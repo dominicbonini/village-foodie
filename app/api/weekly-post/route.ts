@@ -17,10 +17,16 @@ import { canAccess } from '@/lib/features'
 import { scanUrl } from '@/lib/custom-domain/copy'
 import type { Place } from '@/lib/schedule-graphics/places'
 import { buildWeekData, busyWeekData, type WeekEvent } from '@/lib/weekly-post/week-data'
-import { defaultLayout, rowsFitWarning, validateLayout, MAX_UPLOAD_BYTES, MIN_UPLOAD_SHORT_SIDE, type Layout } from '@/lib/weekly-post/layout'
+import {
+  defaultLayout, defaultEventLayout, rowsFitWarning, validateLayout, validateEventLayout,
+  MAX_UPLOAD_BYTES, MIN_UPLOAD_SHORT_SIDE, type EventLayout, type Layout,
+} from '@/lib/weekly-post/layout'
+import { checkAspect, placePicturesThatNoLongerFit, resolveBackground } from '@/lib/weekly-post/backgrounds'
+import { renderEventPost } from '@/lib/weekly-post/render'
+import { entryFor } from '@/lib/weekly-post/week-data'
 import { checkUpload, readImageInfo, toDataUri } from '@/lib/weekly-post/image-info'
 import { renderWeeklyPost } from '@/lib/weekly-post/render'
-import { weekRange, defaultWeekChoice, type WeekChoice } from '@/lib/weekly-post/week'
+import { weekRange, defaultWeekChoice, todayInWeekTz, type WeekChoice } from '@/lib/weekly-post/week'
 import { eventPostText, weekCaption } from '@/lib/weekly-post/caption'
 
 /** 🔴 THE RENDER IS THE SLOW PATH and it is ~40ms warm; 30s matches /api/manage and leaves room for a
@@ -29,6 +35,11 @@ export const maxDuration = 30
 
 const BUCKET = 'post-designs'
 const KIND = 'week'
+/** 🔴 THE SECOND KIND (stage 2). `truck_post_designs`'s unique key is `(truck_id, kind)`, written
+ *  that way in stage 1 so this could be added as one more row per truck rather than a parallel table. */
+const EVENT_KIND = 'event'
+type DesignKind = typeof KIND | typeof EVENT_KIND
+const kindOf = (v: unknown): DesignKind => (v === EVENT_KIND ? EVENT_KIND : KIND)
 /** How long a browser's view of the blank stays valid. Long enough to design, short enough to matter. */
 const SIGNED_URL_SECONDS = 60 * 60
 
@@ -57,11 +68,11 @@ function gated(truck: TruckRow): NextResponse | null {
   return ok ? null : NextResponse.json({ error: 'The weekly post is on Pro and Max' }, { status: 403 })
 }
 
-async function loadDesign(truckId: string) {
+async function loadDesign(truckId: string, kind: DesignKind = KIND) {
   const { data, error } = await supabase
     .from('truck_post_designs')
     .select('id, blank_path, example_path, width, height, layout, updated_at')
-    .eq('truck_id', truckId).eq('kind', KIND).maybeSingle()
+    .eq('truck_id', truckId).eq('kind', kind).maybeSingle()
   if (error) {
     /* ⚠️ A MISSING TABLE IS REPORTED, NOT SWALLOWED. Before the migration this feature cannot work at
      * all, and "set up your weekly post" on a loop would be a maddening way to learn that. */
@@ -103,6 +114,80 @@ async function loadWeek(truckId: string, from: string, to: string) {
   }
 }
 
+type DesignRow = { blank_path: string; width: number | null; height: number | null; layout: unknown } | null
+
+/**
+ * One event, its three possible backgrounds and which one wins — resolved ONCE and shared by
+ * `event_post` (which shows the choice) and `event_render` (which draws it).
+ *
+ * 🔴 ONE PLACE DECIDES, so the picture the modal says is selected is the picture that is drawn. Two
+ * copies of "one-off beats place beats default" would disagree the first time either was touched, and
+ * the operator would be looking at a label that did not match the poster.
+ *
+ * ⚠️ A PICTURE WHOSE SHAPE NO LONGER MATCHES IS NOT OFFERED. The boxes were placed on the default; a
+ * differently shaped picture would put them somewhere else. `fitsDefault` is what keeps it out, and the
+ * place keeps its file so the truck can replace it rather than lose it.
+ */
+async function eventPostContext(
+  truck: TruckRow,
+  eventId: string,
+  design: DesignRow,
+): Promise<{ error: string; status: number } | {
+  entry: ReturnType<typeof entryFor>
+  date: string
+  options: Array<{ source: 'event' | 'place' | 'default'; path: string; label: string }>
+  chosen: { source: 'event' | 'place' | 'default'; path: string }
+}> {
+  if (!design?.blank_path || !design.width || !design.height) {
+    return { error: 'No event design yet.', status: 400 }
+  }
+  const { data: ev } = await supabase.from('truck_events')
+    .select('id, event_date, start_time, end_time, status, venue_name, venue_id, truck_place_id, town')
+    .eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
+  if (!ev) return { error: 'Event not found', status: 404 }
+
+  const { data: places } = await supabase.from('truck_places')
+    .select('id, venue_id, name_key, name, short_name, area, merged_into_id, is_hidden, event_bg_path, event_bg_width, event_bg_height')
+    .eq('truck_id', truck.id)
+
+  const layout = (design.layout ?? null) as EventLayout | null
+  const entry = entryFor(ev as never, (places ?? []) as never, layout?.timeStyle ?? '12h')
+  const date = String((ev as { event_date?: string }).event_date ?? '')
+
+  /* 🔴 THE PLACE IS FOUND BY THE SAME RESOLVER THE POSTER USES. `entryFor` already ran `placeForEvent`
+   * to get the name; finding the picture by any other route could attach one place's artwork to another
+   * place's name on the same poster. */
+  const placeRow = (places ?? []).find((pl: Record<string, unknown>) => {
+    const nm = String(pl.short_name ?? '').trim() || String(pl.name ?? '').trim()
+    return nm === entry.name
+  }) as Record<string, unknown> | undefined
+
+  const placeImg = placeRow?.event_bg_path
+    ? { path: String(placeRow.event_bg_path), width: (placeRow.event_bg_width as number) ?? null, height: (placeRow.event_bg_height as number) ?? null }
+    : null
+  const { data: oneOff } = await supabase.from('event_post_backgrounds')
+    .select('path, width, height').eq('event_id', eventId).maybeSingle()
+
+  const fits = (i: { width: number | null; height: number | null } | null) =>
+    !!i && !!i.width && !!i.height && checkAspect(i.width, i.height, design.width!, design.height!).ok
+
+  const usablePlace = fits(placeImg) ? placeImg : null
+  const usableOneOff = fits(oneOff as never) ? (oneOff as { path: string; width: number | null; height: number | null }) : null
+
+  const chosen = resolveBackground({
+    fallback: { path: design.blank_path, width: design.width, height: design.height },
+    place: usablePlace,
+    event: usableOneOff,
+  })
+
+  const options: Array<{ source: 'event' | 'place' | 'default'; path: string; label: string }> = []
+  if (usableOneOff) options.push({ source: 'event', path: usableOneOff.path, label: 'Picture for this event' })
+  if (usablePlace) options.push({ source: 'place', path: usablePlace.path, label: `${entry.name} picture` })
+  options.push({ source: 'default', path: design.blank_path, label: 'Default picture' })
+
+  return { entry, date, options, chosen: { source: chosen.source, path: chosen.path } }
+}
+
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Bad request' }, { status: 400 }) }
@@ -118,7 +203,7 @@ export async function POST(req: NextRequest) {
 
   // ── LOAD ────────────────────────────────────────────────────────────────────────────────────────
   if (action === 'load') {
-    const { missingTable, design } = await loadDesign(truck.id)
+    const { missingTable, design } = await loadDesign(truck.id, KIND)
     const which: WeekChoice = body.week === 'this' || body.week === 'next'
       ? body.week as WeekChoice
       : defaultWeekChoice()
@@ -152,7 +237,12 @@ export async function POST(req: NextRequest) {
 
   // ── AN UPLOAD SLOT ──────────────────────────────────────────────────────────────────────────────
   if (action === 'upload_url') {
-    const which = body.which === 'example' ? 'example' : 'blank'
+    /* ⚠️ FOUR SLOTS NOW. `blank`/`example` are the week design's; `event-default` is the single-event
+     * design's picture; `place` and `one-off` are stage 2's per-place and per-event pictures. The name
+     * only shapes the stored path — what a file is allowed to BE is decided by `confirm_upload`, from
+     * the bytes. */
+    const SLOTS = ['blank', 'example', 'event-default', 'place', 'one-off'] as const
+    const which = (SLOTS as readonly string[]).includes(String(body.which)) ? String(body.which) : 'blank'
     const ext = String(body.ext ?? 'png').toLowerCase() === 'jpg' ? 'jpg' : String(body.ext ?? 'png').toLowerCase() === 'jpeg' ? 'jpg' : 'png'
     /* ⚠️ THE PATH IS BUILT SERVER-SIDE AND STARTS WITH THE TRUCK ID. A client-supplied path would let
      * one truck write into another's folder — the bucket is private, but a signed upload URL is
@@ -166,7 +256,7 @@ export async function POST(req: NextRequest) {
   // ── CONFIRM AN UPLOAD: read the real bytes, check them, save or discard ─────────────────────────
   if (action === 'confirm_upload') {
     const path = String(body.path ?? '')
-    const which = body.which === 'example' ? 'example' : 'blank'
+    const which = String(body.which ?? 'blank')
     if (!path.startsWith(`${truck.id}/`)) return NextResponse.json({ error: 'Unknown file' }, { status: 400 })
     const bytes = await downloadObject(path)
     if (!bytes) return NextResponse.json({ error: 'That upload did not arrive — please try again.' }, { status: 400 })
@@ -179,6 +269,85 @@ export async function POST(req: NextRequest) {
        * bucket that nothing ever lists. */
       await supabase.storage.from(BUCKET).remove([path])
       return NextResponse.json({ error: check.error }, { status: 400 })
+    }
+
+    /* ══ 🔴 STAGE 2 · THE SHAPE RULE ═══════════════════════════════════════════════
+     * A place or one-off picture must be the same SHAPE as the event default, because the boxes were
+     * placed once on that default and a box at (x, y) is perfectly valid — and perfectly wrong — on a
+     * different canvas. Checked here, from the real bytes, before anything is stored against a place or
+     * an event. */
+    if (which === 'place' || which === 'one-off') {
+      const { design: eventDesign } = await loadDesign(truck.id, EVENT_KIND)
+      if (!eventDesign?.width || !eventDesign?.height) {
+        await supabase.storage.from(BUCKET).remove([path])
+        return NextResponse.json({ error: 'Set up your event post design first.' }, { status: 400 })
+      }
+      const aspect = checkAspect(check.info.width, check.info.height, eventDesign.width, eventDesign.height)
+      if (!aspect.ok) {
+        await supabase.storage.from(BUCKET).remove([path])
+        return NextResponse.json({ error: aspect.error }, { status: 400 })
+      }
+      if (which === 'place') {
+        const placeId = String(body.placeId ?? '')
+        const { data: place } = await supabase.from('truck_places')
+          .select('id, event_bg_path').eq('id', placeId).eq('truck_id', truck.id).maybeSingle()
+        if (!place) { await supabase.storage.from(BUCKET).remove([path]); return NextResponse.json({ error: 'Place not found' }, { status: 404 }) }
+        const old = (place as { event_bg_path?: string | null }).event_bg_path
+        const { error } = await supabase.from('truck_places')
+          .update({ event_bg_path: path, event_bg_width: check.info.width, event_bg_height: check.info.height })
+          .eq('id', placeId).eq('truck_id', truck.id)
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+        if (old && old !== path) await supabase.storage.from(BUCKET).remove([old])
+        return NextResponse.json({ ok: true, url: await signed(path), width: check.info.width, height: check.info.height })
+      }
+      // one-off: keyed by the event
+      const eventId = String(body.eventId ?? '')
+      const { data: ev } = await supabase.from('truck_events')
+        .select('id').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
+      if (!ev) { await supabase.storage.from(BUCKET).remove([path]); return NextResponse.json({ error: 'Event not found' }, { status: 404 }) }
+      const { data: prior } = await supabase.from('event_post_backgrounds')
+        .select('path').eq('event_id', eventId).maybeSingle()
+      const { error } = await supabase.from('event_post_backgrounds').upsert({
+        event_id: eventId, truck_id: truck.id, path,
+        width: check.info.width, height: check.info.height, updated_at: new Date().toISOString(),
+      }, { onConflict: 'event_id' })
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      const oldPath = (prior as { path?: string } | null)?.path
+      if (oldPath && oldPath !== path) await supabase.storage.from(BUCKET).remove([oldPath])
+      return NextResponse.json({ ok: true, url: await signed(path), width: check.info.width, height: check.info.height })
+    }
+
+    /* ══ THE EVENT DESIGN'S OWN DEFAULT PICTURE ═══════════════════════════════════════
+     * 🔴 REPLACING IT WITH A DIFFERENT SHAPE RESETS THE BOXES, exactly as the week design does — and
+     * additionally reports which PLACE pictures no longer fit. Those are kept, not deleted: a truck who
+     * re-exported their default has not asked to throw away per-place artwork, and deleting it on their
+     * behalf cannot be undone. */
+    if (which === 'event-default') {
+      const { design: prior } = await loadDesign(truck.id, EVENT_KIND)
+      const sameSize = prior && prior.width === check.info.width && prior.height === check.info.height
+      const layout = sameSize && prior?.layout ? prior.layout : defaultEventLayout(check.info.width, check.info.height)
+      const oldPath = prior?.blank_path
+      const { error } = await supabase.from('truck_post_designs').upsert({
+        truck_id: truck.id, kind: EVENT_KIND, blank_path: path,
+        width: check.info.width, height: check.info.height, layout,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'truck_id,kind' })
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      if (oldPath && oldPath !== path) await supabase.storage.from(BUCKET).remove([oldPath])
+      const { data: places } = await supabase.from('truck_places')
+        .select('id, name, event_bg_path, event_bg_width, event_bg_height')
+        .eq('truck_id', truck.id)
+      const stranded = placePicturesThatNoLongerFit(
+        (places ?? []).map((pl: Record<string, unknown>) => ({
+          id: String(pl.id), name: String(pl.name ?? ''),
+          image: pl.event_bg_path ? { path: String(pl.event_bg_path), width: (pl.event_bg_width as number) ?? null, height: (pl.event_bg_height as number) ?? null } : null,
+        })),
+        check.info.width, check.info.height)
+      return NextResponse.json({
+        ok: true, width: check.info.width, height: check.info.height,
+        layout, resetLayout: !sameSize, blankUrl: await signed(path),
+        strandedPlaces: stranded,
+      })
     }
 
     const { design } = await loadDesign(truck.id)
@@ -303,6 +472,140 @@ export async function POST(req: NextRequest) {
         'Content-Disposition': `inline; filename="weekly-post-${range.start}.png"`,
         'Cache-Control': 'no-store',
         'X-Render-Ms': String(out.ms),
+        'X-Render-Warnings': encodeURIComponent(JSON.stringify(out.warnings)),
+      },
+    })
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════════════════════
+  // STAGE 2 · THE SINGLE-EVENT POST
+  // ══════════════════════════════════════════════════════════════════════════════════════════
+
+  /** The event design, the places and their pictures — everything the setup screen needs. */
+  if (action === 'event_load') {
+    const { missingTable, design } = await loadDesign(truck.id, EVENT_KIND)
+    const [{ data: places }, { data: upcoming }] = await Promise.all([
+      supabase.from('truck_places')
+        .select('id, name, short_name, area, is_favourite, is_hidden, event_bg_path, event_bg_width, event_bg_height')
+        .eq('truck_id', truck.id),
+      /* 🔴 THE SETUP PREVIEW USES THE TRUCK'S NEXT UPCOMING EVENT, so what they are placing boxes on
+       * is their own real poster rather than invented words of a length nothing will ever be. */
+      supabase.from('truck_events')
+        .select('id, event_date, start_time, end_time, status, venue_name, venue_id, truck_place_id, town')
+        .eq('truck_id', truck.id)
+        .gte('event_date', todayInWeekTz())
+        .order('event_date', { ascending: true })
+        .limit(5),
+    ])
+    const visible = (places ?? []).filter((pl: Record<string, unknown>) => pl.is_hidden !== true)
+    /* ⚠️ FAVOURITES FIRST, then by name — the order the places list itself uses, so the two screens
+     * do not present the same list in two orders. */
+    visible.sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
+      const fa = a.is_favourite === true ? 0 : 1
+      const fb = b.is_favourite === true ? 0 : 1
+      return fa !== fb ? fa - fb : String(a.name ?? '').localeCompare(String(b.name ?? ''))
+    })
+    const W = design?.width ?? 0, H = design?.height ?? 0
+    return NextResponse.json({
+      missingTable,
+      design: design ? {
+        width: design.width, height: design.height, layout: design.layout,
+        backgroundUrl: await signed(design.blank_path),
+      } : null,
+      places: await Promise.all(visible.map(async (pl: Record<string, unknown>) => ({
+        id: pl.id, name: pl.name, area: pl.area, isFavourite: pl.is_favourite === true,
+        imageUrl: pl.event_bg_path ? await signed(String(pl.event_bg_path)) : null,
+        width: pl.event_bg_width ?? null, height: pl.event_bg_height ?? null,
+        /* ⚠️ REPORTED, NOT SILENTLY DROPPED. A place picture that no longer matches the default's
+         * shape is kept and shown as needing replacing, so the truck knows why it is not being used. */
+        fitsDefault: !!(W && H && pl.event_bg_width && pl.event_bg_height
+          && checkAspect(Number(pl.event_bg_width), Number(pl.event_bg_height), W, H).ok),
+      }))),
+      nextEvents: (upcoming ?? []).map((e: Record<string, unknown>) => ({ id: e.id, date: e.event_date })),
+    })
+  }
+
+  if (action === 'event_save_design') {
+    const { design } = await loadDesign(truck.id, EVENT_KIND)
+    if (!design) return NextResponse.json({ error: 'Upload your event picture first.' }, { status: 400 })
+    const v = validateEventLayout(body.layout, design.width ?? 0, design.height ?? 0)
+    if (!v.ok || !v.layout) return NextResponse.json({ error: v.errors[0] ?? 'That design could not be saved.', errors: v.errors }, { status: 400 })
+    const { error } = await supabase.from('truck_post_designs')
+      .update({ layout: v.layout, updated_at: new Date().toISOString() })
+      .eq('truck_id', truck.id).eq('kind', EVENT_KIND)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true, layout: v.layout })
+  }
+
+  if (action === 'event_remove_place_bg') {
+    const placeId = String(body.placeId ?? '')
+    const { data: place } = await supabase.from('truck_places')
+      .select('id, event_bg_path').eq('id', placeId).eq('truck_id', truck.id).maybeSingle()
+    if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+    const old = (place as { event_bg_path?: string | null }).event_bg_path
+    const { error } = await supabase.from('truck_places')
+      .update({ event_bg_path: null, event_bg_width: null, event_bg_height: null })
+      .eq('id', placeId).eq('truck_id', truck.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (old) await supabase.storage.from(BUCKET).remove([old])
+    return NextResponse.json({ ok: true })
+  }
+
+  /** One event's post: which backgrounds it can use, which is chosen, and the text. */
+  if (action === 'event_post') {
+    const eventId = String(body.eventId ?? '')
+    const { design } = await loadDesign(truck.id, EVENT_KIND)
+    const ctx = await eventPostContext(truck, eventId, design)
+    if ('error' in ctx) return NextResponse.json({ error: ctx.error }, { status: ctx.status })
+    const layout = (design?.layout ?? null) as EventLayout | null
+    const text = eventPostText({
+      truckName: truck.name, entry: ctx.entry, date: ctx.date,
+      orderUrl: truck.slug ? scanUrl(truck.slug) : null,
+      timeStyle: layout?.timeStyle ?? '12h', now: new Date(),
+    })
+    return NextResponse.json({
+      hasDesign: !!design,
+      event: { id: eventId, date: ctx.date, name: ctx.entry.name, town: ctx.entry.town, time: ctx.entry.time, status: ctx.entry.status },
+      options: ctx.options,
+      chosen: ctx.chosen.source,
+      text,
+    })
+  }
+
+  if (action === 'event_render') {
+    const eventId = String(body.eventId ?? '')
+    const { design } = await loadDesign(truck.id, EVENT_KIND)
+    if (!design) return NextResponse.json({ error: 'No event design yet.' }, { status: 400 })
+    const v = validateEventLayout(body.layout ?? design.layout, design.width ?? 0, design.height ?? 0)
+    if (!v.ok || !v.layout) return NextResponse.json({ error: v.errors[0] ?? 'That design could not be rendered.' }, { status: 400 })
+    const ctx = await eventPostContext(truck, eventId, design)
+    if ('error' in ctx) return NextResponse.json({ error: ctx.error }, { status: ctx.status })
+
+    /* ⚠️ THE MODAL MAY FORCE A SOURCE (the truck pressed "Default picture" while the place has one).
+     * An unknown or unavailable choice falls back to the resolver's own answer rather than failing —
+     * the worst case is the poster they would have got anyway. */
+    const forced = String(body.background ?? '')
+    const picked = (forced === 'event' || forced === 'place' || forced === 'default')
+      ? (ctx.options.find(o => o.source === forced) ?? ctx.chosen)
+      : ctx.chosen
+    const bytes = await downloadObject(picked.path)
+    if (!bytes) return NextResponse.json({ error: 'That picture could not be read.' }, { status: 500 })
+    const info = readImageInfo(bytes)
+    if (!info) return NextResponse.json({ error: 'That picture could not be read.' }, { status: 500 })
+
+    const out = await renderEventPost({
+      layout: v.layout, entry: ctx.entry, date: ctx.date,
+      backgroundDataUri: toDataUri(bytes, info),
+      note: typeof body.note === 'string' ? body.note : null,
+    })
+    return new NextResponse(new Uint8Array(out.png), {
+      status: 200,
+      headers: {
+        'Content-Type': 'image/png',
+        'Content-Disposition': `inline; filename="event-post-${ctx.date}.png"`,
+        'Cache-Control': 'no-store',
+        'X-Render-Ms': String(out.ms),
+        'X-Background-Source': picked.source,
         'X-Render-Warnings': encodeURIComponent(JSON.stringify(out.warnings)),
       },
     })

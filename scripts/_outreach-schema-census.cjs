@@ -60,6 +60,15 @@ const TABLES = [
    * Added at creation, like truck_places, so the feature can never name a column that does not exist
    * — which on this table would mean the capacity engine reading undefined prep times. */
   'van_category_settings',
+  /* The weekly post's design (supabase/migrations/20261006_truck_post_designs.sql) and the
+   * single-event post's per-event background (20261007_event_post_backgrounds.sql). Both are created
+   * by a migration, so the census can describe them fully.
+   * ⚠️ `truck_post_designs` WAS NOT ADDED AT CREATION, and that was recorded as a deliberate deferral
+   * in docs/weekly-post-stage1-report.md §9.2 — "the table is brand new and the feature's columns may
+   * still move". Stage 2 moved one (`kind` gained a value) and added none, so it is settled enough to
+   * censue now, which is what the stage 1 note said to wait for. */
+  'truck_post_designs',
+  'event_post_backgrounds',
 ]
 
 const CODE_DIRS = ['app', 'lib', 'components']

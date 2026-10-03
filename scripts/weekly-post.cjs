@@ -28,7 +28,7 @@ const LIB = [
   'lib/weekly-post/week.ts', 'lib/weekly-post/format.ts', 'lib/weekly-post/week-data.ts',
   'lib/weekly-post/layout.ts', 'lib/weekly-post/fit.ts', 'lib/weekly-post/contrast.ts',
   'lib/weekly-post/fonts.ts', 'lib/weekly-post/font-list.ts', 'lib/weekly-post/ttf-metrics.ts', 'lib/weekly-post/caption.ts',
-  'lib/weekly-post/render.ts', 'lib/weekly-post/image-info.ts',
+  'lib/weekly-post/render.ts', 'lib/weekly-post/image-info.ts', 'lib/weekly-post/backgrounds.ts',
   'lib/time-utils.ts', 'lib/schedule-graphics/places.ts',
 ]
 
@@ -60,6 +60,7 @@ function build(patch) {
     caption: r('lib/weekly-post/caption.js'),
     render: r('lib/weekly-post/render.js'),
     imageInfo: r('lib/weekly-post/image-info.js'),
+    bg: r('lib/weekly-post/backgrounds.js'),
   }
 }
 
@@ -602,6 +603,132 @@ head('8 · THE UPLOAD GATE')
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
+// 8b · STAGE 2 — THE SINGLE-EVENT POST'S RULES
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('8b · THE SINGLE-EVENT POST \u2014 backgrounds, time and layout')
+{
+  const { resolveBackground, checkAspect, placePicturesThatNoLongerFit, fitsDefault, ASPECT_TOLERANCE } = M.bg
+  const img = (path, w, h) => ({ path, width: w, height: h })
+  const D = img('default.png', 1080, 1350)
+
+  /* \u{1F534} ONE-OFF > PLACE > DEFAULT. It reads as "the most specific thing anyone said about this post
+   * wins": an upload made FOR THIS EVENT is the most deliberate act available, so nothing may override
+   * it; a place picture is a standing instruction about one venue; the default is what is true when
+   * nobody has said anything else. */
+  t('\u{1F534} THE ORDER IS one-off > place > default', (() => {
+    const all = resolveBackground({ fallback: D, place: img('p.png', 1080, 1350), event: img('e.png', 1080, 1350) })
+    const noEvent = resolveBackground({ fallback: D, place: img('p.png', 1080, 1350), event: null })
+    const neither = resolveBackground({ fallback: D })
+    return all.source === 'event' && all.path === 'e.png'
+      && noEvent.source === 'place' && noEvent.path === 'p.png'
+      && neither.source === 'default' && neither.path === 'default.png'
+  })())
+  t('\u26a0\ufe0f a blank or whitespace path is not a picture', (() => {
+    const r = resolveBackground({ fallback: D, place: img('   ', 1080, 1350), event: img('', 1080, 1350) })
+    return r.source === 'default'
+  })())
+  t('\u26a0\ufe0f the choice NAMES its source, so the modal cannot label one picture and draw another',
+    resolveBackground({ fallback: D }).source === 'default')
+
+  /* \u{1F534} THE SHAPE RULE. The boxes were placed once on the default; a differently shaped picture puts
+   * them somewhere else entirely, with no error, because a box at (x, y) is valid on any canvas. */
+  t('\u{1F534} 0.5% OFF IS ACCEPTED \u2014 a re-export is not a different poster', (() => {
+    // 1080\u00d71350 is 0.8; 0.5% tighter is 0.796
+    const h = Math.round(1080 / (0.8 * 0.995))
+    const c = checkAspect(1080, h, 1080, 1350)
+    return c.ok && Math.abs((1080 / h) / 0.8 - 1) < ASPECT_TOLERANCE
+  })())
+  t('\u26d4 2% OFF IS REFUSED, and the message names the default\u2019s size', (() => {
+    const h = Math.round(1080 / (0.8 * 0.98))
+    const c = checkAspect(1080, h, 1080, 1350)
+    return !c.ok && /different shape/i.test(c.error) && c.error.includes('1080\u00d71350')
+  })())
+  t('\u{1F534} A DIFFERENT RESOLUTION, SAME SHAPE, IS ACCEPTED \u2014 a sharper export is the same poster',
+    checkAspect(2160, 2700, 1080, 1350).ok && checkAspect(540, 675, 1080, 1350).ok)
+  t('\u26d4 landscape is refused against a portrait default', !checkAspect(1350, 1080, 1080, 1350).ok)
+  /* \u26a0\ufe0f THE TOLERANCE IS RELATIVE. A fixed \u00b10.01 would be strict on portrait (0.8) and loose on
+   * landscape (1.78); dividing by the default's own ratio makes "within 1%" mean one thing. */
+  t('\u26a0\ufe0f the tolerance means the same on a landscape default as on a portrait one', (() => {
+    const portraitEdge = checkAspect(1080, Math.round(1080 / (0.8 * 1.009)), 1080, 1350).ok
+    const landscapeEdge = checkAspect(1920, Math.round(1920 / ((16 / 9) * 1.009)), 1920, 1080).ok
+    const portraitOver = checkAspect(1080, Math.round(1080 / (0.8 * 1.02)), 1080, 1350).ok
+    const landscapeOver = checkAspect(1920, Math.round(1920 / ((16 / 9) * 1.02)), 1920, 1080).ok
+    return portraitEdge && landscapeEdge && !portraitOver && !landscapeOver
+  })())
+  t('\u26d4 a zero or missing size is refused rather than dividing by zero',
+    !checkAspect(0, 1350, 1080, 1350).ok && !checkAspect(1080, 0, 1080, 1350).ok)
+  t('\u26a0\ufe0f a picture with no recorded size is never used \u2014 size is what proves the shape',
+    fitsDefault({ path: 'x.png', width: null, height: null }, 1080, 1350) === false
+    && fitsDefault(null, 1080, 1350) === false
+    && fitsDefault({ path: 'x.png', width: 2160, height: 2700 }, 1080, 1350) === true)
+
+  /* \u{1F534} A REPLACED DEFAULT STRANDS SOME PLACE PICTURES \u2014 they are KEPT and REPORTED, never deleted.
+   * A truck who re-exported their default has not asked to throw away per-place artwork. */
+  t('\u{1F534} replacing the default reports which place pictures no longer fit, by name', (() => {
+    const stranded = placePicturesThatNoLongerFit([
+      { id: 'a', name: 'Lavenham Village Hall', image: img('a.png', 1080, 1350) },
+      { id: 'b', name: 'The Bull Inn', image: img('b.png', 1920, 1080) },
+      { id: 'c', name: 'No picture', image: null },
+    ], 1080, 1350)
+    return stranded.length === 1 && stranded[0].name === 'The Bull Inn'
+  })())
+
+  // ── the "From" time ───────────────────────────────────────────────────────────────────────────
+  const { formatEventTime } = M.format
+  t('\u{1F534} "From 5pm" IS THE DEFAULT FORM, and keeps minutes when they are not :00',
+    formatEventTime('17:00', '21:00', '12h', 'from') === 'From 5pm'
+    && formatEventTime('17:30', '21:00', '12h', 'from') === 'From 5:30pm')
+  t('\u{1F534} the range form is the stage 1 wording, unchanged',
+    formatEventTime('17:00', '21:00', '12h', 'range') === '5pm \u2013 9pm')
+  t('\u26a0\ufe0f 24-hour follows the EXISTING timeStyle rather than a second setting',
+    formatEventTime('17:00', '21:00', '24h', 'from') === 'From 17:00'
+    && formatEventTime('17:00', '21:00', '24h', 'range') === '17:00 \u2013 21:00')
+  t('\u26d4 no start time gives NOTHING, never a dangling "From "',
+    formatEventTime(null, '21:00', '12h', 'from') === ''
+    && formatEventTime('', null, '12h', 'from') === '')
+  t('\u26a0\ufe0f midnight and noon are 12am/12pm here too',
+    formatEventTime('00:00', null, '12h', 'from') === 'From 12am'
+    && formatEventTime('12:00', null, '12h', 'from') === 'From 12pm')
+
+  // ── the event layout ──────────────────────────────────────────────────────────────────────────
+  const { defaultEventLayout, validateEventLayout, defaultEventNoteBox, LAYOUT_VERSION } = M.layout
+  const EW = 1080, EH = 1350
+  const good = defaultEventLayout(EW, EH)
+  t('\u{1F534} a fresh event layout validates, and its three boxes are inside the picture',
+    validateEventLayout(good, EW, EH).ok === true)
+  t('\u{1F534} the date defaults to ONE line on an event post (two on the weekly one)',
+    good.date.twoLines === false && M.layout.defaultLayout(EW, EH).date.twoLines === true)
+  t('\u{1F534} the time defaults to "From"', good.timeDisplay === 'from')
+  const badEvent = [
+    ['not an object', 'hello'],
+    ['a wrong version', { ...good, version: LAYOUT_VERSION + 1 }],
+    ['a NaN position', { ...good, date: { ...good.date, x: NaN } }],
+    ['a numeric string', { ...good, time: { ...good.time, y: '400' } }],
+    ['a box off the edge', { ...good, location: { ...good.location, x: EW - 10, w: 400 } }],
+    ['a missing box', { ...good, time: undefined }],
+  ]
+  for (const [what, input] of badEvent) {
+    const r = validateEventLayout(input, EW, EH)
+    t(`\u26d4 EVENT LAYOUT REJECTED: ${what}`, r.ok === false && r.errors.length > 0)
+  }
+  t('\u26a0\ufe0f an unknown timeDisplay becomes the documented default rather than being refused', (() => {
+    const r = validateEventLayout({ ...good, timeDisplay: 'sideways' }, EW, EH)
+    return r.ok && r.layout.timeDisplay === 'from'
+  })())
+  t('\u{1F534} THE IMAGE SIZE COMES FROM THE SERVER on the event layout too',
+    validateEventLayout({ ...good, width: 9000, height: 9000, time: { ...good.time, x: 5000, w: 400 } }, EW, EH).ok === false)
+  t('\u26a0\ufe0f a note box can be added and validates', (() => {
+    const withNote = { ...good, note: defaultEventNoteBox(good) }
+    return validateEventLayout(withNote, EW, EH).ok === true
+  })())
+  /* \u26a0\ufe0f THE TWO LAYOUTS ARE DIFFERENT SHAPES AND EACH VALIDATOR REFUSES THE OTHER \u2014 which is why
+   * they are separate functions rather than one with a `kind` branch. */
+  t('\u26d4 the week validator refuses an event layout, and vice versa',
+    M.layout.validateLayout(good, EW, EH).ok === false
+    && validateEventLayout(M.layout.defaultLayout(EW, EH), EW, EH).ok === true)
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
 // 9 · THE RENDER — PIXELS
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 const renderSuite = async () => {
@@ -773,8 +900,179 @@ t('🔴 THE LONGEST SIDE IS CAPPED AT 2160px, and the whole design scales with i
 console.log(`      tall render: ${capped.width}×${capped.height} in ${capped.ms} ms`)
 t('⚠️ …and a 1080×1920 render is still well under 2s', capped.ms < 2000)
 
-return { bg, base, mkWeek, blank }
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 9b · THE SINGLE-EVENT POST, CHECKED IN THE PIXELS
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('9b · THE SINGLE-EVENT POST, IN THE PIXELS')
+
+const EV = { id: 'ev1', event_date: range.days[4], start_time: '17:00', end_time: '21:00',
+  venue_name: 'Lavenham Village Hall', town: 'Lavenham', status: 'confirmed' }
+const entryOf = (over = {}) => M.data.entryFor({ ...EV, ...over }, [], '12h')
+const eventLayout = M.layout.defaultEventLayout(W, H)
+const evBg = await blank(W, H)
+
+const ev1 = await M.render.renderEventPost({
+  layout: eventLayout, entry: entryOf(), date: EV.event_date, backgroundDataUri: evBg.uri,
+})
+t('\u{1F534} it renders a PNG at the picture\u2019s native size', (() => {
+  const img = decodePng(ev1.png)
+  return ev1.png.slice(1, 4).toString() === 'PNG' && img.width === W && img.height === H
+})())
+console.log(`      event render: ${ev1.width}\u00d7${ev1.height}, ${(ev1.png.length / 1024).toFixed(0)} KB, ${ev1.ms} ms`)
+t('\u26a0\ufe0f \u2026well inside the 2-second budget', ev1.ms < 2000)
+
+/* \u{1F534} EVERY BOX'S TEXT STAYS INSIDE ITS BOX \u2014 the stage 1 method, reused: render one box type at a
+ * time with the others parked in an 8\u00d78 corner, diff against the same poster with this one parked too,
+ * and every differing pixel then belongs to this box and nothing else. */
+const EV_KEYS = ['date', 'location', 'time']
+const parkEv = (l, keys) => {
+  const c = JSON.parse(JSON.stringify(l))
+  for (const k of keys) if (c[k]) Object.assign(c[k], { x: 0, y: 0, w: 8, h: 8 })
+  return c
 }
+let evOverflow = null
+for (const key of EV_KEYS) {
+  const others = EV_KEYS.filter(k => k !== key)
+  const onlyThis = { ...parkEv(eventLayout, others), keepReadable: false }
+  const nothing = { ...parkEv(eventLayout, EV_KEYS), keepReadable: false }
+  const withBox = decodePng((await M.render.renderEventPost({ layout: onlyThis, entry: entryOf(), date: EV.event_date, backgroundDataUri: flat.uri })).png)
+  const without = decodePng((await M.render.renderEventPost({ layout: nothing, entry: entryOf(), date: EV.event_date, backgroundDataUri: flat.uri })).png)
+  const b = eventLayout[key]
+  const band = { x: 16, y: Math.max(0, b.y - 2), w: W - 16, h: b.h + 4 }
+  const got = diffBounds(withBox, without, band)
+  if (!got.empty && (got.x < b.x - 2 || got.right > b.x + b.w + 2)) {
+    evOverflow = { key, boxX: [b.x, b.x + b.w], got: [got.x, got.right] }
+  }
+}
+t('\u{1F534} THE DATE, LOCATION AND TIME STAY INSIDE THEIR BOXES \u2014 checked in the rendered pixels',
+  evOverflow === null)
+if (evOverflow) console.log('      ' + J(evOverflow))
+
+/* \u{1F534} A BIGGER PICTURE OF THE SAME SHAPE PUTS THE TEXT IN THE SAME PLACE. This is the whole reason
+ * for the aspect rule: the design's own width/height drive the frame, so a 2160\u00d72700 place picture is
+ * drawn at the default's exact size and the boxes do not move. Proved by rendering both and comparing
+ * the text pixels, not by reasoning about the code. */
+const bigBg = await blank(W * 2, H * 2)
+const sameShape = await M.render.renderEventPost({
+  layout: eventLayout, entry: entryOf(), date: EV.event_date, backgroundDataUri: bigBg.uri,
+})
+t('\u{1F534} A 2\u00d7 BACKGROUND OF THE SAME SHAPE RENDERS AT THE SAME SIZE', sameShape.width === W && sameShape.height === H)
+/* \u26a0\ufe0f EACH BACKGROUND IS COMPARED AGAINST THE SAME POSTER WITH NO TEXT ON IT, so what is compared
+ * is the TEXT's bounding box rather than the two backgrounds \u2014 which genuinely differ, one being a 2\u00d7
+ * render of the other. The two "no text" renders are awaited here rather than inside the assertion:
+ * an earlier draft wrapped them in a pass-through helper to use them in an arrow function, which
+ * returned the PROMISE and crashed the decoder. */
+const blankTextEv = parkEv(eventLayout, EV_KEYS)
+const noneA = decodePng((await M.render.renderEventPost({ layout: blankTextEv, entry: entryOf(), date: EV.event_date, backgroundDataUri: evBg.uri })).png)
+const noneB = decodePng((await M.render.renderEventPost({ layout: blankTextEv, entry: entryOf(), date: EV.event_date, backgroundDataUri: bigBg.uri })).png)
+t('\u{1F534} \u2026and the text lands in exactly the same place', (() => {
+  const ba = diffBounds(decodePng(ev1.png), noneA, { x: 16, y: 0, w: W - 16, h: H })
+  const bb = diffBounds(decodePng(sameShape.png), noneB, { x: 16, y: 0, w: W - 16, h: H })
+  return !ba.empty && !bb.empty
+    && Math.abs(ba.x - bb.x) <= 1 && Math.abs(ba.y - bb.y) <= 1
+    && Math.abs(ba.right - bb.right) <= 1 && Math.abs(ba.bottom - bb.bottom) <= 1
+})())
+
+/* \u{1F534} A CANCELLED EVENT READS "CANCELLED" WHATEVER THE TIME SETTING SAYS. The display choice is
+ * applied below the cancelled branch, so no setting can give a cancelled event a trading time. */
+const cancelled = await M.render.renderEventPost({
+  layout: eventLayout, entry: entryOf({ status: 'cancelled' }), date: EV.event_date, backgroundDataUri: evBg.uri,
+})
+t('\u{1F534} a cancelled event renders, and differs from the same event trading',
+  Buffer.compare(cancelled.png, ev1.png) !== 0 && cancelled.png.length > 1000)
+t('\u{1F534} \u2026and "From 5pm" cannot override CANCELLED', (() => {
+  const asRange = { ...eventLayout, timeDisplay: 'range' }
+  const a = M.data.entryFor({ ...EV, status: 'cancelled' }, [], '12h')
+  return a.status === 'cancelled' && a.time === '' && asRange.timeDisplay === 'range'
+})())
+
+/* \u26a0\ufe0f THE MARK IS THE SAME ONE. Extracted in stage 2 so the event post cannot drift from the weekly
+ * post in size, position or opacity \u2014 checked by finding it in the same bottom strip. */
+const evMark = diffBounds(decodePng(ev1.png), decodePng(evBg.buf), { x: 0, y: H - Math.round(H * 0.05), w: W, h: Math.round(H * 0.05) })
+t('\u{1F534} "Powered by HatchGrab" is on the event post too, bottom centre', (() => {
+  if (evMark.empty) return false
+  return Math.abs((evMark.x + evMark.w / 2) - W / 2) < W * 0.08 && evMark.w > 60
+})())
+
+/* \u26a0\ufe0f THE WEEKLY POST IS UNAFFECTED. Stage 2 refactored the renderer so both posters share `boxEl`,
+ * `paint` and the mark; the proof that the refactor changed nothing is that every stage 1 check above
+ * still passes, and this one asserts the two posters are still different pictures. */
+t('\u26a0\ufe0f the weekly post and the event post are still different posters',
+  Buffer.compare(out.png, ev1.png) !== 0)
+
+return { bg, base, mkWeek, blank, eventLayout, entryOf, EV, evBg }
+}
+
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 9c · THE WIRING — where the single-event post is reachable from
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('9c · THE WIRING')
+{
+  const page = fs.readFileSync(path.join(REPO, 'app/manage/[token]/page.tsx'), 'utf8')
+  const weekly = fs.readFileSync(path.join(REPO, 'components/manage/WeeklyPost.tsx'), 'utf8')
+  const eventUi = fs.readFileSync(path.join(REPO, 'components/manage/EventPost.tsx'), 'utf8')
+  const route = fs.readFileSync(path.join(REPO, 'app/api/weekly-post/route.ts'), 'utf8')
+
+  t('🔴 "Make post" is on each UPCOMING event in Schedule › Events',
+    />Make post</.test(page)
+    && /setPostEventId\(event\.id\)/.test(page)
+    // ⚠️ inside the `!isPast` branch, so past and cancelled rows keep their existing treatment
+    && page.indexOf('setPostEventId(event.id)') > page.indexOf('{!isPast && ('))
+  t('🔴 …and it opens the modal, which asks the SERVER whether there is a design',
+    /<EventPostModal token=\{token\} eventId=\{postEventId\}/.test(page)
+    && /onNeedsSetup=\{\(\) => \{ setPostEventId\(null\); onSectionChange\('weekly'\) \}\}/.test(page))
+
+  /* 🔴 THE §9.3 FIX. Stage 1 recorded that the weekly post's per-event "Share" did exactly what "Copy
+   * text" did — two buttons doing one thing — because there was no per-event image to share. There is
+   * now, so Share opens the modal that owns the picture and its share. */
+  t('🔴 THE PER-EVENT LIST NOW HAS AN Image BUTTON, and Share is no longer a second Copy text', (() => {
+    const list = weekly.slice(weekly.indexOf('Post for each event'), weekly.indexOf('Post for each event') + 2200)
+    const copyButtons = (list.match(/void copy\(p\.text, 'Text'\)/g) || []).length
+    return />Image</.test(list) && />Share</.test(list)
+      && copyButtons === 1                                   // only "Copy text" copies now
+      && (list.match(/setPostEventId\(p\.eventId\)/g) || []).length === 2   // Image and Share
+  })())
+  t('🔴 …and the modal shares the PICTURE and the text, text to the clipboard first',
+    /navigator\.clipboard\.writeText\(info\.text\)/.test(eventUi)
+    && /nav\.canShare\?\.\(\{ files: \[file\] \}\)/.test(eventUi)
+    && eventUi.indexOf('clipboard.writeText(info.text)') < eventUi.indexOf('canShare?.({ files: [file] })'))
+
+  /* ⚠️ MATCHED ON THE MARKERS THE CODE ACTUALLY USES. The first draft looked for
+   * `designKind === 'event'`, which the component never writes — it branches on `=== 'week'` and on
+   * the tab's own `=== k`. The check was wrong, not the code. */
+  t('🔴 the Week | Single event switch is in the SETUP screen only', (() => {
+    const setupOnly = weekly.indexOf("if (mode === 'setup') {")
+    return /Single event/.test(weekly)
+      && /setDesignKind\(k\)/.test(weekly)
+      && /<EventSetupScreen token=\{token\}/.test(weekly)
+      && setupOnly > 0 && weekly.indexOf('setDesignKind(k)') > setupOnly
+      // ⛔ the POST screens are untouched by it — a weekly post is made here, an event post from its event
+      && !/designKind/.test(weekly.slice(weekly.indexOf('function PostScreen')))
+  })())
+
+  /* 🔴 ONE GATE, SERVER-SIDE. The modal and the setup both call /api/weekly-post, which checks
+   * `schedule_graphics` before every action — so an unentitled plan cannot reach the feature by
+   * posting to the route, and the button needs no gate of its own. */
+  t('🔴 the route gates every action, including the event ones',
+    /const blocked = gated\(truck\)/.test(route)
+    && route.indexOf('const blocked = gated(truck)') < route.indexOf("action === 'event_load'"))
+
+  /* 🔴 REUSE, NOT A FORK. The event screens import the weekly post's editor pieces rather than copying
+   * them, and the event renderer calls the same box machinery. */
+  t('🔴 the event setup REUSES the weekly post\'s draggable box and controls',
+    /from '\.\/WeeklyPost'/.test(eventUi)
+    && /DraggableBox/.test(eventUi)
+    && !/function DraggableBox/.test(eventUi))
+  t('🔴 the event renderer reuses boxEl, the mark and paint — it does not draw its own', (() => {
+    const src = fs.readFileSync(path.join(REPO, 'lib/weekly-post/render.ts'), 'utf8')
+    const fn = src.slice(src.indexOf('export async function renderEventPost'))
+    return /boxEl\(/.test(fn) && /poweredByEl\(/.test(fn) && /await paint\(/.test(fn)
+      // ⛔ and no second ImageResponse call of its own
+      && !/new ImageResponse/.test(fn)
+  })())
+}
+
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // 10 · THE BROKEN VARIANTS
@@ -999,6 +1297,109 @@ async function variants(ctx) {
     must('V15 🔴 a note the operator wrote never reaches the poster', detected)
   }
 
+  // ── STAGE 2 ───────────────────────────────────────────────────────────────────────────────────
+  // V16 — the background order inverted
+  {
+    const p = patch('lib/weekly-post/backgrounds.ts',
+      "  if (usable(input.event)) return { source: 'event', ...input.event }\n  if (usable(input.place)) return { source: 'place', ...input.place }",
+      "  if (usable(input.place)) return { source: 'place', ...input.place }\n  if (usable(input.event)) return { source: 'event', ...input.event }")
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const r = V.bg.resolveBackground({
+        fallback: { path: 'd.png', width: 1, height: 1 },
+        place: { path: 'p.png', width: 1, height: 1 },
+        event: { path: 'e.png', width: 1, height: 1 },
+      })
+      detected = r.source !== 'event'
+    }
+    must('V16 🔴 a place picture overrides the one uploaded FOR THIS EVENT', detected)
+  }
+  // V17 — the aspect tolerance widened until a different shape passes
+  {
+    const p = patch('lib/weekly-post/backgrounds.ts', 'export const ASPECT_TOLERANCE = 0.01', 'export const ASPECT_TOLERANCE = 0.5')
+    let detected = true
+    if (p) {
+      const V = build(p)
+      detected = V.bg.checkAspect(1080, Math.round(1080 / (0.8 * 0.98)), 1080, 1350).ok === true
+    }
+    must('V17 🔴 the shape tolerance is widened — a differently shaped picture is accepted and the boxes move', detected)
+  }
+  /* V18 — the tolerance made absolute instead of relative.
+   * ⚠️ DETECTED ON A LANDSCAPE DEFAULT. At 16:9 (1.778) a 0.9% drift is 0.016, which an absolute 0.01
+   * refuses and the correct relative rule accepts — so the variant shows the rule changing meaning
+   * with the shape, which is exactly what dividing by the default's own ratio prevents. */
+  {
+    const p = patch('lib/weekly-post/backgrounds.ts',
+      '  const drift = Math.abs(ratio - defaultRatio) / defaultRatio',
+      '  const drift = Math.abs(ratio - defaultRatio)')
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const h = Math.round(1920 / ((16 / 9) * 1.009))
+      detected = V.bg.checkAspect(1920, h, 1920, 1080).ok === false
+    }
+    must('V18 🔴 the tolerance becomes absolute — it means something different on every shape', detected)
+  }
+  // V19 — a picture with no recorded size is used anyway
+  {
+    const p = patch('lib/weekly-post/backgrounds.ts',
+      '  if (!usable(img) || !img.width || !img.height) return false\n  return checkAspect(img.width, img.height, defaultWidth, defaultHeight).ok',
+      '  if (!usable(img)) return false\n  return true')
+    let detected = true
+    if (p) {
+      const V = build(p)
+      detected = V.bg.fitsDefault({ path: 'x.png', width: null, height: null }, 1080, 1350) === true
+    }
+    must('V19 🔴 a picture with no recorded size is used — its shape was never checked', detected)
+  }
+  // V20 — "From" loses its preposition guard
+  {
+    const p = patch('lib/weekly-post/format.ts',
+      "  return s ? `From ${s}` : ''", "  return `From ${s}`")
+    let detected = true
+    if (p) {
+      const V = build(p)
+      detected = V.format.formatEventTime(null, '21:00', '12h', 'from') !== ''
+    }
+    must('V20 🔴 an event with no start time renders a dangling "From "', detected)
+  }
+  // V21 — the event validator stops trusting the server's size
+  {
+    const p = patch('lib/weekly-post/layout.ts',
+      "export function validateEventLayout(input: unknown, width: number, height: number): EventValidationResult {\n  const errors: string[] = []\n  const W = num(width, 1, 20000)\n  const H = num(height, 1, 20000)",
+      "export function validateEventLayout(input: unknown, width: number, height: number): EventValidationResult {\n  const errors: string[] = []\n  const i = input as { width?: number; height?: number }\n  const W = num(i?.width ?? width, 1, 20000)\n  const H = num(i?.height ?? height, 1, 20000)")
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const good = V.layout.defaultEventLayout(1080, 1350)
+      detected = V.layout.validateEventLayout({ ...good, width: 9000, height: 9000, time: { ...good.time, x: 5000, w: 400 } }, 1080, 1350).ok === true
+    }
+    must('V21 🔴 the event validator trusts the payload’s own width — an off-image box passes', detected)
+  }
+  // V22 — a cancelled event is given a time by the display setting
+  if (ctx) {
+    const p = patch('lib/weekly-post/render.ts',
+      "    out.push({ runs: [{ text: e.status === 'cancelled' ? 'CANCELLED' : textOf(e) }] })",
+      "    out.push({ runs: [{ text: textOf(e) }] })")
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const l = V.layout.defaultEventLayout(1080, 1350)
+      /* ⚠️ COMPARED AGAINST THE REAL MODULE ON THE SAME CANCELLED EVENT, not against a trading one.
+       * The first draft compared cancelled with trading and expected them to become identical — but
+       * they differ anyway, because a cancelled event's NAME is struck through in the location box, so
+       * the variant "passed" for a reason that had nothing to do with the time. Rendering the same
+       * cancelled event through both modules isolates the one box the patch touches. */
+      const base = { id: 'c', event_date: '2026-10-16', start_time: '17:00', end_time: '21:00', venue_name: 'X' }
+      const cancelledEntry = V.data.entryFor({ ...base, status: 'cancelled' }, [], '12h')
+      const broken = await V.render.renderEventPost({ layout: l, entry: cancelledEntry, date: '2026-10-16', backgroundDataUri: ctx.evBg.uri })
+      const realLayout = M.layout.defaultEventLayout(1080, 1350)
+      const real = await M.render.renderEventPost({ layout: realLayout, entry: M.data.entryFor({ ...base, status: 'cancelled' }, [], '12h'), date: '2026-10-16', backgroundDataUri: ctx.evBg.uri })
+      detected = Buffer.compare(broken.png, real.png) !== 0
+    }
+    must('V22 🔴 a cancelled event is given a trading time by the display setting', detected)
+  }
   console.log(`\n  ${vpass + vfail} variants · ${vpass} failed as required · ${vfail} wrongly passed`)
 }
 

@@ -103,6 +103,76 @@ function weeklyPostFixture(css, which, w) {
 </div></body></html>`
 }
 
+const EVENTUI = read('components/manage/EventPost.tsx')
+
+/**
+ * THE SINGLE-EVENT POST'S TWO SCREENS (stage 2).
+ *
+ * 🔴 THE GRID TEMPLATES AND THE MODAL SHELL ARE LIFTED FROM THE COMPONENT, so a restyle breaks the
+ * fixture rather than leaving it measuring a layout nobody is served.
+ * ⚠️ THE PREVIEW IS A PLACEHOLDER AT THE POSTER'S ASPECT RATIO. What is measured here is the SCREEN:
+ * whether the preview and the controls fit and are reachable. The poster's own pixels are measured by
+ * scripts/weekly-post.cjs, which is where that question belongs.
+ */
+function eventPostFixture(css, which) {
+  const setupGrid = lift(EVENTUI, /<div className="(grid grid-cols-1 lg:grid-cols-\[220px_minmax\(0,1fr\)_280px\] gap-4)">/, 'the event setup grid')
+  const modalShell = lift(EVENTUI, /<div className="(bg-white rounded-2xl w-full max-w-4xl max-h-\[92vh\] md:h-\[86vh\] flex flex-col overflow-hidden)"/, 'the modal shell')
+  const modalGrid = lift(EVENTUI, /<div className="(grid grid-cols-1 md:grid-cols-\[minmax\(0,1fr\)_300px\] gap-4)">/, 'the modal grid')
+  const stage = lift(WP, /<div ref=\{stageRef\} className="(relative w-full select-none touch-none bg-slate-100 rounded-xl overflow-hidden)"/, 'the editor stage')
+  const panel = lift(WP, /<div className="(rounded-xl border border-slate-200 bg-white p-3)">/, 'a control panel')
+
+  const panels = (n, idPrefix) => Array.from({ length: n }, (_, i) =>
+    `<div id="${idPrefix}${i}" class="${panel}" style="margin-bottom:12px">
+       <p style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:8px">PANEL ${i + 1}</p>
+       ${filler('a control', 34)}${filler('another control', 34)}
+     </div>`).join('')
+
+  if (which === 'modal') {
+    /* ⚠️ THE MODAL IS MEASURED INSIDE THE REAL SHELL, because the question is whether its body scrolls
+     * and its buttons stay reachable on a phone — which depends on `max-h-[92vh]` and the flex column,
+     * not on the grid alone. */
+    return `${HEAD(css)}
+<div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="position:fixed;inset:0">
+  <div id="modal" class="${modalShell}">
+    <div id="mHeader" class="shrink-0" style="padding:20px 24px 12px;border-bottom:1px solid #e2e8f0">
+      <p style="font-weight:900">Post for this event</p>
+      <p style="font-size:12px;color:#64748b">2026-10-16 · Lavenham Village Hall · 5pm – 9pm</p>
+    </div>
+    <div id="mBody" class="flex-1 min-h-0 overflow-y-auto" style="padding:16px 24px">
+      <div class="${modalGrid}">
+        <div id="stage" class="rounded-xl overflow-hidden bg-slate-100" style="aspect-ratio: 1080 / 1350"></div>
+        <div id="rightCol">
+          ${panels(3, 'R')}
+          <div id="actions" style="display:flex;flex-wrap:wrap;gap:8px">
+            <span style="padding:8px 16px;border-radius:12px;background:#ea580c;color:#fff;white-space:nowrap">Download image</span>
+            <span style="padding:8px 16px;border-radius:12px;background:#f1f5f9;white-space:nowrap">Copy text</span>
+            <span style="padding:8px 16px;border-radius:12px;background:#f1f5f9;white-space:nowrap">Share</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></body></html>`
+  }
+
+  const shell = lift(PAGE, /<div className="(bg-slate-50 h-dvh flex flex-col overflow-hidden)">/, 'the app shell')
+  const main = lift(PAGE, /<main id=\{MANAGE_SCROLLER_ID\} className=\{"(w-full min-\[1400px\]:max-w-5xl min-\[1400px\]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6)"\}>/, 'the scroller')
+  return `${HEAD(css)}
+<div class="${shell}">
+  <div style="height:56px;background:#0f172a" class="shrink-0"></div>
+  <div style="height:44px;background:#0f172a" class="shrink-0"></div>
+  <main id="scroller" class="${main}">
+    <div class="pt-6 manage-tab-pad">
+      <div class="${setupGrid}">
+        <div id="leftCol">${panels(2, 'L')}</div>
+        <div><div id="stage" class="${stage}" style="aspect-ratio: 1080 / 1350"></div></div>
+        <div id="rightCol">${panels(4, 'R')}</div>
+      </div>
+    </div>
+  </main>
+</div></body></html>`
+}
+
 // ── THE APP'S OWN STYLESHEET ────────────────────────────────────────────────────────────────────────
 function appCss() {
   // ⚠️ `.next/static`, NOT `.next/dev`: the dev CSS is a different, unminified artefact and measuring
@@ -899,6 +969,66 @@ async function measure() {
             `⚠️ weekly post ${w}: the This week / Next week picker fits`)
           t(!!r.actions && r.actions.right <= r.scrollerRight + 1,
             `⚠️ weekly post ${w}: Download and Share fit on one row`)
+        }
+      }
+    }
+
+    /* ══ 🔴 THE SINGLE-EVENT POST — SETUP AND MODAL (stage 2) ═══════════════════════════
+     * Same three widths, both engines. The modal is the one that matters on a phone: its body must
+     * scroll and its buttons must stay reachable inside a 92vh box. */
+    for (const which of ['setup', 'modal']) {
+      for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
+        await eng.setViewport(w, h)
+        await eng.page.goto(write(`ep-${which}-${w}-${eng.name}.html`, eventPostFixture(css, which)))
+        const r = await eng.page.evaluate(() => {
+          const box = (id) => {
+            const el = document.getElementById(id)
+            if (!el) return null
+            const b = el.getBoundingClientRect()
+            return { left: Math.round(b.left), right: Math.round(b.right), top: Math.round(b.top),
+              bottom: Math.round(b.bottom), width: Math.round(b.width), height: Math.round(b.height) }
+          }
+          const body = document.getElementById('mBody')
+          const host = document.getElementById('scroller') || document.getElementById('mBody')
+          return {
+            stage: box('stage'), right: box('rightCol'), left: box('leftCol'),
+            modal: box('modal'), actions: box('actions'), r0: box('R0'),
+            hostLeft: host ? Math.round(host.getBoundingClientRect().left) : 0,
+            hostRight: host ? Math.round(host.getBoundingClientRect().right) : 0,
+            bodyScrolls: body ? body.scrollHeight > body.clientHeight + 1 : false,
+            docScrollW: document.documentElement.scrollWidth,
+            innerW: window.innerWidth,
+            pageScrollsSideways: document.documentElement.scrollWidth > window.innerWidth + 1,
+          }
+        })
+        lines.push(`  event ${which} ${w}×${h}  stage ${r.stage.width}×${r.stage.height} · right ${r.right.width}px · doc ${r.docScrollW} vs ${r.innerW}`)
+        t(!r.pageScrollsSideways, `🔴 event ${which} ${w}: NO HORIZONTAL PAGE SCROLL`)
+        t(r.stage.width > 0 && r.stage.height > 0, `🔴 event ${which} ${w}: the preview is visible`)
+        t(Math.abs(r.stage.width / r.stage.height - 1080 / 1350) < 0.02,
+          `🔴 event ${which} ${w}: …at the poster's own aspect ratio`)
+        t(r.stage.left >= r.hostLeft - 1 && r.stage.right <= r.hostRight + 1,
+          `⚠️ event ${which} ${w}: the preview is not clipped sideways`)
+        t(!!r.r0 && r.r0.left >= r.hostLeft - 1 && r.r0.right <= r.hostRight + 1 && r.r0.width > 60,
+          `🔴 event ${which} ${w}: the controls are reachable (${r.r0 ? r.r0.width : 0}px wide)`)
+        if (which === 'modal') {
+          /* 🔴 THE MODAL NEVER EXCEEDS THE VIEWPORT, and its BODY is what scrolls — not the page, and
+           * not the modal itself, which would take the header and the buttons off screen with it. */
+          t(r.modal.height <= h + 1 && r.modal.width <= w + 1,
+            `🔴 event modal ${w}: the modal fits the viewport (${r.modal.width}×${r.modal.height})`)
+          t(!!r.actions && r.actions.right <= r.hostRight + 1,
+            `⚠️ event modal ${w}: Download / Copy text / Share fit without being clipped`)
+        }
+        /* ⚠️ THE TWO SCREENS STACK AT DIFFERENT WIDTHS, AND THAT IS DELIBERATE, NOT AN INCONSISTENCY.
+         * The SETUP screen is three columns and needs `lg:` (1024) to be worth splitting; the MODAL is
+         * two and splits at `md:` (768), which is the same breakpoint the Add event modal uses — so an
+         * iPad in portrait gets the picture beside the controls rather than a column of scrolling.
+         * The first draft of this check assumed one threshold for both and failed the modal at 820 for
+         * behaving exactly as intended. */
+        const stacksBelow = which === 'modal' ? 768 : 1024
+        if (w < stacksBelow) {
+          t(r.right.top > r.stage.top, `🔴 event ${which} ${w}: the columns STACK — nothing is pushed off the side`)
+        } else {
+          t(r.right.left > r.stage.left, `⚠️ event ${which} ${w}: the controls sit beside the preview (stacks below ${stacksBelow})`)
         }
       }
     }

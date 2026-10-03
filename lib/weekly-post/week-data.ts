@@ -112,6 +112,35 @@ const startMins = (t: string | null | undefined): number => {
   return m ? Number(m[1]) * 60 + Number(m[2]) : 24 * 60 + 1
 }
 
+/**
+ * ONE EVENT, AS A ROW OF A POSTER — the shared rule for both the weekly post and the single-event post.
+ *
+ * 🔴 EXTRACTED SO THERE IS ONE OF IT (stage 2). The single-event post needs exactly this: the place
+ * name through `placeForEvent`, the town line with the same suppression rule, the cancelled handling.
+ * Writing it again in an event module would be a second answer to "what does this poster say about this
+ * event", and the two would drift the first time either rule changed.
+ *
+ * ⚠️ THE TIME IS THE RANGE FORM HERE. The single-event post's "From 5pm" is applied by its own
+ * renderer through `formatEventTime`, because the display choice belongs to that design, not to the
+ * event; `startTime`/`endTime` travel untouched so it can.
+ */
+export function entryFor(ev: WeekEvent, places: readonly Place[], timeStyle: TimeStyle): DayEntry {
+  const place = placeForEvent(ev, places)
+  const name = locationName(ev, place)
+  const status = tradingStatusOf(ev.status)
+  return {
+    eventId: ev.id,
+    name,
+    town: townLine(ev, place, name),
+    /* ⚠️ A CANCELLED EVENT'S TIME IS NOT FORMATTED. The Time box reads "CANCELLED"; computing the
+     * range and then throwing it away would leave two sources for what that box says. */
+    time: status === 'cancelled' ? '' : formatTimeRangeFor(ev.start_time, ev.end_time, timeStyle),
+    status,
+    startTime: ev.start_time ?? null,
+    endTime: ev.end_time ?? null,
+  }
+}
+
 export interface BuildWeekOptions {
   timeStyle: TimeStyle
   /** Default on. Off hides cancelled events entirely, which can turn a day into a day off. */
@@ -145,19 +174,7 @@ export function buildWeekData(
     if (excluded.has(ev.id)) continue
     const status = tradingStatusOf(ev.status)
     if (status === 'cancelled' && !opts.showCancelled) continue
-    const place = placeForEvent(ev, places)
-    const name = locationName(ev, place)
-    bucket.push({
-      eventId: ev.id,
-      name,
-      town: townLine(ev, place, name),
-      /* ⚠️ A CANCELLED EVENT'S TIME IS NOT FORMATTED. The Time box reads "CANCELLED"; computing the
-       * range and then throwing it away would leave two sources for what that box says. */
-      time: status === 'cancelled' ? '' : formatTimeRangeFor(ev.start_time, ev.end_time, opts.timeStyle),
-      status,
-      startTime: ev.start_time ?? null,
-      endTime: ev.end_time ?? null,
-    })
+    bucket.push(entryFor(ev, places, opts.timeStyle))
     included.push(ev)
   }
 

@@ -22,6 +22,7 @@ import {
 } from '@/lib/weekly-post/layout'
 import { averageSample } from '@/lib/weekly-post/contrast'
 import { weekLabel } from '@/lib/weekly-post/caption'
+import { EventSetupScreen, EventPostModal } from './EventPost'
 
 type BoxKey = 'heading' | 'date' | 'location' | 'time' | 'note'
 
@@ -79,6 +80,8 @@ export function WeeklyPostApp({ token, truckName }: { token: string; truckName: 
   const [week, setWeek] = useState<'this' | 'next'>('this')
   const [days, setDays] = useState<WeekDayView[]>([])
   const [orderUrl, setOrderUrl] = useState<string | null>(null)
+  /** Which design the setup screen is editing. Post screens are unaffected. */
+  const [designKind, setDesignKind] = useState<'week' | 'event'>('week')
 
   const load = useCallback(async (which?: 'this' | 'next') => {
     try {
@@ -117,10 +120,37 @@ export function WeeklyPostApp({ token, truckName }: { token: string; truckName: 
     )
   }
 
-  return mode === 'setup'
-    ? <SetupScreen token={token} design={design} onDone={() => { void load(week) }} onCancel={design ? () => setMode('post') : undefined} />
-    : <PostScreen token={token} truckName={truckName} design={design!} days={days} week={week}
-        orderUrl={orderUrl} onWeek={w => { setWeek(w); void load(w) }} onEdit={() => setMode('setup')} error={error} />
+  /* ══ 🔴 THE Week | Single event SWITCH (stage 2) ═══════════════════════════════════
+   * ⚠️ IT IS ONLY IN SETUP. The two designs are edited in the same place — Weekly post › Edit design —
+   * because they are the same job (place text on your own picture) and a truck should not have to find
+   * two screens for it. The POST screens stay separate: a weekly post is made here, a single-event post
+   * is made from the event it is about. */
+  if (mode === 'setup') {
+    return (
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg font-black text-slate-900">
+            {designKind === 'week' ? 'Set up your weekly post' : 'Set up your event post'}
+          </h2>
+          <div role="tablist" aria-label="Which design" className="inline-flex rounded-xl border border-slate-200 overflow-hidden">
+            {([['week', 'Week (7 days)'], ['event', 'Single event']] as const).map(([k, label]) => (
+              <button key={k} type="button" role="tab" aria-selected={designKind === k}
+                onClick={() => setDesignKind(k)}
+                className={`text-xs font-bold px-3 py-1.5 ${designKind === k ? 'bg-orange-50 text-orange-700' : 'text-slate-600 hover:bg-slate-50'}`}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        {designKind === 'week'
+          ? <SetupScreen token={token} design={design} onDone={() => { void load(week) }} onCancel={design ? () => setMode('post') : undefined} />
+          : <EventSetupScreen token={token} onCancel={design ? () => setMode('post') : undefined} />}
+      </div>
+    )
+  }
+
+  return <PostScreen token={token} truckName={truckName} design={design!} days={days} week={week}
+    orderUrl={orderUrl} onWeek={w => { setWeek(w); void load(w) }} onEdit={() => setMode('setup')} error={error} />
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -297,9 +327,9 @@ function SetupScreen({ token, design, onDone, onCancel }: {
 
   return (
     <div className="space-y-4">
-      {/* ── HEADER ─────────────────────────────────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-black text-slate-900">Set up your weekly post</h2>
+      {/* ⚠️ NO <h2> HERE ANY MORE — the Week | Single event switch above owns the title, so the two
+          designs' setup screens carry one heading between them rather than one each. */}
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <div className="flex items-center gap-2">
           <button type="button" onClick={() => setBusy(b => !b)}
             className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${busy ? 'border-orange-500 text-orange-700 bg-orange-50' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
@@ -496,7 +526,7 @@ function SetupScreen({ token, design, onDone, onCancel }: {
  * ⚠️ THE BOX IS CLAMPED TO THE IMAGE. The validator refuses a box that reaches outside, so letting one
  * be dragged there would produce a design that cannot be saved and an error at the end of the work.
  */
-function DraggableBox({ label, box, scale, active, bounds, onSelect, onChange }: {
+export function DraggableBox({ label, box, scale, active, bounds, onSelect, onChange }: {
   label: string
   box: TextBox
   scale: number
@@ -601,6 +631,8 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
   const [perEvent, setPerEvent] = useState<{ eventId: string; date: string; name: string; status: string; text: string }[]>([])
   const [busyMsg, setBusyMsg] = useState<string | null>(null)
   const [rendering, setRendering] = useState(false)
+  /** The event whose single-event post modal is open, if any. */
+  const [postEventId, setPostEventId] = useState<string | null>(null)
 
   const allEvents = useMemo(
     () => days.flatMap(d => d.entries.map(e => ({ ...e, date: d.date }))),
@@ -745,9 +777,19 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
               <div key={p.eventId} className="border-t border-slate-100 pt-2 mt-2 first:border-0 first:pt-0 first:mt-0">
                 <p className="text-xs font-bold text-slate-700">{p.name}</p>
                 <p className="text-xs text-slate-500 whitespace-pre-wrap mt-0.5">{p.text}</p>
+                {/* ══ 🔴 STAGE 2 FIXES docs/weekly-post-stage1-report.md §9.3 ════════════════════
+                    THE BUG, RECORDED AT THE TIME: "Share" did exactly what "Copy text" did, because
+                    there was no per-event image to share and a share sheet carrying only text is worse
+                    than a copy. Two buttons doing one thing is a UI that lies about what it offers.
+                    🔴 THERE IS NOW AN IMAGE. **Image** opens the single-event post modal for this event;
+                    **Share** opens the same modal and starts its share, so what leaves the phone is the
+                    picture AND the text. The modal owns both because it is where the background choice
+                    lives — sharing from here would have to re-derive which picture this event uses, and
+                    that rule lives in one place on the server. */}
                 <div className="flex gap-3 mt-1">
                   <button type="button" onClick={() => void copy(p.text, 'Text')} className="text-xs font-bold text-orange-700">Copy text</button>
-                  <button type="button" onClick={() => void copy(p.text, 'Text')} className="text-xs font-bold text-orange-700">Share</button>
+                  <button type="button" onClick={() => setPostEventId(p.eventId)} className="text-xs font-bold text-orange-700">Image</button>
+                  <button type="button" onClick={() => setPostEventId(p.eventId)} className="text-xs font-bold text-orange-700">Share</button>
                 </div>
               </div>
             ))}
@@ -756,6 +798,14 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
         </div>
       </div>
       <p className="text-[11px] text-slate-400">{truckName}</p>
+
+      {/* ⚠️ THE MODAL IS RENDERED HERE, not inside the list, so one is open at a time and closing it
+          cannot leave a second mounted behind it. */}
+      {postEventId && (
+        <EventPostModal token={token} eventId={postEventId}
+          onClose={() => setPostEventId(null)}
+          onNeedsSetup={() => { setPostEventId(null); onEdit() }} />
+      )}
     </div>
   )
 }
@@ -763,10 +813,16 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // SMALL SHARED PIECES
 // ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// 🔴 EXPORTED FOR THE SINGLE-EVENT POST (stage 2). `components/manage/EventPost.tsx` builds the same
+// kind of screen — a picture with draggable text boxes and a column of style controls — and imports
+// these rather than copying them. `DraggableBox` especially: its pointer handling took three fixes to
+// get right on touch (pointer capture, the clamp to the image, the `data-mode` rule that avoids a ref
+// in a per-item closure), and a second copy would have to be fixed again.
 
-const SELECT = 'w-full border border-slate-200 rounded-lg px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400'
+export const SELECT = 'w-full border border-slate-200 rounded-lg px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400'
 
-function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+export function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-3">
       <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">{title}</p>
@@ -775,7 +831,7 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   )
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-2">
       <label className="block text-xs font-bold text-slate-600 mb-1">{label}</label>
@@ -784,7 +840,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
-function Check({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+export function Check({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="flex items-center gap-2 text-sm text-slate-700 py-0.5">
       <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
@@ -794,7 +850,7 @@ function Check({ label, checked, onChange }: { label: string; checked: boolean; 
 }
 
 /** A colour that can be off. ⚠️ Off is `null`, not '#000000' — the panel is optional on the poster. */
-function OptionalColour({ label, value, onChange }: { label: string; value: string | null; onChange: (v: string | null) => void }) {
+export function OptionalColour({ label, value, onChange }: { label: string; value: string | null; onChange: (v: string | null) => void }) {
   return (
     <div className="mb-2">
       <label className="flex items-center gap-2 text-xs font-bold text-slate-600 mb-1">

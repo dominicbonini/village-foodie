@@ -18,7 +18,7 @@
 // component; `./fonts` reads the filesystem and pulling it into the browser bundle fails the build.
 import { DEFAULT_FONT_ID, FONT_BY_ID } from './font-list'
 import { DEFAULT_HEADING } from './format'
-import type { TimeStyle } from './format'
+import type { EventTimeDisplay, TimeStyle } from './format'
 
 export const LAYOUT_VERSION = 1 as const
 
@@ -398,6 +398,176 @@ export function rowsFitWarning(l: Layout): string | null {
 /** Every (font, bold) pair a layout uses, for the renderer's font list. */
 export function fontsUsedBy(l: Layout): Array<{ id: string; bold: boolean }> {
   const boxes: TextStyle[] = [l.heading, l.date, l.location, l.time]
+  if (l.note) boxes.push(l.note)
+  return boxes.map(b => ({ id: b.fontId, bold: b.bold }))
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// THE SINGLE-EVENT LAYOUT (stage 2)
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+
+/**
+ * A design for ONE event.
+ *
+ * 🔴 IT SHARES THE WEEK'S BOX TYPES AND ITS PARSER, AND IS A SEPARATE SHAPE. Three boxes, no row
+ * spacing, no days-off text, no heading — a single-event post has one date, one place and one time, so
+ * modelling it as a week with `rowSpacing` pinned to zero would carry five fields that must never be
+ * read and would make every validator branch ask "which kind is this?". The pieces that ARE the same —
+ * `TextBox`, `parseBox`, the bounds rule, the background sample — are the same code, not a copy.
+ *
+ * ⚠️ IT IS STORED UNDER THE SAME `truck_post_designs` ROW SHAPE, with `kind = 'event'`, which is why
+ * the unique key is `(truck_id, kind)` rather than `truck_id`.
+ */
+export interface EventLayout {
+  version: typeof LAYOUT_VERSION
+  width: number
+  height: number
+  date: DateBox
+  location: TextBox
+  time: TextBox
+  note: NoteBox | null
+  timeStyle: TimeStyle
+  /** "From 5pm" (default) or "5pm – 9pm". */
+  timeDisplay: EventTimeDisplay
+  keepReadable: boolean
+}
+
+/**
+ * A first layout for a freshly uploaded event background.
+ *
+ * ⚠️ THE THREE BOXES STACK IN THE LOWER THIRD, where a truck's artwork usually leaves room, and span
+ * the full width centred — a single-event post is read at a glance, so the week's left/right column
+ * split would be the wrong starting point. It is a starting point the operator drags, not a guess at
+ * their picture.
+ * 🔴 DATE DEFAULTS TO ONE LINE here and to two on the weekly post, which is the brief's rule and the
+ * right one: "FRIDAY 16TH OCTOBER" across a poster reads as a headline; split over two lines in a
+ * seven-row grid it reads as a column.
+ */
+export function defaultEventLayout(width: number, height: number): EventLayout {
+  const w = Math.max(1, Math.round(width))
+  const h = Math.max(1, Math.round(height))
+  const pad = Math.round(w * 0.07)
+  const inner = w - pad * 2
+  const rowH = Math.max(28, Math.round(h * 0.075))
+  const top = Math.round(h * 0.62)
+  const gap = Math.round(rowH * 0.28)
+  const base = {
+    fontId: DEFAULT_FONT_ID,
+    bold: false,
+    color: '#ffffff',
+    caps: true,
+    raisedOrdinals: false,
+    align: 'center' as Align,
+    bgSample: null as { r: number; g: number; b: number } | null,
+  }
+  return {
+    version: LAYOUT_VERSION,
+    width: w,
+    height: h,
+    date: {
+      ...base, x: pad, y: top, w: inner, h: rowH,
+      fontSize: Math.round(rowH * 0.62),
+      twoLines: false, bgTrading: null, bgDayOff: null,
+    },
+    location: {
+      ...base, x: pad, y: top + rowH + gap, w: inner, h: rowH,
+      fontSize: Math.round(rowH * 0.6), caps: false,
+    },
+    time: {
+      ...base, x: pad, y: top + (rowH + gap) * 2, w: inner, h: rowH,
+      fontSize: Math.round(rowH * 0.6),
+    },
+    note: null,
+    timeStyle: '12h',
+    timeDisplay: 'from',
+    keepReadable: true,
+  }
+}
+
+/** A note box for an event design. Placed under the time row. */
+export function defaultEventNoteBox(l: EventLayout): NoteBox {
+  return {
+    bgSample: null,
+    fontId: l.location.fontId,
+    fontSize: Math.max(10, Math.round(l.location.fontSize * 0.8)),
+    bold: false,
+    color: l.location.color,
+    align: l.location.align,
+    caps: false,
+    raisedOrdinals: false,
+    x: l.location.x,
+    y: Math.min(l.height - 40, l.time.y + l.time.h + Math.round(l.time.h * 0.25)),
+    w: l.location.w,
+    h: Math.max(24, Math.round(l.time.h * 0.8)),
+  }
+}
+
+export interface EventValidationResult {
+  ok: boolean
+  layout?: EventLayout
+  errors: string[]
+}
+
+/**
+ * The gate for an event design.
+ *
+ * 🔴 THE SAME `parseBox` AS THE WEEK, so every rule it enforces — finite numbers, no strings, inside
+ * the image, a known font, a real colour, a sane background sample — holds here without being restated.
+ * The only differences are the fields that genuinely differ.
+ * ⚠️ THE IMAGE SIZE COMES FROM THE SERVER, exactly as on the week: a payload that could declare its own
+ * canvas could place a box anywhere and pass the bounds check.
+ */
+export function validateEventLayout(input: unknown, width: number, height: number): EventValidationResult {
+  const errors: string[] = []
+  const W = num(width, 1, 20000)
+  const H = num(height, 1, 20000)
+  if (W === null || H === null) return { ok: false, errors: ['The design image size is not known.'] }
+  if (!isObj(input)) return { ok: false, errors: ['The design is missing.'] }
+  if (input.version !== LAYOUT_VERSION) {
+    return { ok: false, errors: [`This design was saved by a different version of the editor (expected ${LAYOUT_VERSION}).`] }
+  }
+
+  const date = parseBox(input.date, 'The date box', W, H, errors, '#ffffff')
+  const location = parseBox(input.location, 'The location box', W, H, errors, '#ffffff')
+  const time = parseBox(input.time, 'The time box', W, H, errors, '#ffffff')
+  const noteRaw = input.note
+  const note = noteRaw === null || noteRaw === undefined
+    ? null
+    : parseBox(noteRaw, 'The note box', W, H, errors, '#ffffff')
+
+  if (errors.length || !date || !location || !time) {
+    return { ok: false, errors: errors.length ? errors : ['The design could not be read.'] }
+  }
+
+  return {
+    ok: true,
+    errors: [],
+    layout: {
+      version: LAYOUT_VERSION,
+      width: W,
+      height: H,
+      date: {
+        ...date,
+        twoLines: bool(isObj(input.date) ? input.date.twoLines : undefined, false),
+        bgTrading: optColour(isObj(input.date) ? input.date.bgTrading : null),
+        bgDayOff: optColour(isObj(input.date) ? input.date.bgDayOff : null),
+      },
+      location,
+      time,
+      note,
+      timeStyle: input.timeStyle === '24h' ? '24h' : '12h',
+      /* ⚠️ ANYTHING THAT IS NOT 'range' IS 'from'. An unknown value defaults to the documented default
+       * rather than being refused: the worst case is a time that reads "From 5pm" when the truck wanted
+       * a range, which they can see and change. */
+      timeDisplay: input.timeDisplay === 'range' ? 'range' : 'from',
+      keepReadable: bool(input.keepReadable, true),
+    },
+  }
+}
+
+/** Every (font, bold) pair an event layout uses. */
+export function fontsUsedByEvent(l: EventLayout): Array<{ id: string; bold: boolean }> {
+  const boxes: TextStyle[] = [l.date, l.location, l.time]
   if (l.note) boxes.push(l.note)
   return boxes.map(b => ({ id: b.fontId, bold: b.bold }))
 }

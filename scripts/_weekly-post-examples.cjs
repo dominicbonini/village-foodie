@@ -20,7 +20,7 @@ const LIB = [
   'lib/weekly-post/week.ts', 'lib/weekly-post/format.ts', 'lib/weekly-post/week-data.ts',
   'lib/weekly-post/layout.ts', 'lib/weekly-post/fit.ts', 'lib/weekly-post/contrast.ts',
   'lib/weekly-post/fonts.ts', 'lib/weekly-post/font-list.ts', 'lib/weekly-post/ttf-metrics.ts', 'lib/weekly-post/caption.ts',
-  'lib/weekly-post/render.ts', 'lib/weekly-post/image-info.ts',
+  'lib/weekly-post/render.ts', 'lib/weekly-post/image-info.ts', 'lib/weekly-post/backgrounds.ts',
   'lib/time-utils.ts', 'lib/schedule-graphics/places.ts',
 ]
 
@@ -34,12 +34,14 @@ const M = {
 }
 const { ImageResponse } = require(path.join(REPO, 'node_modules/next/og.js'))
 
-async function blank(w, h) {
+async function blank(w, h, style) {
   const el = {
     type: 'div',
     props: {
       style: { display: 'flex', position: 'relative', width: `${w}px`, height: `${h}px`,
-        background: 'linear-gradient(160deg,#0f172a 0%,#7c2d12 55%,#f97316 100%)' },
+        background: style === 'place'
+          ? 'linear-gradient(200deg,#042f2e 0%,#0f766e 50%,#84cc16 100%)'
+          : 'linear-gradient(160deg,#0f172a 0%,#7c2d12 55%,#f97316 100%)' },
       children: [
         // a wordmark, so the examples look like a truck's own artwork rather than a bare gradient
         { type: 'div', props: { style: { position: 'absolute', left: 0, top: `${Math.round(h * 0.025)}px`, width: `${w}px`, display: 'flex', justifyContent: 'center', fontSize: `${Math.round(h * 0.028)}px`, color: '#ffffff', opacity: 0.55, letterSpacing: '6px' }, children: 'A SYNTHETIC BLANK · NOT A REAL TRUCK' } },
@@ -99,6 +101,38 @@ async function blank(w, h) {
     const week = M.data.buildWeekData(range, events, [], { timeStyle: '12h', showCancelled: true })
     const out = await M.render.renderWeeklyPost({ layout: styled, week, blankDataUri: uri, note: notes[name] })
     const file = path.join(REPO, 'docs', `weekly-post-example-${name}.png`)
+    fs.writeFileSync(file, out.png)
+    console.log(`  ${path.relative(REPO, file)}  ${out.width}×${out.height}  ${(out.png.length / 1024).toFixed(0)} KB  ${out.ms} ms  warnings: ${out.warnings.length}`)
+  }
+
+  // ══ STAGE 2 · THE SINGLE-EVENT POST ══════════════════════════════════════════════════
+  /* ⚠️ A SECOND SYNTHETIC PICTURE, SHAPED DIFFERENTLY FROM THE DEFAULT ON PURPOSE — it stands in for
+   * "their artwork with that venue's photo in it", and having two makes the place-background example
+   * visibly a different picture rather than the same one relabelled. */
+  const placeUri = await blank(W, H, 'place')
+  const evLayout = M.layout.defaultEventLayout(W, H)
+  evLayout.date.fontId = 'anton'
+  evLayout.date.raisedOrdinals = true
+  evLayout.location.fontId = 'oswald'
+  evLayout.time.fontId = 'oswald'
+  evLayout.time.bold = true
+
+  const EVENTS = {
+    'default': { bg: uri, ev: { id: 'a', event_date: d[4], start_time: '17:00', end_time: '21:00', venue_name: 'Lavenham Village Hall', town: 'Lavenham', status: 'confirmed' } },
+    'place': { bg: placeUri, ev: { id: 'b', event_date: d[5], start_time: '17:00', end_time: '21:00', venue_name: 'The Bull Inn', town: 'Cavendish', status: 'confirmed' } },
+    'cancelled': { bg: uri, ev: { id: 'c', event_date: d[2], start_time: '12:00', end_time: '14:00', venue_name: 'Market Square', town: 'Sudbury', status: 'cancelled' } },
+  }
+  /* ⚠️ THE NOTE EXAMPLE NEEDS A NOTE BOX. The renderer draws a note only when the design HAS a box
+   * and the post HAS text — passing a note with no box (as a first draft of this script did) correctly
+   * renders nothing, which would have made the example quietly misleading. */
+  const withNote = { ...evLayout, note: M.layout.defaultEventNoteBox(evLayout) }
+  for (const [name, { bg, ev }] of Object.entries(EVENTS)) {
+    const entry = M.data.entryFor(ev, [], '12h')
+    const note = name === 'place' ? 'Pre-order for collection' : ''
+    const out = await M.render.renderEventPost({
+      layout: note ? withNote : evLayout, entry, date: ev.event_date, backgroundDataUri: bg, note,
+    })
+    const file = path.join(REPO, 'docs', `event-post-example-${name}.png`)
     fs.writeFileSync(file, out.png)
     console.log(`  ${path.relative(REPO, file)}  ${out.width}×${out.height}  ${(out.png.length / 1024).toFixed(0)} KB  ${out.ms} ms  warnings: ${out.warnings.length}`)
   }

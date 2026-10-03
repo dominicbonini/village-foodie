@@ -328,7 +328,13 @@ function runTreeSuite() {
   for (const p of r.migrationProblems) console.log(`      🔴 ${p}`)
 
   t('⚠️ every censused table is actually being read — a typo in TABLES would make this vacuously green',
-    TABLES.every(tb => r.declared.get(tb).size > 0) && TABLES.every(tb => r.declared.get(tb).has('id') || tb === 'outreach_settings'))
+    TABLES.every(tb => r.declared.get(tb).size > 0)
+    /* ⚠️ TWO TABLES HAVE NO `id`, BOTH DELIBERATELY. `outreach_settings` is a single-row settings
+     * table; `event_post_backgrounds` is keyed by the EVENT (`event_id` is its primary key), because
+     * one event has one background and a surrogate key would allow two. */
+    && TABLES.every(tb => r.declared.get(tb).has('id')
+      || tb === 'outreach_settings'
+      || (tb === 'event_post_backgrounds' && r.declared.get(tb).has('event_id'))))
 
   /* ⚠️ THE WAIVER LIST STAYS SHORT OR IT STOPS MEANING ANYTHING. One entry today: the capability
    * probe that passes its own parameter to `.select()`. It is not an exemption — the columns its
@@ -357,7 +363,10 @@ function runTreeSuite() {
    * assert the drop took effect and the rename landed on the new name only. */
   t('🔴 a DROPPED column leaves the declared set — the census is not merely incomplete, it is correct',
     !r.declared.get('truck_places').has('group_post_wording')
-    && r.declared.get('truck_places').size === 14
+    /* ⚠️ 17, NOT 14 — stage 2 of the event post added `event_bg_path`, `event_bg_width` and
+     * `event_bg_height` to this table. The count is pinned deliberately: it is what makes the drop
+     * assertion above mean "the declared set is exactly right" rather than "it contains these four". */
+    && r.declared.get('truck_places').size === 17
     && ['area', 'is_favourite', 'is_hidden', 'merged_into_id'].every(c => r.declared.get('truck_places').has(c)))
   t('🔴 a RENAMED column is declared under its NEW name and not its old one',
     r.declared.get('outreach_prospects').size > 0

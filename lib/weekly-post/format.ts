@@ -145,6 +145,32 @@ export function formatTimeRangeFor(
   return s || e || ''
 }
 
+/**
+ * How a single-event post states its time.
+ *
+ * 🔴 "From 5pm" IS THE DEFAULT FOR ONE EVENT, and that is not a style preference. A weekly poster
+ * lists seven rows and a range reads naturally in a column; a single-event post is usually shared on the
+ * day, where "From 5pm" is what a truck writes — it says when to come without promising when they leave.
+ * The range stays available for trucks whose pitches genuinely end at a stated time.
+ *
+ * ⚠️ IT DEFERS TO `timeStyle` FOR THE CLOCK, so a truck that chose 24-hour times on the weekly post
+ * gets "From 17:00" here rather than a second, contradictory setting.
+ * ⚠️ NO START TIME ⇒ EMPTY, never "From ". An unconfirmed event can have no time, and a dangling
+ * preposition on finished artwork reads as a fault.
+ */
+export type EventTimeDisplay = 'from' | 'range'
+
+export function formatEventTime(
+  start: string | null | undefined,
+  end: string | null | undefined,
+  style: TimeStyle,
+  display: EventTimeDisplay,
+): string {
+  if (display === 'range') return formatTimeRangeFor(start, end, style)
+  const s = start ? formatOneTime(start, style) : ''
+  return s ? `From ${s}` : ''
+}
+
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE HEADING'S TOKENS
 // ════════════════════════════════════════════════════════════════════════════════════════════════

@@ -30,9 +30,9 @@ import { ImageResponse } from 'next/og'
 import { fontsForDesign, loadFontMetrics, resolveWeight, FONT_BY_ID, DEFAULT_FONT_ID } from './fonts'
 import { fitLines, RAISED_LIFT, RAISED_SCALE, type FitLine } from './fit'
 import { outlineShadow, readabilityFor } from './contrast'
-import { dayAndMonthRuns, headingRuns, weekdayName, type TextRun } from './format'
-import { MAX_RENDER_SIDE, type DateBox, type Layout, type TextBox } from './layout'
-import type { WeekData, WeekDay } from './week-data'
+import { dayAndMonthRuns, formatEventTime, headingRuns, weekdayName, type TextRun } from './format'
+import { fontsUsedByEvent, MAX_RENDER_SIDE, type DateBox, type EventLayout, type Layout, type TextBox } from './layout'
+import type { DayEntry, WeekData, WeekDay } from './week-data'
 
 export const POWERED_BY = 'Powered by HatchGrab'
 
@@ -162,10 +162,12 @@ function boxEl(
 }
 
 /** The Date box's lines: two ("MONDAY" / "28TH SEPTEMBER") or one. */
-function dateLines(day: WeekDay, box: DateBox): FitLine[] {
+/** ⚠️ TAKES THE DATE, NOT THE DAY, so the single-event post uses this exact function rather than a
+ *  copy with the same ordinal and capitals logic in it. */
+function dateLines(dateYmd: string, box: DateBox): FitLine[] {
   const c = { caps: box.caps, raisedOrdinals: box.raisedOrdinals }
-  const name = weekdayName(day.date, c)
-  const dm = dayAndMonthRuns(day.date, c)
+  const name = weekdayName(dateYmd, c)
+  const dm = dayAndMonthRuns(dateYmd, c)
   if (box.twoLines) return [{ runs: [{ text: name }] }, { runs: dm }]
   return [{ runs: [{ text: name + ' ' }, ...dm] }]
 }
@@ -178,10 +180,12 @@ function dateLines(day: WeekDay, box: DateBox): FitLine[] {
  * ⚠️ THE TOWN IS A SMALLER SECOND LINE (`scale`), and only when `townLine` kept it — the suppression
  * rule lives in week-data.ts so the caption and the poster agree.
  */
-function locationLines(day: WeekDay, daysOffText: string): FitLine[] {
-  if (day.isDayOff) return [{ runs: [{ text: daysOffText }] }]
+/** ⚠️ TAKES ENTRIES, NOT A DAY. One event is a list of one, so the single-event post gets the same
+ *  strike-through rule and the same town-line treatment without a second implementation. */
+function locationLinesFor(entries: readonly DayEntry[], daysOffText: string | null): FitLine[] {
+  if (entries.length === 0) return daysOffText ? [{ runs: [{ text: daysOffText }] }] : []
   const out: FitLine[] = []
-  for (const e of day.entries) {
+  for (const e of entries) {
     const strike = e.status === 'cancelled'
     out.push({ runs: [{ text: e.name }], strike })
     /* ⚠️ PER ENTRY, NOT PER DAY. A day with one cancelled event and one going ahead must strike
@@ -202,11 +206,14 @@ function locationLines(day: WeekDay, daysOffText: string): FitLine[] {
  * ⚠️ A DAY OFF HAS NO TIME BOX AT ALL (the brief: "Time empty"), so this returns nothing and the
  * caller skips the box rather than drawing an empty one.
  */
-const timeLines = (day: WeekDay): FitLine[] => {
-  if (day.isDayOff) return []
+const timeLinesFor = (entries: readonly DayEntry[], textOf: (e: DayEntry) => string): FitLine[] => {
+  if (entries.length === 0) return []
   const out: FitLine[] = []
-  for (const e of day.entries) {
-    out.push({ runs: [{ text: e.status === 'cancelled' ? 'CANCELLED' : e.time }] })
+  for (const e of entries) {
+    /* 🔴 "CANCELLED" WINS OVER ANY TIME FORMAT, on both posters. The single-event post passes its own
+     * `textOf` for the "From 5pm" form; this branch is above it so a cancelled event can never be given
+     * a time by a display setting. */
+    out.push({ runs: [{ text: e.status === 'cancelled' ? 'CANCELLED' : textOf(e) }] })
     if (e.town) out.push({ runs: [{ text: ' ' }], scale: 0.62 })
   }
   // every entry had an empty time and no town ⇒ nothing to draw
@@ -223,6 +230,7 @@ const timeLines = (day: WeekDay): FitLine[] => {
 export async function renderWeeklyPost(input: RenderInput): Promise<RenderResult> {
   const t0 = Date.now()
   const { layout: l, week } = input
+  const keepReadable = l.keepReadable
   const scale = renderScale(l.width, l.height)
   const W = Math.round(l.width * scale)
   const H = Math.round(l.height * scale)
@@ -244,10 +252,10 @@ export async function renderWeeklyPost(input: RenderInput): Promise<RenderResult
     const off = <T extends TextBox>(b: T): T => ({ ...b, y: b.y + dy })
     const dateBox = off(l.date)
     const panel = day.isDayOff ? l.date.bgDayOff : l.date.bgTrading
-    children.push(...boxEl(dateBox, dateLines(day, l.date), scale, l.keepReadable, panel, day.date, warnings, 'The date'))
-    children.push(...boxEl(off(l.location), locationLines(day, l.daysOffText), scale, l.keepReadable, null, day.date, warnings,
+    children.push(...boxEl(dateBox, dateLines(day.date, l.date), scale, l.keepReadable, panel, day.date, warnings, 'The date'))
+    children.push(...boxEl(off(l.location), locationLinesFor(day.entries, l.daysOffText), scale, l.keepReadable, null, day.date, warnings,
       day.isDayOff ? 'The days-off text' : 'The place name'))
-    const tl = timeLines(day)
+    const tl = timeLinesFor(day.entries, e => e.time)
     if (tl.length) {
       children.push(...boxEl(off(l.time), tl, scale, l.keepReadable, null, day.date, warnings, 'The time'))
     }
@@ -262,13 +270,34 @@ export async function renderWeeklyPost(input: RenderInput): Promise<RenderResult
     children.push(...boxEl(l.note, [{ runs: [{ text: note }] }], scale, l.keepReadable, null, 'note', warnings, 'The note'))
   }
 
-  // ── "Powered by HatchGrab" ──────────────────────────────────────────────────────────────────────
-  /* 🔴 ALWAYS, bottom centre, small, and under the SAME readability rule as everything else — so it
-   * is legible on a white blank and on a dark one without being configurable. It is sampled against
-   * nothing, so it carries its own shadow unconditionally when `keepReadable` is on: it is our mark on
-   * someone else's artwork and it must not be the one illegible thing on the poster. */
+  children.push(poweredByEl(W, H, keepReadable))
+  const png = await paint(children, W, H, input.blankDataUri, fontsUsed(l))
+  return { png, width: W, height: H, warnings, ms: Date.now() - t0 }
+}
+
+function fontsUsed(l: Layout): Array<{ id: string; bold: boolean }> {
+  const boxes: TextBox[] = [l.heading, l.date, l.location, l.time]
+  if (l.note) boxes.push(l.note)
+  return boxes.map(b => ({ id: b.fontId, bold: b.bold }))
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// SHARED BY BOTH POSTERS
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+
+/**
+ * "Powered by HatchGrab".
+ *
+ * 🔴 ALWAYS, bottom centre, small, and under the SAME readability rule as everything else — so it
+ * is legible on a white blank and on a dark one without being configurable. It is sampled against
+ * nothing, so it carries its own shadow unconditionally when `keepReadable` is on: it is our mark on
+ * someone else's artwork and it must not be the one illegible thing on the poster.
+ * 🔴 EXTRACTED IN STAGE 2 so the single-event post carries the identical mark rather than a second
+ * one that could drift in size, position or opacity.
+ */
+function poweredByEl(W: number, H: number, keepReadable: boolean): El {
   const pbSize = Math.max(9, Math.round(H * 0.013))
-  children.push(div({
+  return div({
     position: 'absolute',
     left: 0, top: `${H - Math.round(pbSize * 2.1)}px`, width: `${W}px`,
     display: 'flex', justifyContent: 'center',
@@ -279,18 +308,34 @@ export async function renderWeeklyPost(input: RenderInput): Promise<RenderResult
     fontSize: `${pbSize}px`,
     color: '#ffffff',
     opacity: 0.85,
-    ...(l.keepReadable ? { textShadow: `0px 1px ${Math.max(1, Math.round(pbSize * 0.18))}px #0b0b0bcc` } : {}),
+    ...(keepReadable ? { textShadow: `0px 1px ${Math.max(1, Math.round(pbSize * 0.18))}px #0b0b0bcc` } : {}),
     whiteSpace: 'pre',
-  }, POWERED_BY)]))
+  }, POWERED_BY)])
+}
 
+/**
+ * The frame, the background and the one call to satori — shared by both posters.
+ *
+ * 🔴 EXTRACTED IN STAGE 2. Both posters are "a picture with absolutely positioned text on it", and
+ * the parts that make that work — the background as a `backgroundImage` rather than an `<img>`, the
+ * floor colour under it, the font list, the cast past React's types — are decisions that must be the
+ * same for both. A second copy would be a second set of those decisions.
+ */
+async function paint(
+  children: El[],
+  W: number,
+  H: number,
+  backgroundDataUri: string,
+  fonts: Array<{ id: string; bold: boolean }>,
+): Promise<Buffer> {
   const root = div({
     display: 'flex',
     position: 'relative',
     width: `${W}px`,
     height: `${H}px`,
-    /* ⚠️ THE BLANK IS A BACKGROUND IMAGE SIZED TO THE WHOLE FRAME, not an <img> in flow. An <img>
+    /* ⚠️ THE PICTURE IS A BACKGROUND IMAGE SIZED TO THE WHOLE FRAME, not an <img> in flow. An <img>
      * would participate in layout and could be displaced by a sibling; a background cannot move. */
-    backgroundImage: `url(${input.blankDataUri})`,
+    backgroundImage: `url(${backgroundDataUri})`,
     backgroundSize: `${W}px ${H}px`,
     backgroundRepeat: 'no-repeat',
     /* ⚠️ A FLOOR COLOUR UNDER THE IMAGE. If the data URI ever fails to decode, the poster comes out
@@ -298,8 +343,8 @@ export async function renderWeeklyPost(input: RenderInput): Promise<RenderResult
     backgroundColor: '#111827',
   }, children)
 
-  const fonts = fontsForDesign([
-    ...fontsUsed(l),
+  const loaded = fontsForDesign([
+    ...fonts,
     // the mark always needs the default family available
     { id: DEFAULT_FONT_ID, bold: false },
   ])
@@ -309,13 +354,70 @@ export async function renderWeeklyPost(input: RenderInput): Promise<RenderResult
    * drag the React types into a module that has no other reason to want them. satori accepts the same
    * object shape; the cast says "this is the element argument" without importing React to say it. */
   type OgElement = ConstructorParameters<typeof ImageResponse>[0]
-  const res = new ImageResponse(root as unknown as OgElement, { width: W, height: H, fonts })
-  const png = Buffer.from(await res.arrayBuffer())
-  return { png, width: W, height: H, warnings, ms: Date.now() - t0 }
+  const res = new ImageResponse(root as unknown as OgElement, { width: W, height: H, fonts: loaded })
+  return Buffer.from(await res.arrayBuffer())
 }
 
-function fontsUsed(l: Layout): Array<{ id: string; bold: boolean }> {
-  const boxes: TextBox[] = [l.heading, l.date, l.location, l.time]
-  if (l.note) boxes.push(l.note)
-  return boxes.map(b => ({ id: b.fontId, bold: b.bold }))
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// THE SINGLE-EVENT POST (stage 2)
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+
+export interface EventRenderInput {
+  layout: EventLayout
+  /** The one event, built by `entryFor` — the same rule the weekly post uses. */
+  entry: DayEntry
+  /** 'YYYY-MM-DD'. */
+  date: string
+  /** The background, as a data URI. One-off → place → default, resolved by the caller. */
+  backgroundDataUri: string
+  /** Typed in the modal for this post only; never saved to the event. */
+  note?: string | null
+}
+
+/**
+ * One event, on the truck's own picture.
+ *
+ * 🔴 IT IS THE SAME RENDERER, NOT A SECOND ONE. Every piece that decides what the poster looks like is
+ * shared with the weekly post and called from here: `boxEl` (which runs `fitLines` and the readability
+ * rule), `dateLines`, `locationLinesFor`, `timeLinesFor`, `poweredByEl` and `paint`. What differs is
+ * what this file passes them — one entry instead of seven days, no row offset, and the "From 5pm" time
+ * form. A fork would have been two answers to "does this text fit", on artwork a truck posts.
+ *
+ * ⚠️ NO DAYS-OFF TEXT. A single-event post is made *for* an event, so "no trading today" has no meaning
+ * here; `locationLinesFor` is passed `null` and renders nothing if the entry is somehow empty.
+ */
+export async function renderEventPost(input: EventRenderInput): Promise<RenderResult> {
+  const t0 = Date.now()
+  const { layout: l, entry, date } = input
+  const scale = renderScale(l.width, l.height)
+  const W = Math.round(l.width * scale)
+  const H = Math.round(l.height * scale)
+  const warnings: RenderWarning[] = []
+  const children: El[] = []
+  const entries = [entry]
+
+  const panel = entry.status === 'cancelled' ? l.date.bgDayOff : l.date.bgTrading
+  children.push(...boxEl(l.date, dateLines(date, l.date), scale, l.keepReadable, panel, date, warnings, 'The date'))
+  children.push(...boxEl(l.location, locationLinesFor(entries, null), scale, l.keepReadable, null, date, warnings, 'The place name'))
+
+  /* 🔴 THE TIME FORM IS THIS DESIGN'S CHOICE, APPLIED HERE. `entry.time` already carries the range form
+   * (built by `entryFor` for the weekly post); passing a formatter lets the event design say "From 5pm"
+   * without `entryFor` having to know which poster is asking. A cancelled event still reads CANCELLED —
+   * `timeLinesFor` decides that before this formatter is reached. */
+  const tl = timeLinesFor(entries, e =>
+    formatEventTime(e.startTime, e.endTime, l.timeStyle, l.timeDisplay))
+  if (tl.length) {
+    children.push(...boxEl(l.time, tl, scale, l.keepReadable, null, date, warnings, 'The time'))
+  }
+
+  /* ⚠️ THE NOTE IS FOR THIS POST ONLY and is not stored on the event — the same rule as the weekly
+   * post's note, and the same "only render the box when there is something to put in it". */
+  const note = String(input.note ?? '').trim()
+  if (l.note && note) {
+    children.push(...boxEl(l.note, [{ runs: [{ text: note }] }], scale, l.keepReadable, null, 'note', warnings, 'The note'))
+  }
+
+  children.push(poweredByEl(W, H, l.keepReadable))
+  const png = await paint(children, W, H, input.backgroundDataUri, fontsUsedByEvent(l))
+  return { png, width: W, height: H, warnings, ms: Date.now() - t0 }
 }

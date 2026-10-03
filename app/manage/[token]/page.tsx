@@ -101,6 +101,7 @@ import { StoreBadges } from '@/components/StoreBadges'   // native-only hide: Au
 import {
   WeeklyPostPane, TidyUpPlaces, PlaceList, usePlaces, type Place as SgPlaceRow,
 } from '@/components/manage/SchedulePlaces'
+import { EventPostModal } from '@/components/manage/EventPost'
 import { fillFromPlace, timeRangeLabel, placeForEvent } from '@/lib/schedule-graphics/places'
 /* 🔴 THE PREVIEW RENDERS THE PUBLIC PAGE'S OWN CARD. `TruckListCard` is what
  * app/trucks/[slug]/TruckClient.tsx renders for every event on a truck's public schedule; this file
@@ -6986,6 +6987,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const [saving, setSaving] = useState(false)
   const [showPast, setShowPast] = useState(false)
   const [showEventCancelModal, setShowEventCancelModal] = useState(false)
+  /* 🔴 THE SINGLE-EVENT POST MODAL (stage 2). Held here, in ScheduleTab, because "Make post" is on an
+   * event row and the modal is about that event — one open at a time, closed by setting this to null. */
+  const [postEventId, setPostEventId] = useState<string | null>(null)
   const [cancellingEvent, setCancellingEvent] = useState<TruckEvent | null>(null)
   const [affectedOrderCount, setAffectedOrderCount] = useState(0)
   const [editingEvent, setEditingEvent] = useState<EditingEvent | null>(null)
@@ -7629,6 +7633,19 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       <button onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
                         <span className="sm:hidden">✏</span>
                         <span className="hidden sm:inline">Edit</span>
+                      </button>
+                      {/* ══ 🔴 MAKE POST (stage 2) ═══════════════════════════════════════════
+                          ⚠️ UPCOMING EVENTS ONLY — it sits inside the existing `!isPast` branch, which also
+                          excludes cancelled events from the EDIT controls. A cancelled event CAN still
+                          have a post made for it (the picture reads CANCELLED, which is the apology a
+                          truck needs to send), so it is reachable from the weekly post's per-event list
+                          rather than from here, where the row is already in its "past" treatment.
+                          ⚠️ THE GATE IS NOT CHECKED HERE. The modal asks the server, which refuses on an
+                          unentitled plan with the one-line upgrade message — one gate, server-side, as
+                          the weekly post does. */}
+                      <button onClick={() => setPostEventId(event.id)} className="text-xs font-semibold text-orange-700 border border-orange-200 bg-white rounded-lg px-2 py-1.5 hover:bg-orange-50">
+                        <span className="sm:hidden">▣</span>
+                        <span className="hidden sm:inline">Make post</span>
                       </button>
                       <button onClick={() => openEventCancelModal(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">
                         <span className="sm:hidden">✕</span>
@@ -8874,6 +8891,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             )}
           </div>
         </div>
+      )}
+
+      {/* ⚠️ "No design yet" SENDS THEM TO THE SETUP, which is the Weekly post tab's Edit design screen
+          on its Single event side — the modal cannot build a post without one, and a dead end here
+          would be the worst place to meet that. */}
+      {postEventId && (
+        <EventPostModal token={token} eventId={postEventId}
+          onClose={() => setPostEventId(null)}
+          onNeedsSetup={() => { setPostEventId(null); onSectionChange('weekly') }} />
       )}
 
       {showEventCancelModal && cancellingEvent && (
