@@ -73,6 +73,7 @@
     "printing-network-guard.cjs",
     "printing-transport-contract.cjs",
     "ready-press-one-press.cjs",
+    "schedule-graphics-places.cjs",
     "scraper-invented-village.cjs",
     "screenshot-truck-details.cjs",
     "seed-demo-grid.cjs",
@@ -136,6 +137,7 @@
         "outreach-editor-render.cjs",
         "outreach-templates-render.cjs",
         "outreach-workspace-render.cjs",
+        "schedule-graphics-render.cjs",
         "screenshot-truck-details-render.cjs"
       ]
     }

@@ -22,6 +22,7 @@ export type Feature =
   | 'instagram_messenger_replies'
   | 'branded_qr_code'
   | 'advanced_reporting'
+  | 'schedule_graphics'
   // Max
   | 'ticket_printing'
   | 'multi_device_kds'
@@ -48,6 +49,17 @@ const PRO_FEATURES: Feature[] = [
   'instagram_messenger_replies',
   'branded_qr_code',
   'advanced_reporting',
+  // ── SCHEDULE GRAPHICS — Pro, Max and trial (3 October 2026) ──────────────────────────────────────
+  // 🔴 IN `PRO_FEATURES` IS EXACTLY "Pro, Max and trial". MAX_FEATURES spreads this array and
+  // TRIAL_FEATURES spreads MAX_FEATURES, so one entry here grants all three — plus 'tester' and 'demo',
+  // which also spread the Max/trial sets and are internal and sandbox tiers respectively. Adding it to
+  // MAX_FEATURES as well would be a duplicate in a Set, not a second grant.
+  // ⚠️ NO MARKETING ROW, AND THAT IS NOT AN OVERSIGHT. findPlanParityViolations() iterates FEATURE_SECTIONS
+  // rows and `continue`s on any row with no ROW_FEATURE_MAP entry, so a Feature with no row cannot
+  // produce a violation — the precedent is 'embed_schedule' below, which carried no row for weeks.
+  // The gate is enforcement; the comparison table is presentation, and stage 1 ships no public surface
+  // to advertise. See docs/schedule-graphics-places-report.md.
+  'schedule_graphics',
   'whatsapp_replies',   // Pro+Max — moved from Max-only: a Pro truck was sold WhatsApp replies and the gate silently blocked it (canAccess('pro',…)===false)
 ]
 

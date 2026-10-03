@@ -223,6 +223,19 @@ function runVariants() {
       },
     }, 'outreach_prospects.contact_forename'],
 
+    /* ── 🔴 THE SCOPED PAYLOAD READER, PROVED FROM BOTH SIDES (3 October 2026) ──────────────────────
+     * `payloadKeys` used to scan the WHOLE FILE for `<name>.<prop> =`. app/api/manage/route.ts has five
+     * locals called `patch`, so the embed handler's `patch.website = url` was reported as
+     * `truck_places.website` — a false positive on correct code. It is scoped to the nearest enclosing
+     * declaration now, and both halves of that need proving: this variant shows the reader still FIRES
+     * inside the right scope, and the control below shows it no longer fires across scopes. */
+    ['V9b 🔴 a bad column in a `patch.<col> =` whose declaration is one of FIVE in the file', {
+      code: {
+        'app/api/manage/route.ts': changed(read('app/api/manage/route.ts'),
+          '      patch.name = name', '      patch.name_on_posts = name', 'V9b'),
+      },
+    }, 'truck_places.name_on_posts'],
+
     /* 🔴 THE RECORD ITSELF. A column applied by hand and never committed is, to this census and to a
      * fresh database, indistinguishable from one that was invented. Deleting the file must fail. */
     ['V10 🔴 a migration file is deleted — the record, not the code, is what this reads',
@@ -285,8 +298,9 @@ function runTreeSuite() {
   const ok = [], bad = []
   const t = (n, c) => (c ? ok : bad).push(n)
   const r = census(REPO, CODE_DIRS)
+  const { named } = codeColumns(REPO, CODE_DIRS)
 
-  t(`🔴 EVERY column named on the six tables exists in a migration (${r.namedCount} references, ${r.migrationFiles} migration files)`,
+  t(`🔴 EVERY column named on the censused tables exists in a migration (${r.namedCount} references, ${r.migrationFiles} migration files)`,
     r.missing.length === 0)
   for (const m of r.missing) {
     console.log(`      🔴 ${m.table}.${m.col}  —  ${m.file}:${m.line} .${m.method}()${m.via ? ` [${m.via}]` : ''}`)
@@ -302,7 +316,7 @@ function runTreeSuite() {
   t('🔴 the migration reader hit no clause it cannot model', r.migrationProblems.length === 0)
   for (const p of r.migrationProblems) console.log(`      🔴 ${p}`)
 
-  t('⚠️ all six tables are actually being read — a typo in TABLES would make this vacuously green',
+  t('⚠️ every censused table is actually being read — a typo in TABLES would make this vacuously green',
     TABLES.every(tb => r.declared.get(tb).size > 0) && TABLES.every(tb => r.declared.get(tb).has('id') || tb === 'outreach_settings'))
 
   /* ⚠️ THE WAIVER LIST STAYS SHORT OR IT STOPS MEANING ANYTHING. One entry today: the capability
@@ -310,6 +324,23 @@ function runTreeSuite() {
    * call sites pass are listed in it and censused like any others. */
   t(`⚠️ exactly ${WAIVED.length} waiver, and it carries the columns it stands for`,
     WAIVED.length === 1 && WAIVED[0].columns.length === 6 && WAIVED.every(w => w.why && w.columns.length))
+
+  /* ── 🔴 THE CONTROL FOR THE SCOPING FIX. `app/api/manage/route.ts` declares `patch` five times; the
+   * schedule-graphics update is the last of them. A file-wide reader attributes the embed handler's
+   * `patch.website` and the preorder handler's keys to `truck_places`, which is exactly the false
+   * positive this guards. Named explicitly because a silent re-introduction looks like a real finding. */
+  const MANAGE = 'app/api/manage/route.ts'
+  const manageNamed = named.filter(n => n.file === MANAGE && n.table === 'truck_places')
+  t('🔴 a sibling handler\'s identically-named `patch` does not leak columns across scopes',
+    manageNamed.length > 0
+    && !manageNamed.some(n => ['website', 'embed_enabled', 'preorder_enabled'].includes(n.col)))
+  t('⚠️ …while the schedule-graphics update\'s own keys ARE read, so the reader is not simply blind',
+    ['name', 'short_name', 'address', 'postcode', 'group_post_wording', 'updated_at']
+      .every(c => manageNamed.some(n => n.col === c)))
+  t('⚠️ `patch` is genuinely declared more than once in that file — the premise of the control',
+    (read(MANAGE).match(/\bconst patch(:|\s*=)/g) || []).length >= 4)
+  t('⚠️ both schedule-graphics tables are covered by the census',
+    r.declared.get('truck_places').size === 11 && r.declared.get('truck_place_groups').size === 9)
 
   // ── 🔴 THE SELECT LISTS THE BROKEN BUILD TOUCHED, NAMED EXPLICITLY ───────────────────────────
   const SEND_SRC = read(SEND)

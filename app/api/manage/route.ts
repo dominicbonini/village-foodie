@@ -63,6 +63,13 @@ const PROVISION_FAILED: Record<'taken' | 'not_configured' | 'refused' | 'error',
 }
 import { sendConfirmationEmail } from '@/lib/email'
 import { INTERVAL_CHOICES, isIntervalChoice, readVanIntervalsForTruck, DEFAULT_INTERVAL } from '@/lib/slot-interval'
+// 🔴 ONE DEFINITION OF "WHICH PLACE IS THIS EVENT AT", IMPORTED NOT RE-WRITTEN. Stages 2 and 3 import
+// the same module; a second normaliser here would make events stop finding their place with no error.
+import {
+  normalisePlaceName, planPlaceSeed, nextEventAt, groupEventsByPlace, seedWindowStart,
+  effectiveGroupPostWording, DEFAULT_GROUP_POST_WORDING,
+  type PlaceEvent, type Place as SgPlace,
+} from '@/lib/schedule-graphics/places'
 
 // ── PER-ROUTE CEILING ─────────────────────────────────────────────────────────────────────────────
 // THE MANAGE PAYLOAD. One GET assembling the whole console: truck, categories, items, subcategories,
@@ -402,6 +409,10 @@ export async function POST(req: NextRequest) {
     // effect OUTSIDE this database — and `domain_send_instructions` sends mail on the truck's behalf.
     // `domain_preflight` and `domain_status` are reads and are deliberately absent.
     'domain_provision', 'domain_send_instructions', 'domain_confirm', 'domain_turn_off',
+    // Schedule graphics, stage 1. ⚠️ `sg_places` IS A WRITE DESPITE READING LIKE A READ — opening the
+    // tab seeds a place row per pitch in the schedule, so it belongs on this list with the rest. The
+    // tab itself is owner/manager, so staff never reach it; this is the half a request cannot skip.
+    'sg_places', 'sg_upsert_place', 'sg_upsert_group', 'sg_delete_group',
   ]
   if (staffBlockedActions.includes(action) && requestingUserRole === 'staff') {
     return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
@@ -2429,6 +2440,261 @@ export async function POST(req: NextRequest) {
       .order('event_date', { ascending: false })
       .limit(20)
     return NextResponse.json({ ok: true, events: events || [] })
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // SCHEDULE GRAPHICS — STAGE 1: places, and the Facebook groups the truck posts them in
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // 🔴 `truck_events` AND `venues` ARE READ-ONLY TO EVERY ACTION BELOW. There is no insert, update or
+  // delete against either anywhere in this block. `venues` is shared across all trucks (scraper
+  // reference data), so a truck's own name for a pitch must never be written there; `truck_events` is
+  // what a live truck trades on. Everything this feature owns lives in truck_places /
+  // truck_place_groups / trucks.default_group_post_wording.
+  //
+  // 🔴 THE PLAN GATE IS REPEATED PER ACTION, ON PURPOSE. The tab checks too, but a UI check is a
+  // courtesy — this is the one a second tab, a stale client or a curl cannot skip. Same shape as
+  // `save_embed_setup` and the domain actions above.
+  const SG_FORBIDDEN = NextResponse.json({ error: 'Not available on this plan' }, { status: 403 })
+  const sgAllowed = () => canAccess(truck.plan, 'schedule_graphics', truck.feature_overrides ?? {}, truck.trial_expires_at)
+
+  if (action === 'sg_places') {
+    if (!sgAllowed()) return SG_FORBIDDEN
+
+    /* ── THE READ, THEN THE SEED, THEN THE READ THAT ANSWERS ──────────────────────────────────────
+     * ⚠️ THE EVENT WINDOW IS NAMED IN SQL AND AGAIN IN THE PLANNER. Here so a truck with four years
+     * of history is not fetched whole; there so the plan is the same whatever reached it.
+     * ⚠️ A NAMED SELECT, AND EVERY COLUMN IN IT IS ONE THE BRIEF VERIFIED IN PRODUCTION. A column
+     * PostgREST cannot see returns 42703 for the WHOLE statement, which here would read as "this
+     * truck has no schedule" and seed nothing — silently. */
+    const windowStart = seedWindowStart(new Date())
+    const { data: evRows, error: evErr } = await supabase
+      .from('truck_events')
+      .select('venue_id, venue_name, event_date, start_time, end_time, status, venue_address, address, postcode')
+      .eq('truck_id', truck.id)
+      .gte('event_date', windowStart)
+      .order('event_date', { ascending: true })
+      .limit(2000)
+    if (evErr) {
+      console.error('[sg_places] schedule read failed:', evErr.code, evErr.message)
+      return NextResponse.json({ error: "Couldn't read your schedule, so places could not be worked out." }, { status: 400 })
+    }
+    const events = (evRows ?? []) as PlaceEvent[]
+
+    const readPlaces = async () => {
+      const { data, error } = await supabase
+        .from('truck_places')
+        .select('id, venue_id, name_key, name, short_name, address, postcode, group_post_wording, created_at')
+        .eq('truck_id', truck.id)
+        .order('name', { ascending: true })
+      return { rows: (data ?? []) as (SgPlace & { created_at: string })[], error }
+    }
+
+    const before = await readPlaces()
+    if (before.error) {
+      // 🔴 THE MIGRATION NOT BEING APPLIED LANDS HERE (PGRST205). Named, not swallowed: a tab that
+      // showed "no places yet" on a missing table would look like a truck with no schedule.
+      console.error('[sg_places] places read failed:', before.error.code, before.error.message)
+      return NextResponse.json({ error: "Couldn't load places. If this is new, the schedule-graphics migration may not be applied yet." }, { status: 400 })
+    }
+
+    /* ── 🔴 THE IDEMPOTENT SEED ───────────────────────────────────────────────────────────────────
+     * The DATABASE decides there is one row, not this code: `on conflict (truck_id, name_key) do
+     * nothing` resolves against truck_places_truck_name_key_uidx. Two tabs opening at the same moment
+     * both insert, one wins, and both then re-read the same rows. A check-then-insert here would be
+     * the classic race and would produce duplicate places on a double-tap.
+     * ⚠️ `ignoreDuplicates` IS WHAT MAKES IT `do nothing` RATHER THAN `do update`. An update on
+     * conflict would overwrite `name` — the operator's edit — on every refresh. */
+    const plan = planPlaceSeed({ events, places: before.rows, now: new Date() })
+    if (plan.inserts.length > 0) {
+      const { error } = await supabase.from('truck_places').upsert(
+        plan.inserts.map(i => ({ ...i, truck_id: truck.id })),
+        { onConflict: 'truck_id,name_key', ignoreDuplicates: true },
+      )
+      if (error) console.error('[sg_places] seed insert failed:', error.code, error.message)
+    }
+    for (const a of plan.adopts) {
+      // ⚠️ `.is('venue_id', null)` IS THE CONCURRENCY GUARD, not a tidy-up: if another tab adopted this
+      // place a millisecond ago, this update matches no row instead of overwriting its anchor.
+      const { error } = await supabase.from('truck_places')
+        .update({ venue_id: a.venue_id, updated_at: new Date().toISOString() })
+        .eq('id', a.placeId).eq('truck_id', truck.id).is('venue_id', null)
+      if (error) console.error('[sg_places] adopt failed:', error.code, error.message)
+    }
+    for (const f of plan.fills) {
+      // ⚠️ ONE STATEMENT PER BLANK COLUMN, each with its own `.is(col, null)`. A combined update could
+      // not express "fill the address only if it is blank" and would overwrite an operator's address
+      // whenever the postcode happened to be empty.
+      if (f.address !== undefined) {
+        await supabase.from('truck_places').update({ address: f.address, updated_at: new Date().toISOString() })
+          .eq('id', f.placeId).eq('truck_id', truck.id).is('address', null)
+      }
+      if (f.postcode !== undefined) {
+        await supabase.from('truck_places').update({ postcode: f.postcode, updated_at: new Date().toISOString() })
+          .eq('id', f.placeId).eq('truck_id', truck.id).is('postcode', null)
+      }
+    }
+    if (plan.collisions.length > 0) {
+      // 🔴 LOGGED, NOT RESOLVED. Two venue anchors want one name_key; inventing a suffix would name a
+      // place something the operator never chose. One place stands, and this is the record of the other.
+      console.warn('[sg_places] name_key collisions (one place kept per key):',
+        plan.collisions.map(c => `${c.name_key} <- venue ${c.venue_id}`).join(', '))
+    }
+
+    const after = plan.inserts.length || plan.adopts.length || plan.fills.length ? await readPlaces() : before
+    if (after.error) {
+      console.error('[sg_places] re-read failed:', after.error.code, after.error.message)
+      return NextResponse.json({ error: "Couldn't load places." }, { status: 400 })
+    }
+    const places = after.rows
+
+    const { data: grpRows, error: grpErr } = await supabase
+      .from('truck_place_groups')
+      .select('id, place_id, name, url, rules, sort_order')
+      .eq('truck_id', truck.id)
+      .order('sort_order', { ascending: true })
+    if (grpErr) console.error('[sg_places] groups read failed:', grpErr.code, grpErr.message)
+    const groups = (grpRows ?? []) as { id: string; place_id: string; name: string; url: string; rules: string | null; sort_order: number }[]
+
+    // ⚠️ THE TRUCK'S OWN TODAY, not the server's. `getLocalDateInTz` is what every other date-sensitive
+    // read in this route uses; a UTC "today" shows tomorrow's pitch as next from 00:00 UK time in winter.
+    const todayLocal = getLocalDateInTz((truck as any).timezone ?? 'Europe/London')
+    const { byPlace } = groupEventsByPlace(events, places)
+
+    return NextResponse.json({
+      ok: true,
+      // 🔴 THE EFFECTIVE WORDING IS RESOLVED SERVER-SIDE, by the one function that owns the chain, so
+      // the tab renders a default it did not compute and stages 2/3 cannot disagree with it.
+      defaultWording: effectiveGroupPostWording(null, truck as { default_group_post_wording?: string | null }),
+      builtInWording: DEFAULT_GROUP_POST_WORDING,
+      places: places.map(p => {
+        const next = nextEventAt(byPlace.get(p.id) ?? [], todayLocal)
+        return {
+          id: p.id,
+          venue_id: p.venue_id ?? null,
+          name: p.name ?? '',
+          short_name: p.short_name ?? null,
+          address: p.address ?? null,
+          postcode: p.postcode ?? null,
+          group_post_wording: p.group_post_wording ?? null,
+          next_event_date: next?.event_date ?? null,
+          groups: groups.filter(g => g.place_id === p.id),
+        }
+      }),
+    })
+  }
+
+  if (action === 'sg_upsert_place') {
+    if (!sgAllowed()) return SG_FORBIDDEN
+    const id = typeof body.id === 'string' && body.id ? body.id : null
+    const name = String(body.name ?? '').trim()
+
+    if (!id) {
+      // ── "+ New place" — a manual place, no venue anchor ─────────────────────────────────────────
+      if (!name) return NextResponse.json({ error: 'A place needs a name.' }, { status: 400 })
+      const name_key = normalisePlaceName(name)
+      if (!name_key) return NextResponse.json({ error: 'That name has no letters or numbers in it.' }, { status: 400 })
+      /* 🔴 CONFLICT-TOLERANT, AND IT ANSWERS WITH THE EXISTING ROW. Typing the name of a place the
+       * seeder already created is not an error to show an operator — it is the place they were looking
+       * for. `ignoreDuplicates` then a read-back returns it, selected, rather than a red message. */
+      const { error } = await supabase.from('truck_places').upsert(
+        { truck_id: truck.id, venue_id: null, name_key, name, address: null, postcode: null },
+        { onConflict: 'truck_id,name_key', ignoreDuplicates: true },
+      )
+      if (error) {
+        console.error('[sg_upsert_place] insert failed:', error.code, error.message)
+        return NextResponse.json({ error: "Couldn't add that place." }, { status: 400 })
+      }
+      const { data: row } = await supabase.from('truck_places')
+        .select('id').eq('truck_id', truck.id).eq('name_key', name_key).maybeSingle()
+      return NextResponse.json({ ok: true, id: row?.id ?? null })
+    }
+
+    // ── An edit to the detail cards ───────────────────────────────────────────────────────────────
+    /* ⚠️ ONLY KEYS PRESENT IN THE BODY ARE WRITTEN, the same rule `update_settings` follows: a partial
+     * save must never null the fields it did not mention. `''` is stored as NULL for the optional
+     * fields, because a cleared box means "not set", and for `group_post_wording` that is precisely
+     * what "blank = use the truck default" is built on. */
+    const patch: Record<string, unknown> = {}
+    if ('name' in body) {
+      if (!name) return NextResponse.json({ error: 'A place needs a name.' }, { status: 400 })
+      // 🔴 `name_key` IS NOT RE-DERIVED FROM AN EDITED NAME, and this is the one that would be easy to
+      // get wrong. The key is what the truck's EVENTS say; "Name on posts" is what the operator wants
+      // the public to read. Re-keying on a rename would silently orphan every event at that place —
+      // the list row would survive with no dates under it and no error anywhere.
+      patch.name = name
+    }
+    for (const k of ['short_name', 'address', 'postcode', 'group_post_wording'] as const) {
+      if (k in body) {
+        const v = String(body[k] ?? '').trim()
+        patch[k] = v === '' ? null : v
+      }
+    }
+    if (Object.keys(patch).length === 0) return NextResponse.json({ ok: true })
+    patch.updated_at = new Date().toISOString()
+    const { error } = await supabase.from('truck_places')
+      .update(patch).eq('id', id).eq('truck_id', truck.id)
+    if (error) {
+      console.error('[sg_upsert_place] update failed:', error.code, error.message)
+      return NextResponse.json({ error: "Couldn't save that place." }, { status: 400 })
+    }
+    return NextResponse.json({ ok: true, id })
+  }
+
+  if (action === 'sg_upsert_group') {
+    if (!sgAllowed()) return SG_FORBIDDEN
+    const placeId = String(body.place_id ?? '')
+    const id = typeof body.id === 'string' && body.id ? body.id : null
+    const name = String(body.name ?? '').trim()
+    const rawUrl = String(body.url ?? '').trim()
+    const rules = String(body.rules ?? '').trim() || null
+
+    if (!name) return NextResponse.json({ error: 'A group needs a name.' }, { status: 400 })
+    /* 🔴 `normaliseUrl` RETURNS NULL RATHER THAN GUESSING — the same function the website and
+     * custom-domain paths use. A link that does not parse is refused here rather than stored and
+     * rendered as an Open button that goes nowhere. */
+    const url = normaliseUrl(rawUrl)
+    if (!url) return NextResponse.json({ error: "That doesn't look like a link. Paste the group's web address." }, { status: 400 })
+
+    if (id) {
+      const { error } = await supabase.from('truck_place_groups')
+        .update({ name, url, rules, updated_at: new Date().toISOString() })
+        .eq('id', id).eq('truck_id', truck.id)
+      if (error) {
+        console.error('[sg_upsert_group] update failed:', error.code, error.message)
+        return NextResponse.json({ error: "Couldn't save that group." }, { status: 400 })
+      }
+      return NextResponse.json({ ok: true, id })
+    }
+
+    // ⚠️ THE PLACE IS CHECKED AGAINST THIS TRUCK BEFORE THE INSERT. `truck_id` is carried on the group
+    // row, so an unverified `place_id` would otherwise attach one truck's group to another's place.
+    const { data: owns } = await supabase.from('truck_places')
+      .select('id').eq('id', placeId).eq('truck_id', truck.id).maybeSingle()
+    if (!owns) return NextResponse.json({ error: 'That place is not on this truck.' }, { status: 404 })
+
+    const { count } = await supabase.from('truck_place_groups')
+      .select('id', { count: 'exact', head: true }).eq('place_id', placeId).eq('truck_id', truck.id)
+    const { data: made, error } = await supabase.from('truck_place_groups')
+      .insert({ place_id: placeId, truck_id: truck.id, name, url, rules, sort_order: count ?? 0 })
+      .select('id').single()
+    if (error) {
+      console.error('[sg_upsert_group] insert failed:', error.code, error.message)
+      return NextResponse.json({ error: "Couldn't add that group." }, { status: 400 })
+    }
+    return NextResponse.json({ ok: true, id: made?.id ?? null })
+  }
+
+  if (action === 'sg_delete_group') {
+    if (!sgAllowed()) return SG_FORBIDDEN
+    // ⚠️ SCOPED BY `truck_id` AS WELL AS `id`, like every other delete in this route. The id is a uuid
+    // a client supplies; without the scope, knowing one would be enough to delete another truck's row.
+    const { error } = await supabase.from('truck_place_groups')
+      .delete().eq('id', String(body.id ?? '')).eq('truck_id', truck.id)
+    if (error) {
+      console.error('[sg_delete_group] delete failed:', error.code, error.message)
+      return NextResponse.json({ error: "Couldn't remove that group." }, { status: 400 })
+    }
+    return NextResponse.json({ ok: true })
   }
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
