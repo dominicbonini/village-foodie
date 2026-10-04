@@ -250,14 +250,13 @@ never database → migrations, so nothing fails on this. Known and accepted unti
 4. **A MAX-HEIGHT IS NOT A HEIGHT.** The place list would not scroll because the modal had only
    `max-h-[90vh]`; `h-full` below it had nothing to resolve against. Fixed with a definite `md:h-[90vh]`
    where two panes need it. **CLOSED.**
-5. **STICKY CANNOT HOLD AN ELEMENT ABOVE ITS FLOW POSITION.** The Settings jump bar had two resting
-   positions because the shared wrapper's `pt-6` put its flow position 24px down. A `:has()` rule removes
-   that padding only when a sub-tab bar is genuinely first (§65.4). A fixed negative margin was tried and
-   rejected — it would have pulled the bar through the notification banners. **REOPENED AND CLOSED AGAIN
-   4 OCTOBER 2026:** the rule was right but the condition was not met in practice, because the seven
-   notices rendered above the bar. The notices moved below it, so the bar is always first (§65.4). The
-   lesson is the second half of the first: a rule that only fires when the DOM is in a particular order
-   needs the order guaranteed, not hoped for. **CLOSED.**
+5. 🔴 **STICKY CANNOT HOLD AN ELEMENT ABOVE ITS FLOW POSITION.** The sub-tab bars had two resting
+   positions — low at scrollTop 0, flush after any scroll — because their flow position sat inside a
+   shared `pt-6` wrapper. Sticky has no upward reach, so no offset or negative margin can rescue it; the
+   flow position itself has to be right. **Two requirements, both now enforced (§65.4):** the wrapper is
+   not padded on a tab that has a bar (decided in JSX by `TABS_WITH_SUBTABS`), and nothing is rendered
+   above a bar inside it (the seven notices moved below each bar). **CLOSED — 3 bars, all fixed, four
+   measured states per bar in two engines.**
 6. **A VAN CARD THAT EDITED THE TRUCK.** Prep, Items and "Counts to total capacity" were shown inside
    each van's card but stored once per truck on `menu_categories`, so editing Van 2 silently changed
    Van 1 — on the fields that decide whether an order is accepted. Fixed with per-van overrides (§66).
@@ -276,6 +275,33 @@ never database → migrations, so nothing fails on this. Known and accepted unti
 9. **A PRODUCTION BUILD CATCHES WHAT TSC AND HARNESSES DO NOT.** The weekly post's font list pulled
    `node:fs` into the browser bundle through a client component; `tsc` and every harness were clean, only
    `npm run build` failed. **Rule:** a build that adds server-only modules runs `npm run build` once.
+10. 🔴 **A CSS FEATURE THAT DEGRADES SILENTLY IS NOT A MECHANISM.** The 3 October sticky fix was a
+   `:has()` rule. It was correct, it was in the compiled CSS, it was **unlayered** (so it beat the `.pt-6`
+   utility Tailwind emits inside `@layer utilities`, before specificity was even consulted), and a fixture
+   reproducing the real shell measured it working in **Chromium and WebKit**. It did nothing on the
+   operator's browser for two days, and cost a whole second fix aimed at the wrong cause. `:has()` is
+   Safari 15.4 / Chrome 105 / **Firefox 121 — Baseline only since December 2023**; an unsupported selector
+   is **discarded in silence** — no error, no warning, nothing in the source to look at — and a harness
+   can only ever run the browsers the developer has. Note that `dvh`, which this app's shell depends on,
+   is Firefox **101**: the shell renders perfectly on a browser where the rule is dead, so "it looks fine"
+   is not evidence. **Rule: if the page can answer the question itself, do not ask it in a selector.**
+   Reserve load-bearing modern CSS for cases where the worst case is cosmetic, and say which case it is at
+   the rule.
+
+   **SWEEP — every load-bearing modern-CSS use in the codebase, 4 October 2026:**
+
+   | Use | Where | If unsupported | Verdict |
+   |---|---|---|---|
+   | `.manage-tab-pad:has(…)` | `app/globals.css` | the sub-tab bar gets two resting positions | **FIXED** — demoted to a second belt; the mechanism is a JSX boolean (§65.4) |
+   | `html:has(.hg-landing) { scroll-behavior: smooth }` | `app/landing/landing.css` ×2 | the landing page jumps instead of gliding | **BENIGN** — cosmetic only; left as it is |
+   | `@container` / `@sm:` column counts | dashboard content column, `AddOrderPanel` ×3 | order-card and tile grids stay one column | **ACCEPTED** — Chrome 105 / Safari 16 / Firefox 110, wider than `:has()` in every engine, and the degrade is a narrower grid, not a misplaced control |
+   | `h-dvh` app shells | 44 sites | the fixed-viewport column collapses | **ACCEPTED** — Safari 15.4 / Chrome 108 / Firefox 101; a visible, loud failure, not a silent one |
+   | `field-sizing: content` | — | textareas collapse to one line | **ALREADY CLOSED** — this class already bit us once; removed and documented at both sites (`ProspectWorkspace.tsx`, `outreach-shared.tsx`) |
+
+   Nothing else: no `:has()` Tailwind variants, no `subgrid`, no `color-mix`, no CSS anchor positioning,
+   no `popover`, no `inert`, no `scrollbar-gutter`. ⚠️ **And no `@supports` anywhere in the codebase** —
+   nothing feature-detects, so every one of the rows above is an unrecorded dependency on the operator's
+   browser version. **CLOSED — 5 members, 1 fixed, 1 already closed, 3 swept and accepted with reasons.**
 
 ### Open items
 
@@ -27159,65 +27185,124 @@ section 1.
 > **V13.9.** The Schedule section's two finding-events cards moved to a modal on Schedule › Events
 > (§71.2) — a move Dominic has since reversed; they return to this section. The section keeps its name
 > and its jump tab throughout.
-## 65.4 The sticky rule
+## 65.4 The sticky rule — the sub-tab bars have ONE resting position
 
-`position: sticky` cannot hold an element above its normal-flow position. `<main>` deliberately has no
-padding-top (the Billing-row lesson); the resting gap lives in a `pt-6` child. When a sub-tab bar is the
-first thing in that child, the padding is removed:
+**THE INVARIANT.** Menu's, Schedule's and Settings' sub-tab bars sit flush against the tab bar above
+them at scrollTop 0 **and** stay exactly there once pinned. A bar that rests low and jumps up on the
+first scroll has two resting positions, and that is the defect. It was reported three times in two days
+and got three different fixes; **this section leads with the one that works.** The history is at the
+bottom, because reading it first is how the wrong lesson gets taken.
+
+### THE PHYSICS — why there are two requirements, not one
+
+`position: sticky` can hold an element at or **BELOW** where it sits in normal flow. **It has no upward
+reach.** There is no offset, negative margin or measured `top` that lifts a bar whose flow position is
+already too low — a `-mt-6` was tried first and simply pulled the bar through whatever was above it. So
+the bar's flow position must already be the pinned position, which takes two things:
+
+1. **The wrapper it lives in must not be padded above it.**
+2. **Nothing may be rendered above it inside that wrapper.**
+
+Break either one and the bar moves. Nothing in CSS, TypeScript or the build will say so.
+
+### REQUIREMENT 1 — the top padding is a JSX BOOLEAN, not a selector
+
+`<main>` deliberately carries no `padding-top` (the Billing-row lesson); the resting gap for tab content
+lives in a child wrapper. That wrapper is given the padding **only on tabs that have no sub-tab bar**,
+and the page decides it itself — in `app/manage/[token]/page.tsx`:
+
+```jsx
+const TABS_WITH_SUBTABS: Tab[] = ['menu', 'schedule', 'settings']
+…
+<div className={`manage-tab-pad${TABS_WITH_SUBTABS.includes(activeTab) ? '' : ' pt-6'}`}>
+```
+
+⛔ **DO NOT PUT THE PADDING BACK ON UNCONDITIONALLY AND LEAN ON CSS TO TAKE IT AWAY.** That was the
+3 October fix and it did not work on the operator's browser for two days — see "The silent degrade"
+below. One list, evaluated in JSX, is the mechanism.
+
+### REQUIREMENT 2 — nothing renders above a bar in that wrapper
+
+The page's seven notices — the walkthrough "remind me later" strip, the approvals, allergens,
+custom-domain and Stripe banners, the mandatory-fields box and the staleness bar — are **one `notices`
+node**, rendered **below** each sub-tab bar: inline for Menu, and through a `notices` prop for Schedule
+and Settings, which own their own bars. Only the four tabs with no bar render it at the top, gated by the
+same `TABS_WITH_SUBTABS`. A notice scrolls under the pinned bar like any other content.
+
+⛔ **DO NOT ADD ANYTHING ABOVE A SUB-TAB BAR INSIDE THAT WRAPPER.** One banner is enough to undo this,
+on every tab it shows on, and the symptom is indistinguishable from Requirement 1 failing.
+
+### THE `:has()` RULE IS A SECOND BELT, NOT THE MECHANISM
 
 ```css
 .manage-tab-pad:has(> [data-subtab-bar]:first-child),
 .manage-tab-pad:has(> *:first-child > [data-subtab-bar]:first-child) { padding-top: 0 }
 ```
 
-Two selectors because the bars sit at two depths.
+Two selectors because the bars sit at two depths: Menu's and Schedule's rows are direct children of the
+wrapper (Schedule's component returns a fragment, so its children are hoisted), while Settings' bar is
+one level deeper inside `SettingsTab`'s own `space-y-6` root. It is kept because it costs nothing and
+still catches a bar added to a tab nobody put in the list. **Nothing may be written that relies on it.**
 
-**AMENDED 4 OCTOBER 2026 — THE NOTICES MOVED BELOW THE BAR.** This section used to end "when a
-notification banner is first, the padding stays, so the bar never overlaps a banner", and that degrade was
-the bug reported next: with any one of the page's seven notices showing (walkthrough strip, approvals,
-allergens, custom domain, Stripe, missing fields, staleness bar) the bar was not the first child, the
-`pt-6` stayed, and the bar rested low and snapped flush on the first scroll — the same two resting
-positions by a different route. Dominic: *"they have been pushed down the screen a little so when you
-scroll down the screen they move up … make sure the pils are locked as well."*
+### THE GUARDS — and what each one would catch
 
-There is no CSS answer, because the rule above is the whole of what CSS can do: sticky has no upward
-reach. **The order changed instead.** The seven notices are one `notices` node in
-`app/manage/[token]/page.tsx`, rendered BELOW each sub-tab bar — handed to the three tabs that own one
-(Menu inline, Schedule and Settings by prop) — and at the top of the wrapper only for the four tabs that
-have no bar (`TABS_WITH_SUBTABS` is the single list that decides). A notice now scrolls under the pinned
-bar like any other content, and the bar's resting position and its pinned position are the same pixel on
-every tab, notice or no notice.
+| Guard | What it asserts |
+|---|---|
+| `scripts/schedule-graphics-places.cjs` | the wrapper is the ternary and **not** the old hard-coded `pt-6 manage-tab-pad`; nothing but the notices gate sits between the wrapper and the first `data-subtab-bar`; all three bars are followed by the notices |
+| `scripts/schedule-places-render.cjs` | all three bars, three widths, Chromium **and** WebKit — four states each |
 
-⛔ **Nothing may be rendered above a sub-tab bar inside that wrapper again.** One element is enough to
-undo this, and nothing in CSS will say so — the bar simply starts moving. Two guards exist:
-`scripts/schedule-graphics-places.cjs` asserts the source order (and fails if anything is put back), and
-`scripts/schedule-places-render.cjs` measures all three bars at three widths in both engines with a
-notice below (flush at rest, 0px, and still 0px scrolled) and with one above (90px at rest, 0px scrolled
-— the defect, reproduced).
+The four measured states, per bar, per width, per engine:
 
-**AMENDED AGAIN, SAME DAY — THE RULE WAS NOT THE MECHANISM.** Moving the notices below the bars changed
-nothing on the operator's screen, and the gap was reported a third time, narrowed to Settings ("that is
-the page you can scroll against"). The rule above is correct, it is **unlayered** (so it beats the `pt-6`
-utility, which Tailwind emits inside `@layer utilities`), and it measures flush in Chromium and WebKit.
-Both of those can only be true at once in **a browser with no `:has()`** — Safari 15.4 (March 2022) and
-Chrome 105 — and this app is used in an iPad WKWebView. **An unsupported selector is discarded in
-silence:** no error, no warning, and nothing in the source to look at.
+| State | at rest | after a 1200px scroll |
+|---|---|---|
+| normal | 0px | 0px |
+| a notice **below** the bar | 0px | 0px |
+| **the `:has()` rule unable to match** (fixture drops `data-subtab-bar`) | **0px** | 0px |
+| **both belts removed** (padding back **and** no `data-subtab-bar`) | **24px** | 0px |
+| a notice **above** the bar | **66-90px** | 0px |
 
-So the top gap is a **JSX boolean** now, not a selector:
+The third row is the one that matters: it is the measurement that says the fix does not rest on a CSS
+feature. The last two are the defect, reproduced, so the passing rows mean something.
 
-```jsx
-<div className={`manage-tab-pad${TABS_WITH_SUBTABS.includes(activeTab) ? '' : ' pt-6'}`}>
-```
+### ⚠️ THE SILENT DEGRADE — the general lesson, and the reason this took three attempts
 
-The page already knew whether the tab it is rendering has a sub-tab bar — `TABS_WITH_SUBTABS` is the same
-single list the notices use. Asking the question in a selector is what made the answer depend on the
-browser. The `:has()` rule stays as a second belt, for a bar added to a tab nobody listed, and
-`scripts/schedule-places-render.cjs` asserts the bar is flush **with that rule unable to match** — the
-measurement that says the fix does not rest on it. Both belts removed (padding back **and** no
-`data-subtab-bar`) is the reproduced defect: 24px at rest, 0px scrolled.
+The 3 October fix was the `:has()` rule alone. It is correct. It is in the compiled CSS. It is
+**unlayered**, while Tailwind emits `.pt-6` inside `@layer utilities`, so it wins the cascade outright,
+before specificity is consulted. A fixture reproducing the real shell measured the bar flush at rest in
+Chromium **and** WebKit. **And the operator, looking at the actual screen, said the gap was still there.**
 
-⚠️ **THE GENERAL LESSON.** A CSS feature that degrades silently is not a mechanism you can verify by
-measuring it in the engines you happen to have. If the page can answer the question itself, let it.
+Both of those can only be true at once in a browser without `:has()`:
+
+| | `:has()` | `dvh` (which this app's shell depends on) |
+|---|---|---|
+| Safari | 15.4 — March 2022 | 15.4 |
+| Chrome / Edge | 105 — August 2022 | 108 |
+| **Firefox** | **121 — December 2023** | **101 — May 2022** |
+
+`:has()` only became Baseline in **December 2023**, years after the rest of the CSS in this codebase.
+Note the Firefox row: **101–120 supports `dvh` and not `:has()`**, so the app shell renders perfectly
+while the rule does nothing — "the page looks fine" is not evidence. **An unsupported selector is
+discarded in silence.** No error, no warning, no DevTools strike-through on the rule's own line in some
+builds, and nothing in the source to look at. Neither harness could see it, because both run the browsers
+the developer has, not the browser the operator has.
+
+🔴 **THE RULE TO TAKE FROM THIS:** *if the page can answer the question itself, do not ask it in a
+selector.* A CSS feature chosen for convenience is fine when the worst case is cosmetic; when it carries
+layout or behaviour, it is a dependency on the operator's browser version that nothing in the repo
+records and no test on this machine can check. See the failure class in the V13.9 changelog for the
+codebase sweep.
+
+### THE THREE ATTEMPTS, FOR THE RECORD
+
+| | Reported | Diagnosed as | Shipped | Outcome |
+|---|---|---|---|---|
+| 3 Oct | the Settings jump bar rests 24px down and snaps flush | the wrapper's `pt-6` | the `:has()` rule | correct, and **did nothing on the operator's browser** |
+| 4 Oct | "pushed down the screen a little … when you scroll they move up" | a notice above the bar defeating the rule | the notices moved below each bar (Requirement 2) | a real fix for a real second failure mode — **but not this one** |
+| 4 Oct | "the gap is still there nothing has changed … you had solved this before" | **`:has()` not supported there** | the JSX boolean (Requirement 1) | the mechanism no longer depends on a browser feature |
+
+⚠️ The middle row is **not** wasted work and must not be reverted: a notice above the bar genuinely
+does cost it its resting position, and Requirement 2 is what keeps that true. Two different causes, one
+symptom — which is exactly why the second fix "changed nothing" and looked like a failure.
 
 ## 65.5 "Van", not "Truck"
 

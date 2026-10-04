@@ -575,3 +575,27 @@ the bar that I have not found, and `first` names it.
 | `scripts/schedule-graphics-places.cjs` | **249 passed**, 11 variants failed as required |
 | `npx tsc --noEmit` | clean |
 | `npm run build` | compiled successfully |
+
+## B7 · THE MANUAL
+
+`docs/reference-manual.md` §65.4 was three dated amendments stacked in the order they happened, which is
+the shape that gets the wrong lesson taken from it. It is rewritten **answer first**:
+
+* the invariant, then the physics (sticky has no upward reach), then the **two** requirements — the
+  wrapper is not padded on a tab with a bar (the JSX boolean, with the code), and nothing renders above a
+  bar inside it (the notices) — each with a ⛔ saying what not to do;
+* the `:has()` rule demoted to a documented second belt that nothing may rely on;
+* the guards, with the four measured states and what each would catch;
+* the silent-degrade lesson with a sourced support table, including the point that `dvh` is Firefox 101
+  while `:has()` is Firefox 121 — so "the app shell renders" is not evidence the rule is alive;
+* and the three attempts in a table at the **bottom**, with a note that the second fix must not be
+  reverted: a notice above a bar genuinely does cost it its resting position. Two causes, one symptom,
+  which is why the second fix looked like a failure.
+
+Lesson 5 in V13.9's failure-class register is rewritten to the final diagnosis, and a new class 10 is
+added — **"A CSS FEATURE THAT DEGRADES SILENTLY IS NOT A MECHANISM"** — with the codebase sweep the
+manual's own standing rule requires: five load-bearing modern-CSS uses found, one fixed, one already
+closed, three accepted with reasons, and the observation that **nothing in the codebase uses `@supports`**,
+so every one of them is an unrecorded dependency on the operator's browser version. No version bump: this
+amends the existing V13.9 block rather than adding a new one, and the header and front matter already
+agree at 13.9.
