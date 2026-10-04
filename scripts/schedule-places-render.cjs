@@ -173,6 +173,105 @@ function eventPostFixture(css, which) {
 </div></body></html>`
 }
 
+/**
+ * TIDY UP PLACES, IN THE ADD EVENT MODAL'S SHELL.
+ *
+ * 🔴 THE SHELL IS LIFTED FROM THE CONSTANTS, NOT RETYPED. Add event and Tidy up places are the same
+ * modal and must be the same size at every breakpoint; measuring a hand-written copy of the classes
+ * would pass whatever the app actually does. `EVENT_MODAL_SHELL` + `EVENT_MODAL_WIDE` is the exact
+ * pair the element gets when `wideShell` is true, which is the case for Tidy up.
+ *
+ * ⚠️ THE NAME IN "Name on posts" IS 40 CHARACTERS, which is the brief's number — the field must show
+ * all of it at 1440 with nothing clipped. It is a real-shaped venue name, not 40 of the letter W,
+ * because a run of the widest glyph in the font would be a harder test than anything a truck types and
+ * would fail for the wrong reason.
+ */
+const NAME_40 = 'The Bull & Butcher, Wickhambrook Green Xx'.slice(0, 40)
+
+function tidyFixture(css) {
+  const shell = lift(PAGE, /^const EVENT_MODAL_SHELL = '(.+)'$/m, 'EVENT_MODAL_SHELL')
+  const wide = lift(PAGE, /^const EVENT_MODAL_WIDE = '(.+)'$/m, 'EVENT_MODAL_WIDE')
+  const tidyGrid = lift(PLACES, /<div className="(flex-1 min-h-0 grid grid-cols-1 md:grid-cols-\[22rem_1fr\] gap-4)">/, 'the tidy grid')
+  const listBox = lift(PLACES, /<div className="(min-h-0 border border-slate-200 rounded-2xl overflow-hidden flex flex-col max-md:max-h-72)">/, 'the tidy list box')
+  /* 🔴 THE LIST'S OWN SCROLLER, LIFTED FROM `PlaceList`. The first draft of this fixture put the rows
+   * straight into the bordered box, which is `overflow-hidden` — so a long list was CLIPPED rather
+   * than scrolled, and the check reported the scroll broken on working code. The real component wraps
+   * them in `flex-1 min-h-0 overflow-y-auto`, and that nested pair is the whole mechanism. */
+  const listScroll = lift(PLACES, /<div className="(flex-1 min-h-0 overflow-y-auto) px-3 pb-2">/, 'the tidy list scroller')
+  const formCard = lift(PLACES, /<Card className="(p-4 grid grid-cols-1 sm:grid-cols-2 gap-3)">/, 'the place form card')
+
+  /* The five fields, with the two long ones full-width — exactly as `PlaceDetail` lays them out. The
+   * wrapper class is lifted too, so a change to it is measured rather than guessed at. */
+  const field = (id, label, value, full) => `
+    <div id="${id}" class="${full ? 'sm:col-span-2 min-w-0' : 'min-w-0'}">
+      <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:4px">${label}</label>
+      <input id="${id}in" value="${value}" style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:12px;padding:8px 12px;font-size:14px" />
+    </div>`
+
+  return `${HEAD(css)}
+<div class="fixed inset-0 bg-black/60 z-50 flex items-stretch sm:items-center justify-center sm:p-4" style="position:fixed;inset:0">
+  <div id="modal" class="${shell} ${wide}">
+    <div id="mHeader" class="shrink-0" style="padding:20px 24px 12px">
+      <p style="font-weight:900">Tidy up places</p>
+    </div>
+    <div id="tidyBody" class="flex-1 min-h-0 flex flex-col" style="padding:0 24px 24px">
+      <div style="font-size:12px;font-weight:700;color:#ea580c;margin-bottom:8px">← Back to add event</div>
+      <div class="${tidyGrid}">
+        <div class="${listBox}">
+          <div id="list" class="${listScroll}">
+            ${Array.from({ length: 24 }, (_, i) => `<div style="padding:10px 12px;border-bottom:1px solid #f1f5f9;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Place number ${i + 1}</div>`).join('')}
+          </div>
+        </div>
+        <div id="detail" class="min-w-0" style="overflow-y:auto">
+          <div id="form" class="${formCard}" style="border:1px solid #e2e8f0;border-radius:16px;background:#fff">
+            ${field('fName', 'Name on posts', NAME_40, true)}
+            ${field('fAddr', 'Address', '12 High Street, Wickhambrook, Suffolk', true)}
+            ${field('fShort', 'Short name', 'Wickhambrook', false)}
+            ${field('fArea', 'Area', 'Wickhambrook', false)}
+            ${field('fPost', 'Postcode', 'CB8 8PD', false)}
+          </div>
+          <div id="events" style="margin-top:16px;border:1px solid #e2e8f0;border-radius:16px;padding:16px">
+            <p style="font-size:14px;font-weight:900">Events here</p>
+            <p style="font-size:14px;color:#334155">Next: Thu 16 Oct · 5pm – 9pm</p>
+          </div>
+          <div id="controls" style="margin-top:16px;display:flex;flex-wrap:wrap;gap:8px">
+            <span style="padding:6px 12px;border-radius:12px;background:#fff7ed;color:#c2410c;white-space:nowrap">★ Favourite</span>
+            <span style="padding:6px 12px;border-radius:12px;background:#f8fafc;white-space:nowrap">Hide this place</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></body></html>`
+}
+
+/**
+ * THE ADD EVENT MODAL'S SHELL ON ITS OWN, for the size comparison.
+ *
+ * 🔴 THE POINT IS THE COMPARISON, NOT THIS FIXTURE. Tidy up and Add event are measured in the same
+ * engine at the same viewport and the two boxes must come out the same size. Asserting a NUMBER for
+ * either would have to be updated whenever the design changes, and would not notice the two drifting
+ * apart — which is the defect this replaced.
+ */
+function addEventShellFixture(css) {
+  const shell = lift(PAGE, /^const EVENT_MODAL_SHELL = '(.+)'$/m, 'EVENT_MODAL_SHELL')
+  const wide = lift(PAGE, /^const EVENT_MODAL_WIDE = '(.+)'$/m, 'EVENT_MODAL_WIDE')
+  return `${HEAD(css)}
+<div class="fixed inset-0 bg-black/60 z-50 flex items-stretch sm:items-center justify-center sm:p-4" style="position:fixed;inset:0">
+  <div id="modal" class="${shell} ${wide}">
+    <div class="shrink-0" style="padding:20px 24px 12px"><p style="font-weight:900">Add event</p></div>
+    <div id="mBody" class="flex-1 min-h-0 overflow-y-auto" style="padding:0 24px 24px">
+      <div class="md:grid md:grid-cols-[380px_minmax(0,1fr)] md:gap-5 min-h-0 h-full">
+        <div id="list" style="border:1px solid #e2e8f0;border-radius:16px">
+          ${Array.from({ length: 18 }, (_, i) => `<div style="padding:10px 12px;font-size:14px">Place ${i + 1}</div>`).join('')}
+        </div>
+        <div id="detail">${filler('a field', 60)}</div>
+      </div>
+    </div>
+  </div>
+</div></body></html>`
+}
+
 // ── THE APP'S OWN STYLESHEET ────────────────────────────────────────────────────────────────────────
 function appCss() {
   // ⚠️ `.next/static`, NOT `.next/dev`: the dev CSS is a different, unminified artefact and measuring
@@ -230,7 +329,13 @@ const filler = (label, h) =>
  *                    below it stops resolving, and the pane sizes to its content again.
  */
 function fixture(css, oneCol = false, placeCount = 6, breakScroll = false) {
-  const shell = lift(PAGE, /className=\{`(bg-white w-full shadow-2xl flex flex-col min-h-0 overflow-x-hidden)/, 'the modal shell')
+  /* 🔴 LIFTED FROM THE CONSTANT NOW, NOT FROM THE ELEMENT (October 2026). The shell's classes moved
+   * out of the JSX and into `EVENT_MODAL_SHELL` so Add event and Tidy up places could share one size;
+   * this lift followed them. The intent is unchanged and is the reason it is a lift at all: the
+   * fixture must break when the real shell changes rather than go on measuring a shell nobody is
+   * served. ⚠️ `EVENT_MODAL_SHELL` carries the phone and `sm:` sizing; the two-pane height and width
+   * come from `EVENT_MODAL_WIDE`, lifted separately below so `breakScroll` can drop just the height. */
+  const shell = lift(PAGE, /^const EVENT_MODAL_SHELL = '(.+)'$/m, 'the modal shell constant')
   /* 🔴 THE FOUR CLASS STRINGS THE SCROLL DEPENDS ON, LIFTED FROM THE REAL SOURCE so the fixture
    * cannot quietly disagree with the pane it claims to measure. `breakScroll` is the broken variant:
    * it drops `min-h-0` from the wrapper between the pane and the list, which is the one class that
@@ -239,7 +344,12 @@ function fixture(css, oneCol = false, placeCount = 6, breakScroll = false) {
    * draft hardcoded the shell's height classes, so after `md:h-[90vh]` was added to the page the
    * fixture went on measuring the OLD shell and the bug "still reproduced" on fixed code. Anything
    * the measurement depends on comes out of the real file. */
-  const pickerHeight = lift(PAGE, /\$\{showPicker \? '(md:h-\[90vh\])' : ''\}/, 'the two-pane modal height')
+  const wideShell = lift(PAGE, /^const EVENT_MODAL_WIDE = '(.+)'$/m, 'the two-pane modal size constant')
+  /* ⚠️ THE HEIGHT IS PICKED OUT OF THE WIDE CONSTANT so the broken variant can drop it on its own.
+   * The constant is `md:h-[90vh] md:max-w-[1040px]`; dropping the whole thing would also change the
+   * WIDTH, and the variant would then "reproduce" the scroll bug for the wrong reason. */
+  const pickerHeight = lift(PAGE, /^const EVENT_MODAL_WIDE = '(md:h-\[90vh\])/m, 'the two-pane modal height')
+  const pickerWidth = wideShell.replace(pickerHeight, '').trim()
   const leftPane = lift(PAGE, /<div className=\{`(min-h-0 md:h-full md:border md:border-slate-200 md:rounded-2xl md:overflow-hidden flex flex-col)/, 'the left pane')
   const listWrap = lift(PAGE, /<div className="(flex-1 min-h-0)">\s*\n\s*<PlaceList/, 'the PlaceList wrapper')
   const listRoot = lift(PLACES, /<div className="(flex flex-col min-h-0 h-full)">/, 'the PlaceList root')
@@ -259,7 +369,7 @@ function fixture(css, oneCol = false, placeCount = 6, breakScroll = false) {
   const field = (label, h = 56) => `<div>${filler(label, h)}</div>`
   return `${HEAD(css)}<script>window.__placeCount=${placeCount}</script>
 <div class="fixed inset-0" style="background:rgba(0,0,0,.6);display:flex;align-items:stretch;justify-content:center">
-  <div id="modal" class="${shell} max-sm:h-dvh sm:rounded-2xl sm:max-h-[90vh] ${breakScroll ? '' : pickerHeight} md:max-w-[1040px]" style="margin:auto">
+  <div id="modal" class="${shell} ${breakScroll ? '' : pickerHeight} ${pickerWidth}" style="margin:auto">
 
     <div id="header" class="shrink-0 flex items-center gap-3 px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
       <h3 style="font-weight:900;flex:1 1 0%;min-width:0">Add event</h3>
@@ -1031,6 +1141,117 @@ async function measure() {
           t(r.right.left > r.stage.left, `⚠️ event ${which} ${w}: the controls sit beside the preview (stacks below ${stacksBelow})`)
         }
       }
+    }
+
+    /* ══ 🔴 TIDY UP PLACES IS THE ADD EVENT MODAL (Part 2.1) ════════════════════════════════════
+     * They are the same modal, opened from the same button bar, and were visibly different sizes: the
+     * flag that decides the two-PANE layout was also deciding the SHELL, and it excludes Tidy up. So
+     * Tidy up got the narrow cap and no definite height — and its list had nothing to scroll against.
+     *
+     * 🔴 MEASURED AS A COMPARISON, NOT AGAINST NUMBERS. Both shells are rendered at the same viewport
+     * in the same engine and their boxes must match. A hard-coded width would need changing with every
+     * design tweak and would still not notice the two drifting apart. */
+    for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
+      await eng.setViewport(w, h)
+
+      await eng.page.goto(write(`tidy-${w}-${eng.name}.html`, tidyFixture(css)))
+      const tidy = await eng.page.evaluate(() => {
+        const box = (id) => {
+          const el = document.getElementById(id)
+          if (!el) return null
+          const b = el.getBoundingClientRect()
+          return { left: Math.round(b.left), right: Math.round(b.right), top: Math.round(b.top),
+            bottom: Math.round(b.bottom), width: Math.round(b.width), height: Math.round(b.height) }
+        }
+        /* 🔴 "NOTHING CLIPPED" IS MEASURED ON THE INPUT, NOT ON ITS WRAPPER. An input whose value is
+         * wider than the box shows the text scrolled, with no overflow of its own — so the honest test
+         * is whether the VALUE fits the field. A hidden span with the same font renders the text at its
+         * natural width, which is what it needs to fit into. */
+        const fits = (id) => {
+          const input = document.getElementById(id + 'in')
+          if (!input) return null
+          const probe = document.createElement('span')
+          const cs = getComputedStyle(input)
+          probe.style.cssText = `position:absolute;visibility:hidden;white-space:pre;font:${cs.font}`
+          probe.textContent = input.value
+          document.body.appendChild(probe)
+          const textW = probe.getBoundingClientRect().width
+          probe.remove()
+          const padding = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
+          const inner = input.getBoundingClientRect().width - padding
+          return { chars: input.value.length, textW: Math.round(textW), inner: Math.round(inner), fits: textW <= inner + 0.5 }
+        }
+        const body = document.getElementById('tidyBody')
+        const list = document.getElementById('list')
+        return {
+          modal: box('modal'), form: box('form'), detail: box('detail'), list: box('list'),
+          name: box('fName'), addr: box('fAddr'), short: box('fShort'), area: box('fArea'),
+          controls: box('controls'),
+          nameFits: fits('fName'), addrFits: fits('fAddr'),
+          listScrolls: list ? list.scrollHeight > list.clientHeight + 1 : false,
+          bodyOverflows: body ? body.scrollWidth > body.clientWidth + 1 : false,
+          pageScrollsSideways: document.documentElement.scrollWidth > window.innerWidth + 1,
+        }
+      })
+
+      await eng.page.goto(write(`addev-${w}-${eng.name}.html`, addEventShellFixture(css)))
+      const addEv = await eng.page.evaluate(() => {
+        const b = document.getElementById('modal').getBoundingClientRect()
+        return { width: Math.round(b.width), height: Math.round(b.height),
+          left: Math.round(b.left), top: Math.round(b.top) }
+      })
+
+      lines.push(`  tidy ${w}×${h}  modal ${tidy.modal.width}×${tidy.modal.height} vs add-event ${addEv.width}×${addEv.height} · name ${tidy.nameFits.textW}/${tidy.nameFits.inner}px`)
+
+      t(tidy.modal.width === addEv.width && tidy.modal.height === addEv.height,
+        `🔴 tidy ${w}: THE SHELL IS EXACTLY THE ADD EVENT SHELL (${tidy.modal.width}×${tidy.modal.height} vs ${addEv.width}×${addEv.height})`)
+      t(tidy.modal.left === addEv.left && tidy.modal.top === addEv.top,
+        `⚠️ tidy ${w}: …and sits in the same place on screen`)
+      t(!tidy.pageScrollsSideways, `🔴 tidy ${w}: NO HORIZONTAL PAGE SCROLL`)
+      t(!tidy.bodyOverflows, `🔴 tidy ${w}: nothing pushes the modal body sideways`)
+      t(tidy.modal.width <= w + 1 && tidy.modal.height <= h + 1,
+        `🔴 tidy ${w}: the modal fits the viewport`)
+
+      /* 🔴 THE TWO LONG FIELDS GET A FULL ROW — a statement about the TWO-COLUMN layout, so it is
+       * asserted at `sm:` and above. Below 640 the card is one column and EVERY field is already full
+       * width; the first draft asserted "name wider than short name" at 390 too and failed on correct
+       * markup, because there is no narrower field there to be wider than. */
+      if (w >= 640) {
+        t(tidy.name.width > tidy.short.width + 20,
+          `🔴 tidy ${w}: "Name on posts" has a row to itself (${tidy.name.width}px vs short name ${tidy.short.width}px)`)
+        t(tidy.addr.width > tidy.short.width + 20,
+          `🔴 tidy ${w}: "Address" has a row to itself (${tidy.addr.width}px)`)
+      } else {
+        t(tidy.name.width === tidy.short.width && tidy.addr.width === tidy.short.width,
+          `⚠️ tidy ${w}: one column on a phone — every field is full width`)
+      }
+      t(tidy.nameFits.chars === 40,
+        `⚠️ tidy ${w}: the measured name really is 40 characters`)
+      if (w === 1440) {
+        t(tidy.nameFits.fits,
+          `🔴 tidy 1440: A 40-CHARACTER NAME SHOWS IN FULL, NOT CLIPPED (${tidy.nameFits.textW}px of text in ${tidy.nameFits.inner}px)`)
+        t(tidy.addrFits.fits, `⚠️ tidy 1440: the address shows in full too`)
+      }
+
+      /* ⚠️ THE SHORT THREE STAY IN PAIRS above the `sm:` breakpoint — one row each would make a
+       * five-field card scroll for no reason. Below it everything is one column, which is correct. */
+      if (w >= 640) {
+        t(tidy.area.left > tidy.short.left && Math.abs(tidy.area.top - tidy.short.top) <= 1,
+          `⚠️ tidy ${w}: Short name and Area share a row`)
+      } else {
+        t(tidy.area.top > tidy.short.top, `⚠️ tidy ${w}: the fields stack on a phone`)
+      }
+
+      /* 🔴 THE LIST SCROLLS ON ITS OWN. This is what the definite height buys: without it the pane
+       * sized to its content, the body clipped it, and every place below the fold was unreachable. */
+      if (w >= 768) {
+        t(tidy.listScrolls, `🔴 tidy ${w}: the places list scrolls INSIDE the modal`)
+        t(tidy.detail.left > tidy.list.left, `⚠️ tidy ${w}: the detail sits beside the list`)
+      } else {
+        t(tidy.detail.top > tidy.list.top, `🔴 tidy ${w}: the list and the detail stack`)
+      }
+      t(tidy.controls.right <= tidy.modal.right + 1,
+        `⚠️ tidy ${w}: Favourite / Hide fit without being clipped`)
     }
 
     // ── THE CONTROL ─────────────────────────────────────────────────────────────────────────────

@@ -363,11 +363,16 @@ function runTreeSuite() {
    * assert the drop took effect and the rename landed on the new name only. */
   t('🔴 a DROPPED column leaves the declared set — the census is not merely incomplete, it is correct',
     !r.declared.get('truck_places').has('group_post_wording')
-    /* ⚠️ 17, NOT 14 — stage 2 of the event post added `event_bg_path`, `event_bg_width` and
-     * `event_bg_height` to this table. The count is pinned deliberately: it is what makes the drop
-     * assertion above mean "the declared set is exactly right" rather than "it contains these four". */
-    && r.declared.get('truck_places').size === 17
-    && ['area', 'is_favourite', 'is_hidden', 'merged_into_id'].every(c => r.declared.get('truck_places').has(c)))
+    /* ⚠️ 18, NOT 17 OR 14 — stage 2 of the event post added `event_bg_path`, `event_bg_width` and
+     * `event_bg_height`, and stage 2b added `event_layout` (a place's OWN text positions; NULL means
+     * "same as Standard"). The count is pinned deliberately: it is what makes the drop assertion above
+     * mean "the declared set is exactly right" rather than "it contains these four". */
+    && r.declared.get('truck_places').size === 18
+    && ['area', 'is_favourite', 'is_hidden', 'merged_into_id'].every(c => r.declared.get('truck_places').has(c))
+    /* 🔴 THE NEW COLUMN IS CENSUSED. Without this the migration could be written and never applied, or
+     * applied and never read, and nothing here would notice — the failure mode is a place whose own
+     * positions silently never load. */
+    && r.declared.get('truck_places').has('event_layout'))
   t('🔴 a RENAMED column is declared under its NEW name and not its old one',
     r.declared.get('outreach_prospects').size > 0
     && (() => {

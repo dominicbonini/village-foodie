@@ -7,7 +7,7 @@
 // inside that same modal. So this file exports PIECES rather than a screen —
 //   `usePlaces`     the load + seed + optimistic favourite, used by both surfaces
 //   `PlaceList`     the search box, FAVOURITES / ALL PLACES, the star button
-//   `PlaceDetail`   the five fields, Events here, and the three controls
+//   `PlaceDetail`   the five fields, Events here, and the two controls (Favourite, Hide/Restore)
 //   `TidyUpPlaces`  list + detail + a way back
 // — so the modal and Tidy up share the logic instead of each having a copy of it.
 //
@@ -249,9 +249,12 @@ export function PlaceList({
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE DETAIL — reused by Tidy up, logic unchanged
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-export function PlaceDetail({ place, places, api, showToast, onChanged }: {
+export function PlaceDetail({ place, api, showToast, onChanged }: {
   place: Place
-  places: Place[]
+  /* ⛔ `places` IS GONE WITH THE MERGE BUTTON (October 2026). It was here only to build the list of
+   * merge targets; keeping an unused prop would have the next reader looking for what reads it. The
+   * SERVER's merge is untouched — see the note above `doMerge`'s removal in
+   * docs/event-post-per-place-report.md §Part 2.3. */
   api: Api
   showToast: (msg: string, kind?: 'success' | 'error') => void
   onChanged: (keepId?: string | null) => void
@@ -263,8 +266,6 @@ export function PlaceDetail({ place, places, api, showToast, onChanged }: {
   const [address, setAddress] = useState(place.address ?? '')
   const [area, setArea] = useState(place.area ?? '')
   const [postcode, setPostcode] = useState(place.postcode ?? '')
-  const [merging, setMerging] = useState(false)
-  const [mergeInto, setMergeInto] = useState('')
   const [busy, setBusy] = useState(false)
 
   const saveField = async (field: string, value: string, was: string | null) => {
@@ -280,22 +281,16 @@ export function PlaceDetail({ place, places, api, showToast, onChanged }: {
     finally { setBusy(false) }
   }
 
-  const doMerge = async () => {
-    if (!mergeInto) return
-    setBusy(true)
-    try {
-      const r = (await api('sg_merge_place', { id: place.id, into_id: mergeInto })) as { into_id?: string }
-      setMerging(false); setMergeInto('')
-      showToast('Places merged', 'success')
-      // ⚠️ SELECT THE TARGET: the place that now has the events is the one to look at.
-      onChanged(r?.into_id ?? null)
-    } catch (e: unknown) { showToast(msgOf(e, 'Couldn’t merge those places'), 'error') }
-    finally { setBusy(false) }
-  }
-
-  const mergeTargets = places
-    .filter(p => p.id !== place.id && !isRetired(p))
-    .sort((a, b) => a.name.localeCompare(b.name, 'en-GB', { sensitivity: 'base' }))
+  /* ── ⛔ "MERGE INTO ANOTHER PLACE" IS GONE FROM THIS SCREEN (October 2026) ────────────────────
+   * The button, its target list and its confirm card have been removed on instruction. What has NOT
+   * been removed is the server: `sg_merge_place` in app/api/manage/route.ts still works, and
+   * `merged_into_id` is still resolved by `resolvePlaceMerge`/`placeForEvent`, so every row merged
+   * before today keeps behaving exactly as it did — its events still resolve to the target, and
+   * "Restore this place" still un-merges it (`is_hidden: false` clears `merged_into_id`).
+   * ⚠️ `sg_merge_place` NOW HAS NO CALLER IN THE APP. It is listed as unreachable in
+   * docs/event-post-per-place-report.md rather than deleted, because deleting it would also delete the
+   * only way back for a truck who needs a merge undone by hand.
+   */
 
   const nextLine = place.next_event_date
     ? `Next: ${shortDay(place.next_event_date)}${timeRange(place.next_start_time, place.next_end_time) ? ` · ${timeRange(place.next_start_time, place.next_end_time)}` : ''}`
@@ -306,15 +301,24 @@ export function PlaceDetail({ place, places, api, showToast, onChanged }: {
 
   return (
     <div className="space-y-4 min-w-0">
+      {/* ── 🔴 THE TWO LONG FIELDS GET A ROW EACH ──────────────────────────────────────────────────
+        * "Name on posts" and "Address" are the two that hold a long value — a venue name like
+        * "The Bull & Butcher, Wickhambrook Green" is comfortably past 40 characters, and sharing a row
+        * put it in a half-width box where the end of the name scrolled out of sight while being typed.
+        * They are `sm:col-span-2`, so from the first breakpoint upwards each has the full width.
+        * ⚠️ THE OTHER THREE ARE SHORT AND STAY IN PAIRS. A short name, an area and a postcode are all
+        * well under a line; giving each its own row would make a five-field card scroll for no reason. */}
       <Card className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <Input label="Name on posts" value={name} onChange={setName}
-          onBlur={() => saveField('name', name, place.name)} />
-        <Input label="Short name" value={shortName} onChange={setShortName}
-          onBlur={() => saveField('short_name', shortName, place.short_name)} />
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2 min-w-0">
+          <Input label="Name on posts" value={name} onChange={setName}
+            onBlur={() => saveField('name', name, place.name)} />
+        </div>
+        <div className="sm:col-span-2 min-w-0">
           <Input label="Address" value={address} onChange={setAddress}
             onBlur={() => saveField('address', address, place.address)} />
         </div>
+        <Input label="Short name" value={shortName} onChange={setShortName}
+          onBlur={() => saveField('short_name', shortName, place.short_name)} />
         <Input label="Area" value={area} onChange={setArea}
           onBlur={() => saveField('area', area, place.area)} />
         <Input label="Postcode" value={postcode} onChange={setPostcode}
@@ -335,8 +339,6 @@ export function PlaceDetail({ place, places, api, showToast, onChanged }: {
           size="sm" loading={busy}
           onClick={() => setFlag({ is_favourite: !place.is_favourite }, place.is_favourite ? 'Removed from favourites' : 'Added to favourites')}
         />
-        <Btn label="Merge into another place" colour="ghost" size="sm"
-          disabled={mergeTargets.length === 0} onClick={() => setMerging(m => !m)} />
         {isRetired(place) ? (
           // ⚠️ ONE CONTROL, ONE OUTCOME: restoring a merged place also un-merges it, or it would come
           // back into the list showing none of its own events (they all resolve to the target).
@@ -348,21 +350,6 @@ export function PlaceDetail({ place, places, api, showToast, onChanged }: {
         )}
       </div>
 
-      {merging && (
-        <Card className="p-4 space-y-2">
-          <label className="block text-xs font-bold text-slate-600">Merge “{place.name}” into</label>
-          <select value={mergeInto} onChange={e => setMergeInto(e.target.value)}
-            className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-            <option value="">Choose a place</option>
-            {mergeTargets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-          </select>
-          <p className="text-xs text-slate-400">Its events move across. No event is changed.</p>
-          <div className="flex gap-2">
-            <Btn label="Merge" size="sm" loading={busy} disabled={!mergeInto} onClick={doMerge} />
-            <Btn label="Cancel" colour="ghost" size="sm" onClick={() => { setMerging(false); setMergeInto('') }} />
-          </div>
-        </Card>
-      )}
     </div>
   )
 }
@@ -415,7 +402,7 @@ export function TidyUpPlaces({ ctl, api, showToast, onBack }: {
           </div>
           <div className="min-h-0 overflow-y-auto">
             {selected ? (
-              <PlaceDetail key={selected.id} place={selected} places={ctl.places} api={api}
+              <PlaceDetail key={selected.id} place={selected} api={api}
                 showToast={showToast} onChanged={(id) => { ctl.reload(); if (id) setSelectedId(id) }} />
             ) : (
               <Card className="p-8 text-center"><p className="text-sm text-slate-400">Pick a place to tidy up.</p></Card>

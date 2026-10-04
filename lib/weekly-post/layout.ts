@@ -418,18 +418,54 @@ export function fontsUsedBy(l: Layout): Array<{ id: string; bold: boolean }> {
  * ⚠️ IT IS STORED UNDER THE SAME `truck_post_designs` ROW SHAPE, with `kind = 'event'`, which is why
  * the unique key is `(truck_id, kind)` rather than `truck_id`.
  */
+/**
+ * A box that can be switched off.
+ *
+ * 🔴 `enabled` IS AN EXPLICIT FLAG, NOT A ZERO-SIZE BOX. A box collapsed to 0×0 would be
+ * indistinguishable from a drag gone wrong, would fail the validator's own 8px floor, and would lose
+ * the operator's position — so switching it back on would start from nothing. The coordinates stay
+ * exactly where they were; only the drawing stops.
+ * ⚠️ IT IS ON THE EVENT LAYOUT'S BOXES ONLY. The weekly post has seven rows of three and no
+ * meaningful "turn the date off"; adding the flag to the shared `TextBox` would put an unread field on
+ * every box in that design.
+ */
+export interface SwitchableBox extends TextBox {
+  enabled: boolean
+}
+export interface SwitchableDateBox extends DateBox {
+  enabled: boolean
+}
+
 export interface EventLayout {
   version: typeof LAYOUT_VERSION
   width: number
   height: number
-  date: DateBox
-  location: TextBox
-  time: TextBox
+  date: SwitchableDateBox
+  location: SwitchableBox
+  time: SwitchableBox
   note: NoteBox | null
   timeStyle: TimeStyle
   /** "From 5pm" (default) or "5pm – 9pm". */
   timeDisplay: EventTimeDisplay
   keepReadable: boolean
+}
+
+/**
+ * 🔴 AT LEAST ONE OF LOCATION OR TIME MUST STAY ON, and the reason is a cancelled event.
+ *
+ * A cancelled post says so in two places: the place name is struck through, and the Time box reads
+ * CANCELLED. With both switched off, a cancelled event renders as an ordinary poster with a date on
+ * it — a truck would be telling customers to come to something that is not happening. The Date box may
+ * be switched off freely; it carries no cancellation.
+ *
+ * ⚠️ ENFORCED IN THE VALIDATOR, so the rule holds for a hand-made payload as well as for the UI that
+ * greys the last toggle out.
+ */
+export const LAST_TOGGLE_MESSAGE =
+  'Keep either Location or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.'
+
+export function toggleIsAllowed(l: { location: { enabled: boolean }; time: { enabled: boolean } }): boolean {
+  return l.location.enabled || l.time.enabled
 }
 
 /**
@@ -464,17 +500,19 @@ export function defaultEventLayout(width: number, height: number): EventLayout {
     version: LAYOUT_VERSION,
     width: w,
     height: h,
+    /* ⚠️ ALL THREE START ON. A design that opened with something switched off would look broken to a
+     * truck who had not chosen that. */
     date: {
-      ...base, x: pad, y: top, w: inner, h: rowH,
+      ...base, enabled: true, x: pad, y: top, w: inner, h: rowH,
       fontSize: Math.round(rowH * 0.62),
       twoLines: false, bgTrading: null, bgDayOff: null,
     },
     location: {
-      ...base, x: pad, y: top + rowH + gap, w: inner, h: rowH,
+      ...base, enabled: true, x: pad, y: top + rowH + gap, w: inner, h: rowH,
       fontSize: Math.round(rowH * 0.6), caps: false,
     },
     time: {
-      ...base, x: pad, y: top + (rowH + gap) * 2, w: inner, h: rowH,
+      ...base, enabled: true, x: pad, y: top + (rowH + gap) * 2, w: inner, h: rowH,
       fontSize: Math.round(rowH * 0.6),
     },
     note: null,
@@ -539,6 +577,16 @@ export function validateEventLayout(input: unknown, width: number, height: numbe
     return { ok: false, errors: errors.length ? errors : ['The design could not be read.'] }
   }
 
+  /* 🔴 A SWITCHED-OFF BOX IS ACCEPTED EXPLICITLY, and keeps its position. `enabled` defaults to TRUE
+   * when absent, so every design saved before this existed reads as "all three on" — which is what they
+   * were. */
+  const enabledOf = (v: unknown) => bool(isObj(v) ? v.enabled : undefined, true)
+  const locationOn = enabledOf(input.location)
+  const timeOn = enabledOf(input.time)
+  /* ⛔ AND THE LAST ONE CANNOT GO. Enforced here as well as in the UI, so a hand-made payload cannot
+   * produce a design on which a cancelled event reads as an ordinary poster. */
+  if (!locationOn && !timeOn) return { ok: false, errors: [LAST_TOGGLE_MESSAGE] }
+
   return {
     ok: true,
     errors: [],
@@ -548,12 +596,13 @@ export function validateEventLayout(input: unknown, width: number, height: numbe
       height: H,
       date: {
         ...date,
+        enabled: enabledOf(input.date),
         twoLines: bool(isObj(input.date) ? input.date.twoLines : undefined, false),
         bgTrading: optColour(isObj(input.date) ? input.date.bgTrading : null),
         bgDayOff: optColour(isObj(input.date) ? input.date.bgDayOff : null),
       },
-      location,
-      time,
+      location: { ...location, enabled: locationOn },
+      time: { ...time, enabled: timeOn },
       note,
       timeStyle: input.timeStyle === '24h' ? '24h' : '12h',
       /* ⚠️ ANYTHING THAT IS NOT 'range' IS 'from'. An unknown value defaults to the documented default
@@ -570,4 +619,62 @@ export function fontsUsedByEvent(l: EventLayout): Array<{ id: string; bold: bool
   const boxes: TextStyle[] = [l.date, l.location, l.time]
   if (l.note) boxes.push(l.note)
   return boxes.map(b => ({ id: b.fontId, bold: b.bold }))
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// STAGE 2b · THE SAME DESIGN ON A DIFFERENT CANVAS
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+
+/**
+ * An event layout re-expressed at a new picture size, scaled proportionally.
+ *
+ * 🔴 TWO CALLERS, ONE RULE.
+ *   1. Switching a place from "Same as Standard" to "Own for this place" starts from Standard's boxes
+ *      rather than from the generic defaults, because the truck has already arranged those boxes and
+ *      the point of switching is usually to move ONE of them. Starting from scratch would throw that
+ *      arrangement away.
+ *   2. Re-exporting a place's own picture at a different resolution but the SAME shape (1080×1350 →
+ *      2160×2700) is the same poster; the boxes should survive, moved to the new pixel grid.
+ *
+ * ⚠️ THE TWO AXES ARE SCALED INDEPENDENTLY, so this is correct only between canvases of (near) equal
+ * shape — which is all either caller asks of it. Scaling a portrait layout onto a landscape canvas
+ * this way would stretch every box and every font size; that case resets to `defaultEventLayout`
+ * instead, in the route.
+ * ⚠️ FONT SIZES SCALE WITH THE **HEIGHT**, not with the average of the two factors. A font size is a
+ * vertical measure — it is what decides whether a line still fits the box's height — and the renderer
+ * shrinks to fit from it, so tying it to height keeps the relationship between text and box intact.
+ * ⚠️ `bgSample` IS CARRIED OVER UNCHANGED. It is the averaged colour under the box; a re-export at a
+ * different resolution of the same artwork has the same colours, and a wrong shape resets anyway.
+ * ⚠️ THE RESULT IS NOT TRUSTED — every caller passes it through `validateEventLayout`, which is what
+ * clamps a rounded box back inside the canvas.
+ */
+export function scaleEventLayout(input: unknown, width: number, height: number): EventLayout | null {
+  const w = Math.max(1, Math.round(width))
+  const h = Math.max(1, Math.round(height))
+  if (!input || typeof input !== 'object') return null
+  const src = input as Partial<EventLayout>
+  const sw = Number(src.width), sh = Number(src.height)
+  if (!Number.isFinite(sw) || !Number.isFinite(sh) || sw <= 0 || sh <= 0) return null
+  const fx = w / sw, fy = h / sh
+
+  const box = <T extends BoxRect & TextStyle>(b: T): T => ({
+    ...b,
+    x: Math.round(b.x * fx), y: Math.round(b.y * fy),
+    w: Math.round(b.w * fx), h: Math.round(b.h * fy),
+    fontSize: Math.max(1, Math.round(b.fontSize * fy)),
+  })
+
+  const date = src.date, location = src.location, time = src.time
+  if (!date || !location || !time) return null
+  const out: EventLayout = {
+    version: LAYOUT_VERSION,
+    width: w, height: h,
+    date: box(date), location: box(location), time: box(time),
+    note: src.note ? box(src.note) : null,
+    timeStyle: src.timeStyle === '24h' ? '24h' : '12h',
+    timeDisplay: src.timeDisplay === 'range' ? 'range' : 'from',
+    keepReadable: src.keepReadable !== false,
+  }
+  const v = validateEventLayout(out, w, h)
+  return v.ok && v.layout ? v.layout : null
 }

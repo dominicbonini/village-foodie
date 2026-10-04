@@ -6962,6 +6962,20 @@ function applyStartTimeChange(newStart: string, currentEnd: string): { start_tim
  * for one row and two places to remember when a column was added. The modal uses the hook's own
  * `Place` type (imported as `SgPlaceRow`) and the shared `PlaceList`, so there is one shape. */
 
+/* ── 🔴 THE EVENT MODAL'S SHELL, AS CONSTANTS ─────────────────────────────────────────────────────
+ * Add event and Tidy up places are the SAME modal, and must be the same size at every breakpoint.
+ * Written once, here, rather than as numbers repeated at each call site: the two had drifted apart
+ * precisely because the width and height were spelled out inline and only one branch was updated.
+ * ⚠️ THE PHONE IS DEFINITE (`h-dvh`) AND THE TABLET UP IS CAPPED (`sm:max-h-[90vh]`); `EVENT_MODAL_WIDE`
+ * adds the DEFINITE `md:h-[90vh]` that an inner pane's `h-full` needs to resolve against — without it
+ * a `max-h` leaves the flex child's height indefinite and nothing inside scrolls.
+ */
+const EVENT_MODAL_SHELL = 'bg-white w-full shadow-2xl flex flex-col min-h-0 overflow-x-hidden max-sm:h-dvh sm:rounded-2xl sm:max-h-[90vh]'
+/** The two-pane / list size: wider, and tall enough for an inner pane to scroll on its own. */
+const EVENT_MODAL_WIDE = 'md:h-[90vh] md:max-w-[1040px]'
+/** The one-column size, for an edit and for the upload flow — short stays short. */
+const EVENT_MODAL_NARROW = 'sm:max-w-lg lg:max-w-2xl'
+
 function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles, categories, api, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved }: {
   /* 🔴 `isActive` IS STILL "the Schedule tab is open", NOT "the Events section is showing", and that
    * is deliberate. Every load in this component keys off it (`loadEvents`, the vans read, the
@@ -7239,6 +7253,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    *     move an event's place (the other half is the server's update naming no such column);
    *   • UPLOAD mode has its own flow and no single place to choose. */
   const showPicker = !!editingEvent && !editingEvent.id && addMode === 'manual' && modalView === 'add'
+
+  /* ── 🔴 THE SHELL IS THE SAME SIZE FOR TIDY UP PLACES AS FOR ADD EVENT ─────────────────────────
+   * `showPicker` decides whether the two-PANE layout is drawn, and it deliberately excludes Tidy up —
+   * Tidy up has its own single-pane content. But it was also deciding the SHELL's size, so Tidy up got
+   * `sm:max-w-lg lg:max-w-2xl` and no definite height: the same modal, opened from the same button
+   * bar, was visibly narrower and shorter than Add event, and its list had nothing to scroll against.
+   * ⚠️ TWO QUESTIONS, TWO FLAGS. This one is "how big is the box", `showPicker` is "what goes in it".
+   * They were one flag answering both, which is why the sizes drifted apart. */
+  const wideShell = showPicker || modalView === 'tidy'
 
 
   const validateEventForm = (form: EditingEvent) => {
@@ -8545,10 +8568,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
              * flow keep `max-h`, so a short modal is still short rather than always 90vh tall.
              * ⚠️ THE PHONE IS ALREADY DEFINITE (`h-dvh`) and deliberately scrolls its BODY: step 1 is
              * the whole screen, so there is no form beside the list to keep still. */
-            className={`bg-white w-full shadow-2xl flex flex-col min-h-0 overflow-x-hidden
-              max-sm:h-dvh sm:rounded-2xl sm:max-h-[90vh]
-              ${showPicker ? 'md:h-[90vh]' : ''}
-              ${showPicker ? 'md:max-w-[1040px]' : 'sm:max-w-lg lg:max-w-2xl'}`}>
+            className={`${EVENT_MODAL_SHELL} ${wideShell ? EVENT_MODAL_WIDE : EVENT_MODAL_NARROW}`}>
 
             {/* ── THE HEADER ROW ───────────────────────────────────────────────────────────────── */}
             <div className="shrink-0 flex items-center gap-3 px-5 sm:px-6 pt-5 sm:pt-6 pb-3">

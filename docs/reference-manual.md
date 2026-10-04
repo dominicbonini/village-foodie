@@ -8,7 +8,7 @@ Engineering Reference Manual
 
 **Version 13.8**
 
-September 2026
+October 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 

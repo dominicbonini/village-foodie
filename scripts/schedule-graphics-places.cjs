@@ -966,8 +966,13 @@ function runWiringSuite(lib) {
     /Favourites/.test(U) && /All places/.test(U)
     && /is_favourite \? '★' : '☆'/.test(U)
     && /Show hidden places \(\$\{hiddenCount\}\)/.test(U))
-  t('⚠️ the three controls, and Card 1\'s five fields including Area',
-    /Merge into another place/.test(U) && /Hide this place/.test(U) && /Restore this place/.test(U)
+  /* ⚠️ TWO CONTROLS NOW, NOT THREE (October 2026). "Merge into another place" was removed from this
+   * screen on instruction; the SERVER's `sg_merge_place` and `merged_into_id` resolution are untouched
+   * and are asserted in scripts/weekly-post.cjs §9c, so the capability is still covered — what changed
+   * is that the button is gone. The five fields are the point of this line and are unchanged. */
+  t('⚠️ the two controls, and Card 1\'s five fields including Area',
+    /Hide this place/.test(U) && /Restore this place/.test(U)
+    && !/Merge into another place/.test(U)
     && ['Name on posts', 'Short name', 'Address', 'Area', 'Postcode'].every(f => U.includes(`label="${f}"`)))
   t('⚠️ Card 2 names both lines and the count',
     /Events here/.test(U) && /Next: \$\{shortDay/.test(U) && /time\$\{place\.traded_last_year === 1 \? '' : 's'\} in the last year/.test(U))
@@ -1011,9 +1016,14 @@ function runWiringSuite(lib) {
   /* 🔴 THE SCROLL FIX. `max-h` alone leaves a flex container's height INDEFINITE, so `h-full` below
    * it cannot resolve and the pane sizes to its content. The measurement is in
    * scripts/schedule-places-render.cjs (with a broken variant); this pins the class that fixes it. */
+  /* ⚠️ THE CLASS MOVED INTO A CONSTANT (October 2026) so Add event and Tidy up places could share one
+   * size; the assertion followed it. The intent is unchanged — a DEFINITE height on the two-pane case
+   * — and it is now additionally asserted that Tidy up gets it, which is the whole reason it moved. */
   t('🔴 the two-pane modal has a DEFINITE height, so the places pane can be constrained and scroll',
-    /\$\{showPicker \? 'md:h-\[90vh\]' : ''\}/.test(P)
-    && /sm:max-h-\[90vh\]/.test(P))
+    /^const EVENT_MODAL_WIDE = 'md:h-\[90vh\]/m.test(P)
+    && /sm:max-h-\[90vh\]/.test(P)
+    && /const wideShell = showPicker \|\| modalView === 'tidy'/.test(P)
+    && /\$\{EVENT_MODAL_SHELL\} \$\{wideShell \? EVENT_MODAL_WIDE : EVENT_MODAL_NARROW\}/.test(P))
   /* ⚠️ THE DEFINITE HEIGHT IS CONDITIONAL. A short modal (the edit form) must stay short, and the
    * import modal is a different element entirely — it keeps `max-h-[90vh]` with no `h-`. */
   t('⚠️ …and only where two panes need one — the edit form and the import modal keep `max-h` alone',
@@ -1058,8 +1068,12 @@ function runWiringSuite(lib) {
         && /Or paste schedule text/.test(blk)
         && /renderScheduleReview/.test(blk)
     })())
+  /* ⚠️ THE TWO WIDTHS ARE CONSTANTS NOW (October 2026), for the same reason as the height above. The
+   * original point of this line — the width does not depend on how many events an import extracted —
+   * is still asserted, and the inline ternary it used to read is gone rather than changed. */
   t('🔴 the Add event modal is ONE SIZE — its width no longer depends on `extractedEvents`',
-    /\$\{showPicker \? 'md:max-w-\[1040px\]' : 'sm:max-w-lg lg:max-w-2xl'\}/.test(P)
+    /^const EVENT_MODAL_WIDE = 'md:h-\[90vh\] md:max-w-\[1040px\]'$/m.test(P)
+    && /^const EVENT_MODAL_NARROW = 'sm:max-w-lg lg:max-w-2xl'$/m.test(P)
     && !/extractedEvents\.length > 0 \? 'md:max-w-\[980px\]' : showPicker/.test(P))
 
   /* 🔴 "VAN", WHEREVER A VAN IS CHOSEN. Copy only — the column, the options and the predicate are
@@ -1319,7 +1333,16 @@ function runWiringSuite(lib) {
       /* ⚠️ the Weekly post pane gained the `token` it needs to call its own route. */
       "{isActive && section === 'weekly' && <WeeklyPostPane truck={truck} />}",
       'picked. It answers the question the filled fields raise — "will editing this',
-      'change the place?" — and the answer is no: nothing below writes back to the place.'
+      'change the place?" — and the answer is no: nothing below writes back to the place.',
+      /* ⚠️ THE EVENT MODAL'S SHELL MOVED INTO CONSTANTS (October 2026). These four lines were the
+       * inline `className={...}` on the modal; they are now `EVENT_MODAL_SHELL`, `EVENT_MODAL_WIDE`
+       * and `EVENT_MODAL_NARROW`, which the three assertions above read. The move is what makes Tidy
+       * up places the same size as Add event — the two had drifted because the numbers were written
+       * out at the call site and only one branch was ever updated. */
+      'className={`bg-white w-full shadow-2xl flex flex-col min-h-0 overflow-x-hidden',
+      'max-sm:h-dvh sm:rounded-2xl sm:max-h-[90vh]',
+      "${showPicker ? 'md:h-[90vh]' : ''}",
+      "${showPicker ? 'md:max-w-[1040px]' : 'sm:max-w-lg lg:max-w-2xl'}`}>",
     ]
     const unexplained = gone.filter(l => {
       if (!l) return false

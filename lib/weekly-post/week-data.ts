@@ -24,6 +24,16 @@ export type TradingStatus = 'trading' | 'cancelled'
 
 export interface DayEntry {
   eventId: string
+  /**
+   * The place this event resolved to, or null.
+   *
+   * 🔴 ADDED SO THE DESIGN CAN BE FOUND BY ID (stage 2b). docs/event-post-stage2-report.md §8.3
+   * recorded that the single-event post matched a place's picture by its NAME, because that was all
+   * `entryFor` returned — correct, but correct by coincidence. Two places whose names resolve to the
+   * same string would share a picture, and now a whole DESIGN, which decides where the text goes.
+   * The id is what `placeForEvent` actually resolved; carrying it makes the match structural.
+   */
+  placeId: string | null
   /** The place's "Name on posts", else the event's venue_name. Never blank — see `locationName`. */
   name: string
   /**
@@ -130,6 +140,7 @@ export function entryFor(ev: WeekEvent, places: readonly Place[], timeStyle: Tim
   const status = tradingStatusOf(ev.status)
   return {
     eventId: ev.id,
+    placeId: place?.id ?? null,
     name,
     town: townLine(ev, place, name),
     /* ⚠️ A CANCELLED EVENT'S TIME IS NOT FORMATTED. The Time box reads "CANCELLED"; computing the

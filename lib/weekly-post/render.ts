@@ -396,16 +396,24 @@ export async function renderEventPost(input: EventRenderInput): Promise<RenderRe
   const children: El[] = []
   const entries = [entry]
 
+  /* 🔴 A SWITCHED-OFF BOX DRAWS NOTHING — not an empty box, not its panel. "Location off" means the
+   * venue name is already printed on the truck's own picture, so anything drawn there would be a second
+   * copy of it. The box keeps its coordinates in the design; only this skips it. */
   const panel = entry.status === 'cancelled' ? l.date.bgDayOff : l.date.bgTrading
-  children.push(...boxEl(l.date, dateLines(date, l.date), scale, l.keepReadable, panel, date, warnings, 'The date'))
-  children.push(...boxEl(l.location, locationLinesFor(entries, null), scale, l.keepReadable, null, date, warnings, 'The place name'))
+  if (l.date.enabled) {
+    children.push(...boxEl(l.date, dateLines(date, l.date), scale, l.keepReadable, panel, date, warnings, 'The date'))
+  }
+  if (l.location.enabled) {
+    children.push(...boxEl(l.location, locationLinesFor(entries, null), scale, l.keepReadable, null, date, warnings, 'The place name'))
+  }
 
   /* 🔴 THE TIME FORM IS THIS DESIGN'S CHOICE, APPLIED HERE. `entry.time` already carries the range form
    * (built by `entryFor` for the weekly post); passing a formatter lets the event design say "From 5pm"
    * without `entryFor` having to know which poster is asking. A cancelled event still reads CANCELLED —
    * `timeLinesFor` decides that before this formatter is reached. */
-  const tl = timeLinesFor(entries, e =>
-    formatEventTime(e.startTime, e.endTime, l.timeStyle, l.timeDisplay))
+  const tl = l.time.enabled
+    ? timeLinesFor(entries, e => formatEventTime(e.startTime, e.endTime, l.timeStyle, l.timeDisplay))
+    : []
   if (tl.length) {
     children.push(...boxEl(l.time, tl, scale, l.keepReadable, null, date, warnings, 'The time'))
   }

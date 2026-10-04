@@ -729,6 +729,242 @@ head('8b · THE SINGLE-EVENT POST \u2014 backgrounds, time and layout')
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
+// 8c · STAGE 2b · A DESIGN PER PLACE — THE RULES, WITH NO PICTURES INVOLVED
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 WHAT GOES WRONG HERE IS SILENT AND PERMANENT. A place whose picture already has its venue name
+// printed on it needs its own box positions; pair the wrong picture with the wrong positions and the
+// text lands over the artwork, on a poster that goes straight to customers with no error anywhere.
+head('8c · A DESIGN PER PLACE')
+{
+  const { resolveDesign, oneOffMustMatch, placePictureNeedsDefaultShape, checkAspect } = M.bg
+  const STD = { image: { path: 'std.png', width: 1080, height: 1350 }, layout: { tag: 'standard' } }
+  const img = (path, w, h) => ({ path, width: w, height: h })
+
+  // ── 1 · THE ORDER OF PREFERENCE, AND THE POSITIONS THAT TRAVEL WITH IT ────────────────────────
+  const placeOwn = { placeId: 'p1', image: img('kezmet.png', 1080, 1080), layout: { tag: 'kezmet' } }
+  const placeStd = { placeId: 'p2', image: img('sudbury.png', 1080, 1350), layout: null }
+
+  t('🔴 A PLACE DESIGN BEATS STANDARD — its picture AND its positions', (() => {
+    const r = resolveDesign({ standard: STD, place: placeOwn })
+    return r.source === 'place' && r.image.path === 'kezmet.png'
+      && r.layout.tag === 'kezmet' && r.layoutSource === 'place'
+  })())
+
+  t('🔴 A ONE-OFF BEATS BOTH — but it brings only a picture', (() => {
+    const r = resolveDesign({ standard: STD, place: placeOwn, oneOff: img('tonight.png', 1080, 1080) })
+    /* ⚠️ THE POSITIONS ARE STILL THE PLACE'S. A one-off replaces the background for one event; it is
+     * not a new design, so it inherits whatever design it displaced. */
+    return r.source === 'event' && r.image.path === 'tonight.png'
+      && r.layout.tag === 'kezmet' && r.layoutSource === 'place'
+  })())
+
+  t('⚠️ a one-off at a place on STANDARD positions inherits STANDARD positions', (() => {
+    const r = resolveDesign({ standard: STD, place: placeStd, oneOff: img('tonight.png', 1080, 1350) })
+    return r.source === 'event' && r.layout.tag === 'standard' && r.layoutSource === 'standard'
+  })())
+
+  t('⚠️ a place with a picture but no positions of its own uses Standard’s', (() => {
+    const r = resolveDesign({ standard: STD, place: placeStd })
+    return r.source === 'place' && r.image.path === 'sudbury.png'
+      && r.layout.tag === 'standard' && r.layoutSource === 'standard'
+  })())
+
+  t('⚠️ no place and no one-off ⇒ Standard, both halves', (() => {
+    const r = resolveDesign({ standard: STD })
+    return r.source === 'default' && r.image.path === 'std.png' && r.layoutSource === 'standard'
+  })())
+
+  /* 🔴 CHOOSING STANDARD IN THE MODAL TAKES STANDARD'S POSITIONS TOO. This is the brief's rule and the
+   * one most easily got wrong: forcing the picture alone would draw Standard's artwork with the
+   * place's boxes, which is precisely the mismatch this whole stage exists to prevent. */
+  t('🔴 FORCING Standard AT A PLACE WITH ITS OWN DESIGN TAKES STANDARD’S POSITIONS, NOT THE PLACE’S', (() => {
+    const r = resolveDesign({ standard: STD, place: placeOwn, force: 'default' })
+    return r.source === 'default' && r.image.path === 'std.png'
+      && r.layout.tag === 'standard' && r.layoutSource === 'standard'
+  })())
+
+  t('⚠️ forcing the place still gets the place’s own positions', (() => {
+    const r = resolveDesign({ standard: STD, place: placeOwn, oneOff: img('t.png', 1080, 1080), force: 'place' })
+    return r.source === 'place' && r.layout.tag === 'kezmet'
+  })())
+
+  /* ⚠️ A PLACE CAN HAVE POSITIONS AND NO PICTURE — the truck arranged the boxes, then removed the
+   * picture. Half a design is still a design; ignoring it would silently undo what they asked for. */
+  t('⚠️ own positions with no picture of its own: Standard’s picture, the place’s boxes', (() => {
+    const r = resolveDesign({ standard: STD, place: { placeId: 'p3', image: null, layout: { tag: 'own' } } })
+    return r.source === 'default' && r.image.path === 'std.png'
+      && r.layout.tag === 'own' && r.layoutSource === 'place'
+  })())
+
+  // ── 2 · THE SHAPE RULE DEPENDS ON WHOSE POSITIONS ARE USED ───────────────────────────────────
+  t('🔴 A PLACE WITH ITS OWN POSITIONS NEEDS NO PARTICULAR SHAPE…',
+    placePictureNeedsDefaultShape({ layout: { tag: 'own' } }) === false)
+  t('🔴 …AND A PLACE ON STANDARD’S POSITIONS KEEPS THE 1% RULE',
+    placePictureNeedsDefaultShape({ layout: null }) === true
+    && placePictureNeedsDefaultShape(null) === true
+    && placePictureNeedsDefaultShape(undefined) === true)
+
+  /* 🔴 THE 1% RULE ITSELF IS UNCHANGED FOR STANDARD POSITIONS. A square picture against a 4:5 default
+   * is a 25% drift — the case that moved every box in stage 2 — and it is still refused. */
+  t('🔴 a square picture is still refused where Standard’s positions are used',
+    checkAspect(1080, 1080, 1080, 1350).ok === false
+    && checkAspect(2160, 2700, 1080, 1350).ok === true)
+
+  t('🔴 A ONE-OFF MUST MATCH THE DESIGN IT WOULD INHERIT, NOT ALWAYS THE DEFAULT', (() => {
+    /* ⚠️ THE WHOLE POINT: at Kezmet the inherited canvas is 1080×1080, so a 1080×1350 one-off — which
+     * matches Standard perfectly — is the WRONG shape for the positions it is about to be given. */
+    const target = oneOffMustMatch({ standard: STD.image, place: placeOwn })
+    const atStandardPlace = oneOffMustMatch({ standard: STD.image, place: placeStd })
+    const noPlace = oneOffMustMatch({ standard: STD.image, place: null })
+    return target.path === 'kezmet.png'
+      && checkAspect(1080, 1350, target.width, target.height).ok === false
+      && checkAspect(1080, 1080, target.width, target.height).ok === true
+      && atStandardPlace.path === 'std.png' && noPlace.path === 'std.png'
+  })())
+
+  // ── 3 · THE SAME BOXES ON A DIFFERENT CANVAS ─────────────────────────────────────────────────
+  const { scaleEventLayout, defaultEventLayout, validateEventLayout } = M.layout
+  t('🔴 scaleEventLayout moves every box proportionally and keeps it valid', (() => {
+    const base = defaultEventLayout(1080, 1350)
+    const up = scaleEventLayout(base, 2160, 2700)
+    if (!up) return false
+    return up.width === 2160 && up.height === 2700
+      && up.date.x === base.date.x * 2 && up.date.w === base.date.w * 2
+      && up.time.y === base.time.y * 2
+      // ⚠️ THE FONT SIZE SCALES TOO, or the text would be half the size on a 2× canvas
+      && up.location.fontSize === base.location.fontSize * 2
+      && validateEventLayout(up, 2160, 2700).ok === true
+  })())
+  t('⚠️ it refuses input it cannot scale rather than inventing a canvas',
+    scaleEventLayout(null, 1080, 1350) === null
+    && scaleEventLayout({ width: 0, height: 0 }, 1080, 1350) === null
+    && scaleEventLayout({ width: 100, height: 100 }, 1080, 1350) === null)
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 8d · STAGE 2b · THE THREE BOXES CAN BE SWITCHED OFF
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 A SWITCHED-OFF BOX IS AN EXPLICIT FLAG, NOT A ZERO-SIZE BOX. A 0×0 box is indistinguishable from
+// a box the truck dragged to nothing, cannot be switched back on without remembering where it was, and
+// would still be measured, shrunk and warned about by the fit machinery.
+head('8d · BOXES SWITCHED OFF')
+{
+  const { defaultEventLayout, validateEventLayout, toggleIsAllowed, LAST_TOGGLE_MESSAGE } = M.layout
+  const EW = 1080, EH = 1350
+  const base = defaultEventLayout(EW, EH)
+
+  t('🔴 all three start switched ON — a design never opens looking broken',
+    base.date.enabled === true && base.location.enabled === true && base.time.enabled === true)
+
+  t('🔴 THE VALIDATOR ACCEPTS A SWITCHED-OFF BOX EXPLICITLY, keeping its position', (() => {
+    const off = { ...base, date: { ...base.date, enabled: false } }
+    const v = validateEventLayout(off, EW, EH)
+    return v.ok === true && v.layout.date.enabled === false
+      // ⚠️ THE COORDINATES SURVIVE, so switching it back on puts it where it was
+      && v.layout.date.x === base.date.x && v.layout.date.w === base.date.w
+  })())
+
+  t('⚠️ a layout saved before the toggles existed reads as all-on', (() => {
+    const old = JSON.parse(JSON.stringify(base))
+    delete old.date.enabled; delete old.location.enabled; delete old.time.enabled
+    const v = validateEventLayout(old, EW, EH)
+    return v.ok === true && v.layout.date.enabled === true
+      && v.layout.location.enabled === true && v.layout.time.enabled === true
+  })())
+
+  /* 🔴 AT LEAST ONE OF LOCATION OR TIME MUST STAY ON, and the reason is a cancelled event: it says so
+   * by striking the place name through and writing CANCELLED where the time goes. With both off, a
+   * cancelled event renders as an ordinary poster telling customers to come to something that is not
+   * happening. The DATE may be switched off freely — it carries no cancellation. */
+  t('🔴 LOCATION AND TIME BOTH OFF IS REFUSED, with the reason said out loud', (() => {
+    const both = { ...base, location: { ...base.location, enabled: false }, time: { ...base.time, enabled: false } }
+    const v = validateEventLayout(both, EW, EH)
+    return v.ok === false
+      && v.errors.length === 1 && v.errors[0] === LAST_TOGGLE_MESSAGE
+      // ⚠️ THE MESSAGE EXPLAINS ITSELF rather than naming a field — it is shown to a truck, not a dev
+      && /cancelled/i.test(LAST_TOGGLE_MESSAGE)
+  })())
+
+  t('🔴 …but either ONE of them alone is allowed', (() => {
+    const noLoc = { ...base, location: { ...base.location, enabled: false } }
+    const noTime = { ...base, time: { ...base.time, enabled: false } }
+    return validateEventLayout(noLoc, EW, EH).ok === true
+      && validateEventLayout(noTime, EW, EH).ok === true
+  })())
+
+  t('⚠️ the Date box may be switched off on its own — it carries no cancellation',
+    validateEventLayout({ ...base, date: { ...base.date, enabled: false } }, EW, EH).ok === true)
+
+  t('⚠️ toggleIsAllowed is the same rule the UI blocks with', (() => {
+    const on = { enabled: true }, off = { enabled: false }
+    return toggleIsAllowed({ location: on, time: on }) === true
+      && toggleIsAllowed({ location: on, time: off }) === true
+      && toggleIsAllowed({ location: off, time: on }) === true
+      && toggleIsAllowed({ location: off, time: off }) === false
+  })())
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 8e · STAGE 2b · THE PLACE IS MATCHED BY ID, NOT BY NAME
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 STAGE 2 MATCHED THE PLACE BY THE NAME IT HAD JUST PRINTED (stage 2 report §8.3). That was correct
+// by coincidence while the only thing hanging off it was a picture. Now a place's TEXT POSITIONS hang
+// off it, and two places can share a short name — so the wrong design would be attached to the event,
+// and the truck would see a poster laid out for a different venue.
+head('8e · THE PLACE IS MATCHED BY ID')
+{
+  const { entryFor } = M.data
+  /* Two places with similar names, one of them with a design. ⚠️ THEY SHARE A SHORT NAME on purpose —
+   * "Sudbury" the market and "Sudbury" the pub is an ordinary thing for a truck to have. */
+  const PLACES = [
+    { id: 'pub-1', name: 'The Bull, Sudbury', short_name: 'Sudbury', name_key: 'the bull sudbury', area: 'Sudbury' },
+    { id: 'market-1', name: 'Sudbury Market', short_name: 'Sudbury', name_key: 'sudbury market', area: 'Sudbury' },
+  ]
+  const DESIGNS = { 'market-1': { tag: 'market' } }
+
+  t('🔴 entryFor RETURNS THE PLACE’S ID, so nothing downstream has to guess from the name', (() => {
+    const atMarket = entryFor({ id: 'e1', event_date: '2026-10-16', start_time: '17:00', end_time: '21:00',
+      venue_name: 'Sudbury Market', truck_place_id: 'market-1', status: 'confirmed' }, PLACES, '12h')
+    const atPub = entryFor({ id: 'e2', event_date: '2026-10-17', start_time: '17:00', end_time: '21:00',
+      venue_name: 'The Bull, Sudbury', truck_place_id: 'pub-1', status: 'confirmed' }, PLACES, '12h')
+    return atMarket.placeId === 'market-1' && atPub.placeId === 'pub-1'
+      // 🔴 AND THE PRINTED NAME IS THE SAME FOR BOTH, which is why the name cannot be the key
+      && atMarket.name === atPub.name && atMarket.name === 'Sudbury'
+  })())
+
+  t('🔴 THE DESIGN FOLLOWS THE ID: the pub does not inherit the market’s design', (() => {
+    const atPub = entryFor({ id: 'e2', event_date: '2026-10-17', start_time: '17:00', end_time: '21:00',
+      venue_name: 'The Bull, Sudbury', truck_place_id: 'pub-1', status: 'confirmed' }, PLACES, '12h')
+    const atMarket = entryFor({ id: 'e1', event_date: '2026-10-16', start_time: '17:00', end_time: '21:00',
+      venue_name: 'Sudbury Market', truck_place_id: 'market-1', status: 'confirmed' }, PLACES, '12h')
+    /* ⚠️ THE BY-NAME LOOKUP IS RUN ALONGSIDE, so this check states what the old code WOULD have done
+     * rather than only what the new code does. By name, both events find whichever row comes first. */
+    const byName = (e) => PLACES.find(pl => (pl.short_name || pl.name) === e.name)?.id ?? null
+    return DESIGNS[atMarket.placeId] !== undefined
+      && DESIGNS[atPub.placeId] === undefined
+      && byName(atPub) === 'pub-1' && byName(atMarket) === 'pub-1'   // both → the pub: the stage 2 bug
+      && byName(atMarket) !== atMarket.placeId
+  })())
+
+  t('⚠️ an event with no place at all has a null id, not an empty string', (() => {
+    const e = entryFor({ id: 'e3', event_date: '2026-10-18', start_time: '17:00', end_time: '21:00',
+      venue_name: 'Somewhere New', status: 'confirmed' }, [], '12h')
+    return e.placeId === null && e.name === 'Somewhere New'
+  })())
+
+  /* 🔴 THE ROUTE USES THE ID. Read from the source, because the rule is only true if the server does
+   * it — a pure check on `entryFor` would pass with the route still matching on the name. */
+  t('🔴 the route looks the place up by `entry.placeId`, and no longer by its printed name', (() => {
+    const route = fs.readFileSync(path.join(REPO, 'app/api/weekly-post/route.ts'), 'utf8')
+    const fn = route.slice(route.indexOf('async function eventPostContext('),
+      route.indexOf('export async function POST('))
+    return /String\(pl\.id\) === entry\.placeId/.test(fn)
+      && !/=== entry\.name/.test(fn)
+      && !/pl\.short_name \?\? ''\)\.trim\(\) \|\| String\(pl\.name/.test(fn)
+  })())
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
 // 9 · THE RENDER — PIXELS
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 const renderSuite = async () => {
@@ -1000,6 +1236,71 @@ t('\u{1F534} "Powered by HatchGrab" is on the event post too, bottom centre', ((
 t('\u26a0\ufe0f the weekly post and the event post are still different posters',
   Buffer.compare(out.png, ev1.png) !== 0)
 
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 9d · STAGE 2b, IN THE PIXELS — A SWITCHED-OFF BOX, AND A CANCELLED EVENT WITHOUT A LOCATION BOX
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('9d · SWITCHED-OFF BOXES, IN THE PIXELS')
+
+/* 🔴 CHECKED IN THE RENDERED PIXELS, NOT BY READING THE RENDERER. "Draws nothing" is a claim about the
+ * image; a renderer could skip the text and still emit a shadow, a panel behind the date, or a stray
+ * row of background colour from an empty flex child. The only honest test is to look at the output.
+ * ⚠️ `keepReadable: false` ON BOTH SIDES, so the comparison cannot be decided by a drop shadow whose
+ * presence depends on the sampled colour rather than on the toggle. */
+const flatForToggle = flat
+for (const key of ['date', 'location', 'time']) {
+  /* The box under test is the ONLY one on the poster; the other two are parked in an 8×8 corner. Its
+   * own band is then compared against the same poster with this box switched OFF as well. */
+  const others = ['date', 'location', 'time'].filter(k => k !== key)
+  const onlyThis = { ...parkEv(eventLayout, others), keepReadable: false }
+  const switchedOff = { ...onlyThis, [key]: { ...onlyThis[key], enabled: false } }
+
+  const withBox = decodePng((await M.render.renderEventPost({
+    layout: onlyThis, entry: entryOf(), date: EV.event_date, backgroundDataUri: flatForToggle.uri })).png)
+  const offBox = decodePng((await M.render.renderEventPost({
+    layout: switchedOff, entry: entryOf(), date: EV.event_date, backgroundDataUri: flatForToggle.uri })).png)
+  const bare = decodePng((await M.render.renderEventPost({
+    layout: { ...parkEv(eventLayout, ['date', 'location', 'time']), keepReadable: false,
+      date: { ...parkEv(eventLayout, ['date']).date, enabled: false },
+      location: { ...parkEv(eventLayout, ['location']).location, enabled: false },
+      time: { ...parkEv(eventLayout, ['time']).time, enabled: false } },
+    entry: entryOf(), date: EV.event_date, backgroundDataUri: flatForToggle.uri })).png)
+
+  const b = eventLayout[key]
+  const band = { x: 0, y: Math.max(0, b.y - 4), w: W, h: b.h + 8 }
+  const drew = diffBounds(withBox, bare, band)
+  const drewNothing = diffBounds(offBox, bare, band)
+  /* 🔴 TWO HALVES, AND BOTH MATTER. The box must DRAW something when it is on — otherwise "nothing
+   * changed" would pass for a box that never worked — and NOTHING AT ALL when it is off. */
+  t(`🔴 THE ${key.toUpperCase()} BOX DRAWS PIXELS WHEN ON, AND NOT ONE PIXEL WHEN OFF`,
+    !drew.empty && drewNothing.empty)
+  if (drew.empty || !drewNothing.empty) console.log('      ' + J({ key, on: drew, off: drewNothing }))
+}
+
+/* 🔴 A CANCELLED EVENT AT A PLACE WITH LOCATION SWITCHED OFF STILL READS CANCELLED. This is the whole
+ * reason one of Location and Time has to stay on. A truck whose picture already names the venue
+ * switches Location off; if the cancellation lived only in the struck-through place name, that truck's
+ * cancelled posts would look exactly like their trading ones. */
+{
+  const noLoc = { ...eventLayout, location: { ...eventLayout.location, enabled: false }, keepReadable: false }
+  const cancelled = await M.render.renderEventPost({
+    layout: noLoc, entry: entryOf({ status: 'cancelled' }), date: EV.event_date, backgroundDataUri: flat.uri })
+  const trading = await M.render.renderEventPost({
+    layout: noLoc, entry: entryOf(), date: EV.event_date, backgroundDataUri: flat.uri })
+
+  const timeBand = { x: 0, y: Math.max(0, eventLayout.time.y - 4), w: W, h: eventLayout.time.h + 8 }
+  const locBand = { x: 0, y: Math.max(0, eventLayout.location.y - 4), w: W, h: eventLayout.location.h + 8 }
+  const timeDiff = diffBounds(decodePng(cancelled.png), decodePng(trading.png), timeBand)
+  const locDiff = diffBounds(decodePng(cancelled.png), decodePng(trading.png), locBand)
+
+  /* ⚠️ THE DIFFERENCE MUST BE IN THE TIME BAND. Comparing whole posters would pass on any difference
+   * at all — including the struck-through name, which is exactly the thing that is switched off here.
+   * The location band is asserted IDENTICAL as the other half of the same statement. */
+  t('🔴 A CANCELLED EVENT WITH LOCATION SWITCHED OFF STILL READS CANCELLED — in the time box',
+    !timeDiff.empty && locDiff.empty)
+  if (timeDiff.empty || !locDiff.empty) console.log('      ' + J({ timeDiff, locDiff }))
+}
+
 return { bg, base, mkWeek, blank, eventLayout, entryOf, EV, evBg }
 }
 
@@ -1064,6 +1365,151 @@ head('9c · THE WIRING')
     /from '\.\/WeeklyPost'/.test(eventUi)
     && /DraggableBox/.test(eventUi)
     && !/function DraggableBox/.test(eventUi))
+  /* ══ STAGE 2b · THE WIRING ═══════════════════════════════════════════════════════════════════ */
+
+  /* 🔴 THE MODAL'S CHOICE REACHES THE RESOLVER AS A FORCED SOURCE, and the resolver is what decides the
+   * positions. Section 8c proves that forcing 'default' returns Standard's positions; this proves the
+   * modal's radio button is actually wired to that argument — without it, 8c would be a check on a
+   * function nothing calls with a force. */
+  t('🔴 CHOOSING "Standard design" IN THE MODAL REACHES resolveDesign AS A FORCE', (() => {
+    const fn = route.slice(route.indexOf("if (action === 'event_render')"),
+      route.indexOf("return NextResponse.json({ error: 'Unknown action' }"))
+    return /const forced = String\(body\.background \?\? ''\)/.test(fn)
+      // the forced source is handed to the context, which hands it to resolveDesign
+      && /eventPostContext\(truck, eventId, design, forced \|\| null\)/.test(fn)
+      && /force: forced/.test(route)
+      // 🔴 AND THE LAYOUT DRAWN IS THE RESOLVED ONE, not `design.layout` regardless of the choice
+      && /body\.layout \?\? ctx\.layout \?\? design\.layout/.test(fn)
+  })())
+  t('⚠️ …and the modal sends the choice under that name', /action: 'event_render', eventId, background: choice/.test(eventUi))
+
+  /* 🔴 THE LAYOUT IS VALIDATED AGAINST THE CANVAS IT WILL BE DRAWN ON. Validating a place's boxes
+   * against Standard's size is how text ends up outside a differently shaped picture — the bounds
+   * check would pass and the poster would be wrong. */
+  t('🔴 a place layout is validated against the PLACE’S stored picture size, never the body’s', (() => {
+    const ctxFn = route.slice(route.indexOf('async function eventPostContext('),
+      route.indexOf('export async function POST('))
+    const save = route.slice(route.indexOf("if (action === 'event_place_save_layout')"),
+      route.indexOf("if (action === 'event_place_save_layout')") + 2000)
+    return /validateEventLayout\(raw, placeImgRaw\.width, placeImgRaw\.height\)/.test(ctxFn)
+      && /const w = row\.event_bg_width \|\| design\.width/.test(save)
+      && /validateEventLayout\(body\.layout, w, h\)/.test(save)
+      // ⛔ nothing in either path takes a canvas size from the request body
+      && !/body\.width/.test(save) && !/body\.height/.test(save)
+  })())
+
+  /* 🔴 THE TOGGLES EXIST ON EVERY DESIGN INCLUDING STANDARD, and the last-one rule is the layout
+   * module's own message rather than a second sentence written in the component. */
+  t('🔴 the setup screen switches each box on and off, and blocks the last one with the shared message',
+    /<Check label="Date" checked=\{layout\?\.date\.enabled !== false\}/.test(eventUi)
+    && /<Check label="Location"/.test(eventUi) && /<Check label="Time"/.test(eventUi)
+    && /setMsg\(\{ text: LAST_TOGGLE_MESSAGE, bad: true \}\)/.test(eventUi)
+    && /toggleIsAllowed\(next\)/.test(eventUi)
+    // ⚠️ AND IT SAYS WHY under the Location toggle, which is the only one with a reason to be off
+    && /The place name is in your picture/.test(eventUi))
+
+  /* 🔴 "+ ADD A DESIGN FOR A PLACE" USES THE SAME LIST AS ADD EVENT — favourites first, then by name,
+   * with a search. The order comes from the SERVER, so the two screens cannot drift apart. */
+  t('🔴 the designs list has Standard first, a status per design, and the place picker',
+    /name: 'Standard', status: 'Used at every other place'/.test(eventUi)
+    && /\+ Add a design for a place/.test(eventUi)
+    && /placeholder="Search places"/.test(eventUi)
+    && /pl\.isFavourite \? '★ ' : ''/.test(eventUi)
+    && /Remove this place’s design/.test(eventUi)
+    && /a\.is_favourite === true \? 0 : 1/.test(route))
+
+  t('🔴 the three status wordings the brief names are the server’s, in one function',
+    /function placeDesignStatus\(/.test(route)
+    && /'Own picture and text positions'/.test(route)
+    && /'Own picture, standard positions'/.test(route)
+    && /'Different shape — not used until replaced'/.test(route)
+    // ⛔ and the component does not write its own copy of them
+    && !/Own picture and text positions/.test(eventUi))
+
+  /* 🔴 THE PREVIEW FALLS BACK IN THE BRIEF'S ORDER: the next event here, then the last event here with
+   * a label saying so, then the next event anywhere with this place's name put in. */
+  t('🔴 the preview falls back next-here → last-here → anywhere-with-this-name', (() => {
+    const fn = route.slice(route.indexOf('const previewFor = (placeId'),
+      route.indexOf('const designs = await Promise.all'))
+    return /firstAt\(upcoming as never, placeId\)/.test(fn)
+      && /'Preview uses your last event here'/.test(fn)
+      && /substituteName: true/.test(fn)
+      && fn.indexOf('upcoming as never') < fn.indexOf('past as never')
+      // 🔴 THE NAME IS SUBSTITUTED SERVER-SIDE, from the place id — never from text the client sent
+      && /if \(nm\) entry = \{ \.\.\.entry, name: nm, placeId: designPlaceId \}/.test(route)
+  })())
+
+  /* 🔴 TIDY UP PLACES AND ADD EVENT ARE THE SAME MODAL AND MUST BE THE SAME SIZE. They were not: the
+   * flag that decides the two-PANE layout was also deciding the SHELL, and it excludes Tidy up. */
+  t('🔴 THE TIDY UP PLACES SHELL IS THE ADD EVENT SHELL — the same constants, not the same numbers', (() => {
+    // the shell is written once, as constants, and the element uses nothing else
+    const usesConstants = /className=\{`\$\{EVENT_MODAL_SHELL\} \$\{wideShell \? EVENT_MODAL_WIDE : EVENT_MODAL_NARROW\}`\}/.test(page)
+    const wide = /const wideShell = showPicker \|\| modalView === 'tidy'/.test(page)
+    /* ⛔ AND THE NUMBERS APPEAR ONCE EACH **IN THE CODE**. A second `md:max-w-[1040px]` or
+     * `md:h-[90vh]` would be a copy that could drift — which is how the two sizes came apart.
+     * ⚠️ COMMENTS ARE STRIPPED FIRST. The first draft of this check counted raw occurrences and
+     * failed on the three notes that EXPLAIN the constants — a check that forbids writing down why
+     * is a worse check, so it is the code that is counted. */
+    const code = page.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+    const once = (re) => (code.match(re) || []).length === 1
+    return usesConstants && wide
+      && once(/md:max-w-\[1040px\]/g) && once(/md:h-\[90vh\]/g)
+      && once(/sm:max-w-lg lg:max-w-2xl/g)
+      // ⚠️ `showPicker` still excludes tidy — the CONTENT is not shared, only the box
+      && /const showPicker = !!editingEvent && !editingEvent\.id && addMode === 'manual' && modalView === 'add'/.test(page)
+  })())
+
+  /* ⛔ "MERGE INTO ANOTHER PLACE" IS GONE FROM THE SCREEN AND THE SERVER IS UNTOUCHED. Both halves are
+   * asserted: removing the server code would take away the only way to undo a merge by hand, and
+   * leaving the button would be the instruction ignored. */
+  t('⛔ the Merge button and its card are gone from the places form…', (() => {
+    const places = fs.readFileSync(path.join(REPO, 'components/manage/SchedulePlaces.tsx'), 'utf8')
+    /* ⚠️ A CALL IS WHAT MUST BE GONE, NOT THE NAME. The removal note in that file names
+     * `sg_merge_place` so the next reader knows the server kept it; forbidding the string would
+     * forbid the explanation. */
+    const placeCode = places.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+    return !/Merge into another place/.test(places)
+      && !/sg_merge_place/.test(placeCode)
+      && !/mergeTargets/.test(placeCode)
+      && !/setMerging|mergeInto/.test(placeCode)
+      // ⚠️ RESTORE STILL EXISTS, and it is still what un-merges a merged place
+      && /Restore this place/.test(places)
+  })())
+  t('🔴 …and the server’s merge, and merged_into_id resolution, are untouched', (() => {
+    const manage = fs.readFileSync(path.join(REPO, 'app/api/manage/route.ts'), 'utf8')
+    const placesLib = fs.readFileSync(path.join(REPO, 'lib/schedule-graphics/places.ts'), 'utf8')
+    return /action === 'sg_merge_place'/.test(manage)
+      && /'sg_merge_place'/.test(manage)
+      && /export function resolvePlaceMerge/.test(placesLib)
+      && /resolvePlaceMerge\(/.test(placesLib.slice(placesLib.indexOf('export function placeForEvent')))
+      // 🔴 un-hiding still clears the merge, which is the only way back
+      && /if \(body\.is_hidden === false\) patch\.merged_into_id = null/.test(manage)
+  })())
+
+  /* 🔴 THE TWO LONG FIELDS GET A FULL-WIDTH ROW. A venue name past 40 characters in a half-width box
+   * scrolls out of sight while it is being typed. */
+  t('🔴 "Name on posts" and "Address" each have a full-width row; the short three stay in pairs', (() => {
+    const places = fs.readFileSync(path.join(REPO, 'components/manage/SchedulePlaces.tsx'), 'utf8')
+    /* ⚠️ THE END IS FOUND **FROM THE START**, not from the top of the file. The first draft used
+     * `indexOf('Events here')` and that phrase also appears in the file's own header comment — at
+     * offset 630, long before the card — so the slice came out empty and every field read as paired.
+     * A slice whose end can precede its start is a check that silently tests nothing. */
+    const cardAt = places.indexOf('<Card className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">')
+    const card = cardAt < 0 ? '' : places.slice(cardAt, places.indexOf('Events here', cardAt))
+    /* ⚠️ READ STRUCTURALLY, BY WHAT SITS BETWEEN THE FIELDS. An earlier draft searched backwards for
+     * the nearest `sm:col-span-2` and compared it with the nearest `<Input`, which is always the
+     * field's own tag — so every field looked paired and the check could not pass. Splitting on
+     * `<Input` makes "the markup wrapping this field" exactly one segment. */
+    const seg = card.split('<Input')
+    const widths = {}
+    for (let i = 1; i < seg.length; i++) {
+      const m = /^\s*label="([^"]+)"/.exec(seg[i])
+      if (m) widths[m[1]] = seg[i - 1].includes('sm:col-span-2')
+    }
+    return widths['Name on posts'] === true && widths['Address'] === true
+      && widths['Short name'] === false && widths['Area'] === false && widths['Postcode'] === false
+  })())
+
   t('🔴 the event renderer reuses boxEl, the mark and paint — it does not draw its own', (() => {
     const src = fs.readFileSync(path.join(REPO, 'lib/weekly-post/render.ts'), 'utf8')
     const fn = src.slice(src.indexOf('export async function renderEventPost'))
@@ -1298,20 +1744,29 @@ async function variants(ctx) {
   }
 
   // ── STAGE 2 ───────────────────────────────────────────────────────────────────────────────────
-  // V16 — the background order inverted
+  /* V16 — the order of preference inverted.
+   * ⚠️ IT PATCHES `resolveDesign` NOW, not `resolveBackground`. Stage 2b made `resolveBackground`
+   * delegate, so the order lives in exactly one function — which is what this variant should be
+   * attacking. Inverting it there breaks BOTH callers, and that is the point of having one. */
   {
     const p = patch('lib/weekly-post/backgrounds.ts',
-      "  if (usable(input.event)) return { source: 'event', ...input.event }\n  if (usable(input.place)) return { source: 'place', ...input.place }",
-      "  if (usable(input.place)) return { source: 'place', ...input.place }\n  if (usable(input.event)) return { source: 'event', ...input.event }")
+      "  if (usable(input.oneOff) && (input.force === 'event' || !input.force)) {\n    return { source: 'event', image: input.oneOff as StoredImage, layout: inheritedLayout, layoutSource: inheritedSource }\n  }\n  if (placeImage) {\n    return { source: 'place', image: placeImage, layout: inheritedLayout, layoutSource: inheritedSource }\n  }",
+      "  if (placeImage) {\n    return { source: 'place', image: placeImage, layout: inheritedLayout, layoutSource: inheritedSource }\n  }\n  if (usable(input.oneOff) && (input.force === 'event' || !input.force)) {\n    return { source: 'event', image: input.oneOff as StoredImage, layout: inheritedLayout, layoutSource: inheritedSource }\n  }")
     let detected = true
     if (p) {
       const V = build(p)
-      const r = V.bg.resolveBackground({
-        fallback: { path: 'd.png', width: 1, height: 1 },
-        place: { path: 'p.png', width: 1, height: 1 },
-        event: { path: 'e.png', width: 1, height: 1 },
+      const img = (path) => ({ path, width: 1080, height: 1350 })
+      // the picture-only caller…
+      const viaBackground = V.bg.resolveBackground({
+        fallback: img('d.png'), place: img('p.png'), event: img('e.png'),
       })
-      detected = r.source !== 'event'
+      // …and the one that decides the positions too
+      const viaDesign = V.bg.resolveDesign({
+        standard: { image: img('d.png'), layout: { tag: 's' } },
+        place: { placeId: 'p1', image: img('p.png'), layout: null },
+        oneOff: img('e.png'),
+      })
+      detected = viaBackground.source !== 'event' || viaDesign.source !== 'event'
     }
     must('V16 🔴 a place picture overrides the one uploaded FOR THIS EVENT', detected)
   }
@@ -1400,6 +1855,233 @@ async function variants(ctx) {
     }
     must('V22 🔴 a cancelled event is given a trading time by the display setting', detected)
   }
+
+  // ── STAGE 2b · A DESIGN PER PLACE ─────────────────────────────────────────────────────────────
+  /* V23 — a place's own POSITIONS are ignored, and only its picture is used.
+   * 🔴 THIS IS STAGE 2's BEHAVIOUR, AND IT IS THE BUG THIS STAGE EXISTS TO FIX. Kezmet's venue
+   * artwork would be drawn with Standard's box coordinates, printing the date over a picture that is
+   * laid out for it somewhere else entirely. */
+  {
+    const p = patch('lib/weekly-post/backgrounds.ts',
+      '  const inheritedLayout = placeLayout ?? input.standard.layout\n  const inheritedSource: \'standard\' | \'place\' = placeLayout ? \'place\' : \'standard\'',
+      '  const inheritedLayout = input.standard.layout\n  const inheritedSource: \'standard\' | \'place\' = \'standard\'')
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const r = V.bg.resolveDesign({
+        standard: { image: { path: 'd.png', width: 1080, height: 1350 }, layout: { tag: 'standard' } },
+        place: { placeId: 'p1', image: { path: 'k.png', width: 1080, height: 1080 }, layout: { tag: 'kezmet' } },
+      })
+      detected = r.layout.tag !== 'kezmet' || r.layoutSource !== 'place'
+    }
+    must('V23 🔴 a place’s own text positions are ignored — its picture is drawn with Standard’s boxes', detected)
+  }
+
+  /* V24 — a one-off is checked against Standard's shape even where the place has its own positions.
+   * ⚠️ THE ACCEPTED FILE IS THE WRONG SHAPE FOR THE BOXES IT IS ABOUT TO BE GIVEN. At Kezmet the
+   * inherited canvas is 1080×1080; a 1080×1350 upload matches Standard perfectly and lands the text
+   * off the artwork. This is the subtlest of the shape bugs, because the upload is refused nowhere. */
+  {
+    const p = patch('lib/weekly-post/backgrounds.ts',
+      '  const hasOwnPositions = !!(input.place && input.place.layout)\n  const placeImage = usable(input.place?.image) ? (input.place!.image as StoredImage) : null\n  return hasOwnPositions && placeImage ? placeImage : input.standard',
+      '  return input.standard')
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const target = V.bg.oneOffMustMatch({
+        standard: { path: 'd.png', width: 1080, height: 1350 },
+        place: { placeId: 'p1', image: { path: 'k.png', width: 1080, height: 1080 }, layout: { tag: 'own' } },
+      })
+      detected = target.path !== 'k.png'
+        || V.bg.checkAspect(1080, 1350, target.width, target.height).ok !== false
+    }
+    must('V24 🔴 a one-off is measured against Standard at a place with its own positions', detected)
+  }
+
+  /* V25 — a place with its own positions is held to the default's shape after all.
+   * 🔴 THE FEATURE SIMPLY DOES NOT WORK. The one truck this stage is for — differently shaped venue
+   * artwork — has every upload refused, with a message about matching a shape they deliberately left. */
+  {
+    const p = patch('lib/weekly-post/backgrounds.ts',
+      '  return !(place && place.layout)', '  return true')
+    let detected = true
+    if (p) {
+      const V = build(p)
+      detected = V.bg.placePictureNeedsDefaultShape({ layout: { tag: 'own' } }) !== false
+    }
+    must('V25 🔴 a place with its own positions is still forced to match the default’s shape', detected)
+  }
+
+  /* V26 — `entryFor` stops reporting the place's id.
+   * 🔴 EVERY PLACE DESIGN SILENTLY STOPS BEING FOUND. The route looks the place up by
+   * `entry.placeId`; with it null, every event falls back to Standard and a truck's per-venue artwork
+   * quietly stops appearing — with no error, on posts that still render perfectly well. */
+  {
+    const p = patch('lib/weekly-post/week-data.ts',
+      '    placeId: place?.id ?? null,', '    placeId: null,')
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const e = V.data.entryFor({ id: 'e1', event_date: '2026-10-16', start_time: '17:00', end_time: '21:00',
+        venue_name: 'Sudbury Market', truck_place_id: 'market-1', status: 'confirmed' },
+        [{ id: 'market-1', name: 'Sudbury Market', short_name: 'Sudbury', name_key: 'sudbury market' }], '12h')
+      detected = e.placeId !== 'market-1'
+    }
+    must('V26 🔴 the place id stops reaching the resolver — every place design is ignored', detected)
+  }
+
+  /* V27 — the last-toggle rule is removed from the validator.
+   * 🔴 A CANCELLED EVENT BECOMES INDISTINGUISHABLE FROM A TRADING ONE. With both Location and Time
+   * off there is nothing left on the poster that can say "cancelled" — the place name is not there to
+   * strike through and the time box is not there to carry the word. */
+  {
+    const p = patch('lib/weekly-post/layout.ts',
+      '  if (!locationOn && !timeOn) return { ok: false, errors: [LAST_TOGGLE_MESSAGE] }', '')
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const base = V.layout.defaultEventLayout(1080, 1350)
+      const both = { ...base,
+        location: { ...base.location, enabled: false },
+        time: { ...base.time, enabled: false } }
+      detected = V.layout.validateEventLayout(both, 1080, 1350).ok !== false
+    }
+    must('V27 🔴 Location and Time can both be switched off — a cancelled event stops reading cancelled', detected)
+  }
+
+  /* V28 — the renderer ignores the switch and draws a box that is off.
+   * 🔴 THE TOGGLE BECOMES DECORATION. A truck whose picture already names the venue switches Location
+   * off, saves, and the name is printed over it anyway — twice on the same poster. */
+  if (ctx) {
+    const p = patch('lib/weekly-post/render.ts',
+      '  if (l.location.enabled) {', '  if (true) {')
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const l = { ...V.layout.defaultEventLayout(1080, 1350), keepReadable: false }
+      const off = { ...l, location: { ...l.location, enabled: false } }
+      const entry = V.data.entryFor({ ...ctx.EV }, [], '12h')
+      /* ⚠️ COMPARED AGAINST THE SAME LAYOUT WITH THE BOX ON, not against the real module. The patched
+       * module must render "off" and "on" identically — that is exactly what ignoring the flag means. */
+      const drawnOff = await V.render.renderEventPost({ layout: off, entry, date: ctx.EV.event_date, backgroundDataUri: ctx.evBg.uri })
+      const drawnOn = await V.render.renderEventPost({ layout: l, entry, date: ctx.EV.event_date, backgroundDataUri: ctx.evBg.uri })
+      detected = Buffer.compare(drawnOff.png, drawnOn.png) === 0
+    }
+    must('V28 🔴 a switched-off Location box is drawn anyway', detected)
+  }
+
+  /* V29 — the time box is skipped whenever Location is off.
+   * ⚠️ A PLAUSIBLE MISTAKE, which is why it is worth a variant: the two boxes are switched together in
+   * the UI and read as a pair. Tie them in the renderer and a cancelled event at a place with Location
+   * off loses the word CANCELLED — the exact poster the last-toggle rule exists to protect. */
+  if (ctx) {
+    const p = patch('lib/weekly-post/render.ts',
+      '  const tl = l.time.enabled\n', '  const tl = l.time.enabled && l.location.enabled\n')
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const base = V.layout.defaultEventLayout(1080, 1350)
+      const noLoc = { ...base, location: { ...base.location, enabled: false }, keepReadable: false }
+      const ev = { ...ctx.EV }
+      const cancelled = await V.render.renderEventPost({
+        layout: noLoc, entry: V.data.entryFor({ ...ev, status: 'cancelled' }, [], '12h'),
+        date: ev.event_date, backgroundDataUri: ctx.evBg.uri })
+      const trading = await V.render.renderEventPost({
+        layout: noLoc, entry: V.data.entryFor({ ...ev, status: 'confirmed' }, [], '12h'),
+        date: ev.event_date, backgroundDataUri: ctx.evBg.uri })
+      detected = Buffer.compare(cancelled.png, trading.png) === 0
+    }
+    must('V29 🔴 a cancelled event with Location off renders as an ordinary trading poster', detected)
+  }
+
+  /* V30 — choosing Standard in the modal keeps the place's positions.
+   * 🔴 STANDARD'S PICTURE WITH A PLACE'S BOXES is the worst of both: the truck asked for their usual
+   * poster and got text positioned for someone else's artwork. */
+  {
+    const p = patch('lib/weekly-post/backgrounds.ts',
+      "  if (input.force === 'default') {\n    return { source: 'default', image: input.standard.image, layout: input.standard.layout, layoutSource: 'standard' }\n  }",
+      "  if (input.force === 'default') {\n    return { source: 'default', image: input.standard.image, layout: inheritedLayout, layoutSource: inheritedSource }\n  }")
+    let detected = true
+    if (p) {
+      const V = build(p)
+      const r = V.bg.resolveDesign({
+        standard: { image: { path: 'd.png', width: 1080, height: 1350 }, layout: { tag: 'standard' } },
+        place: { placeId: 'p1', image: { path: 'k.png', width: 1080, height: 1080 }, layout: { tag: 'kezmet' } },
+        force: 'default',
+      })
+      detected = r.layout.tag !== 'standard' || r.layoutSource !== 'standard'
+    }
+    must('V30 🔴 "Standard design" takes Standard’s picture but keeps the place’s text positions', detected)
+  }
+
+  /* ── SOURCE-TEXT VARIANTS ────────────────────────────────────────────────────────────────────────
+   * 🔴 THREE CHECKS IN 9c READ SOURCE TEXT rather than running code, because the route and page.tsx
+   * cannot be compiled in isolation here. A text check is worth no more than its ability to notice the
+   * regression it describes, so each is re-run against a MUTATED copy of the file and must then fail.
+   * ⚠️ NOTHING IS WRITTEN TO DISK — the mutation is a string in memory. */
+  {
+    const pageSrc = fs.readFileSync(path.join(REPO, 'app/manage/[token]/page.tsx'), 'utf8')
+    const routeSrc = fs.readFileSync(path.join(REPO, 'app/api/weekly-post/route.ts'), 'utf8')
+
+    // V31 — Tidy up places goes back to its own, smaller shell
+    const shellPredicate = (page) => {
+      const code = page.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+      const once = (re) => (code.match(re) || []).length === 1
+      return /className=\{`\$\{EVENT_MODAL_SHELL\} \$\{wideShell \? EVENT_MODAL_WIDE : EVENT_MODAL_NARROW\}`\}/.test(page)
+        && /const wideShell = showPicker \|\| modalView === 'tidy'/.test(page)
+        && once(/md:max-w-\[1040px\]/g) && once(/md:h-\[90vh\]/g) && once(/sm:max-w-lg lg:max-w-2xl/g)
+    }
+    const narrowed = pageSrc.replace("const wideShell = showPicker || modalView === 'tidy'",
+      'const wideShell = showPicker')
+    must('V31 🔴 the Tidy up places shell shrinks back to its own size', 
+      narrowed !== pageSrc && shellPredicate(pageSrc) && !shellPredicate(narrowed))
+
+    // V32 — the numbers are spelled out inline again instead of coming from the constants
+    const inlined = pageSrc.replace('${EVENT_MODAL_SHELL} ${wideShell ? EVENT_MODAL_WIDE : EVENT_MODAL_NARROW}',
+      'bg-white w-full flex flex-col md:h-[90vh] md:max-w-[1040px]')
+    must('V32 🔴 the shell’s sizes are written inline again, where they can drift apart',
+      inlined !== pageSrc && !shellPredicate(inlined))
+
+    // V33 — the route reverts to finding the place by its printed name
+    const idPredicate = (route) => {
+      const fn = route.slice(route.indexOf('async function eventPostContext('),
+        route.indexOf('export async function POST('))
+      return /String\(pl\.id\) === entry\.placeId/.test(fn) && !/=== entry\.name/.test(fn)
+    }
+    const byName = routeSrc.replace('String(pl.id) === entry.placeId', 'String(pl.name) === entry.name')
+    must('V33 🔴 the route goes back to matching the place by name — two places sharing one share a design',
+      byName !== routeSrc && idPredicate(routeSrc) && !idPredicate(byName))
+
+    // V34 — the forced choice stops reaching the resolver
+    const forcePredicate = (route) => {
+      const fn = route.slice(route.indexOf("if (action === 'event_render')"),
+        route.indexOf("return NextResponse.json({ error: 'Unknown action' }"))
+      return /eventPostContext\(truck, eventId, design, forced \|\| null\)/.test(fn)
+        && /body\.layout \?\? ctx\.layout \?\? design\.layout/.test(fn)
+    }
+    const unforced = routeSrc.replace('eventPostContext(truck, eventId, design, forced || null)',
+      'eventPostContext(truck, eventId, design)')
+    must('V34 🔴 the modal’s design choice stops reaching the resolver',
+      unforced !== routeSrc && forcePredicate(routeSrc) && !forcePredicate(unforced))
+
+    // V35 — a place layout is validated against the request body's canvas instead of the stored one
+    const canvasPredicate = (route) => {
+      const save = route.slice(route.indexOf("if (action === 'event_place_save_layout')"),
+        route.indexOf("if (action === 'event_place_save_layout')") + 2000)
+      return /const w = row\.event_bg_width \|\| design\.width/.test(save)
+        && !/body\.width/.test(save) && !/body\.height/.test(save)
+    }
+    /* ⚠️ EVERY OCCURRENCE, NOT THE FIRST. `const w = row.event_bg_width || design.width` appears in
+     * BOTH `event_place_mode` and `event_place_save_layout`, and `String.replace` with a string
+     * replaces only the first — which is outside the slice this predicate reads, so the first draft of
+     * this variant mutated a line the check never looks at and "passed". Taking the canvas from the
+     * request is the bug wherever it is written, so every occurrence is mutated. */
+    const fromBody = routeSrc.split('const w = row.event_bg_width || design.width')
+      .join('const w = Number(body.width) || design.width')
+    must('V35 🔴 a place’s canvas size is taken from the request body — boxes can be placed outside the picture',
+      fromBody !== routeSrc && canvasPredicate(routeSrc) && !canvasPredicate(fromBody))
+  }
+
   console.log(`\n  ${vpass + vfail} variants · ${vpass} failed as required · ${vfail} wrongly passed`)
 }
 
