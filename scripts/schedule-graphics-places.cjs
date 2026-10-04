@@ -726,7 +726,7 @@ function runWiringSuite(lib) {
 
   /* 🔴 THE INSERT PAYLOAD IS TODAY'S PLUS EXACTLY ONE KEY — compared against the commit this branch
    * started from, not against a list typed out here. A hand-written expectation would drift. */
-  t('🔴 THE ADD-EVENT INSERT IS BYTE-FOR-BYTE TODAY\'S PLUS `truck_place_id` AND NOTHING ELSE', (() => {
+  t('🔴 THE ADD-EVENT INSERT IS TODAY\'S PLUS `truck_place_id`, `event_type_id` AND `order_ready_source` — AND NOTHING ELSE', (() => {
     const keysOf = (src) => {
       const i = src.indexOf("from('truck_events').insert({ truck_id: targetTruckId")
       if (i === -1) return null
@@ -748,7 +748,41 @@ function runWiringSuite(lib) {
     const added = now.filter(k => !before.includes(k))
     const gone = before.filter(k => !now.includes(k))
     console.log(`      insert keys: ${before.length} before → ${now.length} now · added [${added.join(', ')}] · removed [${gone.join(', ')}]`)
-    return gone.length === 0 && added.length === 1 && added[0] === 'truck_place_id'
+    /* ══ 🔴 WIDENED BY THE MERGE, AND EACH KEY IS ATTRIBUTED (October 2026) ═══════════════════
+     * This said "plus `truck_place_id` and NOTHING ELSE", which was right while this was the only
+     * branch touching the insert. `event-types` is merged in now and hooks the same statement, so the
+     * honest claim is "plus exactly these three, and each one comes from a named branch".
+     * 🔴 IT IS NOT LOOSENED INTO "added.length <= 3". The set is named, so a FOURTH key — the thing
+     * this check exists to catch — still fails, and so does a key appearing under a name neither
+     * branch used. `order_ready_override` is NOT on the list: it was already in the insert; only its
+     * VALUE changed (it is skipped when a type is chosen), which section 1 proves on its own. */
+    const SG_KEYS = ['truck_place_id']
+    const ET_KEYS = ['order_ready_source', 'event_type_id']
+    const expected = [...SG_KEYS, ...ET_KEYS].sort()
+    return gone.length === 0 && added.slice().sort().join(',') === expected.join(',')
+  })())
+  /* ⚠️ …AND THE TWO EVENT-TYPES KEYS ARE THAT BRANCH'S OWN, not something the merge invented. Read
+   * off its tip's insert rather than retyped here, so a conflict resolved by hand cannot quietly put a
+   * differently-named key in the money-adjacent write and have this file agree with it. */
+  t('⚠️ …and the two event-types keys are read from that branch’s own insert, not retyped here', (() => {
+    const keysOf = (src) => {
+      const i = src.indexOf("from('truck_events').insert({ truck_id: targetTruckId")
+      if (i === -1) return null
+      const open = src.indexOf('{', src.indexOf('insert(', i))
+      let depth = 0, end = open
+      for (let j = open; j < src.length; j++) {
+        if (src[j] === '{') depth++
+        else if (src[j] === '}') { depth--; if (depth === 0) { end = j; break } }
+      }
+      return [...src.slice(open + 1, end).matchAll(/(?:^|,)\s*([a-z_]+)\s*:/g)].map(m => m[1])
+    }
+    let et = null
+    try {
+      et = keysOf(require('child_process')
+        .execFileSync('git', ['show', '5cde26d:app/api/manage/route.ts'], { cwd: REPO, encoding: 'utf8', maxBuffer: 32e6 }))
+    } catch { return false }
+    return et !== null && ['order_ready_source', 'event_type_id'].every(k => et.includes(k))
+      && !et.includes('truck_place_id')
   })())
 
   t('🔴 THE STAGE-2 MIGRATION ADDS ONE NULLABLE COLUMN TO `truck_events` AND NOTHING ELSE', (() => {
@@ -1333,7 +1367,15 @@ function runWiringSuite(lib) {
       "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page.",
       'Verify', 'remove_exclusion_term', 'get_exclusion_terms',
     ]
-    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY, ...MOVED_TO_SCHEDULE_MODAL])
+    /* 🔴 AND THE THREE SETTING NAMES THAT BECAME SHARED CONSTANTS (October 2026, the merge). They
+     * are no longer JSX text in this file — Settings renders them from `SERVICE_SETTING_LABELS`,
+     * because the Event types grid and the dashboard's "This event" card show the SAME three settings
+     * and all three surfaces were naming them themselves. Settings is still where the words came from.
+     * ⚠️ SAME TREATMENT AS EVERY OTHER MOVE ON THIS LIST: allowed to be absent here ONLY because the
+     * assertion below proves each one is present, spelled identically, in the file it moved to. A
+     * label that vanished from both would still fail. */
+    const MOVED_TO_SERVICE_COPY = ['Do you take cash?', 'Collection times', 'Offline order protection']
+    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY, ...MOVED_TO_SCHEDULE_MODAL, ...MOVED_TO_SERVICE_COPY])
     const removed = [...before].filter(x => !after.has(x)).filter(x => !removable.has(x))
     const badAdded = added.filter(x => !allowed.has(x))
     if (badAdded.length || removed.length) {
@@ -1341,6 +1383,17 @@ function runWiringSuite(lib) {
       console.log('      removed: ' + JSON.stringify(removed.slice(0, 6)))
     }
     return badAdded.length === 0 && removed.length === 0
+  })())
+  /* 🔴 THE COMPANION PROOF FOR `MOVED_TO_SERVICE_COPY`. Without it the list above is a waiver;
+   * with it, it is a claim with a test attached — delete the constant or change its words and this
+   * fails, which is the whole difference between an allowlist and a changelog. */
+  t('⚠️ …and the three moved setting names are present, spelled identically, in lib/copy/serviceSettings.ts', (() => {
+    const copy = read('lib/copy/serviceSettings.ts')
+    const pairs = [['takes_cash', 'Do you take cash?'], ['collection_interval_mins', 'Collection times'],
+      ['offline_protection', 'Offline order protection']]
+    const rendered = pairs.every(([k]) => RAWP.includes(`SERVICE_SETTING_LABELS.${k}`))
+    const spelled = pairs.every(([k, words]) => new RegExp(`${k}:\\s*'${words.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`).test(copy))
+    return rendered && spelled
   })())
 
   /* 🔴 THE OTHER HALF OF "MOVED, NOT DELETED". Every label the check above allowed to leave Settings
@@ -1683,11 +1736,52 @@ function runWiringSuite(lib) {
         nowIn: 'components/manage/ScheduleSettingsModal.tsx',
         now: '{"This can take up to 2 minutes — please keep this page open and don\'t close the tab."}' },
       /* 3-4 · `Toggle` MOVED TO primitives AND GAINED `export`. Its body is byte-identical and is
-       * excused by `movedTo`; only the signature line differs, by that one keyword. */
+       * excused by `movedTo`; only the signature line differs.
+       * ⚠️ THE SIGNATURE CHANGED AGAIN AT THE MERGE, AND THIS CLAIM CAUGHT IT. `event-types` had made
+       * the same move for its own reason — the Event types grid had written a THIRD switch, in the
+       * dashboard's orange — and its version carries three OPTIONAL extra props (`faded`, `ariaLabel`,
+       * `title`). One definition survives, and it is that one, because it is a strict superset:
+       * nothing on this page passes any of the three, so every existing caller renders as it did. */
       { was: 'function Toggle({ on, onToggle, label, disabled }: { on: boolean',
-        reason: 'the switch moved to primitives, so its declaration is exported',
+        reason: 'the switch moved to primitives, exported, and merged with event-types\' superset',
         nowIn: 'components/manage/primitives.tsx',
-        now: 'export function Toggle({ on, onToggle, label, disabled }: { on: boolean' },
+        now: 'export function Toggle({ on, onToggle, label, disabled, faded = false, ariaLabel, title }' },
+      /* ══ 🔴 THE FIVE LINES THE MERGE EDITED (October 2026, event-types merged in) ══════════════
+       * Each carries its NEW form and the file it is in, so this stays a claim with a test attached:
+       * if a replacement is deleted or renamed the companion check below reports it, which is exactly
+       * what happened to the `Toggle` signature entry when the two branches were combined. */
+      /* 1-2 · the switch's two markup lines. event-types' version is the one that survived: it adds
+       * `type="button"`, `role="switch"` and `aria-checked` (a switch should announce itself) and
+       * `shrink-0` on the track (it must not squash in a flex row). No caller passes anything new. */
+      { was: '<button onClick={onToggle} disabled={disabled} className="flex items-center gap-2 group',
+        reason: 'the merged switch is a real `role="switch"` button and takes an optional `faded`',
+        nowIn: 'components/manage/primitives.tsx',
+        now: 'type="button" role="switch" aria-checked={on}' },
+      { was: '<div className={`relative w-11 h-6 rounded-full transition-colors ${on ?',
+        reason: 'the track gained `shrink-0` so it cannot squash beside a long label',
+        nowIn: 'components/manage/primitives.tsx',
+        now: 'relative w-11 h-6 rounded-full transition-colors shrink-0' },
+      /* 3 · the Add event save. A NEW event now carries the picked type; an EDIT does not send the key
+       * at all, and `upsert_event`'s update path destructures a fixed list that does not name it — so
+       * this form cannot move a live event's type. */
+      { was: "await api('upsert_event', { ...editingEvent, latitude: lat, longitude: lng })",
+        reason: 'a new event carries its chosen event type; an edit sends no such key',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '...(editingEvent.id ? {} : { event_type_id: eventTypeId }),' },
+      /* 4-6 · the three setting names became shared constants — see `MOVED_TO_SERVICE_COPY` above,
+       * which proves each one is still spelled identically in lib/copy/serviceSettings.ts. */
+      { was: '<p className="text-sm font-semibold text-slate-800">Do you take cash?</p>',
+        reason: 'the name is a shared constant now, read by three surfaces',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '{SERVICE_SETTING_LABELS.takes_cash}</p>' },
+      { was: 'Offline order protection',
+        reason: 'the name is a shared constant now, read by three surfaces',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '{SERVICE_SETTING_LABELS.offline_protection}' },
+      { was: '<p className={`${SUBCARD_HEADING} mb-1`}>Collection times</p>',
+        reason: 'the name is a shared constant now, read by three surfaces',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '{SERVICE_SETTING_LABELS.collection_interval_mins}</p>' },
       /* the primitives import line gained `Toggle` when the switch moved there. */
       { was: 'import { Spinner, Badge, Btn, Input, Card, EmptyState,',
         reason: '`Toggle` moved to primitives, so the import names it',

@@ -22,13 +22,14 @@ export type Feature =
   | 'instagram_messenger_replies'
   | 'branded_qr_code'
   | 'advanced_reporting'
-  | 'schedule_graphics'
   // Max
   | 'ticket_printing'
   | 'multi_device_kds'
   | 'cook_screen'
   | 'whatsapp_replies'
   | 'embed_schedule'
+  | 'schedule_graphics'
+  | 'event_types'
 
 const PRO_FEATURES: Feature[] = [
   'discovery_map',
@@ -49,17 +50,6 @@ const PRO_FEATURES: Feature[] = [
   'instagram_messenger_replies',
   'branded_qr_code',
   'advanced_reporting',
-  // ── SCHEDULE GRAPHICS — Pro, Max and trial (3 October 2026) ──────────────────────────────────────
-  // 🔴 IN `PRO_FEATURES` IS EXACTLY "Pro, Max and trial". MAX_FEATURES spreads this array and
-  // TRIAL_FEATURES spreads MAX_FEATURES, so one entry here grants all three — plus 'tester' and 'demo',
-  // which also spread the Max/trial sets and are internal and sandbox tiers respectively. Adding it to
-  // MAX_FEATURES as well would be a duplicate in a Set, not a second grant.
-  // ⚠️ NO MARKETING ROW, AND THAT IS NOT AN OVERSIGHT. findPlanParityViolations() iterates FEATURE_SECTIONS
-  // rows and `continue`s on any row with no ROW_FEATURE_MAP entry, so a Feature with no row cannot
-  // produce a violation — the precedent is 'embed_schedule' below, which carried no row for weeks.
-  // The gate is enforcement; the comparison table is presentation, and stage 1 ships no public surface
-  // to advertise. See docs/schedule-graphics-places-report.md.
-  'schedule_graphics',
   'whatsapp_replies',   // Pro+Max — moved from Max-only: a Pro truck was sold WhatsApp replies and the gate silently blocked it (canAccess('pro',…)===false)
 ]
 
@@ -79,6 +69,30 @@ const MAX_FEATURES: Feature[] = [
   // later stage. findPlanParityViolations() iterates MATRIX ROWS and `continue`s when a row has no
   // ROW_FEATURE_MAP entry, so a Feature with no row cannot produce a violation (plan-features.ts:384-386).
   'embed_schedule',
+  // ── SCHEDULE GRAPHICS — Pro, Max and trial (3 October 2026) ──────────────────────────────────────
+  // 🔴 IN `PRO_FEATURES` IS EXACTLY "Pro, Max and trial". MAX_FEATURES spreads this array and
+  // TRIAL_FEATURES spreads MAX_FEATURES, so one entry here grants all three — plus 'tester' and 'demo',
+  // which also spread the Max/trial sets and are internal and sandbox tiers respectively. Adding it to
+  // MAX_FEATURES as well would be a duplicate in a Set, not a second grant.
+  // ⚠️ NO MARKETING ROW, AND THAT IS NOT AN OVERSIGHT. findPlanParityViolations() iterates FEATURE_SECTIONS
+  // rows and `continue`s on any row with no ROW_FEATURE_MAP entry, so a Feature with no row cannot
+  // produce a violation — the precedent is 'embed_schedule' below, which carried no row for weeks.
+  // The gate is enforcement; the comparison table is presentation, and stage 1 ships no public surface
+  // to advertise. See docs/schedule-graphics-places-report.md.
+  'schedule_graphics',
+  // ── Event types — a named preset that supplies one event's SERVICE settings. ───────────────────
+  // 🔴 MAX ONLY, SO MAX AND TRIAL. `TRIAL_FEATURES` below is `[...MAX_FEATURES]`, and `canAccess`
+  // returns the trial set when `trial_expires_at` is NULL — which is what self-serve signup writes
+  // (lib/provision-truck.ts:415) — so a brand-new self-serve truck passes this check on day one.
+  // ⚠️ AND THAT IS ACCEPTED HERE, DELIBERATELY, UNLIKE `embed_schedule` ABOVE. That feature needed a
+  // second `trucks.embed_enabled` gate because it PUBLISHES a surface the moment it is on. This one
+  // publishes nothing: a truck that never creates a type has `event_types` empty and every event's
+  // `event_type_id` NULL, so every resolver returns today's value. The feature is INERT until the
+  // truck acts, so the plan key alone is the whole gate and a second enable column would be a switch
+  // with nothing behind it.
+  // 🔴 CHECKED SERVER-SIDE ON EVERY ACTION in app/api/event-types/route.ts, not only in the UI — the
+  // screen decides what is DRAWN, the route decides what is DONE.
+  'event_types',
 ]
 
 const TRIAL_FEATURES: Feature[] = [...MAX_FEATURES]

@@ -43,6 +43,8 @@
 // reasoning in supabase/migrations/20260810_trucks_completion_presses.sql: this setting decides what
 // `undo_collected` REVERSES, so flipping it mid-event can make an undo delete an hour-old payment.
 /** The truck-level defaults. All optional so a partially-hydrated truck object is safe. */
+import { resolveTakesCashWithType, type TypeFor } from '@/lib/event-types/resolve'
+
 export interface PaidStepTruck {
   show_paid_step?: boolean | null
   takes_cash?: boolean | null
@@ -79,11 +81,18 @@ export interface ResolvedPaidStep {
 export function resolvePaidStep(
   truck: PaidStepTruck | null | undefined,
   event: PaidStepEvent | null | undefined,
+  /* 🔴 THE EVENT'S TYPE, OPTIONAL (October 2026), AND IT REACHES `takesCash` ONLY. Omitted or null ⇒
+   * every one of the three values below is what this function returned before event types existed.
+   * ⚠️ `showPaidStep` AND `completionPresses` ARE DELIBERATELY NOT TYPED SETTINGS. The paid step is a
+   * property of how a truck takes money, not of a pitch, and its own migration says so
+   * (20260730_truck_events_show_paid_step_override.sql). Adding them here because they happen to be
+   * in the same function would make a type change how payments are recorded. */
+  type?: TypeFor | null,
 ): ResolvedPaidStep {
   const showPaidStep = event?.show_paid_step_override ?? truck?.show_paid_step ?? false
   return {
     showPaidStep,
-    takesCash: event?.takes_cash_override ?? truck?.takes_cash ?? false,
+    takesCash: resolveTakesCashWithType(event?.takes_cash_override, type, truck?.takes_cash),
     // ── THE SAME NULLABLE-MEANS-INHERIT CHAIN THE OTHER TWO USE — event, then truck, then fallback ──
     // ⚠️ `??` and never `||`: 'one' is truthy so `||` happens to work here, but the moment a value like
     // 0 or '' enters this vocabulary it would silently re-inherit. Same chain shape as its neighbours,

@@ -6,8 +6,8 @@
 // these by name; its JSX usages are unchanged. Do not fork the styling here — these are the
 // single source for Card / Btn / Input / Badge / EmptyState / allergen+dietary toggles.
 // ══════════════════════════════════════════════════════════════
-import { type ReactNode, type HTMLAttributes } from 'react'
-import { GREEN_SOLID } from '@/lib/ui-tokens'
+import { type ReactNode, type HTMLAttributes, type RefObject } from 'react'
+import { GREEN_SOLID, CONTROL_BOX } from '@/lib/ui-tokens'
 
 export function Spinner() { return <div className="w-5 h-5 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" /> }
 
@@ -45,11 +45,14 @@ export function Btn({ label, colour = 'orange', size = 'md', loading = false, di
 // ⚠️ ALL THREE DEFAULT TO undefined, SO EVERY EXISTING CALL SITE RENDERS BYTE-IDENTICALLY. React omits
 // an attribute whose value is undefined; `spellCheck={false}` must be an explicit false, which is why
 // it is `boolean | undefined` rather than defaulted.
-export function Input({ label, value, onChange, onBlur, type = 'text', inputMode, placeholder, required, hint, error, autoCapitalize, autoCorrect, spellCheck }: { label: string; value: string | number; onChange: (v: string) => void; onBlur?: () => void; type?: string; inputMode?: HTMLAttributes<HTMLInputElement>['inputMode']; placeholder?: string; required?: boolean; hint?: string; error?: string; autoCapitalize?: string; autoCorrect?: string; spellCheck?: boolean }) {
+/* ⚠️ `maxLength` ADDED (4 October 2026). Event types' name boxes cap at MAX_TYPE_NAME, and the
+ * server TRUNCATES rather than rejecting — so without a cap on the input an operator can type 80
+ * characters and watch 40 of them vanish on save. It is optional, so no existing caller changes. */
+export function Input({ label, value, onChange, onBlur, type = 'text', inputMode, placeholder, required, hint, error, autoCapitalize, autoCorrect, spellCheck, maxLength, inputRef, autoFocus }: { label: string; value: string | number; onChange: (v: string) => void; onBlur?: () => void; type?: string; inputMode?: HTMLAttributes<HTMLInputElement>['inputMode']; placeholder?: string; required?: boolean; hint?: string; error?: string; autoCapitalize?: string; autoCorrect?: string; spellCheck?: boolean; maxLength?: number; inputRef?: RefObject<HTMLInputElement | null>; autoFocus?: boolean }) {
   return (
     <div>
       <label className="block text-xs font-bold text-slate-600 mb-1">{label}{required && <span className="text-red-400 ml-0.5">*</span>}</label>
-      <input type={type} inputMode={inputMode} autoCapitalize={autoCapitalize} autoCorrect={autoCorrect} spellCheck={spellCheck} value={value} onChange={e => onChange(e.target.value)} onBlur={onBlur} placeholder={placeholder}
+      <input ref={inputRef} autoFocus={autoFocus} maxLength={maxLength} type={type} inputMode={inputMode} autoCapitalize={autoCapitalize} autoCorrect={autoCorrect} spellCheck={spellCheck} value={value} onChange={e => onChange(e.target.value)} onBlur={onBlur} placeholder={placeholder}
         className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${error ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
       {hint && <p className="text-slate-400 text-xs mt-0.5">{hint}</p>}
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
@@ -61,25 +64,124 @@ export function Input({ label, value, onChange, onBlur, type = 'text', inputMode
  * ══ THE MANAGE SWITCH ══════════════════════════════════════════════════════════════════════════
  *
  * 🔴 MOVED HERE VERBATIM FROM app/manage/[token]/page.tsx (4 October 2026), FOR THE REASON THIS FILE
- * EXISTS. Menu › Kitchen capacity needed Settings' on/off switch for its "Same kitchen capacity for
- * all vans?" row — Dominic: "the SAME green switch Settings uses… the shared Toggle component on this
- * branch, not a new one". There was no shared one: it was a local function in a 12k-line page, so the
- * only way to use the same component was to make it one.
+ * EXISTS. There were THREE switch definitions in the product: this one (Manage), one in
+ * components/dashboard/OrderCard.tsx (the dashboard, a different look on purpose) and a third that
+ * components/manage/EventTypes.tsx had written for itself — and the third had copied the DASHBOARD's
+ * geometry and colour into a MANAGE screen. So the Event types modal's switches were orange where
+ * every switch behind it was green, and 42px where every switch behind it was 44px.
  *
- * ⚠️ THE PROPS AND THE RENDERED MARKUP ARE UNCHANGED, so page.tsx's existing usages did not have to be
- * touched. Nothing about the switch's look or behaviour changed in the move.
- * ⛔ components/dashboard/OrderCard.tsx EXPORTS A DIFFERENT `Toggle` AND IS NOT MERGED INTO THIS ONE.
- * It is a different surface with its own palette; forcing one component on both would be a visual
- * change to the dashboard that nobody asked for.
+ * Dominic, 4 October 2026: "use the app's existing components and styles: the same switch component".
+ * This is now that component, and both callers import it. `lib/ui-tokens.ts` makes the argument for
+ * colours; it is the same argument for a control.
+ *
+ * ⚠️ THE PROPS AND THE RENDERED MARKUP ARE UNCHANGED, so page.tsx's fifteen usages did not have to be
+ * touched. The only addition is `faded`, which Event types needs and nothing else passes.
+ * ⛔ THE DASHBOARD'S SWITCH IS DELIBERATELY NOT MERGED INTO THIS ONE. It is a different surface with
+ * its own palette; forcing one component on both would be a visual change to the dashboard that
+ * nobody asked for.
+ *
+ * @param faded the control is showing a value it INHERITS rather than one of its own. Event types
+ *              uses it for a type that follows Standard; it is the only signal of that state, so it
+ *              must stay a visible difference and not a hover-only one.
  */
-export function Toggle({ on, onToggle, label, disabled }: { on: boolean; onToggle: () => void; label?: string; disabled?: boolean }) {
+export function Toggle({ on, onToggle, label, disabled, faded = false, ariaLabel, title }: {
+  on: boolean; onToggle: () => void; label?: string; disabled?: boolean
+  faded?: boolean
+  /** For a switch with no visible text beside it — a table cell, where there is no room for one. */
+  ariaLabel?: string
+  /** Hover text. In a grid cell this is where a nuance the cell has no room for has to live. */
+  title?: string
+}) {
   return (
-    <button onClick={onToggle} disabled={disabled} className="flex items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed">
-      <div className={`relative w-11 h-6 rounded-full transition-colors ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
+    <button onClick={onToggle} disabled={disabled} type="button" role="switch" aria-checked={on}
+      aria-label={ariaLabel} title={title}
+      className={`flex items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed ${faded ? 'opacity-50' : ''}`}>
+      <div className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-6' : 'translate-x-1'}`} />
       </div>
       {label && <span className="text-sm text-slate-600 font-medium group-hover:text-slate-900">{label}</span>}
     </button>
+  )
+}
+
+/**
+ * ══ THE MANAGE DROPDOWN ════════════════════════════════════════════════════════════════════════
+ *
+ * 🔴 WHY THIS IS NEW RATHER THAN LIFTED, WHICH IS A FINDING AND NOT A FREE CHOICE. Dominic asked for
+ * "the same select/dropdown component and styling as Settings (not native browser selects with the
+ * system arrows)". Settings has no such component: every `<select>` on the Manage page is a NATIVE
+ * one with the platform's own arrow, repeating the same class string inline. The only non-native
+ * select in the repository is in components/dashboard/AddOrderPanel.tsx, whose comment explains the
+ * trick — `appearance-none` is what lets `rounded-xl` actually take effect, because a native select
+ * paints its own chrome over it.
+ *
+ * So this is the two halves of that instruction reconciled: the BORDER, RADIUS, TEXT SIZE, COLOUR and
+ * FOCUS RING are Settings' own (the class string eight of its selects already share, now named here
+ * once), and `appearance-none` plus an inline chevron replaces the system arrow, following the
+ * AddOrderPanel precedent rather than inventing a style.
+ *
+ * ⚠️ SETTINGS ITSELF STILL RENDERS NATIVE SELECTS. Converting all of them is a Manage-wide visual
+ * change and was not asked for, so it is named in the report as a follow-up rather than done here. The
+ * two therefore differ in their ARROW and in nothing else.
+ * ⚠️ `h-9` IS THE ONE VALUE THAT IS NOT SETTINGS'. Settings sizes its selects with `py-1`, which in a
+ * table row gives cells of different heights depending on their content. A fixed height is what keeps
+ * a grid's rows aligned, and it matches the 36px the switch beside it occupies.
+ */
+/* ⚠️ RE-EXPORTED FROM lib/ui-tokens.ts, NOT DEFINED HERE. The dashboard uses the same box and must
+ * not import from the manage primitives to get it — so the string lives in the tokens file both
+ * surfaces already share, and this name is kept for the callers that had it. */
+export { CONTROL_BOX as MANAGE_CONTROL_CLASS } from '@/lib/ui-tokens'
+
+export function Select({ value, onChange, options, ariaLabel, disabled, faded = false, title, className = '' }: {
+  value: string | number
+  onChange: (v: string) => void
+  options: readonly { value: string | number; label: string }[]
+  ariaLabel: string
+  disabled?: boolean
+  /** Showing an inherited value — see <Toggle>'s `faded`. */
+  faded?: boolean
+  /** The full text, for an option the 200px column truncates. */
+  title?: string
+  className?: string
+}) {
+  return (
+    /* ── 🔴 `text-sm` ON THE WRAPPER, AND THIS IS NOT BELT AND BRACES ────────────────────────────────
+      * app/globals.css carries an iOS zoom guard:
+      *     select, input[type=text], … { font-size: 16px !important }          (below 640px)
+      *     @media (min-width: 640px) { … { font-size: inherit !important } }   (640px and up)
+      * `!important` beats `.text-sm` on the <select> itself, so from `sm` up the control takes
+      * `inherit` — which means ITS PARENT'S size. The parent is this span; with no size on it the
+      * chain ran to <body> and every dropdown rendered at 16px while the labels beside them were 14px.
+      * That is what Dominic saw: "the size of text eg every 15 min is much larger than elsewhere".
+      *
+      * 🔴 PUTTING THE SIZE HERE FIXES IT WITHOUT TOUCHING THE GUARD. Below 640px the select is still
+      * forced to 16px and iOS still does not zoom on focus — which is the right behaviour on the one
+      * device this is used on at the hatch, and must not be "fixed" to match the labels.
+      * ⚠️ `text-sm` STAYS ON THE SELECT TOO (via CONTROL_BOX): it is what applies if that global rule
+      * is ever narrowed, and it costs nothing. */
+    <span className={`relative inline-flex min-w-0 items-stretch text-sm ${className}`}>
+      <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
+        aria-label={ariaLabel} title={title}
+        /* ── 🔴 THE BOX IS SETTINGS' BOX, AND THE CHEVRON IS ON THE RIGHT ──────────────────────────
+          * `CONTROL_BOX` carries Settings' own `px-2 py-1 text-sm rounded-lg` — the same padding, text
+          * size and radius. The only additions are layout:
+          *   • `appearance-none` drops the platform arrow so `rounded-lg` actually takes effect (the
+          *     trick AddOrderPanel's comment explains), and the chevron below replaces it ON THE RIGHT.
+          *   • `pr-7` is the room that chevron sits in. NOTHING is added on the left, so the text
+          *     starts at Settings' own `px-2` — Dominic: "normal left padding before the text. Nothing
+          *     appears before the text."
+          * ⚠️ NO FIXED HEIGHT. A fixed 36px box made this half again as tall as every other dropdown in
+          * Manage, which reads as bigger text although the font was always the same 14px. */
+        className={`w-full min-w-0 truncate appearance-none pr-7 disabled:opacity-50 disabled:cursor-not-allowed ${faded ? 'opacity-50' : ''} ${CONTROL_BOX}`}>
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+      {/* ⚠️ `aria-hidden` AND `pointer-events-none`: it is decoration over a real <select>, and a click
+        * on it must reach the control underneath. */}
+      <svg aria-hidden="true" viewBox="0 0 20 20" fill="none"
+        className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400">
+        <path d="M5 7.5 10 12.5 15 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
   )
 }
 

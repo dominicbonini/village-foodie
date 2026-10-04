@@ -57,6 +57,7 @@ import {
 import { whatsAppRowView } from '@/lib/whatsapp/connection-view'
 import { FeatureGate } from '@/components/FeatureGate'
 import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory, collectionTimesHint } from '@/lib/slot-interval'
+import { EventTypesPanel, EventTypeSelect } from '@/components/manage/EventTypes'
 import { intervalExample } from '@/lib/slot-generation'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_NO_LIMIT, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
@@ -95,6 +96,11 @@ import { BUZZER_MAX_COUNT, BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
 import { normaliseUrl, isScraperBlockedDomain } from '@/lib/url-normalise'
 import { URL_MALFORMED_MSG, VERIFY_MESSAGES, BLOCKED_DOMAIN_MSG } from '@/lib/copy/scheduleVerify'
 import { SETTING_COPY, TRIAL_NOT_STARTED_BY_EVENTS, TRIAL_NOT_STARTED_HEADING, TRIAL_NOT_STARTED_BILLING } from '@/lib/settings-copy'
+/* 🔴 THREE LABELS ON THIS PAGE ARE NOW CONSTANTS, because the Event types modal and the dashboard's
+ * "This event" card show the same three settings and were calling them something shorter. Settings is
+ * still the SOURCE of the words — they were lifted from here — but there is one copy of each now, so
+ * the modal cannot call this setting one thing while this screen calls it another. */
+import { SERVICE_SETTING_LABELS } from '@/lib/copy/serviceSettings'
 import { Walkthrough } from '@/components/manage/Walkthrough'
 import { WALKTHROUGH_STOPS, WALKTHROUGH_INTRO, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
@@ -295,11 +301,18 @@ function imgUrl(path: string | null) {
 // definition. Usages below are unchanged.
 // `disabled` is OPTIONAL and defaults to undefined, so every existing call site is unchanged. Added for
 // the cash toggle, which must render visibly disabled (not hidden) when the separate paid step is off.
-/* ── 🔴 `Toggle` MOVED TO components/manage/primitives.tsx (4 October 2026) ────────────────────────
- * Menu › Kitchen capacity needed Settings' own switch, and a function local to this file cannot be
- * shared. One definition, imported by both, is the only arrangement in which they cannot disagree —
- * the same argument lib/ui-tokens.ts makes for colours.
- * ⚠️ THE PROPS AND THE MARKUP ARE UNCHANGED, so every usage below is untouched. */
+/* ── 🔴 `Toggle` MOVED TO components/manage/primitives.tsx ────────────────────────────────────────
+ * BOTH BRANCHES MADE THIS MOVE, FOR DIFFERENT REASONS, AND BOTH REASONS STAND:
+ *   • Menu › Kitchen capacity needed Settings' on/off switch for "Same kitchen capacity for all vans?"
+ *     — Dominic: "the SAME green switch Settings uses". There was no shared one; it was a local
+ *     function in a 12k-line page, so the only way to use the same component was to make it one.
+ *   • The Event types grid had written a THIRD switch for itself, copying the DASHBOARD's geometry and
+ *     orange into a Manage screen — so its switches were orange where every switch behind them was
+ *     green. Dominic: "use the app's existing components and styles: the same switch component".
+ * One definition, imported by every caller, is the only arrangement in which they cannot disagree;
+ * lib/ui-tokens.ts makes the same argument for colours.
+ * ⚠️ THE PROPS AND THE MARKUP ARE UNCHANGED FOR EVERY EXISTING CALLER — the merged component's three
+ * extra props (`faded`, `ariaLabel`, `title`) are optional and nothing on this page passes them. */
 const FOOD_EMOJI_CATEGORIES = [
   {
     label: 'Street food & fast food',
@@ -7165,6 +7178,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const [exclusionTerms, setExclusionTerms] = useState<string[]>([])
   const [exclusionList, setExclusionList] = useState<{ id: string; term: string }[]>([])
   const [showVenueSuggestions, setShowVenueSuggestions] = useState(false)
+  /* Event types: the full-screen panel, and the type chosen in the Add event form. Both are one piece
+   * of state each so the mounts below stay single lines. */
+  const [showEventTypes, setShowEventTypes] = useState(false)
+  const [eventTypeId, setEventTypeId] = useState<string | null>(null)
   const [showImportModal, setShowImportModal] = useState(false)
   const [importModalTitle, setImportModalTitle] = useState('Import schedule')
   const { isDragging: isScheduleDragging, dragProps: scheduleDragProps } = useDragDrop(
@@ -7449,7 +7466,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       if (lat === null || lng === null) {
         console.warn('Geocoding returned null for event:', editingEvent.venue_name, editingEvent.postcode)
       }
-      await api('upsert_event', { ...editingEvent, latitude: lat, longitude: lng })
+      /* ⚠️ `event_type_id` IS SENT ONLY FOR A NEW EVENT, which is the only case the picker is shown
+       * for. On an edit the key is absent, and `upsert_event`'s update path destructures a fixed list
+       * that does not name it, so an edit cannot move an event's type from this form — the dashboard's
+       * own control does that, with the confirm a live event needs. */
+      await api('upsert_event', {
+        ...editingEvent, latitude: lat, longitude: lng,
+        ...(editingEvent.id ? {} : { event_type_id: eventTypeId }),
+      })
       if (editingEventConfirmOnSave && editingEvent.id) {
         await handleConfirmEvent(editingEvent.id)
         setEditingEventConfirmOnSave(false)
@@ -8576,6 +8600,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           <p className="text-slate-400 text-sm">{upcoming.length} upcoming</p>
         </div>
         <div className="flex items-center gap-2">
+          {/* 🔴 ONE LINE, AND A BUTTON RATHER THAN A SUB-TAB. Main's Schedule tab has no sub-tab bar and
+            * schedule-graphics adds one; a panel opened from a button works either way, so this mount
+            * survives that merge unchanged. Promoting it to a third pill afterwards is one entry in
+            * SCHEDULE_SECTIONS and this same line. */}
+          <Btn label="Event types" colour="ghost" onClick={() => setShowEventTypes(true)} />
           <div className="flex flex-col items-end gap-0.5">
             <button onClick={() => setShowImportModal(true)}
               className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
@@ -8590,6 +8619,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               // ⚠️ `truck_place_id: null` EXPLICITLY. The picker sets it; a new event starts with no
               // place picked, and an omitted key would inherit nothing but reads as an oversight.
               setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: truck.id, truck_place_id: null })
+              /* ⚠️ CLEARED ON EVERY OPEN. A type chosen for the last event must not be carried into the
+               * next one by a stale piece of state — the picker fills itself from the venue instead. */
+              setEventTypeId(null)
               setAddMode('manual'); setExtractedEvents([])
             }} />
           </div>
@@ -8700,6 +8732,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           onTruckUpdate={onTruckUpdate} onVerifySuccess={onVerifySuccess}
           onClose={() => onScheduleSettingsOpenChange(false)} />
       )}
+
+      {/* 🔴 THE PANEL, ONE MOUNT. Full-screen, so it needs no sub-tab bar and no layout of its own.
+        * ⚠️ `manageApi={api}` IS THE WHOLE OF "NO SECOND SAVE PATH". The modal's Standard column is
+        * editable, and it changes truck and van settings by calling THIS function — the same one every
+        * Settings control on this page calls, with the same action names, the same payload shapes and
+        * `nativeAuthHeader()` already on it. A fetch written inside the component would be a second
+        * path by definition and would 401 in the native app. */}
+      {showEventTypes && <EventTypesPanel token={token} manageApi={api} onClose={() => setShowEventTypes(false)} />}
 
       {editingEvent && (
         /* ── 🔴 THE MODAL SHELL. A COLUMN, NOT A SCROLLER ─────────────────────────────────────────
@@ -8902,6 +8942,18 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   )}
                   {formErrors.venue_name && <p className="text-xs text-red-500 mt-1">{formErrors.venue_name}</p>}
                 </div>
+                {/* 🔴 EVENT TYPE — ONE MOUNT. Everything the field needs (loading the types, finding
+                  * the usual type for this venue, the hint, the summary) is inside
+                  * components/manage/EventTypes.tsx, so this modal gains one element and the
+                  * schedule-graphics merge is one line. It renders NOTHING for a truck with no types.
+                  * ⚠️ NEW EVENTS ONLY. An edit cannot move an event's type from here — the dashboard's
+                  * own control does that, with the confirm a live event needs. */}
+                {!editingEvent.id && (
+                  <div className="sm:col-span-2">
+                    <EventTypeSelect token={token} venueName={editingEvent.venue_name}
+                      value={eventTypeId} onChange={setEventTypeId} disabled={editSaving} />
+                  </div>
+                )}
                 {/* ADDRESS FIELDS — order and labels are locale-specific.
                     UK format: street address → village/town + postcode
                     Future: extract to addressFieldConfig(locale) to support US/EU formats */}
@@ -11272,7 +11324,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 surfaces at all. */}
             <div className="flex items-center justify-between gap-3 py-3">
               <div>
-                <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
+                <p className="text-sm font-semibold text-slate-800">{SERVICE_SETTING_LABELS.takes_cash}</p>
                 <p className="text-xs text-slate-500 mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. You can turn this on for a single event from the dashboard.</p>
                 {/* ── 🔴 THE GATE NOW HAS TWO PARENTS, AND IT HAD TO (10 August 2026) ─────────────
                     The cash split renders in two places, and after the settings were split those two
@@ -11669,7 +11721,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   <p className={`text-sm font-semibold ${
                     van.auto_pause_on_offline ? 'text-teal-800' : 'text-slate-800'
                   }`}>
-                    Offline order protection
+                    {SERVICE_SETTING_LABELS.offline_protection}
                   </p>
                   {/* ── 🔴 THE SAME THREE LINES AS THE DASHBOARD'S CARD, IN THE SAME ORDER. ──────────
                       Description, then the ⚠️ instruction, then the two modes below — the dashboard's
@@ -11870,7 +11922,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 ⚠️ update_van_settings' destructure is an ALLOWLIST and get_vans' select is NAMED — both
                 carry these keys, or the value writes and never reads back. */}
             <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <p className={`${SUBCARD_HEADING} mb-1`}>Collection times</p>
+              <p className={`${SUBCARD_HEADING} mb-1`}>{SERVICE_SETTING_LABELS.collection_interval_mins}</p>
               <p className="text-xs text-slate-500 mb-3">How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.</p>
               {!intervalsAvailable ? (
                 /* 🔴 THE BOX DEGRADES; THE VAN DOES NOT. The interval columns could not be read, so the

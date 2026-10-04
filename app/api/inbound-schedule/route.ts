@@ -186,6 +186,10 @@ export async function POST(req: NextRequest) {
     const { data: insertedEvent, error: insertErr } = await supabase.from('truck_events').insert({
       truck_id:   truckId,
       order_ready_override: seededOrderReady,
+      /* ⚠️ THE VALUE IS UNCHANGED; this only records that a creation path wrote it. `event_type_id` is
+       * left NULL: a scraped event arrives unconfirmed and unreviewed, and applying a type to it
+       * before anybody has looked at it would be deciding service settings from a guess. */
+      order_ready_source: 'seed',
       venue_name: row.venue_name || null,
       town:       row.village || null,
       // Scraped postcode first; fall back to the matched venue's postcode; null if neither.

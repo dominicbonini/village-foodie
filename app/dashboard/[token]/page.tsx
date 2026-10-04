@@ -6,7 +6,11 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { hasFeature, canAccess } from '@/lib/features'
 import { scanUrl } from '@/lib/custom-domain/copy'   // the one builder for the address a QR encodes
-import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, type OfflineProtectionMode, OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_AUTO_REJECT_LABEL, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS, offlineAutoRejectLabel, OFFLINE_PROTECTION_PURPOSE } from '@/lib/copy/offlineProtection'
+/* ⚠️ TRIMMED (October 2026). The mode labels, the ⚠️ explainer, the auto-reject picker's copy and
+ * the purpose line all moved with the offline-protection control into
+ * components/dashboard/ThisEventCard.tsx, so this file imports only the two window.confirm
+ * bodies its own toggle still shows, and the mode TYPE for the resolved value. */
+import { OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, type OfflineProtectionMode } from '@/lib/copy/offlineProtection'
 import AppHeader from '@/components/shared/AppHeader'
 import { playNewOrder, playOrderDue, installAudioUnlock, primeAudio } from '@/lib/audio'
 
@@ -31,6 +35,8 @@ import { ToastStack } from '@/components/ToastStack'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
+import { ThisEventCard, useEventDeals } from '@/components/dashboard/ThisEventCard'
+import { resolveOfflineWithType, offlineIsHandChange } from '@/lib/event-types/resolve'
 import { readSoundConfig, writeSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
 
 // 🔴 HOW OLD AN OFFLINE-PAUSE MARKER MAY BE AND STILL RAISE THE NOTICE. MODULE SCOPE, NOT COMPONENT
@@ -71,7 +77,6 @@ import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { WebOfflineBanner } from '@/components/WebOfflineBanner'
 import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
 import { DemoWelcome } from '@/components/dashboard/DemoWelcome'
-import { DemoLockChip } from '@/components/dashboard/DemoLockChip'
 import { DemoLoopComplete } from '@/components/dashboard/DemoLoopComplete'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
@@ -525,11 +530,27 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // 🔴 THIS FILE HAD THE EXPRESSION TWICE — the offline-alert hook and the settings card. Both now read
   // this, so there is ONE resolution on this surface and it matches the function that does the pausing.
   // Two places resolving one setting is how they come to disagree.
-  const effectiveOfflineProtection=eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause
+  /* ── EVENT TYPE (October 2026) ───────────────────────────────────────────────────────────────────
+   * 🔴 THE SERVER'S ANSWER, HELD AS-IS. The effective values above are already resolved server-side;
+   * these two are for NAMING the type and showing which rows are this event's own. The client does not
+   * re-run the chain — a second copy of it would disagree the first time either was touched. */
+  const[eventType,setEventType]=useState<{id:string;name:string;buzzer_prompt:boolean|null;takes_cash:boolean|null;order_ready:boolean|null;collection_interval_mins:number|null;offline_protection:boolean|null;offline_protection_mode:'pause'|'no_auto_accept'|null;offline_auto_reject_mins:number|null}|null>(null)
+  const[eventOwnSettings,setEventOwnSettings]=useState<{buzzer_prompt:boolean;takes_cash:boolean;order_ready:boolean;collection_interval_mins:boolean}|null>(null)
+  /* 🔴 ALL THREE OFFLINE VALUES FROM ONE FUNCTION (October 2026). They were three separate inline
+   * expressions here — the switch, the mode and the delay — each duplicating a chain that also lives
+   * in heartbeat-monitor. `resolveOfflineWithType` is now the owner of the order, and with `eventType`
+   * null every one of the three is character-for-character what these lines computed before, which
+   * scripts/event-types.cjs asserts against the pre-build tree. */
+  const resolvedOffline=resolveOfflineWithType(
+    {offline_protection_override:eventOfflineOverride,offline_protection_mode_override:eventOfflineModeOverride,offline_auto_reject_mins_override:eventAutoRejectOverride},
+    eventType,
+    {auto_pause_on_offline:vanAutoPause,offline_protection_mode:vanOfflineMode,offline_auto_reject_mins:vanAutoRejectMins},
+  )
+  const effectiveOfflineProtection=resolvedOffline.enabled
   // 🔴 THE SAME ORDER AS heartbeat-monitor's — event override ?? van default ?? 'pause'. Two places
   // resolving one setting is how they come to disagree, and this one mirrors the function that acts.
-  const effectiveOfflineMode:OfflineProtectionMode=eventOfflineModeOverride??vanOfflineMode
-  const effectiveAutoRejectMins:number|null=eventAutoRejectOverride??vanAutoRejectMins
+  const effectiveOfflineMode:OfflineProtectionMode=resolvedOffline.mode
+  const effectiveAutoRejectMins:number|null=resolvedOffline.autoRejectMins
   // Order-ready (master-switch model): the van DEFAULT (order_ready_enabled — the Settings master switch +
   // seed for new events) + the per-event value (order_ready_override, concrete true/false). effectiveOrderReady
   // resolves override ?? default ?? false server-side and gates the Ready button; the dashboard toggle reads it.
@@ -1175,6 +1196,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(data.vanOfflineMode !== undefined) setVanOfflineMode(data.vanOfflineMode==='no_auto_accept'?'no_auto_accept':'pause')
       if(data.vanAutoRejectMins !== undefined) setVanAutoRejectMins(typeof data.vanAutoRejectMins==='number'?data.vanAutoRejectMins:null)
         if(data.vanOrderReadyDefault !== undefined) setVanOrderReadyDefault(data.vanOrderReadyDefault)
+        /* ⚠️ `undefined` IS "THIS BUILD'S SERVER IS OLDER THAN THIS CLIENT" and leaves the control
+         * absent, which is today's screen. `null` is the real answer "this event has no type". */
+        if(data.eventType !== undefined) setEventType(data.eventType??null)
+        if(data.eventOwnSettings !== undefined) setEventOwnSettings(data.eventOwnSettings??null)
         setEffectiveOrderReady(applyPending('effectiveOrderReady',data.effectiveOrderReady??false))
         // Buzzers — CONFIG, so they sit inside the seed gate with the rest of the van/event settings.
         // applyPending guards the prompt for the same reason effectiveOrderReady is guarded: a reseed
@@ -2989,6 +3014,64 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // (failed refetch) but the selection is still live — never blank the event bar
   const activeEvent:TruckEvent|null=resolvedEvent
 
+  // ── "THIS EVENT" CARD SUPPORT ───────────────────────────────────────────────────────────────────
+  /* 🔴 THE TRUCK'S TYPE LIST, FOR THE CARD'S Event type ROW. One read when the card is first needed;
+   * the list changes only in Manage, so it is not on the poll. An empty list hides that row. */
+  const[eventTypeList,setEventTypeList]=useState<{id:string;name:string}[]>([])
+  useEffect(()=>{let live=true
+    void (async()=>{try{
+      const r=await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'load'})})
+      const j=await r.json().catch(()=>({}))
+      /* ⚠️ A FAILURE LEAVES THE LIST EMPTY, which hides the row — the card and every other row still
+       * work. A truck with no types is in exactly that state anyway. */
+      if(live&&Array.isArray(j.types))setEventTypeList((j.types as {id:string;name:string}[]).map(t=>({id:t.id,name:t.name})))
+    }catch{/* the row simply does not appear */}})()
+    return()=>{live=false}},[token])
+
+  /* The card's deals row. `post` is this page's own authenticated POST, so the hook needs no token. */
+  const dashPost=useCallback(async(body:Record<string,unknown>)=>{
+    try{
+      const r=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,...body})})
+      return await r.json().catch(()=>null)
+    }catch{return null}
+  },[token,pin])
+  const{deals:eventDeals,setDeal:setEventDeal,reloadDeals}=useEventDeals(dashPost,activeEvent?.id??null)
+
+  /* ── 🔴 "RESET TO <TYPE>" — IT CLEARS ONLY WHAT THIS CARD CONTROLS ─────────────────────────────
+   * Two writes, and both are existing per-event paths:
+   *   1. `assign` with `clearOwn: true` nulls exactly the columns in CLEARABLE_EVENT_COLUMNS, which
+   *      is derived from SERVICE_ROWS — the five service rows and nothing else. The pause, the extra
+   *      wait, the paid step, the completion presses and the offline MARKERS are untouched.
+   *   2. the per-event DEAL rows this event overrode are deleted, so those deals go back to the
+   *      bundle's own default. A deal row IS a hand change on this event, so a reset that left them
+   *      would leave a THIS EVENT tag behind and contradict its own count.
+   * ⚠️ IT DOES NOT CHANGE THE EVENT'S TYPE. "Reset to Festival" means "use Festival exactly", not
+   * "stop being a Festival".
+   */
+  const resetThisEvent=useCallback(async()=>{
+    if(!activeEvent)return
+    try{
+      await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,action:'assign',eventId:activeEvent.id,typeId:eventType?.id??null,clearOwn:true})})
+      await dashPost({action:'reset_event_deals',eventId:activeEvent.id})
+      await reloadDeals()
+      await fetchAll(pin,true)
+    }catch{/* the values stay as they are and the next poll shows the truth */}
+  },[activeEvent,token,eventType?.id,dashPost,reloadDeals,fetchAll,pin])
+
+  /* ── THE CARD'S COLLECTION-TIMES VALUES ────────────────────────────────────────────────────────
+   * 🔴 THE SAME THREE EXPRESSIONS THE Kitchen TAB'S CONTROL USED, lifted out of its JSX so the card
+   * and that control cannot resolve the pair differently. `hasEventOv` is slot-interval's own test for
+   * "this event carries its own grid". */
+  const cardEvIntervals=activeEvent?eventIntervals[activeEvent.id]:undefined
+  const cardIntervalOwn=cardEvIntervals?.collection_interval_mins_override!==null&&cardEvIntervals?.collection_interval_mins_override!==undefined
+  const cardCustomerInterval=cardIntervalOwn
+    ?normaliseInterval(cardEvIntervals?.collection_interval_mins_override)
+    :normaliseInterval(vanIntervalPair.customer)
+  /* ⛔ NO `cardOperatorInterval`. An earlier draft of the card EDITED the collection pair and needed
+   * the operator value to write it back; the row hands over to the existing box instead (see the
+   * prop's note in ThisEventCard), so this file no longer resolves a value it does not write. */
+
   // ── DEMO — IS THERE A LIVE BOARD? ────────────────────────────────────────────────────────────────
   // 🔴 DEFINED HERE, ABOVE THE EARLY RETURNS, BECAUSE A HOOK READS IT (the auto-restart effect below).
   // It used to live down in the render body; it cannot any more — `if(loading)return …` sits between,
@@ -3185,7 +3268,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   // The SAME resolver every other consumer uses — the dashboard's own reads (the toggle's position and
   // the collected/undo toast wording) must agree with the card and the server.
-  const {showPaidStep:effectivePaidStep,takesCash:effectiveTakesCash,completionPresses:effectiveCompletionPresses}=resolvePaidStep(truck,activeEvent)
+  /* 🔴 THE TYPE IS PASSED HERE TOO, AND IT HAS TO BE. The server resolves `takesCash` through the same
+   * function with the same type (paidStepFor, app/api/dashboard/action/route.ts), so leaving it out
+   * here would show the operator one cash setting while every collect and undo-collect used another —
+   * the exact divergence resolvePaidStep exists to make impossible.
+   * ⚠️ `showPaidStep` AND `completionPresses` ARE UNAFFECTED: a type does not set them. */
+  const {showPaidStep:effectivePaidStep,takesCash:effectiveTakesCash,completionPresses:effectiveCompletionPresses}=resolvePaidStep(truck,activeEvent,eventType)
     ??(selectedEventId&&lastActiveEventRef.current?.id===selectedEventId?lastActiveEventRef.current:null)
   if(resolvedEvent)lastActiveEventRef.current=resolvedEvent
 
@@ -3506,7 +3594,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   //      was doing double duty as both "click this" and "you can't use this" — precisely the wrong signal
   //      on a conversion surface, where the only orange on screen should be the way forward.
   // Renders nothing outside demo, so call sites need no conditional of their own.
-  const demoLockChip = isDemo ? <DemoLockChip className="ml-2" /> : null
+  /* ⛔ `demoLockChip` IS GONE, AND SO IS THE IMPORT. Its only two consumers were the
+   * offline-protection and order-ready cards, both of which moved into the "This event" card — which
+   * carries the demo rule as a DISABLED control rather than as a chip beside a heading it no longer
+   * has. That left `DemoLockChip` with no consumer ON THIS SCREEN, so the import went too.
+   * ⚠️ THE COMPONENT FILE IS LEFT IN PLACE AND NOW HAS NO CONSUMER AT ALL
+   * (components/dashboard/DemoLockChip.tsx). It is not deleted here because that is a decision about
+   * the demo's visual language, not about this move — and a demo chip is exactly the kind of thing the
+   * next demo screen wants. Listed as newly-unreachable in docs/event-types-stage2b-report.md. */
 
   // ── EXTRA WAIT — ONE WRITE, TWO CONTROLS ─────────────────────────────────────────────────────
   // 🔴 THE FETCH, THE OPTIMISTIC `markPending` PAIR AND THE `startedAt` STAMP ARE THE ORIGINALS, LIFTED
@@ -4563,83 +4658,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 additionally blocked in toggleOfflineProtection so a click can never write set_offline_
                 protection — the disabled state is enforced, not just styled. The ⚠️ operator explainer is
                 swapped for a calm one-liner; there is nothing here for a visitor to act on. */}
-            {activeEvent&&(
-              <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
-                <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">{OFFLINE_PROTECTION_SWITCH_LABEL}{demoLockChip}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_PURPOSE}</p>
-                  {!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>}
-                </div>
-                <Toggle on={isDemo?false:effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)} disabled={isOffline||isDemo}/>
-                </div>
-                {/* ── 🔴 THE TWO MODES — SHOWN ONLY WHEN THE SWITCH IS ON ────────────────────────────
-                    WITH THE SWITCH OFF THIS BLOCK DOES NOT RENDER AT ALL: there is nothing to choose
-                    between, and a visible mode picker under an off switch reads as a setting that is
-                    doing something. The card is then exactly what it was before this change.
-                    ⚠️ SAME SHAPE AS MANAGE'S — one radio row per mode, label then help, from the SAME
-                    `OFFLINE_PROTECTION_MODES` array, so the two surfaces cannot drift.
-                    ⚠️ `role="radio"` + `aria-checked` in a `radiogroup`: these are one choice with two
-                    states, not two toggles. */}
-                {!isDemo&&effectiveOfflineProtection&&(
-                  <div role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL} className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
-                    {/* MOVED DOWN FROM THE HEADING. It describes the CHOICE below it, so it reads as the
-                        options' lead-in rather than as a summary of the whole box. */}
-                    <p className="text-xs text-slate-500">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
-                    {OFFLINE_PROTECTION_MODES.map(m=>(
-                      <div key={m.value} className="flex flex-col gap-2">
-                      <button type="button" role="radio" aria-checked={effectiveOfflineMode===m.value}
-                        onClick={()=>{if(effectiveOfflineMode!==m.value){void setOfflineMode(m.value)
-                          // 🔴 THE DEFAULT IS WRITTEN HERE, AND ONLY HERE. Choosing this mode IS the
-                          // operator interaction, so a van with no stored delay gets one at that moment
-                          // rather than on render — a van nobody touches keeps NULL and nothing
-                          // auto-rejects for it. Skipped when a delay is already stored, so an existing
-                          // choice is never overwritten by re-selecting the mode.
-                          if(m.value==='no_auto_accept'&&effectiveAutoRejectMins==null)void setAutoRejectMins(OFFLINE_AUTO_REJECT_DEFAULT_MINS)}}}
-                        disabled={isOffline}
-                        className="flex items-start gap-2.5 w-full text-left disabled:opacity-50">
-                        <span className={`w-4 h-4 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${effectiveOfflineMode===m.value?'border-orange-500':'border-slate-300'}`}>
-                          {effectiveOfflineMode===m.value&&<span className="w-2 h-2 rounded-full bg-orange-500"/>}
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block text-sm font-semibold text-slate-800">{m.label}</span>
-                          <span className="block text-xs text-slate-500">{m.help}</span>
-                        </span>
-                      </button>
-                      {/* ── 🔴 THE DELAY BELONGS TO THIS OPTION, SO IT SITS INSIDE IT. ────────────────
-                          Indented under the option's own description and with NO divider above it: a
-                          rule would have made it read as a separate setting, which is what it looked
-                          like before. `pl-6` clears the 16px radio plus its 10px gap so the control
-                          lines up with the label text — the same "indent a dependent control under its
-                          parent" idiom the buzzer count row uses with `pl-4`.
-                          It renders only when this mode is the selected one, and only for this option.
-                          🔴 THERE IS NO "OFF". An operator choosing this mode must choose a delay —
-                          without one an order can sit indefinitely while the customer is never told it
-                          was not accepted, which is what the feature exists to prevent.
-                          ⚠️ AND NOTHING IS WRITTEN ON RENDER. A van storing NULL shows the placeholder
-                          and stays NULL until the operator picks; the mode itself has already saved. */}
-                      {m.value==='no_auto_accept'&&effectiveOfflineMode==='no_auto_accept'&&(
-                        <div className="pl-6">
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="text-xs font-semibold text-slate-800">{OFFLINE_AUTO_REJECT_LABEL}</span>
-                            <select
-                              value={effectiveAutoRejectMins ?? OFFLINE_AUTO_REJECT_DEFAULT_MINS}
-                              aria-label={OFFLINE_AUTO_REJECT_LABEL}
-                              disabled={isOffline}
-                              onChange={e=>void setAutoRejectMins(parseInt(e.target.value))}
-                              className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-orange-400"
-                            >
-                              {OFFLINE_AUTO_REJECT_OPTIONS.map(n=><option key={n} value={n}>{offlineAutoRejectLabel(n)}</option>)}
-                            </select>
-                          </div>
-                        </div>
-                      )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+            {/* ⛔ MOVED INTO THE "This event" CARD at the top of this tab (October 2026), as one row with
+                a dropdown — Off, or either of the two modes — plus the ⚠️ instruction and the
+                auto-reject delay beneath it when that mode is chosen.
+                🔴 IT WAS ALREADY PER-EVENT: it writes `truck_events.offline_protection_override`,
+                `offline_protection_mode_override` and `offline_auto_reject_mins_override` for the
+                active event and never the van's columns, which is exactly what the card is for. NOT
+                DUPLICATED — this is the only copy and it is up there.
+                🔴 THE SAFETY-CRITICAL ⚠️ INSTRUCTION TRAVELLED WITH IT, verbatim from
+                lib/copy/offlineProtection.ts, and shows whenever protection resolves on. The two
+                modes are still the same `OFFLINE_PROTECTION_MODES` constants, so this surface and
+                Settings › Kitchen cannot word them differently.
+                ⚠️ THE DEMO RULE TRAVELLED TOO: a demo truck sees the control and cannot arm it. */}
             {/* Auto-accept + its dependent "review notes" sub-option read as ONE group (divide-y rows, same
                 treatment as the Sounds card). Notes-review only applies when auto-accept is on (conditional).
                 FIX 9 — DEMO: fully AVAILABLE and interactive, defaulted ON (set at provision). It genuinely
@@ -4741,6 +4771,83 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 label was tried and removed: it is only needed in MANAGE, where three groups share one
                 Order settings card, and here the nesting already carries what it was saying. Do not
                 reinstate it — and note SUBCARD_HEADING is a MANAGE token; this file no longer imports it. */}
+            {/* ── 🔴 EVENT TYPE — ONE MOUNT, ABOVE THE PER-EVENT SETTINGS IT EXPLAINS ─────────────
+                🔴 IT SITS HERE, NOT IN A CARD OF ITS OWN, because the type is what the rows below
+                resolve FROM: a truck reading "Buzzers: On" needs to see that Festival is why. The
+                control renders nothing for a truck with no types, so this card is unchanged for
+                every truck today.
+                ⚠️ IT DOES NOT CARRY PER-EVENT SCOPE WORDING, per the rule stated immediately below:
+                scope is a property of this screen, not of each row. Its own confirm says what changes.
+                ⚠️ THE "THIS EVENT" FLAGS COME FROM THE SERVER (`eventOwnSettings`), from the same
+                functions that resolved the values — not re-derived here, or the badge and the value
+                could describe different things. */}
+            {/* ── 🔴 "THIS EVENT" — ONE CARD, ONE MOUNT (October 2026, Dashboard2 board) ──────────
+                It replaces the standalone `EventTypeDashboardControl` that stood here, and it is now
+                where FIVE per-event controls live: the buzzer prompt, take cash, the "mark ready"
+                step, collection times and offline protection. Each of those was its own card lower
+                down this tab; none is duplicated — every one was MOVED, and the list is in
+                docs/event-types-stage2b-report.md for approval before this deploys.
+                🔴 IT MOUNTS AT THE TOP OF THIS TAB, which is the screen every one of those controls
+                already lived on — so no control changed screens, only its position within one. The
+                alternative (the orders screen, as the board sketches) would put a tall settings card
+                above the orders an operator is working through.
+                ⚠️ IT SHOWS FOR EVERY TRUCK, including trucks with no event types; the Event type row
+                inside it is what is conditional. */}
+            {activeEvent && (
+              <div className="mb-3">
+                <ThisEventCard
+                  eventId={activeEvent.id}
+                  types={eventTypeList}
+                  currentTypeId={eventType?.id ?? null}
+                  onAssignType={async (typeId, clearOwn) => {
+                    await fetch('/api/event-types', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ token, action: 'assign', eventId: activeEvent.id, typeId, clearOwn }),
+                    })
+                    /* ⚠️ A FULL RE-SEED, NOT A LIVE REFETCH. The type is CONFIG, and `fetchAllRef` is
+                     * the live poll that deliberately never re-seeds config — so a switch would not
+                     * show until the next forced seed. `fetchAll(pin, true)` is the seeding call. */
+                    await fetchAll(pin, true)
+                  }}
+                  buzzerCount={vanBuzzerCount}
+                  buzzerPrompt={effectiveBuzzerPrompt}
+                  onBuzzerPrompt={v => void saveBuzzerPromptOverride(v)}
+                  buzzerPromptOwn={eventOwnSettings?.buzzer_prompt === true}
+                  takesCash={effectiveTakesCash}
+                  onTakesCash={v => void saveTakesCashOverride(v)}
+                  takesCashOwn={eventOwnSettings?.takes_cash === true}
+                  orderReady={effectiveOrderReady}
+                  onOrderReady={v => void setOrderReadyOverride(v)}
+                  orderReadyOwn={eventOwnSettings?.order_ready === true}
+                  collectionMins={cardCustomerInterval}
+                  /* ⚠️ IT HANDS OVER TO THE EXISTING BOX rather than editing the pair itself — see the
+                   * prop's own note. `collection-times-box` is that box's anchor on this tab. */
+                  onOpenCollection={()=>{document.getElementById('collection-times-box')?.scrollIntoView({behavior:'smooth',block:'center'})}}
+                  collectionOwn={cardIntervalOwn}
+                  offlineEnabled={effectiveOfflineProtection}
+                  offlineMode={effectiveOfflineMode}
+                  offlineAutoRejectMins={effectiveAutoRejectMins}
+                  onOffline={v => {
+                    if (v.enabled !== undefined) void toggleOfflineProtection(v.enabled)
+                    if (v.mode !== undefined) void setOfflineMode(v.mode)
+                    if (v.autoRejectMins !== undefined) void setAutoRejectMins(v.autoRejectMins)
+                  }}
+                  offlineOwn={offlineIsHandChange({
+                    offline_protection_override: eventOfflineOverride,
+                    offline_protection_mode_override: eventOfflineModeOverride,
+                    offline_auto_reject_mins_override: eventAutoRejectOverride,
+                  })}
+                  stockSummary={null}
+                  onOpenStock={() => setActiveTab('stock')}
+                  deals={eventDeals}
+                  onDeal={(bundleId, active) => void setEventDeal(bundleId, active)}
+                  onResetToType={() => void resetThisEvent()}
+                  disabled={isOffline}
+                  saving={savingBuzzerPrompt||savingTakesCashOverride||savingIntervals}
+                  isDemo={isDemo}
+                />
+              </div>
+            )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
               {/* ── 🔴 DO NOT ADD PER-EVENT SCOPE WORDING TO THESE ROWS. ────────────────────────────
                   SCOPE IS A PROPERTY OF THE SCREEN, NOT OF EACH SETTING. Dashboard → Settings is
@@ -4855,21 +4962,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                      started asserting a wrong one. The disabled state plus the note carry it instead.
                   Both changes match app/manage/[token]/page.tsx exactly; full reasoning is recorded
                   there. Resolution is untouched — effectiveTakesCash still comes from the one resolver. */}
-              <div className="pt-3 flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
-                  <p className="text-slate-500 text-xs mt-0.5">Splits the payment button into "Cash" and "Card".</p>
-                  {/* 🔴 THE GATE IS GONE — 10 August 2026, matching Manage. The Add Order confirm bar now
-                      ALWAYS offers a payment button (the single one when "Take orders without payment" is
-                      off, the primary one when it is on), so the cash split has a live parent in every
-                      configuration and a disabled toggle here would contradict a button already on
-                      screen. Full reasoning at the Manage copy of this row. */}
-                </div>
-                <div className="flex items-center gap-2 shrink-0 ml-3">
-                  {savingTakesCashOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
-                  <Toggle on={effectiveTakesCash} onToggle={()=>saveTakesCashOverride(!effectiveTakesCash)} disabled={isOffline||!activeEvent}/>
-                </div>
-              </div>
+              {/* ⛔ "Do you take cash?" MOVED INTO THE "This event" CARD at the top of this tab
+                  (October 2026). It writes `truck_events.takes_cash_override` for the active event, so
+                  it is a per-event control and belongs with the others. NOT DUPLICATED.
+                  🔴 THE PAID STEP ITSELF STAYS HERE, and that is the point of splitting them: a type
+                  does not set the paid step, and its own migration
+                  (20260730_truck_events_show_paid_step_override.sql) is explicit that it must not be
+                  seeded or bulk-written. So this card keeps the setting it is titled after and loses
+                  only the child that moved.
+                  ⚠️ THE V9.6 "nested beneath it as a child" NOTE ABOVE NOW DESCRIBES HISTORY. Its
+                  reasoning about why there is no group heading is still correct and is why it stands. */}
             </div>
             {/* Order-ready step — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
                 order_ready_override, seeded from the Settings default at creation + bulk-set when the Settings
@@ -4879,15 +4981,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 FIX 7 — DEMO: SHOWN but locked. Customers being emailed the moment their food is ready is a
                 headline feature worth seeing; but it emails real addresses and the seeded orders carry NULL
                 emails, so it stays non-interactive. */}
-            {activeEvent&&(
-              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Order-ready step{demoLockChip}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Show a “Mark ready” button on the orders screen. Kitchen screens are set separately. Customers are emailed whenever an order is marked ready.</p>
-                </div>
-                <Toggle on={isDemo?false:effectiveOrderReady} onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}} disabled={isOffline||isDemo}/>
-              </div>
-            )}
+            {/* ⛔ MOVED INTO THE "This event" CARD (October 2026). It writes
+                `truck_events.order_ready_override` for the active event and nothing else, so it is a
+                per-event control and now sits with the others. NOT DUPLICATED. */}
             {/* ── BUZZER PROMPT — PER-EVENT ONLY ──────────────────────────────────────────────────
                 Writes truck_events.buzzer_prompt for the ACTIVE EVENT and NEVER truck_vans.buzzer_count
                 — the van default (does this vehicle carry buzzers) belongs to Manage → Settings, and
@@ -4899,18 +4995,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 operator cannot reach from this screen.
                 ⚠️ NO PER-EVENT SCOPE WORDING in the copy — scope is a property of THIS SCREEN, not of
                 each row. See the 🔴 note above the paid-step card. */}
-            {activeEvent&&vanBuzzerCount!=null&&(
-              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Remind me to add a buzzer</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Opens the buzzer grid as soon as you place an order, so the number goes on the board while the customer is still in front of you. With it off you can still add a buzzer any time by tapping the order, but nothing will prompt you. Useful where you hand buzzers out, easy to switch off where you don’t.</p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {savingBuzzerPrompt&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
-                  <Toggle on={effectiveBuzzerPrompt} onToggle={()=>saveBuzzerPromptOverride(!effectiveBuzzerPrompt)} disabled={isOffline||!activeEvent}/>
-                </div>
-              </div>
-            )}
+            {/* ⛔ THE BUZZER PROMPT CARD MOVED INTO THE "This event" CARD at the top of this tab
+                (October 2026). It was always a per-event control — it writes `truck_events.buzzer_prompt`
+                — so it belongs with the other per-event controls rather than as its own card four rows
+                below them. NOT DUPLICATED: this is the only copy, and it is up there.
+                ⚠️ ITS RULES TRAVELLED WITH IT: the row renders only when the van has a rack
+                (`buzzerCount !== null`), because a van with no buzzers has nothing to prompt for —
+                resolveBuzzerPrompt (lib/buzzer.ts) returns early on exactly that. */}
               </div>
             </div>
 
@@ -5033,7 +5124,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 the same box sits directly above the same card. Moved here 17 September 2026; nothing
                 but its position changed. */}
             {activeEvent&&(
-              <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+              /* ⚠️ `id` IS THE ANCHOR THE "This event" CARD'S Collection times ROW SCROLLS TO. That row
+                 shows the value and hands over here, because this box owns the PAIR and the only route
+                 back ("Use my usual setting"). Removing the id orphans that link. */
+              <div id="collection-times-box" className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <p className="text-sm font-semibold text-slate-800">Collection times</p>
                 <p className="text-xs text-slate-500 mt-0.5 mb-3">How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.</p>
                 {!eventIntervalsAvailable ? (

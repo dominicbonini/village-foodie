@@ -13,6 +13,8 @@
 // build, so the client bundle never pulls the SDK in). Same shape as lib/slot-bookings.ts.
 // `react` is isomorphic and is imported for `createElement` alone — see buzzerPill.
 
+import { resolveBuzzerPromptWithType, type TypeFor } from '@/lib/event-types/resolve'
+
 import { createElement } from 'react'
 import type { ReactNode } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
@@ -83,10 +85,17 @@ export interface ResolvedBuzzer {
 export function resolveBuzzerPrompt(
   van: BuzzerVan | null | undefined,
   event: BuzzerEvent | null | undefined,
+  /* 🔴 THE EVENT'S TYPE, OPTIONAL (October 2026). Omitted or null ⇒ `event?.buzzer_prompt ?? true`,
+   * which is character-for-character what this function returned before event types existed — so every
+   * caller that does not know about types is unchanged. The chain is in ONE place,
+   * lib/event-types/resolve.ts, so the dashboard, the KDS and Add Order cannot disagree about it. */
+  type?: TypeFor | null,
 ): ResolvedBuzzer {
   const buzzerCount = van?.buzzer_count ?? null
+  /* ⚠️ A VAN WITH NO RACK STILL WINS, BEFORE THE TYPE IS CONSULTED. There are no buzzers to hand out,
+   * so a prompt would ask for something that does not exist. A type cannot conjure a rack. */
   if (buzzerCount == null) return { buzzerCount: null, buzzerPrompt: false }
-  return { buzzerCount, buzzerPrompt: event?.buzzer_prompt ?? true }
+  return { buzzerCount, buzzerPrompt: resolveBuzzerPromptWithType(event?.buzzer_prompt, type) }
 }
 
 /** Upper bound on the rack size offered in Manage. Not a DB CHECK — see the migration comment. */

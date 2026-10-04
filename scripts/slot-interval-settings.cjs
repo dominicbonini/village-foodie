@@ -136,7 +136,19 @@ check(boxStart > 0 && kcStart > boxStart, `🔴 the Collection times box renders
 /* ⛔ AND THE CARD ITSELF IS GONE FROM THIS FILE, which is the other half of the move. */
 check(rawPage.indexOf('{/* Kitchen capacity — ONE aligned grid') === -1,
   '⛔ the Kitchen capacity card is no longer in page.tsx — it moved to Menu › Kitchen capacity')
-check(/<p className=\{`\$\{SUBCARD_HEADING\} mb-1`\}>Collection times<\/p>/.test(box), 'title is exactly "Collection times"')
+/* ── 🔴 BOTH BRANCHES' CHECKS, KEPT (merge, October 2026) ────────────────────────────────────
+ * The ANCHORS above are schedule-graphics': Kitchen capacity moved to Menu, so the old end marker had
+ * left the file and `indexOf` returned -1, which made the slice empty and every copy check below pass
+ * against nothing. The TITLE check below is event-types': the heading is rendered from
+ * `SERVICE_SETTING_LABELS`, because the Event types grid and the dashboard's "This event" card show
+ * the same setting and all three were naming it themselves.
+ * ⚠️ THE TWO ARE INDEPENDENT and both are needed — the first says WHERE the box is, the second says
+ * the words come from the one place that owns them. Dropping either was a silent weakening. */
+const serviceCopy = src('lib/copy/serviceSettings.ts')
+check(/<p className=\{`\$\{SUBCARD_HEADING\} mb-1`\}>\{SERVICE_SETTING_LABELS\.collection_interval_mins\}<\/p>/.test(box),
+  'the title is rendered from SERVICE_SETTING_LABELS, not retyped')
+check(/collection_interval_mins: 'Collection times'/.test(serviceCopy),
+  'title is exactly "Collection times"')
 check(/How far apart collection times are\. This doesn&apos;t change kitchen capacity or prep times\./.test(box), 'intro is exactly the one specified line')
 check(/<span className="text-sm font-semibold text-slate-800">Customer Collection Times<\/span>/.test(box), 'first select label is "Customer Collection Times"')
 check(/<span className="text-sm font-semibold text-slate-800">Your Collection Times<\/span>/.test(box), 'second select label is "Your Collection Times"')

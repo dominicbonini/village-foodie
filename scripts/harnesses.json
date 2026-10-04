@@ -36,6 +36,8 @@
     "demo-seed-parameters.cjs",
     "demo-welcome-open.cjs",
     "dot-overlap-labels.cjs",
+    "event-types-render.cjs",
+    "event-types.cjs",
     "ops-write-guard.cjs",
     "outreach-channel-for.cjs",
     "outreach-crm-polish.cjs",

@@ -483,7 +483,13 @@ function capacityFixture(css, vans = 1, allSame = true) {
    * point of the 4 October change is that this row looks like every other setting row in Manage. If
    * either drifts, this fixture stops building rather than measuring a row nobody is served. */
   const sw = lift(KC, /<div className="(bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3)">/, 'the question row')
-  const togTrack = lift(PRIM, /<div className=\{`(relative w-11 h-6 rounded-full transition-colors) \$\{on \? 'bg-green-500' : 'bg-slate-300'\}`\}>/, 'the shared toggle track')
+  /* ⚠️ THE TRACK GAINED `shrink-0` AT THE MERGE (October 2026). `event-types` had written a third
+   * switch of its own and, when the two were reconciled into one, its version survived — a strict
+   * superset: three optional props nothing here passes, plus `type="button"`, `role="switch"` and
+   * this `shrink-0`, which stops the track squashing beside a long label. The lift is widened to the
+   * class list rather than pinned to the old string, so it measures what is rendered; it still fails
+   * if the geometry (`w-11 h-6 rounded-full`) or the green/slate pair ever changes. */
+  const togTrack = lift(PRIM, /<div className=\{`(relative w-11 h-6 rounded-full transition-colors[^`$]*) \$\{on \? 'bg-green-500' : 'bg-slate-300'\}`\}>/, 'the shared toggle track')
   const togKnob = lift(PRIM, /<div className=\{`(absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform)/, 'the shared toggle knob')
   const hdr = 'text-[11px] font-bold uppercase tracking-wide text-slate-400'
   // Real category names — the first column is `minmax(0,1fr)` and text is what fills it.

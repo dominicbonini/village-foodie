@@ -59,6 +59,25 @@ export const DARK_SOLID  = 'bg-slate-800 hover:bg-slate-900 text-white'
  *  "unify" those onto this token. */
 export const SUBCARD_HEADING = 'text-xs font-black text-slate-800 uppercase tracking-widest'
 
+/**
+ * ── 🔴 THE APP'S CONTROL BOX — EVERY <select> AND EVERY SMALL <input> SITS IN ONE OF THESE ─────
+ * Counted before it was named, which is what makes it the house style rather than a preference: this
+ * exact string appears EIGHT times inline in app/manage/[token]/page.tsx and SIX times in
+ * app/dashboard/[token]/page.tsx. Fourteen copies of one box, with nothing making them agree.
+ *
+ * It is here rather than in components/manage/primitives.tsx because BOTH surfaces use it, and the
+ * dashboard must not import from the manage primitives to get a border colour.
+ *
+ * ⚠️ IT CARRIES NO WIDTH, NO HEIGHT AND NO MARGIN. Callers add those: a table cell wants a fixed
+ * height so its rows align, a form field wants `w-full`. Baking a size in is what produced the
+ * variants this replaces.
+ * ⚠️ THE FOCUS RING IS ORANGE ON BOTH SURFACES. components/dashboard/AddOrderPanel.tsx uses a TEAL
+ * ring on its slot picker, deliberately — that panel has its own accent. It is not a counter-example
+ * and must not be "unified" onto this.
+ */
+export const CONTROL_BOX =
+  'border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400'
+
 /** The dashboard order-card Btn palette. */
 export const BTN_COLOURS: Record<string, string> = {
   green:  GREEN_SOLID,

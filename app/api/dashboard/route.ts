@@ -11,11 +11,13 @@ import { buildSlotAvailability, type EngineReservation } from '@/lib/slot-availa
 import { buildSlotIndicators } from '@/lib/slot-display'
 import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-breach'
 import { generateCollectionTimes } from '@/lib/slot-generation'
-import { resolveIntervalsFor, readEventIntervalsForTruck } from '@/lib/slot-interval'
+import { resolveIntervalsFor, readEventIntervalsForTruck, hasEventOverride } from '@/lib/slot-interval'
 import { resolveCategoriesForVan } from '@/lib/van-category-settings'
 import type { CatConfig } from '@/lib/prep-utils'
 import { isDemoIdentifier } from '@/lib/demo'
 import { resolveBuzzerPrompt, BUZZER_IN_USE_STATUS_SET } from '@/lib/buzzer'
+import { resolveOrderReadyWithType, orderReadyIsHandChange } from '@/lib/event-types/resolve'
+import { readEventType } from '@/lib/event-types/read'
 // Type-only would not work here: LEDGER_ROW_COLUMNS is a VALUE. This route is server-only, so pulling
 // the module in carries no browser-bundle cost (the concern noted at the top of lib/payments/ledger.ts).
 import { LEDGER_ROW_COLUMNS } from '@/lib/payments/ledger'
@@ -579,6 +581,13 @@ export async function GET(req: NextRequest) {
   // is the legacy-null safety net. vanOrderReadyDefault = the raw van default, still returned to the client.
   let effectiveOrderReady: boolean = false
   let vanOrderReadyDefault: boolean = false
+  /* Is the mark-ready value a change the truck made on THIS event? Drives the "THIS EVENT" badge, so
+   * the badge and the value come from one pair of functions and cannot describe different things. */
+  let orderReadyIsOwn: boolean = false
+  /* 🔴 THE EVENT'S TYPE, READ ONCE, PROBED. `readEventType` resolves to "no type" on any failure — a
+   * missing table, an unreloaded schema cache, a race — so this cannot blank the board the way a new
+   * column on the NAMED truck_events select above would. One embed, so a poll gains no round trip. */
+  const eventTypeRead = await readEventType(supabase, selectedEventId)
   // Pause is now EVENT-scoped (truck_events). Sourced from the SELECTED event below and returned
   // under these (legacy-named) keys so the client computes paused state from the SAME fields the
   // customer menu checks. (Kept the key names to avoid churning the client read path.)
@@ -640,12 +649,27 @@ export async function GET(req: NextRequest) {
       // for this van, which is every van today.
       vanAutoRejectMins = (van as { offline_auto_reject_mins?: number | null } | null)?.offline_auto_reject_mins ?? null
       vanShowCookingStep = van?.show_cooking_step ?? false
-      // event override ?? van global default ?? false (mirrors the offline ?? chain).
       vanOrderReadyDefault = van?.order_ready_enabled ?? false
-      effectiveOrderReady = (capacityEvent as any)?.order_ready_override ?? vanOrderReadyDefault
-      // event override ?? (this van has buzzers). Never inline — resolveBuzzerPrompt is the only place
-      // this chain lives, for the same reason resolvePaidStep is.
-      const rb = resolveBuzzerPrompt(van as any, capacityEvent as any)
+      /* 🔴 NO LONGER INLINE (October 2026). This read `(capacityEvent)?.order_ready_override ??
+       * vanOrderReadyDefault`, which is still exactly what `resolveOrderReadyWithType` returns when
+       * the event has no type — asserted byte-for-byte by scripts/event-types.cjs. With a type it is
+       * the one place that knows a SEEDED value is not a hand change, which is what lets a type win
+       * for this setting at all (lib/event-types/resolve.ts section 3). */
+      effectiveOrderReady = resolveOrderReadyWithType(
+        (capacityEvent as any)?.order_ready_override,
+        eventTypeRead.orderReadySource,
+        eventTypeRead.type,
+        vanOrderReadyDefault,
+      )
+      orderReadyIsOwn = orderReadyIsHandChange(
+        (capacityEvent as any)?.order_ready_override,
+        eventTypeRead.orderReadySource,
+        eventTypeRead.type,
+        vanOrderReadyDefault,
+      )
+      // event override ?? type ?? (this van has buzzers). Never inline — resolveBuzzerPrompt is the only
+      // place this chain lives, for the same reason resolvePaidStep is.
+      const rb = resolveBuzzerPrompt(van as any, capacityEvent as any, eventTypeRead.type)
       vanBuzzerCount = rb.buzzerCount
       effectiveBuzzerPrompt = rb.buzzerPrompt
     }
@@ -889,8 +913,51 @@ export async function GET(req: NextRequest) {
     vanOfflineMode,                                // 'pause' | 'no_auto_accept' — the van's mode, for the Settings card
     vanAutoRejectMins,                             // integer minutes or null (= off) — the van's auto-reject delay
     vanShowCookingStep,
-    effectiveOrderReady,                          // event override ?? van default ?? false (gates the Ready button)
+    effectiveOrderReady,                          // event hand change ?? type ?? van default ?? false (gates the Ready button)
     vanOrderReadyDefault,                          // raw van default (seed for new events; the Settings master switch)
+    /* ── THE EVENT'S TYPE, FOR THE DASHBOARD'S "Event type ▾" CONTROL ────────────────────────────
+     * 🔴 THE RESOLVED VALUES ABOVE ARE NOT RE-DERIVED FROM THIS. The client is handed the type so it
+     * can NAME it and show which settings are its own; every effective value it draws is the one the
+     * server already computed. A client that resolved the chain itself would be a second copy of the
+     * rule, and the two would disagree the first time either was touched.
+     * ⚠️ NULL IS THE ANSWER FOR EVERY EVENT TODAY and means Standard. */
+    eventType: eventTypeRead.type
+      ? {
+          id: eventTypeRead.type.id,
+          name: eventTypeRead.type.name,
+          buzzer_prompt: eventTypeRead.type.buzzer_prompt,
+          takes_cash: eventTypeRead.type.takes_cash,
+          order_ready: eventTypeRead.type.order_ready,
+          collection_interval_mins: eventTypeRead.type.collection_interval_mins,
+          offline_protection: eventTypeRead.type.offline_protection,
+          offline_protection_mode: eventTypeRead.type.offline_protection_mode,
+          offline_auto_reject_mins: eventTypeRead.type.offline_auto_reject_mins,
+        }
+      : null,
+    /* Which settings on this event are the truck's own hand changes — the "THIS EVENT" badges and the
+     * "N settings changed for this event only" count, from the SAME functions that resolved them. */
+    eventOwnSettings: {
+      buzzer_prompt: (selectedEvent as any)?.buzzer_prompt !== null && (selectedEvent as any)?.buzzer_prompt !== undefined,
+      takes_cash: (selectedEvent as any)?.takes_cash_override !== null && (selectedEvent as any)?.takes_cash_override !== undefined,
+      order_ready: orderReadyIsOwn,
+      /* ⛔ OFFLINE PROTECTION'S FLAG IS NOT HERE, AND THAT IS DELIBERATE. Its three override columns are
+       * not on the named `truck_events` select above, and this file's own comment records what adding a
+       * column to that select costs if the database disagrees: PostgREST answers 42703, the whole
+       * statement fails, and the operator's board goes blank. `offline_auto_reject_mins_override` has no
+       * migration in this repository at all (only 20260819's function references it), so I will not make
+       * the board depend on it.
+       * 🔴 THE CLIENT ALREADY HAS ALL THREE. app/dashboard/[token]/page.tsx reads them in its own
+       * separate query (`eventOfflineOverride` / `eventOfflineModeOverride` / `eventAutoRejectOverride`),
+       * which is a read that can fail harmlessly. The card computes the flag from those with the same
+       * `offlineIsHandChange` this file would have used, so there is still one test — it just runs where
+       * the data safely is. */
+      /* ⚠️ FROM THE TRUCK-WIDE MAP THAT IS ALREADY LOADED, keyed by the selected event — no extra
+       * read. `hasEventOverride` is slot-interval's own test for "this event carries its own pair",
+       * so this badge and `applyEventIntervals` agree about what that means. */
+      collection_interval_mins: hasEventOverride(
+        selectedEventId ? eventIntervalOverrides.byEventId.get(selectedEventId) : null,
+      ),
+    },
     vanBuzzerCount,                                // truck_vans.buzzer_count — null ⇒ no buzzers, feature hidden
     effectiveBuzzerPrompt,                         // event override ?? van-has-buzzers (opens the grid after a new order)
     vanPausedUntil: eventPausedUntil,            // event-scoped (key kept for the client)

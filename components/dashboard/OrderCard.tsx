@@ -23,9 +23,15 @@ const ITEM_TICK_ENABLED = false
 
 // ── Shared UI primitives ──────────────────────────────────────────────────────
 
-export function Toggle({ on, onToggle, disabled }: { on: boolean; onToggle: () => void; disabled?: boolean }) {
+/* ⚠️ `ariaLabel` AND THE SWITCH ROLE ADDED (4 October 2026) so the dashboard's "This event" card can
+ * use THIS component instead of the one it had written for itself. That one was `w-[42px]` and
+ * orange-600 — and both dashboard surfaces behind it (this file, and the keep-screen-on switch on the
+ * dashboard page) are `w-11` and green-500. A card's switch should not be the odd one out on its own
+ * screen. The markup is otherwise unchanged, so the existing callers render identically. */
+export function Toggle({ on, onToggle, disabled, ariaLabel }: { on: boolean; onToggle: () => void; disabled?: boolean; ariaLabel?: string }) {
   return (
-    <button onClick={onToggle} disabled={disabled} className="relative shrink-0 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+    <button onClick={onToggle} disabled={disabled} type="button" role="switch" aria-checked={on} aria-label={ariaLabel}
+      className="relative shrink-0 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
       <div className={`w-11 h-6 rounded-full transition-colors ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-6' : 'translate-x-1'}`} />
       </div>
