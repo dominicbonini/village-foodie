@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V13.8
+HatchGrab Engineering Reference Manual · V13.9
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 13.8**
+**Version 13.9**
 
 October 2026
 
@@ -25,6 +25,128 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V13.9 — 3–4 October 2026 — SINGLE-EVENT POSTS AND A DESIGN PER PLACE; EVENT TYPES (STAGES 1–2, ON A SECOND BRANCH); KITCHEN CAPACITY UNDER MENU; PILL SUB-TABS. NOTHING DEPLOYED.
+
+**Status — read this first.**
+- **Nothing in this block is live.** There are now **two** unmerged branches:
+  - **`schedule-graphics`** — everything from V13.8, plus the single-event post, a design per place, the
+    Tidy up places fixes, Kitchen capacity under Menu, Schedule settings in a modal, and pill sub-tabs.
+  - **`event-types`** — cut from `main` on 4 October. Event types stages 1 and 2 (service settings), the
+    Event types modal (v3) and the dashboard "This event" card.
+- ⚠️ **Every migration below HAS been applied to the production database** by Dominic, with its
+  verification selects checked. The tables and columns exist in production; no deployed code reads them.
+- **Next step agreed:** combine the two branches so there is one localhost to test (§72.3). Then the
+  remaining event-type stages, a Places tab, and a release that Dominic deploys by hand.
+
+**Covers:** new **§69** (single-event post, a design per place, Tidy up places), **§70** (event types),
+**§71** (Manage moves: Kitchen capacity, Schedule settings, pills), **§72** (process: two branches, harness
+scope, follow-up messages, the release plan); additions in place to **§63**, **§65**, **§66** and **§68**.
+
+### The decisions (Dominic's, recorded so they are not re-litigated)
+
+| Decision | Recorded |
+|---|---|
+| A single-event post can use **the truck's standard design, or a design for that place** (own picture, and optionally its own text positions). Needed for trucks like Kezmet whose venue artwork already carries the venue name | 3 Oct |
+| A place's design may **switch off the Location box** (and Date). Location and Time cannot **both** be off, so a cancelled event always reads cancelled | 3 Oct |
+| **Tidy up places** is the same size as Add event; **"Merge into another place" removed from the screen** (server action kept, existing merges still honoured) | 3 Oct |
+| **Event types: resolve on read.** `truck_events.event_type_id` is the whole state; a type never writes onto an event. Effective value = the event's own hand change ?? the type ?? the van/truck default | 4 Oct |
+| **A hand change on one event always wins** over its type. "Clear my changes" / "Reset to <type>" undoes them | 4 Oct |
+| A **live** event's type **can be switched** from the dashboard, with a confirm. Orders already placed keep their prices | 4 Oct |
+| Event types are **Max and trial only** (`event_types` in `MAX_FEATURES`). On a downgrade, typed events keep resolving; the screen goes read-only | 4 Oct |
+| **No "food only"** price option — unnecessary complexity. Prices may go **up or down** (never below £0) | 4 Oct |
+| **"Usual type for this place"** = the type of the truck's last event at that venue, worked out when needed (no table). To move onto places after the merge | 4 Oct |
+| **New event types start exactly like Standard.** Name chips only (Festival, Pub, Market, Private hire) — no pre-filled settings | 4 Oct |
+| **Standard is editable in the Event types modal** and saves through **Settings' own actions**. One column **per active van** (2+ vans); one "Standard" column for one van | 4 Oct |
+| **No "Same as Standard", "Set per van", "Varies by van" or "Settings" links** in the modal. Every cell is a real switch or a real value; an untouched type value is shown faded | 4 Oct |
+| Labels come from the **existing source strings** — so the row is **"Order-ready step"** (`SETTING_COPY.orderReady.label`), not "Mark ready" | 4 Oct |
+| Row order, most important first: Collection times · Order-ready step · Do you take cash? · Offline order protection · Remind me to add a buzzer. Prices, menu, stock and deals go above them when built | 4 Oct |
+| **Offline order protection** is a type setting. The **auto-reject delay is not** (its only consumer is a plpgsql function that cannot read the resolver); it stays per event on the dashboard | 4 Oct |
+| The dashboard gets a **"This event" card**: every per-event setting in one place, **this event only** | 4 Oct |
+| **Prices on the dashboard per event** and **prices per type** are one piece of work (there is no per-event pricing at all today — §70.2) | 4 Oct |
+| **Kitchen capacity is a Menu sub-tab** (second, after Items). With 2+ vans, one question **"Same kitchen capacity for all vans?"** on the green switch, default **on**: on = one box for all vans, off = one box per van | 4 Oct |
+| **Sub-tabs are pills again** (Menu, Schedule, Settings' sticky jump tabs), same sticky behaviour. Dominic chose the shorter pill (32px) over the brief's 40px | 4 Oct |
+| Four pieces of copy removed at Dominic's request: Settings' capacity pointer box; "Kitchen capacity has its own switch…"; "Changes to the first van are copied here."; "⚠ Slot capacity limits still apply…" (the behaviour is unchanged) | 4 Oct |
+| **Schedule settings** (where we find your events) was moved to a modal on Schedule › Events (option (a) — the custom-domain card stayed above the QR code). **Then reversed by Dominic the same day: it goes back into Settings** — it is set once and left. Not yet built | 4 Oct |
+| A **Places tab** in Schedule, after the merge: each place's details, usual event type, event-post design, and its events | 4 Oct |
+| **One localhost**: combine the branches rather than test two | 4 Oct |
+| At first deploy, the weekly and single-event posts show **only on Pizza Kitchen** (`test-truck`) | 4 Oct |
+| Harness runs: **only the area changed** on each build; the **full sweep only before a deploy** (§72.2) | 4 Oct |
+
+### The builds, in order
+
+Every hash below was checked against `git log --oneline` on both branches when this block was applied;
+where the code and its report were separate commits, both are named. The `[verify]` markers the delta
+carried are resolved — see `docs/reference-manual-v13-9-report.md` for the four that were wrong.
+
+| Build | Branch | Code | Report |
+|---|---|---|---|
+| Single-event post, stage 2 (shared renderer, per-place and one-off backgrounds) | schedule-graphics | `8b3112c` | `540ab39` |
+| A design per place; Tidy up places same size; Merge removed; manual month fixed | schedule-graphics | `49da39a` | in `49da39a` |
+| …and its follow-up: "Add a picture" empty state; the sweep recorded | schedule-graphics | `66fec25` | in `66fec25` |
+| V13.8 manual applied | schedule-graphics | `fd092a1` | `f8b9c56` |
+| Event types investigation (report only) | event-types | — | `ba6c9b3` |
+| Event types stages 1 + 2 | event-types | `9d3ecb8` | in `9d3ecb8` |
+| Event types 2b: modal, offline protection, dashboard "This event" card, deal toggles | event-types | `88b71f1` | in `88b71f1` |
+| Event types v3: editable Standard, van columns, shared controls | event-types | `5cde26d` | in `5cde26d` |
+| Kitchen capacity under Menu (with van picker) | schedule-graphics | `8f50c49` | in `8f50c49` |
+| Kitchen capacity one question; Schedule settings modal; pills; finding-events card | schedule-graphics | `726ca02` | in `726ca02` |
+
+### Migrations — all applied by hand to PRODUCTION; code only on the branches
+
+| File | What | Branch |
+|---|---|---|
+| `20261007_event_post_backgrounds.sql` | `truck_post_designs.kind` allows `'event'`; `truck_places.event_bg_path/width/height`; table `event_post_backgrounds` (event_id PK, service-role only) | schedule-graphics |
+| `20261008_event_post_place_layouts.sql` | `truck_places.event_layout jsonb` (NULL = Standard's positions) | schedule-graphics |
+| `20261009_event_types.sql` | table `event_types`; `truck_events.event_type_id` (on delete set null); `truck_events.order_ready_source` ('seed'/'truck') | event-types |
+| `20261010_event_types_offline.sql` | `event_types.offline_protection`, `offline_protection_mode`, `offline_auto_reject_mins` | event-types |
+| `20261010_capacity_same_as_first_van.sql` | `truck_vans.capacity_same_as_first_van` (NOT NULL, default false), backfilled from `same_as_first_van` — Dominic's verification select read 14 vans, 14 equal, 0 differ (a production result; not recorded in the repository) | schedule-graphics |
+
+### The failure classes this work found
+
+1. **A brief built on a premise that was false.** "Event types fill `event_price_overrides`" — that table
+   does not exist, and there is no per-event pricing at all. Found by an investigation-only prompt before
+   any build. **Rule: a feature that touches money starts with a read-only investigation.**
+2. **A brief that contradicted itself** (a row list said "Mark ready", the same section said use existing
+   labels). Cursor stopped and asked. The mockup's wording was the planning chat's error.
+3. **Checks that matched their own comments** — a source check that forbids a string fails on the comment
+   explaining it. Checks now strip comments and count code.
+4. **Slices whose end anchor had left the file** — `indexOf` returned −1 and `slice(start, -1)` covered most
+   of a 12,000-line file, so every check inside passed against nothing.
+5. **Baselines that moved with HEAD** — a before/after harness pinned to "HEAD" compares a build with
+   itself once the build is committed. Pinned to a named commit.
+6. **Fixtures with invented labels** measured a pill row nobody is served. Labels are now lifted from the
+   source array.
+7. **Safari ignores `min-height` on a `<select>`** (23px on WebKit, 40px on Chromium). Found only by rendering
+   in both engines.
+8. **The iOS zoom guard in `globals.css`** forces every `<select>` to `font-size: inherit !important` from
+   640px up (16px below). A select's text size must be set on its **wrapper**.
+9. **A resolver that hard-coded its own input** — all five callers of `firstVanId` passed `active: true`,
+   so a retired oldest van stayed "the first van". Fixed at the source.
+10. **A check scoped to the whole file matched a different handler** and asserted the opposite of its
+    intent while passing.
+
+### Open items
+
+| Item | State |
+|---|---|
+| **Combine the branches** (event-types into schedule-graphics), Event types as the third Schedule pill, one localhost | next prompt |
+| **Schedule settings back into Settings** (reverse the modal) | decided 4 Oct, not built |
+| **The buzzer row is two settings**: a type sets the per-event *prompt*; Standard's switch sets whether the van *has buzzers* (`buzzer_count`), and toggling it resets the count to the default. Proposed fix: a per-van "Remind me to add a buzzer" default (needs SQL) | awaiting Dominic |
+| Event types: **prices** (types and dashboard together), **items sold and stock**, **deals per type**, **private events + private link + QR** | designed (§68.2–68.3, Event types canvas), not built |
+| **Places tab** in Schedule | decided, to mock up after the merge |
+| Posts visible on **Pizza Kitchen only** at first deploy | for the release prompt |
+| **Gusto approval list** before deploy: the nav and Settings changes (V13.8), the dashboard "This event" card (five controls moved off the Kitchen tab), Kitchen capacity's move | for the release report |
+| **Full harness sweep** | before deploy only |
+| Pill height 32px (brief said ≥40px). One token (`min-h-10` on `subtabBtn`) restores it | Dominic's call |
+| `add-order-refresh-inputs.cjs` fails intermittently, also on the commit before this work | separate fix |
+| `claim_order_for_auto_reject` cannot read event types; finishing the delay on types needs it changed | later, its own build |
+| `offline_auto_reject_mins` / `_override` columns have **no DDL in the repo** | check production, add a migration file |
+| `DemoLockChip.tsx` has no consumer; `SCHED_BLOCKED_DOMAIN_MSG` duplicates a sentence now in `lib/copy/scheduleVerify.ts` | noted |
+| `event_types.offline_auto_reject_mins` exists but is unused | by design until the plpgsql change |
+| Stale-stage SQL (from V13.7/V13.8) | still unresolved |
+
+---
 
 ## V13.8 — 1–3 October 2026 — OUTREACH FIXES; AND A LARGE BODY OF OPERATOR WORK ON THE `schedule-graphics` BRANCH (NOT DEPLOYED): PLACES, A NEW ADD EVENT, SUB-TAB NAVIGATION, SETTINGS AS ONE LIST, PER-VAN CAPACITY, AND THE WEEKLY SCHEDULE POST
 
@@ -26870,6 +26992,9 @@ branch; that does not matter — only `main` is served.
    independently (§68.2). The two branches both touch `app/manage/[token]/page.tsx`; keeping event-types
    code in separate files keeps the eventual merge small.
 
+
+> **V13.9.** There is now a second branch, `event-types` (§72.1). The same rule applies to it. Merging the
+> two branches together is allowed; merging either into `main` is a deploy and needs Dominic's say-so.
 ## 63.3 Localhost uses the production database
 
 There is one Supabase project, `ffphgwonshgxamtvefcv`. `.env.local` points localhost at it. **Anything
@@ -27006,6 +27131,11 @@ One underlined bar style is shared by Menu, Schedule and Settings (`SUBTAB_BAR`,
 - The walkthrough drops any stop whose tab is not in the DOM, so its "deals and extras" stop was
   re-pointed at Menu. **Any future tab removal can silently shorten the tour.**
 
+
+> **V13.9.** The three bars are now **pills** (§71.3), superseding **"One underlined bar style"** above —
+> same three constants, same stickiness, same `?section=` and legacy `?tab=` behaviour.
+> Menu's sections are now **Items · Kitchen capacity · Extras & upsells · Deals** (§71.1), so `?section=`
+> on Menu also takes `capacity`. Schedule's are unchanged (`events|weekly`).
 ## 65.3 Settings — one scrolling list with sticky jump tabs
 
 No wording changed except eight new section headings. Order: **Truck details** (logo folded in as a field
@@ -27021,6 +27151,10 @@ section 1.
   `scrollIntoView` (which walked up to `<main>` and undid the jump).
 - Deep links: `#truck-details` … `#account-deletion`.
 
+
+> **V13.9.** The Schedule section's two finding-events cards moved to a modal on Schedule › Events
+> (§71.2) — a move Dominic has since reversed; they return to this section. The section keeps its name
+> and its jump tab throughout.
 ## 65.4 The sticky rule
 
 `position: sticky` cannot hold an element above its normal-flow position. `<main>` deliberately has no
@@ -27084,6 +27218,9 @@ comparing outputs byte for byte, then running both through the real capacity eng
 - Delete Van 1 → the next-oldest becomes first; followers keep their values and stay on.
 - The switch exists only in Manage, not on the Dashboard van card.
 
+
+> **V13.9.** "Same as Van 1" no longer covers kitchen capacity. Capacity has its own flag
+> (`capacity_same_as_first_van`) and its own question on Menu › Kitchen capacity (§71.1).
 ## 66.5 Noticed, not changed
 
 - An unset `batch_size` resolves to **999** in `buildCatConfigs` (acceptance) and to **1** in
@@ -27176,6 +27313,9 @@ read "From 5pm" or "5pm – 9pm". Opened from **Make post** on an event and from
 per-event list (whose Share then attaches the image). Planned storage: `truck_post_designs.kind` gains
 `'event'`; `truck_places.event_bg_*`; a new `event_post_backgrounds` table keyed by event.
 
+
+> **V13.9.** Built — see §69. A design per place (own picture, own positions, Location off) was added the
+> same night.
 ## 68.2 Event types (mocked up; separate `event-types` branch)
 
 Schedule › **Event types**: columns side by side — **Standard** (default) plus types from suggestions
@@ -27197,12 +27337,19 @@ apply_to_new_events` stays; deals gain "and these event types". Before building:
 `event_price_overrides` (including its `event_name`, `valid_from`, `valid_until` columns), the menu items
 table name and item default stock, and that orders store their price at the time of ordering.
 
+
+> **V13.9.** Stages 1–2 (service settings), the modal and the dashboard card are built on `event-types` —
+> see §70. The "fill existing per-event tables" architecture above was **replaced by resolve-on-read**
+> (§70.3), and the `event_price_overrides` table it names **does not exist** (§70.2).
 ## 68.3 Private events
 
 Hidden from the map and Village Foodie discovery. The public schedule shows **"Private event"** with date
 and times only — no venue or address. Ordering by a **private link** (long random URL, can be regenerated)
 and its **QR code**. A numeric code was considered and deferred (guessable, needs attempt limits).
 
+
+> **V13.9.** Not built. Design unchanged (one private link per event, replaceable; QR). See §70.2 for the
+> public surfaces it must change and §70.8 for its place in the stages.
 ## 68.4 Posting to Facebook
 
 Groups: **impossible** (API closed 2024). Personal profiles: impossible. **Pages and Instagram
@@ -27224,5 +27371,161 @@ The goal: win the handful of jobs trucks open Canva for (weekly schedule, event 
 posters). Path: import their blank (now) → ready-made templates with a brand kit → AI-made backgrounds
 with our text placed on top → a small editor (move/resize text, swap picture, colours) — **not** a full
 Canva rival.
+
+# 69. The single-event post, a design per place, and Tidy up places (V13.9 — 3 October 2026, `schedule-graphics`)
+
+## 69.1 One renderer for both posters
+The single-event post reuses the weekly post's machinery: `boxEl` (fitting, fonts, readability),
+`dateLines`, `locationLinesFor`, `timeLinesFor`, `entryFor`, `poweredByEl` and one `paint()` — the only
+`ImageResponse` call. `renderEventPost` has none of its own. The event layout is its own shape
+(`validateEventLayout`), stored in `truck_post_designs` with `kind = 'event'`; each validator refuses the
+other's layout. The date is one line by default on an event post (two on the week). `bgDayOff` is reused as
+the cancelled panel. The route is still `/api/weekly-post` for both posters.
+
+## 69.2 Which picture and which text positions — one resolver
+`resolveDesign()` in `lib/weekly-post/backgrounds.ts` decides **picture and positions together**:
+**one-off (this event) > place design > Standard**.
+- A place with its own positions (`truck_places.event_layout`) brings its picture **and** its boxes.
+- A place with only a picture uses Standard's positions and must match Standard's shape **within 1%**
+  (relative, so it means the same on portrait and landscape).
+- A one-off picture inherits the positions it displaces and must match **that** design's shape.
+- Choosing "Standard design" in the make-post modal takes Standard's picture **and** Standard's positions.
+- The place is matched **by id** (`entryFor` returns `placeId`), never by printed name.
+
+## 69.3 Boxes can be switched off
+Date, Location and Time each have an explicit `enabled` flag (coordinates kept). Location and Time cannot
+both be off (`toggleIsAllowed`, `LAST_TOGGLE_MESSAGE`) — a cancelled event says so in exactly those two
+places. A layout saved before the flags reads as all-on.
+
+## 69.4 Shape changes never delete artwork
+Replacing a default with a different shape resets the boxes and reports, by name, which place pictures no
+longer fit; they are kept and skipped ("Different shape — not used until replaced"). A picture with no
+recorded size is never used.
+
+## 69.5 Tidy up places
+Same modal shell as Add event at every breakpoint (`EVENT_MODAL_SHELL`/`_WIDE`/`_NARROW` constants).
+"Name on posts" and "Address" are full-width rows. **Merge is gone from the screen**; `sg_merge_place` and
+`merged_into_id` resolution are untouched, and Restore still un-merges.
+
+# 70. Event types (V13.9 — 4 October 2026, `event-types` branch)
+
+## 70.1 What a type is
+A named preset a truck picks when adding an event (Festival, Pub…). Built so far: **service settings only**
+— Collection times, Order-ready step, Do you take cash?, Offline order protection, Remind me to add a
+buzzer. Prices, items sold, stock, deals and private visibility are later stages.
+
+## 70.2 What the investigation found (read before building prices)
+- **There is no per-event pricing anywhere.** `loadPriceBook(supabase, truckId)` is scoped by truck only;
+  the menu API serves `menu_items_db.price`. Prices must be **built**: an event-aware price book **beside**
+  `loadPriceBook` (not a changed signature), and the menu API's price leg.
+- The server is the only price authority; orders store `items[].unit_price`, so **placed orders never
+  move**. Operator hand-prices are audited (`price_override` / `book_price`) — the precedent for typed prices.
+- **The no-id event fallback** picks "the earliest" event, and the menu API and submit route order
+  differently. Typed pricing must **refuse when the event is ambiguous**. (In the last 90 days, every order
+  carried an event id.)
+- Per-event stock tables are **sparse overrides** with a server gate and **no counters** (consumption is read
+  from orders). `event_deals.overridden` is already the "hand change" marker a type needs. Deal time windows
+  are **enforced in the browser only**.
+- Public surfaces for private events: the discovery feed (`app/api/discovery/events/route.ts`) feeds the
+  listing, the truck page **and** the map — one mapper to change; the schedule feed's dedup key must be built
+  before substituting "Private event"; the menu API's auto-detect must never pick a private event. A private
+  link needs its own noindex header and rate-limit entry, like `/o`.
+
+## 70.3 Resolve on read
+`truck_events.event_type_id` (nullable, no default, on delete set null) is the whole state. One pure function
+per setting in `lib/event-types/resolve.ts`: **event hand change ?? type ?? van/truck default** (`??`,
+never `||` — `false` is a real instruction). Switching type is one column write. No type ⇒ the resolver
+returns today's expression exactly; proved by compiling the pre-build tree and comparing exhaustively.
+
+## 70.4 The order-ready seed problem
+`order_ready_override` is seeded at creation and bulk-written when the van default flips, so a type could
+never win. `truck_events.order_ready_source` ('seed' | 'truck' | NULL) records who wrote it: the dashboard
+toggle writes 'truck' (wins over the type); creation paths and the master switch write 'seed' (the type
+wins). Add event does not seed it when a type is chosen. Untyped events never read the source column.
+
+## 70.5 Offline protection
+`resolveOfflineWithType` resolves switch, mode and delay as three independent chains. The **heartbeat
+monitor** (a Deno function that cannot import `lib/`) carries a second copy of the chain, asserted to match.
+The delay is not offered on a type (§ decisions).
+
+## 70.6 The modal (v3)
+- Opened from an "Event types" button in the Schedule header (on `main` there is no sub-tab bar; after the
+  merge it becomes the third Schedule pill).
+- Fixed-width columns (label 212px, values 168px), dividers between all columns, scrolls sideways inside a
+  dialog capped at 1000px.
+- **Standard** = one column per active van (oldest first), or one "Standard" column for one van. Each saves
+  through Settings' own action (`update_van_settings`, or `update_truck` for the truck-level "Do you take
+  cash?", which shows one switch per van column moving together, titled "Applies to all your vans").
+- **Types**: NULL values render faded at the first van's value ("Follows each van's usual setting" on
+  hover); touching sets an explicit value for every van. ⋯ menu: Rename · Move left · Move right · Match
+  Standard · Delete.
+- Labels from `lib/copy/serviceSettings.ts`, shared by Settings, the modal and the dashboard card.
+- Shared controls: `Toggle` and `Select` in `components/manage/primitives.tsx`; `CONTROL_BOX` in
+  `lib/ui-tokens.ts`. Settings' own selects remain native.
+
+## 70.7 The dashboard "This event" card
+`components/dashboard/ThisEventCard.tsx`, at the top of the dashboard's Kitchen tab. Every row is **this
+event only**: event type (when the truck has types), stock and items sold (hands over to Stock), one switch
+per deal (`set_event_deal`, `overridden: true`), the five service settings (collection times hands over to
+the existing box). Five controls moved into it from separate cards — the list Dominic approves before
+deploy. Footer: "N settings changed for this event only" + Reset.
+
+## 70.8 Remaining stages (designed on the Event types canvas)
+Items sold + stock per type; deals per type (Menu › Deals: "applies to event types"); **prices** (type +/− £
+or %, rounding none / nearest £1 / always up, typed per-item overrides; and the same on the dashboard per
+event, with the live-event warning); **private events** (shown as "Private event", no address, no map pin;
+one private link per event, replaceable; QR code).
+
+# 71. Manage moves on `schedule-graphics` (V13.9 — 4 October 2026)
+
+## 71.1 Menu › Kitchen capacity
+Second Menu pill: Items · Kitchen capacity · Extras & upsells · Deals. `components/manage/KitchenCapacitySection.tsx`.
+- One van: the box, no question. 2+ vans: "Same kitchen capacity for all vans?" on Settings' green `Toggle`.
+  On = one box "All vans · Kitchen capacity" (edits the first van, fans out). Off = one box per active van.
+- **The answer is read, never stored**: on only when every non-first active van follows. Mixed reads off;
+  the first save on that screen unfollows the stragglers. Nothing is written on load.
+- Off → on asks first and copies the first van's capacity to all. On → off keeps each van's values.
+- `add_van` reads the answer **before** inserting: on ⇒ the new van follows; off ⇒ it gets its own box.
+  Values are copied either way. The column default stays false.
+- `truck_vans.capacity_same_as_first_van` is independent of `same_as_first_van`; Settings' "Same as Van 1"
+  now covers everything **except** capacity (`VAN_COPY_FIELDS` / `CAPACITY_COPY_FIELDS`, disjoint).
+- `firstVanId` callers now pass the real `active` flag.
+
+## 71.2 Schedule settings
+Cards "Your schedule" and "Import exclusions" moved to `components/manage/ScheduleSettingsModal.tsx`, opened
+from a "Finding events automatically" card on Schedule › Events; `CustomDomainSetup` stayed in Settings
+directly above the QR code (the printed QR resolves at scan time). Verify messages in
+`lib/copy/scheduleVerify.ts`. ⚠️ **Dominic reversed this on 4 October: it goes back into Settings.** Not yet
+built.
+
+## 71.3 Pills
+`SUBTAB_BAR` / `SUBTAB_ROW` / `subtabBtn` render rounded pills (slate-100 inactive, slate-900 active),
+32px high. Sticky behaviour, scroll-spy, `?section=` and legacy `?tab=` unchanged.
+
+# 72. Process (V13.9 — 4 October 2026)
+
+## 72.1 Two branches
+`schedule-graphics` (V13.8 work and §69, §71) and `event-types` (§70, cut from `main`). Both share
+production migrations. Each Cursor prompt works on one branch; two prompts must not run at once, because
+they share one working copy. Stop the dev server before a prompt switches branch.
+
+## 72.2 Harness scope
+Each build runs `tsc`, `npm run build`, ESLint on added lines, the page multiset diff, and **only the
+harnesses that compile or read a changed file**. The **full sweep** (about three hours, run in chunks with
+`--list=`) runs **only before a deploy**.
+
+## 72.3 Follow-up messages to a running prompt
+Dominic sends corrections to Cursor mid-build as short "addition" prompts that write to the **same** report
+file. Each must still carry the garbled/contradiction line and the FINALLY line.
+
+## 72.4 The release plan
+1. Combine: merge `event-types` into `schedule-graphics` (both moved `Toggle` into
+   `components/manage/primitives.tsx` — reconcile to one), Event types as the third Schedule pill, Schedule
+   settings back into Settings. One localhost.
+2. Remaining event-type stages and the Places tab, tested on that localhost.
+3. Release prompt: posts limited to `test-truck`; full sweep; a list of everything Pizzeria Gusto will see,
+   approved by Dominic; Dominic deploys by hand.
+
+---
 
 *End of manual. The version is stated once, in the header — deliberately not repeated here.*
