@@ -1229,6 +1229,65 @@ function runWiringSuite(lib) {
     /min-w-0 overflow-x-auto/.test(P) && /const SUBTAB_ROW = 'flex gap-1\.5 w-max'/.test(P)
     && (P.match(/className=\{SUBTAB_ROW\}/g) || []).length === 3)
 
+  /* ══ 🔴 NOTHING RENDERS ABOVE A SUB-TAB BAR (4 October 2026) ═══════════════════════════════════════
+   * THE REPORT: "for the pils under menu, schedule and settings, they have been pushed down the screen
+   * a little so when you scroll down the screen they move up … make sure the pils are locked as well."
+   * THE CAUSE: the page's seven notices (walkthrough strip, approvals, allergens, custom domain,
+   * Stripe, missing fields, staleness bar) were the FIRST children of the `pt-6 manage-tab-pad`
+   * wrapper. With any one of them showing, the bar below it was no longer the wrapper's first child,
+   * the `:has()` rule in app/globals.css stopped matching, the `pt-6` stayed, and the bar rested low
+   * and snapped flush on the first scroll. `position: sticky` has no upward reach, so there is no CSS
+   * answer — only order.
+   * 🔴 THIS IS A STRUCTURAL CHECK, NOT A CLASS CENSUS, because the defect is DOM ORDER. The rendered
+   * pixels are measured by scripts/schedule-places-render.cjs, which now reproduces this wrapper and
+   * fails a notice placed above a bar. What is asserted here is the thing a renderer cannot see: that
+   * the SOURCE cannot put one there again. */
+  t('🔴 THE NOTICES ARE ONE NODE, not seven inline blocks at the top of the wrapper',
+    /const notices = \(\n    <>/.test(P)
+    && /const TABS_WITH_SUBTABS: Tab\[\] = \['menu', 'schedule', 'settings'\]/.test(P))
+  t('🔴 NOTHING IS RENDERED BETWEEN THE PADDED WRAPPER AND THE FIRST SUB-TAB BAR but the notices gate',
+    (() => {
+      const open = P.indexOf('<div className="pt-6 manage-tab-pad">')
+      const bar = P.indexOf('data-subtab-bar', open)
+      if (open < 0 || bar < 0) return false
+      /* every JSX expression or element between the two, with blank lines dropped.
+       * ⚠️ AND `{}` DROPPED TOO. `stripComments` empties a block comment but leaves the braces of a
+       * JSX one, so every `{/* … *\/}` line collapses to `{}` — a token pair that renders nothing.
+       * Counting those as content would make this check fail on a comment, which is not what it is
+       * for; what it must catch is an ELEMENT or a real expression sneaking in above the bar. */
+      const between = P.slice(open + '<div className="pt-6 manage-tab-pad">'.length, P.lastIndexOf('{activeTab ===', bar))
+        .split('\n').map(l => l.trim()).filter(l => l && l !== '{}')
+      return between.length === 1
+        && between[0] === "{!TABS_WITH_SUBTABS.includes(activeTab) && notices}"
+    })())
+  t('🔴 …and that gate renders NOTHING on the three tabs that own a bar, so the bar really is first',
+    /\{!TABS_WITH_SUBTABS\.includes\(activeTab\) && notices\}/.test(P)
+    && !/\{TABS_WITH_SUBTABS\.includes\(activeTab\) && notices\}/.test(P))
+  t('🔴 all three bars are followed by the notices, and all three are handed them',
+    /\{activeTab === 'menu' && notices\}/.test(P)
+    && /\{isActive && notices\}/.test(P)
+    && /\{notices\}/.test(P)
+    && (P.match(/notices=\{notices\}/g) || []).length === 2
+    /* the Menu bar, then its notices — in that order, not the other way round */
+    && P.indexOf("{activeTab === 'menu' && notices}") > P.indexOf('data-subtab-bar className={`${SUBTAB_BAR} mb-4`}')
+    /* Schedule: its bar, then its notices */
+    && P.indexOf('{isActive && notices}') > P.lastIndexOf('aria-label="Schedule sections"')
+    /* Settings: its bar, then its notices */
+    && P.indexOf('{notices}', P.indexOf('aria-label="Settings sections"')) > P.indexOf('aria-label="Settings sections"'))
+  t('⚠️ the staleness bar went WITH them — it sat immediately above the Menu bar and cost it the same 24px',
+    /const staleBar = refreshFailedAt \?/.test(P)
+    && (() => {
+      const n = P.indexOf('const notices = (')
+      const end = P.indexOf('<div className="pt-6 manage-tab-pad">')
+      return P.slice(n, end).includes('{staleBar}') && !P.slice(end).includes('{staleBar}')
+    })())
+  t('🔴 the `:has()` rule that gives the wrapper up its padding is still there, both depths',
+    (() => {
+      const css = read('app/globals.css')
+      return /\.manage-tab-pad:has\(> \[data-subtab-bar\]:first-child\),\n\.manage-tab-pad:has\(> \*:first-child > \[data-subtab-bar\]:first-child\) \{\n  padding-top: 0;\n\}/.test(css)
+        && /DO NOT PUT ANYTHING BACK ABOVE A SUB-TAB BAR/.test(css)
+    })())
+
   /* 🔴 NO SETTINGS WORDING CHANGED. Asserted by DIFFING EVERY QUOTED STRING in SettingsTab against
    * the commit this build started from — not by reading. The only additions allowed are the eight
    * section labels. */
@@ -1624,8 +1683,12 @@ function runWiringSuite(lib) {
         reason: 'the capacity pointer prop went; a Schedule settings one arrived',
         nowIn: 'app/manage/[token]/page.tsx', now: 'onOpenScheduleSettings={() =>' },
       { was: 'function SettingsTab({ userRole, truck, whatsappConnection',
-        reason: 'the capacity prop left the signature; the Schedule settings one joined it',
-        nowIn: 'app/manage/[token]/page.tsx', now: ', onOpenWalkthrough, onOpenScheduleSettings }: {' },
+        /* ⚠️ THIS ENTRY HAS NOW CHANGED THREE TIMES, and each time the companion check below was what
+         * said so. The latest: on 4 October the signature gained `notices`, because the page's seven
+         * notification banners render BELOW this tab's sticky bar rather than above it — the bar has to
+         * be the first child of the padded wrapper or it cannot sit flush. */
+        reason: 'the capacity prop left; the Schedule settings one joined it; then `notices` did',
+        nowIn: 'app/manage/[token]/page.tsx', now: ', onOpenScheduleSettings, notices }: {' },
       /* 3 · `mt-3` WAS A RELATIONSHIP TO THE CARD ABOVE IT, and there is no card above it any more.
        * The capacity card was the last sub-card inside a van's Kitchen panel; it is now the first
        * thing on its own screen, where a top margin would be a stray gap. */

@@ -358,3 +358,124 @@ its default stays `false` — the ON-by-default rule is applied by `add_van`, no
 | `scripts/schedule-graphics-places.cjs` | the pill assertions, the card assertions, the moved-line accounting |
 | `scripts/schedule-places-render.cjs` | the capacity states, the modal, the three bars, the finding-events card, 36 screenshots |
 | `scripts/van-category-settings.cjs` | two checks corrected — §6 |
+
+---
+
+# ADDENDUM · 4 OCTOBER 2026 — THE PILLS WERE NOT LOCKED
+
+> *"for the pils under menu, schedule and settings, they have been pushed down the scren a little so
+> wehn you scroll down the screen they move up. we have this problem with the selectors before but they
+> were locked. make sure the pils are locked as well"*
+
+## A1 · WHAT WAS ACTUALLY WRONG
+
+Not the CSS. The `:has()` rule from 3 October (§65.4 of the manual) was present, compiled and correct —
+I measured it in isolation first, and all three bars rested flush at 0px and stayed there. The rule was
+simply **not firing on the operator's screen**, because its condition was not met.
+
+The condition is "a sub-tab bar is the FIRST child of the `pt-6 manage-tab-pad` wrapper". Seven things
+could render above it:
+
+| | |
+|---|---|
+| walkthrough "remind me later" strip | every tab |
+| events-to-approve banner | every tab but Schedule |
+| allergens-not-verified banner | every tab but Menu |
+| custom-domain banner | every tab |
+| Stripe-requirements banner | every tab but Payments |
+| mandatory-fields banner | every tab |
+| the staleness bar | every tab |
+
+With any **one** of them showing, the bar was no longer first, the `:has()` stopped matching, the `pt-6`
+stayed, and the bar rested 24px + that notice's height down the page — then snapped flush on the first
+scroll. The same two resting positions as 3 October, reached by a different route. A test truck with
+unverified allergens and a pending event hits two of them at once, on all three tabs.
+
+**`position: sticky` has no upward reach**, so there is no CSS answer to content above the bar: no
+offset, no negative margin (tried and rejected on 3 October — it pulled the bar through the banner), no
+measured `top`. The ORDER had to change.
+
+## A2 · THE FIX
+
+The seven notices became **one `notices` node** in `app/manage/[token]/page.tsx`, rendered **below** each
+sub-tab bar:
+
+* **Menu** — `{activeTab === 'menu' && notices}`, immediately after the bar, both direct children of the
+  wrapper.
+* **Schedule** — a `notices` prop; `ScheduleTab` renders `{isActive && notices}` after its own bar inside
+  the same fragment, so both stay direct children of the wrapper.
+* **Settings** — a `notices` prop; `SettingsTab` renders `{notices}` after its bar inside its own
+  `space-y-6` root, so the notices take that list's 24px gap and nothing renders when none is showing.
+* **The four tabs with no bar** (Reports, Team, Payments, Billing) still render the stack at the top,
+  where it belongs for them. `TABS_WITH_SUBTABS` is the one list that decides which case a tab is in, so
+  a fifth tab gaining a bar cannot leave the stack above it.
+
+Nothing about **when** a notice shows changed — every condition, including the `activeTab !== 'schedule'`
+/ `!== 'menu'` / `!== 'payments'` suppressions, is the one it was. This is a move. The only new rule is
+where they render; a notice now scrolls under the pinned bar like any other page content.
+
+`app/globals.css` keeps both `:has()` selectors (Settings' bar is still one level deeper than the other
+two) and records why nothing may go back above a bar.
+
+## A3 · THE HARNESS WAS MEASURING A LAYOUT NOBODY IS SERVED
+
+`barFixture` in `scripts/schedule-places-render.cjs` built its own shell — `<main class="flex-1
+overflow-y-auto">` with a plain `max-w-5xl px-4` child. **No `pt-6`, no `.manage-tab-pad`.** Its "THE BAR
+IS FLUSH AT REST" assertion therefore could not fail, and it passed green on the very build whose bars
+were reported as sitting low and jumping. This is the same failure class as the Settings fixture that went
+on measuring the old shell, and it is the one that let this ship.
+
+Both classes are lifted from the source now, and three measurements were added per bar, per width, per
+engine:
+
+| | at rest | after a 1200px scroll |
+|---|---|---|
+| no notice | 0px | 0px |
+| **notice BELOW** (the fix) | 0px | 0px |
+| **notice ABOVE** (broken variant) | **90px** | 0px |
+
+The broken variant is the operator's report, reproduced — so the passing runs mean something.
+`settingsFixture`'s banner case was **reversed**: it used to place the banner above the bar and assert
+that the wrapper *kept* its padding, i.e. it asserted that the degraded layout was correct. It now places
+the notice below, asserts the bar is flush at rest and still flush scrolled, and a new `bannerAbove`
+variant fails as required.
+
+`scripts/schedule-graphics-places.cjs` gained the structural half, which no renderer can see — that the
+**source** cannot put anything above a bar again:
+
+* the notices are one node, and `TABS_WITH_SUBTABS` exists;
+* **nothing** is rendered between the wrapper and the first `data-subtab-bar` but the gate line (verified
+  to fail: putting `{staleBar}` back above it breaks this check and one other);
+* the gate renders nothing on the three tabs that own a bar;
+* all three bars are followed by the notices, in that order, and both tabs are handed them;
+* the staleness bar went with them and is not left behind;
+* the `:has()` rule and its ⛔ warning are still in `app/globals.css`.
+
+One `movedEdits` claim was stale — `SettingsTab`'s signature now ends `, onOpenScheduleSettings, notices
+}: {` — and the companion check reported ⛔ EDIT CLAIMED BUT NOT PRESENT, which is what it is for.
+
+## A4 · WHAT I DID NOT CHANGE
+
+The bar's `py-2`, which puts the pills 8px below its top edge. That is 8px of air **inside** a bar that no
+longer moves, and it is there because a filled pill needs air an underlined tab did not. The 8px is the
+same at rest and when pinned, so it is not the "pushed down … they move up" that was reported. Say the
+word and it goes.
+
+## A5 · RESULTS
+
+| | |
+|---|---|
+| `scripts/schedule-graphics-places.cjs` | **249 passed**, 11 variants failed as required |
+| `scripts/schedule-places-render.cjs` | **934 passed** in Chromium and WebKit, 0 failed |
+| `scripts/capacity-move-identity.cjs` | 53 checks, 11 variants failed as required |
+| `scripts/van-category-settings.cjs` | 68 passed, 11 variants failed as required |
+| `npx tsc --noEmit` | clean |
+| `npm run build` | compiled successfully |
+| `npm run lint` | `page.tsx`: the same 5 pre-existing errors as the committed tree, no new ones |
+
+## A6 · MANUAL
+
+`docs/reference-manual.md` §65.4 ended "when a notification banner is first, the padding stays, so the bar
+never overlaps a banner" — a sentence describing the degrade that turned out to be the bug. It is amended
+in place, dated, with the old wording quoted so the history is readable, and lesson 5 in the lessons list
+is marked **REOPENED AND CLOSED AGAIN**. No other section was touched and no hash was changed.

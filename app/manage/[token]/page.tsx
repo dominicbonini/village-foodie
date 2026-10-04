@@ -194,6 +194,10 @@ const MANAGE_SCROLLER_ID = 'manage-scroller'
  */
 const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 py-2 bg-slate-50 border-b border-slate-200 min-w-0 overflow-x-auto'
 const SUBTAB_ROW = 'flex gap-1.5 w-max'
+/* 🔴 THE TABS THAT OWN A SUB-TAB BAR. Read by the notification stack, which must render BELOW a bar
+ * where there is one and at the top of the page where there is not. One list, so a fourth tab gaining
+ * a bar cannot leave the stack above it — which is the whole failure this guards. */
+const TABS_WITH_SUBTABS: Tab[] = ['menu', 'schedule', 'settings']
 const subtabBtn = (on: boolean) =>
   `px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
     on ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
@@ -856,82 +860,20 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     return t.roles.includes(userRole)
   })
 
-  // 🔴 ONE PROVIDER FOR THE WHOLE OPERATOR SURFACE. Wrapped here, at the highest point `truck` is
-  // available, so BillingTab (17 price renders) and FeatureGate (a shared component with no truck
-  // prop) both read the same policy without either being handed a boolean. A price added anywhere
-  // below is masked correctly by default — see components/PricingPolicy.tsx for why that is the
-  // whole point rather than a convenience.
-  // ⚠️ `?? false` — an ABSENT column (pre-migration) means "follow the global flag", i.e. today's
-  // behaviour. Not `?? true`; that default belongs to the context, for a different question.
-  return (
-    <PricingPolicyProvider hidePricing={truck.hide_pricing ?? false}>
-    <div className="bg-slate-50 h-dvh flex flex-col overflow-hidden">{/* App-shell (KDS flex pattern): fixed-viewport column, bars are shrink-0, only <main> scrolls — keeps the header+tabs locked in the iPad WKWebView where stacked position:sticky-against-body-scroll was unreliable. Matches the dashboard. */}
-      {/* Header */}
-      {/* sticky={false}: this header is a shrink-0 flex child of an h-dvh overflow-hidden shell, so
-          position:sticky can never apply an offset here — the root never scrolls and <main> is a SIBLING,
-          not an ancestor. It becomes `relative`, keeping z-50 and the stacking context while dropping
-          WebKit's sticky compositing hint. See AppHeader and docs/native-shell-report.md. */}
-      <AppHeader
-        sticky={false}
-        truckName={truck.name}
-        truckLogoUrl={truck.logo ?? null}
-        subtitle="Management console"
-      >
-        <AppLink href={`/dashboard/${token}`}
-          className="text-xs text-slate-400 hover:text-orange-400 font-bold transition-colors hidden sm:block">
-          ← Orders dashboard
-        </AppLink>
-        <UserMenu
-          operatorName={currentUserName || currentUserFirstName || ''}
-          userEmail={currentUserEmail}
-          token={token}
-          showDashboardLink
-          isAdmin={isAdmin}
-        />
-      </AppHeader>
-      {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts.
-          Non-scrolling shrink-0 flex child (not sticky) → locked on every tab/browser incl. iPad WKWebView.
-          overflow-x-auto stays on the inner row for narrow-width horizontal tab scroll. */}
-      <div className="bg-slate-900 border-b border-slate-700 shrink-0 z-40">
-        <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
-          {tabs.map(t => (
-            // K3: `data-tab-id` is the walkthrough's ANCHOR. It is a stable identifier, not a position —
-            // the tour resolves `[data-tab-id="settings"]` at open time, so this bar can be reordered,
-            // role-filtered or extended without touching lib/walkthrough.ts. Do not remove it.
-            <button key={t.id} data-tab-id={t.id} onClick={() => setActiveTab(t.id)}
-              className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${activeTab === t.id ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
-              <span>{t.icon}</span>
-              {t.id === 'schedule' && pendingApprovalCount > 0 ? (
-                // Pending: show the count inline in the same font, reading "Schedule (8)" in orange.
-                <span className="text-orange-400">{t.label} ({pendingApprovalCount})</span>
-              ) : t.id === 'payments' && stripeActionRequired ? (
-                // Stripe needs something from the truck: the SAME orange-400 (!) treatment the Menu tab
-                // uses for unverified allergens — a countless variant, because "how many requirements"
-                // is not a number an operator can act on. No new formatting was invented.
-                <span className="text-orange-400">{t.label} <span aria-label="Stripe needs your attention">(!)</span></span>
-              ) : t.id === 'menu' && allergensUnverified ? (
-                // Allergens unverified: a (!) on the Menu tab. Uses the SAME orange-400 treatment as the
-                // Schedule needs-approval cue (consistency) — not amber.
-                <span className="text-orange-400">{t.label} <span aria-label="allergens not set">(!)</span></span>
-              ) : (
-                t.label
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* The ONLY scroll container — flex-1 min-h-0 fills the shell and scrolls internally while the bars
-          stay put. NO top padding on the scroller: a `position:sticky` child pins at the scroll container's
-          CONTENT box, so padding-top here would become a permanent gap above any sticky header (the Billing
-          plan/price row). The resting top gap lives on the inner `pt-6` wrapper as SCROLLABLE content
-          instead, so `sticky top-0` pins FLUSH under the tabs — no magic offset, desktop + iPad WKWebView. */}
-      {/* 🔴 `id` ADDED SO SETTINGS' SCROLL-SPY CAN FIND ITS SCROLLER. This is the ONLY scroll container
-          on the page — the shell is `h-dvh overflow-hidden` and the bars are `shrink-0` siblings — so
-          `window.scrollY` is always 0 here and a spy written against the window would never fire.
-          Everything in `useSettingsJumpBar` reads this element's `scrollTop`/`clientHeight`/`scrollHeight`. */}
-      <main id={MANAGE_SCROLLER_ID} className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6"}>
-        <div className="pt-6 manage-tab-pad">
+  /* ══ 🔴 THE NOTIFICATION STACK — ONE NODE, RENDERED BELOW THE SUB-TAB BAR ════════════════════════
+   * Six banners and the staleness bar. They were inline at the top of the scroller's padded wrapper;
+   * they are a `const` now for one reason only: the sub-tab bar has to be the FIRST child of that
+   * wrapper or it cannot sit flush (`position: sticky` has no upward reach — see the `.manage-tab-pad`
+   * rule in app/globals.css), and the only way to have them below a bar that three different
+   * components render is to hand them to those components.
+   * ⚠️ NOTHING ABOUT WHEN THEY SHOW CHANGED. Every condition below is the one it was, including the
+   * `activeTab !== 'schedule'` / `!== 'menu'` / `!== 'payments'` suppressions — this is a move, not a
+   * rewrite. The only new rule is WHERE they render.
+   * ⚠️ IT IS READ IN FOUR PLACES — the wrapper (for tabs with no bar) and the three tabs that have
+   * one. React renders a node once per place it appears and these four are mutually exclusive by
+   * `activeTab`, so exactly one of them is ever on screen. */
+  const notices = (
+    <>
         {/* ── K2: THE "REMIND ME LATER" STRIP ────────────────────────────────────────────────────────
             Left behind by the done screen's "Remind me later", and persistent until it is taken or
             dismissed — no timer, no timestamp, ONE boolean in the same per-truck localStorage key the
@@ -1033,6 +975,100 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           )
         })()}
         {staleBar}
+    </>
+  )
+  // 🔴 ONE PROVIDER FOR THE WHOLE OPERATOR SURFACE. Wrapped here, at the highest point `truck` is
+  // available, so BillingTab (17 price renders) and FeatureGate (a shared component with no truck
+  // prop) both read the same policy without either being handed a boolean. A price added anywhere
+  // below is masked correctly by default — see components/PricingPolicy.tsx for why that is the
+  // whole point rather than a convenience.
+  // ⚠️ `?? false` — an ABSENT column (pre-migration) means "follow the global flag", i.e. today's
+  // behaviour. Not `?? true`; that default belongs to the context, for a different question.
+  return (
+    <PricingPolicyProvider hidePricing={truck.hide_pricing ?? false}>
+    <div className="bg-slate-50 h-dvh flex flex-col overflow-hidden">{/* App-shell (KDS flex pattern): fixed-viewport column, bars are shrink-0, only <main> scrolls — keeps the header+tabs locked in the iPad WKWebView where stacked position:sticky-against-body-scroll was unreliable. Matches the dashboard. */}
+      {/* Header */}
+      {/* sticky={false}: this header is a shrink-0 flex child of an h-dvh overflow-hidden shell, so
+          position:sticky can never apply an offset here — the root never scrolls and <main> is a SIBLING,
+          not an ancestor. It becomes `relative`, keeping z-50 and the stacking context while dropping
+          WebKit's sticky compositing hint. See AppHeader and docs/native-shell-report.md. */}
+      <AppHeader
+        sticky={false}
+        truckName={truck.name}
+        truckLogoUrl={truck.logo ?? null}
+        subtitle="Management console"
+      >
+        <AppLink href={`/dashboard/${token}`}
+          className="text-xs text-slate-400 hover:text-orange-400 font-bold transition-colors hidden sm:block">
+          ← Orders dashboard
+        </AppLink>
+        <UserMenu
+          operatorName={currentUserName || currentUserFirstName || ''}
+          userEmail={currentUserEmail}
+          token={token}
+          showDashboardLink
+          isAdmin={isAdmin}
+        />
+      </AppHeader>
+      {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts.
+          Non-scrolling shrink-0 flex child (not sticky) → locked on every tab/browser incl. iPad WKWebView.
+          overflow-x-auto stays on the inner row for narrow-width horizontal tab scroll. */}
+      <div className="bg-slate-900 border-b border-slate-700 shrink-0 z-40">
+        <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
+          {tabs.map(t => (
+            // K3: `data-tab-id` is the walkthrough's ANCHOR. It is a stable identifier, not a position —
+            // the tour resolves `[data-tab-id="settings"]` at open time, so this bar can be reordered,
+            // role-filtered or extended without touching lib/walkthrough.ts. Do not remove it.
+            <button key={t.id} data-tab-id={t.id} onClick={() => setActiveTab(t.id)}
+              className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${activeTab === t.id ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
+              <span>{t.icon}</span>
+              {t.id === 'schedule' && pendingApprovalCount > 0 ? (
+                // Pending: show the count inline in the same font, reading "Schedule (8)" in orange.
+                <span className="text-orange-400">{t.label} ({pendingApprovalCount})</span>
+              ) : t.id === 'payments' && stripeActionRequired ? (
+                // Stripe needs something from the truck: the SAME orange-400 (!) treatment the Menu tab
+                // uses for unverified allergens — a countless variant, because "how many requirements"
+                // is not a number an operator can act on. No new formatting was invented.
+                <span className="text-orange-400">{t.label} <span aria-label="Stripe needs your attention">(!)</span></span>
+              ) : t.id === 'menu' && allergensUnverified ? (
+                // Allergens unverified: a (!) on the Menu tab. Uses the SAME orange-400 treatment as the
+                // Schedule needs-approval cue (consistency) — not amber.
+                <span className="text-orange-400">{t.label} <span aria-label="allergens not set">(!)</span></span>
+              ) : (
+                t.label
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* The ONLY scroll container — flex-1 min-h-0 fills the shell and scrolls internally while the bars
+          stay put. NO top padding on the scroller: a `position:sticky` child pins at the scroll container's
+          CONTENT box, so padding-top here would become a permanent gap above any sticky header (the Billing
+          plan/price row). The resting top gap lives on the inner `pt-6` wrapper as SCROLLABLE content
+          instead, so `sticky top-0` pins FLUSH under the tabs — no magic offset, desktop + iPad WKWebView. */}
+      {/* 🔴 `id` ADDED SO SETTINGS' SCROLL-SPY CAN FIND ITS SCROLLER. This is the ONLY scroll container
+          on the page — the shell is `h-dvh overflow-hidden` and the bars are `shrink-0` siblings — so
+          `window.scrollY` is always 0 here and a spy written against the window would never fire.
+          Everything in `useSettingsJumpBar` reads this element's `scrollTop`/`clientHeight`/`scrollHeight`. */}
+      <main id={MANAGE_SCROLLER_ID} className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6"}>
+        <div className="pt-6 manage-tab-pad">
+        {/* 🔴 THE NOTIFICATION STACK IS NOT HERE ANY MORE — IT IS BELOW EACH SUB-TAB BAR ──────────
+            The six banners and the staleness bar used to be the first children of this wrapper. On a
+            day any ONE of them was showing, the sub-tab bar below it was no longer the first child:
+            the `:has()` rule in app/globals.css stopped matching, the wrapper kept its `pt-6`, and the
+            bar rested ~24px + the banner's height down the page and SNAPPED FLUSH on the first scroll.
+            That is the two-resting-positions bug of 3 October all over again, just triggered by a
+            banner instead of by padding — and it is what Dominic reported on 4 October: "they have been
+            pushed down the screen a little so when you scroll down the screen they move up".
+            🔴 THE FIX IS ORDER, NOT ARITHMETIC. `position: sticky` cannot hold an element ABOVE its
+            normal-flow position, so no offset, negative margin or measured `top` can rescue a bar that
+            has content above it. The bar has to BE first. The stack therefore moved below it — in each
+            of the three tabs that own a bar, via the `notices` prop — and the banners now scroll under
+            the pinned bar like every other piece of page content.
+            ⚠️ TABS WITH NO BAR STILL RENDER IT HERE, at the top, which is where it belongs for them.
+            `TABS_WITH_SUBTABS` is the one list that decides which case a tab is in. */}
+        {!TABS_WITH_SUBTABS.includes(activeTab) && notices}
         {/* ── 🔴 THE MENU SUB-TABS ─────────────────────────────────────────────────────
             🔴 PILLS → THE SHARED UNDERLINED BAR (3 October 2026, operator request). They were pills
             on the reasoning that the bar above is the app's one underlined row; the operator asked for
@@ -1055,6 +1091,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </div>
           </div>
         )}
+        {/* 🔴 THE NOTIFICATION STACK, BELOW THE BAR — see `notices` above for why. */}
+        {activeTab === 'menu' && notices}
         {/* 🔴 EACH PILL RENDERS THE EXISTING COMPONENT, BODY UNEDITED — same props, same behaviour,
             same plan gating (each of these three already gates its own content where it needs to, and
             none of that is touched). The only change is which of them is on screen. */}
@@ -1066,7 +1104,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             tab gains one line rather than eight of SettingsTab's internals. */}
         {activeTab === 'menu' && menuSection === 'capacity' && <KitchenCapacitySection categories={categories} api={api} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
-        <ScheduleTab isActive={activeTab === 'schedule'} section={scheduleSection} onSectionChange={setScheduleSection} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onVerifySuccess={handleVerifiedEvents} scheduleSettingsOpen={showScheduleSettings} onScheduleSettingsOpenChange={setShowScheduleSettings} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} />
+        <ScheduleTab isActive={activeTab === 'schedule'} section={scheduleSection} onSectionChange={setScheduleSection} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onVerifySuccess={handleVerifiedEvents} scheduleSettingsOpen={showScheduleSettings} onScheduleSettingsOpenChange={setShowScheduleSettings} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} notices={notices} />
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}
@@ -1085,7 +1123,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} onOpenScheduleSettings={() => { setScheduleSection('events'); setShowScheduleSettings(true); setActiveTab('schedule') }} />}
+        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} onOpenScheduleSettings={() => { setScheduleSection('events'); setShowScheduleSettings(true); setActiveTab('schedule') }} notices={notices} />}
         {activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
         </div>
@@ -7030,7 +7068,7 @@ const EVENT_MODAL_WIDE = 'md:h-[90vh] md:max-w-[1040px]'
 /** The one-column size, for an edit and for the upload flow — short stays short. */
 const EVENT_MODAL_NARROW = 'sm:max-w-lg lg:max-w-2xl'
 
-function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles, categories, api, showToast, onTruckUpdate, onVerifySuccess, scheduleSettingsOpen, onScheduleSettingsOpenChange, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved }: {
+function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles, categories, api, showToast, onTruckUpdate, onVerifySuccess, scheduleSettingsOpen, onScheduleSettingsOpenChange, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved, notices }: {
   /* 🔴 `isActive` IS STILL "the Schedule tab is open", NOT "the Events section is showing", and that
    * is deliberate. Every load in this component keys off it (`loadEvents`, the vans read, the
    * conflict scan) and `onPendingCount` drives the "Schedule (8)" badge on the tab bar. Narrowing it
@@ -7038,6 +7076,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    * section decides what is RENDERED, never what is LOADED. */
   isActive: boolean; section: ScheduleSection; onSectionChange: (s: ScheduleSection) => void
   truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
+  /** 🔴 THE PAGE'S SIX NOTIFICATION BANNERS — rendered here, under this tab's own bar, so the bar
+   *  stays the first child of the manage scroller's padded wrapper. See `notices` at the page level. */
+  notices: React.ReactNode
   api: (a: string, e?: any) => Promise<any>; showToast: ShowToast
   /* ⛔ `onSwitchTab` IS GONE FROM THIS TAB. Its only consumer was the "Change in Settings" link on
    * the "Finding events automatically" caption, and that caption is now a card whose button opens the
@@ -8509,6 +8550,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         </div>
       </div>
     )}
+    {/* 🔴 THE PAGE'S NOTIFICATION STACK, BELOW THE BAR — see `notices` at the page level. */}
+    {isActive && notices}
     {isActive && section === 'events' && (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -9758,10 +9801,15 @@ function useSettingsJumpBar(active: boolean) {
   return { barRef, sectionEls, pinnedTop, activeId, jumpTo, lastSectionMinHeight }
 }
 
-function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough, onOpenScheduleSettings }: {
+function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough, onOpenScheduleSettings, notices }: {
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
   userRole: UserRole
+  /** 🔴 THE PAGE'S SIX NOTIFICATION BANNERS, RENDERED BY THIS TAB RATHER THAN ABOVE IT. The sub-tab
+   *  bar must be the FIRST thing in the manage scroller or `position: sticky` cannot hold it flush —
+   *  see the `.manage-tab-pad` rule in app/globals.css. Passing the stack down is what keeps that
+   *  true on a day a banner is showing. */
+  notices: React.ReactNode
   truck: Truck; token: string
   /** S2: the reduced, client-safe connection view. null = not loaded yet or the
    *  payload predates this field — both treated as 'not connected'. */
@@ -10661,6 +10709,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           ))}
         </div>
       </div>
+
+      {/* 🔴 THE PAGE'S NOTIFICATION STACK, BELOW THE BAR — see `notices` at the page level for why
+          it is not above it. A direct child of this `space-y-6` list, so each banner takes the list's
+          own 24px gap; when nothing is showing it renders no node and this line costs nothing. */}
+      {notices}
 
       {/* ── K4: THE WALKTHROUGH RE-OPEN ENTRY POINT ────────────────────────────────────────────────
           🔴 MOVED TO THE TOP, 10 August 2026 (operator review). It sat as the LAST card, after "Your

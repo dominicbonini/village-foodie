@@ -311,6 +311,10 @@ const HEAD = css => `<!doctype html><html><head><meta charset="utf-8">
 const filler = (label, h) =>
   `<div style="height:${h}px;background:#eef2f7;border:1px solid #cbd5e1;border-radius:12px">${label}</div>`
 
+/* 🔴 ONE NOTIFICATION BANNER, used by both sticky fixtures. Where it goes is the whole question: ABOVE
+ * a sub-tab bar it costs the bar its flush resting position, BELOW it costs nothing. */
+const BANNER = `<div id="banner" style="background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:12px" class="mb-4">a notification banner</div>`
+
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE FIXTURE — the two panes, from the component's own classes
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -575,7 +579,7 @@ function menuPillFixture(css, pillCount) {
  *                    `<main>` comment warns about — a sticky child then pins 24px down, so the bar
  *                    detaches from the top of the scroller and content shows above it.
  */
-function settingsFixture(css, breakSticky = false, breakFlush = false, withBanner = false, direct = false) {
+function settingsFixture(css, breakSticky = false, breakFlush = false, withBanner = false, direct = false, bannerAbove = false) {
   /* 🔴 LIFTED FROM THE SHARED CONSTANT all three sub-tab rows now use. If the real class list
    * changes, `lift` throws rather than quietly measuring a bar the page no longer has. */
   const bar = lift(PAGE, /const SUBTAB_BAR = '(.+?)'/, 'the shared sub-tab bar')
@@ -607,13 +611,14 @@ function settingsFixture(css, breakSticky = false, breakFlush = false, withBanne
   <div style="height:44px;background:#0f172a;color:#94a3b8;display:flex;align-items:center;padding:0 16px" class="shrink-0">tab bar</div>
   <main id="scroller" class="${main}${breakSticky ? ' pt-6' : ''}">
     <div class="${pad}">
-      ${withBanner ? `<div id="banner" style="background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:12px" class="mb-4">a notification banner</div>` : ''}
+      ${bannerAbove ? BANNER : ''}
       ${direct ? '' : '<div class="space-y-6">'}
         <div id="jumpbar" ${breakFlush ? '' : 'data-subtab-bar'} class="${bar}">
           <div class="${barInner}">
             ${labels.map((l, i) => `<button data-settings-tab="${ids[i]}" style="padding:10px 0;font-weight:700;font-size:14px;white-space:nowrap;border-bottom:2px solid ${i === 0 ? '#f97316' : 'transparent'};background:none">${l}</button>`).join('')}
           </div>
         </div>
+        ${withBanner ? BANNER : ''}
         ${filler('New to HatchGrab?', 90)}
         ${filler('Get the app', 90)}
         ${ids.map((id, i) => section(id, labels[i], i)).join('')}
@@ -920,22 +925,33 @@ function scheduleModalFixture(css) {
  * child of a NON-DOCUMENT scroller. A fixture that scrolled the document would answer a different
  * question — the bar would stick to the viewport and every assertion would pass for the wrong reason.
  */
-function barFixture(css, labels, activeIdx = 0) {
+function barFixture(css, labels, activeIdx = 0, { notice = false, noticeAbove = false } = {}) {
   const bar = lift(PAGE, /const SUBTAB_BAR = '(.+?)'/, 'the shared sub-tab bar')
   const row = lift(PAGE, /const SUBTAB_ROW = '(.+?)'/, 'the shared sub-tab row')
   const btn = lift(PAGE, /const subtabBtn = \(on: boolean\) =>\s*\n\s*`(.+?) \$\{/, 'the shared pill')
   const on = lift(PAGE, /on \? '(bg-slate-900 text-white)'/, 'the active pill')
   const off = lift(PAGE, /: '(bg-slate-100 text-slate-700 hover:bg-slate-200)'/, 'the inactive pill')
+  /* 🔴 THE REAL SHELL AND THE REAL PADDED WRAPPER (4 October 2026). This fixture used to build its own
+   * `<main class="flex-1 overflow-y-auto">` with a plain `max-w-5xl px-4` div inside — which had no
+   * `pt-6` and no `.manage-tab-pad`, so its "flush at rest" assertion could not fail. It passed green
+   * on the very build whose bars Dominic reported as sitting low and jumping. A fixture that cannot
+   * reproduce the defect is not measuring the page; both classes are lifted from the source now. */
+  const shell = lift(PAGE, /<div className="(bg-slate-50 h-dvh flex flex-col overflow-hidden)">/, 'the app shell')
+  const main = lift(PAGE, /<main id=\{MANAGE_SCROLLER_ID\} className=\{"(.+?)"\}>/, 'the manage scroller')
+  const pad = lift(PAGE, /<div className="(pt-6 manage-tab-pad)">/, 'the padded tab wrapper')
+  const notif = `<div id="notice" style="background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:12px" class="mb-4">a notification banner</div>`
   return `${HEAD(css)}
-<div class="bg-slate-50 h-dvh flex flex-col overflow-hidden">
+<div class="${shell}">
   <div class="shrink-0 h-14 bg-slate-900"></div>
-  <main id="scroller" class="flex-1 overflow-y-auto">
-    <div class="max-w-5xl mx-auto px-4">
-      <div id="bar" data-subtab-bar class="${bar}">
+  <main id="scroller" class="${main}">
+    <div class="${pad}">
+      ${noticeAbove ? notif : ''}
+      <div id="bar" data-subtab-bar class="${bar} mb-4">
         <div id="barRow" class="${row}">
           ${labels.map((l, i) => `<button id="pill${i}" class="${btn} ${i === activeIdx ? on : off}">${l}</button>`).join('')}
         </div>
       </div>
+      ${notice ? notif : ''}
       ${filler('the section below the bar', 2400)}
     </div>
   </main>
@@ -1318,7 +1334,34 @@ async function measure() {
         lines.push(`    …stuck after ${stuck.scrolled}px: bar@${stuck.barTop} scroller@${stuck.scrollerTop}`)
         t(stuck.scrolled > 0 && Math.abs(stuck.barTop - stuck.scrollerTop) <= 1,
           `🔴 ${barName} ${w}: STUCK FLUSH after scrolling ${stuck.scrolled}px`)
+        /* 🔴 AND WITH A NOTICE SHOWING. The page's seven notification banners render BELOW the bar as
+         * of 4 October 2026; this is the measurement that says so, and the `noticeAbove` run under it
+         * is the same fixture with the notice back where it used to be — which must behave differently,
+         * or neither run is measuring anything. */
+        for (const [variant, opts, wantFlush] of [
+          ['notice BELOW', { notice: true }, true],
+          ['notice ABOVE (broken)', { noticeAbove: true }, false],
+        ]) {
+          await eng.page.goto(write(`bar-${barName}-${w}-${variant.split(' ')[1]}-${eng.name}.html`, barFixture(css, labels, 0, opts)))
+          const n = await eng.page.evaluate(() => {
+            const sc = document.getElementById('scroller')
+            const bar = document.getElementById('bar')
+            const at = () => Math.round(bar.getBoundingClientRect().top - sc.getBoundingClientRect().top)
+            const rest = at()
+            sc.scrollTop = 1200
+            return { rest, scrolled: at() }
+          })
+          lines.push(`    …${variant}: at rest ${n.rest}px, after scrolling ${n.scrolled}px`)
+          if (wantFlush) {
+            t(n.rest <= 1 && n.scrolled <= 1,
+              `🔴 ${barName} ${w}: A NOTICE BELOW THE BAR COSTS IT NOTHING — flush at rest and still flush scrolled`)
+          } else {
+            t(n.rest > 1 && n.scrolled <= 1,
+              `🔴 ${barName} ${w}: BROKEN VARIANT — a notice ABOVE the bar gives it two resting positions`)
+          }
+        }
         if (w === 1440 || w === 390) {
+          await eng.page.goto(write(`bar-${barName}-${w}-${eng.name}.html`, barFixture(css, labels)))
           await eng.page.evaluate(() => { document.getElementById('scroller').scrollTop = 0 })
           await eng.shot(path.join(shotDir, `pills-${barName.toLowerCase()}-${w}-rest-${eng.name.toLowerCase()}.png`))
           await eng.page.evaluate(() => { document.getElementById('scroller').scrollTop = 1200 })
@@ -1457,27 +1500,51 @@ async function measure() {
         '🔴 BROKEN VARIANT: a padding-top on `<main>` detaches the bar from the top — the bug the comment warns about, reproduced')
     }
 
-    /* ── 🔴 THE BANNER CASE — THE REASON THE FIX IS A `:has()` RULE ─────────────────────
-     * Six notification banners can render above the tab content. With one showing, the bar is NOT the
-     * first child, the wrapper KEEPS its padding, and the bar must sit BELOW the banner — not pulled up
-     * through it, which is exactly what the first `-mt-6` fix did. */
+    /* ── 🔴 THE NOTICE CASE — THE BAR IS STILL FLUSH, BECAUSE THE NOTICE IS BELOW IT ────────────────
+     * 🔴 THIS ASSERTION IS THE REVERSE OF WHAT IT SAID UNTIL 4 OCTOBER 2026, deliberately. It used to
+     * place the banner ABOVE the bar and assert that the wrapper then KEPT its top padding — i.e. it
+     * asserted the degraded layout was correct. It is not: with anything above it the bar rests low
+     * and snaps flush on the first scroll, which is what Dominic reported ("pushed down the screen a
+     * little … when you scroll down the screen they move up"). The page's seven notices moved BELOW
+     * each sub-tab bar, so the measurement is now "a notice costs the bar nothing".
+     * ⚠️ BOTH HALVES: at rest AND after a real scroll. The defect was always two positions, never one. */
     {
       await eng.setViewport(1440, 900)
       await eng.page.goto(write(`set-banner-${eng.name}.html`, settingsFixture(css, false, false, true)))
       const b = await eng.page.evaluate(() => {
+        const sc = document.getElementById('scroller')
         const bn = document.getElementById('banner')
         const jb = document.getElementById('jumpbar')
-        return {
-          overlap: Math.round(bn.getBoundingClientRect().bottom - jb.getBoundingClientRect().top),
-          bannerTop: Math.round(bn.getBoundingClientRect().top),
-          scrollerTop: Math.round(document.getElementById('scroller').getBoundingClientRect().top),
-        }
+        const at = () => Math.round(jb.getBoundingClientRect().top - sc.getBoundingClientRect().top)
+        const rest = at()
+        const below = Math.round(bn.getBoundingClientRect().top - jb.getBoundingClientRect().bottom)
+        sc.scrollTop = 1200
+        return { rest, scrolled: at(), below }
       })
-      lines.push(`  settings WITH A BANNER  banner@${b.bannerTop} scroller@${b.scrollerTop} · banner/bar overlap ${b.overlap}px`)
-      t(b.overlap <= 0,
-        '🔴 settings: with a banner above it the bar does NOT overlap it — the `-mt-6` fix did, the `:has()` rule does not')
-      t(b.bannerTop > b.scrollerTop,
-        '⚠️ …and the wrapper keeps its top padding in that case, so the banner is not jammed against the tab bar')
+      lines.push(`  settings WITH A NOTICE BELOW THE BAR  bar at rest ${b.rest}px, after scrolling ${b.scrolled}px · notice ${b.below}px below the bar`)
+      t(b.below >= 0, '🔴 settings: the notice renders BELOW the bar, not above it')
+      t(b.rest <= 1 && b.scrolled <= 1,
+        '🔴 settings: WITH A NOTICE SHOWING THE BAR IS STILL FLUSH AT REST AND STAYS PUT — one resting position, not two')
+    }
+
+    /* ── 🔴 THE BROKEN VARIANT: THE NOTICE BACK ABOVE THE BAR ───────────────────────────────────────
+     * The same fixture with the banner moved back to where the page used to put it. This is the shape
+     * of the 4 October report, and it must FAIL the assertion above — a guard that cannot reproduce
+     * the defect it guards is not a guard. */
+    {
+      await eng.setViewport(1440, 900)
+      await eng.page.goto(write(`set-banner-above-${eng.name}.html`, settingsFixture(css, false, false, false, false, true)))
+      const b = await eng.page.evaluate(() => {
+        const sc = document.getElementById('scroller')
+        const jb = document.getElementById('jumpbar')
+        const at = () => Math.round(jb.getBoundingClientRect().top - sc.getBoundingClientRect().top)
+        const rest = at()
+        sc.scrollTop = 1200
+        return { rest, scrolled: at() }
+      })
+      lines.push(`  settings BROKEN (notice ABOVE the bar)  at rest ${b.rest}px, after scrolling ${b.scrolled}px`)
+      t(b.rest > 1 && b.scrolled <= 1,
+        '🔴 BROKEN VARIANT: a notice above the bar gives it two resting positions — the 4 October report, reproduced')
     }
 
     /* ── 🔴 THE OTHER DEPTH — MENU AND SCHEDULE ─────────────────────────────────────

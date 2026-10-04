@@ -253,7 +253,11 @@ never database → migrations, so nothing fails on this. Known and accepted unti
 5. **STICKY CANNOT HOLD AN ELEMENT ABOVE ITS FLOW POSITION.** The Settings jump bar had two resting
    positions because the shared wrapper's `pt-6` put its flow position 24px down. A `:has()` rule removes
    that padding only when a sub-tab bar is genuinely first (§65.4). A fixed negative margin was tried and
-   rejected — it would have pulled the bar through the notification banners. **CLOSED.**
+   rejected — it would have pulled the bar through the notification banners. **REOPENED AND CLOSED AGAIN
+   4 OCTOBER 2026:** the rule was right but the condition was not met in practice, because the seven
+   notices rendered above the bar. The notices moved below it, so the bar is always first (§65.4). The
+   lesson is the second half of the first: a rule that only fires when the DOM is in a particular order
+   needs the order guaranteed, not hoped for. **CLOSED.**
 6. **A VAN CARD THAT EDITED THE TRUCK.** Prep, Items and "Counts to total capacity" were shown inside
    each van's card but stored once per truck on `menu_categories`, so editing Van 2 silently changed
    Van 1 — on the fields that decide whether an order is accepted. Fixed with per-van overrides (§66).
@@ -27166,8 +27170,30 @@ first thing in that child, the padding is removed:
 .manage-tab-pad:has(> *:first-child > [data-subtab-bar]:first-child) { padding-top: 0 }
 ```
 
-Two selectors because the bars sit at two depths. When a notification banner is first, the padding stays,
-so the bar never overlaps a banner.
+Two selectors because the bars sit at two depths.
+
+**AMENDED 4 OCTOBER 2026 — THE NOTICES MOVED BELOW THE BAR.** This section used to end "when a
+notification banner is first, the padding stays, so the bar never overlaps a banner", and that degrade was
+the bug reported next: with any one of the page's seven notices showing (walkthrough strip, approvals,
+allergens, custom domain, Stripe, missing fields, staleness bar) the bar was not the first child, the
+`pt-6` stayed, and the bar rested low and snapped flush on the first scroll — the same two resting
+positions by a different route. Dominic: *"they have been pushed down the screen a little so when you
+scroll down the screen they move up … make sure the pils are locked as well."*
+
+There is no CSS answer, because the rule above is the whole of what CSS can do: sticky has no upward
+reach. **The order changed instead.** The seven notices are one `notices` node in
+`app/manage/[token]/page.tsx`, rendered BELOW each sub-tab bar — handed to the three tabs that own one
+(Menu inline, Schedule and Settings by prop) — and at the top of the wrapper only for the four tabs that
+have no bar (`TABS_WITH_SUBTABS` is the single list that decides). A notice now scrolls under the pinned
+bar like any other content, and the bar's resting position and its pinned position are the same pixel on
+every tab, notice or no notice.
+
+⛔ **Nothing may be rendered above a sub-tab bar inside that wrapper again.** One element is enough to
+undo this, and nothing in CSS will say so — the bar simply starts moving. Two guards exist:
+`scripts/schedule-graphics-places.cjs` asserts the source order (and fails if anything is put back), and
+`scripts/schedule-places-render.cjs` measures all three bars at three widths in both engines with a
+notice below (flush at rest, 0px, and still 0px scrolled) and with one above (90px at rest, 0px scrolled
+— the defect, reproduced).
 
 ## 65.5 "Van", not "Truck"
 

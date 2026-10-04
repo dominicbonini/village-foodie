@@ -151,11 +151,23 @@ html:not([data-brand="hatchgrab"]) .brand-mark-hg { display: none; }
    THE FIX: when a sub-tab bar IS the first thing in the wrapper, the wrapper gives up its top padding,
    so the bar's flow position and its pinned position are the same pixel and it never moves.
 
-   ⚠️ WHY `:has()` AND NOT A `-mt-6` ON THE BAR. Six different notification banners can render ABOVE the
-   tab content in this wrapper (walkthrough, approvals, allergens, domain, Stripe, missing fields) and a
-   fixed negative margin would pull the bar up THROUGH whichever one is showing. This rule applies only
-   when the bar really is the first child, so a banner day degrades to the ordinary padded layout
-   instead of an overlap. It also cannot drift: no boolean to keep in sync with those six conditions.
+   ⚠️ WHY `:has()` AND NOT A `-mt-6` ON THE BAR. A fixed negative margin pulls the bar up whether or
+   not there is room, so on any day something else rendered above it the bar would overlap that thing.
+   This rule applies only when the bar really IS the first child, so it can never produce an overlap,
+   and it cannot drift: there is no boolean to keep in sync with the page's conditions.
+
+   🔴 AND WHY THE BAR IS NOW ALWAYS THE FIRST CHILD (4 October 2026). Until this date the page's seven
+   notices — walkthrough strip, approvals, allergens, custom domain, Stripe, missing fields, and the
+   staleness bar — were the first children of this wrapper. Whenever ONE of them was showing the bar
+   was not first, this rule stopped matching, the `pt-6` stayed, and the bar rested ~24px + the notice's
+   height down the page and snapped flush on the first scroll: the SAME two resting positions, reached
+   by a different route. Dominic: "they have been pushed down the screen a little so when you scroll
+   down the screen they move up." `position: sticky` has no upward reach, so there is no CSS answer to
+   content above the bar — the ORDER had to change. The notices moved BELOW each sub-tab bar (they are
+   one `notices` node in app/manage/[token]/page.tsx, handed to the three tabs that own a bar), and they
+   now scroll under the pinned bar like any other content. Tabs with no bar still render them on top.
+   ⛔ DO NOT PUT ANYTHING BACK ABOVE A SUB-TAB BAR INSIDE THIS WRAPPER. One banner is enough to undo
+   the fix, and nothing in CSS will tell you — the bar simply starts moving again.
 
    ⚠️ TWO SELECTORS BECAUSE THE BARS SIT AT TWO DEPTHS. Menu's row and Schedule's row are direct
    children of the wrapper (Schedule's component returns a fragment, so its children are hoisted);
