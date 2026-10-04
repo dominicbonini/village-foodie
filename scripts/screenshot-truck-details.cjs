@@ -406,7 +406,29 @@ function fakeDb(opts = {}) {
     catch { return false }
   }
   t('🔴 the schedule extraction module is byte-identical to HEAD', gitClean('lib/admin/screenshot-events.ts'))
-  t('🔴 /api/inbound-schedule is byte-identical to HEAD', gitClean('app/api/inbound-schedule/route.ts'))
+  /* ⚠️ NARROWED, NOT DROPPED (October 2026, event types stage 1-2). This read `gitClean(...)` — a
+   * byte-identity guard against a FLOATING HEAD — and its meaning is "the screenshot/truck-details
+   * work did not touch the scraped-event bridge". A later, unrelated build legitimately added ONE key
+   * to that route's insert (`order_ready_source: 'seed'`, which records that a creation path wrote
+   * order_ready_override rather than the truck choosing it), and a floating-HEAD assertion cannot tell
+   * that apart from a change to the bridging logic.
+   * 🔴 SO THE GUARD NOW ALLOWS EXACTLY THAT ONE LINE AND NOTHING ELSE. Every other difference still
+   * fails it, which is the property worth keeping. A harness that pins HEAD must say what it tolerates;
+   * see the note in scripts/_slot-interval-compile.cjs about pinning a commit rather than HEAD. */
+  t('🔴 /api/inbound-schedule is unchanged apart from the one event-types seed marker', (() => {
+    const f = 'app/api/inbound-schedule/route.ts'
+    if (gitClean(f)) return true
+    let diff = ''
+    try { diff = execFileSync('git', ['diff', '-U0', 'HEAD', '--', f], { cwd: REPO, encoding: 'utf8' }) }
+    catch { return false }
+    const changed = diff.split('\n')
+      .filter(l => /^[+-]/.test(l) && !/^[+-][+-]/.test(l))
+      .map(l => l.slice(1).trim())
+      .filter(Boolean)
+      /* comment lines are not behaviour */
+      .filter(l => !/^(\/\*|\*|\/\/)/.test(l))
+    return changed.length === 1 && changed[0] === "order_ready_source: 'seed',"
+  })())
   t('🔴 lib/schedule-extract.ts (the operator path) is byte-identical to HEAD', gitClean('lib/schedule-extract.ts'))
   t('the one contact writer is untouched', gitClean('lib/outreach-contact-log.ts'))
   t('the outreach_events writer is untouched', gitClean('lib/outreach-events.ts'))

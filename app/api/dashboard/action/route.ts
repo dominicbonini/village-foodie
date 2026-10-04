@@ -39,6 +39,7 @@ import { releaseHoldForTerminalOrder } from '@/lib/payments/release-hold'
 import { rejectOrder } from '@/lib/orders/reject-order'
 import { resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
+import { readEventType } from '@/lib/event-types/read'
 import { assignBuzzer } from '@/lib/buzzer'
 import { logAction, logActionOrThrow } from '@/lib/audit/actionAudit'
 import type { DiscountCode } from '@/lib/order-calculations'
@@ -111,7 +112,14 @@ async function paidStepFor(truck: any, eventId: string | null | undefined) {
       `action:`, evErr.message,
     )
   }
-  return resolvePaidStep(truck, ev as any)
+  /* 🔴 THE EVENT'S TYPE, READ SEPARATELY AND PROBED (October 2026). It is NOT added to the named
+   * select above, deliberately: that select's own comment records that one absent column is 42703 and
+   * silently ignores every per-event override. `readEventType` resolves to "no type" on any failure,
+   * so a deploy ahead of 20261009 costs the TYPE and leaves this path exactly as it is today.
+   * ⚠️ ONE MORE ROUND TRIP ON A PATH THAT ALREADY MAKES ONE. Stated rather than hidden; it runs on
+   * collect/undo-collect and the walk-up paid-at-order path, not on a poll. */
+  const et = await readEventType(supabase, eventId)
+  return resolvePaidStep(truck, ev as any, et.type)
 }
 
 // ── 🔴 THREE CAUSES USED TO COLLAPSE INTO ONE `null`, AND ONE OF THEM IS A CREDENTIAL CHECK ───────
@@ -1208,7 +1216,11 @@ export async function POST(req: NextRequest) {
         // start matching the Settings default).
         const seededOrderReady = await getVanOrderReadyDefault(supabase, truck.id)
         await supabase.from('truck_events')
-          .insert({ truck_id: truck.id, event_date: date, start_time, end_time, order_ready_override: seededOrderReady, source: 'manual' })
+          /* ⚠️ `order_ready_source: 'seed'` — the value is unchanged; this only records that a creation
+           * path wrote it rather than the truck choosing it for this event. `event_type_id` is left
+           * NULL here on purpose: a dashboard draft has no venue and no place yet, so there is nothing
+           * to look a usual type up by. */
+          .insert({ truck_id: truck.id, event_date: date, start_time, end_time, order_ready_override: seededOrderReady, order_ready_source: 'seed', source: 'manual' })
       }
       return NextResponse.json({ success: true })
     }
@@ -2658,7 +2670,10 @@ export async function POST(req: NextRequest) {
       if (value !== true && value !== false && value !== null) {
         return NextResponse.json({ error: 'value must be true, false, or null' }, { status: 400 })
       }
-      const { error } = await supabase.from('truck_events').update({ order_ready_override: value }).eq('id', eventId).eq('truck_id', truck.id)
+      /* 🔴 `order_ready_source: 'truck'` IS WHAT MAKES THIS A HAND CHANGE. This is the only writer
+       * that records a per-event CHOICE for the mark-ready step, and it is why a type cannot overrule
+       * what the truck set here — decision 2. Every other writer records 'seed'. */
+      const { error } = await supabase.from('truck_events').update({ order_ready_override: value, order_ready_source: 'truck' }).eq('id', eventId).eq('truck_id', truck.id)
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ success: true })
     }

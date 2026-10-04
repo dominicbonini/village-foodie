@@ -352,6 +352,24 @@ export async function GET(req: NextRequest) {
 }
 
 // ── POST — all mutations ──────────────────────────────────────
+/**
+ * The event type id from a request body, checked against this truck's own types.
+ *
+ * ⚠️ RETURNS NULL FOR ANYTHING IT CANNOT CONFIRM — absent, blank, malformed, another truck's, or a
+ * read failure. The event is then created as Standard, which is exactly what it would have been
+ * before this feature existed, so a bad id costs the type and never the event.
+ */
+async function resolveRequestedTypeId(truckId: string, raw: unknown): Promise<string | null> {
+  const id = typeof raw === 'string' && raw.trim() ? raw.trim() : null
+  if (!id) return null
+  try {
+    const { data, error } = await supabase
+      .from('event_types').select('id').eq('id', id).eq('truck_id', truckId).maybeSingle()
+    if (error || !data) return null
+    return String((data as { id: string }).id)
+  } catch { return null }
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const { token, action } = body
@@ -872,7 +890,22 @@ export async function POST(req: NextRequest) {
       // Seed order_ready_override from the van's current default so the new event starts matching the
       // Settings master switch (master-switch model).
       const seededOrderReady = await getVanOrderReadyDefault(supabase, targetTruckId, resolvedVanId)
-      const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: resolvedVanId ?? null, order_ready_override: seededOrderReady, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null, auto_open: truck.default_auto_open ?? true, auto_close: truck.default_auto_close ?? true }).select().single()
+      /* ── 🔴 THE EVENT TYPE, AND THE ONE REASON THE SEED IS SKIPPED ─────────────────────────────
+       * `event_type_id` is the whole of what a type does to an event: nothing is copied onto it.
+       *
+       * 🔴 WHEN A TYPE IS CHOSEN, order_ready_override IS NOT SEEDED. That column is the one per-event
+       * override that is seeded at creation AND bulk-written when the van default flips, so a seeded
+       * value would make the type's mark-ready setting permanently inert on this event — offered on
+       * the type screen and silently doing nothing. Leaving it NULL lets the type supply it, and the
+       * truck can still override it on the dashboard afterwards (which records 'truck' and wins).
+       * ⚠️ UNTYPED EVENTS ARE SEEDED EXACTLY AS BEFORE — same value, same column, same van lookup. The
+       * ternary is the whole difference, and it can only take the new branch when a type was picked.
+       * ⚠️ VALIDATED AGAINST THIS TRUCK'S OWN TYPES. An id from another truck, or one that does not
+       * exist, resolves to NULL rather than erroring: the event is still created, as Standard, which is
+       * what it would have been without the field. The foreign key would refuse a bad id anyway; this
+       * makes the refusal a silent fallback rather than a failed save of a real event. */
+      const typedEventTypeId = await resolveRequestedTypeId(targetTruckId, body.event_type_id)
+      const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: resolvedVanId ?? null, order_ready_override: typedEventTypeId ? null : seededOrderReady, order_ready_source: typedEventTypeId ? null : 'seed', event_type_id: typedEventTypeId, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null, auto_open: truck.default_auto_open ?? true, auto_close: truck.default_auto_close ?? true }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       savedEvent = data
 
@@ -1985,7 +2018,12 @@ export async function POST(req: NextRequest) {
     if (order_ready_enabled !== undefined) {
       await supabase
         .from('truck_events')
-        .update({ order_ready_override: order_ready_enabled })
+        /* ⚠️ `order_ready_source: 'seed'` IS THE TRUTH ABOUT THIS WRITE, NOT A NEW BEHAVIOUR. This
+         * statement already overwrites every event "including events previously toggled on the
+         * dashboard (they reset to the new value, by design)" — so after it runs, no event's value is
+         * a per-event choice any more, and saying so is what lets an event type win for this setting
+         * afterwards. The VALUE written is unchanged, and so is the set of rows. */
+        .update({ order_ready_override: order_ready_enabled, order_ready_source: 'seed' })
         .eq('truck_id', truck.id)
     }
     return NextResponse.json({ ok: true })

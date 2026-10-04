@@ -57,6 +57,7 @@ import {
 import { whatsAppRowView } from '@/lib/whatsapp/connection-view'
 import { FeatureGate } from '@/components/FeatureGate'
 import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory, collectionTimesHint } from '@/lib/slot-interval'
+import { EventTypesPanel, EventTypeSelect } from '@/components/manage/EventTypes'
 import { intervalExample } from '@/lib/slot-generation'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_NO_LIMIT, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
@@ -6821,6 +6822,10 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
   const [exclusionTerms, setExclusionTerms] = useState<string[]>([])
   const [exclusionList, setExclusionList] = useState<{ id: string; term: string }[]>([])
   const [showVenueSuggestions, setShowVenueSuggestions] = useState(false)
+  /* Event types: the full-screen panel, and the type chosen in the Add event form. Both are one piece
+   * of state each so the mounts below stay single lines. */
+  const [showEventTypes, setShowEventTypes] = useState(false)
+  const [eventTypeId, setEventTypeId] = useState<string | null>(null)
   const [showImportModal, setShowImportModal] = useState(false)
   const [importModalTitle, setImportModalTitle] = useState('Import schedule')
   const { isDragging: isScheduleDragging, dragProps: scheduleDragProps } = useDragDrop(
@@ -7011,7 +7016,14 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
       if (lat === null || lng === null) {
         console.warn('Geocoding returned null for event:', editingEvent.venue_name, editingEvent.postcode)
       }
-      await api('upsert_event', { ...editingEvent, latitude: lat, longitude: lng })
+      /* ⚠️ `event_type_id` IS SENT ONLY FOR A NEW EVENT, which is the only case the picker is shown
+       * for. On an edit the key is absent, and `upsert_event`'s update path destructures a fixed list
+       * that does not name it, so an edit cannot move an event's type from this form — the dashboard's
+       * own control does that, with the confirm a live event needs. */
+      await api('upsert_event', {
+        ...editingEvent, latitude: lat, longitude: lng,
+        ...(editingEvent.id ? {} : { event_type_id: eventTypeId }),
+      })
       if (editingEventConfirmOnSave && editingEvent.id) {
         await handleConfirmEvent(editingEvent.id)
         setEditingEventConfirmOnSave(false)
@@ -8083,6 +8095,11 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
           <p className="text-slate-400 text-sm">{upcoming.length} upcoming</p>
         </div>
         <div className="flex items-center gap-2">
+          {/* 🔴 ONE LINE, AND A BUTTON RATHER THAN A SUB-TAB. Main's Schedule tab has no sub-tab bar and
+            * schedule-graphics adds one; a panel opened from a button works either way, so this mount
+            * survives that merge unchanged. Promoting it to a third pill afterwards is one entry in
+            * SCHEDULE_SECTIONS and this same line. */}
+          <Btn label="Event types" colour="ghost" onClick={() => setShowEventTypes(true)} />
           <div className="flex flex-col items-end gap-0.5">
             <button onClick={() => setShowImportModal(true)}
               className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
@@ -8095,6 +8112,9 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
               const lastEv = [...events].filter(e => e.start_time && e.end_time).sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())[0]
               setFormErrors({})
               setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: truck.id })
+              /* ⚠️ CLEARED ON EVERY OPEN. A type chosen for the last event must not be carried into the
+               * next one by a stale piece of state — the picker fills itself from the venue instead. */
+              setEventTypeId(null)
               setAddMode('manual'); setExtractedEvents([])
             }} />
           </div>
@@ -8175,6 +8195,9 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
           )}
         </div>
       )}
+
+      {/* 🔴 THE PANEL, ONE MOUNT. Full-screen, so it needs no sub-tab bar and no layout of its own. */}
+      {showEventTypes && <EventTypesPanel token={token} onClose={() => setShowEventTypes(false)} />}
 
       {editingEvent && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center lg:items-start lg:pt-8 justify-center p-4">
@@ -8279,6 +8302,18 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
                   )}
                   {formErrors.venue_name && <p className="text-xs text-red-500 mt-1">{formErrors.venue_name}</p>}
                 </div>
+                {/* 🔴 EVENT TYPE — ONE MOUNT. Everything the field needs (loading the types, finding
+                  * the usual type for this venue, the hint, the summary) is inside
+                  * components/manage/EventTypes.tsx, so this modal gains one element and the
+                  * schedule-graphics merge is one line. It renders NOTHING for a truck with no types.
+                  * ⚠️ NEW EVENTS ONLY. An edit cannot move an event's type from here — the dashboard's
+                  * own control does that, with the confirm a live event needs. */}
+                {!editingEvent.id && (
+                  <div className="sm:col-span-2">
+                    <EventTypeSelect token={token} venueName={editingEvent.venue_name}
+                      value={eventTypeId} onChange={setEventTypeId} disabled={editSaving} />
+                  </div>
+                )}
                 {/* ADDRESS FIELDS — order and labels are locale-specific.
                     UK format: street address → village/town + postcode
                     Future: extract to addressFieldConfig(locale) to support US/EU formats */}

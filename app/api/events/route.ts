@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { readVanIntervals, readEventIntervalsForTruck, applyEventIntervals, NO_VAN_INTERVALS, type VanIntervals } from '@/lib/slot-interval'
+import { readEventTypesForTruck } from '@/lib/event-types/read'
 
 export const revalidate = 0
 
@@ -102,6 +103,8 @@ export async function GET(req: NextRequest) {
   // 🔴 THE EVENT LAYER. One probed read for the whole page; a failure leaves every event on its van,
   // which is this endpoint's behaviour before the event columns existed.
   const eventOverrides = await readEventIntervalsForTruck(supabase, truck.id)
+  /* One extra probed read for the whole list, not one per event — see readEventTypesForTruck. */
+  const eventTypes = await readEventTypesForTruck(supabase, truck.id, today)
 
   const seen = new Set<string>()
   const events = (rows || []).map(e => {
@@ -125,9 +128,14 @@ export async function GET(req: NextRequest) {
       // The minutes the fallback picker may offer for THIS event: the event's own override when it has
       // one, else its van's, else 5. 🔴 ONLY `.customer` is published — the operator grid has no
       // business on a public endpoint, and applyEventIntervals returns both.
+      /* ⚠️ THE EVENT'S TYPE IS PASSED (October 2026). This value is what the fallback picker OFFERS a
+       * customer, and /api/slots resolves the same chain through `resolveIntervalsFor` — so omitting
+       * the type here would publish one grid and serve another. The event's own override still wins,
+       * and a truck with no types gets `undefined` for every event, which is today's value. */
       collection_interval_mins: applyEventIntervals(
         vanPairByVan.get((e as { van_id?: string | null }).van_id || '') ?? NO_VAN_INTERVALS,
         eventOverrides.byEventId.get(e.id) ?? null,
+        eventTypes.byEventId.get(e.id) ?? null,
       ).customer,
     }
   }).filter(Boolean)

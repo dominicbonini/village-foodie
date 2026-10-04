@@ -26,24 +26,27 @@
 // ⚠️ THE DATABASE HAS A CHECK ON BOTH COLUMNS AND THIS LIST MUST MATCH IT (20260917_van_collection_intervals).
 // The CHECK is the backstop; this is the layer that can say something useful in an error message.
 
+/* ⚠️ ONLY WHAT THIS FILE STILL USES ITSELF. The rest of the vocabulary is RE-EXPORTED below for its
+ * callers without being imported here — `export … from` needs no local binding, and importing names
+ * this file does not use would be four unused locals. */
+import { normaliseInterval, NO_VAN_INTERVALS, type VanIntervals } from '@/lib/slot-interval-core'
+import { resolveIntervalsWithType, type TypeFor as EventTypeForIntervals } from '@/lib/event-types/resolve'
+import { readEventType } from '@/lib/event-types/read'
+
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-export const INTERVAL_CHOICES = [5, 10, 15, 20, 30] as const
-export type IntervalChoice = (typeof INTERVAL_CHOICES)[number]
-
-export const DEFAULT_INTERVAL: IntervalChoice = 5
-
-/** The one validator — used by the settings route and by every reader that normalises a stored value. */
-export const isIntervalChoice = (v: unknown): v is IntervalChoice =>
-  typeof v === 'number' && Number.isInteger(v) && (INTERVAL_CHOICES as readonly number[]).includes(v)
-
-/**
- * A stored value → a usable interval. 🔴 NEVER RETURNS ANYTHING OUTSIDE THE VOCABULARY. Null (the
- * customer column is nullable), undefined (the column is absent from a select), 0, or a value the
- * CHECK would refuse all read as 5 — the value every row holds today, so an unexpected shape can only
- * ever reproduce today's behaviour, never invent a new grid.
- */
-export const normaliseInterval = (v: unknown): IntervalChoice => (isIntervalChoice(v) ? v : DEFAULT_INTERVAL)
+/* ── 🔴 THE VOCABULARY LIVES IN lib/slot-interval-core.ts AND IS RE-EXPORTED HERE ──────────────────
+ * It moved out to break an import cycle: this file now resolves an event's TYPE, so it imports
+ * lib/event-types/resolve.ts, which needs `normaliseInterval` and `VanIntervals`. The core file has no
+ * imports of its own, so it cannot take part in a cycle. Its own header explains why a cycle that
+ * "works" was not left in place.
+ * ⚠️ RE-EXPORTED, SO EVERY EXISTING IMPORT OF THIS FILE IS UNCHANGED. `import { INTERVAL_CHOICES,
+ * normaliseInterval } from '@/lib/slot-interval'` still resolves, at all ten call sites, and nothing
+ * moved. This is still the public door. */
+export {
+  INTERVAL_CHOICES, DEFAULT_INTERVAL, isIntervalChoice, normaliseInterval, NO_VAN_INTERVALS,
+} from '@/lib/slot-interval-core'
+export type { IntervalChoice, VanIntervals } from '@/lib/slot-interval-core'
 
 // ── THE SETTINGS HINT (18 September 2026) ───────────────────────────────────────────────────────────
 // A collection interval that is not a whole multiple of a cooking category's prep puts collection times
@@ -70,18 +73,8 @@ export function collectionTimesHint(cat: { name: string; prepMins: number }): st
   return `${cat.name} takes ${cat.prepMins} minutes to cook, so some times between batches will show as full.`
 }
 
-/** A van's resolved pair. `truck` is ALREADY the effective value — the override if set, else the
- *  customer value — so no caller ever has to remember the `?? customer` rule. */
-export interface VanIntervals {
-  /** truck_vans.collection_interval_mins — what a customer may pick. */
-  customer: IntervalChoice
-  /** operator_collection_interval_mins ?? collection_interval_mins — what the operator may pick. */
-  truck: IntervalChoice
-}
-
-/** No van resolved. Both 5 — today's behaviour for every truck, and the answer this file returns for
- *  every failure as well, so an unreadable column can only ever reproduce today's grid. */
-export const NO_VAN_INTERVALS: VanIntervals = { customer: DEFAULT_INTERVAL, truck: DEFAULT_INTERVAL }
+/* `VanIntervals` and `NO_VAN_INTERVALS` moved to lib/slot-interval-core.ts with the rest of the
+ * vocabulary and are re-exported above; their notes went with them. */
 
 /**
  * Read a van's two intervals with a capability probe.
@@ -235,12 +228,16 @@ export const NO_EVENT_OVERRIDE: EventIntervalRead = { ok: true, override: null }
  * ever reaches here — a hand-written row, a future writer — it is IGNORED and the van wins, because the
  * alternative is inventing a customer grid for it.
  */
-export function applyEventIntervals(van: VanIntervals, override: EventIntervalOverride | null | undefined): VanIntervals {
-  const customerRaw = override?.collection_interval_mins_override
-  if (customerRaw === null || customerRaw === undefined) return van
-  const customer = normaliseInterval(customerRaw)
-  const op = override?.operator_collection_interval_mins_override
-  return { customer, truck: op === null || op === undefined ? customer : normaliseInterval(op) }
+export function applyEventIntervals(
+  van: VanIntervals,
+  override: EventIntervalOverride | null | undefined,
+  /* 🔴 THE EVENT'S TYPE, OPTIONAL (October 2026). Omitted or null ⇒ this function is unchanged: the
+   * event's own pair wins, else the van's. The whole chain lives in ONE place,
+   * `resolveIntervalsWithType` in lib/event-types/resolve.ts, which reproduces the operator rule
+   * documented above rather than restating it. */
+  type?: EventTypeForIntervals | null,
+): VanIntervals {
+  return resolveIntervalsWithType(van, override, type ?? null)
 }
 
 /** True when the event carries its own pair. The dashboard's revert control is shown only then. */
@@ -292,10 +289,25 @@ export async function resolveIntervalsFor(
   supabase: SupabaseClient,
   vanId: string | null | undefined,
   eventId: string | null | undefined,
-): Promise<VanIntervals & { fromEvent: boolean; eventReadOk: boolean }> {
+): Promise<VanIntervals & { fromEvent: boolean; eventReadOk: boolean; fromType: boolean }> {
   const van = await readVanIntervals(supabase, vanId)
   const ev = await readEventIntervals(supabase, eventId)
-  return { ...applyEventIntervals(van, ev.override), fromEvent: hasEventOverride(ev.override), eventReadOk: ev.ok }
+  /* 🔴 A THIRD PROBED READ, AND IT IS PROBED FOR THE SAME REASON AS THE SECOND. `readEventType`
+   * resolves to "no type" on any failure — a missing table, an unreloaded schema cache, a race — so a
+   * deploy that reaches a database without 20261009 costs the TYPE and never the grid. Ordering: the
+   * event's own pair is still read first and still wins, so this read cannot change an event that has
+   * its own override. */
+  const et = await readEventType(supabase, eventId)
+  const fromEvent = hasEventOverride(ev.override)
+  return {
+    ...applyEventIntervals(van, ev.override, et.type),
+    fromEvent,
+    eventReadOk: ev.ok,
+    /* ⚠️ "THE TYPE DECIDED THIS" IS NOT "THE EVENT HAS A TYPE". It is true only when the type's value
+     * is what is being used — the event has no pair of its own AND the type sets the grid. The
+     * dashboard's revert control keys on `fromEvent`, which is unchanged. */
+    fromType: !fromEvent && et.type?.collection_interval_mins !== null && et.type?.collection_interval_mins !== undefined,
+  }
 }
 
 /** Every event of one truck that carries an override, for the dashboard's per-event box. One probed

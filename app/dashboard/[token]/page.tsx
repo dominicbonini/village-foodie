@@ -31,6 +31,7 @@ import { ToastStack } from '@/components/ToastStack'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
+import { EventTypeDashboardControl } from '@/components/manage/EventTypes'
 import { readSoundConfig, writeSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
 
 // 🔴 HOW OLD AN OFFLINE-PAUSE MARKER MAY BE AND STILL RAISE THE NOTICE. MODULE SCOPE, NOT COMPONENT
@@ -534,6 +535,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // seed for new events) + the per-event value (order_ready_override, concrete true/false). effectiveOrderReady
   // resolves override ?? default ?? false server-side and gates the Ready button; the dashboard toggle reads it.
   const[vanOrderReadyDefault,setVanOrderReadyDefault]=useState<boolean>(false)
+  /* ── EVENT TYPE (October 2026) ───────────────────────────────────────────────────────────────────
+   * 🔴 THE SERVER'S ANSWER, HELD AS-IS. The effective values above are already resolved server-side;
+   * these two are for NAMING the type and showing which rows are this event's own. The client does not
+   * re-run the chain — a second copy of it would disagree the first time either was touched. */
+  const[eventType,setEventType]=useState<{id:string;name:string;buzzer_prompt:boolean|null;takes_cash:boolean|null;order_ready:boolean|null;collection_interval_mins:number|null}|null>(null)
+  const[eventOwnSettings,setEventOwnSettings]=useState<{buzzer_prompt:boolean;takes_cash:boolean;order_ready:boolean;collection_interval_mins:boolean}|null>(null)
   const[eventOrderReadyOverride,setEventOrderReadyOverride]=useState<boolean|null>(null)
   // Buzzers. vanBuzzerCount is the VAN's rack (null ⇒ this van has no buzzers and every buzzer
   // affordance stays hidden — no chip, no Add Order button, no Settings row). Both are RESOLVED
@@ -1175,6 +1182,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(data.vanOfflineMode !== undefined) setVanOfflineMode(data.vanOfflineMode==='no_auto_accept'?'no_auto_accept':'pause')
       if(data.vanAutoRejectMins !== undefined) setVanAutoRejectMins(typeof data.vanAutoRejectMins==='number'?data.vanAutoRejectMins:null)
         if(data.vanOrderReadyDefault !== undefined) setVanOrderReadyDefault(data.vanOrderReadyDefault)
+        /* ⚠️ `undefined` IS "THIS BUILD'S SERVER IS OLDER THAN THIS CLIENT" and leaves the control
+         * absent, which is today's screen. `null` is the real answer "this event has no type". */
+        if(data.eventType !== undefined) setEventType(data.eventType??null)
+        if(data.eventOwnSettings !== undefined) setEventOwnSettings(data.eventOwnSettings??null)
         setEffectiveOrderReady(applyPending('effectiveOrderReady',data.effectiveOrderReady??false))
         // Buzzers — CONFIG, so they sit inside the seed gate with the rest of the van/event settings.
         // applyPending guards the prompt for the same reason effectiveOrderReady is guarded: a reseed
@@ -3167,7 +3178,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   // The SAME resolver every other consumer uses — the dashboard's own reads (the toggle's position and
   // the collected/undo toast wording) must agree with the card and the server.
-  const {showPaidStep:effectivePaidStep,takesCash:effectiveTakesCash,completionPresses:effectiveCompletionPresses}=resolvePaidStep(truck,activeEvent)
+  /* 🔴 THE TYPE IS PASSED HERE TOO, AND IT HAS TO BE. The server resolves `takesCash` through the same
+   * function with the same type (paidStepFor, app/api/dashboard/action/route.ts), so leaving it out
+   * here would show the operator one cash setting while every collect and undo-collect used another —
+   * the exact divergence resolvePaidStep exists to make impossible.
+   * ⚠️ `showPaidStep` AND `completionPresses` ARE UNAFFECTED: a type does not set them. */
+  const {showPaidStep:effectivePaidStep,takesCash:effectiveTakesCash,completionPresses:effectiveCompletionPresses}=resolvePaidStep(truck,activeEvent,eventType)
     ??(selectedEventId&&lastActiveEventRef.current?.id===selectedEventId?lastActiveEventRef.current:null)
   if(resolvedEvent)lastActiveEventRef.current=resolvedEvent
 
@@ -4723,6 +4739,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 label was tried and removed: it is only needed in MANAGE, where three groups share one
                 Order settings card, and here the nesting already carries what it was saying. Do not
                 reinstate it — and note SUBCARD_HEADING is a MANAGE token; this file no longer imports it. */}
+            {/* ── 🔴 EVENT TYPE — ONE MOUNT, ABOVE THE PER-EVENT SETTINGS IT EXPLAINS ─────────────
+                🔴 IT SITS HERE, NOT IN A CARD OF ITS OWN, because the type is what the rows below
+                resolve FROM: a truck reading "Buzzers: On" needs to see that Festival is why. The
+                control renders nothing for a truck with no types, so this card is unchanged for
+                every truck today.
+                ⚠️ IT DOES NOT CARRY PER-EVENT SCOPE WORDING, per the rule stated immediately below:
+                scope is a property of this screen, not of each row. Its own confirm says what changes.
+                ⚠️ THE "THIS EVENT" FLAGS COME FROM THE SERVER (`eventOwnSettings`), from the same
+                functions that resolved the values — not re-derived here, or the badge and the value
+                could describe different things. */}
+            {activeEvent && (
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-3">
+                <EventTypeDashboardControl
+                  token={token}
+                  eventId={activeEvent.id}
+                  currentTypeId={eventType?.id ?? null}
+                  ownSettings={eventOwnSettings}
+                  /* ⚠️ A FULL RE-SEED, NOT A LIVE REFETCH. The type is CONFIG, and `fetchAllRef` is
+                   * the live poll that deliberately never re-seeds config — so a switch would not show
+                   * until the next forced seed. `fetchAll(pin, true)` is the seeding call. */
+                  onChanged={() => { void fetchAll(pin, true) }}
+                  disabled={isOffline}
+                />
+              </div>
+            )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
               {/* ── 🔴 DO NOT ADD PER-EVENT SCOPE WORDING TO THESE ROWS. ────────────────────────────
                   SCOPE IS A PROPERTY OF THE SCREEN, NOT OF EACH SETTING. Dashboard → Settings is
