@@ -148,6 +148,85 @@ export async function usualTypeForVenue(
   }
 }
 
+/**
+ * ══ 🔴 "THE USUAL TYPE FOR THIS PLACE" — BY PLACE FIRST, BY NAME ONLY WHEN THERE IS NO PLACE ═════
+ *
+ * THE RULE (asked for when the two branches were combined): the default type for a new event is the
+ * type of this truck's most recent event AT THE SAME PLACE, where "the same place" is
+ * `placeForEvent` — the one resolver the Places list itself uses. That matters for one reason above
+ * all: it follows `merged_into_id`, so when an operator merges "Kings Arms" into "The Kings Arms"
+ * the history of BOTH names counts as one pitch. A normalised-name match cannot see a merge; it is
+ * the weakest of `placeForEvent`'s three passes and the only one stage 1 had.
+ *
+ * ⚠️ THE NAME RULE IS NOT REPLACED, IT IS DEMOTED. Most events have no `truck_place_id`: it is
+ * written only by the Add event modal, so every scraped event and everything created before
+ * 3 October 2026 has none. Those events still match by name, which is why this takes `venueName`
+ * too — and why a truck that has never opened the places list sees exactly the old behaviour.
+ *
+ * ⚠️ IT FAILS OPEN, LIKE EVERY READ IN THIS FILE. Any error — a missing column, a missing table, a
+ * throw — returns "no usual type", which is Standard, which is what every event was before this
+ * feature existed. A default that cannot be worked out must never stop an operator adding an event.
+ */
+export async function usualTypeForPlace(
+  supabase: SupabaseClient,
+  truckId: string,
+  placeId: string | null | undefined,
+  venueName: string | null | undefined,
+  normalise: (s: string) => string,
+  /** `placeForEvent` from lib/schedule-graphics/places — injected so this module does not import a
+   *  schedule-graphics file, and so the harness can prove the SAME function is used. */
+  resolvePlace: (event: PlaceEventLike, places: readonly PlaceLike[]) => { id: string } | null,
+): Promise<{ ok: boolean; typeId: string | null; by: 'place' | 'venue' | null }> {
+  /* ⚠️ NO PLACE PICKED ⇒ THE NAME RULE, UNCHANGED. Not "the name rule as well": with no place there
+   * is nothing to resolve, and running both would be two answers for one question. */
+  if (!placeId) {
+    const r = await usualTypeForVenue(supabase, truckId, venueName, normalise)
+    return { ...r, by: r.typeId ? 'venue' : null }
+  }
+  try {
+    /* ⚠️ A NAMED SELECT, AND EVERY COLUMN IS ONE A MIGRATION CREATED. A column PostgREST cannot see
+     * answers 42703 for the WHOLE statement, which here would read as "this truck has no history". */
+    const [{ data: evRows, error: evErr }, { data: plRows, error: plErr }] = await Promise.all([
+      supabase.from('truck_events')
+        .select('truck_place_id, venue_id, venue_name, event_date, start_time, event_type_id')
+        .eq('truck_id', truckId)
+        .order('event_date', { ascending: false })
+        .order('start_time', { ascending: false })
+        .limit(200),
+      supabase.from('truck_places')
+        .select('id, venue_id, name_key, merged_into_id')
+        .eq('truck_id', truckId)
+        .limit(2000),
+    ])
+    if (evErr || plErr) {
+      const e = (evErr ?? plErr) as { code?: string }
+      console.warn(`[event-types] usual type by place for truck ${truckId}: ${why(e.code)}; Standard`)
+      return { ok: false, typeId: null, by: null }
+    }
+    const places = (plRows ?? []) as PlaceLike[]
+    /* 🔴 THE TARGET IS RESOLVED THROUGH THE SAME FUNCTION, not taken as given. The picked place may
+     * itself have been merged since; resolving it means "the pitch this id now belongs to". */
+    const target = resolvePlace({ truck_place_id: placeId }, places)
+    if (!target) return { ok: true, typeId: null, by: null }
+    const events = (evRows ?? []) as (PlaceEventLike & { event_type_id?: string | null })[]
+    for (const ev of events) {
+      const place = resolvePlace(ev, places)
+      if (place && place.id === target.id) return { ok: true, typeId: ev.event_type_id ?? null, by: 'place' }
+    }
+    /* ⚠️ NO HISTORY AT THIS PLACE IS AN ANSWER, NOT A FAILURE — and it does NOT fall through to the
+     * name rule. The operator picked a place; "nothing has happened here yet" is Standard. Falling
+     * through would let a same-named-but-different place supply a type the operator never used here. */
+    return { ok: true, typeId: null, by: null }
+  } catch (e) {
+    console.warn('[event-types] usual type by place threw; Standard:', e instanceof Error ? e.message : String(e))
+    return { ok: false, typeId: null, by: null }
+  }
+}
+
+/** The shapes `placeForEvent` needs, named here so this module imports no schedule-graphics type. */
+type PlaceEventLike = { truck_place_id?: string | null; venue_id?: string | null; venue_name?: string | null }
+type PlaceLike = { id: string; venue_id?: string | null; name_key: string; merged_into_id?: string | null }
+
 /** How many UPCOMING events use each type — the "Used by: N upcoming events" line. */
 export async function countUpcomingByType(
   supabase: SupabaseClient,

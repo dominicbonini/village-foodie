@@ -73,16 +73,20 @@ const HEAD = css => `<!doctype html><html><head><meta charset="utf-8">
  * @param breakScroll THE BROKEN VARIANT: drops `overflow-x-auto` from the grid's wrapper, which is
  *                  the fix. The grid then widens the PAGE instead of itself.
  */
-function panelFixture(css, typeCount, breakScroll = false, vans = 'one') {
+function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline = false) {
   /* ── 🔴 EVERY CLASS AND EVERY NUMBER IS LIFTED FROM THE COMPONENT ────────────────────────────────
    * `lift` THROWS if a pattern is not found, which is the point: each time this build changed shape —
    * the shell, the Standard cell, both control looks, the grid template, and then the whole Standard
    * column becoming one column per van — this fixture stopped BUILDING instead of going on measuring
    * a screen nobody is served. That is the failure the Settings build hit, and it is why none of
    * these is typed out here. */
-  const shell = lift(UI, /className="(bg-white max-h-\[92vh\] rounded-2xl shadow-2xl flex flex-col overflow-hidden)"/, 'the modal shell')
+  const shell = lift(UI, /'(bg-white max-h-\[92vh\] rounded-2xl shadow-2xl flex flex-col overflow-hidden)'/, 'the modal shell')
+  /* 🔴 THE INLINE SHELL — the same box as a `<Card>`, lifted from the other arm of the same ternary,
+   * because Event types is the third Schedule PILL now as well as an overlay. Lifting both arms means
+   * the fixture cannot measure one shell while the page renders the other. */
+  const shellInline = lift(UI, /'(bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden)'/, 'the inline shell')
   const header = lift(UI, /<div className="(shrink-0 flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-slate-200)">/, 'the modal header')
-  const body = lift(UI, /<div className="(flex-1 min-h-0 overflow-y-auto)">/, 'the modal body')
+  const body = lift(UI, /inline \? '' : '(flex-1 min-h-0 overflow-y-auto)'/, 'the modal body')
   const scroller = lift(UI, /<div className="(hidden md:block overflow-x-auto px-2 pb-2)" data-types-scroller>/, 'the columns scroller')
   const phone = lift(UI, /<div className="(md:hidden p-4 space-y-3)">/, 'the phone column')
   /* 🔴 THE DIVIDER IS PART OF EVERY VALUE CELL NOW, and both halves are lifted so the fixture cannot
@@ -221,15 +225,15 @@ function panelFixture(css, typeCount, breakScroll = false, vans = 'one') {
   const pickerNames = [...(vanCols.length > 1 ? vanCols : ['Standard']), ...typeNames]
 
   return `${HEAD(css)}
-<div class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4" style="position:fixed;inset:0">
-  <div id="modal" data-event-types-modal class="${shell}" style="width:${dialogW}px;max-width:min(1000px, 100%)">
+${inline ? '<div style="padding:16px">' : '<div class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4" style="position:fixed;inset:0">'}
+  <div id="modal" data-event-types-modal class="${inline ? shellInline : shell}" style="width:${dialogW}px;max-width:min(1000px, 100%)">
     <div id="header" class="${header}">
       <div class="min-w-0 flex-1">
         <h2 class="font-bold text-slate-900 text-lg">Event types</h2>
         <p class="text-xs sm:text-[13px] text-slate-500">${subtitle}</p>
       </div>
       <button id="newtype" class="hover:bg-slate-100 text-slate-600 border border-slate-200 text-sm px-4 py-2 font-bold rounded-xl">+ New event type</button>
-      <button id="close" aria-label="Close" class="shrink-0 w-10 h-10 rounded-full bg-slate-100 text-slate-600 text-lg font-bold">✕</button>
+      ${inline ? '' : '<button id="close" aria-label="Close" class="shrink-0 w-10 h-10 rounded-full bg-slate-100 text-slate-600 text-lg font-bold">✕</button>'}
     </div>
     <div id="body" class="${body}">
       <div id="phone" class="${phone}">
@@ -606,6 +610,37 @@ async function main() {
     lines.push(`── ${eng.name} ──────────────────────────────────────────────────────────────`)
 
     for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
+
+      /* ══ 🔴 0 · THE EVENT TYPES PILL — THE SAME GRID, INLINE ON THE PAGE ═══════════════════════════
+       * Event types is the third Schedule pill now, so the grid is measured where it is actually
+       * rendered. The claims are the brief's: the SAME fixed column widths, a card capped at 1000px,
+       * LEFT-ALIGNED with the rest of the page, with "+ New event type" in the header and the footer
+       * text kept. Six types, because that is the case where a cap has anything to do.
+       * ⚠️ AND NO ✕ AND NO SECOND SCROLLER — the two things that must NOT come along from the overlay. */
+      {
+        await eng.setViewport(w, h)
+        await eng.page.goto(write(`pill-${w}-${eng.name}.html`, panelFixture(css, 6, false, 'one', true)))
+        const q = await eng.page.evaluate(probe)
+        lines.push(`  pill ${w}×${h}  card ${q.modal.width}×${q.modal.height} · grid ${q.grid.width}px in ${q.scroller ? q.scroller.width : 0}px · doc ${q.docScrollW} vs ${q.innerW}`)
+        t(!q.pageScrollsSideways, `🔴 pill ${w}: NO HORIZONTAL PAGE SCROLL with six types`)
+        t(q.modal.width <= Math.min(1000, w) + 1,
+          `🔴 pill ${w}: the card is capped at 1000px and does not grow with the types (${q.modal.width}px)`)
+        /* 🔴 LEFT-ALIGNED: the card starts at the content's left edge, not centred in the viewport.
+         * 16px is the fixture's own page padding, standing in for the manage scroller's `px-4`. */
+        t(q.modal.left <= 17, `🔴 pill ${w}: the card is LEFT-aligned with the page (${q.modal.left}px)`)
+        t(!q.close, `⚠️ pill ${w}: no ✕ — the pill above is how you leave`)
+        /* 🔴 THE COLUMNS STILL SCROLL SIDEWAYS INSIDE THE CARD — that is what the cap is for, and it is
+         * the one scroller the inline shell keeps. */
+        if (q.scroller && q.grid.width > q.scroller.width) {
+          t(q.gridScrolls === true, `🔴 pill ${w}: the COLUMNS scroll sideways inside the card, not the page`)
+        }
+        if (w === 1440 || w === 390) {
+          /* ⚠️ `shot` TAKES AN ELEMENT ID HERE, unlike the other render harness — it screenshots that
+           * element, not the viewport. Omitting it asked for `#undefined` and hung for 30s. */
+          await eng.shot(path.join(shotDir, `event-types-pill-${w}-${eng.name.toLowerCase()}.png`), 'modal')
+        }
+      }
+
       // ── 1 · THE MODAL, with SIX types (the brief's wide case) ─────────────────────────────────
       await eng.setViewport(w, h)
       await eng.page.goto(write(`modal-${w}-${eng.name}.html`, panelFixture(css, 6)))

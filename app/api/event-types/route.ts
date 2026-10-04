@@ -34,7 +34,11 @@ import {
   SERVICE_KEYS, MAX_TYPE_NAME, blankTypeValues, type ServiceKey,
   EVENT_OVERRIDE_COLUMNS,
 } from '@/lib/event-types/types'
-import { readTypesForTruck, countUpcomingByType, usualTypeForVenue } from '@/lib/event-types/read'
+import { readTypesForTruck, countUpcomingByType, usualTypeForPlace } from '@/lib/event-types/read'
+/* 🔴 THE ONE DEFINITION OF "WHICH PLACE IS THIS EVENT AT", IMPORTED NOT RE-WRITTEN — the same
+ * function the Places list uses. A second copy here would let the default type disagree with the
+ * list it is derived from, with nothing to report it. */
+import { placeForEvent } from '@/lib/schedule-graphics/places'
 import { isIntervalChoice } from '@/lib/slot-interval-core'
 import { readVanIntervalsForTruck } from '@/lib/slot-interval'
 import { OFFLINE_PROTECTION_MODES } from '@/lib/copy/offlineProtection'
@@ -383,10 +387,23 @@ export async function POST(req: NextRequest) {
      * nothing to migrate when a venue is renamed. `normalisePlaceName` is the ONE matching function
      * `truck_places.name_key` is defined as, so this screen and the places list agree about what "the
      * same place" means. */
-    const { ok, typeId } = await usualTypeForVenue(
-      supabase, truck.id, typeof body.venueName === 'string' ? body.venueName : null, normalizeVenue,
+    /* ══ 🔴 BY PLACE FIRST (October 2026, the branches combined) ═════════════════════════════
+     * When the form has a place picked, "the same place" is `placeForEvent` — the resolver the Places
+     * list itself uses, which follows `merged_into_id`, so a pitch an operator merged counts as one
+     * pitch here too. `normalizeVenue` is still passed and is still the ONE function
+     * `truck_places.name_key` is defined as: it matches the events that have no place, which is most
+     * of them. THE ACTION NAME IS UNCHANGED, so no caller had to be migrated.
+     * ⚠️ `placeForEvent` IS PASSED IN rather than imported inside lib/event-types/read.ts, so the
+     * event-types module still imports nothing from schedule-graphics — the arrangement
+     * docs/event-types-investigation-report.md §8.2 asked for, intact across the merge. */
+    const { ok, typeId, by } = await usualTypeForPlace(
+      supabase, truck.id,
+      typeof body.placeId === 'string' ? body.placeId : null,
+      typeof body.venueName === 'string' ? body.venueName : null,
+      normalizeVenue,
+      placeForEvent,
     )
-    return NextResponse.json({ ok, typeId })
+    return NextResponse.json({ ok, typeId, by })
   }
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })

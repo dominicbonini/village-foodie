@@ -87,7 +87,6 @@ import { configureStatusBar } from '@/lib/native/statusBar'
 import { Spinner, Badge, Btn, Input, Card, EmptyState, Toggle, AllergenToggles, DietaryToggles, AllergenModeChooser, OptionCardChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
 import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'
 import ExtrasEditor from '@/components/manage/ExtrasEditor'
-import { ScheduleSettingsModal } from '@/components/manage/ScheduleSettingsModal'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { KitchenCapacityCategoryRow } from '@/components/manage/KitchenCapacityCategoryRow'
 import { KitchenCapacitySection } from '@/components/manage/KitchenCapacitySection'
@@ -251,10 +250,18 @@ const LEGACY_TAB_TO_MENU_SECTION: Record<string, MenuSection> = {
  * Back button both work — a section held only in React state is one an operator loses by reloading.
  * ⚠️ 'events' IS THE DEFAULT AND IS NOT WRITTEN TO THE URL, so the existing /manage/<token> link opens
  * exactly where it always did. */
-type ScheduleSection = 'events' | 'weekly'
+type ScheduleSection = 'events' | 'weekly' | 'event-types'
 const SCHEDULE_SECTIONS: { id: ScheduleSection; label: string }[] = [
   { id: 'events', label: 'Events' },
   { id: 'weekly', label: 'Weekly post' },
+  /* 🔴 EVENT TYPES IS THE THIRD PILL (October 2026, the branches combined). It arrived on its own
+   * branch as a BUTTON in the Schedule header opening a full-screen overlay, because main's Schedule
+   * tab had no sub-tab bar and adding one would have collided head-on with this one — the plan in
+   * docs/event-types-investigation-report.md §8.3 said so, and said that promoting it afterwards would
+   * be "one entry in SCHEDULE_SECTIONS and one line". This is that entry and that line.
+   * ⚠️ THE ID IS HYPHENATED, matching `?section=event-types`. It is not `eventTypes`: every other id
+   * here is what appears in the URL, and a camelCase one would need a mapping nothing else needs. */
+  { id: 'event-types', label: 'Event types' },
 ]
 /* 🔴 `places` IS NO LONGER A SECTION (3 October 2026). The list lives in the Add event modal's left
  * pane and the detail behind its "Tidy up places" link, so a third pill would be a route to a screen
@@ -263,7 +270,7 @@ const SCHEDULE_SECTIONS: { id: ScheduleSection; label: string }[] = [
  * the operator lands on Events. It does NOT force Tidy up open: a bookmark from yesterday should not
  * put somebody inside a modal they did not open. */
 const isScheduleSection = (v: unknown): v is ScheduleSection =>
-  v === 'events' || v === 'weekly'
+  v === 'events' || v === 'weekly' || v === 'event-types'
 type UserRole = 'owner' | 'manager' | 'staff'
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -362,12 +369,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('menu')
   const [scheduleSection, setScheduleSection] = useState<ScheduleSection>('events')
-  /* ── 🔴 THE SCHEDULE SETTINGS MODAL'S FLAG LIVES HERE, NOT IN ScheduleTab ──────────────────────
-   * TWO places open it: the "Finding events automatically" line in Schedule › Events, and the one-line
-   * pointer left behind in Settings › Schedule. The pointer has to switch TAB and open the modal in
-   * one press, and a flag inside ScheduleTab cannot be set by a sibling tab — ScheduleTab is not even
-   * mounted while Settings is showing. */
-  const [showScheduleSettings, setShowScheduleSettings] = useState(false)
   const [menuSection, setMenuSection] = useState<MenuSection>('items')
   const [allergenWizardOpen, setAllergenWizardOpen] = useState(false)   // Slice-3 allergen wizard overlay (lives in MenuTab)
   const [pendingVerifyEvents, setPendingVerifyEvents] = useState<any[] | null>(null)
@@ -1133,7 +1134,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             tab gains one line rather than eight of SettingsTab's internals. */}
         {activeTab === 'menu' && menuSection === 'capacity' && <KitchenCapacitySection categories={categories} api={api} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
-        <ScheduleTab isActive={activeTab === 'schedule'} section={scheduleSection} onSectionChange={setScheduleSection} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onVerifySuccess={handleVerifiedEvents} scheduleSettingsOpen={showScheduleSettings} onScheduleSettingsOpenChange={setShowScheduleSettings} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} notices={notices} />
+        <ScheduleTab isActive={activeTab === 'schedule'} section={scheduleSection} onSectionChange={setScheduleSection} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} notices={notices} />
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}
@@ -1152,7 +1153,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} onOpenScheduleSettings={() => { setScheduleSection('events'); setShowScheduleSettings(true); setActiveTab('schedule') }} notices={notices} />}
+        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} notices={notices} />}
         {activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
         </div>
@@ -7097,7 +7098,7 @@ const EVENT_MODAL_WIDE = 'md:h-[90vh] md:max-w-[1040px]'
 /** The one-column size, for an edit and for the upload flow — short stays short. */
 const EVENT_MODAL_NARROW = 'sm:max-w-lg lg:max-w-2xl'
 
-function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles, categories, api, showToast, onTruckUpdate, onVerifySuccess, scheduleSettingsOpen, onScheduleSettingsOpenChange, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved, notices }: {
+function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles, categories, api, showToast, onTruckUpdate, onVerifySuccess, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved, notices }: {
   /* 🔴 `isActive` IS STILL "the Schedule tab is open", NOT "the Events section is showing", and that
    * is deliberate. Every load in this component keys off it (`loadEvents`, the vans read, the
    * conflict scan) and `onPendingCount` drives the "Schedule (8)" badge on the tab bar. Narrowing it
@@ -7119,9 +7120,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    * invented for them. */
   onTruckUpdate: (partial: Record<string, unknown>) => void
   onVerifySuccess: (events: unknown[]) => void
-  /** The modal's flag, owned by the page — Settings' pointer opens it too. */
-  scheduleSettingsOpen: boolean
-  onScheduleSettingsOpenChange: (open: boolean) => void
+  /* 🔴 `onSwitchTab` IS BACK (Dominic reversed the Schedule-settings move). Its original consumer
+   * was the "Change in Settings" link on the caption above the van filter; that caption was replaced
+   * by a card opening a modal, and both are now gone. The link points at Settings again, which is
+   * where "Your schedule" and "Import exclusions" live again. */
+  onSwitchTab: (tab: Tab) => void
   pendingVerifyEvents?: any[] | null
   /** T1: fired after a SUCCESSFUL extracted-events save, and only when a caller supplied one.
    *  🔴 OPTIONAL, AND SETTINGS DOES NOT PASS IT. Settings' handleVerifyUrl calls onVerifySuccess with a
@@ -7178,9 +7181,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const [exclusionTerms, setExclusionTerms] = useState<string[]>([])
   const [exclusionList, setExclusionList] = useState<{ id: string; term: string }[]>([])
   const [showVenueSuggestions, setShowVenueSuggestions] = useState(false)
-  /* Event types: the full-screen panel, and the type chosen in the Add event form. Both are one piece
-   * of state each so the mounts below stay single lines. */
-  const [showEventTypes, setShowEventTypes] = useState(false)
+  /* ⚠️ `showEventTypes` IS GONE — the panel is the third Schedule pill now, so which screen is on
+   * is `section`, the state the pills already own. A second flag saying the same thing is how two
+   * pieces of state come to disagree about what is showing. */
   const [eventTypeId, setEventTypeId] = useState<string | null>(null)
   const [showImportModal, setShowImportModal] = useState(false)
   const [importModalTitle, setImportModalTitle] = useState('Import schedule')
@@ -8600,11 +8603,6 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           <p className="text-slate-400 text-sm">{upcoming.length} upcoming</p>
         </div>
         <div className="flex items-center gap-2">
-          {/* 🔴 ONE LINE, AND A BUTTON RATHER THAN A SUB-TAB. Main's Schedule tab has no sub-tab bar and
-            * schedule-graphics adds one; a panel opened from a button works either way, so this mount
-            * survives that merge unchanged. Promoting it to a third pill afterwards is one entry in
-            * SCHEDULE_SECTIONS and this same line. */}
-          <Btn label="Event types" colour="ghost" onClick={() => setShowEventTypes(true)} />
           <div className="flex flex-col items-end gap-0.5">
             <button onClick={() => setShowImportModal(true)}
               className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
@@ -8628,40 +8626,26 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         </div>
       </div>
 
-      {/* ══ 🔴 "FINDING EVENTS AUTOMATICALLY" IS ITS OWN CARD (4 October 2026, ScheduleWhere board) ══
-        * Dominic: the line "is too easy to miss". It was 12px grey text sharing a row with the van
-        * filter, with the only way into the schedule settings buried in it as a `·`-separated link —
-        * so the one control that decides whether events arrive at all read as a caption.
-        *
-        * 🔴 THE SHARED `<Card>`, so it is the same white/border/radius/shadow as every setting card in
-        * Settings, and the SHARED `<Btn colour="ghost">`, which is the app's existing secondary button.
-        * Neither is a new style; a second secondary button is how two of them come to exist.
-        * ⚠️ ON A PHONE THE BUTTON SITS UNDER THE TEXT, FULL WIDTH — `flex-col sm:flex-row` with
-        * `w-full sm:w-auto`. At 390 a right-aligned button beside wrapping text is a 90px tap target
-        * at the end of a line.
-        * ⚠️ THE WORDING: the title is the brief's, and the source moved to the helper line beneath it.
-        * The MANUAL state keeps its existing sentence unchanged and has no source line, because there
-        * is no source — the truck is not reading one. */}
-      <Card className="p-4 flex flex-col sm:flex-row sm:items-center gap-3" data-finding-events-card>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-slate-800">
-            {truck.scraper_preference === 'auto' || truck.scraper_preference === 'both'
-              ? 'Finding events automatically'
-              : "You're managing your schedule manually"}
-          </p>
-          {(truck.scraper_preference === 'auto' || truck.scraper_preference === 'both') && (
-            <p className="text-xs text-slate-500 mt-0.5">From your website</p>
-          )}
-        </div>
-        {/* 🔴 A BUTTON, NOT A LINK. It opens the same modal the inline link did — no behaviour changed. */}
-        <Btn label="Schedule settings" colour="ghost" className="w-full sm:w-auto justify-center"
-          onClick={() => onScheduleSettingsOpenChange(true)} />
-      </Card>
-
-      {/* ⚠️ THE VAN FILTER MOVED DOWN, to sit with the list it filters rather than beside a setting.
-          Renders NOTHING for a single-van truck — the gate lives inside VanFilter, so for Gusto and
-          every other one-van operator this row is empty and invisible, exactly as before. */}
-      <div className="flex items-center justify-end">
+      {/* ══ ⛔ THE "FINDING EVENTS AUTOMATICALLY" CARD IS GONE (Dominic reversed the move) ═════════
+        * It existed to open the Schedule settings modal, and that modal is gone — "Your schedule" and
+        * "Import exclusions" are back in Settings › Schedule, where they were. With nothing left for the
+        * card's button to open, the card had no job.
+        * 🔴 SO THIS ROW IS THE ONE THAT WAS HERE BEFORE THE CARD, restored: the caption on the left and
+        * the van filter on the right, in one `justify-between` row. The link points at Settings again,
+        * which is true again. Asked for as "put the van filter back where it sat before the card was
+        * added" — this row is where it sat.
+        * ⚠️ VanFilter RENDERS NOTHING FOR A SINGLE-VAN TRUCK — the gate is inside the component, so for
+        * Gusto and every other one-van operator this row is the caption alone, exactly as before. */}
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-slate-500">
+          {truck.scraper_preference === 'auto' || truck.scraper_preference === 'both'
+            ? 'Finding events automatically from your website'
+            : "You're managing your schedule manually"}
+          {' · '}
+          <button onClick={() => onSwitchTab('settings')} className="text-orange-600 hover:underline font-medium">
+            Change in Settings
+          </button>
+        </p>
         <VanFilter vans={vans} value={vanFilter} onChange={setVanFilter} showUnassigned={hasUnassignedEvents} />
       </div>
 
@@ -8725,13 +8709,6 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         </div>
       )}
 
-      {/* 🔴 SCHEDULE SETTINGS — ONE MOUNT. The two cards that left Settings › Schedule, in their own
-        * file, opened from the "Finding events automatically" line above. */}
-      {scheduleSettingsOpen && (
-        <ScheduleSettingsModal token={token} truck={truck} api={api}
-          onTruckUpdate={onTruckUpdate} onVerifySuccess={onVerifySuccess}
-          onClose={() => onScheduleSettingsOpenChange(false)} />
-      )}
 
       {/* 🔴 THE PANEL, ONE MOUNT. Full-screen, so it needs no sub-tab bar and no layout of its own.
         * ⚠️ `manageApi={api}` IS THE WHOLE OF "NO SECOND SAVE PATH". The modal's Standard column is
@@ -8739,7 +8716,6 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         * Settings control on this page calls, with the same action names, the same payload shapes and
         * `nativeAuthHeader()` already on it. A fetch written inside the component would be a second
         * path by definition and would 401 in the native app. */}
-      {showEventTypes && <EventTypesPanel token={token} manageApi={api} onClose={() => setShowEventTypes(false)} />}
 
       {editingEvent && (
         /* ── 🔴 THE MODAL SHELL. A COLUMN, NOT A SCROLLER ─────────────────────────────────────────
@@ -8951,6 +8927,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {!editingEvent.id && (
                   <div className="sm:col-span-2">
                     <EventTypeSelect token={token} venueName={editingEvent.venue_name}
+                      placeId={editingEvent.truck_place_id ?? null}
                       value={eventTypeId} onChange={setEventTypeId} disabled={editSaving} />
                   </div>
                 )}
@@ -9143,6 +9120,16 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         ⚠️ PLACES IS NOT HERE ANY MORE. Seeding now happens when the Add event modal opens, which is
         the deliberate act that needs the list; the Schedule tab itself writes nothing. */}
     {isActive && section === 'weekly' && <WeeklyPostPane truck={truck} token={token} />}
+    {/* ══ 🔴 EVENT TYPES, INLINE — THE SAME COMPONENT, NOT A SECOND COPY OF ITS GRID ═══════════
+      * `inline` swaps the overlay's shell for a card in the page's flow and changes nothing else: the
+      * same fixed column widths, the same 1000px cap, the same "+ New event type" in the header and
+      * the same two footer lines. A six-column grid laid out twice is how two screens come to disagree
+      * about what a column is worth.
+      * ⚠️ `manageApi={api}` IS THE WHOLE OF "NO SECOND SAVE PATH" — Standard's values live on the truck
+      * and the vans, and this hands the component the SAME function every Settings control calls, with
+      * `nativeAuthHeader()` already on it. A fetch written inside the component would 401 in the native
+      * app. Unchanged from the overlay mount it replaces. */}
+    {isActive && section === 'event-types' && <EventTypesPanel token={token} manageApi={api} inline />}
     {/* Import modal — rendered outside the isActive gate so it can open from any tab */}
     {showImportModal && (
       <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
@@ -9869,7 +9856,7 @@ function useSettingsJumpBar(active: boolean) {
   return { barRef, sectionEls, pinnedTop, activeId, jumpTo, lastSectionMinHeight }
 }
 
-function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough, onOpenScheduleSettings, notices }: {
+function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough, notices }: {
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
   userRole: UserRole
@@ -9903,7 +9890,6 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   /** K4: the re-open entry point. Opens the page-level walkthrough; stores nothing itself. */
   onOpenWalkthrough: () => void
   /** Opens Schedule › Events with the Schedule settings modal already up — one press. */
-  onOpenScheduleSettings: () => void
 }) {
   const [form, setForm] = useState({ ...truck })
   // ── CUISINE ROWS, SEEDED ONCE FROM THE STORED STRING ────────────────────────────────────────────
@@ -12069,25 +12055,141 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         className="scroll-mt-0 space-y-6"
       >
         <h2 className="text-lg font-black text-slate-900">Schedule</h2>
-      {/* ── ⛔ "Your schedule" AND "Import exclusions" MOVED TO Schedule › Schedule settings ────────
-          (4 October 2026, option (a) of docs/manage-moves-report.md §1 — Dominic's choice.)
-          They are now a modal in components/manage/ScheduleSettingsModal.tsx, opened from the
-          "Finding events automatically" line in Schedule › Events. Same fields, same wording, same
-          saves; the file holds them verbatim.
-          🔴 ONLY TWO OF THE THREE CARDS MOVED. `CustomDomainSetup` is still below, and its own comment
-          says why it cannot follow them: it sits immediately above the QR code, and the printed code
-          resolves to the operator's own address at SCAN time once that setup finishes. Separated, an
-          operator concludes they need to reprint.
-          ⚠️ THE SECTION AND ITS JUMP TAB KEEP THEIR NAMES, as asked — this is one line, not a gap. */}
-      <Card className="p-4">
-        <p className="text-sm text-slate-600">
-          Where we find your events has moved to{' '}
-          <button type="button" onClick={onOpenScheduleSettings}
-            className="font-semibold text-orange-700 underline hover:text-orange-800">
-            Schedule › Schedule settings
-          </button>
+      {/* ══ 🔴 "Your schedule" AND "Import exclusions" ARE BACK HERE (Dominic reversed the move) ═══
+          They were moved into a modal opened from Schedule › Events on 4 October (option (a) of
+          docs/manage-moves-report.md §1). Dominic reversed that decision, so they are back in their
+          original position — in this section, above `CustomDomainSetup` — with the same fields, the
+          same wording and the same saves. The modal file is deleted; nothing opens it any more.
+          ⚠️ THE STATE AND THE HANDLER NEVER LEFT THIS COMPONENT. `settingsExclusionList`, `verifying`,
+          `verifyError`, the `get_exclusion_terms` load and `handleVerifyUrl` are the ones that were
+          always here — only the JSX travelled — so this is a restoration, not a reimplementation.
+          ⚠️ THE VERIFY MESSAGES STAY IN lib/copy/scheduleVerify.ts. That file was created by the move and
+          is KEPT deliberately: the setup wizard reads the same five strings, so a single home is worth
+          having whether or not a modal exists. Nothing here retypes them. */}
+      {/* Your schedule */}
+      <Card className="p-4 space-y-4">
+        <p className="text-base font-bold text-slate-800">Your schedule</p>
+        <div className="space-y-2">
+          {([
+            { value: 'manual', label: "I'll add events myself" },
+            { value: 'auto',   label: 'Find my events automatically',    desc: "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page." },
+          ] as { value: 'auto' | 'manual'; label: string; desc?: string }[]).map(opt => {
+            const pref = form.scraper_preference ?? 'manual'
+            const selected = pref === opt.value || (opt.value === 'auto' && pref === 'both')
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => {
+                  setForm(p => ({ ...p, scraper_preference: opt.value }))
+                  saveSetting('scraper_preference', opt.value)
+                }}
+                className={`w-full text-left border rounded-xl p-4 transition-colors ${selected ? 'border-orange-500 bg-orange-50' : 'border-slate-200 hover:border-slate-300'}`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`mt-0.5 w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${selected ? 'border-orange-500' : 'border-slate-300'}`}>
+                    {selected && <div className="w-2 h-2 rounded-full bg-orange-500" />}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{opt.label}</p>
+                    {opt.desc && <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>}
+                  </div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+        {/* Clarifier — applies to BOTH options: found events always come for approval, nothing
+            goes live until confirmed (so a "I'll add events myself" truck isn't surprised). */}
+        <p className="text-xs text-slate-500">
+          Either way, if we find your events listed elsewhere, we&apos;ll still send these to you for approval. Nothing goes live until you confirm it.
         </p>
+        {['auto', 'both'].includes(form.scraper_preference ?? 'manual') && (
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-slate-800">Where do you post your schedule?</p>
+            <div className="flex gap-2">
+              <input
+                type="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
+                value={form.schedule_url ?? ''}
+                onChange={e => { setForm(p => ({ ...p, schedule_url: e.target.value })); setVerifyError(null) }}
+                onBlur={e => {
+                  // N1: the blur-save normalises too, not just the Verify button. Otherwise an operator
+                  // who typed `www.…` and tabbed away would have the scheme-less string SAVED and later
+                  // handed to the scraper, which is the same failure one step further downstream.
+                  const raw = e.target.value.trim()
+                  if (!raw) { setVerifyError(null); saveSetting('schedule_url', null); return }
+                  const val = normaliseUrl(raw)
+                  if (!val) { setVerifyError(URL_MALFORMED_MSG); return }
+                  setForm(p => ({ ...p, schedule_url: val }))
+                  if (isBlockedDomain(val)) {
+                    setVerifyError(BLOCKED_DOMAIN_MSG)
+                  } else {
+                    setVerifyError(null)
+                    saveSetting('schedule_url', val)
+                  }
+                }}
+                placeholder="https://yourtruck.co.uk/events"
+                disabled={verifying}
+                className={`flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${verifying ? 'opacity-50 cursor-not-allowed' : ''}`}
+              />
+              <button
+                type="button"
+                onClick={handleVerifyUrl}
+                disabled={!form.schedule_url?.trim() || verifying}
+                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                {verifying
+                  ? <><div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-orange-500 rounded-full animate-spin" />Checking...</>
+                  : 'Verify'}
+              </button>
+            </div>
+            {verifying && (
+              <div className="mt-1 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <svg className="animate-spin h-4 w-4 text-amber-600 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-amber-800">Checking your website...</p>
+                  <p className="text-xs text-amber-700 mt-0.5">This can take up to 2 minutes — please keep this page open and don't close the tab.</p>
+                </div>
+              </div>
+            )}
+            {!verifying && verifyError && <p className="text-xs text-red-500">{verifyError}</p>}
+            <p className="text-xs text-slate-500">Your website where customers can see your upcoming events — not a Facebook or Instagram page</p>
+          </div>
+        )}
       </Card>
+
+      {/* Import exclusions */}
+      {settingsExclusionList.length > 0 && (
+        <Card className="p-4 space-y-3">
+          <div>
+            <p className="text-base font-bold text-slate-800">Import exclusions</p>
+            <p className="text-xs text-slate-500 mt-0.5">These terms are automatically filtered out when importing your schedule. Remove any that were added by mistake.</p>
+          </div>
+          <div className="space-y-1.5">
+            {settingsExclusionList.map(item => (
+              <div key={item.id} className="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg border border-slate-200">
+                <span className="text-sm text-slate-700">{item.term}</span>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (item.id) {
+                      try { await api('remove_exclusion_term', { id: item.id }) } catch { /* continue */ }
+                    }
+                    setSettingsExclusionList(prev => prev.filter(t => t.id !== item.id))
+                  }}
+                  className="text-slate-400 hover:text-red-600 transition-colors ml-3"
+                  aria-label={`Remove exclusion for ${item.term}`}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* ── 🔴 IMMEDIATELY ABOVE THE QR CODE, AND THE ADJACENCY IS THE POINT (V11.49). ───────────────
           The QR code below encodes a hatchgrab.com address PERMANENTLY and resolves its destination at

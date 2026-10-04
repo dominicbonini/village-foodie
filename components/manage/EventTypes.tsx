@@ -301,9 +301,23 @@ const Dot = ({ colour }: { colour: string }) => (
 //   3. EVERY CONTROL IS IN ITS OWN TYPE'S COLUMN, on the row its name is on. Nothing is in the label
 //      column.
 
-export function EventTypesPanel({ token, onClose, manageApi }: {
+export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
   token: string
-  onClose: () => void
+  /** Required for the overlay; ignored when `inline`, which has nothing to close. */
+  onClose?: () => void
+  /**
+   * ══ 🔴 INLINE: THE SAME GRID, ON THE PAGE, INSTEAD OF OVER IT ════════════════════════════
+   * Event types is the third Schedule pill now, not a button opening an overlay. What changes is the
+   * SHELL and nothing else: the fixed backdrop, the dialog role, the ✕ and the 92vh body scroller
+   * drop away, and the box becomes a card in the page's own flow.
+   * 🔴 THE GRID, THE COLUMN WIDTHS, THE HEADER'S "+ New event type" AND THE FOOTER ARE THE SAME CODE.
+   * They are not re-laid-out for the page — a second copy of a six-column grid is how two screens come
+   * to disagree about what a column is worth. The width expression is the same one, cap included.
+   * ⚠️ LEFT-ALIGNED, NOT CENTRED. In the overlay the dialog is centred in the viewport; on the page it
+   * starts at the content's left edge like every other card, so a truck with one type does not get a
+   * box floating in the middle of the column.
+   */
+  inline?: boolean
   /**
    * ── 🔴 THE MANAGE PAGE'S OWN `api`, PASSED IN. THIS IS THE "NO SECOND SAVE PATH" RULE, LITERALLY ──
    * Standard's values live on the truck and the vans, and the only sanctioned way to change them is
@@ -498,9 +512,14 @@ export function EventTypesPanel({ token, onClose, manageApi }: {
     return () => window.removeEventListener('click', close)
   }, [menuFor])
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4"
-      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+  /* ⚠️ ONE BOX, TWO SHELLS. The ternaries below are the whole of the difference between the overlay
+   * and the pill; everything between them is shared markup.
+   * ⚠️ AND THE SHELL IS NOT A COMPONENT DEFINED HERE. It was, briefly, and the React Compiler lint
+   * caught it: a component created during render is a NEW type on every render, so React unmounts and
+   * remounts its whole subtree — which here is the grid, taking the sideways scroll position and any
+   * focused control with it on every keystroke. The content is a VALUE; the wrapper is chosen after. */
+  const content = (
+    <>
       {/* ── 🔴 IT FITS ITS COLUMNS, AND IS CAPPED AT 1000px ────────────────────────────────────────
         * It was `w-full max-w-[1000px]`, so a truck with ONE type got a 1000px dialog holding 630px of
         * table and an empty band to the right of it — the width said "there is more here" and there
@@ -512,13 +531,18 @@ export function EventTypesPanel({ token, onClose, manageApi }: {
         * a tablet in portrait — 1000px of dialog on an 820px screen would clip the close button.
         * ⚠️ THE NUMBERS COME FROM THE SAME CONSTANTS THE GRID USES. Two places computing the same
         * width from different literals is how the empty band appeared in the first place. */}
-      <div role="dialog" aria-modal="true" aria-label="Event types"
+      <div role={inline ? undefined : 'dialog'} aria-modal={inline ? undefined : true} aria-label="Event types"
         data-event-types-modal
         /* ⚠️ `valueColumnCount`, NOT `types.length + 1`. A two-van truck with two types now has FOUR
           * value columns, and the dialog has to be as wide as its content or the empty band this
           * expression exists to remove comes back on the other axis. */
         style={{ width: GRID_LABEL_W + GRID_COL_W * valueColumnCount + MODAL_SIDE_PADDING, maxWidth: 'min(1000px, 100%)' }}
-        className="bg-white max-h-[92vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        /* ⚠️ INLINE USES THE SHARED CARD'S OWN CLASSES (`shadow-sm border border-slate-200`), so it is
+          * the same box as every other card on the page rather than a dialog dropped into it; and it
+          * has NO height cap, because the page is the scroller there. */
+        className={inline
+          ? 'bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden'
+          : 'bg-white max-h-[92vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden'}>
 
         {/* ── HEADER ───────────────────────────────────────────────────────────────────────────── */}
         <div className="shrink-0 flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-slate-200">
@@ -531,11 +555,17 @@ export function EventTypesPanel({ token, onClose, manageApi }: {
           </div>
           <Btn label="+ New event type" colour="ghost" disabled={!editable}
             onClick={() => setCreating(true)} />
-          <button type="button" onClick={onClose} aria-label="Close"
-            className="shrink-0 w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-lg font-bold">✕</button>
+          {/* ⚠️ NO ✕ WHEN INLINE — there is nothing to close; the pill above is how you leave. */}
+          {!inline && (
+            <button type="button" onClick={() => onClose?.()} aria-label="Close"
+              className="shrink-0 w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-lg font-bold">✕</button>
+          )}
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto">
+        {/* ⚠️ THE BODY SCROLLS ONLY IN THE OVERLAY. On the page the manage scroller already does it, and
+          * a second vertical scroller inside a card is the "two scrollbars" shape this app avoids. The
+          * grid's own SIDEWAYS scroller is inside and is unaffected by either. */}
+        <div className={inline ? '' : 'flex-1 min-h-0 overflow-y-auto'}>
           {loading && <p className="text-sm text-slate-400 p-5">Loading…</p>}
 
           {!loading && missingTable && (
@@ -812,6 +842,16 @@ export function EventTypesPanel({ token, onClose, manageApi }: {
           </div>
         </div>
       )}
+    </>
+  )
+
+  /* 🔴 INLINE: the card goes straight into the page's flow. OVERLAY: the same card, inside the
+   * backdrop that closes it. The popups travel with it either way — they are `fixed` themselves, so
+   * they are correct in both shells. */
+  return inline ? content : (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4"
+      onClick={e => { if (e.target === e.currentTarget) onClose?.() }}>
+      {content}
     </div>
   )
 }
@@ -1304,10 +1344,18 @@ function NewTypePopup({ busy, onCancel, onCreate }: {
  * ⚠️ IT OWNS NO FORM STATE. `value` and `onChange` come from the modal, so the type is submitted by
  * the same save the rest of the form uses and there is no second write path to keep in step.
  */
-export function EventTypeSelect({ token, venueName, value, onChange, disabled }: {
+export function EventTypeSelect({ token, venueName, placeId, value, onChange, disabled }: {
   token: string
-  /** The venue typed into the form, for "the usual type for this place". */
+  /** The venue typed into the form — the fallback when no place is picked. */
   venueName: string | null | undefined
+  /**
+   * 🔴 THE PICKED PLACE, AND IT OUTRANKS THE NAME. "The usual type for this place" means the most
+   * recent event at the SAME PLACE, resolved server-side through `placeForEvent` — which follows
+   * `merged_into_id`, so a pitch the operator merged counts as one pitch. Null (nothing picked, or a
+   * truck that has never opened the places list) falls back to the normalised-name rule, which is
+   * what every event without a place still matches on.
+   */
+  placeId: string | null | undefined
   value: string | null
   onChange: (typeId: string | null) => void
   disabled?: boolean
@@ -1332,7 +1380,10 @@ export function EventTypeSelect({ token, venueName, value, onChange, disabled }:
     return () => { live = false }
   }, [token])
 
-  /* The usual type for this venue, debounced — it is a database read per venue name. */
+  /* The usual type for this place, debounced — it is a database read per venue name.
+   * ⚠️ `placeId` IS IN THE DEPENDENCIES AND IS NOT DEBOUNCED AWAY: picking a place in the picker is a
+   * single deliberate press, not typing, so the answer should follow it immediately on the next tick
+   * rather than 350ms later. The timer is still there because the VENUE BOX is typed into. */
   useEffect(() => {
     const name = String(venueName ?? '').trim()
     /* ⚠️ THE DISABLE IS ON THIS LINE, NOT ON THE TIMER BELOW. Clearing the remembered answer the moment
@@ -1340,15 +1391,15 @@ export function EventTypeSelect({ token, venueName, value, onChange, disabled }:
      * blank venue would be wrong — and it is a synchronous setState in an effect, which is what the
      * rule flags. The debounced write inside the timer is asynchronous and needs no disable. */
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!name || types.length === 0) { setUsual(null); return }
+    if ((!name && !placeId) || types.length === 0) { setUsual(null); return }
     const t = setTimeout(async () => {
       try {
-        const r = await api(token, { action: 'usual_for_venue', venueName: name })
+        const r = await api(token, { action: 'usual_for_venue', venueName: name, placeId: placeId ?? null })
         setUsual((r.typeId as string | null) ?? null)
       } catch { setUsual(null) }
-    }, 350)
+    }, placeId ? 0 : 350)
     return () => clearTimeout(t)
-  }, [token, venueName, types.length])
+  }, [token, venueName, placeId, types.length])
 
   /* ⚠️ THE DEFAULT IS APPLIED IN AN EFFECT because it depends on a read that finishes later. It fires
    * only while untouched and only when it would actually change the value. */

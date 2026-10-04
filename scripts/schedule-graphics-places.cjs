@@ -875,12 +875,48 @@ function runWiringSuite(lib) {
     && !fs.existsSync(path.join(REPO, 'components/manage/ScheduleGraphicsTab.tsx')))
   /* 🔴 TWO PILLS NOW. The Places pill went when the list moved into the Add event modal; a third
    * pill would be a route to a screen that is part of adding an event. */
-  t('🔴 the Schedule tab has TWO pills — Events, then Weekly post — and no Places pill',
+  /* 🔴 THREE PILLS NOW (October 2026, the branches combined). Event types arrived on its own branch
+   * as a button opening an overlay, because main's Schedule tab had no pill bar; it is the third pill.
+   * ⚠️ THE ORDER IS ASSERTED, not just the membership: Events is the default and must be first, and
+   * Event types is a setting rather than a day's work, so it is last. */
+  t('🔴 the Schedule tab has THREE pills — Events, Weekly post, Event types — and no Places pill',
     /\{ id: 'events', label: 'Events' \}/.test(P)
     && /\{ id: 'weekly', label: 'Weekly post' \}/.test(P)
+    && /\{ id: 'event-types', label: 'Event types' \}/.test(P)
     && !/id: 'places'/.test(P)
     && P.indexOf("id: 'events'") < P.indexOf("id: 'weekly'")
-    && /type ScheduleSection = 'events' \| 'weekly'/.test(P))
+    && P.indexOf("id: 'weekly'") < P.indexOf("id: 'event-types'")
+    && /type ScheduleSection = 'events' \| 'weekly' \| 'event-types'/.test(P)
+    /* 🔴 AND `?section=event-types` REACHES IT — the guard is what the URL is parsed through, so a
+     * pill the guard does not know is a pill no link can reach. */
+    && /v === 'events' \|\| v === 'weekly' \|\| v === 'event-types'/.test(P))
+  /* ⛔ AND THE BUTTON AND THE OVERLAY ARE GONE. Two routes to one screen is what the Places pill was
+   * removed for; leaving the button would have rebuilt exactly that. */
+  t('⛔ the "Event types" header button and its overlay mount are gone',
+    !/Btn label="Event types"/.test(P)
+    && !/showEventTypes/.test(P)
+    && /section === 'event-types' && <EventTypesPanel/.test(P))
+  /* 🔴 AND IT IS THE SAME COMPONENT, INLINE — not a second copy of the grid on the page. `inline`
+   * swaps the shell; the grid, the column widths, the header button and the footer are shared code. */
+  t('🔴 the pill renders the SAME component with `inline`, not a second grid', (() => {
+    /* ⚠️ `codeOnly`, BECAUSE THE PROSE NAMES THE SAME STRINGS. The comment above the prop explains
+     * that "+ New event type" and the footer are shared; counting them in the comments would make
+     * "not duplicated" mean "mentioned twice", which is the opposite of the claim. */
+    const et = codeOnly(read('components/manage/EventTypes.tsx'))
+    const n = (re) => (et.match(re) || []).length
+    return /inline = false/.test(et)
+      && /inline\?: boolean/.test(et)
+      /* ONE width expression, ONE header button, ONE footer — both shells use them */
+      && n(/GRID_LABEL_W \+ GRID_COL_W \* valueColumnCount \+ MODAL_SIDE_PADDING/g) === 1
+      && n(/label="\+ New event type"/g) === 1
+      && n(/\{EVENT_TYPES_FOOTER_STANDARD\}/g) === 1
+      /* the inline box is the shared Card's own classes, left-aligned (no mx-auto) */
+      && /bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden/.test(et)
+      && !/mx-auto/.test(et)
+      /* ⚠️ AND NO SECOND SCROLLER ON THE PAGE: the overlay's body scrolls, the inline card does not
+       * (the manage scroller already does), which is the one behavioural difference between them. */
+      && /inline \? '' : 'flex-1 min-h-0 overflow-y-auto'/.test(et)
+  })())
   t("🔴 an old `?section=places` link falls through to Events and does NOT force Tidy up open",
     /v === 'events' \|\| v === 'weekly'/.test(P)
     && !/section === 'places'/.test(P)
@@ -1352,28 +1388,16 @@ function runWiringSuite(lib) {
      * a label that vanished from both would still fail. */
     const MOVED_TO_CAPACITY = ['Kitchen capacity', 'Category', 'Items', 'Prep', 'Counts to total capacity',
       'Total capacity', 'Set a capacity to choose which categories count.']
-    /* 🔴 AND THE TWO SCHEDULE CARDS MOVED TO THE MODAL (4 October 2026, option (a)). Same treatment:
-     * these may leave SettingsTab ONLY because the assertion below proves each is present in
-     * components/manage/ScheduleSettingsModal.tsx. A string that vanished from both still fails.
-     * ⚠️ IT IS NOT A LIST OF WORDS I CHOSE — it is every quoted string the diff reported as leaving,
-     * which is why it can be checked against the new file rather than trusted. */
-    const MOVED_TO_SCHEDULE_MODAL = [
-      'Your schedule', 'Where do you post your schedule?', 'Checking...', 'Checking your website...',
-      "This can take up to 2 minutes — please keep this page open and don't close the tab.",
-      'Your website where customers can see your upcoming events — not a Facebook or Instagram page',
-      'Import exclusions',
-      'These terms are automatically filtered out when importing your schedule. Remove any that were added by mistake.',
-      "I'll add events myself", 'Find my events automatically',
-      "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page.",
-      'Verify', 'remove_exclusion_term', 'get_exclusion_terms',
-    ]
-    /* 🔴 AND THE THREE SETTING NAMES THAT BECAME SHARED CONSTANTS (October 2026, the merge). They
-     * are no longer JSX text in this file — Settings renders them from `SERVICE_SETTING_LABELS`,
-     * because the Event types grid and the dashboard's "This event" card show the SAME three settings
-     * and all three surfaces were naming them themselves. Settings is still where the words came from.
-     * ⚠️ SAME TREATMENT AS EVERY OTHER MOVE ON THIS LIST: allowed to be absent here ONLY because the
-     * assertion below proves each one is present, spelled identically, in the file it moved to. A
-     * label that vanished from both would still fail. */
+    /* ⛔ `MOVED_TO_SCHEDULE_MODAL` IS GONE. It listed every string allowed to leave Settings for the
+     * Schedule settings modal. The move was reversed, the strings are back, and an allowlist that
+     * excuses a removal that no longer happens would quietly excuse a REAL one later. */
+    const MOVED_TO_SCHEDULE_MODAL = []
+    /* 🔴 AND THE THREE SETTING NAMES THAT BECAME SHARED CONSTANTS (the merge). They are no longer
+     * JSX text in this file — Settings renders them from `SERVICE_SETTING_LABELS`, because the Event
+     * types grid and the dashboard's "This event" card show the SAME three settings and all three were
+     * naming them themselves. Settings is still where the words came from.
+     * ⚠️ ALLOWED TO BE ABSENT HERE ONLY because the assertion below proves each one is present,
+     * spelled identically, in the file it moved to. A label that vanished from both still fails. */
     const MOVED_TO_SERVICE_COPY = ['Do you take cash?', 'Collection times', 'Offline order protection']
     const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY, ...MOVED_TO_SCHEDULE_MODAL, ...MOVED_TO_SERVICE_COPY])
     const removed = [...before].filter(x => !after.has(x)).filter(x => !removable.has(x))
@@ -1417,37 +1441,54 @@ function runWiringSuite(lib) {
     if (missingTitles.length) console.log('      box titles missing: ' + JSON.stringify(missingTitles))
     return missing.length === 0 && missingTitles.length === 0
   })())
-  /* 🔴 THE SAME PROOF FOR THE SCHEDULE CARDS. Every string allowed to leave Settings above must be
-   * present, word for word, in the modal — otherwise "allowed to move" would be indistinguishable
-   * from "allowed to vanish". */
-  t('🔴 every string that left Settings › Schedule is present in the Schedule settings modal', (() => {
-    const modal = read('components/manage/ScheduleSettingsModal.tsx')
+  /* ══ ⛔ THE SCHEDULE CARDS CAME BACK (Dominic reversed the move) ═════════════════════════
+   * These three checks asserted the opposite: that "Your schedule" and "Import exclusions" had LEFT
+   * Settings for components/manage/ScheduleSettingsModal.tsx, and that a one-line pointer stood where
+   * they had been. The move was reversed, the modal file is deleted, and the pointer is gone — so the
+   * same three facts are asserted from the other side, and `MOVED_TO_SCHEDULE_MODAL` above is no
+   * longer needed to excuse anything, because nothing left.
+   * 🔴 THE STRING LIST IS THE SAME ONE. It is every string the original move reported as leaving, so
+   * checking it against Settings now is the exact inverse of checking it against the modal then — not
+   * a new, shorter list that would pass more easily. */
+  t('⛔ "Your schedule" and "Import exclusions" ARE BACK in Settings, with the same strings', (() => {
     const MUST = [
       'Your schedule', 'Where do you post your schedule?', 'Import exclusions',
       "I'll add events myself", 'Find my events automatically', 'Verify',
       'These terms are automatically filtered out when importing your schedule. Remove any that were added by mistake.',
       'remove_exclusion_term', 'get_exclusion_terms',
     ]
-    const missing = MUST.filter(x => !modal.includes(x))
-    if (missing.length) console.log('      missing from the modal: ' + JSON.stringify(missing))
-    return missing.length === 0
+    const i = RAWP.indexOf('function SettingsTab({ userRole, truck,')
+    const settings = RAWP.slice(i, RAWP.indexOf('\nfunction ', i + 50))
+    const missing = MUST.filter(x => !settings.includes(x))
+    if (missing.length) console.log('      missing from SettingsTab: ' + JSON.stringify(missing))
+    return i > 0 && missing.length === 0
   })())
-  /* ⛔ AND CustomDomainSetup DID **NOT** MOVE. It is the third card in that section and stays
-   * directly above the QR code — page.tsx's own comment says why: the printed code resolves to the
-   * operator's address at SCAN time, so separated, an operator concludes they need to reprint. */
-  t('⛔ CustomDomainSetup STAYED in Settings, directly above the QR code', (() => {
-    const modal = read('components/manage/ScheduleSettingsModal.tsx')
-    const dom = RAWP.indexOf('<CustomDomainSetup'), qr = RAWP.indexOf('id="qr-code"')
-    /* ⚠️ `codeOnly`: the modal's header comment NAMES CustomDomainSetup in order to explain that it
-     * did not move — and the first draft of this check failed on that explanation. */
-    return !/CustomDomainSetup/.test(codeOnly(modal)) && dom > 0 && qr > dom
-      && /IMMEDIATELY ABOVE THE QR CODE/.test(RAWP)
+  t('⛔ …and the Schedule settings MODAL and its pointer are gone', (() => {
+    const fileGone = !fs.existsSync(path.join(REPO, 'components/manage/ScheduleSettingsModal.tsx'))
+    return fileGone
+      && !/ScheduleSettingsModal/.test(RAWP)
+      && !/Where we find your events has moved to/.test(RAWP)
+      && !/scheduleSettingsOpen/.test(RAWP)
   })())
-  /* 🔴 AND THE SECTION AND ITS JUMP TAB KEEP THEIR NAMES, with one line where the cards were. */
-  t('🔴 Settings › Schedule keeps its name and leaves one line pointing at the modal',
-    /\{ id: 'schedule', label: 'Schedule' \}/.test(RAWP)
-    && /Where we find your events has moved to/.test(RAWP)
-    && /Schedule › Schedule settings/.test(RAWP))
+  /* 🔴 AND THEY ARE IN THEIR ORIGINAL POSITION: inside the Schedule section, ABOVE CustomDomainSetup,
+   * which never moved. Order is the claim — "present somewhere in Settings" would pass with the cards
+   * at the bottom of the page. */
+  t('🔴 …in their original position: inside Settings › Schedule, ABOVE CustomDomainSetup', (() => {
+    const sec = RAWP.indexOf('id="schedule"')
+    const you = RAWP.indexOf('Your schedule', sec)
+    const exc = RAWP.indexOf('Import exclusions', sec)
+    const dom = RAWP.indexOf('<CustomDomainSetup', sec)
+    const qr = RAWP.indexOf('id="qr-code"', sec)
+    return sec > 0 && you > sec && exc > you && dom > exc && qr > dom
+  })())
+  /* ⛔ AND CustomDomainSetup STILL DID NOT MOVE. page.tsx's own comment says why: the printed QR code
+   * resolves to the operator's address at SCAN time, so separated, an operator concludes they need to
+   * reprint. The check above already pins the order; this pins the reason's comment. */
+  t('⛔ CustomDomainSetup is still directly above the QR code, with its reason on record',
+    /IMMEDIATELY ABOVE THE QR CODE/.test(RAWP))
+  /* 🔴 AND THE SECTION AND ITS JUMP TAB KEEP THEIR NAMES. */
+  t('🔴 Settings › Schedule keeps its name',
+    /\{ id: 'schedule', label: 'Schedule' \}/.test(RAWP))
 
   /* ⚠️ AND THE TWO EXPLANATORY PARAGRAPHS — the mockup's "How capacity works" — travelled as the same
    * shared constants, so their wording cannot have changed in the move. */
@@ -1649,7 +1690,8 @@ function runWiringSuite(lib) {
       'components/manage/primitives.tsx',
       /* 🔴 4 October: "Your schedule" and "Import exclusions" moved into their own modal, and the five
        * verify messages went with them — a route file is not a place to import copy from. */
-      'components/manage/ScheduleSettingsModal.tsx',
+      /* ⛔ ScheduleSettingsModal.tsx IS DELETED — its two cards are back in Settings, so nothing
+       * moved into it and it cannot absorb a lost line. */
       'lib/copy/scheduleVerify.ts',
     ]
     const movedTo = (() => {
@@ -1713,28 +1755,27 @@ function runWiringSuite(lib) {
       { was: 'const VERIFY_MESSAGES: Record<string, string> = {',
         reason: 'moved with it',
         nowIn: 'lib/copy/scheduleVerify.ts', now: 'export const VERIFY_MESSAGES: Record<string, string> = {' },
+      /* ⚠️ THIS ENTRY HAS CHANGED THREE TIMES AND THE COMPANION CHECK CAUGHT EACH ONE. The mount
+       * gained the modal's flag; then `notices`; then the flag went when the move was reversed and
+       * `onSwitchTab` came back for the restored "Change in Settings" link. What is claimed now is
+       * the prop that is actually there. */
       { was: '<ScheduleTab isActive={activeTab === \'schedule\'}',
-        reason: 'the mount passes the two callbacks the modal needs, and the modal\'s flag',
-        nowIn: 'app/manage/[token]/page.tsx', now: 'scheduleSettingsOpen={showScheduleSettings}' },
+        reason: 'the mount threads the notices and, again, onSwitchTab for the restored link',
+        nowIn: 'app/manage/[token]/page.tsx', now: 'onSwitchTab={setActiveTab} pendingVerifyEvents' },
       { was: 'function ScheduleTab({ isActive, section, onSectionChange, truck, token',
         reason: 'the signature declares them',
-        nowIn: 'app/manage/[token]/page.tsx', now: 'onScheduleSettingsOpenChange, pendingVerifyEvents' },
-      { was: "<button onClick={() => onSwitchTab('settings')} className=\"text-orange-600 hover:underline font-medium\">",
-        /* ⚠️ THIS ENTRY CHANGED TWICE IN ONE DAY. The link first became "Schedule settings" and opened
-         * the modal; then the whole line became a CARD with a shared secondary BUTTON, because the
-         * caption was "too easy to miss". The companion check reported ⛔ EDIT CLAIMED BUT NOT PRESENT
-         * when the <button> went, which is what it is for. */
-        reason: 'the caption became a card with a shared secondary button',
-        nowIn: 'app/manage/[token]/page.tsx',
-        now: '<Btn label="Schedule settings" colour="ghost" className="w-full sm:w-auto justify-center"' },
+        nowIn: 'app/manage/[token]/page.tsx', now: 'onVerifySuccess, onSwitchTab, pendingVerifyEvents' },
+      /* ⛔ THE CAPTION-LINK ENTRY IS RETIRED, NOT RE-AIMED. It excused that line going when the caption
+       * became a card; the move was reversed and the line is back, byte for byte, so it is not lost
+       * and there is nothing to excuse. An entry for a line that never leaves is a claim that can only
+       * ever rot — which is what the companion check reported when it did. */
       /* ⚠️ ONE MOVED LINE GAINED A JSX WRAPPER. The text is identical — `react/no-unescaped-entities`
        * fires on the apostrophe in "don't", and the lint config differs between a route file and a
        * component. Wrapping it in `{"…"}` keeps the RENDERED characters exactly as they were, where
        * `&apos;` or a curly quote would have changed what the operator reads. */
-      { was: '<p className="text-xs text-amber-700 mt-0.5">This can take up to 2 minutes',
-        reason: 'the apostrophe needed a JSX expression in a component; the text is unchanged',
-        nowIn: 'components/manage/ScheduleSettingsModal.tsx',
-        now: '{"This can take up to 2 minutes — please keep this page open and don\'t close the tab."}' },
+      /* ⛔ RETIRED WITH THE MODAL. The line needed a JSX expression only because it had moved into a
+       * component whose lint config refuses a bare apostrophe; it is back in page.tsx, byte for byte,
+       * so nothing is lost and nothing needs excusing. */
       /* 3-4 · `Toggle` MOVED TO primitives AND GAINED `export`. Its body is byte-identical and is
        * excused by `movedTo`; only the signature line differs.
        * ⚠️ THE SIGNATURE CHANGED AGAIN AT THE MERGE, AND THIS CLAIM CAUGHT IT. `event-types` had made
@@ -1787,16 +1828,31 @@ function runWiringSuite(lib) {
         reason: '`Toggle` moved to primitives, so the import names it',
         nowIn: 'app/manage/[token]/page.tsx',
         now: 'EmptyState, Toggle, AllergenToggles' },
+      /* ══ 🔴 EVENT TYPES BECAME THE THIRD SCHEDULE PILL ═══════════════════════════════════
+       * Two lines carry the section vocabulary and both gained the new id. They are claimed rather
+       * than waived: the pill assertions in PART A read these same two strings, so a revert fails
+       * there too — this entry only keeps the line-level guard honest about WHY they changed. */
+      { was: "type ScheduleSection = 'events' | 'weekly'",
+        reason: 'Event types is the third pill, reachable as ?section=event-types',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "type ScheduleSection = 'events' | 'weekly' | 'event-types'" },
+      { was: "v === 'events' || v === 'weekly'",
+        reason: 'the URL guard has to know the new id or no link can reach the pill',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "v === 'events' || v === 'weekly' || v === 'event-types'" },
+      /* ⚠️ THIS MOUNT HAS CHANGED THREE TIMES. The capacity pointer prop went; a Schedule settings one
+       * arrived; then that one went too when the move was reversed, and `notices` arrived. What is
+       * claimed is the prop that is there. */
       { was: "{activeTab === 'settings'  && <SettingsTab",
-        reason: 'the capacity pointer prop went; a Schedule settings one arrived',
-        nowIn: 'app/manage/[token]/page.tsx', now: 'onOpenScheduleSettings={() =>' },
+        reason: 'the capacity and schedule-settings pointers both went; `notices` arrived',
+        nowIn: 'app/manage/[token]/page.tsx', now: 'onOpenWalkthrough={openWalkthrough} notices={notices}' },
       { was: 'function SettingsTab({ userRole, truck, whatsappConnection',
         /* ⚠️ THIS ENTRY HAS NOW CHANGED THREE TIMES, and each time the companion check below was what
          * said so. The latest: on 4 October the signature gained `notices`, because the page's seven
          * notification banners render BELOW this tab's sticky bar rather than above it — the bar has to
          * be the first child of the padded wrapper or it cannot sit flush. */
         reason: 'the capacity prop left; the Schedule settings one joined it; then `notices` did',
-        nowIn: 'app/manage/[token]/page.tsx', now: ', onOpenScheduleSettings, notices }: {' },
+        nowIn: 'app/manage/[token]/page.tsx', now: ', onOpenWalkthrough, notices }: {' },
       /* 3 · `mt-3` WAS A RELATIONSHIP TO THE CARD ABOVE IT, and there is no card above it any more.
        * The capacity card was the last sub-card inside a van's Kitchen panel; it is now the first
        * thing on its own screen, where a top margin would be a stray gap. */
@@ -2086,41 +2142,50 @@ function runWiringSuite(lib) {
    * 🔴 THE WALKTHROUGH'S OWN ROUTE TO SETTINGS IS UNCHANGED, which is what this check is really for —
    * and the tab bar still switches tabs. Both are asserted; the one link that legitimately changed
    * destination is asserted to have changed, rather than quietly dropped from the check. */
-  /* ══ 🔴 "FINDING EVENTS AUTOMATICALLY" IS A CARD WITH A BUTTON, NOT A CAPTION WITH A LINK ═══════
-   * Dominic, 4 October 2026: the line "is too easy to miss". It was 12px grey text sharing a row with
-   * the van filter, with the only route into the schedule settings buried in it as a `·`-separated
-   * link. Both halves are asserted — the shared card, and a real button — because either one reverting
-   * puts it back to a caption. */
-  t('🔴 THE FINDING-EVENTS LINE IS ITS OWN CARD, in the shared card style', (() => {
-    const sec = RAWP.slice(RAWP.indexOf('data-finding-events-card') - 400, RAWP.indexOf('data-finding-events-card') + 1400)
-    return /<Card className="p-4 flex flex-col sm:flex-row sm:items-center gap-3" data-finding-events-card>/.test(RAWP)
-      /* the bold title and the grey source line beneath it */
-      && /<p className="text-sm font-semibold text-slate-800">\s*\n\s*\{truck\.scraper_preference === 'auto'/.test(sec)
-      && /<p className="text-xs text-slate-500 mt-0\.5">From your website<\/p>/.test(sec)
-      /* the manual state keeps its existing sentence, unchanged */
+  /* ══ ⛔ THE "FINDING EVENTS AUTOMATICALLY" CARD IS GONE (Dominic reversed the move) ════════════
+   * These three checks asserted the card, its button and the van filter sitting BELOW it. The card
+   * existed to open the Schedule settings modal; the modal is gone and its two cards are back in
+   * Settings, so the card had nothing left to open. The row that was there before it is restored, and
+   * these assert that — the exact inverse, not a deletion.
+   * 🔴 THE VAN FILTER IS BACK WHERE IT SAT: one `justify-between` row, caption on the left, filter on
+   * the right. Asked for in those words. */
+  t('⛔ the finding-events CARD is gone, and nothing opens a schedule-settings modal',
+    !/data-finding-events-card/.test(RAWP)
+    && !/<Btn label="Schedule settings"/.test(RAWP)
+    && !/onScheduleSettingsOpenChange/.test(RAWP))
+  t('🔴 the caption + van filter row is back, in one `justify-between` row', (() => {
+    const i = RAWP.indexOf('<VanFilter vans={vans}')
+    const sec = RAWP.slice(i - 900, i + 200)
+    return i > 0
+      && /<div className="flex items-center justify-between">/.test(sec)
+      && /Finding events automatically from your website/.test(sec)
       && /You're managing your schedule manually/.test(sec)
+      /* the route to Settings is a link again, and it points at Settings, which is true again */
+      && /onClick=\{\(\) => onSwitchTab\('settings'\)\}/.test(sec)
+      && /Change in Settings/.test(sec)
   })())
-  t('🔴 …and a shared secondary BUTTON opens the modal — not an inline text link', (() => {
-    const sec = RAWP.slice(RAWP.indexOf('data-finding-events-card'), RAWP.indexOf('data-finding-events-card') + 1600)
-    return /<Btn label="Schedule settings" colour="ghost" className="w-full sm:w-auto justify-center"/.test(sec)
-      && /onClick=\{\(\) => onScheduleSettingsOpenChange\(true\)\}/.test(sec)
-      /* ⛔ THE INLINE LINK IS GONE — the shape this replaced. ⚠️ SCOPED TO THIS CARD, not the file:
-       * Settings' one-line pointer legitimately ends "…Schedule › Schedule settings</button>", and a
-       * file-wide ban failed on it. A guard that reaches outside the thing it guards fails for
-       * reasons that have nothing to do with it. */
-      && !/Schedule settings\s*\n\s*<\/button>/.test(sec)
-      && !/\{' · '\}/.test(sec)
-  })())
-  /* ⚠️ AND THE VAN FILTER MOVED DOWN, to sit with the list it filters. */
-  t('⚠️ the van filter sits below the card, with the list', (() => {
-    return RAWP.indexOf('data-finding-events-card') < RAWP.indexOf('<VanFilter vans={vans}')
-  })())
+  /* ⚠️ AND `onSwitchTab` IS A PROP OF ScheduleTab AGAIN, which is what that link needs. It was
+   * removed when the caption became a card; a link with no way to switch tabs would not compile, but a
+   * prop threaded from the wrong place would — so the mount is asserted too. */
+  t('⚠️ …and `onSwitchTab` is threaded to ScheduleTab from the page',
+    /function ScheduleTab\(\{[^}]*onSwitchTab/.test(P)
+    /* ⚠️ THE MOUNT IS ONE VERY LONG LINE CONTAINING `=>`, so `[^>]*` cannot be used to stay inside the
+     * tag — it stops at the first arrow. The line is taken whole and both facts checked on it. */
+    && (() => {
+      const line = (P.split('\n').find(l => l.includes('<ScheduleTab isActive=')) || '')
+      return line.includes('onSwitchTab={setActiveTab}')
+    })())
 
-  t('⚠️ the walkthrough still reaches Settings, and the Schedule link now opens the modal',
+  /* ⚠️ RE-AIMED (October 2026, the move reversed). The middle clause asserted the Schedule link
+   * opened the modal and the last one asserted "Change in Settings" was GONE. The modal is gone and
+   * that link is back, so both are inverted — and the walkthrough's own route to Settings, which is
+   * what this check is really for, is unchanged and still asserted. */
+  t('⚠️ the walkthrough still reaches Settings, and the Schedule link points there again',
     /tabIds: \['settings'\]/.test(read('lib/walkthrough.ts'))
     && /data-tab-id=\{t\.id\}/.test(P)
-    && /onScheduleSettingsOpenChange\(true\)/.test(P)
-    && !/Change in Settings/.test(P))
+    && /onSwitchTab\('settings'\)/.test(P)
+    && /Change in Settings/.test(P)
+    && !/onScheduleSettingsOpenChange/.test(P))
 
   // ════════════════════════════════════════════════════════════════════════════════════════════
   // PART A.4 · "SAME AS VAN1" — NOT BUILT, AND THE HARNESS PINS THAT
@@ -2474,8 +2539,11 @@ function runVariants() {
       changed(read(PLACES_UI), "            {others.length > 0 && (", "            {others.length > 0 && showHidden && (", 'W22'),
       src => /\{others\.length > 0 && \(/.test(src)],
     ['W23 🔴 the Places pill comes back, so there are two routes to one screen',
-      changed(read(PAGE), "  { id: 'weekly', label: 'Weekly post' },\n]",
-        "  { id: 'weekly', label: 'Weekly post' },\n  { id: 'places', label: 'Places' },\n]", 'W23'),
+      /* ⚠️ RE-ANCHORED: Event types is the last entry now, so the old anchor (`Weekly post` followed
+       * by the closing bracket) had left the file and `changed()` reported THE ANCHOR IS GONE — which
+       * is the behaviour that stops a broken variant passing against a string it never replaced. */
+      changed(read(PAGE), "  { id: 'event-types', label: 'Event types' },\n]",
+        "  { id: 'event-types', label: 'Event types' },\n  { id: 'places', label: 'Places' },\n]", 'W23'),
       src => !/id: 'places'/.test(codeOnly(src))],
     ['W24 🔴 the sticky footer becomes part of the scrolling body again',
       changed(read(PAGE), '              <div className="shrink-0 border-t border-slate-200 bg-white px-5',
@@ -2560,17 +2628,13 @@ function runVariants() {
       src => src.indexOf('THE STICKY JUMP BAR') < src.indexOf('New to HatchGrab?')],
     /* ⚠️ RE-TARGETED WITH ITS CHECK: the inactive tab is a grey PILL now, so the mutation that makes
      * it look disabled is draining the pill's fill, not fading underlined text. */
-    /* W46 — the card reverts to an inline text link inside a caption, which is what made it easy to
-     * miss in the first place. */
-    ['W46 🔴 the finding-events card goes back to a caption with an inline link',
-      changed(read(PAGE), '<Btn label="Schedule settings" colour="ghost" className="w-full sm:w-auto justify-center"',
-        '<button className="text-orange-600 hover:underline font-medium"', 'W46'),
-      src => /<Btn label="Schedule settings" colour="ghost"/.test(src)],
-    /* W47 — the card loses the shared `<Card>` and becomes a bare row again. */
-    ['W47 🔴 the finding-events card stops using the shared card style',
-      changed(read(PAGE), '<Card className="p-4 flex flex-col sm:flex-row sm:items-center gap-3" data-finding-events-card>',
-        '<div className="flex items-center justify-between" data-finding-events-card>', 'W47'),
-      src => /<Card className="p-4 flex flex-col sm:flex-row sm:items-center gap-3" data-finding-events-card>/.test(src)],
+    /* ⛔ W46 AND W47 RETIRED: both mutated the finding-events card, and the card is gone. They are
+     * replaced by one variant for what took its place — the van filter leaving the row it belongs in,
+     * which is the shape "put the van filter back where it sat" was asked to fix. */
+    ['W46 🔴 the van filter leaves the caption row and floats on its own again',
+      changed(read(PAGE), '      <div className="flex items-center justify-between">\n        <p className="text-xs text-slate-500">',
+        '      <div className="flex items-center justify-end">\n        <p className="hidden">', 'W46'),
+      src => /<div className="flex items-center justify-between">\s*\n\s*<p className="text-xs text-slate-500">/.test(src)],
 
     ['W43 🔴 the tabs go back to looking disabled',
       changed(read(PAGE), 'bg-slate-100 text-slate-700 hover:bg-slate-200',

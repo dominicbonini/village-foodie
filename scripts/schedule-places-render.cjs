@@ -35,7 +35,9 @@ const KC = read('components/manage/KitchenCapacitySection.tsx')
 const KCLIB = read('lib/kitchen-capacity.ts')
 /* 🔴 THE SHARED CONTROLS LIVE HERE NOW — the capacity question uses Settings' own Toggle. */
 const PRIM = read('components/manage/primitives.tsx')
-const SSM = read('components/manage/ScheduleSettingsModal.tsx')
+/* 🔴 THE EVENT TYPE PICKER LIVES IN THE EVENT-TYPES COMPONENT and is mounted in the Add event
+ * modal's form pane — one line in page.tsx, the whole field in that file. */
+const ET = read('components/manage/EventTypes.tsx')
 
 /** Lift one class string out of the real source, or fail — the fixture is only worth as much as its
  *  agreement with the component. */
@@ -197,6 +199,17 @@ const NAME_40 = 'The Bull & Butcher, Wickhambrook Green Xx'.slice(0, 40)
 function tidyFixture(css) {
   const shell = lift(PAGE, /^const EVENT_MODAL_SHELL = '(.+)'$/m, 'EVENT_MODAL_SHELL')
   const wide = lift(PAGE, /^const EVENT_MODAL_WIDE = '(.+)'$/m, 'EVENT_MODAL_WIDE')
+  /* 🔴 THE PICKER'S OWN CLASSES, LIFTED FROM components/manage/EventTypes.tsx — the field is mounted
+   * in this modal's form pane, below Van, so it is measured HERE rather than on its own. A restyle of
+   * the control breaks this fixture rather than leaving it measuring a field nobody is served. */
+  const etSelect = lift(ET, /<select id="event-type-select"[\s\S]*?className="([^"]+)"/, 'the event type picker')
+  /* 🔴 AND THE VAN SELECT DIRECTLY ABOVE IT, because the claim worth measuring is PARITY: the
+   * picker is mounted in this pane below Van, and must look and size like the field it sits under.
+   * ⚠️ ITS ABSOLUTE HEIGHT IS NOT THE CLAIM. A native `<select>` in WebKit ignores vertical padding,
+   * so BOTH of these render ~23px there and ~38px in Chromium — a pre-existing property of every
+   * native select in this form, not of this field. Asserting a 36px floor here would fail on code
+   * this build did not write; the finding is in the report instead. */
+  const vanSelect = lift(PAGE, /className=\{`(w-full border rounded-xl px-3 py-2 text-sm text-slate-900[^`]*?) \$\{formErrors\.van_id/, 'the Van select')
   const tidyGrid = lift(PLACES, /<div className="(flex-1 min-h-0 grid grid-cols-1 md:grid-cols-\[22rem_1fr\] gap-4)">/, 'the tidy grid')
   const listBox = lift(PLACES, /<div className="(min-h-0 border border-slate-200 rounded-2xl overflow-hidden flex flex-col max-md:max-h-72)">/, 'the tidy list box')
   /* 🔴 THE LIST'S OWN SCROLLER, LIFTED FROM `PlaceList`. The first draft of this fixture put the rows
@@ -262,6 +275,17 @@ function tidyFixture(css) {
 function addEventShellFixture(css) {
   const shell = lift(PAGE, /^const EVENT_MODAL_SHELL = '(.+)'$/m, 'EVENT_MODAL_SHELL')
   const wide = lift(PAGE, /^const EVENT_MODAL_WIDE = '(.+)'$/m, 'EVENT_MODAL_WIDE')
+  /* 🔴 THE PICKER'S OWN CLASSES, LIFTED FROM components/manage/EventTypes.tsx — the field is mounted
+   * in this modal's form pane, below Van, so it is measured HERE rather than on its own. A restyle of
+   * the control breaks this fixture rather than leaving it measuring a field nobody is served. */
+  const etSelect = lift(ET, /<select id="event-type-select"[\s\S]*?className="([^"]+)"/, 'the event type picker')
+  /* 🔴 AND THE VAN SELECT DIRECTLY ABOVE IT, because the claim worth measuring is PARITY: the
+   * picker is mounted in this pane below Van, and must look and size like the field it sits under.
+   * ⚠️ ITS ABSOLUTE HEIGHT IS NOT THE CLAIM. A native `<select>` in WebKit ignores vertical padding,
+   * so BOTH of these render ~23px there and ~38px in Chromium — a pre-existing property of every
+   * native select in this form, not of this field. Asserting a 36px floor here would fail on code
+   * this build did not write; the finding is in the report instead. */
+  const vanSelect = lift(PAGE, /className=\{`(w-full border rounded-xl px-3 py-2 text-sm text-slate-900[^`]*?) \$\{formErrors\.van_id/, 'the Van select')
   return `${HEAD(css)}
 <div class="fixed inset-0 bg-black/60 z-50 flex items-stretch sm:items-center justify-center sm:p-4" style="position:fixed;inset:0">
   <div id="modal" class="${shell} ${wide}">
@@ -271,7 +295,19 @@ function addEventShellFixture(css) {
         <div id="list" style="border:1px solid #e2e8f0;border-radius:16px">
           ${Array.from({ length: 18 }, (_, i) => `<div style="padding:10px 12px;font-size:14px">Place ${i + 1}</div>`).join('')}
         </div>
-        <div id="detail">${filler('a field', 60)}</div>
+        <div id="detail" class="space-y-3">
+          ${filler('Venue', 60)}${filler('Date', 60)}
+          <div id="vanRow">
+            <label class="block text-xs font-bold text-slate-600 mb-1">Van</label>
+            <select id="vanSelect" class="${vanSelect}"><option>Van 1</option></select>
+          </div>
+          <div id="etRow" data-event-type-select>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Event type</label>
+            <select id="etSelect" class="${etSelect}"><option>Standard</option><option>Festival</option></select>
+            <p id="etHint" class="text-xs text-slate-500 mt-0.5"><span class="font-semibold text-slate-600">(usual for this place) </span>Collection times every 15 min</p>
+          </div>
+          ${filler('Notes', 60)}
+        </div>
       </div>
     </div>
   </div>
@@ -899,50 +935,61 @@ const rects = () => {
  * ⚠️ EVERY CLASS IS LIFTED from components/manage/ScheduleSettingsModal.tsx, so a restyle breaks the
  * fixture rather than leaving it measuring a dialog nobody is served.
  */
-function scheduleModalFixture(css) {
-  const shell = lift(SSM, /className="(bg-white w-full max-w-\[560px\] max-h-\[92vh\] rounded-2xl shadow-2xl flex flex-col overflow-hidden)"/, 'the modal shell')
-  const header = lift(SSM, /<div className="(shrink-0 flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-slate-200)">/, 'the modal header')
-  const body = lift(SSM, /<div className="(flex-1 min-h-0 overflow-y-auto p-4 space-y-4)">/, 'the modal body')
-  const foot = lift(SSM, /<div className="(shrink-0 px-4 sm:px-5 py-3 border-t border-slate-200 flex justify-end)">/, 'the modal footer')
-  const title = lift(SSM, /<h2 className="font-bold text-slate-900 text-lg min-w-0 flex-1">(.+?)<\/h2>/, 'the modal title')
+/**
+ * ══ 🔴 SETTINGS › SCHEDULE — "Your schedule" AND "Import exclusions", BACK WHERE THEY WERE ══════
+ *
+ * This file used to measure the Schedule settings MODAL. Dominic reversed that move, the modal is
+ * deleted, and the two cards are in Settings again — so the same question ("do these two cards fit and
+ * work at every width?") is asked of the place they are in now.
+ * ⚠️ EVERY CLASS IS LIFTED FROM page.tsx, so a restyle breaks this fixture rather than leaving it
+ * measuring a layout nobody is served — the lesson the Settings build is named for.
+ */
+function settingsScheduleFixture(css) {
+  const cardBase = lift(PRIM, /return <div className=\{`(bg-white rounded-2xl border border-slate-200 shadow-sm) \$\{className\}`\}>/, 'the shared Card')
+  const opt = lift(PAGE, /className=\{`(w-full text-left border rounded-xl p-4 transition-colors) \$\{selected/, 'a schedule-source option')
+  const urlInput = lift(PAGE, /className=\{`(flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2\.5 text-sm[^`]*?) \$\{verifying/, 'the URL input')
+  const verifyBtn = lift(PAGE, /onClick=\{handleVerifyUrl\}[\s\S]*?className="([^"]+)"/, 'the Verify button')
+  const exclRow = lift(PAGE, /<div key=\{item\.id\} className="(flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg border border-slate-200)">/, 'an exclusion row')
+  const shell = lift(PAGE, /<div className="(bg-slate-50 h-dvh flex flex-col overflow-hidden)">/, 'the app shell')
+  const main = lift(PAGE, /<main id=\{MANAGE_SCROLLER_ID\} className=\{"(.+?)"\}>/, 'the manage scroller')
   return `${HEAD(css)}
-<div class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4" style="position:fixed;inset:0">
-  <div id="smodal" data-schedule-settings-modal class="${shell}">
-    <div id="sheader" class="${header}">
-      <h2 class="font-bold text-slate-900 text-lg min-w-0 flex-1">${title}</h2>
-      <button id="sclose" aria-label="Close" class="shrink-0 w-10 h-10 rounded-full bg-slate-100 text-slate-600 text-lg font-bold">✕</button>
-    </div>
-    <div id="sbody" class="${body}">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
-        <p class="text-base font-bold text-slate-800">Your schedule</p>
-        ${filler("I'll add events myself / Find my events automatically", 92)}
-        <div><p class="text-sm font-semibold text-slate-800">Where do you post your schedule?</p>
-          <input class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" value="pizzakitchen.co.uk/events">
+<div class="${shell}">
+  <div class="shrink-0 h-14 bg-slate-900"></div>
+  <main id="scroller" class="${main}">
+    <div class="${padClass()}">
+      <section id="sched" class="space-y-6">
+        <h2 class="text-lg font-black text-slate-900">Schedule</h2>
+        <div id="yourSchedule" class="${cardBase} p-4 space-y-4">
+          <p class="text-base font-bold text-slate-800">Your schedule</p>
+          <div class="space-y-2">
+            <button id="optManual" class="${opt} border-slate-200"><div class="flex items-start gap-3"><div class="mt-0.5 w-4 h-4 rounded-full border-2 flex-shrink-0 border-slate-300"></div><div><p class="text-sm font-semibold text-slate-800">I&apos;ll add events myself</p></div></div></button>
+            <button id="optAuto" class="${opt} border-orange-500 bg-orange-50"><div class="flex items-start gap-3"><div class="mt-0.5 w-4 h-4 rounded-full border-2 flex-shrink-0 border-orange-500"><div class="w-2 h-2 rounded-full bg-orange-500"></div></div><div><p class="text-sm font-semibold text-slate-800">Find my events automatically</p><p class="text-xs text-slate-500 mt-0.5">Tell us where you post your schedule and we&apos;ll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page.</p></div></div></button>
+          </div>
+          <div class="space-y-1">
+            <p class="text-sm font-semibold text-slate-800">Where do you post your schedule?</p>
+            <div class="flex gap-2">
+              <input id="urlBox" class="${urlInput}" value="https://yourtruck.co.uk/events">
+              <button id="verifyBtn" class="${verifyBtn}">Verify</button>
+            </div>
+            <p class="text-xs text-slate-500">Your website where customers can see your upcoming events — not a Facebook or Instagram page</p>
+          </div>
         </div>
-        <button class="border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold">Verify</button>
-      </div>
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
-        <p class="text-base font-bold text-slate-800">Import exclusions</p>
-        ${filler('three excluded terms, each with a remove button', 140)}
-      </div>
+        <div id="exclusions" class="${cardBase} p-4 space-y-3">
+          <div>
+            <p class="text-base font-bold text-slate-800">Import exclusions</p>
+            <p class="text-xs text-slate-500 mt-0.5">These terms are automatically filtered out when importing your schedule. Remove any that were added by mistake.</p>
+          </div>
+          <div class="space-y-1.5">
+            <div id="exclRow" class="${exclRow}"><span class="text-sm text-slate-700">private party</span><button class="text-slate-400 ml-3">✕</button></div>
+          </div>
+        </div>
+        ${filler('CustomDomainSetup (unmoved)', 160)}
+      </section>
     </div>
-    <div id="sfoot" class="${foot}">
-      <button class="bg-orange-500 text-white rounded-xl px-4 py-2 text-sm font-bold">Done</button>
-    </div>
-  </div>
+  </main>
 </div></body></html>`
 }
 
-/**
- * ONE STICKY SUB-TAB BAR, with a given set of labels — Menu's, Schedule's or Settings'.
- *
- * 🔴 ALL THREE RENDER FROM ONE DEFINITION (`SUBTAB_BAR`/`SUBTAB_ROW`/`subtabBtn`), so measuring them
- * separately is measuring that claim rather than trusting it: if one bar ever stopped matching, its
- * pills would be a different size here.
- * ⚠️ THE SHELL IS REBUILT, NOT JUST THE BAR, because what is being measured is a `position: sticky`
- * child of a NON-DOCUMENT scroller. A fixture that scrolled the document would answer a different
- * question — the bar would stick to the viewport and every assertion would pass for the wrong reason.
- */
 function barFixture(css, labels, activeIdx = 0, { notice = false, noticeAbove = false, breakFlush = false, breakPad = false } = {}) {
   const bar = lift(PAGE, /const SUBTAB_BAR = '(.+?)'/, 'the shared sub-tab bar')
   const row = lift(PAGE, /const SUBTAB_ROW = '(.+?)'/, 'the shared sub-tab row')
@@ -986,21 +1033,22 @@ function barFixture(css, labels, activeIdx = 0, { notice = false, noticeAbove = 
  * ⚠️ BOTH STATES, because the manual one has no source line and a longer title — if the row only ever
  * fitted in the automatic state, the truck that types its own events would get the broken one.
  */
-function findingEventsFixture(css, auto = true) {
-  const card = lift(PAGE, /<Card className="(p-4 flex flex-col sm:flex-row sm:items-center gap-3)" data-finding-events-card>/, 'the finding-events card')
-  const cardBase = lift(PRIM, /return <div className=\{`(bg-white rounded-2xl border border-slate-200 shadow-sm) \$\{className\}`\}>/, 'the shared Card')
-  const btnGhost = lift(PRIM, /ghost:\s+'(.+?)'/, 'the ghost button palette')
-  const btnBase = lift(PRIM, /className=\{`\$\{colours\[colour\] \|\| colours\.orange\} \$\{sizes\[size\]\} (.+?) \$\{className\}`\}>/, 'the button base')
+/**
+ * ══ 🔴 THE CAPTION + VAN FILTER ROW, RESTORED ═══════════════════════════════════════
+ *
+ * This measured the "Finding events automatically" CARD. The card opened the Schedule settings modal;
+ * the modal is gone and its cards are back in Settings, so the card went and the row that was there
+ * before it came back — caption on the left, van filter on the right, one `justify-between` row.
+ * 🔴 WHAT IS MEASURED IS THE PHONE CASE, which is the only one where this row can go wrong: a long
+ * caption and a filter in one row must not push the page sideways, and the filter must stay reachable.
+ */
+function captionRowFixture(css, auto = true, oneVan = false) {
   return `${HEAD(css)}
 <div style="max-width:1040px;margin:0 auto;padding:16px">
-  <div id="feCard" class="${cardBase} ${card}">
-    <div class="min-w-0 flex-1">
-      <p id="feTitle" class="text-sm font-semibold text-slate-800">${auto ? 'Finding events automatically' : "You&apos;re managing your schedule manually"}</p>
-      ${auto ? '<p id="feSource" class="text-xs text-slate-500 mt-0.5">From your website</p>' : ''}
-    </div>
-    <button id="feBtn" class="${btnGhost} text-sm px-4 py-2 ${btnBase} w-full sm:w-auto justify-center">Schedule settings</button>
+  <div id="capRow" class="flex items-center justify-between">
+    <p id="capText" class="text-xs text-slate-500">${auto ? 'Finding events automatically from your website' : "You&apos;re managing your schedule manually"} · <button class="text-orange-600 hover:underline font-medium">Change in Settings</button></p>
+    ${oneVan ? '' : '<span id="capFilter" style="display:inline-flex;gap:6px"><span style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:10px;white-space:nowrap">All vans</span></span>'}
   </div>
-  <div class="flex items-center justify-end" style="padding-top:12px"><span id="feFilter"></span></div>
   ${filler('the events list', 280)}
 </div></body></html>`
 }
@@ -1273,46 +1321,59 @@ async function measure() {
      * from `undefined` — which timed out rather than failing loudly. */
     for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
       await eng.setViewport(w, h)
-      /* ══ 🔴 THE "FINDING EVENTS AUTOMATICALLY" CARD, IN BOTH STATES ════════════════════════════ */
+      /* ══ 🔴 THE CAPTION + VAN FILTER ROW (restored) ═════════════════════════════════ */
       for (const auto of [true, false]) {
-        await eng.page.goto(write(`fe-${w}-${auto ? 'auto' : 'manual'}-${eng.name}.html`, findingEventsFixture(css, auto)))
-        const f = await eng.page.evaluate(rects)
-        lines.push(`  finding-events ${w}×${h} ${auto ? 'auto  ' : 'manual'}  card ${f.feCard.width}×${f.feCard.height} · btn ${f.feBtn.width}×${f.feBtn.height} · stacked ${f.feStacked} · doc ${f.docScrollW}`)
-        t(!f.pageScrollsSideways, `🔴 finding-events ${w} ${auto ? 'auto' : 'manual'}: NO HORIZONTAL PAGE SCROLL`)
-        t(f.feBtn.height >= 36, `🔴 finding-events ${w}: the button is a real target, not a line of text (${f.feBtn.height}px)`)
-        t(f.feBtn.right <= f.feCard.right + 1 && f.feBtn.left >= f.feCard.left - 1,
-          `🔴 finding-events ${w}: the button stays inside the card`)
-        t(auto ? !!f.feSource : !f.feSource,
-          `⚠️ finding-events ${w}: the source line is shown ${auto ? 'under the title' : 'NOT shown when the truck adds events itself'}`)
-        /* 🔴 THE PHONE RULE: under the text, full width. Above `sm` it sits beside the text. */
-        if (w < 640) {
-          t(f.feStacked === true, `🔴 finding-events ${w}: the button sits UNDER the text on a phone`)
-          t(Math.abs(f.feBtn.width - (f.feCard.width - 32)) <= 2,
-            `🔴 finding-events ${w}: …and is full width (${f.feBtn.width} in a ${f.feCard.width} card)`)
-        } else {
-          t(f.feStacked === false, `⚠️ finding-events ${w}: the button sits BESIDE the text above the sm breakpoint`)
-        }
+        await eng.page.goto(write(`cap-${w}-${auto ? 'auto' : 'manual'}-${eng.name}.html`, captionRowFixture(css, auto)))
+        const f = await eng.page.evaluate(() => {
+          const r = (id) => { const e = document.getElementById(id); if (!e) return null
+            const b = e.getBoundingClientRect(); return { l: Math.round(b.left), r: Math.round(b.right), t: Math.round(b.top), b: Math.round(b.bottom), w: Math.round(b.width), h: Math.round(b.height) } }
+          return { row: r('capRow'), text: r('capText'), filter: r('capFilter'),
+            docW: document.documentElement.scrollWidth, innerW: window.innerWidth }
+        })
+        lines.push(`  caption row ${w}×${h} ${auto ? 'auto  ' : 'manual'}  row ${f.row.w}×${f.row.h} · text ${f.text.w} · filter@${f.filter.l} · doc ${f.docW} vs ${f.innerW}`)
+        t(f.docW <= f.innerW, `🔴 caption row ${w} ${auto ? 'auto' : 'manual'}: NO HORIZONTAL PAGE SCROLL`)
+        /* 🔴 ONE ROW, FILTER ON THE RIGHT — which is "where it sat before the card was added". */
+        t(f.filter.l >= f.text.r - 1, `🔴 caption row ${w}: the van filter is to the RIGHT of the caption, in the same row`)
+        t(f.filter.r <= f.row.r + 1, `⚠️ caption row ${w}: …and stays inside the row`)
         if (w === 1440 || w === 390) {
-          await eng.shot(path.join(shotDir, `finding-events-${w}-${auto ? 'auto' : 'manual'}-${eng.name.toLowerCase()}.png`))
+          await eng.shot(path.join(shotDir, `caption-row-${w}-${auto ? 'auto' : 'manual'}-${eng.name.toLowerCase()}.png`))
         }
       }
-
-      /* ══ 🔴 THE SCHEDULE SETTINGS MODAL, AND THE THREE PILL BARS ═══════════════════════════════════ */
+      /* ⚠️ AND THE ONE-VAN CASE: VanFilter renders nothing, so the row is the caption alone. Measured
+       * because "renders nothing" is a claim about a component this fixture does not contain. */
       {
-        await eng.page.goto(write(`smodal-${w}-${eng.name}.html`, scheduleModalFixture(css)))
-        const m = await eng.page.evaluate(rects)
-        lines.push(`  schedule modal ${w}×${h}  dialog ${m.smodal.width}×${m.smodal.height} · close ${m.sclose.right} · doc ${m.docScrollW} vs ${m.innerW}`)
-        t(!m.pageScrollsSideways, `🔴 schedule modal ${w}: NO HORIZONTAL PAGE SCROLL`)
-        t(m.smodal.width <= Math.min(560, w) + 2, `🔴 schedule modal ${w}: the dialog fits (${m.smodal.width}px)`)
-        t(m.smodal.height <= h + 1, `🔴 schedule modal ${w}: …and fits the viewport's height`)
-        t(m.sclose.right <= m.smodal.right + 1 && m.sclose.top >= -1,
-          `🔴 schedule modal ${w}: the close button is on screen and inside the dialog`)
-        t(m.sfoot.bottom <= m.smodal.bottom + 1, `⚠️ schedule modal ${w}: the Done button sits inside the dialog`)
-        /* 🔴 THE BODY SCROLLS, NOT THE PAGE — the cards are taller than a phone. */
-        t(m.sbodyScrolls === true || m.smodal.height < h,
-          `🔴 schedule modal ${w}: the BODY scrolls when the cards do not fit, not the page`)
+        await eng.page.goto(write(`cap1-${w}-${eng.name}.html`, captionRowFixture(css, true, true)))
+        const f = await eng.page.evaluate(() => ({
+          filter: !!document.getElementById('capFilter'),
+          docW: document.documentElement.scrollWidth, innerW: window.innerWidth,
+        }))
+        t(!f.filter && f.docW <= f.innerW, `⚠️ caption row ${w}: a one-van truck gets the caption alone, no sideways scroll`)
+      }
+
+      /* ══ 🔴 SETTINGS › SCHEDULE — THE TWO RESTORED CARDS ═══════════════════════════════ */
+      {
+        await eng.page.goto(write(`sset-${w}-${eng.name}.html`, settingsScheduleFixture(css)))
+        const f = await eng.page.evaluate(() => {
+          const r = (id) => { const e = document.getElementById(id); if (!e) return null
+            const b = e.getBoundingClientRect(); return { l: Math.round(b.left), r: Math.round(b.right), t: Math.round(b.top), w: Math.round(b.width), h: Math.round(b.height) } }
+          const sc = document.getElementById('scroller')
+          return { you: r('yourSchedule'), exc: r('exclusions'), url: r('urlBox'), verify: r('verifyBtn'),
+            optAuto: r('optAuto'), scroller: { l: Math.round(sc.getBoundingClientRect().left), r: Math.round(sc.getBoundingClientRect().right) },
+            docW: document.documentElement.scrollWidth, innerW: window.innerWidth }
+        })
+        lines.push(`  settings›schedule ${w}×${h}  "Your schedule" ${f.you.w}×${f.you.h} · exclusions ${f.exc.w}×${f.exc.h} · url ${f.url.w} + verify ${f.verify.w} · doc ${f.docW} vs ${f.innerW}`)
+        t(f.docW <= f.innerW, `🔴 settings›schedule ${w}: NO HORIZONTAL PAGE SCROLL`)
+        /* 🔴 ORDER: "Your schedule" first, "Import exclusions" under it — their original position. */
+        t(f.exc.t > f.you.t, `🔴 settings›schedule ${w}: "Import exclusions" sits BELOW "Your schedule"`)
+        /* 🔴 THE VERIFY ROW IS THE ONE THAT CAN BREAK: an input and a button in one row at 390. */
+        t(f.verify.r <= f.you.r + 1 && f.url.l >= f.you.l - 1,
+          `🔴 settings›schedule ${w}: the URL box and Verify stay inside the card`)
+        t(f.verify.w >= 56, `⚠️ settings›schedule ${w}: Verify is not squeezed to nothing (${f.verify.w}px)`)
+        t(f.url.w >= 100, `⚠️ settings›schedule ${w}: …and the address is still readable (${f.url.w}px)`)
+        /* ⚠️ THE CARDS SPAN THE COLUMN, like every other Settings card. */
+        t(Math.abs(f.you.w - f.exc.w) <= 1, `⚠️ settings›schedule ${w}: both cards are the same width`)
         if (w === 1440 || w === 390) {
-          await eng.shot(path.join(shotDir, `schedule-settings-modal-${w}-${eng.name.toLowerCase()}.png`))
+          await eng.shot(path.join(shotDir, `settings-schedule-${w}-${eng.name.toLowerCase()}.png`))
         }
       }
 
@@ -1836,9 +1897,35 @@ async function measure() {
       await eng.page.goto(write(`addev-${w}-${eng.name}.html`, addEventShellFixture(css)))
       const addEv = await eng.page.evaluate(() => {
         const b = document.getElementById('modal').getBoundingClientRect()
+        const r = (id) => { const e = document.getElementById(id); if (!e) return null
+          const q = e.getBoundingClientRect(); return { l: Math.round(q.left), r: Math.round(q.right), t: Math.round(q.top), w: Math.round(q.width), h: Math.round(q.height) } }
+        const d = document.getElementById('detail').getBoundingClientRect()
+        const hint = document.getElementById('etHint')
         return { width: Math.round(b.width), height: Math.round(b.height),
-          left: Math.round(b.left), top: Math.round(b.top) }
+          left: Math.round(b.left), top: Math.round(b.top),
+          row: r('etRow'), sel: r('etSelect'), hint: r('etHint'), van: r('vanSelect'),
+          detail: { l: Math.round(d.left), r: Math.round(d.right) },
+          hintLines: hint ? (() => { const rr = document.createRange(); rr.selectNodeContents(hint); return rr.getClientRects().length })() : 0 }
       })
+
+      /* ══ 🔴 THE EVENT TYPE PICKER, IN THE ADD EVENT MODAL'S FORM PANE ════════════════════════
+       * The field is one line in page.tsx and the whole control in components/manage/EventTypes.tsx —
+       * but what can go wrong is where it LANDS: a select and a "(usual for this place)" hint inside a
+       * 380px-grid form pane at 390. Measured in the modal rather than on its own for that reason. */
+      lines.push(`  add-event picker ${w}\u00d7${h}  row ${addEv.row.w}\u00d7${addEv.row.h} · select ${addEv.sel.w}\u00d7${addEv.sel.h} (Van ${addEv.van.w}\u00d7${addEv.van.h}) · hint ${addEv.hintLines} line(s)`)
+      t(addEv.sel.l >= addEv.detail.l - 1 && addEv.sel.r <= addEv.detail.r + 1,
+        `🔴 add-event picker ${w}: the select stays inside the form pane`)
+      t(Math.abs(addEv.sel.h - addEv.van.h) <= 1,
+        `🔴 add-event picker ${w}: the picker is the SAME height as the Van select above it (${addEv.sel.h} vs ${addEv.van.h}px)`)
+      t(Math.abs(addEv.sel.w - addEv.van.w) <= 1,
+        `⚠️ add-event picker ${w}: …and the same width, so the two fields line up`)
+      t(addEv.hint.r <= addEv.detail.r + 1,
+        `🔴 add-event picker ${w}: the "(usual for this place)" hint does not overflow the pane`)
+      t(addEv.hintLines >= 1 && addEv.hintLines <= 3,
+        `⚠️ add-event picker ${w}: the hint wraps to at most three lines (${addEv.hintLines})`)
+      if (w === 1440 || w === 390) {
+        await eng.shot(path.join(shotDir, `add-event-type-picker-${w}-${eng.name.toLowerCase()}.png`))
+      }
 
       lines.push(`  tidy ${w}×${h}  modal ${tidy.modal.width}×${tidy.modal.height} vs add-event ${addEv.width}×${addEv.height} · name ${tidy.nameFits.textW}/${tidy.nameFits.inner}px`)
 

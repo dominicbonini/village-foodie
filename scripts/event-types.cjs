@@ -45,6 +45,12 @@ const LIB_NOW = [
    * it is the one module in the feature that touches a database, and a harness that needs a database
    * is a harness that cannot run. It is compiled so the variant trees resolve, and never invoked. */
   'lib/event-types/read.ts',
+  /* 🔴 AND NOW IT IS CALLED, FOR ONE FUNCTION. `usualTypeForPlace` is the "usual type for this place"
+   * rule, and section 6 below runs it against a STUB client — so the comment above is no longer true
+   * of the whole module: the parts that talk to a database are still never invoked, but this one is,
+   * with the rows handed to it. `lib/schedule-graphics/places.ts` is compiled beside it because that
+   * is where the REAL `placeForEvent` lives and the whole point is to use it, not a look-alike. */
+  'lib/schedule-graphics/places.ts',
   'lib/slot-interval-core.ts', 'lib/slot-interval.ts',
   'lib/buzzer.ts', 'lib/payments/paid-step.ts', 'lib/features.ts',
   /* The offline vocabulary. A leaf with no imports, and the OWNER of the two mode values — so a
@@ -130,6 +136,10 @@ function build(root, files, tag) {
      * of a before/after comparison. */
     copyService: (() => { try { return c.req('lib/copy/serviceSettings.js') } catch { return null } })(),
     settingsCopy: (() => { try { return c.req('lib/settings-copy.js') } catch { return null } })(),
+    /* 🔴 THE "USUAL TYPE FOR THIS PLACE" RULE AND THE REAL PLACE RESOLVER. Guarded like the two
+     * above: the BEFORE tree has neither, and an unguarded require would throw there. */
+    read: (() => { try { return c.req('lib/event-types/read.js') } catch { return null } })(),
+    places: (() => { try { return c.req('lib/schedule-graphics/places.js') } catch { return null } })(),
   }
 }
 
@@ -719,10 +729,22 @@ head('5 · THE WIRING')
    * that attribute is the whole of the "no second save path" rule — the modal's editable Standard
    * column changes truck and van settings by calling the PAGE'S OWN `api`. A check that insisted on
    * the old exact string would be insisting the feature not have the attribute. */
+  /* ══ 🔴 RE-AIMED: THE PANEL IS THE THIRD SCHEDULE PILL NOW, NOT AN OVERLAY ═══════════════════
+   * It arrived as a BUTTON opening a full-screen panel because main's Schedule tab had no pill bar and
+   * adding one would have collided with schedule-graphics' — see §8.3 of the investigation report,
+   * which said promoting it afterwards would be one entry in SCHEDULE_SECTIONS and one line. It is.
+   * ⚠️ STILL ONE LINE AND ONE IMPORT, which is what this check is for; and `manageApi={api}` is
+   * unchanged, which is the whole of "no second save path". */
   t('🔴 the manage page mounts the panel and the picker in one line each',
-    /\{showEventTypes && <EventTypesPanel token=\{token\} manageApi=\{api\} onClose=\{\(\) => setShowEventTypes\(false\)\} \/>\}/.test(page)
+    /\{isActive && section === 'event-types' && <EventTypesPanel token=\{token\} manageApi=\{api\} inline \/>\}/.test(page)
     && /<EventTypeSelect token=\{token\} venueName=\{editingEvent\.venue_name\}/.test(page)
-    && /import \{ EventTypesPanel, EventTypeSelect \} from '@\/components\/manage\/EventTypes'/.test(page))
+    && /import \{ EventTypesPanel, EventTypeSelect \} from '@\/components\/manage\/EventTypes'/.test(page)
+    /* ⛔ AND THE BUTTON AND ITS FLAG ARE GONE — two routes to one screen is what the pill replaced.
+     * ⚠️ `codeOf`, BECAUSE THE COMMENT THAT RECORDS THE REMOVAL NAMES THE FLAG. Matching the prose
+     * would make "it is gone" fail precisely because someone wrote down that it went. */
+    && !/showEventTypes/.test(codeOf(page))
+    && !/Btn label="Event types"/.test(codeOf(page)))
+
   t('🔴 the type is sent on CREATE only, never on an edit',
     /\.\.\.\(editingEvent\.id \? \{\} : \{ event_type_id: eventTypeId \}\)/.test(page))
   t('⚠️ the picker is cleared every time the modal opens', /setEventTypeId\(null\)/.test(page))
@@ -1920,7 +1942,95 @@ function variants() {
   console.log(`\n  ${vpass + vfail} variants · ${vpass} failed as required · ${vfail} wrongly passed`)
 }
 
+  /* ══ 🔴 "THE USUAL TYPE FOR THIS PLACE" — BY PLACE, THROUGH THE REAL RESOLVER ═══════════════════
+   * THE RULE (asked for when the branches were combined): the default type for a new event is the
+   * type of the truck's most recent event AT THE SAME PLACE, where "the same place" is
+   * `placeForEvent` — so a pitch the operator MERGED counts as one pitch. The normalised venue-name
+   * rule is kept, demoted: it is what matches the events that have no place, which is most of them.
+   *
+   * 🔴 RUN AGAINST A STUB CLIENT AND THE REAL `placeForEvent`. The function is the only one in the
+   * event-types module this harness invokes; the rows are handed to it, so there is no database here,
+   * and the resolver is the production one rather than a look-alike — which is the whole claim. A
+   * re-implemented matcher would make this test agree with itself and with nothing else. */
+async function usualTypeSuite() {
+    const read = NOW.read, places = NOW.places
+    /* ⚠️ THE PREMISE, ASSERTED: both modules compiled and both exports exist. Without this a typo in
+     * `LIB_NOW` would make every case below pass by never running. */
+    t('🔴 the usual-type rule and the real place resolver are both loaded',
+      !!read && typeof read.usualTypeForPlace === 'function'
+      && !!places && typeof places.placeForEvent === 'function')
+
+    /* Two places, and the SECOND IS MERGED INTO THE FIRST — the case a name match cannot see. */
+    const PLACES = [
+      { id: 'p1', name_key: 'the kings arms', merged_into_id: null },
+      { id: 'p2', name_key: 'kings arms', merged_into_id: 'p1' },
+    ]
+    /* Most recent first, which is the order the real select asks for. */
+    const EVENTS = [
+      { truck_place_id: 'p2', venue_name: 'Kings Arms', event_type_id: 'festival' },
+      { truck_place_id: 'p1', venue_name: 'The Kings Arms', event_type_id: 'quiet' },
+      { truck_place_id: null, venue_name: 'Village Hall', event_type_id: 'hall' },
+    ]
+    const stub = (events, placeRows, fail) => ({
+      from: (table) => ({
+        select: () => ({
+          eq: () => ({
+            order: () => ({ order: () => ({ limit: async () => fail ? { data: null, error: { code: '42703' } }
+              : { data: events, error: null } }) }),
+            limit: async () => fail ? { data: null, error: { code: '42703' } }
+              : { data: table === 'truck_places' ? placeRows : events, error: null },
+          }),
+        }),
+      }),
+    })
+    const norm = places.normalisePlaceName
+    const run = (placeId, venueName, opts = {}) => read.usualTypeForPlace(
+      stub(EVENTS, PLACES, opts.fail), 'truck-1', placeId, venueName, norm, places.placeForEvent)
+
+    /* 🔴 THE CASE THE CHANGE EXISTS FOR: the operator picks "The Kings Arms" (p1). The most recent
+     * event there is at p2 — a DIFFERENT row, merged into p1 — and its type is what comes back. A
+     * name match would have missed it, because the two rows have different `name_key`s. */
+    t('🔴 a MERGED place counts: the newest event at either name supplies the type',
+      await (async () => { const r = await run('p1', 'The Kings Arms')
+        return r.ok === true && r.typeId === 'festival' && r.by === 'place' })())
+    /* ⚠️ AND FROM THE OTHER SIDE: picking the merged row resolves to the same pitch, same answer. */
+    t('⚠️ …and picking the merged row gives the same answer, because it resolves to the same pitch',
+      await (async () => { const r = await run('p2', 'Kings Arms')
+        return r.typeId === 'festival' && r.by === 'place' })())
+    /* 🔴 NO PLACE PICKED ⇒ THE NAME RULE, UNCHANGED. This is the fallback the brief kept. */
+    t('🔴 with NO place picked it falls back to the normalised venue-name rule',
+      await (async () => { const r = await run(null, 'Village Hall')
+        return r.ok === true && r.typeId === 'hall' && r.by === 'venue' })())
+    /* ⛔ AND A PICKED PLACE DOES NOT FALL THROUGH TO THE NAME. A place with no history is Standard —
+     * falling through would let a same-named but different pitch supply a type never used here. */
+    t('⛔ a picked place with no history is Standard — it does NOT fall back to the name',
+      await (async () => { const r = await read.usualTypeForPlace(
+        stub([], PLACES, false), 'truck-1', 'p1', 'Village Hall', norm, places.placeForEvent)
+        return r.ok === true && r.typeId === null && r.by === null })())
+    /* 🔴 AND IT FAILS OPEN. A missing column answers 42703 for the whole statement; the answer must be
+     * "no usual type", which is Standard, which is what every event was before this feature existed. */
+    t('🔴 a read failure is Standard, never an error the operator meets',
+      await (async () => { const r = await run('p1', 'The Kings Arms', { fail: true })
+        return r.ok === false && r.typeId === null })())
+    /* ⚠️ AND THE PICKER SENDS THE PICKED PLACE. The rule is server-side, so the client half is that the
+     * form's `truck_place_id` reaches it — without that line the server always takes the name path. */
+    t('⚠️ the Add event form sends its picked place to the rule', (() => {
+      const et = codeOf(fs.readFileSync(path.join(REPO, 'components/manage/EventTypes.tsx'), 'utf8'))
+      return /placeId: placeId \?\? null/.test(et)
+        && /placeId: string \| null \| undefined/.test(et)
+        && /placeId=\{editingEvent\.truck_place_id \?\? null\}/.test(
+          codeOf(fs.readFileSync(path.join(REPO, 'app/manage/[token]/page.tsx'), 'utf8')))
+    })())
+  }
+
+
 variants()
-console.log('')
-if (fail === 0) console.log(`✅ all ${pass} passed`)
-else { console.log(`🔴 ${fail} CHECK(S) FAILED`); process.exitCode = 1 }
+
+/* ⚠️ ONE ASYNC SECTION, AND THE SUMMARY WAITS FOR IT. `usualTypeForPlace` is an async function, so
+ * its checks cannot run in the synchronous flow above — and a `void (async () => …)()` would have
+ * printed the totals before they were counted, which is a harness that reports green early. */
+usualTypeSuite().then(() => {
+  console.log('')
+  if (fail === 0) console.log(`✅ all ${pass} passed`)
+  else { console.log(`🔴 ${fail} CHECK(S) FAILED`); process.exitCode = 1 }
+})
