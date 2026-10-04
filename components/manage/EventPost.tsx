@@ -551,7 +551,10 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
                   if (current) void uploadPlace(current, f)
                   else void uploadStandard(f)
                 }} />
-              {busy ? 'Uploading…' : 'Replace'}
+              {/* ⚠️ "ADD A PICTURE" WHERE THERE IS NONE. A design picked from the place picker has no
+                * picture of its own yet, and offering to "Replace" one it does not have reads as though
+                * something is already there — in the one flow this stage exists for. */}
+              {busy ? 'Uploading…' : current && !placeDesign?.imageUrl ? 'Add a picture' : 'Replace'}
             </label>
             <p className="text-[11px] text-slate-400 mt-1">
               {current && !placeDesign?.imageUrl

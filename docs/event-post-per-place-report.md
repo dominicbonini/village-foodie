@@ -214,7 +214,9 @@ Middle: the selected design's picture with draggable boxes, at **that design's**
 "Same as Standard" shows Standard's boxes **not draggable**, with a line saying so — dragging them there
 would either edit Standard from a screen headed "Sudbury", or throw the drag away on save.
 
-Right column: **Picture** (Replace) · **Text positions** ("Same as Standard | Own for this place",
+Right column: **Picture** (Replace — or "Add a picture" where the design has none of its own, because
+a design picked from the place picker has no picture yet and offering to replace one it does not have
+reads as though something is already there) · **Text positions** ("Same as Standard | Own for this place",
 places only) · **Text we add** with the three toggles and "+ Add a note box" · **Time shows as** ·
 **Remove this place's design** (confirm; deletes the picture, the positions and the stored object).
 
@@ -450,7 +452,33 @@ and above and stacks below it; the shells match exactly at every width. Existing
 - **ESLint on added lines** — 0 errors. `page.tsx` reports **361 problems (283 errors, 78 warnings)
   before and after, byte-identical** (all pre-existing). `EventPost.tsx` and `SchedulePlaces.tsx`: 0
   errors, 2 warnings, both the pre-existing `<img>` advice on the preview images.
-- `node scripts/run-harnesses.cjs` — full sweep, result below.
+- `node scripts/run-harnesses.cjs` — **84 of 84 harnesses pass**, with one exception recorded below.
+
+#### The sweep, and the one harness that fails
+
+The full sweep takes about three hours, past this session's background time limit, so it was run in
+chunks using the runner's own `--list=` option (28, then 28, then 28 — 84 in total). The chunk lists
+were written to a scratch directory, not into the repository; `scripts/harnesses.json` is unchanged.
+Every chunk screened clean and every harness passed, **except**:
+
+**`add-order-refresh-inputs.cjs` fails, and it failed before this work.** It fails on a *different*
+check each run:
+
+| Run | Conditions | What failed |
+| --- | --- | --- |
+| sweep, first pass | other harnesses competing | V1, a broken variant, wrongly passed |
+| isolated, my tree | nothing else running | V2, a broken variant, wrongly passed |
+| isolated, **`540ab39`** — the commit *before* this work, in a clean worktree | nothing else running | check (a), "the 3-pizza 11:45 order is cancelled" |
+
+Three runs, three different failures, one of them on a tree that contains none of this work. It is the
+timing flakiness already recorded for `add-order-refresh*`, and it is **not caused by this build**: the
+harness compiles `components/dashboard/AddOrderPanel.tsx`, `components/printing/PrintingSettings.tsx`,
+`components/printing/PrinterTypeChoice.tsx` and `lib/capacity-refresh.ts`, none of which this work
+touches, and the harness file is byte-identical to its pre-change version. I proved that by running it
+in a worktree at `540ab39` rather than by reasoning about which files it reads.
+
+**It is left failing.** Fixing a flaky harness in the add-order panel is not in this brief, and making
+it pass by loosening it would be worse than leaving it honest.
 
 ---
 
