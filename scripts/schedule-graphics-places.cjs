@@ -1195,7 +1195,11 @@ function runWiringSuite(lib) {
       return !/window\.scrollY|document\.documentElement\.scrollHeight/.test(hook)
     })())
   t('🔴 the bar is `sticky top-0` and is NOT wrapped in a div of its own',
-    /const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 bg-slate-50 border-b border-slate-200 min-w-0 overflow-x-auto'/.test(P)
+    /* ⚠️ THE STICKY PARTS, NOT THE WHOLE STRING. The bar gained `py-2` when the tabs became pills —
+     * a pill with a background needs air that an underlined tab did not. Pinning the literal made a
+     * LOOK change fail a POSITION check, which is the opposite of what this assertion is for. The
+     * position-bearing tokens are named individually and are unchanged. */
+    /const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 [^']*bg-slate-50 border-b border-slate-200 min-w-0 overflow-x-auto'/.test(P)
     && /data-subtab-bar\n        className=\{SUBTAB_BAR\}/.test(P)
     && /ref=\{barRef\}/.test(P)
     && /<main id=\{MANAGE_SCROLLER_ID\}/.test(P)
@@ -1219,7 +1223,10 @@ function runWiringSuite(lib) {
     /data-settings-tab="\$\{activeId\}"/.test(P)
     && /bar\.scrollLeft = Math\.max\(0, left\)/.test(P))
   t('⚠️ the jump bar scrolls sideways inside its row; the page does not',
-    /min-w-0 overflow-x-auto/.test(P) && /const SUBTAB_ROW = 'flex gap-4 w-max'/.test(P)
+    /* ⚠️ `gap-1.5`, NOT `gap-4` (4 October 2026): the bars went back to PILLS, and the boards' own
+     * CSS is `gap:6px`. The behaviour this line asserts — the ROW scrolls, not the page — is
+     * unchanged, and so is `min-w-0 overflow-x-auto`. */
+    /min-w-0 overflow-x-auto/.test(P) && /const SUBTAB_ROW = 'flex gap-1\.5 w-max'/.test(P)
     && (P.match(/className=\{SUBTAB_ROW\}/g) || []).length === 3)
 
   /* 🔴 NO SETTINGS WORDING CHANGED. Asserted by DIFFING EVERY QUOTED STRING in SettingsTab against
@@ -1248,7 +1255,22 @@ function runWiringSuite(lib) {
      * a label that vanished from both would still fail. */
     const MOVED_TO_CAPACITY = ['Kitchen capacity', 'Category', 'Items', 'Prep', 'Counts to total capacity',
       'Total capacity', 'Set a capacity to choose which categories count.']
-    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY])
+    /* 🔴 AND THE TWO SCHEDULE CARDS MOVED TO THE MODAL (4 October 2026, option (a)). Same treatment:
+     * these may leave SettingsTab ONLY because the assertion below proves each is present in
+     * components/manage/ScheduleSettingsModal.tsx. A string that vanished from both still fails.
+     * ⚠️ IT IS NOT A LIST OF WORDS I CHOSE — it is every quoted string the diff reported as leaving,
+     * which is why it can be checked against the new file rather than trusted. */
+    const MOVED_TO_SCHEDULE_MODAL = [
+      'Your schedule', 'Where do you post your schedule?', 'Checking...', 'Checking your website...',
+      "This can take up to 2 minutes — please keep this page open and don't close the tab.",
+      'Your website where customers can see your upcoming events — not a Facebook or Instagram page',
+      'Import exclusions',
+      'These terms are automatically filtered out when importing your schedule. Remove any that were added by mistake.',
+      "I'll add events myself", 'Find my events automatically',
+      "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page.",
+      'Verify', 'remove_exclusion_term', 'get_exclusion_terms',
+    ]
+    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY, ...MOVED_TO_SCHEDULE_MODAL])
     const removed = [...before].filter(x => !after.has(x)).filter(x => !removable.has(x))
     const badAdded = added.filter(x => !allowed.has(x))
     if (badAdded.length || removed.length) {
@@ -1263,12 +1285,54 @@ function runWiringSuite(lib) {
    * indistinguishable from allowing a deletion. */
   t('🔴 every capacity label that left Settings is present in Menu › Kitchen capacity', (() => {
     const cap = read('components/manage/KitchenCapacitySection.tsx')
-    const LABELS = ['Kitchen capacity', 'Category', 'Items', 'Prep', 'Counts to total capacity',
+    /* ⚠️ "Kitchen capacity" IS NO LONGER A TEXT NODE (4 October 2026). The box's heading is a `title`
+     * PROP now, because the screen draws one box ("All vans · Kitchen capacity") or one per van
+     * ("<van name> · Kitchen capacity"), and a one-van truck keeps the plain words. So it is asserted
+     * where it actually lives — in the title expressions — rather than as `>Kitchen capacity<`, which
+     * would now be asserting the old single-box screen. */
+    const LABELS = ['Category', 'Items', 'Prep', 'Counts to total capacity',
       'Total capacity', 'Set a capacity to choose which categories count.']
     const missing = LABELS.filter(l => !cap.includes('>' + l + '<'))
+    /* 🔴 THE THREE TITLES, EACH CHECKED. If one of them lost the words, this screen would have a box
+     * with no name — and the other two would still pass a looser `cap.includes('Kitchen capacity')`. */
+    const titles = ["'All vans · Kitchen capacity'", "'Kitchen capacity'", '· Kitchen capacity`']
+    const missingTitles = titles.filter(x => !cap.includes(x))
     if (missing.length) console.log('      labels missing from the new file: ' + JSON.stringify(missing))
+    if (missingTitles.length) console.log('      box titles missing: ' + JSON.stringify(missingTitles))
+    return missing.length === 0 && missingTitles.length === 0
+  })())
+  /* 🔴 THE SAME PROOF FOR THE SCHEDULE CARDS. Every string allowed to leave Settings above must be
+   * present, word for word, in the modal — otherwise "allowed to move" would be indistinguishable
+   * from "allowed to vanish". */
+  t('🔴 every string that left Settings › Schedule is present in the Schedule settings modal', (() => {
+    const modal = read('components/manage/ScheduleSettingsModal.tsx')
+    const MUST = [
+      'Your schedule', 'Where do you post your schedule?', 'Import exclusions',
+      "I'll add events myself", 'Find my events automatically', 'Verify',
+      'These terms are automatically filtered out when importing your schedule. Remove any that were added by mistake.',
+      'remove_exclusion_term', 'get_exclusion_terms',
+    ]
+    const missing = MUST.filter(x => !modal.includes(x))
+    if (missing.length) console.log('      missing from the modal: ' + JSON.stringify(missing))
     return missing.length === 0
   })())
+  /* ⛔ AND CustomDomainSetup DID **NOT** MOVE. It is the third card in that section and stays
+   * directly above the QR code — page.tsx's own comment says why: the printed code resolves to the
+   * operator's address at SCAN time, so separated, an operator concludes they need to reprint. */
+  t('⛔ CustomDomainSetup STAYED in Settings, directly above the QR code', (() => {
+    const modal = read('components/manage/ScheduleSettingsModal.tsx')
+    const dom = RAWP.indexOf('<CustomDomainSetup'), qr = RAWP.indexOf('id="qr-code"')
+    /* ⚠️ `codeOnly`: the modal's header comment NAMES CustomDomainSetup in order to explain that it
+     * did not move — and the first draft of this check failed on that explanation. */
+    return !/CustomDomainSetup/.test(codeOnly(modal)) && dom > 0 && qr > dom
+      && /IMMEDIATELY ABOVE THE QR CODE/.test(RAWP)
+  })())
+  /* 🔴 AND THE SECTION AND ITS JUMP TAB KEEP THEIR NAMES, with one line where the cards were. */
+  t('🔴 Settings › Schedule keeps its name and leaves one line pointing at the modal',
+    /\{ id: 'schedule', label: 'Schedule' \}/.test(RAWP)
+    && /Where we find your events has moved to/.test(RAWP)
+    && /Schedule › Schedule settings/.test(RAWP))
+
   /* ⚠️ AND THE TWO EXPLANATORY PARAGRAPHS — the mockup's "How capacity works" — travelled as the same
    * shared constants, so their wording cannot have changed in the move. */
   t('⚠️ the capacity explainer is still the shared constants, not retyped prose', (() => {
@@ -1393,6 +1457,52 @@ function runWiringSuite(lib) {
       'max-sm:h-dvh sm:rounded-2xl sm:max-h-[90vh]',
       "${showPicker ? 'md:h-[90vh]' : ''}",
       "${showPicker ? 'md:max-w-[1040px]' : 'sm:max-w-lg lg:max-w-2xl'}`}>",
+      /* ── ⛔ THE CAPTION'S THREE REMAINING LINES (4 October 2026) ────────────────────────────────
+       * The "Finding events automatically" line became its own card with a secondary button. What
+       * left with the caption: the old title (the source moved to a helper line beneath it), the bare
+       * flex row that held it beside the van filter, and the `·` that separated the inline link.
+       * 🔴 THE NEW FORMS ARE ASSERTED BY NAME in PART A — "THE FINDING-EVENTS LINE IS ITS OWN CARD"
+       * and "…a shared secondary BUTTON opens the modal" — so these are lines that were REPLACED,
+       * not lines that vanished. */
+      /* ⛔ ScheduleTab's `onSwitchTab` PROP TYPE. Its only consumer was the caption's "Change in
+       * Settings" link, which the card replaced — so the prop became unused and went with it. The
+       * line still exists once, in SettingsTab, which has its own. */
+      'onSwitchTab: (tab: Tab) => void',
+      "? 'Finding events automatically from your website'",
+      '<div className="flex items-center justify-between">',
+      "{' · '}",
+      /* ⛔ "Change in Settings" — the link's LABEL. It now reads "Schedule settings" and opens the
+       * modal; the two cards it used to point at are no longer on that screen. The replacement is
+       * asserted by name in PART A, so this is a label that left, not a link that vanished. */
+      'Change in Settings',
+      /* ⛔ `BLOCKED_DOMAIN_MSG` left SettingsTab's body for lib/copy/scheduleVerify.ts, where the
+       * modal can read it too. ⚠️ THE SAME SENTENCE STILL EXISTS ONCE MORE IN page.tsx as the setup
+       * wizard's `SCHED_BLOCKED_DOMAIN_MSG` — unifying that one is a separate change with its own
+       * blast radius and is named in the report rather than done quietly here. */
+      'const BLOCKED_DOMAIN_MSG = "Please use your website URL — Facebook and Instagram pages can\'t be scraped automatically."',
+      /* ── ⛔ THE 4 OCTOBER REMOVALS. Dominic asked for four pieces of copy to go ────────────────
+       * Three in Settings — the "Kitchen capacity has moved to…" box, the "has its own switch in
+       * Menu › Kitchen capacity" line, and "Changes to the first van are copied here." — and the
+       * amber "Slot capacity limits still apply" notice under auto-accept.
+       * 🔴 A REMOVAL IS NOT A MOVE, so these do not belong in `movedEdits`: there is no new home to
+       * point at, and claiming one would be false. They are listed here, where the entry means
+       * "this line is gone on purpose", and each names who asked and when.
+       * ⚠️ THE BEHAVIOUR BEHIND THE AMBER NOTICE IS UNCHANGED — lib/orders/auto-accept still refuses a
+       * full slot. What went was a standing warning about something working correctly. */
+      'Kitchen capacity has moved to{\' \'}',
+      'Kitchen capacity has its own switch in Menu › Kitchen capacity.',
+      "? 'This van uses the same settings, except kitchen capacity. Changes to the first van are copied here.'",
+      '⚠ Slot capacity limits still apply — full slots are never auto-confirmed',
+      '<div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">',
+      '<p className="text-sm text-slate-600">',
+      '<button type="button" onClick={onOpenKitchenCapacity}',
+      'className="font-semibold text-orange-700 underline hover:text-orange-800">',
+      'Menu › Kitchen capacity',
+      '{/* pl-4 indents the whole sub-block as a CHILD of auto-accept (only enabled when it\'s on). */}',
+      '{form.auto_accept && (',
+      '<div className="py-3 pl-4">',
+      '<div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">',
+      '<p className="text-xs text-slate-400 mt-0.5">',
     ]
     /* ── 🔴 THE CAPACITY CARD MOVED FILE, AND "MOVED" IS PROVED LINE BY LINE ──────────────────────
      * This build took ~50 lines out of page.tsx and put them, unchanged, in
@@ -1412,10 +1522,23 @@ function runWiringSuite(lib) {
      * there. Whitespace is the only thing this hides, and the wording diff above guards the visible
      * strings separately. */
     const norm = (l) => l.replace(/\s+/g, '')
+    /* 🔴 TWO DESTINATIONS NOW. The capacity card moved to KitchenCapacitySection in October; on
+     * 4 October `Toggle` moved to components/manage/primitives.tsx, because Menu › Kitchen capacity
+     * needed Settings' own switch and a function local to a 12k-line page cannot be shared.
+     * ⚠️ A FILE IS ADDED HERE ONLY WHEN LINES REALLY MOVED INTO IT. The set is what makes "I moved it"
+     * a check rather than a claim, so widening it is widening the excuse — each entry has to be a
+     * file this build actually moved code into. */
+    const MOVED_INTO = [
+      'components/manage/KitchenCapacitySection.tsx',
+      'components/manage/primitives.tsx',
+      /* 🔴 4 October: "Your schedule" and "Import exclusions" moved into their own modal, and the five
+       * verify messages went with them — a route file is not a place to import copy from. */
+      'components/manage/ScheduleSettingsModal.tsx',
+      'lib/copy/scheduleVerify.ts',
+    ]
     const movedTo = (() => {
       try {
-        return new Set(blockStrip(read('components/manage/KitchenCapacitySection.tsx'))
-          .map(norm).filter(Boolean))
+        return new Set(MOVED_INTO.flatMap(f => blockStrip(read(f))).map(norm).filter(Boolean))
       } catch { return new Set() }
     })()
     /* ── 🔴 THE SIX LINES THIS BUILD GENUINELY CHANGED, EACH NAMED WITH WHAT CHANGED ──────────
@@ -1429,12 +1552,80 @@ function runWiringSuite(lib) {
       /* 1-2 · SettingsTab gained ONE prop, `onOpenKitchenCapacity`, so that the pointer left behind in
        * Settings › Kitchen can open Menu › Kitchen capacity. Both the mount and the signature changed,
        * and both stay in page.tsx. */
+      /* 1-2 · SettingsTab's mount and signature.
+       * ⚠️ THESE TWO ENTRIES HAVE NOW CHANGED TWICE, AND THE SECOND TIME THE TABLE CAUGHT IT. The
+       * October build ADDED an `onOpenKitchenCapacity` prop for the pointer box in Settings; on
+       * 4 October Dominic had that box removed, so the prop lost its only consumer and went with it.
+       * The entries still claimed `onOpenKitchenCapacity={() =>` was present, and the companion check
+       * reported ⛔ EDIT CLAIMED BUT NOT PRESENT — which is exactly what it exists to do. Both lines
+       * are back to HEAD's shape bar the other October changes, so what is asserted now is that the
+       * prop is NOT there. */
+      /* ── 🔴 THE PILL RESTYLE (4 October 2026) ─────────────────────────────────────────────────
+       * Three constants changed, once, so all three sub-tab bars match: Menu's, Schedule's and
+       * Settings' sticky jump tabs. The look changed and nothing else did — the bar keeps `sticky
+       * top-0 z-30 -mx-4 px-4`, its background, its border and its sideways scroller, which the four
+       * assertions in PART A still check. */
+      { was: "const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 bg-slate-50",
+        reason: 'the bar gained `py-2` — a filled pill needs air an underlined tab did not',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 py-2 bg-slate-50" },
+      { was: "const SUBTAB_ROW = 'flex gap-4 w-max'",
+        reason: "the boards' pill CSS is `gap:6px`",
+        nowIn: 'app/manage/[token]/page.tsx', now: "const SUBTAB_ROW = 'flex gap-1.5 w-max'" },
+      { was: '`py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${',
+        reason: 'the tab became a pill',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '`px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${' },
+      { was: "on ? 'border-orange-500 text-slate-900' : 'border-transparent text-slate-600",
+        reason: 'the active pill is filled dark; the inactive one is filled grey',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "on ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`" },
+      /* ── 🔴 THE SCHEDULE SETTINGS MODAL'S WIRING ─────────────────────────────────────────────── */
+      { was: 'const URL_MALFORMED_MSG = "That doesn\'t look like a web address.',
+        reason: 'moved to lib/copy/scheduleVerify.ts and exported',
+        nowIn: 'lib/copy/scheduleVerify.ts', now: 'export const URL_MALFORMED_MSG = "That doesn\'t look like a web address.' },
+      { was: 'const VERIFY_MESSAGES: Record<string, string> = {',
+        reason: 'moved with it',
+        nowIn: 'lib/copy/scheduleVerify.ts', now: 'export const VERIFY_MESSAGES: Record<string, string> = {' },
+      { was: '<ScheduleTab isActive={activeTab === \'schedule\'}',
+        reason: 'the mount passes the two callbacks the modal needs, and the modal\'s flag',
+        nowIn: 'app/manage/[token]/page.tsx', now: 'scheduleSettingsOpen={showScheduleSettings}' },
+      { was: 'function ScheduleTab({ isActive, section, onSectionChange, truck, token',
+        reason: 'the signature declares them',
+        nowIn: 'app/manage/[token]/page.tsx', now: 'onScheduleSettingsOpenChange, pendingVerifyEvents' },
+      { was: "<button onClick={() => onSwitchTab('settings')} className=\"text-orange-600 hover:underline font-medium\">",
+        /* ⚠️ THIS ENTRY CHANGED TWICE IN ONE DAY. The link first became "Schedule settings" and opened
+         * the modal; then the whole line became a CARD with a shared secondary BUTTON, because the
+         * caption was "too easy to miss". The companion check reported ⛔ EDIT CLAIMED BUT NOT PRESENT
+         * when the <button> went, which is what it is for. */
+        reason: 'the caption became a card with a shared secondary button',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '<Btn label="Schedule settings" colour="ghost" className="w-full sm:w-auto justify-center"' },
+      /* ⚠️ ONE MOVED LINE GAINED A JSX WRAPPER. The text is identical — `react/no-unescaped-entities`
+       * fires on the apostrophe in "don't", and the lint config differs between a route file and a
+       * component. Wrapping it in `{"…"}` keeps the RENDERED characters exactly as they were, where
+       * `&apos;` or a curly quote would have changed what the operator reads. */
+      { was: '<p className="text-xs text-amber-700 mt-0.5">This can take up to 2 minutes',
+        reason: 'the apostrophe needed a JSX expression in a component; the text is unchanged',
+        nowIn: 'components/manage/ScheduleSettingsModal.tsx',
+        now: '{"This can take up to 2 minutes — please keep this page open and don\'t close the tab."}' },
+      /* 3-4 · `Toggle` MOVED TO primitives AND GAINED `export`. Its body is byte-identical and is
+       * excused by `movedTo`; only the signature line differs, by that one keyword. */
+      { was: 'function Toggle({ on, onToggle, label, disabled }: { on: boolean',
+        reason: 'the switch moved to primitives, so its declaration is exported',
+        nowIn: 'components/manage/primitives.tsx',
+        now: 'export function Toggle({ on, onToggle, label, disabled }: { on: boolean' },
+      /* the primitives import line gained `Toggle` when the switch moved there. */
+      { was: 'import { Spinner, Badge, Btn, Input, Card, EmptyState,',
+        reason: '`Toggle` moved to primitives, so the import names it',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'EmptyState, Toggle, AllergenToggles' },
       { was: "{activeTab === 'settings'  && <SettingsTab",
-        reason: 'the mount passes the new onOpenKitchenCapacity prop',
-        nowIn: 'app/manage/[token]/page.tsx', now: 'onOpenKitchenCapacity={() =>' },
+        reason: 'the capacity pointer prop went; a Schedule settings one arrived',
+        nowIn: 'app/manage/[token]/page.tsx', now: 'onOpenScheduleSettings={() =>' },
       { was: 'function SettingsTab({ userRole, truck, whatsappConnection',
-        reason: 'the signature declares it',
-        nowIn: 'app/manage/[token]/page.tsx', now: 'onOpenKitchenCapacity: () => void' },
+        reason: 'the capacity prop left the signature; the Schedule settings one joined it',
+        nowIn: 'app/manage/[token]/page.tsx', now: ', onOpenWalkthrough, onOpenScheduleSettings }: {' },
       /* 3 · `mt-3` WAS A RELATIONSHIP TO THE CARD ABOVE IT, and there is no card above it any more.
        * The capacity card was the last sub-card inside a van's Kitchen panel; it is now the first
        * thing on its own screen, where a top margin would be a stray gap. */
@@ -1446,10 +1637,14 @@ function runWiringSuite(lib) {
        * token from a 12k-line page to a component (which would make page.tsx a style module for
        * everything that moves out of it next), the heading carries the token's literal value — the
        * same three classes, so the heading renders identically. */
+      /* ⚠️ THIS ENTRY HAS CHANGED TWICE. The move replaced `SUBCARD_HEADING` with its literal value
+       * (the token is a page.tsx local and is not exported); on 4 October the heading became a `title`
+       * PROP, because the screen now draws one box or one per van. The companion check reported ⛔ EDIT
+       * CLAIMED BUT NOT PRESENT when the literal went, which is what it is for. */
       { was: '${SUBCARD_HEADING} mb-3`}>Kitchen capacity',
-        reason: 'SUBCARD_HEADING is not exported from page.tsx; its literal value is used instead',
+        reason: 'the heading is a `title` prop now — the screen draws one box, or one per van',
         nowIn: 'components/manage/KitchenCapacitySection.tsx',
-        now: '<p className="text-sm font-bold text-slate-800 mb-3">Kitchen capacity</p>' },
+        now: '<p className="text-sm font-bold text-slate-800 mb-3">{title}</p>' },
       /* 5-6 · `void ` ADDED. Both are `onChange` handlers calling an async function; the new file is
        * linted with no-floating-promises, which page.tsx predates. `void` is the project's existing
        * way of saying "fire and forget, deliberately" — it changes no behaviour. */
@@ -1464,6 +1659,16 @@ function runWiringSuite(lib) {
     ]
     const unexplained = gone.filter(l => {
       if (!l) return false
+      /* ⛔ COMMENT-STRIPPING RESIDUE IS NOT A LOST LINE. `blockStrip` removes the body of a block
+       * comment, so a JSX line that was only `{/* … *\/}` collapses to `{}` — a token pair that
+       * carries no code at all. There are 387 of them in the baseline and 416 in the working tree, so
+       * the only way one can show up as "lost" is the multiset arithmetic, never a deletion that
+       * matters. Allowlisting the single instance would be answering the symptom; this says what the
+       * line actually is.
+       * ⚠️ IT IS THE EXACT STRING, NOT A PATTERN. `{}` alone — an empty object literal on its own line
+       * would be real code and is not matched by anything else here, but nothing in this file has one,
+       * and widening this to "anything brace-like" is how a guard stops guarding. */
+      if (l === '{}') return false
       if (allowed.includes(l)) return false
       if (movedTo.has(norm(l))) return false
       if (movedEdits.some(m => l.includes(m.was))) return false
@@ -1599,6 +1804,42 @@ function runWiringSuite(lib) {
        * work never touched. */
       && !/px-3\.5 py-1\.5 rounded-full text-sm font-bold whitespace-nowrap transition-colors/.test(P)
   })())
+  /* ══ 🔴 THE PILLS, FROM THE BOARDS' OWN CSS (4 October 2026) ═══════════════════════════════════
+   * `.pills a { padding:8px 16px; border-radius:999px; font-size:15px; font-weight:600;
+   *             color:#334155; background:#EEF2F6 }` and `.pills a.on { background:#0F172A; color:#fff }`
+   * — a light grey inactive pill and a dark filled active one, with `gap:6px` between them.
+   * 🔴 ONE DEFINITION FOR ALL THREE BARS, which is what makes "they match" a fact rather than a habit:
+   * Menu, Schedule and Settings' sticky jump tabs all render `subtabBtn`. */
+  t('🔴 THE THREE BARS ARE PILLS, FROM ONE DEFINITION', (() => {
+    const btn = (P.match(/const subtabBtn = \(on: boolean\) =>\s*\n\s*`([^`]+)`/) || [])[1] || ''
+    return /rounded-full/.test(btn)
+      && /text-sm font-semibold/.test(btn)   // 14px — dropped from 15px with the height, 4 October
+      && /bg-slate-900 text-white/.test(btn)        // active
+      && /bg-slate-100 text-slate-700/.test(btn)    // inactive
+      /* ⛔ AND NO UNDERLINE SURVIVES — the design this replaced. */
+      && !/border-b-2/.test(btn) && !/border-orange-500/.test(btn)
+      // every bar renders it, so none of the three can be left behind
+      && (P.match(/className=\{subtabBtn\(/g) || []).length === 3
+  })())
+  /* ⚠️ THE 40px FLOOR WAS LIFTED BY A LATER INSTRUCTION. The written brief said "Pills stay ≥40px
+   * high"; after seeing them Dominic said they are "too high, too much space above and below the text
+   * within them", so `min-h-10` came off and the padding is `py-1.5`. The two instructions genuinely
+   * disagree and the later one wins — this check records which, rather than asserting a rule that is
+   * no longer the one in force. The RENDERED height is measured by scripts/schedule-places-render.cjs.
+   * 🔴 WHAT IS STILL ASSERTED is that the pill has explicit vertical padding at all: a pill with none
+   * collapses onto its text and stops being a touch target in any useful sense. */
+  t('⚠️ a pill has deliberate vertical padding (the 40px floor was lifted on 4 October)', (() => {
+    const btn = (P.match(/const subtabBtn = \(on: boolean\) =>\s*\n\s*`([^`]+)`/) || [])[1] || ''
+    return /py-1\.5/.test(btn) && !/min-h-10/.test(btn)
+  })())
+  /* ⛔ THE LOOK CHANGED AND NOTHING ELSE DID. Every one of these is a BEHAVIOUR the brief said to
+   * keep, asserted here so "change the look only" is checked rather than claimed. */
+  t('⛔ the bar keeps its sticky behaviour, its scroller and its background', (() => {
+    const bar = (P.match(/const SUBTAB_BAR = '([^']+)'/) || [])[1] || ''
+    return /sticky top-0 z-30/.test(bar) && /-mx-4 px-4/.test(bar)
+      && /bg-slate-50/.test(bar) && /border-b border-slate-200/.test(bar)
+      && /min-w-0 overflow-x-auto/.test(bar)
+  })())
   /* 🔴 …BUT MENU AND SCHEDULE STILL SWITCH PAGES. "they have separate pages though keep that dont
    * have the scrolling like settings" — the style came across and the scroll-spy did NOT. This check
    * is what stops a later tidy-up "unifying" them into Settings' one-long-page behaviour. */
@@ -1621,9 +1862,20 @@ function runWiringSuite(lib) {
       && (sec.match(/void uploadLogo\(f\)/g) || []).length === 1
       && (sec.match(/void removeLogo\(\)/g) || []).length === 1
   })())
+  /* ⚠️ RE-EXPRESSED FOR THE PILLS (4 October 2026). The rule has not changed: an unselected tab is the
+   * primary way around the section and must look PRESSABLE, not disabled. Under the underline design
+   * that meant `text-slate-600` rather than `text-slate-400`; under pills it means a filled grey pill
+   * with slate-700 text and a hover, rather than bare faded text. */
   t('🔴 THE JUMP TABS ARE NOT GREYED OUT LIKE DISABLED CONTROLS',
-    /border-transparent text-slate-600 hover:text-slate-900/.test(P)
-    && !/border-transparent text-slate-400 hover:text-slate-600/.test(P))
+    /* ⚠️ SCOPED TO `subtabBtn`. The first draft checked the whole file and failed on `bg-transparent`
+     * and a faded hover used by other components this work never touched — a guard that reaches
+     * outside the thing it guards fails for reasons that have nothing to do with it. */
+    (() => {
+      const btn = (P.match(/const subtabBtn = \(on: boolean\) =>\s*\n\s*`([^`]+)`/) || [])[1] || ''
+      return /bg-slate-100 text-slate-700 hover:bg-slate-200/.test(btn)
+        && !/text-slate-400/.test(btn)
+        && !/bg-transparent/.test(btn)
+    })())
   /* 🔴 ONE PRESS, NOT TWO. `scrollIntoView` on the tab BUTTON walked every scrollable ancestor —
    * `<main>` included — so keeping the tab in view scrolled the page back and undid the jump that had
    * just started. The bar's own `scrollLeft` is set directly now: one axis, one element. */
@@ -1650,10 +1902,47 @@ function runWiringSuite(lib) {
    * title, and the section headings. The page title is gone. */
   t('🔴 the duplicate "Settings" page title is gone',
     !/<h2 className="font-black text-slate-900 text-lg">Settings<\/h2>/.test(RAWP))
-  t('⚠️ the walkthrough and `onSwitchTab(\'settings\')` still reach Settings unchanged',
+  /* ⚠️ `onSwitchTab('settings')` LEFT THE SCHEDULE TAB (4 October 2026). The "Finding events
+   * automatically" line used to end "· Change in Settings"; it now says "· Schedule settings" and
+   * opens the modal, because the two cards it pointed at are no longer on that screen.
+   * 🔴 THE WALKTHROUGH'S OWN ROUTE TO SETTINGS IS UNCHANGED, which is what this check is really for —
+   * and the tab bar still switches tabs. Both are asserted; the one link that legitimately changed
+   * destination is asserted to have changed, rather than quietly dropped from the check. */
+  /* ══ 🔴 "FINDING EVENTS AUTOMATICALLY" IS A CARD WITH A BUTTON, NOT A CAPTION WITH A LINK ═══════
+   * Dominic, 4 October 2026: the line "is too easy to miss". It was 12px grey text sharing a row with
+   * the van filter, with the only route into the schedule settings buried in it as a `·`-separated
+   * link. Both halves are asserted — the shared card, and a real button — because either one reverting
+   * puts it back to a caption. */
+  t('🔴 THE FINDING-EVENTS LINE IS ITS OWN CARD, in the shared card style', (() => {
+    const sec = RAWP.slice(RAWP.indexOf('data-finding-events-card') - 400, RAWP.indexOf('data-finding-events-card') + 1400)
+    return /<Card className="p-4 flex flex-col sm:flex-row sm:items-center gap-3" data-finding-events-card>/.test(RAWP)
+      /* the bold title and the grey source line beneath it */
+      && /<p className="text-sm font-semibold text-slate-800">\s*\n\s*\{truck\.scraper_preference === 'auto'/.test(sec)
+      && /<p className="text-xs text-slate-500 mt-0\.5">From your website<\/p>/.test(sec)
+      /* the manual state keeps its existing sentence, unchanged */
+      && /You're managing your schedule manually/.test(sec)
+  })())
+  t('🔴 …and a shared secondary BUTTON opens the modal — not an inline text link', (() => {
+    const sec = RAWP.slice(RAWP.indexOf('data-finding-events-card'), RAWP.indexOf('data-finding-events-card') + 1600)
+    return /<Btn label="Schedule settings" colour="ghost" className="w-full sm:w-auto justify-center"/.test(sec)
+      && /onClick=\{\(\) => onScheduleSettingsOpenChange\(true\)\}/.test(sec)
+      /* ⛔ THE INLINE LINK IS GONE — the shape this replaced. ⚠️ SCOPED TO THIS CARD, not the file:
+       * Settings' one-line pointer legitimately ends "…Schedule › Schedule settings</button>", and a
+       * file-wide ban failed on it. A guard that reaches outside the thing it guards fails for
+       * reasons that have nothing to do with it. */
+      && !/Schedule settings\s*\n\s*<\/button>/.test(sec)
+      && !/\{' · '\}/.test(sec)
+  })())
+  /* ⚠️ AND THE VAN FILTER MOVED DOWN, to sit with the list it filters. */
+  t('⚠️ the van filter sits below the card, with the list', (() => {
+    return RAWP.indexOf('data-finding-events-card') < RAWP.indexOf('<VanFilter vans={vans}')
+  })())
+
+  t('⚠️ the walkthrough still reaches Settings, and the Schedule link now opens the modal',
     /tabIds: \['settings'\]/.test(read('lib/walkthrough.ts'))
     && /data-tab-id=\{t\.id\}/.test(P)
-    && /onSwitchTab\('settings'\)/.test(P))
+    && /onScheduleSettingsOpenChange\(true\)/.test(P)
+    && !/Change in Settings/.test(P))
 
   // ════════════════════════════════════════════════════════════════════════════════════════════
   // PART A.4 · "SAME AS VAN1" — NOT BUILT, AND THE HARNESS PINS THAT
@@ -2091,10 +2380,24 @@ function runVariants() {
         return rest.slice(0, at) + bar + rest.slice(at)
       })(),
       src => src.indexOf('THE STICKY JUMP BAR') < src.indexOf('New to HatchGrab?')],
+    /* ⚠️ RE-TARGETED WITH ITS CHECK: the inactive tab is a grey PILL now, so the mutation that makes
+     * it look disabled is draining the pill's fill, not fading underlined text. */
+    /* W46 — the card reverts to an inline text link inside a caption, which is what made it easy to
+     * miss in the first place. */
+    ['W46 🔴 the finding-events card goes back to a caption with an inline link',
+      changed(read(PAGE), '<Btn label="Schedule settings" colour="ghost" className="w-full sm:w-auto justify-center"',
+        '<button className="text-orange-600 hover:underline font-medium"', 'W46'),
+      src => /<Btn label="Schedule settings" colour="ghost"/.test(src)],
+    /* W47 — the card loses the shared `<Card>` and becomes a bare row again. */
+    ['W47 🔴 the finding-events card stops using the shared card style',
+      changed(read(PAGE), '<Card className="p-4 flex flex-col sm:flex-row sm:items-center gap-3" data-finding-events-card>',
+        '<div className="flex items-center justify-between" data-finding-events-card>', 'W47'),
+      src => /<Card className="p-4 flex flex-col sm:flex-row sm:items-center gap-3" data-finding-events-card>/.test(src)],
+
     ['W43 🔴 the tabs go back to looking disabled',
-      changed(read(PAGE), 'border-transparent text-slate-600 hover:text-slate-900',
-        'border-transparent text-slate-400 hover:text-slate-600', 'W43'),
-      src => /border-transparent text-slate-600 hover:text-slate-900/.test(src)],
+      changed(read(PAGE), 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+        'bg-transparent text-slate-400 hover:text-slate-600', 'W43'),
+      src => /bg-slate-100 text-slate-700 hover:bg-slate-200/.test(src)],
 
     ['W44 🔴 the jump bar goes back to resting 24px down and snapping flush on first scroll',
       changed(read(PAGE), '        data-subtab-bar\n        className={SUBTAB_BAR}',

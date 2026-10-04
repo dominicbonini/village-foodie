@@ -409,22 +409,40 @@ export async function readVanSameAsFirst(
    */
   capacityByVanId: Map<string, boolean>
   createdAt: Map<string, string | null>
+  /**
+   * ── 🔴 WHETHER EACH VAN IS ACTIVE, AND WHY IT HAD TO BE ADDED (October 2026) ──────────────────
+   * `firstVanId()` is documented as "the oldest ACTIVE van" and filters on exactly that — but every
+   * one of its five callers in app/api/manage/route.ts built its input as
+   * `({ id, created_at, active: true })`, hard-coding the flag it was meant to be told.
+   *
+   * So for a truck that had RETIRED its oldest van, "the first van" was that retired van: the switch
+   * that follows it would copy a van nobody uses, and its edits would fan out from a van that is not
+   * on the road. No truck has hit it because retiring the oldest van is rare — it is a latent bug,
+   * not a reported one.
+   * ⚠️ `active` IS A LONG-STANDING COLUMN, so adding it to this select cannot 42703 the way the two
+   * flag columns could. It is read HERE rather than in a second query so that "is it active" and
+   * "does it follow" can never come from two different reads of one table.
+   */
+  activeById: Map<string, boolean>
 }> {
   const byVanId = new Map<string, boolean>()
   const capacityByVanId = new Map<string, boolean>()
   const createdAt = new Map<string, string | null>()
+  const activeById = new Map<string, boolean>()
   try {
     const { data, error } = await supabase
       .from('truck_vans')
-      .select('id, same_as_first_van, capacity_same_as_first_van, created_at')
+      .select('id, same_as_first_van, capacity_same_as_first_van, created_at, active')
       .eq('truck_id', truckId)
     if (error) {
       const code = (error as { code?: string }).code
       console.warn(`[van-category-settings] truck ${truckId}: same_as_first_van unreadable (${code ?? 'no code'}): ${error.message}; every switch reads off`)
-      return { ok: false, byVanId, capacityByVanId, createdAt }
+      return { ok: false, byVanId, capacityByVanId, createdAt, activeById }
     }
-    for (const row of (data ?? []) as Array<{ id: string; same_as_first_van?: boolean | null; capacity_same_as_first_van?: boolean | null; created_at?: string | null }>) {
+    for (const row of (data ?? []) as Array<{ id: string; same_as_first_van?: boolean | null; capacity_same_as_first_van?: boolean | null; created_at?: string | null; active?: boolean | null }>) {
       if (!row?.id) continue
+      /* ⚠️ `!== false`, matching `firstVanId`'s own test: a NULL `active` is not a retired van. */
+      activeById.set(row.id, row.active !== false)
       byVanId.set(row.id, !!row.same_as_first_van)
       /* ⚠️ `undefined` BEFORE THE MIGRATION FALLS BACK TO THE OLD FLAG, not to false. Until 20261010
        * is applied, `same_as_first_van` IS what covers capacity — so reading the capacity switch as
@@ -433,9 +451,67 @@ export async function readVanSameAsFirst(
       capacityByVanId.set(row.id, row.capacity_same_as_first_van ?? !!row.same_as_first_van)
       createdAt.set(row.id, row.created_at ?? null)
     }
-    return { ok: true, byVanId, capacityByVanId, createdAt }
+    return { ok: true, byVanId, capacityByVanId, createdAt, activeById }
   } catch (e) {
     console.warn(`[van-category-settings] truck ${truckId}: same_as_first_van read threw; every switch reads off:`, e instanceof Error ? e.message : String(e))
-    return { ok: false, byVanId, capacityByVanId, createdAt }
+    return { ok: false, byVanId, capacityByVanId, createdAt, activeById }
   }
+}
+
+/**
+ * ══ 🔴 "SAME KITCHEN CAPACITY FOR ALL VANS?" — THE ANSWER, READ FROM THE FLAGS ═══════════════════
+ *
+ * Menu › Kitchen capacity asks a multi-van truck one question. There is NO COLUMN for the answer and
+ * there must not be: the answer IS "does every non-first active van follow the first van". A column
+ * would be a second source of truth that could disagree with the flags it describes — and the flags
+ * are what the capacity engine actually reads.
+ *
+ * 🔴 THIS LIVES HERE SO THE SCREEN AND THE SERVER READ IT THE SAME WAY. The screen decides whether to
+ * draw one box or one per van; `add_van` decides whether a new van arrives following. Two inline
+ * `.every(...)`s would be two rules, and the one that drifted would be the server's — where nobody
+ * would see it until a truck's new van quietly stopped matching.
+ *
+ * 🔴 YES ONLY WHEN **EVERY** OTHER ACTIVE VAN FOLLOWS. The mixed case (some follow, some do not)
+ * reads NO. Reading it as Yes would draw one box over a truck where a van is running different
+ * numbers behind it — the screen would be lying, and the engine would go on using the other values.
+ * ⚠️ A TRUCK WITH ONE VAN (or none) IS VACUOUSLY YES. That is deliberate and is what makes a truck's
+ * SECOND van follow by default, which is the common case.
+ * ⚠️ RETIRED VANS DO NOT COUNT. A van nobody uses must not force a truck onto "No" for ever.
+ */
+export interface CapacityFollowRow {
+  id: string
+  active?: boolean | null
+  capacity_same_as_first_van?: boolean | null
+}
+
+export function capacityAllSame(
+  vans: readonly CapacityFollowRow[] | null | undefined,
+  firstId: string | null,
+): boolean {
+  return capacityOthers(vans, firstId).every(v => v.capacity_same_as_first_van === true)
+}
+
+/** The active vans that are not the first one — the ones the answer is about. */
+export function capacityOthers(
+  vans: readonly CapacityFollowRow[] | null | undefined,
+  firstId: string | null,
+): CapacityFollowRow[] {
+  return (vans ?? []).filter(v => v.active !== false && v.id !== firstId)
+}
+
+/**
+ * The vans still following while the answer reads NO — the MIXED case.
+ *
+ * 🔴 THESE ARE WHAT THE FIRST SAVE ON THE SCREEN HAS TO UNFOLLOW. A mixed truck shows one box per van,
+ * but the followers have not been unfollowed yet — and must not be on load, because opening a screen
+ * must never write. So the first edit unfollows them first (keeping their copied values), and only
+ * then lands; otherwise editing the first van's box would fan out into vans drawn as independent.
+ * ⚠️ EMPTY WHEN THE ANSWER IS YES. Under Yes the followers are not stragglers, they are the answer.
+ */
+export function capacityStragglers(
+  vans: readonly CapacityFollowRow[] | null | undefined,
+  firstId: string | null,
+): CapacityFollowRow[] {
+  if (capacityAllSame(vans, firstId)) return []
+  return capacityOthers(vans, firstId).filter(v => v.capacity_same_as_first_van === true)
 }

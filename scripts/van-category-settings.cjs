@@ -245,11 +245,36 @@ head('4 · THE WRITERS')
     /counts_toward_capacity: counts_toward_capacity !== undefined \? !!counts_toward_capacity : base\.counts_toward_capacity/.test(api))
   t('🔴 a failed per-van save is VISIBLE, not a green toast on nothing',
     /That van\\'s capacity settings could not be saved right now\./.test(api))
-  t('🔴 set_van_same_as_first COPIES the van fields and REPLACES the category rows',
-    /action === 'set_van_same_as_first'/.test(api)
-    && /vanCopyPayload\(src as Record<string, unknown> \| null\)/.test(api)
-    && /from\('van_category_settings'\)\.delete\(\)\.eq\('van_id', vanId\)/.test(api)
-    && /vanCategoryCopyRows\(srcRows\.byCategoryId, truck\.id, vanId as string\)/.test(api))
+  /* ⚠️ THIS CHECK WAS MATCHING THE WRONG HANDLER, and the extraction of `copyCapacityFromFirst`
+   * exposed it. Its name says `set_van_same_as_first`, but three of its four regexes ran against the
+   * WHOLE FILE — and the `van_category_settings` delete-then-insert they found lived in the CAPACITY
+   * switch, not in this one. Settings' switch deliberately stopped copying category rows in October
+   * 2026 (capacity has its own switch), so the check has been asserting the opposite of the intent
+   * ever since, and passing because another handler happened to contain the text.
+   * 🔴 SCOPED TO THE HANDLER NOW, and it asserts what that handler actually must do: copy the van
+   * FIELDS, and NOT touch the category rows. */
+  t('🔴 set_van_same_as_first COPIES the van fields and does NOT touch the category rows', (() => {
+    /* ⚠️ THE SLICE ENDS AT THE SHARED HELPER, which was extracted BETWEEN the two handlers — so
+     * ending it at the capacity switch would pull `copyCapacityFromFirst` into this handler's text and
+     * find the very `van_category_settings` write this check exists to forbid here. */
+    const h = api.slice(api.indexOf("action === 'set_van_same_as_first'"), api.indexOf('async function copyCapacityFromFirst'))
+    return h.length > 200
+      && /vanCopyPayload\(src as Record<string, unknown> \| null\)/.test(h)
+      // ⛔ capacity's rows are not this switch's business
+      && !/van_category_settings/.test(h)
+      && !/vanCategoryCopyRows/.test(h)
+  })())
+  /* 🔴 AND THE CAPACITY SWITCH IS THE ONE THAT REPLACES THE ROWS — through the shared helper, so
+   * `add_van` cannot grow a second, subtly different copy. */
+  t('🔴 the CAPACITY copy is one helper, delete-then-insert, used by the switch AND by add_van', (() => {
+    const fn = api.slice(api.indexOf('async function copyCapacityFromFirst'), api.indexOf("if (action === 'set_van_capacity_same_as_first')"))
+    return /capacityCopyPayload\(src as Record<string, unknown> \| null\)/.test(fn)
+      && /from\('van_category_settings'\)\.delete\(\)\.eq\('van_id', targetVanId\)/.test(fn)
+      && /vanCategoryCopyRows\(srcRows\.byCategoryId, truckId, targetVanId\)/.test(fn)
+      // both callers go through it, and nobody re-implements it
+      && (api.match(/copyCapacityFromFirst\(/g) || []).length === 3
+      && (api.match(/vanCategoryCopyRows\(/g) || []).length === 1
+  })())
   t('⛔ the first van cannot follow itself', /The first van cannot follow itself\./.test(api))
   t('🔴 switching OFF writes only the switch — the copied values stay', (() => {
     const h = api.slice(api.indexOf("action === 'set_van_same_as_first'"), api.indexOf("action === 'add_van'"))
@@ -290,9 +315,23 @@ head('4 · THE WRITERS')
     && /prepSecs=\{eff\.prep_secs \?\? 0\}/.test(cap)
     && /batchSize=\{eff\.batch_size \?\? 0\}/.test(cap))
   /* ⛔ AND IT IS NOT STILL IN page.tsx — the other half of "moved, not copied". */
-  t('⛔ the capacity table is gone from Settings › Kitchen, and only a pointer is left',
-    !/KitchenCapacityCategoryRow\s*$/m.test(page.slice(page.indexOf('COLLECTION TIMES — PER VAN')))
-    && /Kitchen capacity has moved to/.test(read(PAGE)))
+  /* ⚠️ THE POINTER BOX IS GONE TOO (Dominic, 4 October 2026): "in settings, remove the box 'Kitchen
+   * capacity has moved to Menu › Kitchen capacity'". A signpost to a thing that moved is worth having
+   * for a few weeks and then becomes furniture.
+   * 🔴 SO THE CHECK IS NOW THE STRONGER HALF ALONE — the table is not here — plus an assertion that
+   * the COMMENT explaining where it went survives. Three harnesses anchor their Collection-times
+   * slice on that comment, and it is the answer to "why is there no capacity card on this screen?".
+   * ⛔ AND THE TWO HELPER LINES THAT POINTED AT THE NEW SCREEN WENT WITH IT, which is asserted so
+   * that "removed" cannot quietly become "removed from one of the three places". */
+  t('⛔ the capacity table is gone from Settings › Kitchen, and so is every pointer to it', (() => {
+    const raw = read(PAGE)
+    return !/KitchenCapacityCategoryRow\s*$/m.test(page.slice(page.indexOf('COLLECTION TIMES — PER VAN')))
+      && !/Kitchen capacity has moved to/.test(raw)
+      && !/has its own switch in Menu/.test(raw)
+      && !/Changes to the first van are copied here/.test(raw)
+      // the comment that records the move — and that three slices anchor on — stays
+      && raw.includes('{/* ── ⛔ KITCHEN CAPACITY MOVED TO MENU')
+  })())
   /* ⛔ THE OPTIMISTIC PATCH MOVED TOO. The old write patched the SHARED truck-level category list,
    * which would now paint one van's number onto every van's card. */
   t('⛔ the optimistic patch is on the VAN, not on the shared category list', (() => {
@@ -647,11 +686,18 @@ function variants() {
       v === null || !/const base = effectiveCategorySettings\(/.test(v))
   }
   {
+    /* ⚠️ RE-TARGETED (October 2026): the delete-then-insert moved into `copyCapacityFromFirst`, the
+     * helper `set_van_capacity_same_as_first` and `add_van` now share, so its parameter is
+     * `targetVanId` rather than `vanId`. The old anchor matched nothing and `patched()` reported THE
+     * ANCHOR IS GONE — which is what that guard is for.
+     * 🔴 AND IT IS CAPACITY'S SWITCH, NOT SETTINGS'. Settings' "Same as Van 1" stopped copying category
+     * rows in October 2026; the variant's old title said otherwise and was wrong about which switch
+     * it was breaking. */
     const v = patched('app/api/manage/route.ts',
-      "from('van_category_settings').delete().eq('van_id', vanId)",
-      "from('van_category_settings').select('id').eq('van_id', vanId)", 'V6')
-    must('V6 🔴 "Same as Van 1" MERGES instead of replacing — it claims "same" while a category differs',
-      v === null || !/from\('van_category_settings'\)\.delete\(\)\.eq\('van_id', vanId\)/.test(v))
+      "from('van_category_settings').delete().eq('van_id', targetVanId)",
+      "from('van_category_settings').select('id').eq('van_id', targetVanId)", 'V6')
+    must('V6 🔴 the CAPACITY copy MERGES instead of replacing — it claims "same" while a category differs',
+      v === null || !/from\('van_category_settings'\)\.delete\(\)\.eq\('van_id', targetVanId\)/.test(v))
   }
   {
     const v = patched('app/dashboard/[token]/page.tsx',

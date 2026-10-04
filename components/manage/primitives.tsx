@@ -16,7 +16,11 @@ export function Badge({ label, colour }: { label: string; colour: 'green' | 'sla
   return <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c}`}>{label}</span>
 }
 
-export function Btn({ label, colour = 'orange', size = 'md', loading = false, disabled = false, onClick, icon }: { label: string; colour?: string; size?: 'sm' | 'md'; loading?: boolean; disabled?: boolean; onClick?: () => void; icon?: string }) {
+/* ⚠️ `className` ADDED (4 October 2026), OPTIONAL AND EMPTY BY DEFAULT, so every existing call site
+ * renders byte-identically. The Schedule › Events card needs its button full-width on a phone and
+ * auto-width above it, which is a LAYOUT decision belonging to the caller — the alternative was a
+ * second button component with the same palette, which is how two secondary styles come to exist. */
+export function Btn({ label, colour = 'orange', size = 'md', loading = false, disabled = false, onClick, icon, className = '' }: { label: string; colour?: string; size?: 'sm' | 'md'; loading?: boolean; disabled?: boolean; onClick?: () => void; icon?: string; className?: string }) {
   const colours: Record<string, string> = {
     orange: 'bg-orange-600 hover:bg-orange-700 text-white',
     red:    'bg-red-50 hover:bg-red-100 text-red-600 border border-red-200',
@@ -27,7 +31,7 @@ export function Btn({ label, colour = 'orange', size = 'md', loading = false, di
   const sizes = { sm: 'text-xs px-2.5 py-1.5', md: 'text-sm px-4 py-2' }
   return (
     <button onClick={onClick} disabled={disabled || loading}
-      className={`${colours[colour] || colours.orange} ${sizes[size]} font-bold rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex items-center gap-1.5 whitespace-nowrap`}>
+      className={`${colours[colour] || colours.orange} ${sizes[size]} font-bold rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex items-center gap-1.5 whitespace-nowrap ${className}`}>
       {loading ? <Spinner /> : icon ? <span>{icon}</span> : null}
       {label}
     </button>
@@ -50,6 +54,32 @@ export function Input({ label, value, onChange, onBlur, type = 'text', inputMode
       {hint && <p className="text-slate-400 text-xs mt-0.5">{hint}</p>}
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
     </div>
+  )
+}
+
+/**
+ * ══ THE MANAGE SWITCH ══════════════════════════════════════════════════════════════════════════
+ *
+ * 🔴 MOVED HERE VERBATIM FROM app/manage/[token]/page.tsx (4 October 2026), FOR THE REASON THIS FILE
+ * EXISTS. Menu › Kitchen capacity needed Settings' on/off switch for its "Same kitchen capacity for
+ * all vans?" row — Dominic: "the SAME green switch Settings uses… the shared Toggle component on this
+ * branch, not a new one". There was no shared one: it was a local function in a 12k-line page, so the
+ * only way to use the same component was to make it one.
+ *
+ * ⚠️ THE PROPS AND THE RENDERED MARKUP ARE UNCHANGED, so page.tsx's existing usages did not have to be
+ * touched. Nothing about the switch's look or behaviour changed in the move.
+ * ⛔ components/dashboard/OrderCard.tsx EXPORTS A DIFFERENT `Toggle` AND IS NOT MERGED INTO THIS ONE.
+ * It is a different surface with its own palette; forcing one component on both would be a visual
+ * change to the dashboard that nobody asked for.
+ */
+export function Toggle({ on, onToggle, label, disabled }: { on: boolean; onToggle: () => void; label?: string; disabled?: boolean }) {
+  return (
+    <button onClick={onToggle} disabled={disabled} className="flex items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed">
+      <div className={`relative w-11 h-6 rounded-full transition-colors ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
+        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-6' : 'translate-x-1'}`} />
+      </div>
+      {label && <span className="text-sm text-slate-600 font-medium group-hover:text-slate-900">{label}</span>}
+    </button>
   )
 }
 

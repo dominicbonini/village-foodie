@@ -66,7 +66,7 @@ import { INTERVAL_CHOICES, isIntervalChoice, readVanIntervalsForTruck, DEFAULT_I
 import {
   readVanCategorySettings, readVanCategorySettingsForTruck, readVanSameAsFirst,
   effectiveCategorySettings, firstVanId, vanCopyPayload, vanCategoryCopyRows, VAN_COPY_FIELDS,
-  CAPACITY_COPY_FIELDS, capacityCopyPayload,
+  CAPACITY_COPY_FIELDS, capacityCopyPayload, capacityAllSame,
 } from '@/lib/van-category-settings'
 // 🔴 ONE DEFINITION OF "WHICH PLACE IS THIS EVENT AT", IMPORTED NOT RE-WRITTEN. Stages 2 and 3 import
 // the same module; a second normaliser here would make events stop finding their place with no error.
@@ -2139,7 +2139,7 @@ export async function POST(req: NextRequest) {
       if (Object.keys(fanFields).length) {
         const same = await readVanSameAsFirst(supabase, truck.id)
         if (same.ok) {
-          const vanRows = [...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: true }))
+          const vanRows = [...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: same.activeById.get(id) !== false }))
           const first = firstVanId(vanRows)
           if (first && first === vanId) {
             const followers = [...same.byVanId.entries()].filter(([id, on]) => on && id !== first).map(([id]) => id)
@@ -2171,7 +2171,7 @@ export async function POST(req: NextRequest) {
       if (Object.keys(capFields).length) {
         const same = await readVanSameAsFirst(supabase, truck.id)
         if (same.ok) {
-          const vanRows = [...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: true }))
+          const vanRows = [...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: same.activeById.get(id) !== false }))
           const first = firstVanId(vanRows)
           if (first && first === vanId) {
             const followers = [...same.capacityByVanId.entries()].filter(([id, on]) => on && id !== first).map(([id]) => id)
@@ -2255,7 +2255,7 @@ export async function POST(req: NextRequest) {
     const same = await readVanSameAsFirst(supabase, truck.id)
     const fannedTo: string[] = []
     if (same.ok) {
-      const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: true })))
+      const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: same.activeById.get(id) !== false })))
       if (first && first === vanId) {
         for (const [fid, on] of same.capacityByVanId.entries()) {
           if (!on || fid === first) continue
@@ -2284,7 +2284,7 @@ export async function POST(req: NextRequest) {
 
     const same = await readVanSameAsFirst(supabase, truck.id)
     if (!same.ok) return NextResponse.json({ error: 'That switch is unavailable until the database is updated.' }, { status: 503 })
-    const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: true })))
+    const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: same.activeById.get(id) !== false })))
     /* ⛔ THE FIRST VAN CANNOT FOLLOW ITSELF. The UI only renders the switch on vans 2+, but the
      * handler refuses it too — a van following itself would make its own edits fan out to itself. */
     if (first && first === vanId) return NextResponse.json({ error: 'The first van cannot follow itself.' }, { status: 400 })
@@ -2340,6 +2340,44 @@ export async function POST(req: NextRequest) {
    * override, the switch would claim "same capacity" while one category still differed. An empty
    * source set is correct and means "both vans inherit the truck defaults".
    */
+  /**
+   * ── 🔴 COPY THE FIRST VAN'S CAPACITY ONTO ANOTHER VAN ─────────────────────────────────────────
+   * Extracted from the switch below (October 2026) because `add_van` now has to do exactly the same
+   * thing for a new van. Two copies of a delete-then-insert is how one of them comes to merge instead
+   * of replace — the failure the switch's own comment warns about.
+   *
+   * 🔴 DELETE-THEN-INSERT, NEVER A MERGE. If the target kept a row for a category the source does not
+   * override, it would differ while claiming to be the same. An empty source set is correct and means
+   * "both vans inherit the truck defaults".
+   * ⚠️ `select('*')` SO A COLUMN THIS DEPLOY DOES NOT KNOW ABOUT CANNOT 42703 THE WHOLE COPY —
+   * `capacityCopyPayload`'s allowlist decides what travels, not the select.
+   *
+   * @returns null on success, or a message for the caller to return.
+   */
+  async function copyCapacityFromFirst(firstId: string, targetVanId: string, truckId: string): Promise<string | null> {
+    const { data: src } = await supabase.from('truck_vans').select('*').eq('id', firstId).maybeSingle()
+    const payload = capacityCopyPayload(src as Record<string, unknown> | null)
+    if (Object.keys(payload).length) {
+      const { error: cpErr } = await supabase.from('truck_vans').update(payload).eq('id', targetVanId).eq('truck_id', truckId)
+      if (cpErr) {
+        console.warn(`[van-capacity-copy] van ${targetVanId}: copying the first van's capacity failed (${(cpErr as { code?: string }).code ?? 'no code'}): ${cpErr.message}`)
+        return 'The first van\'s capacity could not be copied right now.'
+      }
+    }
+    const srcRows = await readVanCategorySettings(supabase, firstId)
+    const { error: delErr } = await supabase.from('van_category_settings').delete().eq('van_id', targetVanId)
+    if (delErr) console.warn(`[van-capacity-copy] van ${targetVanId}: clearing old category rows failed (${(delErr as { code?: string }).code ?? 'no code'}): ${delErr.message}`)
+    const rows = vanCategoryCopyRows(srcRows.byCategoryId, truckId, targetVanId)
+    if (rows.length) {
+      const { error: insErr } = await supabase.from('van_category_settings').insert(rows)
+      if (insErr) {
+        console.warn(`[van-capacity-copy] van ${targetVanId}: copying category rows failed (${(insErr as { code?: string }).code ?? 'no code'}): ${insErr.message}`)
+        return 'The first van\'s category settings could not be copied right now.'
+      }
+    }
+    return null
+  }
+
   if (action === 'set_van_capacity_same_as_first') {
     const { vanId, on } = body
     if (!vanId) return NextResponse.json({ error: 'vanId is required' }, { status: 400 })
@@ -2349,7 +2387,7 @@ export async function POST(req: NextRequest) {
 
     const same = await readVanSameAsFirst(supabase, truck.id)
     if (!same.ok) return NextResponse.json({ error: 'That switch is unavailable until the database is updated.' }, { status: 503 })
-    const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: true })))
+    const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: same.activeById.get(id) !== false })))
     /* ⛔ THE FIRST VAN CANNOT FOLLOW ITSELF — its own edits would fan out to itself. */
     if (first && first === vanId) return NextResponse.json({ error: 'The first van cannot follow itself.' }, { status: 400 })
 
@@ -2357,26 +2395,8 @@ export async function POST(req: NextRequest) {
       if (!first) return NextResponse.json({ error: 'There is no first van to follow.' }, { status: 400 })
       /* 🔴 `select('*')` SO A COLUMN THIS DEPLOY DOES NOT KNOW ABOUT CANNOT 42703 THE WHOLE COPY —
        * `capacityCopyPayload`'s allowlist decides what travels, not the select. */
-      const { data: src } = await supabase.from('truck_vans').select('*').eq('id', first).maybeSingle()
-      const payload = capacityCopyPayload(src as Record<string, unknown> | null)
-      if (Object.keys(payload).length) {
-        const { error: cpErr } = await supabase.from('truck_vans').update(payload).eq('id', vanId).eq('truck_id', truck.id)
-        if (cpErr) {
-          console.warn(`[van-capacity-same-as-first] van ${vanId}: copying the first van's capacity failed (${(cpErr as { code?: string }).code ?? 'no code'}): ${cpErr.message}`)
-          return NextResponse.json({ error: 'The first van\'s capacity could not be copied right now.' }, { status: 500 })
-        }
-      }
-      const srcRows = await readVanCategorySettings(supabase, first)
-      const { error: delErr } = await supabase.from('van_category_settings').delete().eq('van_id', vanId)
-      if (delErr) console.warn(`[van-capacity-same-as-first] van ${vanId}: clearing old category rows failed (${(delErr as { code?: string }).code ?? 'no code'}): ${delErr.message}`)
-      const rows = vanCategoryCopyRows(srcRows.byCategoryId, truck.id, vanId as string)
-      if (rows.length) {
-        const { error: insErr } = await supabase.from('van_category_settings').insert(rows)
-        if (insErr) {
-          console.warn(`[van-capacity-same-as-first] van ${vanId}: copying category rows failed (${(insErr as { code?: string }).code ?? 'no code'}): ${insErr.message}`)
-          return NextResponse.json({ error: 'The first van\'s category settings could not be copied right now.' }, { status: 500 })
-        }
-      }
+      const failure = await copyCapacityFromFirst(first, vanId as string, truck.id)
+      if (failure) return NextResponse.json({ error: failure }, { status: 500 })
     }
 
     const { error: swErr } = await supabase
@@ -2393,13 +2413,60 @@ export async function POST(req: NextRequest) {
     if (!name?.trim()) {
       return NextResponse.json({ error: 'Name required' }, { status: 400 })
     }
+
+    /* ── 🔴 THE NEW VAN'S KITCHEN CAPACITY IS DECIDED BEFORE IT EXISTS ──────────────────────────
+     * Menu › Kitchen capacity asks one question of a multi-van truck: "Same kitchen capacity for all
+     * vans?". A van added to a truck whose answer is YES must arrive already following — otherwise
+     * the answer silently becomes NO the moment a van is added, and the operator is shown a screen
+     * full of per-van boxes they never asked for.
+     *
+     * 🔴 "YES" IS READ, NOT STORED. There is no column for the answer: it IS "does every non-first
+     * active van follow the first van". A one-van truck satisfies that vacuously, which is why a
+     * truck's SECOND van follows by default — the common case, and the one the brief calls out.
+     * ⚠️ READ BEFORE THE INSERT. Afterwards the new van is itself a non-first van with the column
+     * default (false), so the answer would read NO for every truck and no van would ever follow.
+     * ⛔ AND THE COLUMN DEFAULT IS NOT CHANGED — this writes the flag explicitly. A `default true`
+     * would make every van on every truck follow, including trucks that answered No.
+     */
+    const same = await readVanSameAsFirst(supabase, truck.id)
+    const existing = [...same.createdAt.entries()]
+      .map(([id, created_at]) => ({ id, created_at, active: same.activeById.get(id) !== false }))
+    const first = firstVanId(existing)
+    /* 🔴 THE SAME `capacityAllSame` THE SCREEN READS. An inline `.every(...)` here would be a second
+     * rule, and the one that drifted would be this one — where nobody would see it until a truck's new
+     * van quietly stopped matching its siblings. */
+    const answerIsYes = same.ok && capacityAllSame(
+      existing.map(v => ({ ...v, capacity_same_as_first_van: same.capacityByVanId.get(v.id) === true })),
+      first,
+    )
+
     const { data, error } = await supabase
       .from('truck_vans')
       .insert({ truck_id: truck.id, name: name.trim(), active: true })
       .select('id, truck_id, name, kds_token, active')
       .single()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ ok: true, van: data })
+
+    const newId = (data as { id?: string } | null)?.id
+    /* 🔴 THE VALUES ARE COPIED EITHER WAY; ONLY THE FLAG DIFFERS. Under "No" the new van still starts
+     * from the first van's numbers — a van that arrived at the truck's defaults while its siblings
+     * were configured would be a van quietly running a different kitchen. What "No" means is that it
+     * then diverges on its own, not that it starts from nothing. */
+    let followed = false
+    if (newId && first && first !== newId) {
+      const failure = await copyCapacityFromFirst(first, newId, truck.id)
+      /* ⚠️ A COPY FAILURE DOES NOT FAIL THE VAN. The van exists and is usable; its capacity can be set
+       * on the screen. Returning an error here would leave a created van behind an error message. */
+      if (failure) console.warn(`[add-van] van ${newId}: ${failure}`)
+      if (same.ok && answerIsYes) {
+        const { error: flagErr } = await supabase
+          .from('truck_vans').update({ capacity_same_as_first_van: true }).eq('id', newId).eq('truck_id', truck.id)
+        if (flagErr) console.warn(`[add-van] van ${newId}: could not set the capacity flag (${(flagErr as { code?: string }).code ?? 'no code'}): ${flagErr.message}`)
+        else followed = true
+      }
+    }
+    /* `followed` is reported so the screen can say what happened rather than guess. */
+    return NextResponse.json({ ok: true, van: data, capacityFollowsFirstVan: followed })
   }
 
   if (action === 'delete_van') {

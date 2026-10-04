@@ -33,6 +33,9 @@ const PLACES = read('components/manage/SchedulePlaces.tsx')
 /* 🔴 MENU › KITCHEN CAPACITY (October 2026) — its own screen now, so its own fixture. */
 const KC = read('components/manage/KitchenCapacitySection.tsx')
 const KCLIB = read('lib/kitchen-capacity.ts')
+/* 🔴 THE SHARED CONTROLS LIVE HERE NOW — the capacity question uses Settings' own Toggle. */
+const PRIM = read('components/manage/primitives.tsx')
+const SSM = read('components/manage/ScheduleSettingsModal.tsx')
 
 /** Lift one class string out of the real source, or fail — the fixture is only worth as much as its
  *  agreement with the component. */
@@ -449,30 +452,26 @@ function fixture(css, oneCol = false, placeCount = 6, breakScroll = false) {
  * the real class strings, and with a six-tab control at 320px where the row genuinely overflows.
  */
 /**
- * MENU › KITCHEN CAPACITY — THE SCREEN THE CAPACITY TABLE MOVED TO.
+ * MENU › KITCHEN CAPACITY — one box, or one per van.
  *
- * 🔴 WHY THIS NEEDS MEASURING WHEN THE MARKUP DID NOT CHANGE. The table is what stood in Settings ›
- * Kitchen — but it is in a different BOX. There it sat inside a van card, inside the settings list's
- * padded column; here it sits directly in the tab body. The template is
- * `minmax(0,1fr)_5rem_5rem_2.5rem` at mobile, and the comment on that constant records what already
- * went wrong once: at ~311px the fixed columns overflowed, the name column collapsed to zero and the
- * ceiling selects went off-screen. A different container is exactly how that returns, and no class
- * census can see it.
+ * 🔴 REWRITTEN 4 OCTOBER 2026: the van picker and the per-van switch are gone. A multi-van truck is
+ * asked ONE question — "Same kitchen capacity for all vans?" — answered with Settings' own green
+ * `<Toggle>`, and the answer decides whether there is ONE box ("All vans · Kitchen capacity") or one
+ * per van ("<van name> · Kitchen capacity").
  *
- * ⚠️ WHAT IS AND IS NOT REAL HERE. The grid template, the card and the switch classes are LIFTED from
- * the component and from lib/kitchen-capacity.ts, so a restyle breaks this fixture instead of leaving
- * it measuring the old screen. The category cells are filler at realistic widths —
- * `<KitchenCapacityCategoryRow>` has its own coverage; what is measured here is the SCREEN.
- *
- * @param vans 1 ⇒ no picker and no switch (the single-van truck, which is most of them); 2 ⇒ both,
- *             which is the layout that did not exist before this build.
- * @param following the switch ON ⇒ the table is COLLAPSED, so the screen must not leave a hole.
+ * @param vans how many ACTIVE vans. 1 ⇒ no question at all, just the box.
+ * @param allSame the answer. true ⇒ one box; false ⇒ one per van. Ignored when `vans` is 1.
  */
-function capacityFixture(css, vans = 1, following = false) {
+function capacityFixture(css, vans = 1, allSame = true) {
   const grid = lift(KCLIB, /export const KITCHEN_CAPACITY_GRID =\n\s*'(.+?)' \+/, 'the capacity grid template')
   const grid2 = lift(KCLIB, /\+\n\s*'(sm:grid-cols-.+?)'/, 'the sm half of the grid template')
   const card = lift(KC, /<div className="(bg-slate-50 border border-slate-200 rounded-xl p-3)">/, 'the capacity card')
-  const sw = lift(KC, /<div className="(flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3)">/, 'the switch row')
+  /* 🔴 THE QUESTION ROW'S CARD, AND THE SHARED SWITCH'S OWN CLASSES — both lifted, because the whole
+   * point of the 4 October change is that this row looks like every other setting row in Manage. If
+   * either drifts, this fixture stops building rather than measuring a row nobody is served. */
+  const sw = lift(KC, /<div className="(bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3)">/, 'the question row')
+  const togTrack = lift(PRIM, /<div className=\{`(relative w-11 h-6 rounded-full transition-colors) \$\{on \? 'bg-green-500' : 'bg-slate-300'\}`\}>/, 'the shared toggle track')
+  const togKnob = lift(PRIM, /<div className=\{`(absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform)/, 'the shared toggle knob')
   const hdr = 'text-[11px] font-bold uppercase tracking-wide text-slate-400'
   // Real category names — the first column is `minmax(0,1fr)` and text is what fills it.
   const CATS = ['Pizzas', 'Loaded fries & sides', 'Dips', 'Soft drinks']
@@ -481,43 +480,49 @@ function capacityFixture(css, vans = 1, following = false) {
         <div class="min-w-0"><span class="min-w-0 truncate text-sm text-slate-700">${c}</span></div>
         <div>${sel('4 items')}</div><div>${sel('every 7 min')}</div>
         <div class="text-center"><input type="checkbox"></div>`).join('')
-  const table = `
-    <div id="kcCard" class="${card}">
-      <p class="text-sm font-bold text-slate-800 mb-3">Kitchen capacity</p>
-      <div id="kcGrid" class="${grid} ${grid2} gap-y-2 items-center">
-        <span id="kcCatHdr" class="min-w-0 truncate ${hdr}">Category</span>
+  /** One box. `id` is set on the first so the measurement can find it. */
+  const box = (title, first) => `
+    <div class="${card}"${first ? ' id="kcCard"' : ''}>
+      <p class="text-sm font-bold text-slate-800 mb-3"${first ? ' id="kcTitle"' : ''}>${title}</p>
+      <div${first ? ' id="kcGrid"' : ''} class="${grid} ${grid2} gap-y-2 items-center">
+        <span${first ? ' id="kcCatHdr"' : ''} class="min-w-0 truncate ${hdr}">Category</span>
         <span class="${hdr}">Items</span>
         <span class="${hdr}">Prep</span>
-        <span id="kcCountsHdr" class="${hdr} text-center leading-tight">Counts to total capacity</span>
+        <span${first ? ' id="kcCountsHdr"' : ''} class="${hdr} text-center leading-tight">Counts to total capacity</span>
         ${rows}
       </div>
-      <div id="kcTotal" class="${grid} ${grid2} items-center mt-2 pt-2.5 border-t border-slate-100">
-        <span id="kcTotalLbl" class="min-w-0 truncate text-sm font-semibold text-slate-700">Total capacity</span>
+      <div${first ? ' id="kcTotal"' : ''} class="${grid} ${grid2} items-center mt-2 pt-2.5 border-t border-slate-100">
+        <span${first ? ' id="kcTotalLbl"' : ''} class="min-w-0 truncate text-sm font-semibold text-slate-700">Total capacity</span>
         <div>${sel('12 items')}</div><div>${sel('every 5 min')}</div><span></span>
       </div>
     </div>`
-  const picker = vans > 1 ? `
-    <div id="kcPicker" class="flex gap-2 overflow-x-auto">
-      ${['Main van', 'Festival trailer'].slice(0, vans).map((n, i) =>
-        `<button class="px-3 py-1.5 rounded-full text-sm font-bold whitespace-nowrap ${i === 0 ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}">${n}</button>`).join('')}
-    </div>` : ''
-  const sws = vans > 1 ? `
-    <div id="kcSwitch" class="${sw}">
+
+  const VAN_NAMES = ['Main van', 'Festival trailer']
+  /* 🔴 THE BOXES THE SCREEN WOULD DRAW, from the same rule the component uses. */
+  const boxes = (vans === 1 || allSame)
+    ? [box(vans > 1 ? 'All vans · Kitchen capacity' : 'Kitchen capacity', true)]
+    : VAN_NAMES.slice(0, vans).map((n, i) => box(`${n} · Kitchen capacity`, i === 0))
+
+  /* The question, only with more than one van — the shared Toggle on the right, like every other
+   * on/off setting in Settings. ⚠️ NO HELPER LINE: it was removed on 4 October. */
+  const question = vans > 1 ? `
+    <div id="kcQuestion" class="${sw}">
       <div class="min-w-0">
-        <p class="text-sm font-semibold text-slate-800">Same capacity as Main van</p>
-        <p class="text-xs text-slate-500 mt-0.5">${following
-          ? 'This van uses Main van’s capacity. Changes there are copied here.'
-          : 'Copy Main van’s capacity and keep it in step.'}</p>
+        <p class="text-sm font-semibold text-slate-800">Same kitchen capacity for all vans?</p>
       </div>
-      <button class="relative w-11 h-6 rounded-full shrink-0 ${following ? 'bg-orange-600' : 'bg-slate-300'}"></button>
+      <button id="kcToggle" class="flex items-center gap-2 group">
+        <div class="${togTrack} ${allSame ? 'bg-green-500' : 'bg-slate-300'}"><div class="${togKnob} ${allSame ? 'translate-x-6' : 'translate-x-1'}"></div></div>
+      </button>
     </div>` : ''
+
   return `${HEAD(css)}
 <div style="max-width:1024px;margin:0 auto;padding:0 16px">
-  <div id="kcRoot" class="space-y-3 py-4">
-    ${picker}${sws}${following ? '' : table}
-    <div id="kcExplainer" class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
-      <p class="text-xs text-blue-600">How capacity works — filler for the two shared paragraphs.</p>
-    </div>
+  <div id="kcRoot" class="space-y-4 py-4">
+    <!-- A REFERENCE SWATCH: the switch's colour is compared to a bg-green-500 element rendered by
+         the same stylesheet, rather than to a colour string. Tailwind v4 emits an oklch variable. -->
+    <span id="refGreen" class="bg-green-500" style="position:absolute;width:1px;height:1px"></span>
+    <p class="text-sm text-slate-500">How many items your kitchen can make, so customers can only pick collection times you can meet.</p>
+    ${question}${boxes.join('')}
   </div>
 </div></body></html>`
 }
@@ -648,6 +653,35 @@ const rects = () => {
       display: cs.display,
     }
   }
+  /* ── THE SCHEDULE SETTINGS MODAL AND THE PILL BARS ────────────────────────────────────────────── */
+  for (const id of ['smodal', 'sheader', 'sbody', 'sfoot', 'sclose', 'bar', 'barRow', 'pill0', 'feCard', 'feTitle', 'feSource', 'feBtn']) {
+    const el = document.getElementById(id)
+    if (!el) { out[id] = null; continue }
+    const r = el.getBoundingClientRect()
+    out[id] = { top: Math.round(r.top), left: Math.round(r.left), right: Math.round(r.right),
+      bottom: Math.round(r.bottom), width: Math.round(r.width), height: Math.round(r.height) }
+  }
+  const sb = document.getElementById('sbody')
+  out.sbodyScrolls = sb ? sb.scrollHeight > sb.clientHeight + 1 : null
+  const barEl = document.getElementById('bar'), rowEl = document.getElementById('barRow')
+  const scEl = document.getElementById('scroller')
+  out.scrollerTop = scEl ? Math.round(scEl.getBoundingClientRect().top) : null
+  out.barRows = rowEl ? [...new Set([...rowEl.children].map(k => Math.round(k.getBoundingClientRect().top)))].length : null
+  /* 🔴 THE PILL'S RADIUS AND THE ROW'S GAP, COMPUTED. A class census would see `rounded-full` and
+   * `gap-1.5` in the source and still be wrong about what the engine did with them. */
+  out.pillRadius = (() => {
+    const e = document.getElementById('pill0')
+    return e ? Math.round(parseFloat(getComputedStyle(e).borderTopLeftRadius)) : null
+  })()
+  out.pillGap = rowEl ? Math.round(parseFloat(getComputedStyle(rowEl).columnGap || '0')) : null
+  /* 🔴 IS THE BUTTON BESIDE THE TEXT, OR UNDER IT? Measured from the two boxes, not from a class —
+   * `sm:flex-row` is a claim about a breakpoint, and which side of it a given width falls on is the
+   * thing worth checking. */
+  out.feStacked = (() => {
+    const t = document.getElementById('feTitle'), b = document.getElementById('feBtn')
+    if (!t || !b) return null
+    return b.getBoundingClientRect().top >= t.getBoundingClientRect().bottom - 1
+  })()
   out.docScrollW = document.documentElement.scrollWidth
   out.innerW = window.innerWidth
   out.innerH = window.innerHeight
@@ -708,13 +742,46 @@ const rects = () => {
     }
   } else { out.kc = null }
   const kcRoot = document.getElementById('kcRoot')
+  const kcQ = document.getElementById('kcQuestion')
+  const kcTog = document.getElementById('kcToggle')
   out.kcScreen = kcRoot ? {
+    /* ── THE 4 OCTOBER SCREEN: one question, and one box or one per van ───────────────────────── */
+    question: !!kcQ,
+    questionTop: kcQ ? Math.round(kcQ.getBoundingClientRect().top) : null,
+    questionRight: kcQ ? Math.round(kcQ.getBoundingClientRect().right) : null,
+    /** How many capacity boxes the screen drew — 1 under "same for all", one per van otherwise. */
+    boxes: [...kcRoot.children].filter(el => el.querySelector('[id^=kcGrid], .grid') || /Kitchen capacity/.test(el.textContent || '') && el.querySelector('select')).length,
+    firstTitle: (() => { const e = document.getElementById('kcTitle'); return e ? (e.textContent || '').trim() : null })(),
+    /* 🔴 THE SWITCH, MEASURED — it must be Settings' own 44×24 green track, on the right. A
+     * look-alike with different numbers is exactly what this build removed. */
+    switchW: (() => { const d = kcTog && kcTog.firstElementChild; return d ? Math.round(d.getBoundingClientRect().width) : null })(),
+    switchH: (() => { const d = kcTog && kcTog.firstElementChild; return d ? Math.round(d.getBoundingClientRect().height) : null })(),
+    /* 🔴 COMPARED TO A REFERENCE `bg-green-500`, not to a colour string. The computed value, so a
+     * purged class (which leaves the class name and no colour) fails. */
+    switchGreen: (() => {
+      const d = kcTog && kcTog.firstElementChild
+      const ref = document.getElementById('refGreen')
+      if (!d || !ref) return null
+      return getComputedStyle(d).backgroundColor === getComputedStyle(ref).backgroundColor
+    })(),
+    switchOn: (() => {
+      const d = kcTog && kcTog.firstElementChild
+      const ref = document.getElementById('refGreen')
+      if (!d || !ref) return null
+      return getComputedStyle(d).backgroundColor === getComputedStyle(ref).backgroundColor
+    })(),
+    /** The switch's right edge — the old key pointed at an element this screen no longer has. */
+    switchRight: kcTog ? Math.round(kcTog.getBoundingClientRect().right) : null,
+    /** ⛔ Any leftover Yes/No pair. */
+    yesNoButtons: [...kcRoot.querySelectorAll('button')].filter(b => ['Yes', 'No'].includes((b.textContent || '').trim())).length,
     rootH: Math.round(kcRoot.getBoundingClientRect().height),
     picker: !!document.getElementById('kcPicker'),
     hasSwitch: !!document.getElementById('kcSwitch'),
     table: !!document.getElementById('kcCard'),
     explainer: !!document.getElementById('kcExplainer'),
-    switchRight: (() => { const e = document.getElementById('kcSwitch'); return e ? Math.round(e.getBoundingClientRect().right) : null })(),
+    /* ⛔ THE OLD `kcSwitch` KEY IS GONE WITH THE PER-VAN SWITCH IT MEASURED. It was a DUPLICATE
+     * `switchRight` later in this object literal, so it silently overrode the one above and the
+     * "on the right" check read null for every width. */
   } : null
   /* 🔴 IS THE FOOTER ON SCREEN WITHOUT SCROLLING? The modal is a flex column, so the footer sits
    * inside the viewport iff the modal does. Measured, not assumed.
@@ -799,19 +866,132 @@ const rects = () => {
 }
 
 // ── THE ENGINES ─────────────────────────────────────────────────────────────────────────────────────
+
+/**
+ * SCHEDULE › SCHEDULE SETTINGS — the modal the two cards moved into.
+ *
+ * 🔴 THE SHELL IS WHAT IS MEASURED. The two cards inside are the ones that stood in Settings and are
+ * unchanged; what is new is that they are now in a dialog, which has to fit a phone, keep its close
+ * button reachable, and scroll its own body rather than the page.
+ * ⚠️ EVERY CLASS IS LIFTED from components/manage/ScheduleSettingsModal.tsx, so a restyle breaks the
+ * fixture rather than leaving it measuring a dialog nobody is served.
+ */
+function scheduleModalFixture(css) {
+  const shell = lift(SSM, /className="(bg-white w-full max-w-\[560px\] max-h-\[92vh\] rounded-2xl shadow-2xl flex flex-col overflow-hidden)"/, 'the modal shell')
+  const header = lift(SSM, /<div className="(shrink-0 flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-slate-200)">/, 'the modal header')
+  const body = lift(SSM, /<div className="(flex-1 min-h-0 overflow-y-auto p-4 space-y-4)">/, 'the modal body')
+  const foot = lift(SSM, /<div className="(shrink-0 px-4 sm:px-5 py-3 border-t border-slate-200 flex justify-end)">/, 'the modal footer')
+  const title = lift(SSM, /<h2 className="font-bold text-slate-900 text-lg min-w-0 flex-1">(.+?)<\/h2>/, 'the modal title')
+  return `${HEAD(css)}
+<div class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4" style="position:fixed;inset:0">
+  <div id="smodal" data-schedule-settings-modal class="${shell}">
+    <div id="sheader" class="${header}">
+      <h2 class="font-bold text-slate-900 text-lg min-w-0 flex-1">${title}</h2>
+      <button id="sclose" aria-label="Close" class="shrink-0 w-10 h-10 rounded-full bg-slate-100 text-slate-600 text-lg font-bold">✕</button>
+    </div>
+    <div id="sbody" class="${body}">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
+        <p class="text-base font-bold text-slate-800">Your schedule</p>
+        ${filler("I'll add events myself / Find my events automatically", 92)}
+        <div><p class="text-sm font-semibold text-slate-800">Where do you post your schedule?</p>
+          <input class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" value="pizzakitchen.co.uk/events">
+        </div>
+        <button class="border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold">Verify</button>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+        <p class="text-base font-bold text-slate-800">Import exclusions</p>
+        ${filler('three excluded terms, each with a remove button', 140)}
+      </div>
+    </div>
+    <div id="sfoot" class="${foot}">
+      <button class="bg-orange-500 text-white rounded-xl px-4 py-2 text-sm font-bold">Done</button>
+    </div>
+  </div>
+</div></body></html>`
+}
+
+/**
+ * ONE STICKY SUB-TAB BAR, with a given set of labels — Menu's, Schedule's or Settings'.
+ *
+ * 🔴 ALL THREE RENDER FROM ONE DEFINITION (`SUBTAB_BAR`/`SUBTAB_ROW`/`subtabBtn`), so measuring them
+ * separately is measuring that claim rather than trusting it: if one bar ever stopped matching, its
+ * pills would be a different size here.
+ * ⚠️ THE SHELL IS REBUILT, NOT JUST THE BAR, because what is being measured is a `position: sticky`
+ * child of a NON-DOCUMENT scroller. A fixture that scrolled the document would answer a different
+ * question — the bar would stick to the viewport and every assertion would pass for the wrong reason.
+ */
+function barFixture(css, labels, activeIdx = 0) {
+  const bar = lift(PAGE, /const SUBTAB_BAR = '(.+?)'/, 'the shared sub-tab bar')
+  const row = lift(PAGE, /const SUBTAB_ROW = '(.+?)'/, 'the shared sub-tab row')
+  const btn = lift(PAGE, /const subtabBtn = \(on: boolean\) =>\s*\n\s*`(.+?) \$\{/, 'the shared pill')
+  const on = lift(PAGE, /on \? '(bg-slate-900 text-white)'/, 'the active pill')
+  const off = lift(PAGE, /: '(bg-slate-100 text-slate-700 hover:bg-slate-200)'/, 'the inactive pill')
+  return `${HEAD(css)}
+<div class="bg-slate-50 h-dvh flex flex-col overflow-hidden">
+  <div class="shrink-0 h-14 bg-slate-900"></div>
+  <main id="scroller" class="flex-1 overflow-y-auto">
+    <div class="max-w-5xl mx-auto px-4">
+      <div id="bar" data-subtab-bar class="${bar}">
+        <div id="barRow" class="${row}">
+          ${labels.map((l, i) => `<button id="pill${i}" class="${btn} ${i === activeIdx ? on : off}">${l}</button>`).join('')}
+        </div>
+      </div>
+      ${filler('the section below the bar', 2400)}
+    </div>
+  </main>
+</div></body></html>`
+}
+
+
+/**
+ * SCHEDULE › EVENTS — the "Finding events automatically" card.
+ *
+ * 🔴 WHAT IS MEASURED: that it is a CARD with a real BUTTON, and that on a phone the button sits
+ * UNDER the text at full width rather than beside it. At 390 a right-aligned button next to wrapping
+ * text is a narrow tap target at the end of a line, which is the shape this replaced.
+ * ⚠️ BOTH STATES, because the manual one has no source line and a longer title — if the row only ever
+ * fitted in the automatic state, the truck that types its own events would get the broken one.
+ */
+function findingEventsFixture(css, auto = true) {
+  const card = lift(PAGE, /<Card className="(p-4 flex flex-col sm:flex-row sm:items-center gap-3)" data-finding-events-card>/, 'the finding-events card')
+  const cardBase = lift(PRIM, /return <div className=\{`(bg-white rounded-2xl border border-slate-200 shadow-sm) \$\{className\}`\}>/, 'the shared Card')
+  const btnGhost = lift(PRIM, /ghost:\s+'(.+?)'/, 'the ghost button palette')
+  const btnBase = lift(PRIM, /className=\{`\$\{colours\[colour\] \|\| colours\.orange\} \$\{sizes\[size\]\} (.+?) \$\{className\}`\}>/, 'the button base')
+  return `${HEAD(css)}
+<div style="max-width:1040px;margin:0 auto;padding:16px">
+  <div id="feCard" class="${cardBase} ${card}">
+    <div class="min-w-0 flex-1">
+      <p id="feTitle" class="text-sm font-semibold text-slate-800">${auto ? 'Finding events automatically' : "You&apos;re managing your schedule manually"}</p>
+      ${auto ? '<p id="feSource" class="text-xs text-slate-500 mt-0.5">From your website</p>' : ''}
+    </div>
+    <button id="feBtn" class="${btnGhost} text-sm px-4 py-2 ${btnBase} w-full sm:w-auto justify-center">Schedule settings</button>
+  </div>
+  <div class="flex items-center justify-end" style="padding-top:12px"><span id="feFilter"></span></div>
+  ${filler('the events list', 280)}
+</div></body></html>`
+}
+
 async function engines() {
   const out = []
   try {
     const puppeteer = require('puppeteer')
     const b = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] })
     const page = await b.newPage()
-    out.push({ name: 'Chromium', close: () => b.close(), page, setViewport: (w, h) => page.setViewport({ width: w, height: h }) })
+    out.push({ name: 'Chromium', close: () => b.close(), page,
+      setViewport: (w, h) => page.setViewport({ width: w, height: h }),
+      /* ⚠️ THE VIEWPORT, NOT THE ELEMENT. An element screenshot of a child of a `position: fixed`
+       * overlay hangs in both engines here — the first version of this did that and the harness
+       * stopped producing output at all. A viewport shot at a named width shows the same thing and
+       * cannot hang. */
+      shot: async (file) => { await page.screenshot({ path: file }) } })
   } catch (e) { out.push({ name: 'Chromium', skip: String(e.message).split('\n')[0].slice(0, 110) }) }
   try {
     const { webkit } = require('playwright')
     const b = await webkit.launch()
     const page = await b.newPage()
-    out.push({ name: 'WebKit', close: () => b.close(), page, setViewport: (w, h) => page.setViewportSize({ width: w, height: h }) })
+    out.push({ name: 'WebKit', close: () => b.close(), page,
+      setViewport: (w, h) => page.setViewportSize({ width: w, height: h }),
+      shot: async (file) => { await page.screenshot({ path: file }) } })
   } catch (e) { out.push({ name: 'WebKit', skip: String(e.message).split('\n')[0].slice(0, 110) }) }
   return out
 }
@@ -824,6 +1004,12 @@ async function measure() {
   const css = appCss()
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hg-sg-render-'))
   const write = (name, html) => { const f = path.join(tmp, name); fs.writeFileSync(f, html); return 'file://' + f }
+
+  /* 🔴 SCREENSHOTS. ⚠️ THEY ARE RENDERS OF FIXTURES built from the real class strings, NOT captures of
+   * a running page — that needs a database and a live truck, which this harness must never touch.
+   * The report says so wherever it links them. */
+  const shotDir = path.join(REPO, 'docs/screenshots/manage-moves-2')
+  fs.mkdirSync(shotDir, { recursive: true })
 
   const list = await engines()
   let measured = 0
@@ -989,28 +1175,158 @@ async function measure() {
       t(r.kc.nameW > 0, `🔴 CONTROL at 320px: the Category column is still non-zero (${r.kc.nameW}px)`)
       t(r.docScrollW <= r.innerW, '🔴 …and the page still does not scroll sideways')
     }
-    /* ── 🔴 THE TWO-VAN LAYOUT, WHICH DID NOT EXIST BEFORE THIS BUILD ─────────────────────────────
-     * A second van adds a picker and the "Same capacity as Van 1" switch above the table. Switch ON
-     * collapses the table, and a collapsed screen must not be an empty one — the explainer stays, so
-     * the operator is told what the setting means even while the table is hidden. */
-    for (const [w, h] of [[1440, 900], [390, 844]]) {
+    /* ══ 🔴 THE THREE STATES OF THE CAPACITY SCREEN (4 October 2026) ═══════════════════════════════
+     * The van picker and the per-van switch are gone. What there is now:
+     *   ONE VAN            — no question at all, just the box.
+     *   TWO VANS, ON       — the question, and ONE box titled "All vans · Kitchen capacity".
+     *   TWO VANS, OFF      — the question, and ONE BOX PER VAN, each titled with its van's name.
+     * 🔴 THE QUESTION ROW IS MEASURED IN BOTH POSITIONS, because it is the row Dominic reported as
+     * matching nothing else in Manage: it must be the shared green switch, on the right, in a card
+     * the same shape as Settings' own setting rows. */
+    /** The question row's top under the previous answer — it must not move when the answer does. */
+    let lastQuestionTop = null
+    for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
       await eng.setViewport(w, h)
-      await eng.page.goto(write(`kc2-${w}-${eng.name}.html`, capacityFixture(css, 2, false)))
-      let r = await eng.page.evaluate(rects)
-      lines.push(`  capacity 2-van ${w}  picker ${r.kcScreen.picker} · switch ${r.kcScreen.hasSwitch} · table ${r.kcScreen.table} · name ${r.kc.nameW} · doc ${r.docScrollW}`)
-      t(r.kcScreen.picker && r.kcScreen.hasSwitch && r.kcScreen.table, `🔴 2-van ${w}, switch OFF: picker, switch AND table all render`)
-      t(r.kc.nameW >= 60 && r.kc.selsOnScreen, `🔴 2-van ${w}: the table is still usable under the picker and switch`)
-      t(r.kcScreen.switchRight <= r.innerW + 1, `⚠️ 2-van ${w}: the switch row does not spill past the viewport`)
-      t(r.docScrollW <= r.innerW, `🔴 2-van ${w}: NO HORIZONTAL PAGE SCROLL`)
 
-      await eng.page.goto(write(`kc2on-${w}-${eng.name}.html`, capacityFixture(css, 2, true)))
+      // ── ONE VAN: no question ──────────────────────────────────────────────────────────────────
+      await eng.page.goto(write(`kc1-${w}-${eng.name}.html`, capacityFixture(css, 1)))
+      let r = await eng.page.evaluate(rects)
+      lines.push(`  capacity ${w} · 1 van        question ${r.kcScreen.question} · boxes ${r.kcScreen.boxes} · title "${r.kcScreen.firstTitle}" · doc ${r.docScrollW}`)
+      t(r.kcScreen.question === false, `🔴 ${w}/1 van: NO question — a question with one answer is furniture`)
+      t(r.kcScreen.boxes === 1, `🔴 ${w}/1 van: exactly one box`)
+      t(r.kcScreen.firstTitle === 'Kitchen capacity', `⚠️ ${w}/1 van: …titled plainly, with no "All vans" prefix`)
+      t(r.docScrollW <= r.innerW, `🔴 ${w}/1 van: NO HORIZONTAL PAGE SCROLL`)
+
+      // ── TWO VANS, SWITCH ON: one box for all of them ──────────────────────────────────────────
+      await eng.page.goto(write(`kcY-${w}-${eng.name}.html`, capacityFixture(css, 2, true)))
       r = await eng.page.evaluate(rects)
-      lines.push(`  capacity 2-van ${w} FOLLOWING  table ${r.kcScreen.table} · explainer ${r.kcScreen.explainer} · root ${r.kcScreen.rootH}`)
-      t(r.kcScreen.table === false, `🔴 2-van ${w}, switch ON: the table is COLLAPSED, not disabled`)
-      t(r.kcScreen.hasSwitch && r.kcScreen.explainer, `🔴 …and the switch and the explainer remain — a collapsed screen is not a blank one`)
-      t(r.kcScreen.rootH > 80, `⚠️ …the screen still has content (${r.kcScreen.rootH}px tall)`)
-      t(r.docScrollW <= r.innerW, `🔴 2-van ${w} following: NO HORIZONTAL PAGE SCROLL`)
+      lines.push(`  capacity ${w} · 2 vans ON    question ${r.kcScreen.question} · boxes ${r.kcScreen.boxes} · title "${r.kcScreen.firstTitle}" · switch on ${r.kcScreen.switchOn} · doc ${r.docScrollW}`)
+      t(r.kcScreen.question === true, `🔴 ${w}/2 vans: the question IS asked`)
+      t(r.kcScreen.boxes === 1, `🔴 ${w}/2 vans ON: ONE box for every van`)
+      t(r.kcScreen.firstTitle === 'All vans · Kitchen capacity', `🔴 ${w}/2 vans ON: …titled "All vans · Kitchen capacity"`)
+      t(r.kcScreen.switchOn === true, `🔴 ${w}/2 vans ON: the switch reads ON`)
+      t(r.kc.nameW >= 60 && r.kc.selsOnScreen, `🔴 ${w}/2 vans ON: the table is usable under the question`)
+      t(r.docScrollW <= r.innerW, `🔴 ${w}/2 vans ON: NO HORIZONTAL PAGE SCROLL`)
+      /* 🔴 THE SWITCH IS SETTINGS' OWN, ON THE RIGHT. Measured, not grepped: the track is 44×24 (the
+       * shared `w-11 h-6`), it is green when on, and its right edge is at the row's right edge. */
+      t(r.kcScreen.switchW === 44 && r.kcScreen.switchH === 24,
+        `🔴 ${w}/2 vans: the switch is the shared 44×24 track (${r.kcScreen.switchW}×${r.kcScreen.switchH})`)
+      t(r.kcScreen.switchGreen === true, `🔴 ${w}/2 vans ON: …and it is Settings' green, not an accent colour`)
+      lastQuestionTop = r.kcScreen.questionTop
+      t(r.kcScreen.switchRight <= r.innerW + 1 && r.kcScreen.questionRight - r.kcScreen.switchRight <= 20,
+        `🔴 ${w}/2 vans: …on the RIGHT of the row, like every other setting`)
+      /* ⛔ AND NO Yes/No PAIR SURVIVES. */
+      t(r.kcScreen.yesNoButtons === 0, `⛔ ${w}/2 vans: no Yes/No buttons — the control Manage has nowhere else`)
+
+      // ── TWO VANS, SWITCH OFF: one box per van ─────────────────────────────────────────────────
+      await eng.page.goto(write(`kcN-${w}-${eng.name}.html`, capacityFixture(css, 2, false)))
+      r = await eng.page.evaluate(rects)
+      lines.push(`  capacity ${w} · 2 vans OFF   question ${r.kcScreen.question} · boxes ${r.kcScreen.boxes} · title "${r.kcScreen.firstTitle}" · switch on ${r.kcScreen.switchOn} · doc ${r.docScrollW}`)
+      t(r.kcScreen.boxes === 2, `🔴 ${w}/2 vans OFF: ONE BOX PER VAN (${r.kcScreen.boxes})`)
+      t(r.kcScreen.firstTitle === 'Main van · Kitchen capacity', `🔴 ${w}/2 vans OFF: …each titled with its van's name`)
+      t(r.kcScreen.switchOn === false, `🔴 ${w}/2 vans OFF: the switch reads OFF`)
+      t(r.kc.nameW >= 60 && r.kc.selsOnScreen, `🔴 ${w}/2 vans OFF: the first box is still usable`)
+      t(r.docScrollW <= r.innerW, `🔴 ${w}/2 vans OFF: NO HORIZONTAL PAGE SCROLL`)
+      /* 🔴 THE QUESTION ROW DOES NOT MOVE BETWEEN THE TWO ANSWERS. Switching the answer changes how
+       * many boxes are BELOW it; the row itself must stay where it is, or every press makes the thing
+       * you just pressed jump. */
+      t(r.kcScreen.questionTop === lastQuestionTop,
+        `🔴 ${w}: the question row does not move when the answer changes (${r.kcScreen.questionTop} vs ${lastQuestionTop})`)
     }
+
+    /* ⚠️ ITS OWN WIDTH LOOP. The first version of this block sat AFTER the capacity loop's
+     * closing brace, so `w` and `h` were out of scope and every `goto` was handed a URL built
+     * from `undefined` — which timed out rather than failing loudly. */
+    for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
+      await eng.setViewport(w, h)
+      /* ══ 🔴 THE "FINDING EVENTS AUTOMATICALLY" CARD, IN BOTH STATES ════════════════════════════ */
+      for (const auto of [true, false]) {
+        await eng.page.goto(write(`fe-${w}-${auto ? 'auto' : 'manual'}-${eng.name}.html`, findingEventsFixture(css, auto)))
+        const f = await eng.page.evaluate(rects)
+        lines.push(`  finding-events ${w}×${h} ${auto ? 'auto  ' : 'manual'}  card ${f.feCard.width}×${f.feCard.height} · btn ${f.feBtn.width}×${f.feBtn.height} · stacked ${f.feStacked} · doc ${f.docScrollW}`)
+        t(!f.pageScrollsSideways, `🔴 finding-events ${w} ${auto ? 'auto' : 'manual'}: NO HORIZONTAL PAGE SCROLL`)
+        t(f.feBtn.height >= 36, `🔴 finding-events ${w}: the button is a real target, not a line of text (${f.feBtn.height}px)`)
+        t(f.feBtn.right <= f.feCard.right + 1 && f.feBtn.left >= f.feCard.left - 1,
+          `🔴 finding-events ${w}: the button stays inside the card`)
+        t(auto ? !!f.feSource : !f.feSource,
+          `⚠️ finding-events ${w}: the source line is shown ${auto ? 'under the title' : 'NOT shown when the truck adds events itself'}`)
+        /* 🔴 THE PHONE RULE: under the text, full width. Above `sm` it sits beside the text. */
+        if (w < 640) {
+          t(f.feStacked === true, `🔴 finding-events ${w}: the button sits UNDER the text on a phone`)
+          t(Math.abs(f.feBtn.width - (f.feCard.width - 32)) <= 2,
+            `🔴 finding-events ${w}: …and is full width (${f.feBtn.width} in a ${f.feCard.width} card)`)
+        } else {
+          t(f.feStacked === false, `⚠️ finding-events ${w}: the button sits BESIDE the text above the sm breakpoint`)
+        }
+        if (w === 1440 || w === 390) {
+          await eng.shot(path.join(shotDir, `finding-events-${w}-${auto ? 'auto' : 'manual'}-${eng.name.toLowerCase()}.png`))
+        }
+      }
+
+      /* ══ 🔴 THE SCHEDULE SETTINGS MODAL, AND THE THREE PILL BARS ═══════════════════════════════════ */
+      {
+        await eng.page.goto(write(`smodal-${w}-${eng.name}.html`, scheduleModalFixture(css)))
+        const m = await eng.page.evaluate(rects)
+        lines.push(`  schedule modal ${w}×${h}  dialog ${m.smodal.width}×${m.smodal.height} · close ${m.sclose.right} · doc ${m.docScrollW} vs ${m.innerW}`)
+        t(!m.pageScrollsSideways, `🔴 schedule modal ${w}: NO HORIZONTAL PAGE SCROLL`)
+        t(m.smodal.width <= Math.min(560, w) + 2, `🔴 schedule modal ${w}: the dialog fits (${m.smodal.width}px)`)
+        t(m.smodal.height <= h + 1, `🔴 schedule modal ${w}: …and fits the viewport's height`)
+        t(m.sclose.right <= m.smodal.right + 1 && m.sclose.top >= -1,
+          `🔴 schedule modal ${w}: the close button is on screen and inside the dialog`)
+        t(m.sfoot.bottom <= m.smodal.bottom + 1, `⚠️ schedule modal ${w}: the Done button sits inside the dialog`)
+        /* 🔴 THE BODY SCROLLS, NOT THE PAGE — the cards are taller than a phone. */
+        t(m.sbodyScrolls === true || m.smodal.height < h,
+          `🔴 schedule modal ${w}: the BODY scrolls when the cards do not fit, not the page`)
+        if (w === 1440 || w === 390) {
+          await eng.shot(path.join(shotDir, `schedule-settings-modal-${w}-${eng.name.toLowerCase()}.png`))
+        }
+      }
+
+      /* 🔴 ALL THREE PILL BARS, AT REST AND WHEN STUCK. They render from ONE definition, so measuring
+       * each is measuring that claim: if one ever stopped matching, its pills would differ here.
+       * ⚠️ "AT REST" IS scrollTop 0, BEFORE ANYTHING IS TOUCHED — the assertion the 3 October fix exists
+       * for, because the earlier version only checked flushness AFTER scrolling and a 24px resting gap
+       * measured green. */
+      for (const [barName, labels] of [
+        ['Menu', menuPillLabels()],
+        ['Schedule', ['Events', 'Weekly post', 'Places']],
+        ['Settings', ['Truck details', 'Contact', 'Order settings', 'Truck settings', 'Schedule', 'QR code', 'Auto-replies', 'Account deletion']],
+      ]) {
+        await eng.page.goto(write(`bar-${barName}-${w}-${eng.name}.html`, barFixture(css, labels)))
+        const b = await eng.page.evaluate(rects)
+        lines.push(`  ${barName} bar ${w}×${h}  pill ${b.pill0.width}×${b.pill0.height} · rows ${b.barRows} · bar@${b.bar.top} scroller@${b.scrollerTop} · doc ${b.docScrollW}`)
+        t(b.barRows === 1, `🔴 ${barName} ${w}: the pills stay on ONE row — they scroll, they do not wrap`)
+        t(!b.pageScrollsSideways, `🔴 ${barName} ${w}: NO HORIZONTAL PAGE SCROLL`)
+        /* ⚠️ WAS `>= 40`. Dominic lifted that floor on 4 October — "too high, too much space above and
+       * below the text". The range is asserted instead of a floor, because the failure this guards is
+       * a pill collapsing onto its text, not a pill being a particular height. */
+      t(b.pill0.height >= 28 && b.pill0.height <= 40,
+        `🔴 ${barName} ${w}: a pill is 28-40px high — shorter than the old floor, not collapsed (${b.pill0.height}px)`)
+        t(b.pillRadius >= 16, `🔴 ${barName} ${w}: …and it is a PILL, not a tab (radius ${b.pillRadius}px)`)
+        t(b.pillGap === 6, `⚠️ ${barName} ${w}: the gap is the boards' 6px (${b.pillGap}px)`)
+        /* 🔴 AT REST: flush to the top of its scroller, scrollTop 0. */
+        t(Math.abs(b.bar.top - b.scrollerTop) <= 1,
+          `🔴 ${barName} ${w}: THE BAR IS FLUSH AT REST (bar@${b.bar.top} scroller@${b.scrollerTop})`)
+        /* 🔴 AND WHEN STUCK: it stays put, still flush, after a real scroll. */
+        const stuck = await eng.page.evaluate(() => {
+          const sc = document.getElementById('scroller')
+          sc.scrollTop = 1200
+          const bar = document.getElementById('bar')
+          return { scrolled: sc.scrollTop, barTop: Math.round(bar.getBoundingClientRect().top),
+            scrollerTop: Math.round(sc.getBoundingClientRect().top) }
+        })
+        lines.push(`    …stuck after ${stuck.scrolled}px: bar@${stuck.barTop} scroller@${stuck.scrollerTop}`)
+        t(stuck.scrolled > 0 && Math.abs(stuck.barTop - stuck.scrollerTop) <= 1,
+          `🔴 ${barName} ${w}: STUCK FLUSH after scrolling ${stuck.scrolled}px`)
+        if (w === 1440 || w === 390) {
+          await eng.page.evaluate(() => { document.getElementById('scroller').scrollTop = 0 })
+          await eng.shot(path.join(shotDir, `pills-${barName.toLowerCase()}-${w}-rest-${eng.name.toLowerCase()}.png`))
+          await eng.page.evaluate(() => { document.getElementById('scroller').scrollTop = 1200 })
+          await eng.shot(path.join(shotDir, `pills-${barName.toLowerCase()}-${w}-stuck-${eng.name.toLowerCase()}.png`))
+        }
+      }
+    }
+
     /* ── 🔴 THE MENU PILLS, AT THE THREE WIDTHS ─────────────────────────────────────────────────── */
     for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
       await eng.setViewport(w, h)

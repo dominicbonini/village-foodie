@@ -26,6 +26,8 @@ const path = require('path'), fs = require('fs')
 
 let pass = 0, fail = 0
 const check = (ok, label) => { console.log(`  ${ok ? '✓' : '🔴'} ${label}`); ok ? pass++ : fail++ }
+/** Read a repo file. §§6-7 read source text; §§1-5 compile and call the real functions. */
+const read = (f) => fs.readFileSync(path.join(REPO, f), 'utf8')
 const ENTRY = ['lib/van-category-settings.ts']
 
 console.log('── COMPILING THE RESOLVER BEFORE AND AFTER ─────────────────────────────────────────────')
@@ -165,6 +167,292 @@ try {
     check(b === a, `${name}: before=${b} after=${a} — ${b === a ? 'IDENTICAL' : 'DIFFERENT'}`)
   }
 } finally { head.remove() }
+
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 6 · 🔴 "SAME KITCHEN CAPACITY FOR ALL VANS?" — THE ANSWER, AND WHAT EACH SWITCH OF IT DOES
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// The van picker and the per-van "Same capacity as …" switch are gone (Dominic, 4 October 2026). A
+// multi-van truck is asked ONE question, and the answer is READ from the flags rather than stored —
+// so the rule that reads it is the thing most worth pinning. Everything below is the brief's list.
+console.log('\n── 6 · THE YES / NO ANSWER ─────────────────────────────────────────────────────────────')
+{
+  const LIB = AFTER
+  const van = (id, follows, active = true) => ({ id, active, capacity_same_as_first_van: follows })
+
+  /* ── 1 · THE ANSWER READS CORRECTLY IN ALL THREE STATES ──────────────────────────────────────── */
+  const ALL_FOLLOW = [van('v1', false), van('v2', true), van('v3', true)]
+  const NONE_FOLLOW = [van('v1', false), van('v2', false), van('v3', false)]
+  const MIXED = [van('v1', false), van('v2', true), van('v3', false)]
+
+  check(LIB.capacityAllSame(ALL_FOLLOW, 'v1') === true, '🔴 every other van follows ⇒ the answer reads YES')
+  check(LIB.capacityAllSame(NONE_FOLLOW, 'v1') === false, '🔴 no other van follows ⇒ the answer reads NO')
+  /* 🔴 THE MIXED CASE IS THE ONE THAT MATTERS. Reading it as Yes would draw ONE box over a truck where
+   * a van is running different numbers behind it — the screen would be lying and the engine would go
+   * on using the other values. */
+  check(LIB.capacityAllSame(MIXED, 'v1') === false, '🔴 SOME follow and some do not ⇒ the answer reads NO, never Yes')
+  check(LIB.capacityAllSame([van('v1', false)], 'v1') === true, '⚠️ a ONE-VAN truck is vacuously YES — which is what makes its second van follow')
+  check(LIB.capacityAllSame([], null) === true, '⚠️ …and so is a truck with no vans, rather than throwing')
+  /* ⚠️ A RETIRED VAN MUST NOT HOLD A TRUCK ON "No" FOR EVER. */
+  check(LIB.capacityAllSame([van('v1', false), van('v2', true), van('v3', false, false)], 'v1') === true,
+    '🔴 a RETIRED van that does not follow is ignored — the answer is about the vans in use')
+  /* ⚠️ THE FIRST VAN'S OWN FLAG IS NOT PART OF THE ANSWER. It cannot follow itself. */
+  check(LIB.capacityAllSame([van('v1', true), van('v2', true)], 'v1') === true,
+    '⚠️ the first van\'s own flag is not read — it is not one of the "other" vans')
+
+  /* ── 4 · THE MIXED CASE'S STRAGGLERS ─────────────────────────────────────────────────────────── */
+  check(LIB.capacityStragglers(MIXED, 'v1').map(v => v.id).join() === 'v2',
+    '🔴 the mixed case names the vans STILL FOLLOWING — the ones the first save has to unfollow')
+  check(LIB.capacityStragglers(ALL_FOLLOW, 'v1').length === 0,
+    '⚠️ …and there are none under YES, where following IS the answer')
+  check(LIB.capacityStragglers(NONE_FOLLOW, 'v1').length === 0, '⚠️ …nor when nothing follows')
+
+  /* ── 🔴 ONE RULE, TWO READERS. The screen decides how many boxes to draw; `add_van` decides whether
+   * a new van arrives following. Two inline `.every(...)`s would be two rules, and the one that
+   * drifted would be the server's — invisible until a truck's new van stopped matching. */
+  const UI = read('components/manage/KitchenCapacitySection.tsx')
+  const API = read('app/api/manage/route.ts')
+  check(/import \{ capacityAllSame, capacityStragglers \} from '@\/lib\/van-category-settings'/.test(UI)
+    && /const allSame = capacityAllSame\(vans, firstVan\?\.id \?\? null\)/.test(UI)
+    && /const stragglers = capacityStragglers\(vans, firstVan\?\.id \?\? null\)/.test(UI),
+    '🔴 the SCREEN reads the shared rule, not its own `.every(...)`')
+  check(/capacityAllSame\(/.test(API) && !/\.every\(v => same\.capacityByVanId/.test(API),
+    '🔴 and `add_van` reads the SAME rule')
+
+  /* ── 6 · NOTHING IS WRITTEN BECAUSE THE PAGE LOADED ──────────────────────────────────────────── */
+  const loadFn = UI.slice(UI.indexOf('const load = useCallback'), UI.indexOf('const firstVan ='))
+  check(!/set_van_capacity_same_as_first|update_van_settings|upsert_van_category/.test(loadFn),
+    '🔴 LOAD WRITES NOTHING — opening the screen cannot change the database')
+  const effect = UI.slice(UI.indexOf('useEffect(() => { void load() }'), UI.indexOf('const firstVan ='))
+  check(!/api\(/.test(effect), '⚠️ …and the mount effect calls nothing but `load`')
+  /* 🔴 THE MIXED TRUCK IS UNFOLLOWED BY THE FIRST SAVE, NOT BY THE LOAD. `ensureIndependent` runs
+   * BEFORE the edit — afterwards, the edit would already have fanned out into a van drawn as its own. */
+  check(/const ensureIndependent = async \(\) => \{/.test(UI)
+    && /if \(allSame \|\| stragglers\.length === 0\) return/.test(UI)
+    && /for \(const v of stragglers\) await api\('set_van_capacity_same_as_first', \{ vanId: v\.id, on: false \}\)/.test(UI),
+    '🔴 the FIRST SAVE unfollows the stragglers, keeping their copied values')
+  const writes = ['const writeVanCat', 'const updateVanSetting']
+  check(writes.every(w => {
+    const body = UI.slice(UI.indexOf(w), UI.indexOf(w) + 1400)
+    const guard = body.indexOf('await ensureIndependent()')
+    const call = body.indexOf("await api('")
+    return guard > 0 && call > guard
+  }), '🔴 …and it runs BEFORE the write in every write path, never after')
+
+  /* ── 2 & 3 · WHAT EACH SWITCH OF THE ANSWER DOES ─────────────────────────────────────────────── */
+  /* 🔴 NO → YES COPIES, AND ASKS FIRST. It is the only destructive thing on the screen: every other
+   * van's numbers are replaced by the first van's. */
+  /* ⚠️ THE CONTROL IS THE SHARED `<Toggle>` NOW (Dominic, 4 October 2026): a Yes/No button pair
+   * "matches nothing else in Manage". ON = same for all vans (the old Yes), OFF = one box per van.
+   * The BEHAVIOUR is unchanged, so this still asserts that only one direction asks. */
+  check(/onToggle=\{\(\) => \{ if \(allSame\) void setAllSame\(false\); else setConfirmAllSame\(true\) \}\}/.test(UI),
+    '🔴 switching ON asks first; switching OFF does not — only one of them replaces anything')
+  /* 🔴 IT IS SETTINGS' OWN COMPONENT, NOT A LOOK-ALIKE, and no Yes/No buttons survive. */
+  check(/import \{ Btn, Toggle \} from '@\/components\/manage\/primitives'/.test(UI)
+    && /<Toggle\s*\n\s*on=\{allSame\}/.test(UI)
+    && !/role="radiogroup"/.test(UI)
+    && !/>Yes</.test(UI) && !/>No</.test(UI)
+    && !/rounded-full transition-colors/.test(UI.replace(/\/\*[\s\S]*?\*\//g, '')),
+    '🔴 the row renders the SHARED Toggle — no Yes/No buttons, and no switch defined here')
+  check(/export function Toggle\(/.test(read('components/manage/primitives.tsx'))
+    && !/^function Toggle\(/m.test(read('app/manage/[token]/page.tsx').replace(/\/\*[\s\S]*?\*\//g, ''))
+    && /import \{[^}]*\bToggle\b[^}]*\} from '@\/components\/manage\/primitives'/.test(read('app/manage/[token]/page.tsx')),
+    '🔴 …and Settings renders that same component — page.tsx defines no switch of its own')
+  /* ⛔ AND THE HELPER LINE UNDER THE LABEL IS GONE (Dominic, same message). */
+  check(!/Only asked when you have more than one van\./.test(UI),
+    '⛔ "Only asked when you have more than one van." is gone')
+  check(/All vans will use \{firstVan\.name\}’s kitchen capacity\. Each van’s own numbers will be replaced\./.test(UI),
+    '🔴 …and the confirm says exactly what the brief gave')
+  check(/for \(const v of others\) await api\('set_van_capacity_same_as_first', \{ vanId: v\.id, on \}\)/.test(UI),
+    '🔴 both answers write EVERY other van\'s flag, through the action that already copies')
+  /* 🔴 YES → NO KEEPS THE VALUES. `on: false` writes only the switch — the copied numbers stay, which
+   * is what makes "stop following" different from "revert". Asserted against the HANDLER. */
+  const capHandler = API.slice(API.indexOf("action === 'set_van_capacity_same_as_first'"), API.indexOf("if (action === 'add_van')"))
+  const ifOn = capHandler.indexOf('if (on) {')
+  const flagWrite = capHandler.indexOf('update({ capacity_same_as_first_van: !!on })')
+  check(ifOn > 0 && flagWrite > ifOn && capHandler.indexOf('copyCapacityFromFirst') < flagWrite,
+    '🔴 YES → NO keeps every van\'s values — the copy is inside `if (on)`, the flag write is outside it')
+
+  /* ── 5 · A VAN ADDED UNDER YES FOLLOWS; ONE ADDED UNDER NO DOES NOT ──────────────────────────── */
+  const addVan = API.slice(API.indexOf("if (action === 'add_van')"), API.indexOf("if (action === 'delete_van')"))
+  check(/const same = await readVanSameAsFirst\(supabase, truck\.id\)/.test(addVan)
+    && addVan.indexOf('readVanSameAsFirst') < addVan.indexOf('.insert({ truck_id: truck.id, name: name.trim()'),
+    '🔴 the answer is READ BEFORE THE INSERT — afterwards the new van would itself read as "No"')
+  check(/if \(same\.ok && answerIsYes\) \{/.test(addVan)
+    && /update\(\{ capacity_same_as_first_van: true \}\)/.test(addVan),
+    '🔴 a van added under YES arrives FOLLOWING the first van')
+  check(/const failure = await copyCapacityFromFirst\(first, newId, truck\.id\)/.test(addVan)
+    && addVan.indexOf('copyCapacityFromFirst') < addVan.indexOf('if (same.ok && answerIsYes)'),
+    '🔴 …and the first van\'s values are copied EITHER WAY — under No it starts from them and diverges')
+  check(!/capacity_same_as_first_van: false/.test(addVan),
+    '⛔ under NO nothing is written to the flag — the column default (false) is what applies')
+  /* ⛔ AND THE COLUMN DEFAULT IS UNTOUCHED, which the brief asked for explicitly. A `default true`
+   * would make every van on every truck follow, including trucks that answered No. */
+  const MIG = read('supabase/migrations/20261010_capacity_same_as_first_van.sql')
+  check(/alter column capacity_same_as_first_van set default false;/.test(MIG),
+    '⛔ the column default is still `false` — the rule is applied by the action, not by the schema')
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 7 · 🔴 A BROKEN VARIANT FOR EACH, SHOWN TO FAIL
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// Each mutates the real source in memory and the matching predicate must then go false. Nothing is
+// written to disk. A check that cannot be made to fail is a check that proves nothing.
+console.log('\n── 7 · THE BROKEN VARIANTS ─────────────────────────────────────────────────────────────')
+{
+  let vpass = 0, vfail = 0
+  const must = (label, detected) => {
+    if (detected) { vpass++; console.log('  ✓ FAILED as required  ' + label) }
+    else { vfail++; fail++; console.log('  🔴 MUST FAIL BUT PASSED  ' + label) }
+  }
+  const UI = read('components/manage/KitchenCapacitySection.tsx')
+  const API = read('app/api/manage/route.ts')
+  const LIBSRC = read('lib/van-category-settings.ts')
+
+  /* C1 — the mixed case reads YES, so one box is drawn over a truck whose vans differ.
+   * ⚠️ THE MUTANT IS WRITTEN OUT, NOT EVAL'D FROM THE SOURCE. The first version of this variant built
+   * a function by regex-replacing the TypeScript — which is a parser written in `.replace()`, and it
+   * broke on its own escaping before it ever ran. A broken variant only has to be the WRONG RULE,
+   * stated plainly, and shown to disagree with the real one on the case that matters. */
+  {
+    const others = (vans, f) => (vans ?? []).filter(v => v.active !== false && v.id !== f)
+    /** The plausible wrong rule: "some follow" instead of "every other van follows". */
+    const brokenAllSame = (vans, f) => {
+      const o = others(vans, f)
+      return o.length === 0 || o.some(v => v.capacity_same_as_first_van === true)
+    }
+    const MIXED = [{ id: 'v1' }, { id: 'v2', capacity_same_as_first_van: true }, { id: 'v3' }]
+    must('C1 🔴 the MIXED case reads Yes — one box drawn over a truck whose vans differ',
+      brokenAllSame(MIXED, 'v1') === true && AFTER.capacityAllSame(MIXED, 'v1') === false)
+  }
+
+  /* C2 — the screen writes on load, so opening it changes the database. */
+  {
+    const p = (ui) => {
+      const loadFn = ui.slice(ui.indexOf('const load = useCallback'), ui.indexOf('const firstVan ='))
+      return !/set_van_capacity_same_as_first/.test(loadFn)
+    }
+    const m = UI.replace("      setAvailable(r.perVanCategoriesAvailable !== false)",
+      "      setAvailable(r.perVanCategoriesAvailable !== false)\n      await api('set_van_capacity_same_as_first', { vanId: list[0]?.id, on: false })")
+    must('C2 🔴 the screen unfollows stragglers ON LOAD — opening it writes to the database',
+      m !== UI && p(UI) && !p(m))
+  }
+
+  /* C3 — `ensureIndependent` runs AFTER the write, so the edit has already fanned out. */
+  {
+    const p = (ui) => {
+      const body = ui.slice(ui.indexOf('const updateVanSetting'), ui.indexOf('const updateVanSetting') + 1400)
+      const g = body.indexOf('await ensureIndependent()'), c = body.indexOf("await api('")
+      return g > 0 && c > g
+    }
+    const m = UI.replace("      await ensureIndependent()\n      await api('update_van_settings', { vanId, [field]: value })",
+      "      await api('update_van_settings', { vanId, [field]: value })\n      await ensureIndependent()")
+    must('C3 🔴 the stragglers are unfollowed AFTER the write, so the edit already fanned out',
+      m !== UI && p(UI) && !p(m))
+  }
+
+  /* C4 — No → Yes stops asking, so a van's numbers are replaced with no warning. */
+  {
+    const p = (ui) => /else setConfirmAllSame\(true\)/.test(ui)
+    const m = UI.replace('else setConfirmAllSame(true)', 'else void setAllSame(true)')
+    must('C4 🔴 switching ON replaces every van\'s numbers without asking', m !== UI && p(UI) && !p(m))
+  }
+
+  /* C5 — Yes → No copies as well, so "stop following" silently rewrites the values it kept. */
+  {
+    const p = (api) => {
+      const h = api.slice(api.indexOf("action === 'set_van_capacity_same_as_first'"), api.indexOf("if (action === 'add_van')"))
+      const ifOn = h.indexOf('if (on) {'), flag = h.indexOf('update({ capacity_same_as_first_van: !!on })')
+      return ifOn > 0 && flag > ifOn && h.indexOf('copyCapacityFromFirst') < flag && h.indexOf('copyCapacityFromFirst') > ifOn
+    }
+    /* ⚠️ SPLICED BY INDEX, NOT `.replace()`. `if (on) {` appears in BOTH switch handlers — Settings'
+     * and capacity's — and a plain replace hit the first one, leaving the handler under test
+     * untouched. The mutant then equalled the source for this predicate and the variant WRONGLY
+     * PASSED, which the tally reported. */
+    const capStart = API.indexOf("if (action === 'set_van_capacity_same_as_first')")
+    const onIdx = API.indexOf('    if (on) {', capStart)
+    const m = API.slice(0, onIdx) + '    if (true) {' + API.slice(onIdx + '    if (on) {'.length)
+    must('C5 🔴 Yes → No copies too, so "stop following" overwrites the values it should have kept',
+      m !== API && p(API) && !p(m))
+  }
+
+  /* C6 — `add_van` reads the answer AFTER the insert, so no van ever follows. */
+  {
+    const p = (api) => {
+      const a = api.slice(api.indexOf("if (action === 'add_van')"), api.indexOf("if (action === 'delete_van')"))
+      return a.indexOf('readVanSameAsFirst') < a.indexOf('.insert({ truck_id: truck.id, name: name.trim()')
+    }
+    /* ⚠️ ALSO SPLICED BY INDEX — `readVanSameAsFirst` is called in five handlers. The mutant moves
+     * add_van's read to AFTER the insert, which is the real failure mode: the new van is then itself a
+     * non-first van holding the column default, so the answer reads "No" for every truck and nothing
+     * ever follows. */
+    const aStart = API.indexOf("if (action === 'add_van')")
+    const aEnd = API.indexOf("if (action === 'delete_van')")
+    const readLine = '    const same = await readVanSameAsFirst(supabase, truck.id)\n'
+    const rIdx = API.indexOf(readLine, aStart)
+    /* ⚠️ THE MUTANT MUST PUT THE READ *AFTER* THE INSERT, not merely later in the handler. The first
+     * attempt moved it to just before `.insert(…)`, which is still before — so the predicate held and
+     * the variant wrongly passed. The anchor is the line after the insert's error check. */
+    const afterInsert = API.indexOf("    const newId = (data as { id?: string } | null)?.id", aStart)
+    const m = (rIdx > 0 && afterInsert > rIdx && afterInsert < aEnd)
+      ? API.slice(0, rIdx) + API.slice(rIdx + readLine.length, afterInsert) + readLine + API.slice(afterInsert)
+      : API
+    must('C6 🔴 add_van reads the answer after the insert, so the new van makes it "No" and never follows',
+      m !== API && p(API) && !p(m))
+  }
+
+  /* C7 — a van added under NO is forced to follow anyway. */
+  {
+    const p = (api) => {
+      const a = api.slice(api.indexOf("if (action === 'add_van')"), api.indexOf("if (action === 'delete_van')"))
+      return /if \(same\.ok && answerIsYes\) \{/.test(a)
+    }
+    const m = API.replace('      if (same.ok && answerIsYes) {', '      if (same.ok) {')
+    must('C7 🔴 every new van follows, whatever the truck answered', m !== API && p(API) && !p(m))
+  }
+
+  /* C8 — the column default is changed instead of the action writing the flag. The brief forbade it:
+   * a `default true` makes every van on every truck follow, including trucks that answered No. */
+  {
+    const MIG = read('supabase/migrations/20261010_capacity_same_as_first_van.sql')
+    const p = (sql) => /alter column capacity_same_as_first_van set default false;/.test(sql)
+    const m = MIG.replace('set default false;', 'set default true;')
+    must('C8 ⛔ the column default becomes true, so every van on every truck follows',
+      m !== MIG && p(MIG) && !p(m))
+  }
+
+  /* C9 — the screen and the server read the answer differently. */
+  {
+    const p = (ui) => /const allSame = capacityAllSame\(vans, firstVan\?\.id \?\? null\)/.test(ui)
+    const m = UI.replace('const allSame = capacityAllSame(vans, firstVan?.id ?? null)',
+      'const allSame = others.every(v => v.capacity_same_as_first_van === true)')
+    must('C9 🔴 the screen grows its own copy of the rule, which can then drift from the server\'s',
+      m !== UI && p(UI) && !p(m))
+  }
+
+  /* C10 — the Yes/No button pair is restored, so this one row uses a control Manage has nowhere else. */
+  {
+    const p = (ui) => /<Toggle\s*\n\s*on=\{allSame\}/.test(ui) && !/role="radiogroup"/.test(ui)
+    const m = UI.replace('          <Toggle\n            on={allSame}',
+      '          <div role="radiogroup"><button>Yes</button><button>No</button></div>\n          <Toggle\n            on={allSame}')
+    must('C10 🔴 the Yes/No button pair returns — a control that matches nothing else in Manage',
+      m !== UI && p(UI) && !p(m))
+  }
+
+  /* C11 — the switch is re-styled locally instead of rendering the shared one, so Manage has two
+   * greens that can drift apart. */
+  {
+    const p = (ui) => /import \{ Btn, Toggle \} from '@\/components\/manage\/primitives'/.test(ui)
+    const m = UI.replace("import { Btn, Toggle } from '@/components/manage/primitives'",
+      "import { Btn } from '@/components/manage/primitives'\nconst Toggle = () => null")
+    must('C11 🔴 the row defines its own switch instead of rendering Settings\' one',
+      m !== UI && p(UI) && !p(m))
+  }
+
+  console.log(`\n  ${vpass + vfail} variants · ${vpass} failed as required · ${vfail} wrongly passed`)
+}
 
 console.log(`\n${fail ? `🔴 ${fail} FAILED` : `✅ capacity resolves identically before and after — ${pass} checks`}`)
 process.exit(fail ? 1 : 0)
