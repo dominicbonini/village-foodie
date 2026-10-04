@@ -37,6 +37,11 @@ import {
   offlineAutoRejectLabel, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY,
   type OfflineProtectionMode,
 } from '@/lib/copy/offlineProtection'
+/* 🔴 THE FIVE LABELS, FROM WHERE SETTINGS AND THIS CARD BOTH GET THEM. */
+import { SERVICE_SETTING_LABELS } from '@/lib/copy/serviceSettings'
+/* 🔴 THE DASHBOARD'S OWN SWITCH, AND THE APP'S CONTROL BOX. Neither is defined in this file. */
+import { Toggle } from '@/components/dashboard/OrderCard'
+import { CONTROL_BOX, ORANGE_SOLID } from '@/lib/ui-tokens'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // SHARED BITS
@@ -73,18 +78,21 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 /** The dashboard's switch shape, local so this file needs nothing from the page it mounts in. */
+/* ── 🔴 THIS CARD'S OWN SWITCH IS GONE. IT WAS THE ODD ONE OUT ON ITS OWN SCREEN ─────────────
+ * Dominic, 4 October 2026: "Do the same for the dashboard 'This event' card if any control there
+ * differs from the dashboard's existing controls." It did. This file had written a switch at
+ * `w-[42px] h-6` with an 18px knob and `bg-orange-600` for ON, while BOTH dashboard surfaces behind
+ * it — `components/dashboard/OrderCard.tsx`'s exported `Toggle` and the keep-screen-on switch on
+ * `app/dashboard/[token]/page.tsx` — are `w-11 h-6` with a 16px knob and `bg-green-500`.
+ * So three switches existed where the product has one, and this card's was the only orange one.
+ *
+ * 🔴 IT NOW RENDERS `OrderCard`'s `Toggle`, which gained an optional `ariaLabel` for the purpose.
+ * `Switch` is kept as a thin local alias so the five call sites below read unchanged, and so the
+ * name in this file still says what it is. */
 function Switch({ on, onToggle, disabled, label }: {
   on: boolean; onToggle: () => void; disabled?: boolean; label: string
 }) {
-  return (
-    <button type="button" role="switch" aria-checked={on} aria-label={label} disabled={disabled}
-      onClick={onToggle}
-      className={`relative w-[42px] h-6 rounded-full transition-colors shrink-0 disabled:opacity-40 ${
-        on ? 'bg-orange-600' : 'bg-slate-300'}`}>
-      <span className={`absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform ${
-        on ? 'translate-x-[21px]' : 'translate-x-[3px]'}`} />
-    </button>
-  )
+  return <Toggle on={on} onToggle={onToggle} disabled={disabled} ariaLabel={label} />
 }
 
 /**
@@ -96,7 +104,14 @@ function Switch({ on, onToggle, disabled, label }: {
  * Letting it shrink, with a cap, keeps it inside the card at every width; the browser truncates the
  * shown label and the full text is still in the open list. The label beside it keeps the rest.
  */
-const SELECT = 'border border-slate-300 rounded-xl px-2.5 h-10 text-sm font-semibold text-slate-900 bg-white min-w-0 max-w-[58%]'
+/* ⚠️ THE BOX IS `CONTROL_BOX` NOW — the string that appears six times inline on the dashboard page
+ * and eight times in Manage (lib/ui-tokens.ts). This was `border-slate-300 rounded-xl px-2.5 h-10
+ * font-semibold`: a darker border, a rounder corner and a bolder weight than any other dropdown on
+ * the screen.
+ * 🔴 `h-10` AND `max-w-[58%]` SURVIVE, AND THE NOTE ABOVE EXPLAINS WHY — the width is what stops a
+ * <select> sizing itself to "Keep taking orders, confirm them yourself" and pushing the row's label
+ * off a phone. The token deliberately carries no size, so callers add their own. */
+const SELECT = `${CONTROL_BOX} h-10 min-w-0 max-w-[58%]`
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE CARD
@@ -258,28 +273,31 @@ export function ThisEventCard(props: ThisEventCardProps) {
       {/* ── SERVICE ───────────────────────────────────────────────────────────────────────────── */}
       <SectionHeading>SERVICE</SectionHeading>
 
-      {/* ⚠️ BUZZERS ONLY APPEAR WHERE THERE IS A RACK. `buzzer_count` null means this van has none, so
-        * there is nothing a prompt could ask for — lib/buzzer.ts returns early on exactly that. */}
-      {buzzerCount !== null && (
-        <Row label="Buzzers" own={buzzerPromptOwn}>
-          <Switch label="Buzzers" on={buzzerPrompt} disabled={disabled}
-            onToggle={() => onBuzzerPrompt(!buzzerPrompt)} />
-        </Row>
-      )}
+      {/* ── 🔴 THE SAME FIVE ROWS, IN THE SAME ORDER, UNDER THE SAME NAMES AS THE EVENT TYPES MODAL ──
+        * Order and labels both come from `SERVICE_ROWS` (lib/event-types/types.ts) now. They were
+        * hand-written here in a different sequence and under shorter names — 'Buzzers', 'Take cash',
+        * 'Offline protection' — so the same five settings read one way on this card, another way in
+        * the modal, and a third way in Settings. An operator who turns something off here and then
+        * goes looking for it elsewhere was looking for a different phrase.
+        * ⚠️ THE ROWS ARE STILL WRITTEN OUT, NOT GENERATED FROM THE ARRAY. Each has its own control, its
+        * own `own` flag and its own condition (buzzers need a rack; offline carries two extra blocks),
+        * and a loop over five special cases would be longer than the five. What comes from the array
+        * is the ORDER and the WORDS, which are what drifted. scripts/event-types.cjs asserts the five
+        * appear here in `SERVICE_ROWS`' order and that each label is the constant, not a literal. */}
 
-      <Row label="Take cash" own={takesCashOwn}>
-        <Switch label="Take cash" on={takesCash} disabled={disabled}
-          onToggle={() => onTakesCash(!takesCash)} />
+      <Row label={SERVICE_SETTING_LABELS.collection_interval_mins} hint={`Every ${collectionMins} min`} own={collectionOwn}>
+        <button type="button" onClick={onOpenCollection} disabled={disabled}
+          className="text-sm font-semibold text-orange-700 disabled:text-slate-300 shrink-0">Change</button>
       </Row>
 
-      <Row label="“Mark ready” step" own={orderReadyOwn}>
-        <Switch label="Mark ready step" on={orderReady} disabled={disabled}
+      <Row label={SERVICE_SETTING_LABELS.order_ready} own={orderReadyOwn}>
+        <Switch label={SERVICE_SETTING_LABELS.order_ready} on={orderReady} disabled={disabled}
           onToggle={() => onOrderReady(!orderReady)} />
       </Row>
 
-      <Row label="Collection times" hint={`Every ${collectionMins} min`} own={collectionOwn}>
-        <button type="button" onClick={onOpenCollection} disabled={disabled}
-          className="text-sm font-semibold text-orange-700 disabled:text-slate-300 shrink-0">Change</button>
+      <Row label={SERVICE_SETTING_LABELS.takes_cash} own={takesCashOwn}>
+        <Switch label={SERVICE_SETTING_LABELS.takes_cash} on={takesCash} disabled={disabled}
+          onToggle={() => onTakesCash(!takesCash)} />
       </Row>
 
       {/* ── OFFLINE PROTECTION ─────────────────────────────────────────────────────────────────
@@ -294,8 +312,8 @@ export function ThisEventCard(props: ThisEventCardProps) {
         * help text; this card has one row per setting, and the Dashboard2 board shows a dropdown. The
         * values and their labels are the SAME constants, so the two surfaces cannot word them
         * differently. */}
-      <Row label="Offline protection" own={offlineOwn}>
-        <select aria-label="Offline protection" disabled={disabled || isDemo}
+      <Row label={SERVICE_SETTING_LABELS.offline_protection} own={offlineOwn}>
+        <select aria-label={SERVICE_SETTING_LABELS.offline_protection} disabled={disabled || isDemo}
           value={!offlineEnabled ? 'off' : offlineMode}
           onChange={e => {
             const v = e.target.value
@@ -325,6 +343,18 @@ export function ThisEventCard(props: ThisEventCardProps) {
             {OFFLINE_AUTO_REJECT_OPTIONS.map(n => <option key={n} value={n}>{offlineAutoRejectLabel(n)}</option>)}
           </select>
         </div>
+      )}
+
+      {/* ⚠️ BUZZERS ONLY APPEAR WHERE THERE IS A RACK. `buzzer_count` null means this van has none, so
+        * there is nothing a prompt could ask for — lib/buzzer.ts returns early on exactly that.
+        * 🔴 LAST, NOT FIRST. It was the top row of this card and the top row of the modal, because the
+        * rows had been written in the order the columns were added. It is the setting an operator
+        * changes least and the one that matters least if it is wrong. */}
+      {buzzerCount !== null && (
+        <Row label={SERVICE_SETTING_LABELS.buzzer_prompt} own={buzzerPromptOwn}>
+          <Switch label={SERVICE_SETTING_LABELS.buzzer_prompt} on={buzzerPrompt} disabled={disabled}
+            onToggle={() => onBuzzerPrompt(!buzzerPrompt)} />
+        </Row>
       )}
 
       {/* ── THE FOOTER ────────────────────────────────────────────────────────────────────────── */}
@@ -368,8 +398,14 @@ export function ThisEventCard(props: ThisEventCardProps) {
             <div className="flex gap-2 justify-end">
               <button type="button" onClick={() => setPending(undefined)} disabled={busy}
                 className="bg-slate-100 text-slate-700 text-sm px-4 py-2 font-bold rounded-xl">Cancel</button>
+              {/* ⚠️ `ORANGE_SOLID` — the shared token (lib/ui-tokens.ts), which the dashboard's own `Btn`
+                * palette uses for a primary action. It was a raw `bg-orange-600 text-white`, i.e. the
+                * same colour with NO hover state, which the token supplies.
+                * 🔴 NOT THE DASHBOARD'S `Btn` COMPONENT: that one is `flex-1 min-w-[72px] py-3`, built
+                * for the order card's full-width action row, and would stretch a modal's button pair.
+                * The COLOUR is shared; the geometry is this dialog's. */}
               <button type="button" onClick={() => void commitType()} disabled={busy}
-                className="bg-orange-600 text-white text-sm px-4 py-2 font-bold rounded-xl disabled:opacity-50">
+                className={`${ORANGE_SOLID} text-sm px-4 py-2 font-bold rounded-xl disabled:opacity-50`}>
                 {busy ? 'Switching…' : `Switch to ${targetName}`}
               </button>
             </div>

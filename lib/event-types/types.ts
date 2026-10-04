@@ -13,6 +13,8 @@ import { INTERVAL_CHOICES, type IntervalChoice } from '@/lib/slot-interval-core'
  * from it, and that array is "the ONLY place they live" — so a type's column and the van's column are
  * the same two values by construction. That file has no imports of its own, so it is a safe leaf. */
 import type { OfflineProtectionMode } from '@/lib/copy/offlineProtection'
+/* 🔴 THE LABELS LIVE WHERE SETTINGS AND THE DASHBOARD DEFINE THEM, not here. */
+import { SERVICE_SETTING_LABELS } from '@/lib/copy/serviceSettings'
 
 /**
  * One event type, as the database holds it.
@@ -80,12 +82,25 @@ export interface ServiceRow {
   kind: 'switch' | 'interval' | 'offline'
 }
 
+/**
+ * ── 🔴 THE ORDER OF THIS ARRAY IS THE ORDER ON THE SCREEN, AND IT IS MOST-IMPORTANT-FIRST ─────
+ * Dominic's order, 4 October 2026: Collection times · Order-ready step · Do you take cash? · Offline
+ * order protection · Remind me to add a buzzer. It was the reverse of this by accident — the rows had
+ * been written in the order the COLUMNS were added to `event_types`, so the buzzer prompt (the setting
+ * that matters least and is set per event most often) sat at the top and collection times, which every
+ * truck changes, sat fourth.
+ *
+ * 🔴 BOTH THE MODAL AND THE DASHBOARD'S "This event" CARD RENDER THIS ARRAY, so they cannot drift
+ * apart in order. The card used to list the five in its own hand-written sequence.
+ *
+ * 🔴 EVERY LABEL COMES FROM `SERVICE_SETTING_LABELS`, WHICH LIFTS IT FROM SETTINGS OR THE DASHBOARD.
+ * They were short retyped names here — 'Buzzers', 'Take cash', 'Offline protection' — so one setting
+ * had two names depending on which screen you were looking at. See lib/copy/serviceSettings.ts.
+ * ⚠️ DO NOT PUT A LITERAL BACK IN THIS ARRAY. scripts/event-types.cjs refuses one.
+ */
 export const SERVICE_ROWS: readonly ServiceRow[] = [
-  { id: 'buzzer_prompt', label: 'Buzzers', keys: ['buzzer_prompt'], eventColumns: ['buzzer_prompt'], kind: 'switch' },
-  { id: 'takes_cash', label: 'Take cash', keys: ['takes_cash'], eventColumns: ['takes_cash_override'], kind: 'switch' },
-  { id: 'order_ready', label: '“Mark ready” step', keys: ['order_ready'], eventColumns: ['order_ready_override'], kind: 'switch' },
   {
-    id: 'collection_interval_mins', label: 'Collection times',
+    id: 'collection_interval_mins', label: SERVICE_SETTING_LABELS.collection_interval_mins,
     keys: ['collection_interval_mins'],
     /* ⚠️ THE PAIR IS CLEARED TOGETHER. An operator override with a null customer override is an invalid
      * pair that `applyEventIntervals` ignores (lib/slot-interval.ts), so leaving it would strand a
@@ -93,14 +108,17 @@ export const SERVICE_ROWS: readonly ServiceRow[] = [
     eventColumns: ['collection_interval_mins_override', 'operator_collection_interval_mins_override'],
     kind: 'interval',
   },
+  { id: 'order_ready', label: SERVICE_SETTING_LABELS.order_ready, keys: ['order_ready'], eventColumns: ['order_ready_override'], kind: 'switch' },
+  { id: 'takes_cash', label: SERVICE_SETTING_LABELS.takes_cash, keys: ['takes_cash'], eventColumns: ['takes_cash_override'], kind: 'switch' },
   {
-    id: 'offline_protection', label: 'Offline protection',
+    id: 'offline_protection', label: SERVICE_SETTING_LABELS.offline_protection,
     keys: ['offline_protection', 'offline_protection_mode', 'offline_auto_reject_mins'],
     eventColumns: [
       'offline_protection_override', 'offline_protection_mode_override', 'offline_auto_reject_mins_override',
     ],
     kind: 'offline',
   },
+  { id: 'buzzer_prompt', label: SERVICE_SETTING_LABELS.buzzer_prompt, keys: ['buzzer_prompt'], eventColumns: ['buzzer_prompt'], kind: 'switch' },
 ]
 
 /** The label each setting is shown under. The mockup's wording, including the quotation marks. */

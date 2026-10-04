@@ -135,13 +135,25 @@ export async function POST(req: NextRequest) {
         /* ⚠️ STILL NO INTERVAL COLUMN HERE — scripts/slot-interval-van-list-tolerance.cjs refuses a
          * `truck_vans` select that mixes `collection_interval_mins` with other van fields, because one
          * 42703 would fail the whole statement. The grid comes from `readVanIntervalsForTruck` below. */
-        .select('id, order_ready_enabled, buzzer_count, auto_pause_on_offline, offline_protection_mode')
-        .eq('truck_id', truck.id).eq('active', true),
+        /* 🔴 `name` ADDED (v3). The Standard column now shows ONE CONTROL PER VAN where the vans
+         * differ, and each is labelled with its van's name — so the name is part of the answer, not
+         * decoration. Everything else here is unchanged.
+         * ⚠️ STILL NO INTERVAL COLUMN. See the two-reads note above; that has not changed. */
+        .select('id, name, order_ready_enabled, buzzer_count, auto_pause_on_offline, offline_protection_mode')
+        /* 🔴 OLDEST ACTIVE FIRST, BECAUSE THE COLUMN ORDER IS NOW THE VAN ORDER (v3 addition).
+         * Dominic: "one column per active van, first van first (oldest active van)". Without an
+         * explicit order PostgREST returns whatever the planner gives, so the columns could reorder
+         * between loads — an operator would watch Van 1 and Van 2 swap places after a save.
+         * ⚠️ `created_at` IS THE SAME RULE "the first van" MEANS EVERYWHERE ELSE in this product:
+         * the oldest ACTIVE van, which is why the `active` filter sits beside it rather than after it. */
+        .eq('truck_id', truck.id).eq('active', true)
+        .order('created_at', { ascending: true }),
       readVanIntervalsForTruck(supabase, truck.id),
     ])
 
     const vanRows = (vans as {
-      id: string; order_ready_enabled?: boolean | null; buzzer_count?: number | null
+      id: string; name?: string | null
+      order_ready_enabled?: boolean | null; buzzer_count?: number | null
       auto_pause_on_offline?: boolean | null; offline_protection_mode?: string | null
     }[] | null) ?? []
     const distinct = <T,>(pick: (v: typeof vanRows[number]) => T): { same: boolean; value: T | null } => {
@@ -168,6 +180,42 @@ export async function POST(req: NextRequest) {
       readOnly: !canWrite,
       upgradeMessage: canWrite ? null : UPGRADE_MESSAGE,
       types: types.map(t => ({ ...t, upcoming: counts[t.id] ?? 0 })),
+      /* ── 🔴 THE ACTIVE VANS' IDS, BECAUSE STANDARD IS NOW EDITABLE ─────────────────────────
+       * Changing a Standard row writes to EVERY active van, and it does so by calling the SAME
+       * `update_van_settings` action Settings calls — once per van, with the same payload shape. That
+       * action takes a `vanId`, so the modal has to know them.
+       * ⚠️ IDS ONLY. The VALUES stay in `standard` below, where they are already aggregated with their
+       * "do the vans agree" flag. Sending the rows themselves would give the modal a second, unprobed
+       * copy of van state to drift from — and the interval columns in particular must not be read in
+       * the same select as the rest (see the two-reads note above).
+       * ⚠️ ORDER IS THE SELECT'S ORDER AND NOTHING DEPENDS ON IT. The modal writes to all of them. */
+      vanIds: vanRows.map(v => v.id),
+      /* ── 🔴 THE VANS THEMSELVES, BECAUSE "Set per van" IS NO LONGER AN ANSWER ────────────────────
+       * Dominic, 4 October 2026: every Standard value must be changeable in the modal, and there are
+       * to be no "Settings" links. So where the vans disagree the Standard cell renders one control
+       * PER VAN, each labelled with that van's name and each saving to that van alone — which means
+       * the modal needs each van's own value, not only the aggregate.
+       * ⚠️ THE AGGREGATE (`standard`, below) STAYS AND IS STILL WHAT DECIDES. `perVan` is computed
+       * here, from these same rows; the client does not re-derive it. These values are for RENDERING
+       * the per-van controls, so the two can never disagree about whether the vans differ.
+       * ⚠️ `takes_cash` IS ABSENT ON PURPOSE — it is `trucks.takes_cash`, one value for the whole
+       * truck, so it has no per-van form and its Standard cell is always a single control.
+       * ⚠️ THE INTERVAL COMES FROM `vanGrids`, THE PROBED READER, and defaults to 5 exactly as the
+       * aggregate does — never from the select above, which must not name that column. */
+      vans: vanRows.map(v => ({
+        id: v.id,
+        name: v.name ?? 'Van',
+        order_ready: v.order_ready_enabled === true,
+        /* 🔴 THE BUZZER ROW'S VALUE IS THE RACK — `buzzer_count !== null`, lib/buzzer.ts's rule — and
+         * that is now also what Standard's switch WRITES, through the same `update_van_settings`
+         * call Settings' own buzzer toggle makes. The count travels so turning it back on can restore
+         * a rack size rather than inventing one. */
+        buzzer_prompt: (v.buzzer_count ?? null) !== null,
+        buzzer_count: v.buzzer_count ?? null,
+        offline_enabled: v.auto_pause_on_offline === true,
+        offline_mode: v.offline_protection_mode ?? 'pause',
+        collection_interval_mins: vanGrids.byVanId.get(v.id)?.customer ?? 5,
+      })),
       /* What the Standard column shows. `perVan: true` ⇒ the screen prints "Set per van". */
       standard: {
         /* ⚠️ THE BUZZER PROMPT'S DEFAULT IS "this van has a rack", not a column — lib/buzzer.ts's

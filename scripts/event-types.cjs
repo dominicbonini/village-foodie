@@ -36,6 +36,12 @@ const LIB_NOW = [
   /* The offline vocabulary. A leaf with no imports, and the OWNER of the two mode values — so a
    * check on the resolver's mode chain is a check against the same constants the screens render. */
   'lib/copy/offlineProtection.ts',
+  /* 🔴 THE FIVE SETTING LABELS, AND `settings-copy.ts` BECAUSE IT RE-EXPORTS ONE OF THEM. They are
+   * here because `types.ts` now IMPORTS them — `SERVICE_ROWS` carries no literal label any more — so
+   * without these two every compile in this file fails with TS2307. That is also what makes "the
+   * labels are imported, not retyped" checkable against the COMPILED array rather than against the
+   * source text: `NOW.types.SERVICE_ROWS[0].label` is the real string Settings renders. */
+  'lib/copy/serviceSettings.ts', 'lib/settings-copy.ts',
 ]
 /* ⚠️ THE BEFORE TREE HAS NO lib/event-types AND NO lib/slot-interval-core. Compiling the same list
  * against it would fail on a missing file, which a careless harness would report as "the build broke"
@@ -44,6 +50,20 @@ const LIB_BEFORE = [
   'lib/slot-interval.ts', 'lib/buzzer.ts', 'lib/payments/paid-step.ts', 'lib/features.ts',
   'lib/copy/offlineProtection.ts',
 ]
+
+/* ══ 🔴 MANAGE'S OWN CONTROL CLASSES, WRITTEN DOWN ONCE ═══════════════════════════════════════════
+ * Dominic, 4 October 2026: the Event types modal's "boxes and options" did not look like the rest of
+ * Manage — different colours, formats and sizes. They did not: the modal had been built with the
+ * DASHBOARD card's switch (orange, 42px, 18px knob) and a `rounded-lg px-2.5 h-9 text-[13px]` select
+ * with a slate-300 border, inside a MANAGE screen whose own controls are green switches and
+ * `border-slate-200 rounded-lg px-2 py-1 text-sm` boxes.
+ *
+ * 🔴 THESE TWO STRINGS MUST APPEAR IN BOTH FILES, VERBATIM. That is what makes "consistent" a check
+ * rather than an opinion: if page.tsx restyles its controls, the assertion fails and the modal has to
+ * follow. Neither string is invented here — both are lifted from app/manage/[token]/page.tsx.
+ * ⚠️ IF THIS FAILS AFTER A MANAGE RESTYLE, THE FIX IS TO UPDATE BOTH FILES, not to delete the check. */
+const SELECT_BASE_EXPECTED = 'border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400'
+const TOGGLE_TRACK_EXPECTED = 'relative w-11 h-6 rounded-full transition-colors'
 
 let pass = 0, fail = 0
 const t = (label, ok) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label) } }
@@ -91,6 +111,11 @@ function build(root, files, tag) {
     paid: c.req('lib/payments/paid-step.js'),
     features: c.req('lib/features.js'),
     copy: c.req('lib/copy/offlineProtection.js'),
+    /* ⚠️ GUARDED LIKE `types`/`resolve`: the BEFORE tree has neither of these files, and an
+     * unguarded require would throw there and be scored as "the build broke" rather than as the point
+     * of a before/after comparison. */
+    copyService: (() => { try { return c.req('lib/copy/serviceSettings.js') } catch { return null } })(),
+    settingsCopy: (() => { try { return c.req('lib/settings-copy.js') } catch { return null } })(),
   }
 }
 
@@ -123,20 +148,33 @@ const INTERVALS = [null, 5, 10, 15, 20, 30, 7, 0]
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE')
 {
-  /* 🔴 THE "BEFORE" IS A REAL CHECKOUT, COMPILED. `headWorktree` puts the commit this build started
-   * from on disk and compiles it, so "unchanged" is a comparison against code that actually ran — not
-   * against an expression retyped into this file, which would only ever prove that I remember what I
-   * wrote. */
-  const { wt, remove } = headWorktree('et', 'HEAD')
+  /* 🔴 THE "BEFORE" IS A REAL CHECKOUT, COMPILED. `headWorktree` puts the named commit on disk and
+   * compiles it, so "unchanged" is a comparison against code that actually ran — not against an
+   * expression retyped into this file, which would only ever prove that I remember what I wrote.
+   *
+   * ── 🔴 THE REF IS PINNED, AND IT USED TO BE `'HEAD'`. THAT IS THE BUG THIS FIXES ────────────────
+   * `'HEAD'` means "whatever was last committed", so the baseline moved every time this branch gained
+   * a commit. At stage 1 HEAD was the pre-event-types tree and the comparison meant "event types
+   * changed nothing". At stage 2b HEAD was stage 1 and it meant "offline protection changed nothing".
+   * By stage v3 HEAD was stage 2b — which ALREADY HAS the offline resolver — so the baseline and the
+   * working tree were the same code for this section, and the two premise checks below went red to
+   * say so. They were right to: a comparison of a thing against itself passes for the wrong reason.
+   * ⚠️ scripts/_slot-interval-compile.cjs's own note warns about exactly this ("every 'HEAD vs
+   * working tree' identity check whose premise was 'HEAD is the old engine' became false"), and this
+   * file had the warning quoted above it and still tracked HEAD.
+   * 🔴 SO IT NAMES THE COMMIT: 9d3ecb8 is "Event types, stages 1+2" — the last tree that had the
+   * resolver WITHOUT offline protection in it, which is the premise sections 1d-ii and 1d need. The
+   * two checks below assert that premise rather than trusting this line. */
+  const BEFORE_REF = '9d3ecb8'
+  const { wt, remove } = headWorktree('et', BEFORE_REF)
   let BEFORE = null
   try {
     BEFORE = build(wt, LIB_BEFORE, 'et-before')
 
-    /* ⚠️ THE BASELINE'S MEANING MOVED WITH THE BUILD (October 2026, stage 2b). At stage 1 HEAD was
-     * the PRE-EVENT-TYPES tree, so this asserted the absence of the module. HEAD is now stage 1,
-     * which HAS the module — so the premise is no longer "no event types existed" but "offline
-     * protection was not yet a type setting", and that is what is asserted. Stage 1's own run proved
-     * byte-identity against the pre-event-types tree; this run proves THIS build changed nothing. */
+    /* ⚠️ THE BASELINE IS STAGE 1 (9d3ecb8), AND THESE TWO CHECKS ARE WHY IT IS PINNED. The premise of
+     * everything below is "the before tree resolved offline protection INLINE, without a type in the
+     * chain". If the ref ever points at a tree that already has `resolveOfflineWithType`, these go red
+     * instead of letting 252 comparisons pass against an identical copy of the same code. */
     t('🔴 the before tree is STAGE 1 — it has the resolver, without the offline one',
       BEFORE.resolve !== null
       && typeof BEFORE.resolve.resolveBuzzerPromptWithType === 'function'
@@ -641,8 +679,12 @@ head('5 · THE WIRING')
     })())
 
   /* 🔴 ONE-LINE MOUNTS. The merge cost of this feature is these three lines plus one import each. */
+  /* ⚠️ THE MOUNT GAINED ONE ATTRIBUTE (v3): `manageApi={api}`. Still one line and one import, and
+   * that attribute is the whole of the "no second save path" rule — the modal's editable Standard
+   * column changes truck and van settings by calling the PAGE'S OWN `api`. A check that insisted on
+   * the old exact string would be insisting the feature not have the attribute. */
   t('🔴 the manage page mounts the panel and the picker in one line each',
-    /\{showEventTypes && <EventTypesPanel token=\{token\} onClose=\{\(\) => setShowEventTypes\(false\)\} \/>\}/.test(page)
+    /\{showEventTypes && <EventTypesPanel token=\{token\} manageApi=\{api\} onClose=\{\(\) => setShowEventTypes\(false\)\} \/>\}/.test(page)
     && /<EventTypeSelect token=\{token\} venueName=\{editingEvent\.venue_name\}/.test(page)
     && /import \{ EventTypesPanel, EventTypeSelect \} from '@\/components\/manage\/EventTypes'/.test(page))
   t('🔴 the type is sent on CREATE only, never on an edit',
@@ -669,9 +711,15 @@ head('5 · THE WIRING')
       && /for this event stay\./.test(ui)
       && /Clear my changes and use \{targetName\} exactly/.test(ui)
   })())
-  t('🔴 Standard is first and read-only, and says "Set per van" when the vans disagree',
-    /name: 'Standard'/.test(ui) && /Set per van/.test(ui)
-    && /Change these in Settings, not here\./.test(ui))
+  /* ⚠️ THIS CHECK HAS BEEN REVERSED TWICE, AND THE TRAIL IS THE POINT. Stage 2b: "Standard is first
+   * and READ-ONLY". v3 first pass: editable, but saying "Set per van" where the vans disagree. v3
+   * addition (Dominic, 4 October): no "Set per van" ANYWHERE in the Standard column and no links out
+   * — the cell renders ONE CONTROL PER VAN instead. So both of the old sentences are now forbidden
+   * strings, and that is what this asserts. */
+  t('🔴 Standard is first, and neither "Set per van" nor a Settings link survives in the modal',
+    /name: 'Standard'/.test(ui)
+    && !/Set per van/.test(codeOf(ui))
+    && !/Change these in Settings, not here\./.test(ui))
   t('⚠️ the panel offers rename, reorder, delete-with-confirm and the upcoming count',
     />Rename</.test(ui) && />Delete</.test(ui) && /will go back to Standard/.test(ui)
     && /upcoming event\{/.test(ui) && /action: 'reorder'/.test(ui))
@@ -700,12 +748,46 @@ head('5b · THE MODAL AND THE CARD')
       // ⛔ and it is no longer the full-screen panel the first build used
       && !/fixed inset-0 z-50 bg-slate-50 flex flex-col/.test(ui)
   })())
-  t('🔴 EVERY TYPE COLUMN IS A FIXED 230px, so a column does not shrink as types are added', (() => {
-    return /gridTemplateColumns: `200px repeat\(\$\{types\.length \+ 1\}, 230px\)`/.test(ui)
-      // ⛔ the first build's shrinking columns are gone
-      /* ⚠️ COUNTED IN THE CODE: the note above this check names the old template on purpose, and a
-       * check that forbade writing down what was replaced would forbid explaining the fix. */
+  /* ⚠️ THE TWO WIDTHS SWAPPED (v3). It was `200px repeat(n, 230px)` — a 200px LABEL column beside
+   * 230px value columns, which gave "Remind me to add a buzzer" less room than the switch describing
+   * it. The board's template is `230px repeat(n, 200px)` and the brief says label ~230, type ~200.
+   * 🔴 AND THEY ARE CONSTANTS NOW, not literals in a template string, because the DIALOG'S WIDTH is
+   * computed from the same two numbers. Two places deriving one width from separate literals is what
+   * produced the empty band this build removes. */
+  /* ⚠️ THE NUMBERS ARE NOT PINNED HERE ANY MORE. They were 230/200 from the board, then 200/168 when
+   * Dominic said the columns were too wide — and a check that names them has to be edited every time,
+   * which is a check that tracks the code rather than guarding it. What MATTERS is the relationship:
+   * the label column is the wider one (the longest string on any row is a label), both are fixed, and
+   * the measurement harness proves nothing is clipped at whatever they currently are. */
+  t('🔴 THE COLUMNS ARE FIXED, AND THE LABEL COLUMN IS THE WIDER ONE', (() => {
+    const labelW = Number((ui.match(/const GRID_LABEL_W = (\d+)/) || [])[1])
+    const colW = Number((ui.match(/const GRID_COL_W = (\d+)/) || [])[1])
+    return labelW > 0 && colW > 0 && labelW > colW
+      /* ⚠️ `valueColumnCount`, NOT `types.length + 1` (v3 addition). A truck with two vans has one
+       * column PER VAN plus one per type, so the count is no longer "the types and Standard". */
+      && /gridTemplateColumns: `\$\{GRID_LABEL_W\}px repeat\(\$\{valueColumnCount\}, \$\{GRID_COL_W\}px\)`/.test(ui)
+      && /const valueColumnCount = \(vanColumns\.length > 1 \? vanColumns\.length : 1\) \+ types\.length/.test(ui)
+      // ⛔ the first build's shrinking columns, and the swapped literals, are both gone
       && !/minmax\(150px, 1fr\)/.test(codeOf(ui))
+      && !/`200px repeat\(/.test(codeOf(ui))
+  })())
+  /* 🔴 §4 · THE DIALOG FITS ITS COLUMNS. It was `w-full max-w-[1000px]`, so one type got a 1000px
+   * dialog holding 630px of table — an empty band whose width said "there is more here". */
+  t('🔴 THE DIALOG IS ITS CONTENT\'S WIDTH, CAPPED AT 1000px — no empty band with few types', (() => {
+    return /width: GRID_LABEL_W \+ GRID_COL_W \* valueColumnCount \+ MODAL_SIDE_PADDING/.test(ui)
+      && /maxWidth: 'min\(1000px, 100%\)'/.test(ui)
+      /* ⛔ the fixed full-width dialog is gone. ⚠️ AGAINST `codeOf`, NOT THE RAW FILE: the comment
+       * above that line NAMES the old class to explain the fix, and the first draft of this check read
+       * the raw source and so failed on my own explanation. A check that forbade writing down what was
+       * replaced would forbid explaining the change. */
+      && !/w-full max-w-\[1000px\]/.test(codeOf(ui))
+  })())
+  /* ⚠️ A LONG OPTION TRUNCATES AT REST AND IS WHOLE IN THE OPEN LIST — the brief's §4 rule. The
+   * `title` is what makes the truncated text recoverable without opening it. */
+  t('⚠️ long dropdown labels truncate, with the full text available', (() => {
+    const ctl = ui.slice(ui.indexOf('function TypeControl('))
+    return /truncate/.test(ui)
+      && /title=\{inheritTitle \?\? OFFLINE_CHOICES\.find\(c => c\.value === v\)\?\.label \?\? ''\}/.test(ctl)
   })())
   t('🔴 …and when they no longer fit, THE COLUMNS scroll — not the dialog',
     /overflow-x-auto[^"]*" data-types-scroller/.test(ui) || /data-types-scroller/.test(ui))
@@ -715,48 +797,317 @@ head('5b · THE MODAL AND THE CARD')
    * LABEL cell, the STANDARD cell, then one cell per type containing `<TypeControl>` — and the label
    * cell must contain nothing but the label. */
   t('🔴 NO CONTROL IS IN THE LABEL COLUMN', (() => {
-    const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('function TypeControl('))
-    const labelCell = row.slice(row.indexOf('text-sm font-semibold text-slate-900 min-h-11'), row.indexOf('{/* 🔴 STANDARD IS READ-ONLY'))
-    return /\{row\.label\}/.test(labelCell)
-      && !/<select|<button|<TypeControl|role="switch"/.test(labelCell)
+    const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('/* ── ⛔ `StandardControl` IS DELETED'))
+    /* ⚠️ THE END ANCHOR HAS MOVED TWICE WITH THIS FEATURE. It was the Standard cell's old comment,
+     * then "STANDARD IS EDITABLE NOW"; the cell is emitted per van column now, so the slice ends at
+     * the first thing AFTER the label cell — the `{/* ── THE STANDARD SIDE` banner. A -1 here would
+     * make `slice(start, -1)` hand this check most of the function and it would pass for the wrong
+     * reason, which is why the anchor's existence is asserted first. */
+    /* ⚠️ THE START ANCHOR IS THE LABEL CELL'S OWN TEXT CLASS, which went from `text-sm` to
+     * `text-[13px]` when the columns were narrowed. Matched loosely on what it IS — a semibold
+     * slate-900 cell — rather than on its exact size. */
+    const labelCell = row.slice(row.indexOf('font-semibold text-slate-900 min-h-11'), row.indexOf('{/* ── THE STANDARD SIDE'))
+    return row.includes('{/* ── THE STANDARD SIDE')
+      && /\{row\.label\}/.test(labelCell)
+      && !/<select|<button|<TypeControl|role="switch"|<Toggle|<Select/.test(labelCell)
       // and the per-type cell is where the control is
       && /\{types\.map\(t => \([\s\S]{0,400}<TypeControl row=\{row\}/.test(row)
   })())
-  t('🔴 STANDARD IS READ-ONLY — its cell renders text, never a control', (() => {
-    const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('function TypeControl('))
-    const stdCell = row.slice(row.indexOf('{/* 🔴 STANDARD IS READ-ONLY'), row.indexOf('{types.map'))
-    return /standardText\(row, standard\)/.test(stdCell) && !/<select|<button/.test(stdCell)
+  /* ══ 🔴 §1 (SECOND ADDITION) · ONE COLUMN PER ACTIVE VAN, NOT A STACK IN ONE CELL ════════════
+   * This replaces the checks for the stacked design, which lasted a few hours. Dominic: "2+ active
+   * vans: replace the Standard column with ONE COLUMN PER ACTIVE VAN, first van first… Do this
+   * whether or not the vans currently differ, so the layout does not jump when a value changes."
+   *
+   * 🔴 "WHETHER OR NOT THEY DIFFER" IS THE ASSERTION THAT MATTERS. The stacked design keyed off
+   * `perVan`, so equalising two vans collapsed two controls into one and moved every row below it.
+   * The columns must key off the VAN COUNT alone. */
+  t('🔴 ONE VAN ⇒ ONE "Standard" COLUMN; 2+ VANS ⇒ ONE COLUMN PER VAN', (() => {
+    return /const vanColumns = useMemo\(\(\) => \(vans\.length > 1 \? vans : \[\]\), \[vans\]\)/.test(ui)
+      /* ⛔ AND IT DOES NOT CONSULT `perVan`. This is the whole "no layout jump" rule: if
+       * `standardIsPerVan` appeared in the column decision, the columns would appear and disappear
+       * as values changed. */
+      && !/vanColumns[\s\S]{0,120}standardIsPerVan/.test(ui)
+      && /\{vanColumns\.length > 1 \? vanColumns\.map\(v => \(/.test(ui)
   })())
-  t('🔴 "Set per van" is what Standard says where the vans disagree',
-    /return 'Set per van'/.test(ui) && /perVan/.test(ui))
+  t('🔴 …each van column saves to THAT VAN ONLY, through the same Settings action', (() => {
+    const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('/* ── ⛔ `StandardControl` IS DELETED'))
+    return /vanColumns\.map\(v => \(/.test(row)
+      /* 🔴 A PER-VAN ROW WRITES THAT VAN; A TRUCK-LEVEL ROW WRITES THE TRUCK. One ternary, so the two
+       * cannot drift — and `takes_cash` can never be written per van, which would 404 on a column
+       * that does not exist. */
+      && /value=\{truckLevel \? standardValue\(row, standard\) : vanValue\(row, v\)\}/.test(row)
+      && /onChange=\{value => \(truckLevel \? onStandard\(row, value\) : onStandardVan\(row, v\.id, value\)\)\}/.test(row)
+      // the single-column case still writes every van
+      && /value=\{standardValue\(row, standard\)\}/.test(row)
+      && /onChange=\{v => onStandard\(row, v\)\}/.test(row)
+  })())
+  /* 🔴 THE HEADER CARRIES THE NAME AND A SMALL "Standard" TAG, and keeps the highlight. Without the
+   * tag a van column and a type column are indistinguishable. */
+  /* ⛔ THE HIGHLIGHT IS GONE, AND THAT IS THE 4 OCTOBER INSTRUCTION: "remove the colour coding that
+   * standard uses, all columns should be same colour". With one column per VAN the tint was colouring
+   * one or two of five columns, which reads as "selected" rather than "your usual setup".
+   * 🔴 SO THE SMALL "Standard" TAG IS NOW THE ONLY THING THAT IDENTIFIES A VAN COLUMN, which makes it
+   * load-bearing rather than decorative — hence the assertion. */
+  t('🔴 a van column is identified by its NAME plus a "Standard" tag, and NO colour', (() => {
+    const hdr = ui.slice(ui.indexOf('{/* heading row */}'), ui.indexOf('SERVICE</div>'))
+    return /\{vanColumns\.length > 1 \? vanColumns\.map\(v => \(/.test(hdr)
+      && /title=\{v\.name\}>\{v\.name\}<\/span>/.test(hdr)
+      && />Standard<\/span>/.test(hdr)
+      // ⛔ no tint anywhere in the modal
+      && !/bg-orange-50/.test(codeOf(ui))
+  })())
+  /* 🔴 AND THE CONTROLS ARE CENTRED IN THEIR CELLS. Dominic: "centre the toggle buttons". A switch
+   * pinned to the left of a 168px column reads as belonging to the column's edge, and for the
+   * truck-level row — one control spanning two van columns — a left-aligned switch looked like it
+   * belonged to the FIRST van and the second van had none. That was the report he filed. */
+  t('🔴 every value cell centres its control', (() => {
+    const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('/* ── ⛔ `StandardControl` IS DELETED'))
+    return /const STD_CELL = `\$\{CELL_DIVIDER\}[^`]*justify-center/.test(row)
+      && /border-t border-slate-100 min-h-11 flex items-center justify-center gap-2/.test(row)
+  })())
+  /* ⛔ THE PER-CELL VAN LABELS ARE GONE. "Remove the small 'Van1/Van2' labels inside cells" — the
+   * column header is what names a column. */
+  t('⛔ NO PER-CELL VAN LABEL SURVIVES', (() => {
+    const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('/* ── ⛔ `StandardControl` IS DELETED'))
+    return !/text-\[11px\] font-semibold text-slate-500 truncate shrink-0 max-w-\[45%\]/.test(row)
+      && !/<span[^>]*>\{v\.name\}<\/span>/.test(codeOf(row))
+      // ⛔ and the stacked container is gone too
+      && !/flex flex-col gap-1\.5 py-0\.5/.test(codeOf(ui))
+      && !/function StandardControl\(/.test(codeOf(ui))
+  })())
+  /* 🔴 A TRUCK-LEVEL ROW IS ONE CONTROL SPANNING THE VAN COLUMNS, not one per van. `takes_cash` is
+   * `trucks.takes_cash` — repeating it would draw switches that always move together. */
+  /* ══ 🔴 "Do you take cash?" GETS A SWITCH IN EVERY VAN COLUMN ═════════════════════════════════
+   * Dominic, 4 October 2026: "Each van column gets its own switch, like every other row. No control
+   * spanning two columns." It HAD spanned them, and the result was one switch under the first van's
+   * header with nothing under the second's — "van 1 has a toggle but van2 doesnt", which is what he
+   * reported.
+   * ⚠️ IT IS STILL ONE SETTING: `trucks.takes_cash`, truck-level. The switches show the same value and
+   * write the same `update_truck` call, so they move together — which is why each carries a title
+   * saying so, and why that title is asserted rather than assumed. */
+  t('🔴 THE TRUCK-LEVEL ROW RENDERS ONE SWITCH PER VAN COLUMN, with a title that says why', (() => {
+    const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('/* ── ⛔ `StandardControl` IS DELETED'))
+    return /const truckLevel = standardWriteFor\(row, false\)\?\.scope === 'truck'/.test(row)
+      // ⛔ no span anywhere in the row renderer
+      && !/gridColumn: `span/.test(row)
+      // one cell per van column, for EVERY row
+      && /vanColumns\.map\(v => \(/.test(row)
+      && /title=\{truckLevel \? TAKES_CASH_ALL_VANS_TITLE : undefined\}/.test(row)
+      && NOW.copyService.TAKES_CASH_ALL_VANS_TITLE === 'Applies to all your vans'
+  })())
+  /* ══ 🔴 A DIVIDER BETWEEN EVERY PAIR OF COLUMNS ═══════════════════════════════════════════════
+   * One definition, applied to every cell right of the labels — header included. The colour is the
+   * row dividers', so the grid reads as one grid rather than two kinds of line. */
+  t('🔴 EVERY COLUMN IS DIVIDED FROM THE ONE BEFORE IT, header included', (() => {
+    const divider = (ui.match(/const CELL_DIVIDER = '(.+?)'/) || [])[1]
+    const hdr = ui.slice(ui.indexOf('{/* heading row */}'), ui.indexOf('SERVICE</div>'))
+    const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('/* ── ⛔ `StandardControl` IS DELETED'))
+    return divider === 'border-l border-slate-100'
+      // the header cells: the van/Standard headers and the type headers
+      && (hdr.match(/\$\{CELL_DIVIDER\}/g) || []).length >= 3
+      // the value cells: the Standard cell constant and the type cell
+      && /const STD_CELL = `\$\{CELL_DIVIDER\}/.test(row)
+      && /<div key=\{t\.id\} className=\{`\$\{CELL_DIVIDER\}/.test(row)
+      // ⛔ and the divider's colour is the ROW dividers' colour, not a second weight of line
+      && /border-t border-slate-100/.test(row)
+  })())
+  /* 🔴 AND EXACTLY ONE ROW IS TRUCK-LEVEL TODAY, decided by where it writes rather than by a list.
+   * Asserted against the compiled rows so the report's table cannot be wrong. */
+  t('🔴 …and the split is: `takes_cash` truck-level, the other four per van', (() => {
+    const fn = ui.slice(ui.indexOf('function standardWriteFor('), ui.indexOf('const GRID_LABEL_W'))
+    /* ⚠️ SPLIT ON THE `case` BOUNDARIES, NOT SCANNED FORWARD FROM EACH ONE. The first draft matched
+     * `case 'X':[\s\S]{0,400}?scope: 'truck'` — which runs straight past the end of X's branch into
+     * the NEXT case and reports its scope as X's. It named `order_ready` as truck-level (it is not;
+     * `takes_cash` follows it) and missed `buzzer_prompt` entirely because its branch is long. A
+     * lookahead with a character budget is not a parser. */
+    const blocks = fn.split(/\n\s{4}(?=case '|default:)/).slice(1)
+    const scopeOf = {}
+    for (const b of blocks) {
+      const id = (b.match(/^case '(\w+)':/) || [])[1]
+      if (!id) continue
+      scopeOf[id] = /scope: 'truck'/.test(b) ? 'truck' : /scope: 'van'/.test(b) ? 'van' : 'none'
+    }
+    const ids = NOW.types.SERVICE_ROWS.map(r => r.id)
+    const truck = ids.filter(id => scopeOf[id] === 'truck')
+    const van = ids.filter(id => scopeOf[id] === 'van')
+    /* 🔴 EVERY ROW IS ACCOUNTED FOR, so a row added later cannot be silently neither. */
+    return ids.every(id => scopeOf[id] === 'truck' || scopeOf[id] === 'van')
+      && truck.length === 1 && truck[0] === 'takes_cash'
+      && van.length === 4
+      && ['collection_interval_mins', 'order_ready', 'offline_protection', 'buzzer_prompt'].every(id => van.includes(id))
+  })())
+  /* 🔴 THE PHONE PICKER LISTS THE VAN COLUMNS AND THEN THE TYPES, in the grid's order. */
+  t('🔴 on a phone the picker lists the van columns, then the types', (() => {
+    return /\.\.\.\(vanColumns\.length > 1[\s\S]{0,200}vanColumns\.map\(v => \(\{ id: `van:\$\{v\.id\}`/.test(ui)
+      && /\.\.\.types\.map\(t => \(\{ id: t\.id, name: t\.name/.test(ui)
+      && /if \(phoneSel\.startsWith\('van:'\)\)/.test(ui)
+      // the selection is DERIVED, so the picker and the card below it cannot disagree
+      && /const phoneSel = useMemo\(\(\) => \{/.test(ui)
+      && /if \(phoneType && columns\.some\(c => c\.id === phoneType\)\) return phoneType/.test(ui)
+  })())
+  /* 🔴 THE VANS ARRIVE OLDEST-FIRST, which is what "first van first" means everywhere else. */
+  t('🔴 the route orders the vans oldest-active-first, so the columns cannot reorder', (() => {
+    const r = fs.readFileSync(path.join(REPO, 'app/api/event-types/route.ts'), 'utf8')
+    return /\.eq\('active', true\)\s*\n\s*\.order\('created_at', \{ ascending: true \}\)/.test(r)
+  })())
 
-  /* ── 🔴 "SAME AS STANDARD" IS A REAL STATE ON BOTH CONTROL KINDS ──────────────────────────────── */
-  t('🔴 for a DROPDOWN it is the first option', (() => {
-    /* The interval select's first option, and the offline list's first entry. */
+  /* ══ 🔴 §1 (ADDITION) · NO LINKS OUT, AND ONE CONTROL PER VAN WHERE THEY DIFFER ═══════════════
+   * Dominic, 4 October 2026: "NO 'SETTINGS' LINKS IN THE MODAL. Every Standard value must be
+   * changeable right here." */
+  t('⛔ THE MODAL CONTAINS NO "Settings" LINK AT ALL', (() => {
+    const code = codeOf(ui)
+    return !/SettingsLink/.test(code)
+      // ⛔ no anchor to Settings, however it is spelled
+      && !/tab=settings/.test(code)
+      && !/<a href=/.test(code)
+      && !/STANDARD_PER_VAN_LINK/.test(code)
+  })())
+  /* ⛔ THE "ONE CONTROL PER VAN IN ONE CELL" CHECKS ARE DELETED, WITH THE DESIGN THEY DESCRIBED.
+   * They asserted a stack inside the Standard cell, gated on `perVan`. The column model above
+   * replaces both halves: one cell per column, and the columns exist on the van COUNT. Keeping them
+   * would mean asserting two mutually exclusive layouts.
+   * 🔴 WHAT THEY PROTECTED IS NOT LOST — "each control saves to its own van" is now asserted by
+   * "…each van column saves to THAT VAN ONLY" above, against the same `onStandardVan` handler. */
+  t('🔴 the per-van handler writes ONE van, with the same payload builder as the all-vans path', (() => {
+    return /const saveStandardForVan = async \(row: ServiceRow, vanId: string, value: boolean \| number \| string\) =>/.test(ui)
+      && /const write = standardWriteFor\(row, value\)/.test(ui)
+      && /await manageApi\(write\.action, \{ vanId, \.\.\.write\.payload \}\)/.test(ui)
+      && /if \(!write \|\| write\.scope !== 'van' \|\| !manageApi\) return/.test(ui)
+  })())
+
+  /* 🔴 A TYPE INHERITING A DIFFERING ROW SAYS "Varies by van", FADED — NOT "Set per van", and not
+   * link text. The brief: "Use the same faded style as other inherited values, not underlined link
+  /* ══ ⛔ NONE OF THE THREE PHRASES SURVIVES ════════════════════════════════════════════════════
+   * Dominic, 4 October 2026: "No 'Varies by van', no 'Same as Standard', no 'Set per van' text
+   * anywhere." Three passes of this build each drew one of them in a cell instead of a value.
+   *
+   * ⚠️ AGAINST `codeOf`, SO COMMENTS EXPLAINING THEIR REMOVAL ARE ALLOWED. The question is what an
+   * operator READS, and the render harness asks that separately against the rendered text — which is
+   * the stronger of the two, and the reason this one can afford to be lenient about prose. */
+  t('⛔ "Varies by van", "Set per van" AND "Same as Standard" APPEAR NOWHERE IN THE MODAL', (() => {
+    const modal = codeOf(ui.slice(0, ui.indexOf('// 2 · THE ADD EVENT PICKER')))
+    const copy = codeOf(fs.readFileSync(path.join(REPO, 'lib/copy/serviceSettings.ts'), 'utf8'))
+    return ['Varies by van', 'Set per van', 'Same as Standard']
+      .every(phrase => !modal.includes(phrase) && !copy.includes(phrase))
+      // ⛔ and the constants that held two of them are gone
+      && !/TYPE_VARIES_BY_VAN|STANDARD_PER_VAN/.test(ui)
+  })())
+  /* 🔴 WHAT REPLACED THEM: a real control at a real value, faded, with a hover title saying whose
+   * value it is. The title is now the only place that nuance lives, so it is load-bearing. */
+  t('🔴 AN INHERITING TYPE CELL IS A REAL CONTROL AT THE FIRST VAN\'S VALUE, with a hover title', (() => {
     const ctl = ui.slice(ui.indexOf('function TypeControl('))
-    return /<option value="">Same as Standard<\/option>/.test(ctl)
-      && /\{ value: '', label: 'Same as Standard' \}/.test(ui)
-      && ui.indexOf("{ value: '', label: 'Same as Standard' }") < ui.indexOf("{ value: 'off', label: 'Off' }")
+    return /const inheritTitle = own \? undefined : TYPE_FOLLOWS_VAN_TITLE/.test(ctl)
+      && NOW.copyService.TYPE_FOLLOWS_VAN_TITLE === "Follows each van's usual setting"
+      // the title reaches all three control kinds
+      && (ctl.match(/inheritTitle/g) || []).length >= 4
+      && /title=\{inheritTitle\}/.test(ctl)
+      // ⛔ and the special "the vans differ" branch is gone entirely
+      && !/vansDiffer/.test(ctl)
+      && !/setRevealed/.test(ctl)
   })())
-  t('🔴 for a SWITCH it is a GREYED switch labelled "Same as Standard"', (() => {
-    const ctl = ui.slice(ui.indexOf('// ── A SWITCH ──'))
-    return /const explicit = value === true \|\| value === false/.test(ctl)
-      && /\$\{explicit \? '' : 'opacity-45'\}/.test(ctl)
-      && /<span className="text-xs text-slate-400 truncate">Same as Standard<\/span>/.test(ctl)
+
+  /* 🔴 `standardIsPerVan` IS NOW ONLY THE *TYPE* COLUMN'S QUESTION, and that is the design change.
+   * The Standard side stopped asking it when the columns became a fact about the van count — which
+   * is exactly why the layout no longer jumps. It still decides "Varies by van" and the interval
+   * fallback, and it is still one function so the two cannot disagree. */
+  t('🔴 one predicate decides "do the vans differ", and only the TYPE columns ask it', (() => {
+    const fn = ui.slice(ui.indexOf('function standardIsPerVan('), ui.indexOf('function standardSwitchValue('))
+    const uses = (ui.match(/standardIsPerVan\(/g) || []).length
+    return /return standard\.collection_interval_mins\.perVan/.test(fn)
+      && /return standard\.offline_protection\.perVan/.test(fn)
+      && /return s\.perVan/.test(fn)
+      /* The definition and the interval fallback. It no longer decides any LAYOUT — the van columns
+       * key off the van count, and the type cells always draw a real control — which is why the use
+       * count fell. That is the design, not an omission. */
+      && uses >= 2
+      && /standardIsPerVan\(row, standard\) \? TYPE_INTERVAL_CHOICES\[0\]/.test(ui)
   })())
-  t('🔴 …tapping an inheriting switch sets an EXPLICIT value',
-    /onPatch\(\{ \[key\]: explicit \? !value : true \}\)/.test(ui))
-  t('🔴 …and a small "Same as Standard" link beside an explicit value returns it to NULL', (() => {
-    const ctl = ui.slice(ui.indexOf('// ── A SWITCH ──'))
-    return /onClick=\{\(\) => onPatch\(\{ \[key\]: null \}\)\}/.test(ctl)
-      && /THE WAY BACK TO NULL/.test(ctl)
+
+  /* ══ 🔴 §1 · "SAME AS STANDARD" IS GONE FROM EVERY CONTROL ════════════════════════════════════
+   * This replaces four checks that asserted the OPPOSITE — the dropdown option, the greyed switch
+   * with its label, and the link back to NULL. The brief: "Remove the 'Same as Standard' labels, the
+   * links, and the 'Same as Standard' option from every dropdown. A dropdown lists only real
+   * settings." So the four are inverted, and the state is now carried by FADING alone. */
+  t('⛔ NO DROPDOWN OFFERS "Same as Standard", AND NOTHING IS LABELLED IT', (() => {
+    const code = codeOf(ui)
+    /* The two components that render a SETTING's control, which is where the pseudo-option lived. */
+    const controls = ui.slice(ui.indexOf('function StandardControl('), ui.indexOf('// ═══', ui.indexOf('function TypeControl(')))
+    return !/Same as Standard/.test(code)
+      /* ⛔ NO OPTION LABELLED "Same as Standard" — that is the ban, and it is on the WORDS.
+       * ⚠️ IT IS NO LONGER A BAN ON AN EMPTY-VALUED OPTION. There is one now: where the vans differ, a
+       * type's control offers "Varies by van" as its first choice, value `''`, writing NULL. That was
+       * added on Dominic's instruction and it is not the same thing — "Same as Standard" was a
+       * cross-reference the operator had to look across the table to resolve, where "Varies by van" is
+       * a statement of the value itself. The empty value is now checked to be labelled correctly
+       * rather than forbidden. */
+      && !/<option value="">(?!Standard<)/.test(codeOf(controls))
+      && [...code.matchAll(/\{ value: '', label: (\w+) \}/g)].every(m => m[1] === 'TYPE_VARIES_BY_VAN')
+      && !/label: 'Same as Standard'/.test(code)
+      // the offline list now STARTS at a real setting
+      && /const OFFLINE_CHOICES = \[\s*\n\s*\{ value: 'off', label: 'Off' \},/.test(ui)
+  })())
+  /* 🔴 A NULL SETTING RENDERS FADED, SHOWING THE VALUE IT INHERITS. One implementation of "faded"
+   * (`opacity-50`), applied to the same control — not a second palette. */
+  /* ⚠️ "FADED" IS THE PRIMITIVES' OWN PROP NOW, not a class string in this component. The v3 first
+   * pass had `SELECT_CLASS_OWN` / `SELECT_CLASS_INHERITED` here; the addition moved both controls to
+   * the shared components, which carry `faded` themselves. So this asserts the PROP, and the shared
+   * component's single definition of what faded looks like is asserted separately below. */
+  t('🔴 A NULL TYPE VALUE RENDERS FADED, SHOWING WHAT IT INHERITS', (() => {
+    const ctl = ui.slice(ui.indexOf('function TypeControl('))
+    /* TWO again: the differ-case dropdown is gone, so it is the interval and offline controls. */
+    return (ctl.match(/faded=\{!own\}/g) || []).length === 2
+      && /faded=\{!explicit\}/.test(ctl)                            // the switch
+      && /const shown = explicit \? stored === true : standardSwitchValue\(row, standard\)/.test(ctl)
+      // the dropdowns fall back to Standard's value, never to an empty option
+      && /type\.collection_interval_mins\s*\n?\s*\?\? \(standardIsPerVan\(row, standard\) \? TYPE_INTERVAL_CHOICES\[0\] : standard\.collection_interval_mins\.value\)/.test(ctl)
+      && /return standardOfflineValue\(standard\)/.test(ui)
+      // ⛔ and this file defines no control look of its own any more
+      && !/SELECT_CLASS_OWN|SELECT_CLASS_INHERITED|SELECT_BASE/.test(ui)
+  })())
+  t('🔴 …AND TOUCHING IT STORES AN EXPLICIT VALUE', (() => {
+    const ctl = ui.slice(ui.indexOf('function TypeControl('))
+    /* The switch writes a boolean (never null); both dropdowns write a real value. Nothing in this
+     * component writes null to a single row any more — clearing is Match Standard's job alone. */
+    return /onToggle=\{\(\) => onPatch\(\{ \[key\]: !shown \}\)\}/.test(ctl)
+      && /onChange=\{v => onPatch\(\{ collection_interval_mins: Number\(v\) \}\)\}/.test(ctl)
+      && /onChange=\{v2 => onPatch\(offlinePatch\(v2\)\)\}/.test(ctl)
+      // ⛔ the per-control way back to NULL is gone
+      && !/onPatch\(\{ \[key\]: null \}\)/.test(ctl)
+  })())
+  /* ⛔ THE "TAP TO REVEAL" CHECK IS DELETED WITH THE AFFORDANCE IT DESCRIBED. Revealing-without-
+   * storing mattered when the inherited state was a line of text; it is a dropdown option now, so
+   * the state is reachable and reversible by the same control as every other value. What it
+   * protected — that nothing is written until the operator chooses — is inherent in a <select>.
+   */
+
+  /* ══ 🔴 §1 · MATCH STANDARD — THE ONLY WAY BACK TO INHERITING ═════════════════════════════════ */
+  t('🔴 MATCH STANDARD NULLS EVERY COLUMN, after a confirm', (() => {
+    return /const matchStandard = \(id: string\) =>\s*\n\s*act\(\{ action: 'update', id, \.\.\.blankTypeValues\(\) \}/.test(ui)
+      && /MATCH_STANDARD_CONFIRM/.test(ui)
+      && /setConfirmMatch\(t\.id\)/.test(ui)
+      // the confirm has to be dismissable without acting
+      && /onClick=\{\(\) => setConfirmMatch\(null\)\}/.test(ui)
+  })())
+  /* ⚠️ `NOW.types`, NOT `ty` — that local belongs to §3 and is not in scope here. The first draft
+   * used it and this whole file crashed with a ReferenceError before printing §5b. */
+  t('🔴 …and `blankTypeValues()` really is every service column', (() => {
+    const T = NOW.types
+    const blank = T.blankTypeValues()
+    return T.SERVICE_KEYS.every(k => blank[k] === null)
+      && Object.keys(blank).length === T.SERVICE_KEYS.length
   })())
 
   /* ── 🔴 THE ⋯ MENU ──────────────────────────────────────────────────────────────────────────── */
   t('🔴 Rename, Move left, Move right and Delete are in a ⋯ MENU on each type header', (() => {
     const hdr = ui.slice(ui.indexOf('{/* heading row */}'), ui.indexOf('SERVICE</div>'))
+    /* ⚠️ FIVE ITEMS NOW, IN THE BOARD'S ORDER: Rename · Move left · Move right · Match Standard ·
+     * Delete. The order is asserted, because Match Standard sitting under Delete would put a
+     * destructive-looking item above a reset one. */
+    const order = ['>Rename<', '>Move left<', '>Move right<', '{MATCH_STANDARD_LABEL}<', '>Delete<']
+    const at = order.map(x => hdr.indexOf(x))
     return /aria-label=\{`More for \$\{t\.name\}`\}/.test(hdr)
-      && />Rename</.test(hdr) && />Move left</.test(hdr) && />Move right</.test(hdr) && />Delete</.test(hdr)
+      && at.every(i => i >= 0)
+      && at.every((v, i) => i === 0 || v > at[i - 1])
   })())
   t('⚠️ the "Used by" row stays', /USED BY<\/div>/.test(ui) && /Upcoming events/.test(ui))
   t('⚠️ on a phone it is one column with a picker at the top',
@@ -765,16 +1116,22 @@ head('5b · THE MODAL AND THE CARD')
   /* ── 🔴 §3 · OFFLINE PROTECTION OFFERS WHAT THE SETTINGS CONTROL OFFERS ───────────────────────
    * Settings › Kitchen offers a SWITCH then a MODE; the type's dropdown says the same in one control,
    * and its two mode values come from the SAME constants that screen renders. */
-  t('🔴 the offline dropdown is Same as Standard · Off · the two real modes', (() => {
+  /* ⚠️ THREE CHOICES NOW, NOT FOUR — "Same as Standard" left the list (§1). The brief: "The Offline
+   * protection options are the OFFLINE_PROTECTION_MODES labels plus Off." */
+  t('🔴 the offline dropdown is Off · the two real modes, and the labels are IMPORTED', (() => {
     return /OFFLINE_CHOICES/.test(ui)
       && /\.\.\.OFFLINE_PROTECTION_MODES\.map\(m => \(\{ value: m\.value as string, label: m\.label \}\)\)/.test(ui)
       && OFFLINE_MODES_COUNT === 2
+      // ⛔ neither mode label is retyped in this file
+      && !new RegExp("'Pause Online Ordering'").test(ui)
+      && !new RegExp("'Keep taking orders, confirm them yourself'").test(ui)
   })())
   t('🔴 …and it writes BOTH columns, so "Off" is not mistaken for "inherit"', (() => {
-    const fn = ui.slice(ui.indexOf('function offlinePatch('), ui.indexOf('const Dot ='))
-    return /if \(value === ''\) return \{ offline_protection: null, offline_protection_mode: null \}/.test(fn)
-      && /if \(value === 'off'\) return \{ offline_protection: false, offline_protection_mode: null \}/.test(fn)
+    const fn = ui.slice(ui.indexOf('function offlinePatch('), ui.indexOf('/**\n * ── 🔴 DOES STANDARD HAVE A SINGLE VALUE'))
+    return /if \(value === 'off'\) return \{ offline_protection: false, offline_protection_mode: null \}/.test(fn)
       && /return \{ offline_protection: true, offline_protection_mode: value \}/.test(fn)
+      // ⛔ there is no "inherit" branch any more: nothing writes null from a dropdown
+      && !/offline_protection: null/.test(fn)
   })())
   /* ⛔ THE DELAY IS DELIBERATELY NOT OFFERED ON A TYPE — see the report. Asserted so the omission is a
    * decision on record rather than something overlooked, and so that adding it later is a conscious
@@ -876,9 +1233,11 @@ head('5b · THE MODAL AND THE CARD')
       && !/Do you take cash\?/.test(page)
       && !/Order-ready step\{demoLockChip\}/.test(page)
       && !/\{OFFLINE_PROTECTION_PURPOSE\}/.test(page)
-    const inCard = /label="Buzzers"/.test(card) && /label="Take cash"/.test(card)
-      && /label="“Mark ready” step"/.test(card) && /label="Offline protection"/.test(card)
-      && /label="Collection times"/.test(card)
+    /* ⚠️ THE CARD'S LABELS ARE CONSTANTS NOW (v3), not literals. They were five retyped short names —
+     * 'Buzzers', 'Take cash', '“Mark ready” step', 'Offline protection', 'Collection times' — so the
+     * same five settings read one way here, another in the modal and a third in Settings. */
+    const inCard = ['collection_interval_mins', 'order_ready', 'takes_cash', 'offline_protection', 'buzzer_prompt']
+      .every(id => card.includes(`label={SERVICE_SETTING_LABELS.${id}}`))
     const writersKept = /const saveBuzzerPromptOverride=/.test(page)
       && /const saveTakesCashOverride=/.test(page)
       && /const setOrderReadyOverride=/.test(page)
@@ -1218,13 +1577,21 @@ function variants() {
     // V17 — a control goes back into the LABEL column (the defect §1 exists to fix)
     const labelPredicate = (ui) => {
       const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('function TypeControl('))
-      const labelCell = row.slice(row.indexOf('text-sm font-semibold text-slate-900 min-h-11'),
-        row.indexOf('{/* 🔴 STANDARD IS READ-ONLY'))
-      return /\{row\.label\}/.test(labelCell) && !/<select|<button|<TypeControl|role="switch"/.test(labelCell)
+      /* ⚠️ THE ANCHOR MOVED WITH SettingRow (v3's column model) — see the note on the live check. */
+      const labelCell = row.slice(row.indexOf('font-semibold text-slate-900 min-h-11'),
+        row.indexOf('{/* ── THE STANDARD SIDE'))
+      return row.includes('{/* ── THE STANDARD SIDE')
+        && /\{row\.label\}/.test(labelCell)
+        && !/<select|<button|<TypeControl|role="switch"|<Toggle|<Select/.test(labelCell)
     }
     const uiSrc = fs.readFileSync(path.join(REPO, 'components/manage/EventTypes.tsx'), 'utf8')
+    /* ⚠️ THE MUTATION SITE MOVED TOO: the label cell's closing tag is now followed by a blank line
+     * and the Standard banner, so the old two-line anchor no longer existed and the mutant equalled
+     * the source — which the variant tally reported as a wrongly-passing variant. */
+    /* ⚠️ THE ANCHOR TRACKS THE LABEL CELL, which gained a comment above it when the columns were
+     * narrowed. Matched on the two lines that are actually the cell's body. */
     const inLabel = uiSrc.replace('        {row.label}\n      </div>',
-      '        {row.label}\n        <select aria-label="oops"><option>x</option></select>\n      </div>')
+      '        {row.label}\n        <Toggle on={false} onToggle={() => {}} ariaLabel="oops" />\n      </div>')
     must('V17 🔴 a control goes back into the label column, where it belongs to no type',
       inLabel !== uiSrc && labelPredicate(uiSrc) && !labelPredicate(inLabel))
 
@@ -1239,12 +1606,262 @@ function variants() {
     must('V18 🔴 a per-event deal is written without `overridden`, so a later default change overwrites it',
       noOverride !== dealSrc && dealPredicate(dealSrc) && !dealPredicate(noOverride))
 
-    // V19 — the fixed column width goes back to a shrinking one
+    /* V19 — the fixed column width goes back to a shrinking one.
+     * ⚠️ RE-TARGETED (v3): the template is built from `GRID_LABEL_W`/`GRID_COL_W` now, so this used to
+     * mutate a literal that no longer exists — `replace` found nothing, the mutant equalled the source
+     * and the variant WRONGLY PASSED. It was reported as such by the variant tally, which is what that
+     * tally is for. */
+    /* ⚠️ RE-TARGETED AGAIN (the column model): the template counts `valueColumnCount` now, so the
+     * old literal was absent and this variant wrongly passed. */
+    /* ⚠️ THE PREDICATE NO LONGER NAMES THE PIXEL VALUES. They have changed twice (230/200 → 200/168)
+     * and a variant that pins them fails for the wrong reason every time the design moves. What it
+     * guards is that the columns are FIXED at all. */
     const widthPredicate = (ui) =>
-      /gridTemplateColumns: `200px repeat\(\$\{types\.length \+ 1\}, 230px\)`/.test(ui)
-    const shrunk = uiSrc.replace('200px repeat(${types.length + 1}, 230px)', '200px repeat(${types.length + 1}, minmax(150px, 1fr))')
+      /const GRID_LABEL_W = \d+/.test(ui) && /const GRID_COL_W = \d+/.test(ui)
+      && /gridTemplateColumns: `\$\{GRID_LABEL_W\}px repeat\(\$\{valueColumnCount\}, \$\{GRID_COL_W\}px\)`/.test(ui)
+    const shrunk = uiSrc.replace('${GRID_LABEL_W}px repeat(${valueColumnCount}, ${GRID_COL_W}px)',
+      '${GRID_LABEL_W}px repeat(${valueColumnCount}, minmax(150px, 1fr))')
     must('V19 🔴 the type columns shrink as types are added, which is what misaligned them',
       shrunk !== uiSrc && widthPredicate(uiSrc) && !widthPredicate(shrunk))
+
+    /* ══ 🔴 THE v3 VARIANTS — ONE PER NEW RULE, EACH SHOWN TO FAIL ═══════════════════════════════
+     * The brief asks for a broken variant for each of its checks. These mutate the real source in
+     * memory and the matching predicate must then go false; nothing is written to disk. */
+
+    // V20 — "Same as Standard" comes back as a dropdown option
+    const sasPredicate = (ui) => !/Same as Standard/.test(codeOf(ui))
+    const sasBack = uiSrc.replace("const OFFLINE_CHOICES = [\n  { value: 'off', label: 'Off' },",
+      "const OFFLINE_CHOICES = [\n  { value: '', label: 'Same as Standard' },\n  { value: 'off', label: 'Off' },")
+    must('V20 ⛔ a dropdown offers "Same as Standard" again — a cross-reference instead of a setting',
+      sasBack !== uiSrc && sasPredicate(uiSrc) && !sasPredicate(sasBack))
+
+    /* V21 — an inheriting control is drawn at full strength, so nothing distinguishes it.
+     * ⚠️ RE-TARGETED: fade is the shared primitives' `faded` prop now, not a class string in the
+     * modal, so the old mutation found nothing and the variant wrongly passed. */
+    const fadePredicate = (ui) => {
+      const ctl = ui.slice(ui.indexOf('function TypeControl('))
+      /* THREE `faded={!own}` now — the two agree-case dropdowns and the differ-case one. */
+      return (ctl.match(/faded=\{!own\}/g) || []).length === 2 && /faded=\{!explicit\}/.test(ctl)
+    }
+    const noFade = uiSrc.replace('faded={!explicit}', 'faded={false}')
+    must('V21 🔴 an inheriting control loses its fade, so "follows Standard" has no signal at all',
+      noFade !== uiSrc && fadePredicate(uiSrc) && !fadePredicate(noFade))
+    /* V21b — the FADE ITSELF stops being visible, in the shared component. One prop, one place, and
+     * if it renders nothing then every inheriting control on the screen looks explicit. */
+    const primSrc = fs.readFileSync(path.join(REPO, 'components/manage/primitives.tsx'), 'utf8')
+    const primFade = (src) => (src.match(/faded \? 'opacity-50' : ''/g) || []).length === 2
+    const primNoFade = primSrc.replace(/faded \? 'opacity-50' : ''/g, "faded ? '' : ''")
+    must('V21b 🔴 the shared controls stop rendering `faded`, so inheriting is invisible everywhere',
+      primNoFade !== primSrc && primFade(primSrc) && !primFade(primNoFade))
+
+    // V22 — touching a faded switch writes NULL instead of an explicit value
+    const explicitPredicate = (ui) => {
+      const ctl = ui.slice(ui.indexOf('function TypeControl('))
+      return /onToggle=\{\(\) => onPatch\(\{ \[key\]: !shown \}\)\}/.test(ctl)
+        && !/onPatch\(\{ \[key\]: null \}\)/.test(ctl)
+    }
+    /* ⚠️ `onToggle`, NOT `onClick` — the shared <Toggle>'s prop. The old mutation targeted the raw
+     * <button> this component used to render. */
+    const writesNull = uiSrc.replace('onToggle={() => onPatch({ [key]: !shown })}', 'onToggle={() => onPatch({ [key]: null })}')
+    must('V22 🔴 touching a faded switch stores NULL, so the control cannot be given a value at all',
+      writesNull !== uiSrc && explicitPredicate(uiSrc) && !explicitPredicate(writesNull))
+
+    /* V23 — Standard writes through a path of its own instead of Settings' action.
+     * 🔴 THIS IS THE ONE THAT MATTERS MOST. A second save path is invisible at runtime until it
+     * diverges — it would skip `update_van_settings`' validation, its event resets and (after the
+     * merge) its "Same as Van 1" fan-out, while looking like a working switch. */
+    const onePathPredicate = (ui) =>
+      /for \(const vanId of vanIds\) await manageApi\(write\.action, \{ vanId, \.\.\.write\.payload \}\)/.test(ui)
+      && !/fetch\('\/api\/manage'/.test(ui)
+    const ownFetch = uiSrc.replace('for (const vanId of vanIds) await manageApi(write.action, { vanId, ...write.payload })',
+      "for (const vanId of vanIds) await fetch('/api/manage', { method: 'POST', body: JSON.stringify({ token, vanId }) })")
+    must('V23 🔴 Standard gets its own fetch to /api/manage — a second save path, with no validation',
+      ownFetch !== uiSrc && onePathPredicate(uiSrc) && !onePathPredicate(ownFetch))
+
+    // V24 — a van payload key is renamed to its COLUMN name, which the handler drops silently
+    const keyPredicate = (ui) => /payload: \{ autoPauseOnOffline: true, offlineProtectionMode: String\(value\) \}/.test(ui)
+    const snake = uiSrc.replace('payload: { autoPauseOnOffline: true, offlineProtectionMode: String(value) }',
+      'payload: { auto_pause_on_offline: true, offline_protection_mode: String(value) }')
+    must('V24 🔴 the offline keys go snake_case — which update_van_settings DROPS SILENTLY, saving nothing',
+      snake !== uiSrc && keyPredicate(uiSrc) && !keyPredicate(snake))
+
+    // V25 — Standard writes one van instead of every van
+    const everyVanPredicate = (ui) => /for \(const vanId of vanIds\)/.test(ui)
+    const oneVan = uiSrc.replace('for (const vanId of vanIds) await manageApi(write.action, { vanId, ...write.payload })',
+      'await manageApi(write.action, { vanId: vanIds[0], ...write.payload })')
+    must('V25 🔴 Standard writes only the first van, so a two-van truck silently becomes "Set per van"',
+      oneVan !== uiSrc && everyVanPredicate(uiSrc) && !everyVanPredicate(oneVan))
+
+    /* V26 — THE COLUMNS START DEPENDING ON WHETHER THE VANS AGREE, which is the layout jump the
+     * second addition exists to remove: equalise two vans and two columns collapse into one, moving
+     * every row. ⚠️ RE-TARGETED from the stacked design's `perVan` gate. */
+    const gatedPredicate = (ui) =>
+      /const vanColumns = useMemo\(\(\) => \(vans\.length > 1 \? vans : \[\]\), \[vans\]\)/.test(ui)
+      && !/vanColumns[\s\S]{0,120}standardIsPerVan/.test(ui)
+    const ungated = uiSrc.replace('const vanColumns = useMemo(() => (vans.length > 1 ? vans : []), [vans])',
+      'const vanColumns = useMemo(() => (vans.length > 1 && standardIsPerVan(SERVICE_ROWS[0], standard!) ? vans : []), [vans, standard])')
+    must('V26 🔴 the van columns appear only when the vans differ, so the layout jumps on a save',
+      ungated !== uiSrc && gatedPredicate(uiSrc) && !gatedPredicate(ungated))
+
+    /* V26b — a van column writes EVERY van instead of its own, so changing one van silently changes
+     * them all. The single most damaging thing this feature could get wrong. */
+    const perVanWrite = (ui) => {
+      const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('/* ── ⛔ `StandardControl` IS DELETED'))
+      return /onChange=\{value => \(truckLevel \? onStandard\(row, value\) : onStandardVan\(row, v\.id, value\)\)\}/.test(row)
+    }
+    /* ⚠️ THE HANDLER IS A TERNARY NOW (truck-level rows write the truck, per-van rows write the van),
+     * so the old flat anchor matched nothing and this variant wrongly passed. */
+    const writesAll = uiSrc.replace('onChange={value => (truckLevel ? onStandard(row, value) : onStandardVan(row, v.id, value))}',
+      'onChange={value => onStandard(row, value)}')
+    must('V26b 🔴 a van column writes every van, so changing one van changes them all',
+      writesAll !== uiSrc && perVanWrite(uiSrc) && !perVanWrite(writesAll))
+
+    /* V26d — the truck-level row goes back to SPANNING the van columns, so the second van's cell is
+     * empty and the row reads as "van 2 has no switch". The defect Dominic reported. */
+    const perColumnPredicate = (ui) => {
+      const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('/* ── ⛔ `StandardControl` IS DELETED'))
+      return !/gridColumn: `span/.test(row) && /title=\{truckLevel \? TAKES_CASH_ALL_VANS_TITLE : undefined\}/.test(row)
+    }
+    const spanBack = uiSrc.replace('            <OneStandardControl row={row} editable={canEdit}\n              value={truckLevel ? standardValue(row, standard) : vanValue(row, v)}',
+      '            <div style={{ gridColumn: `span ${vanColumns.length}` }} />\n            <OneStandardControl row={row} editable={canEdit}\n              value={truckLevel ? standardValue(row, standard) : vanValue(row, v)}')
+    must('V26d 🔴 the truck-level row spans the van columns again, leaving the second van with no switch',
+      spanBack !== uiSrc && perColumnPredicate(uiSrc) && !perColumnPredicate(spanBack))
+
+    /* V26e — the truck-level switch loses its hover title, so two switches that move together have
+     * nothing on screen explaining why. */
+    const titlePredicate = (ui) => /title=\{truckLevel \? TAKES_CASH_ALL_VANS_TITLE : undefined\}/.test(ui)
+    const noTitle = uiSrc.replace('              title={truckLevel ? TAKES_CASH_ALL_VANS_TITLE : undefined}\n', '')
+    must('V26e 🔴 the truck-level switches lose the title that says they apply to every van',
+      noTitle !== uiSrc && titlePredicate(uiSrc) && !titlePredicate(noTitle))
+
+    /* ══ 🔴 THE 4 OCTOBER UI FIXES, EACH WITH A VARIANT ═══════════════════════════════════════════ */
+
+    // V30 — the column dividers are removed, so five columns of switches read as one row of controls
+    const dividerPredicate = (ui) => {
+      const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('/* ── ⛔ `StandardControl` IS DELETED'))
+      return /const CELL_DIVIDER = 'border-l border-slate-100'/.test(ui)
+        && /const STD_CELL = `\$\{CELL_DIVIDER\}/.test(row)
+    }
+    const noDivider = uiSrc.replace("const CELL_DIVIDER = 'border-l border-slate-100'", "const CELL_DIVIDER = ''")
+    must('V30 🔴 the column dividers vanish, so a row reads as a line of controls rather than one per column',
+      noDivider !== uiSrc && dividerPredicate(uiSrc) && !dividerPredicate(noDivider))
+
+    /* V31 — one of the three retired phrases comes back into the modal. */
+    const phrasePredicate = (ui) => {
+      const modal = codeOf(ui.slice(0, ui.indexOf('// 2 · THE ADD EVENT PICKER')))
+      return ['Varies by van', 'Set per van', 'Same as Standard'].every(x => !modal.includes(x))
+    }
+    const phraseBack = uiSrc.replace('  const inheritTitle = own ? undefined : TYPE_FOLLOWS_VAN_TITLE',
+      "  const inheritTitle = own ? undefined : 'Varies by van'")
+    must('V31 ⛔ "Varies by van" comes back into the modal, in place of a real value',
+      phraseBack !== uiSrc && phrasePredicate(uiSrc) && !phrasePredicate(phraseBack))
+
+    /* V32 — the inheriting cell loses the hover title, which is now the ONLY place the "this is the
+     * van's value, and the vans may differ" nuance lives. */
+    const inheritTitlePredicate = (ui) => {
+      const ctl = ui.slice(ui.indexOf('function TypeControl('))
+      return /const inheritTitle = own \? undefined : TYPE_FOLLOWS_VAN_TITLE/.test(ctl)
+        && (ctl.match(/inheritTitle/g) || []).length >= 4
+    }
+    const noInheritTitle = uiSrc.replace('  const inheritTitle = own ? undefined : TYPE_FOLLOWS_VAN_TITLE',
+      '  const inheritTitle = undefined')
+    must('V32 🔴 an inheriting cell loses its hover title, so nothing says whose value it is showing',
+      noInheritTitle !== uiSrc && inheritTitlePredicate(uiSrc) && !inheritTitlePredicate(noInheritTitle))
+
+    /* V33 — the dropdown's size moves off the WRAPPER, which is the only place it works. globals.css
+     * forces `font-size: inherit !important` on every <select> from 640px up, so a size on the select
+     * itself is overridden and the control renders at 16px beside 14px labels — the exact symptom
+     * Dominic reported ("every 15 min is much larger than elsewhere"). */
+    const wrapperSizePredicate = (prim) =>
+      /<span className=\{`relative inline-flex min-w-0 items-stretch text-sm \$\{className\}`\}>/.test(prim)
+    const primSrc3 = fs.readFileSync(path.join(REPO, 'components/manage/primitives.tsx'), 'utf8')
+    const sizeOffWrapper = primSrc3.replace('relative inline-flex min-w-0 items-stretch text-sm ${className}',
+      'relative inline-flex min-w-0 items-stretch ${className}')
+    must('V33 🔴 the dropdown size leaves the wrapper, so globals.css forces it back to 16px',
+      sizeOffWrapper !== primSrc3 && wrapperSizePredicate(primSrc3) && !wrapperSizePredicate(sizeOffWrapper))
+
+    /* V34 — the chevron loses its absolute positioning and renders INLINE, before the text. */
+    const chevronPredicate = (prim) =>
+      /className="pointer-events-none absolute right-1\.5 top-1\/2 -translate-y-1\/2 w-3 h-3 text-slate-400"/.test(prim)
+      && /appearance-none pr-7/.test(prim)
+    const chevronInline = primSrc3.replace('pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400',
+      'pointer-events-none w-3 h-3 text-slate-400')
+    must('V34 🔴 the dropdown chevron renders inline, before the text instead of right-aligned',
+      chevronInline !== primSrc3 && chevronPredicate(primSrc3) && !chevronPredicate(chevronInline))
+
+    /* V26f — the phone picker loses the van columns, so a phone can reach only the types and no
+     * per-van value can be changed on one. */
+    const pickerPredicate = (ui) =>
+      /vanColumns\.map\(v => \(\{ id: `van:\$\{v\.id\}`/.test(ui) && /if \(phoneSel\.startsWith\('van:'\)\)/.test(ui)
+    const noVansInPicker = uiSrc.replace('? vanColumns.map(v => ({ id: `van:${v.id}`, name: v.name, vanId: v.id }))',
+      '? [{ id: null as string | null, name: \'Standard\', vanId: null as string | null }]')
+    must('V26f 🔴 the phone picker drops the van columns, so no per-van value is reachable on a phone',
+      noVansInPicker !== uiSrc && pickerPredicate(uiSrc) && !pickerPredicate(noVansInPicker))
+    /* V26c — a "Settings" link comes back into the modal, which the addition forbids outright. */
+    const noLinkPredicate = (ui) => !/<a href=/.test(codeOf(ui)) && !/tab=settings/.test(codeOf(ui))
+    /* ⚠️ `{TYPE_VARIES_BY_VAN}` IS NO LONGER RENDERED AS A TEXT NODE — it is an option's label now —
+     * so the old mutation found nothing and this variant wrongly passed. It injects the link where a
+     * link would actually be put back: beside a control in the Standard cell. */
+    /* ⚠️ RE-AIMED at the cell as it is now written — the per-van and truck-level branches merged. */
+    const linkBack = uiSrc.replace('            <OneStandardControl row={row} editable={canEdit}\n              value={truckLevel ? standardValue(row, standard) : vanValue(row, v)}',
+      '            <a href="?tab=settings#kitchen">Settings</a>\n            <OneStandardControl row={row} editable={canEdit}\n              value={truckLevel ? standardValue(row, standard) : vanValue(row, v)}')
+    must('V26c ⛔ a "Settings" link reappears in the modal, sending the operator off the screen',
+      linkBack !== uiSrc && noLinkPredicate(uiSrc) && !noLinkPredicate(linkBack))
+
+    // V27 — Match Standard clears only one column instead of all of them
+    const matchPredicate = (ui) =>
+      /act\(\{ action: 'update', id, \.\.\.blankTypeValues\(\) \}/.test(ui)
+    const partial = uiSrc.replace("act({ action: 'update', id, ...blankTypeValues() }", "act({ action: 'update', id, buzzer_prompt: null }")
+    must('V27 🔴 Match Standard clears one column, leaving a type that looks reset and is not',
+      partial !== uiSrc && matchPredicate(uiSrc) && !matchPredicate(partial))
+
+    /* V28 — a label is retyped instead of imported.
+     * 🔴 AGAINST THE COMPILED ARRAY, not the source text: the mutant changes `SERVICE_ROWS` to carry a
+     * literal, and the predicate asks whether every label still equals its `SERVICE_SETTING_LABELS`
+     * entry. A text-only check would pass a file that imported the module and then ignored it. */
+    const typesSrc = fs.readFileSync(path.join(REPO, 'lib/event-types/types.ts'), 'utf8')
+    const labelPredicate2 = (src) => !/label: '/.test(codeOf(src))
+      && (src.match(/label: SERVICE_SETTING_LABELS\./g) || []).length === 5
+    const retyped = typesSrc.replace('label: SERVICE_SETTING_LABELS.buzzer_prompt', "label: 'Buzzers'")
+    must('V28 🔴 a row label is retyped — so one setting has two names across three screens',
+      retyped !== typesSrc && labelPredicate2(typesSrc) && !labelPredicate2(retyped))
+
+    /* V29 — the modal starts defining a control look of its own again, which is how it came to have
+     * the dashboard's orange switch inside a Manage screen.
+     * ⚠️ RE-TARGETED: comparing class strings between two files (the first pass) passes a file that
+     * COPIES them correctly — and a correct copy still drifts. The honest predicate is "this file
+     * defines no control", so the mutation is to make it define one. */
+    const modalOf = (src) => codeOf(src.slice(0, src.indexOf('// 2 · THE ADD EVENT PICKER')))
+    const housePredicate = (src) => {
+      const m = modalOf(src)
+      return /import \{ Btn, Toggle, Select, Input \} from '\.\/primitives'/.test(src)
+        && !/rounded-full transition-colors/.test(m) && !/translate-x-/.test(m)
+        && !/bg-green-500|bg-orange-600/.test(m) && !/<select/.test(m)
+    }
+    const drifted = uiSrc.replace('    <Toggle on={value === true} disabled={!editable} ariaLabel={label}',
+      '    <button className="relative w-11 h-6 rounded-full transition-colors bg-green-500" /> || <Toggle on={value === true} disabled={!editable} ariaLabel={label}')
+    must('V29 🔴 the modal re-styles a switch locally instead of rendering the shared one',
+      drifted !== uiSrc && housePredicate(uiSrc) && !housePredicate(drifted))
+    /* V29b — the shared switch is un-shared again: page.tsx takes back its own copy. The state the
+     * product was in before this build, and the reason the modal's switch was the wrong colour. */
+    const sharedPredicate = (page, prim) =>
+      /import \{[^}]*\bToggle\b[^}]*\} from '@\/components\/manage\/primitives'/.test(page)
+      && !/function Toggle\(/.test(codeOf(page)) && /export function Toggle\(/.test(prim)
+    const pageSrc2 = fs.readFileSync(path.join(REPO, 'app/manage/[token]/page.tsx'), 'utf8')
+    const primSrc2 = fs.readFileSync(path.join(REPO, 'components/manage/primitives.tsx'), 'utf8')
+    const forked = pageSrc2.replace('const FOOD_EMOJI_CATEGORIES = [',
+      'function Toggle() { return null }\nconst FOOD_EMOJI_CATEGORIES = [')
+    must('V29b 🔴 page.tsx defines its own switch again, so Settings and the modal can diverge',
+      forked !== pageSrc2 && sharedPredicate(pageSrc2, primSrc2) && !sharedPredicate(forked, primSrc2))
+    /* V29c — the dashboard card goes back to its own switch, the odd one out on its own screen. */
+    const cardSrc = fs.readFileSync(path.join(REPO, 'components/dashboard/ThisEventCard.tsx'), 'utf8')
+    const cardPredicate = (src) =>
+      /import \{ Toggle \} from '@\/components\/dashboard\/OrderCard'/.test(src)
+      && !/w-\[42px\]/.test(codeOf(src)) && !/bg-orange-600/.test(codeOf(src))
+    const cardForked = cardSrc.replace('  return <Toggle on={on} onToggle={onToggle} disabled={disabled} ariaLabel={label} />',
+      '  return <button className="relative w-[42px] h-6 rounded-full bg-orange-600" />')
+    must('V29c 🔴 the dashboard card re-styles its switch, orange where the whole screen is green',
+      cardForked !== cardSrc && cardPredicate(cardSrc) && !cardPredicate(cardForked))
   }
 
   console.log(`\n  ${vpass + vfail} variants · ${vpass} failed as required · ${vfail} wrongly passed`)

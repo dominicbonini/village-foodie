@@ -118,7 +118,17 @@ const boxStart = rawPage.indexOf('COLLECTION TIMES — PER VAN')
 const kcStart  = rawPage.indexOf('{/* Kitchen capacity — ONE aligned grid')
 const box = rawPage.slice(boxStart, kcStart)
 check(boxStart > 0 && kcStart > boxStart, `🔴 the Collection times box renders BEFORE the Kitchen capacity box (${boxStart} < ${kcStart})`)
-check(/<p className=\{`\$\{SUBCARD_HEADING\} mb-1`\}>Collection times<\/p>/.test(box), 'title is exactly "Collection times"')
+/* ⚠️ THE TITLE IS A CONSTANT NOW (October 2026), not a literal. The Event types modal and the
+ * dashboard's "This event" card show this same setting, and all three were calling it something of
+ * their own — so the words moved to lib/copy/serviceSettings.ts and Settings renders them from there.
+ * 🔴 THIS IS A STRONGER CHECK THAN THE ONE IT REPLACES, not a weaker one: it asserts both that the
+ * heading comes from the shared constant AND that the constant still reads "Collection times". The
+ * literal version could only have told you about this screen. */
+const serviceCopy = src('lib/copy/serviceSettings.ts')
+check(/<p className=\{`\$\{SUBCARD_HEADING\} mb-1`\}>\{SERVICE_SETTING_LABELS\.collection_interval_mins\}<\/p>/.test(box),
+  'the title is rendered from SERVICE_SETTING_LABELS, not retyped')
+check(/collection_interval_mins: 'Collection times'/.test(serviceCopy),
+  'title is exactly "Collection times"')
 check(/How far apart collection times are\. This doesn&apos;t change kitchen capacity or prep times\./.test(box), 'intro is exactly the one specified line')
 check(/<span className="text-sm font-semibold text-slate-800">Customer Collection Times<\/span>/.test(box), 'first select label is "Customer Collection Times"')
 check(/<span className="text-sm font-semibold text-slate-800">Your Collection Times<\/span>/.test(box), 'second select label is "Your Collection Times"')

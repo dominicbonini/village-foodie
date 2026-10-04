@@ -84,7 +84,7 @@ import AppHeader from '@/components/shared/AppHeader'
 // used to carry for them are gone rather than duplicated.
 import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { configureStatusBar } from '@/lib/native/statusBar'
-import { Spinner, Badge, Btn, Input, Card, EmptyState, AllergenToggles, DietaryToggles, AllergenModeChooser, OptionCardChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
+import { Spinner, Badge, Btn, Input, Card, EmptyState, Toggle, AllergenToggles, DietaryToggles, AllergenModeChooser, OptionCardChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
 import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'
 import ExtrasEditor from '@/components/manage/ExtrasEditor'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
@@ -93,6 +93,11 @@ import { SUBCARD_HEADING } from '@/lib/ui-tokens'
 import { BUZZER_MAX_COUNT, BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
 import { normaliseUrl, isScraperBlockedDomain } from '@/lib/url-normalise'
 import { SETTING_COPY, TRIAL_NOT_STARTED_BY_EVENTS, TRIAL_NOT_STARTED_HEADING, TRIAL_NOT_STARTED_BILLING } from '@/lib/settings-copy'
+/* 🔴 THREE LABELS ON THIS PAGE ARE NOW CONSTANTS, because the Event types modal and the dashboard's
+ * "This event" card show the same three settings and were calling them something shorter. Settings is
+ * still the SOURCE of the words — they were lifted from here — but there is one copy of each now, so
+ * the modal cannot call this setting one thing while this screen calls it another. */
+import { SERVICE_SETTING_LABELS } from '@/lib/copy/serviceSettings'
 import { Walkthrough } from '@/components/manage/Walkthrough'
 import { WALKTHROUGH_STOPS, WALKTHROUGH_INTRO, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
@@ -152,16 +157,11 @@ function fmtDate(d: string) {
 // definition. Usages below are unchanged.
 // `disabled` is OPTIONAL and defaults to undefined, so every existing call site is unchanged. Added for
 // the cash toggle, which must render visibly disabled (not hidden) when the separate paid step is off.
-function Toggle({ on, onToggle, label, disabled }: { on: boolean; onToggle: () => void; label?: string; disabled?: boolean }) {
-  return (
-    <button onClick={onToggle} disabled={disabled} className="flex items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed">
-      <div className={`relative w-11 h-6 rounded-full transition-colors ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
-        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-6' : 'translate-x-1'}`} />
-      </div>
-      {label && <span className="text-sm text-slate-600 font-medium group-hover:text-slate-900">{label}</span>}
-    </button>
-  )
-}
+/* ── 🔴 `Toggle` MOVED TO components/manage/primitives.tsx (4 October 2026) ──────────────────
+ * It was defined here, and the Event types modal had written a THIRD switch for itself — copying the
+ * dashboard's geometry and orange into a Manage screen. One definition, imported by both, is the only
+ * arrangement in which they cannot disagree; lib/ui-tokens.ts makes the same argument for colours.
+ * ⚠️ THE PROPS AND THE MARKUP ARE UNCHANGED, so the fifteen usages below are untouched. */
 const FOOD_EMOJI_CATEGORIES = [
   {
     label: 'Street food & fast food',
@@ -8196,8 +8196,13 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
         </div>
       )}
 
-      {/* 🔴 THE PANEL, ONE MOUNT. Full-screen, so it needs no sub-tab bar and no layout of its own. */}
-      {showEventTypes && <EventTypesPanel token={token} onClose={() => setShowEventTypes(false)} />}
+      {/* 🔴 THE PANEL, ONE MOUNT. Full-screen, so it needs no sub-tab bar and no layout of its own.
+        * ⚠️ `manageApi={api}` IS THE WHOLE OF "NO SECOND SAVE PATH". The modal's Standard column is
+        * editable, and it changes truck and van settings by calling THIS function — the same one every
+        * Settings control on this page calls, with the same action names, the same payload shapes and
+        * `nativeAuthHeader()` already on it. A fetch written inside the component would be a second
+        * path by definition and would 401 in the native app. */}
+      {showEventTypes && <EventTypesPanel token={token} manageApi={api} onClose={() => setShowEventTypes(false)} />}
 
       {editingEvent && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center lg:items-start lg:pt-8 justify-center p-4">
@@ -11203,7 +11208,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 surfaces at all. */}
             <div className="flex items-center justify-between gap-3 py-3">
               <div>
-                <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
+                <p className="text-sm font-semibold text-slate-800">{SERVICE_SETTING_LABELS.takes_cash}</p>
                 <p className="text-xs text-slate-500 mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. You can turn this on for a single event from the dashboard.</p>
                 {/* ── 🔴 THE GATE NOW HAS TWO PARENTS, AND IT HAD TO (10 August 2026) ─────────────
                     The cash split renders in two places, and after the settings were split those two
@@ -11504,7 +11509,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   <p className={`text-sm font-semibold ${
                     van.auto_pause_on_offline ? 'text-teal-800' : 'text-slate-800'
                   }`}>
-                    Offline order protection
+                    {SERVICE_SETTING_LABELS.offline_protection}
                   </p>
                   {/* ── 🔴 THE SAME THREE LINES AS THE DASHBOARD'S CARD, IN THE SAME ORDER. ──────────
                       Description, then the ⚠️ instruction, then the two modes below — the dashboard's
@@ -11705,7 +11710,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 ⚠️ update_van_settings' destructure is an ALLOWLIST and get_vans' select is NAMED — both
                 carry these keys, or the value writes and never reads back. */}
             <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <p className={`${SUBCARD_HEADING} mb-1`}>Collection times</p>
+              <p className={`${SUBCARD_HEADING} mb-1`}>{SERVICE_SETTING_LABELS.collection_interval_mins}</p>
               <p className="text-xs text-slate-500 mb-3">How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.</p>
               {!intervalsAvailable ? (
                 /* 🔴 THE BOX DEGRADES; THE VAN DOES NOT. The interval columns could not be read, so the
