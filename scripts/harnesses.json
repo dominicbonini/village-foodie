@@ -27,6 +27,7 @@
     "batch-rolling-check.cjs",
     "batch-rolling-identity.cjs",
     "breach-banner-dismiss.cjs",
+    "capacity-move-identity.cjs",
     "collection-times-hint.cjs",
     "compare-no-system.cjs",
     "cover-dot-own-window.cjs",

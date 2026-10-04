@@ -30,6 +30,9 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 const TAB = read('components/manage/SchedulePlaces.tsx')
 const PAGE = read('app/manage/[token]/page.tsx')
 const PLACES = read('components/manage/SchedulePlaces.tsx')
+/* 🔴 MENU › KITCHEN CAPACITY (October 2026) — its own screen now, so its own fixture. */
+const KC = read('components/manage/KitchenCapacitySection.tsx')
+const KCLIB = read('lib/kitchen-capacity.ts')
 
 /** Lift one class string out of the real source, or fail — the fixture is only worth as much as its
  *  agreement with the component. */
@@ -445,10 +448,103 @@ function fixture(css, oneCol = false, placeCount = 6, breakScroll = false) {
  * 🔴 THE QUESTION IS UNCHANGED: do the tabs scroll INSIDE their row, or widen the page? Measured with
  * the real class strings, and with a six-tab control at 320px where the row genuinely overflows.
  */
-function menuPillFixture(css, pillCount = 3) {
+/**
+ * MENU › KITCHEN CAPACITY — THE SCREEN THE CAPACITY TABLE MOVED TO.
+ *
+ * 🔴 WHY THIS NEEDS MEASURING WHEN THE MARKUP DID NOT CHANGE. The table is what stood in Settings ›
+ * Kitchen — but it is in a different BOX. There it sat inside a van card, inside the settings list's
+ * padded column; here it sits directly in the tab body. The template is
+ * `minmax(0,1fr)_5rem_5rem_2.5rem` at mobile, and the comment on that constant records what already
+ * went wrong once: at ~311px the fixed columns overflowed, the name column collapsed to zero and the
+ * ceiling selects went off-screen. A different container is exactly how that returns, and no class
+ * census can see it.
+ *
+ * ⚠️ WHAT IS AND IS NOT REAL HERE. The grid template, the card and the switch classes are LIFTED from
+ * the component and from lib/kitchen-capacity.ts, so a restyle breaks this fixture instead of leaving
+ * it measuring the old screen. The category cells are filler at realistic widths —
+ * `<KitchenCapacityCategoryRow>` has its own coverage; what is measured here is the SCREEN.
+ *
+ * @param vans 1 ⇒ no picker and no switch (the single-van truck, which is most of them); 2 ⇒ both,
+ *             which is the layout that did not exist before this build.
+ * @param following the switch ON ⇒ the table is COLLAPSED, so the screen must not leave a hole.
+ */
+function capacityFixture(css, vans = 1, following = false) {
+  const grid = lift(KCLIB, /export const KITCHEN_CAPACITY_GRID =\n\s*'(.+?)' \+/, 'the capacity grid template')
+  const grid2 = lift(KCLIB, /\+\n\s*'(sm:grid-cols-.+?)'/, 'the sm half of the grid template')
+  const card = lift(KC, /<div className="(bg-slate-50 border border-slate-200 rounded-xl p-3)">/, 'the capacity card')
+  const sw = lift(KC, /<div className="(flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3)">/, 'the switch row')
+  const hdr = 'text-[11px] font-bold uppercase tracking-wide text-slate-400'
+  // Real category names — the first column is `minmax(0,1fr)` and text is what fills it.
+  const CATS = ['Pizzas', 'Loaded fries & sides', 'Dips', 'Soft drinks']
+  const sel = v => `<select style="width:100%"><option>${v}</option></select>`
+  const rows = CATS.map(c => `
+        <div class="min-w-0"><span class="min-w-0 truncate text-sm text-slate-700">${c}</span></div>
+        <div>${sel('4 items')}</div><div>${sel('every 7 min')}</div>
+        <div class="text-center"><input type="checkbox"></div>`).join('')
+  const table = `
+    <div id="kcCard" class="${card}">
+      <p class="text-sm font-bold text-slate-800 mb-3">Kitchen capacity</p>
+      <div id="kcGrid" class="${grid} ${grid2} gap-y-2 items-center">
+        <span id="kcCatHdr" class="min-w-0 truncate ${hdr}">Category</span>
+        <span class="${hdr}">Items</span>
+        <span class="${hdr}">Prep</span>
+        <span id="kcCountsHdr" class="${hdr} text-center leading-tight">Counts to total capacity</span>
+        ${rows}
+      </div>
+      <div id="kcTotal" class="${grid} ${grid2} items-center mt-2 pt-2.5 border-t border-slate-100">
+        <span id="kcTotalLbl" class="min-w-0 truncate text-sm font-semibold text-slate-700">Total capacity</span>
+        <div>${sel('12 items')}</div><div>${sel('every 5 min')}</div><span></span>
+      </div>
+    </div>`
+  const picker = vans > 1 ? `
+    <div id="kcPicker" class="flex gap-2 overflow-x-auto">
+      ${['Main van', 'Festival trailer'].slice(0, vans).map((n, i) =>
+        `<button class="px-3 py-1.5 rounded-full text-sm font-bold whitespace-nowrap ${i === 0 ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}">${n}</button>`).join('')}
+    </div>` : ''
+  const sws = vans > 1 ? `
+    <div id="kcSwitch" class="${sw}">
+      <div class="min-w-0">
+        <p class="text-sm font-semibold text-slate-800">Same capacity as Main van</p>
+        <p class="text-xs text-slate-500 mt-0.5">${following
+          ? 'This van uses Main van’s capacity. Changes there are copied here.'
+          : 'Copy Main van’s capacity and keep it in step.'}</p>
+      </div>
+      <button class="relative w-11 h-6 rounded-full shrink-0 ${following ? 'bg-orange-600' : 'bg-slate-300'}"></button>
+    </div>` : ''
+  return `${HEAD(css)}
+<div style="max-width:1024px;margin:0 auto;padding:0 16px">
+  <div id="kcRoot" class="space-y-3 py-4">
+    ${picker}${sws}${following ? '' : table}
+    <div id="kcExplainer" class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+      <p class="text-xs text-blue-600">How capacity works — filler for the two shared paragraphs.</p>
+    </div>
+  </div>
+</div></body></html>`
+}
+
+/* 🔴 THE PILL LABELS ARE LIFTED FROM `MENU_SECTIONS`, NOT TYPED HERE (October 2026). They used to be a
+ * hard-coded `['Items', 'Extras & upsells', 'Deals', 'Fourth section', …]` with `pillCount = 3`, and
+ * when Kitchen capacity became a fourth pill this fixture went on measuring three pills with one
+ * invented label — a layout nobody is served, which is the exact failure this file's header warns
+ * about. The real labels matter because a pill row is measured in TEXT: 'Kitchen capacity' is the
+ * widest of the four, so a made-up 'Deals' in its place would under-measure the row at 390px.
+ * ⚠️ IT ALSO TRACKS THE ORDER, which changed on 4 October (capacity moved to second). Order does not
+ * affect whether the row fits, but a fixture that disagrees with the screen is worth nothing. */
+function menuPillLabels() {
+  const block = lift(PAGE, /const MENU_SECTIONS: \{ id: MenuSection; label: string \}\[\] = \[([\s\S]*?)\n\]/, 'MENU_SECTIONS')
+  const labels = [...block.matchAll(/label: '([^']+)'/g)].map(m => m[1])
+  if (labels.length < 2) throw new Error('the fixture cannot be built: MENU_SECTIONS yielded no labels')
+  return labels
+}
+function menuPillFixture(css, pillCount) {
   const row = lift(PAGE, /const SUBTAB_BAR = '(.+?)'/, 'the shared sub-tab bar')
   const inner = lift(PAGE, /const SUBTAB_ROW = '(.+?)'/, 'the sub-tab row')
-  const labels = ['Items', 'Extras & upsells', 'Deals', 'Fourth section', 'Fifth section', 'Sixth section']
+  /* The 320px clipping control asks for MORE pills than exist, to force a genuine overflow; the
+   * extras repeat the longest real label so the overflow is realistic rather than six short words. */
+  const real = menuPillLabels()
+  const longest = real.slice().sort((a, b) => b.length - a.length)[0]
+  const labels = pillCount == null ? real : [...real, ...Array(Math.max(0, pillCount - real.length)).fill(longest)]
+  pillCount = pillCount == null ? real.length : pillCount
   return `${HEAD(css)}
 <div style="max-width:1024px;margin:0 auto;padding:0 16px">
   <div id="menuPills" class="${row} mb-4">
@@ -579,6 +675,47 @@ const rects = () => {
       width: Math.round(mp.getBoundingClientRect().width),
     }
   } else { out.menuPills = null }
+  /* ── MENU › KITCHEN CAPACITY ───────────────────────────────────────────────────────────────────
+   * 🔴 `nameW` IS THE NUMBER THAT MATTERS. It is the rendered width of the `minmax(0,1fr)` first
+   * column. The defect this screen could reintroduce collapses it to 0 and pushes the ceiling selects
+   * off-screen — invisible to every check except a measurement of it. */
+  const kcGrid = document.getElementById('kcGrid')
+  if (kcGrid) {
+    const first = document.getElementById('kcCatHdr')
+    const counts = document.getElementById('kcCountsHdr')
+    const card = document.getElementById('kcCard')
+    const sels = [...kcGrid.querySelectorAll('select')]
+    const totalLbl = document.getElementById('kcTotalLbl')
+    out.kc = {
+      nameW: first ? Math.round(first.getBoundingClientRect().width) : 0,
+      countsRight: counts ? Math.round(counts.getBoundingClientRect().right) : 0,
+      cardRight: card ? Math.round(card.getBoundingClientRect().right) : 0,
+      cardW: card ? Math.round(card.getBoundingClientRect().width) : 0,
+      selCount: sels.length,
+      /* Every select fully inside the viewport AND of a real size. ⚠️ `width > 8` is not padding:
+       * the collapse being guarded against renders a select at or near zero width, which still has a
+       * box and still reports a rect. */
+      selsOnScreen: sels.every(e => { const r = e.getBoundingClientRect(); return r.left >= -1 && r.right <= window.innerWidth + 1 && r.width > 8 && r.height > 8 }),
+      /* The Total-capacity row uses the SAME template, so its first column must be the same width as
+       * the table's. This is the alignment the shared constant exists for. */
+      totalAligned: (totalLbl && first)
+        ? Math.abs(Math.round(totalLbl.getBoundingClientRect().width) - Math.round(first.getBoundingClientRect().width)) <= 1 : null,
+      // Does the header row overlap? `Category` ending past where `Items` starts is the old overlap bug.
+      headerOverlap: (() => {
+        const ks = [...kcGrid.children].slice(0, 4).map(e => e.getBoundingClientRect())
+        return ks.some((r, i) => i > 0 && r.left < ks[i - 1].right - 1)
+      })(),
+    }
+  } else { out.kc = null }
+  const kcRoot = document.getElementById('kcRoot')
+  out.kcScreen = kcRoot ? {
+    rootH: Math.round(kcRoot.getBoundingClientRect().height),
+    picker: !!document.getElementById('kcPicker'),
+    hasSwitch: !!document.getElementById('kcSwitch'),
+    table: !!document.getElementById('kcCard'),
+    explainer: !!document.getElementById('kcExplainer'),
+    switchRight: (() => { const e = document.getElementById('kcSwitch'); return e ? Math.round(e.getBoundingClientRect().right) : null })(),
+  } : null
   /* 🔴 IS THE FOOTER ON SCREEN WITHOUT SCROLLING? The modal is a flex column, so the footer sits
    * inside the viewport iff the modal does. Measured, not assumed.
    * ⚠️ EVERY MODAL METRIC IS GUARDED. `rects` is shared with the menu-pill fixture, which has none of
@@ -822,13 +959,65 @@ async function measure() {
       t(r.docScrollW <= r.innerW, `🔴 ${w}: and no horizontal scroll either side of it`)
     }
 
+
+    /* ══ 🔴 MENU › KITCHEN CAPACITY, AT THE THREE WIDTHS ═══════════════════════════════════════════
+     * The table did not change; its container did. These are the four questions that answers:
+     *   1. does the name column keep a real width (the old collapse), 
+     *   2. are all six ceiling/prep selects on screen and clickable,
+     *   3. does the Total-capacity row still line up with the table above it,
+     *   4. and does the page scroll sideways. */
+    for (const [w, h, label] of [[1440, 900, 'desktop'], [820, 1180, 'iPad portrait'], [390, 844, 'phone']]) {
+      await eng.setViewport(w, h)
+      await eng.page.goto(write(`kc-${w}-${eng.name}.html`, capacityFixture(css, 1)))
+      const r = await eng.page.evaluate(rects)
+      lines.push(`  capacity ${w}×${h} (${label})  name ${r.kc.nameW} · counts→${r.kc.countsRight} · card ${r.kc.cardW}→${r.kc.cardRight} · selects ${r.kc.selCount} · doc ${r.docScrollW} vs ${r.innerW}`)
+      t(r.kc.nameW >= 60, `🔴 capacity ${w}: the Category column keeps a real width (${r.kc.nameW}px) — NOT the old collapse to 0`)
+      t(r.kc.selsOnScreen, `🔴 capacity ${w}: all ${r.kc.selCount} selects are fully on screen and of real size`)
+      t(!r.kc.headerOverlap, `🔴 capacity ${w}: no header cell overlaps its neighbour`)
+      t(r.kc.totalAligned === true, `⚠️ capacity ${w}: the Total-capacity row lines up with the table (same shared template)`)
+      t(r.docScrollW <= r.innerW, `🔴 capacity ${w}: NO HORIZONTAL PAGE SCROLL`)
+      t(r.kc.cardRight <= r.innerW + 1, `⚠️ capacity ${w}: the card does not spill past the viewport`)
+    }
+    /* 🔴 THE CLIPPING CONTROL — 320px, narrower than any phone this is measured at. The template's own
+     * comment says the fixed columns overflowed a ~311px phone once. If the name column survives even
+     * here the checks above are not passing by luck of a roomy viewport. */
+    {
+      await eng.setViewport(320, 844)
+      await eng.page.goto(write(`kc-320-${eng.name}.html`, capacityFixture(css, 1)))
+      const r = await eng.page.evaluate(rects)
+      lines.push(`  capacity 320 (control)  name ${r.kc.nameW} · doc ${r.docScrollW} vs ${r.innerW}`)
+      t(r.kc.nameW > 0, `🔴 CONTROL at 320px: the Category column is still non-zero (${r.kc.nameW}px)`)
+      t(r.docScrollW <= r.innerW, '🔴 …and the page still does not scroll sideways')
+    }
+    /* ── 🔴 THE TWO-VAN LAYOUT, WHICH DID NOT EXIST BEFORE THIS BUILD ─────────────────────────────
+     * A second van adds a picker and the "Same capacity as Van 1" switch above the table. Switch ON
+     * collapses the table, and a collapsed screen must not be an empty one — the explainer stays, so
+     * the operator is told what the setting means even while the table is hidden. */
+    for (const [w, h] of [[1440, 900], [390, 844]]) {
+      await eng.setViewport(w, h)
+      await eng.page.goto(write(`kc2-${w}-${eng.name}.html`, capacityFixture(css, 2, false)))
+      let r = await eng.page.evaluate(rects)
+      lines.push(`  capacity 2-van ${w}  picker ${r.kcScreen.picker} · switch ${r.kcScreen.hasSwitch} · table ${r.kcScreen.table} · name ${r.kc.nameW} · doc ${r.docScrollW}`)
+      t(r.kcScreen.picker && r.kcScreen.hasSwitch && r.kcScreen.table, `🔴 2-van ${w}, switch OFF: picker, switch AND table all render`)
+      t(r.kc.nameW >= 60 && r.kc.selsOnScreen, `🔴 2-van ${w}: the table is still usable under the picker and switch`)
+      t(r.kcScreen.switchRight <= r.innerW + 1, `⚠️ 2-van ${w}: the switch row does not spill past the viewport`)
+      t(r.docScrollW <= r.innerW, `🔴 2-van ${w}: NO HORIZONTAL PAGE SCROLL`)
+
+      await eng.page.goto(write(`kc2on-${w}-${eng.name}.html`, capacityFixture(css, 2, true)))
+      r = await eng.page.evaluate(rects)
+      lines.push(`  capacity 2-van ${w} FOLLOWING  table ${r.kcScreen.table} · explainer ${r.kcScreen.explainer} · root ${r.kcScreen.rootH}`)
+      t(r.kcScreen.table === false, `🔴 2-van ${w}, switch ON: the table is COLLAPSED, not disabled`)
+      t(r.kcScreen.hasSwitch && r.kcScreen.explainer, `🔴 …and the switch and the explainer remain — a collapsed screen is not a blank one`)
+      t(r.kcScreen.rootH > 80, `⚠️ …the screen still has content (${r.kcScreen.rootH}px tall)`)
+      t(r.docScrollW <= r.innerW, `🔴 2-van ${w} following: NO HORIZONTAL PAGE SCROLL`)
+    }
     /* ── 🔴 THE MENU PILLS, AT THE THREE WIDTHS ─────────────────────────────────────────────────── */
     for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
       await eng.setViewport(w, h)
       await eng.page.goto(write(`mp-${w}-${eng.name}.html`, menuPillFixture(css)))
       const r = await eng.page.evaluate(rects)
       lines.push(`  menu pills ${w}×${h}  row ${r.menuPills.rowW} · content ${r.menuPills.contentW} · rows ${r.menuPills.rows} · doc ${r.docScrollW} vs ${r.innerW}`)
-      t(r.menuPills.rows === 1, `🔴 menu pills ${w}: all three stay on ONE row — they scroll, they do not wrap`)
+      t(r.menuPills.rows === 1, `🔴 menu pills ${w}: all ${menuPillLabels().length} stay on ONE row — they scroll, they do not wrap`)
       t(r.menuPills.width <= r.innerW, `🔴 menu pills ${w}: the row never exceeds the viewport`)
       t(r.docScrollW <= r.innerW, `🔴 menu pills ${w}: NO HORIZONTAL PAGE SCROLL`)
     }

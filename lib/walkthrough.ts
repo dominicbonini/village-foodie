@@ -109,13 +109,20 @@ export const WALKTHROUGH_STOPS: WalkthroughStop[] = [
     //     it saves.
     // Both PUBLISH ON SAVE. Do not reintroduce any form of "this is only a draft" here.
     // ⚠️ "these tabs" WAS TRUE AND IS NOT ANY MORE — they are pills inside Menu, so the copy says so.
-    body: 'Deals, upsells and customisations live under Menu — have a play around.',
+    /* ⚠️ RE-POINTED AGAIN (October 2026): KITCHEN CAPACITY IS NOW A FOURTH MENU PILL. It was a
+     * sub-card inside Settings › Kitchen, and the `settings` stop below said so. Naming it here is the
+     * whole point of a walkthrough stop — an operator who has just been told capacity lives in
+     * Settings will not find it. */
+    body: 'Deals, upsells, customisations and your kitchen capacity live under Menu — have a play around.',
   },
   {
     id: 'settings',
     tabIds: ['settings'],
     title: 'Settings',
-    body: "Your truck's details, how customers pay, and your kitchen's capacity.",
+    /* ⚠️ CAPACITY DROPPED FROM THIS LINE (October 2026) — it moved to Menu › Kitchen capacity and is
+     * named on the `menu` stop above. Leaving it here would send operators to the one screen that no
+     * longer has it. */
+    body: "Your truck's details and how customers pay.",
   },
   {
     id: 'billing',

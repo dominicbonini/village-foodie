@@ -24,6 +24,9 @@ const check = (ok, label) => { console.log(`  ${ok ? '✓' : '🔴'} ${label}`);
 
 const manage = strip(src('app/api/manage/route.ts'))
 const managePage = src('app/manage/[token]/page.tsx')
+/* ⚠️ THE KITCHEN CAPACITY CARD LIVES HERE NOW (October 2026), not in page.tsx. Named once so the
+ * checks below cannot drift apart from each other. */
+const NEW_CAPACITY_FILE = 'components/manage/KitchenCapacitySection.tsx'
 const { readVanIntervalsForTruck, DEFAULT_INTERVAL } = compile(REPO, ['lib/slot-interval.ts'], 'tolerance').req('lib/slot-interval.js')
 
 // The HEAD column list, read from git rather than retyped, so this cannot drift.
@@ -139,7 +142,15 @@ console.log('\n── THE HEALTHY PATH IS UNCHANGED ─────────�
 console.log('\n── THE MANAGE PAGE RENDERS EVERY VAN REGARDLESS ────────────────────────────────────────')
 {
   const vanMapStart = managePage.indexOf('{vans.map(van => (')
-  const box = managePage.slice(managePage.indexOf('COLLECTION TIMES — PER VAN'), managePage.indexOf('{/* Kitchen capacity — ONE aligned grid'))
+  /* ⚠️ RE-ANCHORED (October 2026) BECAUSE THE OLD END ANCHOR NO LONGER EXISTS. This slice used to
+   * end at `{/* Kitchen capacity — ONE aligned grid`, the card that has since moved to
+   * components/manage/KitchenCapacitySection.tsx. `indexOf` returned -1, and `slice(start, -1)` is
+   * "everything to the end bar one character" — so every check below was passing against most of a
+   * 12k-line file instead of one box. That is the same silent-widening bug the Collection-times slice
+   * in slot-interval-settings.cjs had. The slice now ends where the pointer left behind begins. */
+  const kcPtr = managePage.indexOf('{/* ── ⛔ KITCHEN CAPACITY MOVED TO MENU')
+  check(kcPtr > 0, '🔴 the end anchor exists — a -1 here would silently widen every check below')
+  const box = managePage.slice(managePage.indexOf('COLLECTION TIMES — PER VAN'), kcPtr)
   check(vanMapStart > 0, 'the van list is a plain vans.map over the response')
   check(!/intervalsAvailable[\s\S]{0,80}vans\.map/.test(managePage), '🔴 the van map is NOT gated on intervalsAvailable')
   check(/\{!intervalsAvailable \? \(/.test(box), 'only the Collection times box branches on it')
@@ -149,10 +160,24 @@ console.log('\n── THE MANAGE PAGE RENDERS EVERY VAN REGARDLESS ────�
   check(!/<select|<input|updateVanSetting/.test(unavail), 'the unavailable branch renders no select, no checkbox and no save')
   check(!/[a-z]/.test(unavail.replace(/Collection times are unavailable right now\./, '').replace(/[\s\S]*?\/\*[\s\S]*?\*\//, '').replace(/className="[^"]*"/g, '').replace(/[^>]*>/g, '')), 'no other text in the unavailable branch')
   check(/setIntervalsAvailable\(r\.intervalsAvailable !== false\)/.test(managePage), 'an absent flag reads as available — a missing field never disables a working setting')
-  // The Kitchen capacity box is a sibling of the Collection times box, not a child.
-  const kcIdx = managePage.indexOf('{/* Kitchen capacity — ONE aligned grid')
-  check(kcIdx > managePage.indexOf('COLLECTION TIMES — PER VAN'), 'Kitchen capacity renders after Collection times, as a sibling')
-  check(!/intervalsAvailable/.test(managePage.slice(kcIdx, kcIdx + 4000)), '🔴 the Kitchen capacity box does not mention intervalsAvailable — it cannot be hidden by it')
+  /* ── 🔴 THE KITCHEN CAPACITY BOX LEFT THIS FILE (October 2026) ───────────────────────
+   * WHAT THIS PAIR USED TO ASSERT: that the capacity card rendered after the Collection times box as
+   * its SIBLING (not nested inside it), and that it named no `intervalsAvailable` — i.e. a truck whose
+   * interval columns are missing still gets its capacity controls.
+   * WHY IT CHANGED: the card is now Menu › Kitchen capacity, in its own file. "After, as a sibling"
+   * has no meaning across two files, so the FIRST check is replaced by what now carries the same
+   * weight — the card is in that file, and what is left here is only a pointer.
+   * 🔴 THE SECOND CHECK IS NOT DROPPED, IT FOLLOWS THE CARD. It is the one that matters (a capacity
+   * control hidden by an unrelated missing column is the defect), and it now reads the new file —
+   * where, being a separate screen, it could regress unnoticed far more easily than before. */
+  const kcSrc = src(NEW_CAPACITY_FILE)
+  check(kcPtr > managePage.indexOf('COLLECTION TIMES — PER VAN'), 'the pointer sits after Collection times, where the card used to be')
+  /* ⚠️ THE MARKER IS THE COMMENT'S TEXT, NOT `{/* …`. The move reflowed the comment, so the opener
+   * and the words are no longer on the same line — and it is the words that identify the card. */
+  const CARD = 'Kitchen capacity — ONE aligned grid'
+  check(!managePage.includes(CARD), '⛔ the card itself is GONE from page.tsx — not copied, moved')
+  check(kcSrc.includes(CARD), `🔴 …and it IS in ${NEW_CAPACITY_FILE} — so "moved" is checked, not claimed`)
+  check(!/intervalsAvailable/.test(kcSrc), '🔴 the Kitchen capacity screen does not mention intervalsAvailable — it cannot be hidden by it')
 }
 
 console.log('\n── update_van_settings CANNOT LOSE OTHER SETTINGS TO A MISSING COLUMN ──────────────────')

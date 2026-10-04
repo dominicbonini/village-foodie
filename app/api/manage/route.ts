@@ -66,6 +66,7 @@ import { INTERVAL_CHOICES, isIntervalChoice, readVanIntervalsForTruck, DEFAULT_I
 import {
   readVanCategorySettings, readVanCategorySettingsForTruck, readVanSameAsFirst,
   effectiveCategorySettings, firstVanId, vanCopyPayload, vanCategoryCopyRows, VAN_COPY_FIELDS,
+  CAPACITY_COPY_FIELDS, capacityCopyPayload,
 } from '@/lib/van-category-settings'
 // 🔴 ONE DEFINITION OF "WHICH PLACE IS THIS EVENT AT", IMPORTED NOT RE-WRITTEN. Stages 2 and 3 import
 // the same module; a second normaliser here would make events stop finding their place with no error.
@@ -1963,6 +1964,12 @@ export async function POST(req: NextRequest) {
       ...v,
       categorySettings: vanCats.byVanId.get((v as { id: string }).id) ?? [],
       same_as_first_van: sameAs.byVanId.get((v as { id: string }).id) ?? false,
+      /* 🔴 THE CAPACITY SWITCH, SENT ALONGSIDE (October 2026). Menu › Kitchen capacity owns it and
+       * Settings › Truck settings owns the other; they are two columns because a truck must be able
+       * to give Van 2 the same service settings and a different kitchen. `readVanSameAsFirst` falls
+       * the capacity flag back to the OLD one when the column is absent, so a deploy ahead of
+       * 20261010 shows every van exactly the switch it has today. */
+      capacity_same_as_first_van: sameAs.capacityByVanId.get((v as { id: string }).id) ?? false,
     }))
     return NextResponse.json({
       vans: vansOut,
@@ -2117,7 +2124,12 @@ export async function POST(req: NextRequest) {
      * behind, which is recoverable by re-saving; failing the whole request would lose the edit the
      * operator actually made. Logged, never thrown.
      * ⚠️ IT CANNOT RUN BEFORE THE MIGRATION: with no `same_as_first_van` column the probed read
-     * returns ok:false and an empty map, so there are no followers and this is a no-op. */
+     * returns ok:false and an empty map, so there are no followers and this is a no-op.
+     * 🔴 AND IT NO LONGER CARRIES CAPACITY (October 2026). `kitchen_capacity` and
+     * `capacity_window_mins` moved out of `VAN_COPY_FIELDS` into `CAPACITY_COPY_FIELDS`, which the
+     * CAPACITY switch owns — so a change to the first van's capacity fans out to the vans following
+     * its CAPACITY, not to the vans following its service settings. The block below this one does
+     * that, keyed on the other flag. */
     {
       const fanFields: Record<string, unknown> = {}
       for (const f of VAN_COPY_FIELDS) {
@@ -2142,6 +2154,39 @@ export async function POST(req: NextRequest) {
           }
         }
       }
+
+    /* ── 🔴 THE CAPACITY FAN-OUT — THE SAME SHAPE, THE OTHER FLAG ─────────────────────────────────
+     * A change to the FIRST van's capacity reaches every van following its CAPACITY, in this request.
+     * Two blocks rather than one because the two switches are independent: a van may follow Van 1's
+     * service settings and keep its own kitchen, or the reverse, and a single loop over one flag would
+     * get one of those two wrong.
+     * ⚠️ BEST-EFFORT AND PROBED, exactly as the block above: a failure leaves the first van saved and
+     * one follower briefly behind, which re-saving fixes; failing the request would lose the edit. */
+    {
+      const capFields: Record<string, unknown> = {}
+      for (const f of CAPACITY_COPY_FIELDS) {
+        if (f in updates) capFields[f] = updates[f]
+        else if (f in intervalUpdates) capFields[f] = intervalUpdates[f]
+      }
+      if (Object.keys(capFields).length) {
+        const same = await readVanSameAsFirst(supabase, truck.id)
+        if (same.ok) {
+          const vanRows = [...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: true }))
+          const first = firstVanId(vanRows)
+          if (first && first === vanId) {
+            const followers = [...same.capacityByVanId.entries()].filter(([id, on]) => on && id !== first).map(([id]) => id)
+            for (const fid of followers) {
+              const { error: fanErr } = await supabase
+                .from('truck_vans')
+                .update(capFields)
+                .eq('id', fid)
+                .eq('truck_id', truck.id)
+              if (fanErr) console.warn(`[van-capacity-same-as-first] van ${fid}: follow-the-first-van capacity write failed (${(fanErr as { code?: string }).code ?? 'no code'}): ${fanErr.message}`)
+            }
+          }
+        }
+      }
+    }
     }
     return NextResponse.json({ ok: true })
   }
@@ -2203,13 +2248,16 @@ export async function POST(req: NextRequest) {
     }
 
     /* 🔴 THE SAME FAN-OUT AS THE VAN FIELDS: a change to the FIRST van reaches every van following
-     * it, in this request. Each follower gets its own row, so no reader indirects through the switch. */
+     * it, in this request. Each follower gets its own row, so no reader indirects through the switch.
+     * 🔴 KEYED ON THE **CAPACITY** FLAG (October 2026). These rows ARE the capacity table — per-category
+     * batch sizes and prep times — so they travel with the capacity switch, not with Settings' one. A
+     * van following Van 1's service settings but set up with its own kitchen must keep its own rows. */
     const same = await readVanSameAsFirst(supabase, truck.id)
     const fannedTo: string[] = []
     if (same.ok) {
       const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: true })))
       if (first && first === vanId) {
-        for (const [fid, on] of same.byVanId.entries()) {
+        for (const [fid, on] of same.capacityByVanId.entries()) {
           if (!on || fid === first) continue
           const { error: fanErr } = await supabase
             .from('van_category_settings')
@@ -2259,23 +2307,82 @@ export async function POST(req: NextRequest) {
        * row for a category the first van does not override, merging would leave that category still
        * different while the switch claimed "same". An empty source row set is correct and means "both
        * vans inherit the truck defaults". */
-      const srcRows = await readVanCategorySettings(supabase, first)
-      const { error: delErr } = await supabase.from('van_category_settings').delete().eq('van_id', vanId)
-      if (delErr) console.warn(`[van-same-as-first] van ${vanId}: clearing old category rows failed (${(delErr as { code?: string }).code ?? 'no code'}): ${delErr.message}`)
-      const rows = vanCategoryCopyRows(srcRows.byCategoryId, truck.id, vanId as string)
-      if (rows.length) {
-        const { error: insErr } = await supabase.from('van_category_settings').insert(rows)
-        if (insErr) {
-          console.warn(`[van-same-as-first] van ${vanId}: copying category rows failed (${(insErr as { code?: string }).code ?? 'no code'}): ${insErr.message}`)
-          return NextResponse.json({ error: 'The first van\'s category settings could not be copied right now.' }, { status: 500 })
-        }
-      }
+      /* ⛔ THE CATEGORY ROWS ARE NO LONGER COPIED HERE (October 2026). They are the capacity table's
+       * rows, and capacity has its own switch — `set_van_capacity_same_as_first` below does the
+       * delete-then-insert, with the same reasoning about why it is a replacement and not a merge.
+       * Copying them here too would make Settings' switch silently set a van's kitchen. */
     }
 
     const { error: swErr } = await supabase
       .from('truck_vans').update({ same_as_first_van: !!on }).eq('id', vanId).eq('truck_id', truck.id)
     if (swErr) {
       console.warn(`[van-same-as-first] van ${vanId}: switch write failed (${(swErr as { code?: string }).code ?? 'no code'}): ${swErr.message}`)
+      return NextResponse.json({ error: 'That switch could not be saved right now.' }, { status: 500 })
+    }
+    return NextResponse.json({ ok: true, copiedFrom: on ? first : null })
+  }
+
+  /* ── 🔴 THE CAPACITY SWITCH — "Same capacity as Van 1" (Menu › Kitchen capacity) ───────────────
+   * The same model as `set_van_same_as_first` above, over capacity's own fields and rows:
+   *   • turning it ON copies the first van's `kitchen_capacity` + `capacity_window_mins` AND replaces
+   *     its `van_category_settings` rows — delete-then-insert, never a merge;
+   *   • while it is on, every change to the first van's capacity is also written to this van, in the
+   *     same request (the two fan-outs in `update_van_settings` and `upsert_van_category`);
+   *   • turning it OFF writes only the switch. The copied values stay — "stop following", not
+   *     "revert to something".
+   *
+   * 🔴 A COPY, NEVER A LOOKUP, and the reason is the same one the report gives for the other switch:
+   * a read-time `if (capacity_same_as_first_van) use van 1` would put a second van lookup on order
+   * ACCEPTANCE, where capacity is enforced. Because it is a copy, every van's own row is complete and
+   * the engine never resolves through a switch.
+   *
+   * ⚠️ DELETE-THEN-INSERT, NOT A MERGE. If this van kept a row for a category the first van does not
+   * override, the switch would claim "same capacity" while one category still differed. An empty
+   * source set is correct and means "both vans inherit the truck defaults".
+   */
+  if (action === 'set_van_capacity_same_as_first') {
+    const { vanId, on } = body
+    if (!vanId) return NextResponse.json({ error: 'vanId is required' }, { status: 400 })
+    const { data: van } = await supabase
+      .from('truck_vans').select('id').eq('id', vanId).eq('truck_id', truck.id).maybeSingle()
+    if (!van) return NextResponse.json({ error: 'Van not found' }, { status: 404 })
+
+    const same = await readVanSameAsFirst(supabase, truck.id)
+    if (!same.ok) return NextResponse.json({ error: 'That switch is unavailable until the database is updated.' }, { status: 503 })
+    const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: true })))
+    /* ⛔ THE FIRST VAN CANNOT FOLLOW ITSELF — its own edits would fan out to itself. */
+    if (first && first === vanId) return NextResponse.json({ error: 'The first van cannot follow itself.' }, { status: 400 })
+
+    if (on) {
+      if (!first) return NextResponse.json({ error: 'There is no first van to follow.' }, { status: 400 })
+      /* 🔴 `select('*')` SO A COLUMN THIS DEPLOY DOES NOT KNOW ABOUT CANNOT 42703 THE WHOLE COPY —
+       * `capacityCopyPayload`'s allowlist decides what travels, not the select. */
+      const { data: src } = await supabase.from('truck_vans').select('*').eq('id', first).maybeSingle()
+      const payload = capacityCopyPayload(src as Record<string, unknown> | null)
+      if (Object.keys(payload).length) {
+        const { error: cpErr } = await supabase.from('truck_vans').update(payload).eq('id', vanId).eq('truck_id', truck.id)
+        if (cpErr) {
+          console.warn(`[van-capacity-same-as-first] van ${vanId}: copying the first van's capacity failed (${(cpErr as { code?: string }).code ?? 'no code'}): ${cpErr.message}`)
+          return NextResponse.json({ error: 'The first van\'s capacity could not be copied right now.' }, { status: 500 })
+        }
+      }
+      const srcRows = await readVanCategorySettings(supabase, first)
+      const { error: delErr } = await supabase.from('van_category_settings').delete().eq('van_id', vanId)
+      if (delErr) console.warn(`[van-capacity-same-as-first] van ${vanId}: clearing old category rows failed (${(delErr as { code?: string }).code ?? 'no code'}): ${delErr.message}`)
+      const rows = vanCategoryCopyRows(srcRows.byCategoryId, truck.id, vanId as string)
+      if (rows.length) {
+        const { error: insErr } = await supabase.from('van_category_settings').insert(rows)
+        if (insErr) {
+          console.warn(`[van-capacity-same-as-first] van ${vanId}: copying category rows failed (${(insErr as { code?: string }).code ?? 'no code'}): ${insErr.message}`)
+          return NextResponse.json({ error: 'The first van\'s category settings could not be copied right now.' }, { status: 500 })
+        }
+      }
+    }
+
+    const { error: swErr } = await supabase
+      .from('truck_vans').update({ capacity_same_as_first_van: !!on }).eq('id', vanId).eq('truck_id', truck.id)
+    if (swErr) {
+      console.warn(`[van-capacity-same-as-first] van ${vanId}: switch write failed (${(swErr as { code?: string }).code ?? 'no code'}): ${swErr.message}`)
       return NextResponse.json({ error: 'That switch could not be saved right now.' }, { status: 500 })
     }
     return NextResponse.json({ ok: true, copiedFrom: on ? first : null })

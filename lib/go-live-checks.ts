@@ -154,7 +154,11 @@ export function checkGoLive(input: GoLiveInput): GoLiveResult {
         detail:
           `No capacity is set for ${which}. Without it we will keep promising customers collection ` +
           'times your kitchen has no way to hit.',
-        where: 'Settings → Kitchen capacity',
+        /* ⚠️ RE-POINTED (October 2026): the capacity table moved from Settings › Kitchen to
+         * Menu › Kitchen capacity, so a blocker that still said "Settings" would send an operator
+         * to a screen that now only carries a pointer. The words a go-live blocker uses are the
+         * only directions it gives. */
+        where: 'Menu → Kitchen capacity',
       })
     }
   }

@@ -2241,7 +2241,8 @@ export default function AdminPage() {
                   {/* ⚠️ THE CAPACITY INPUT IS GONE, DELIBERATELY. It defaulted to 5, so every truck
                       created here inherited a concurrency ceiling nobody had chosen. Capacity must be an
                       active decision made once the operator knows their kitchen, so the route now always
-                      passes an explicit null and this is set in Manage -> Settings -> Kitchen capacity.
+                      passes an explicit null and this is set in Manage -> Menu -> Kitchen capacity (it moved out of
+                      Settings in October 2026).
                       The van itself is still created — a vanless truck has an inert capacity engine. */}
                   <input
                     type="text"

@@ -115,9 +115,27 @@ check(/notify pgrst, 'reload schema'/.test(mig), "ends with notify pgrst, 'reloa
 console.log('\n── V4 COPY, EXACTLY ────────────────────────────────────────────────────────────────────')
 const rawPage = src('app/manage/[token]/page.tsx')
 const boxStart = rawPage.indexOf('COLLECTION TIMES — PER VAN')
-const kcStart  = rawPage.indexOf('{/* Kitchen capacity — ONE aligned grid')
-const box = rawPage.slice(boxStart, kcStart)
-check(boxStart > 0 && kcStart > boxStart, `🔴 the Collection times box renders BEFORE the Kitchen capacity box (${boxStart} < ${kcStart})`)
+/* ⚠️ RE-ANCHORED (October 2026). This slice used to end at the Kitchen capacity card, and the check
+ * below asserted the Collection times box rendered BEFORE it. Kitchen capacity has MOVED to
+ * Menu › Kitchen capacity (components/manage/KitchenCapacitySection.tsx), so that marker is no longer
+ * in this file and `indexOf` returned -1 — which made the slice empty and every copy check below pass
+ * against nothing.
+ * 🔴 THE ORDER ASSERTION IS KEPT AND RE-AIMED AT WHAT IS NOW BELOW THE BOX: the one-line pointer that
+ * replaced the card. The box must still come first, and the pointer is now what "first" is relative
+ * to — so the ordering this check was written to protect is still protected. */
+const kcStart  = rawPage.indexOf('{/* ── ⛔ KITCHEN CAPACITY MOVED TO MENU')
+/* 🔴 THE SLICE ENDS WHERE THE BOX ENDS, which is the close of the per-van "Same as Van 1" COLLAPSE —
+ * not at whatever happens to come next in the file. With the capacity card gone, "whatever comes
+ * next" became the rename-van inputs, and the no-stray-copy check below started reporting their
+ * Save/Cancel as stray copy in the Collection times box. The collapse's close is a boundary that
+ * belongs to the box, so it cannot drift again when something else moves. */
+const boxEnd = rawPage.indexOf('            </>)}', boxStart)
+const box = rawPage.slice(boxStart, boxEnd > boxStart ? boxEnd : kcStart)
+check(boxStart > 0 && boxEnd > boxStart, `🔴 the Collection times box is inside the per-van collapse (${boxStart} < ${boxEnd})`)
+check(boxStart > 0 && kcStart > boxStart, `🔴 the Collection times box renders BEFORE the Kitchen capacity pointer (${boxStart} < ${kcStart})`)
+/* ⛔ AND THE CARD ITSELF IS GONE FROM THIS FILE, which is the other half of the move. */
+check(rawPage.indexOf('{/* Kitchen capacity — ONE aligned grid') === -1,
+  '⛔ the Kitchen capacity card is no longer in page.tsx — it moved to Menu › Kitchen capacity')
 check(/<p className=\{`\$\{SUBCARD_HEADING\} mb-1`\}>Collection times<\/p>/.test(box), 'title is exactly "Collection times"')
 check(/How far apart collection times are\. This doesn&apos;t change kitchen capacity or prep times\./.test(box), 'intro is exactly the one specified line')
 check(/<span className="text-sm font-semibold text-slate-800">Customer Collection Times<\/span>/.test(box), 'first select label is "Customer Collection Times"')

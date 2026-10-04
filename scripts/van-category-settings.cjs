@@ -190,8 +190,15 @@ head('3 · THE SWITCH IS A WRITE FAN-OUT, NOT A READ')
    * Because it is a COPY, every van's own row is complete and authoritative. */
   const files = execFileSync('grep', ['-rl', 'same_as_first_van', '--include=*.ts', '--include=*.tsx', 'app', 'lib', 'components'],
     { cwd: REPO, encoding: 'utf8' }).trim().split('\n').filter(Boolean)
-  const WRITE_SITES = new Set(['app/api/manage/route.ts', 'lib/van-category-settings.ts', 'app/manage/[token]/page.tsx'])
-  t('🔴 only the writer, the resolver module and the Settings UI name the column at all',
+  /* ⚠️ A FOURTH SITE (October 2026): the capacity table moved to Menu › Kitchen capacity, which is
+   * components/manage/KitchenCapacitySection.tsx, and it names the column because it renders the
+   * CAPACITY switch. The point of this check is unchanged — the set is still CLOSED, and still
+   * contains no reader on the order path (asserted next). */
+  const WRITE_SITES = new Set([
+    'app/api/manage/route.ts', 'lib/van-category-settings.ts', 'app/manage/[token]/page.tsx',
+    'components/manage/KitchenCapacitySection.tsx',
+  ])
+  t('🔴 only the writer, the resolver module and the two switch UIs name the column at all',
     files.every(f => WRITE_SITES.has(f)))
   t('⛔ NO READER ON THE ORDER PATH NAMES IT', (() => {
     const order = ['app/api/slots/[truckId]/route.ts', 'app/api/dashboard/route.ts',
@@ -267,20 +274,31 @@ head('4 · THE WRITERS')
     && /\.eq\('truck_id', truck\.id\)/.test(api))
 
   const page = codeOnly(read(PAGE))
-  t('🔴 the Manage VAN card writes per-van (writeVanCat), not truck-level',
-    /void writeVanCat\(van, cat, \{ prep_secs: secs \}\)/.test(page)
-    && /void writeVanCat\(van, cat, \{ batch_size: val \?\? 0 \}\)/.test(page)
-    && /void writeVanCat\(van, cat, \{ counts_toward_capacity: !eff\.counts_toward_capacity \}\)/.test(page)
-    && /api\('upsert_van_category', \{ vanId: van\.id, categoryId: cat\.id, \.\.\.patch \}\)/.test(page))
-  t('🔴 …and READS per-van, so one van\'s number never shows on another\'s card',
-    /const eff = effectiveVanCat\(van, cat\)/.test(page)
-    && /prepSecs=\{eff\.prep_secs \?\? 0\}/.test(page)
-    && /batchSize=\{eff\.batch_size \?\? 0\}/.test(page))
+  /* ⚠️ THE CAPACITY TABLE MOVED FILES (October 2026) — from Settings › Kitchen in page.tsx to
+   * Menu › Kitchen capacity in components/manage/KitchenCapacitySection.tsx. These two checks are
+   * about the TABLE's writes and reads, so they follow it; what they assert is unchanged, and the
+   * expressions they match are the same ones, because the move did not edit them. */
+  const CAP = 'components/manage/KitchenCapacitySection.tsx'
+  const cap = codeOnly(read(CAP))
+  t('🔴 the capacity table writes per-van (writeVanCat), not truck-level',
+    /void writeVanCat\(van, cat, \{ prep_secs: secs \}\)/.test(cap)
+    && /void writeVanCat\(van, cat, \{ batch_size: val \?\? 0 \}\)/.test(cap)
+    && /void writeVanCat\(van, cat, \{ counts_toward_capacity: !eff\.counts_toward_capacity \}\)/.test(cap)
+    && /api\('upsert_van_category', \{ vanId: v\.id, categoryId: cat\.id, \.\.\.patch \}\)/.test(cap))
+  t('🔴 …and READS per-van, so one van\'s number never shows on another\'s',
+    /const eff = effectiveVanCat\(van, cat\)/.test(cap)
+    && /prepSecs=\{eff\.prep_secs \?\? 0\}/.test(cap)
+    && /batchSize=\{eff\.batch_size \?\? 0\}/.test(cap))
+  /* ⛔ AND IT IS NOT STILL IN page.tsx — the other half of "moved, not copied". */
+  t('⛔ the capacity table is gone from Settings › Kitchen, and only a pointer is left',
+    !/KitchenCapacityCategoryRow\s*$/m.test(page.slice(page.indexOf('COLLECTION TIMES — PER VAN')))
+    && /Kitchen capacity has moved to/.test(read(PAGE)))
   /* ⛔ THE OPTIMISTIC PATCH MOVED TOO. The old write patched the SHARED truck-level category list,
    * which would now paint one van's number onto every van's card. */
   t('⛔ the optimistic patch is on the VAN, not on the shared category list', (() => {
-    const w = page.slice(page.indexOf('const writeVanCat'), page.indexOf('const setVanSameAsFirst'))
-    return /patchVanCat\(van\.id, cat\.id, next\)/.test(w) && !/onCategoriesPatch/.test(w)
+    /* ⚠️ READ FROM THE MOVED FILE, and the slice ends at its own next declaration. */
+    const w = cap.slice(cap.indexOf('const writeVanCat'), cap.indexOf('const updateVanSetting'))
+    return /patchVanCat\(v\.id, cat\.id, next\)/.test(w) && !/onCategoriesPatch/.test(w)
   })())
   t('🔴 the Manage Menu tab still uses the truck-level writers, untouched',
     /const updateCatField = async \(cat: Category/.test(page)
@@ -357,9 +375,16 @@ const V = compile(REPO, [LIB], 'vcs').req('lib/van-category-settings.js')
     const written = new Set()
     for (const m of h.matchAll(/updates\.([a-z_]+) =/g)) written.add(m[1])
     for (const m of h.matchAll(/intervalUpdates\.([a-z_]+) =/g)) written.add(m[1])
-    const copied = new Set(V.VAN_COPY_FIELDS)
+    /* 🔴 TWO SWITCHES NOW, AND BETWEEN THEM THEY MUST STILL COVER EVERY WRITABLE FIELD (October 2026).
+     * `kitchen_capacity` and `capacity_window_mins` moved out of `VAN_COPY_FIELDS` into
+     * `CAPACITY_COPY_FIELDS`, because Menu › Kitchen capacity owns them with its own flag. The property
+     * this check exists for is unchanged and is now stated of the UNION: a setting added to
+     * update_van_settings and forgotten by BOTH lists would make a switch silently stop meaning "same".
+     * ⚠️ AND THE TWO LISTS MUST BE DISJOINT, asserted separately below — a field in both would let the
+     * two switches fight over one column. */
+    const copied = new Set([...V.VAN_COPY_FIELDS, ...V.CAPACITY_COPY_FIELDS])
     const missing = [...written].filter(f => !copied.has(f))
-    if (missing.length) console.log('      per-van settings the switch would NOT copy: ' + JSON.stringify(missing))
+    if (missing.length) console.log('      per-van settings NEITHER switch would copy: ' + JSON.stringify(missing))
     return missing.length === 0
   })())
   t('⛔ the secret, the name and the printer address are NOT copied', (() => {
@@ -367,9 +392,32 @@ const V = compile(REPO, [LIB], 'vcs').req('lib/van-category-settings.js')
     return !c.has('kds_token') && !c.has('name') && !c.has('network_printer_address')
       && !c.has('network_print_device_id') && !c.has('same_as_first_van') && !c.has('active')
   })())
+  /* 🔴 THE TWO COPY SETS ARE DISJOINT. The lib exports the test so this is an assertion rather than a
+   * comment claiming it. A field in both = two switches writing one column. */
+  t('🔴 VAN_COPY_FIELDS and CAPACITY_COPY_FIELDS share no field',
+    V.capacitySplitIsClean() === true
+    && !(V.VAN_COPY_FIELDS).includes('kitchen_capacity')
+    && !(V.VAN_COPY_FIELDS).includes('capacity_window_mins')
+    && V.CAPACITY_COPY_FIELDS.length === 2)
+  t('🔴 capacityCopyPayload carries the capacity pair and nothing else', (() => {
+    const out = V.capacityCopyPayload({
+      kitchen_capacity: 10, capacity_window_mins: 5,
+      buzzer_count: 9, order_ready_enabled: true, name: 'Van1',
+    })
+    return Object.keys(out).sort().join(',') === 'capacity_window_mins,kitchen_capacity'
+      && out.kitchen_capacity === 10 && out.capacity_window_mins === 5
+  })())
+  t('⚠️ …and only PRESENT keys, so an absent column is not written as undefined',
+    Object.keys(V.capacityCopyPayload({ kitchen_capacity: 3 })).join(',') === 'kitchen_capacity'
+    && Object.keys(V.capacityCopyPayload(null)).length === 0)
+
   t('⚠️ vanCopyPayload carries only present keys, so an absent column is not written as undefined', (() => {
-    const p = V.vanCopyPayload({ kitchen_capacity: 4, name: 'Van 1', kds_token: 'secret' })
-    return Object.keys(p).join(',') === 'kitchen_capacity' && p.kitchen_capacity === 4
+    /* ⚠️ THE PROBE FIELD CHANGED (October 2026). It used `kitchen_capacity`, which is no longer one of
+     * THIS payload's fields — it moved to `capacityCopyPayload` with the capacity switch. `buzzer_count`
+     * is a field this one still owns, so the check asserts the same property about the same function.
+     * ⛔ AND IT ASSERTS THE CAPACITY FIELD IS **NOT** CARRIED, which is the move's whole point. */
+    const p = V.vanCopyPayload({ buzzer_count: 4, kitchen_capacity: 9, name: 'Van 1', kds_token: 'secret' })
+    return Object.keys(p).join(',') === 'buzzer_count' && p.buzzer_count === 4
   })())
   /* 🔴 A FULL REPLACEMENT, NOT A MERGE. If the target keeps a row the source does not have, the switch
    * claims "same" while one category still differs. */

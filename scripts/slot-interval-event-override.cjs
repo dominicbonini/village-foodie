@@ -249,10 +249,23 @@ console.log('\n── DASHBOARD ORDER: Collection times sits DIRECTLY ABOVE Kitc
   const seq = order(page)
   check(directlyAbove(seq), `🔴 the real page: Collection times immediately precedes Kitchen capacity — ${seq.join(' → ')}`)
   check(seq[seq.length - 1] === 'Kitchen capacity' && seq[seq.length - 2] === 'Collection times', 'no card title sits between them')
-  // And the Manage page has the same adjacency (the thing this is matching).
+  /* ── 🔴 THE MANAGE HALF OF THIS CHECK IS OBSOLETE, AND SAYING WHY IS THE POINT ──────────────
+   * WHAT IT ASSERTED (17 Sep 2026): that Manage had the SAME adjacency as the dashboard — Collection
+   * times directly above the Kitchen capacity card, with no card title between them. The dashboard
+   * ordering above was "matching Manage", and this was the other side of that match.
+   * WHY IT CANNOT HOLD: in October 2026 the Manage capacity card moved to its own screen, Menu ›
+   * Kitchen capacity (components/manage/KitchenCapacitySection.tsx). There is no adjacency left to
+   * compare — the two controls are now on different tabs of Manage by design.
+   * ⚠️ SO THE DASHBOARD ORDER NOW STANDS ON ITS OWN, and the checks above are what hold it: the box
+   * sits directly above the dashboard's own capacity card, which did NOT move. What replaces the
+   * Manage half is the one thing still worth pinning — that Manage has the card in exactly ONE place,
+   * so this reads as a deliberate split rather than a half-finished move that left two copies. */
   const manage = src('app/manage/[token]/page.tsx')
-  const mStart = manage.indexOf('COLLECTION TIMES — PER VAN'), mKc = manage.indexOf('{/* Kitchen capacity — ONE aligned grid')
-  check(mStart > 0 && mKc > mStart && !/font-semibold text-slate-800">(?!Customer Collection Times|Your Collection Times)[^<]+<\/span>/.test(manage.slice(manage.indexOf('</div>', mStart + 4000), mKc)), 'Manage: the same box sits directly above the same card')
+  const CARD = 'Kitchen capacity — ONE aligned grid'
+  const kcFile = src('components/manage/KitchenCapacitySection.tsx')
+  check(manage.indexOf('COLLECTION TIMES — PER VAN') > 0, 'Manage still has its Collection times box')
+  check(!manage.includes(CARD) && kcFile.includes(CARD), '🔴 Manage’s capacity card is in its own file and NOWHERE in page.tsx — one copy, not two')
+  check(manage.includes('{/* ── ⛔ KITCHEN CAPACITY MOVED TO MENU'), '…and page.tsx keeps a pointer where it used to be, so the move is findable')
   // Nothing but the position moved: the box\'s copy is intact.
   for (const t of ['Customer Collection Times', 'Use different times for orders I add', 'Your Collection Times', 'Use my usual setting', 'Collection times are unavailable right now.'])
     check(page.includes(t), `copy intact: "${t}"`)

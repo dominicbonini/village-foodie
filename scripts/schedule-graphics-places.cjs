@@ -1131,11 +1131,25 @@ function runWiringSuite(lib) {
     && /t\.id === 'payments' && stripeActionRequired/.test(P)
     && /t\.id === 'menu' && allergensUnverified/.test(P)
     && !/t\.id === 'deals'/.test(P) && !/t\.id === 'modifiers'/.test(P))
+  /* ⚠️ THE VALUE SETS, NOT THE ORDER THEY ARE WRITTEN IN (October 2026). This used to match the
+   * literal `v === 'items' || v === 'extras' || v === 'deals'`, which made the PILL ORDER load-bearing
+   * for a check about COLLISIONS — so moving Kitchen capacity to second broke an assertion that has
+   * nothing to do with where a pill sits. The claim worth pinning is: every section id the Menu tab
+   * offers is accepted by its own guard, and no id is accepted by both guards. */
+  const guardIds = (fn) => {
+    const m = P.match(new RegExp(`const ${fn} = \\(v: unknown\\): v is \\w+ =>([^\\n]*(?:\\n(?!const )[^\\n]*)*)`))
+    return m ? [...m[1].matchAll(/v === '([^']+)'/g)].map(x => x[1]).sort() : []
+  }
+  const menuIds = guardIds('isMenuSection'), schedIds = guardIds('isScheduleSection')
+  const pillIds = [...(P.match(/const MENU_SECTIONS[\s\S]*?\n\]/) || [''])[0].matchAll(/id: '([^']+)'/g)].map(x => x[1])
   t('🔴 ONE `?section=` PARAM SERVES BOTH TABS, and the values cannot collide',
-    /v === 'events' \|\| v === 'weekly'/.test(P)
-    && /v === 'items' \|\| v === 'extras' \|\| v === 'deals'/.test(P)
+    menuIds.length > 0 && schedIds.length > 0
+    && pillIds.length > 0 && pillIds.every(id => menuIds.includes(id))
+    && menuIds.length === pillIds.length
+    && !menuIds.some(id => schedIds.includes(id))
     && /isMenuSection\(sectionParam\)/.test(P)
-    && /window\.history\.replaceState/.test(P) && !/pushState/.test(P))
+    && /window\.history\.replaceState/.test(P) && !/pushState/.test(P),
+    `menu=[${menuIds}] schedule=[${schedIds}] pills=[${pillIds}]`)
   t('⚠️ …and a tab with no sections CLEARS the param, so one cannot follow the operator onto Reports',
     /: null\s*\n\s*const url = new URL\(window\.location\.href\)/.test(P))
   t('⚠️ no internal link or tab-switch still targets the retired tabs',
@@ -1228,7 +1242,13 @@ function runWiringSuite(lib) {
      * Any OTHER removal is a wording change and fails. */
     /* ⚠️ "Settings" IS ALSO AN ALLOWED REMOVAL: it was a page title duplicating the tab the operator
      * just pressed to get here. Every OTHER removal is a wording change and fails. */
-    const removable = new Set([...allowed, 'Settings'])
+    /* ⚠️ AND THE KITCHEN CAPACITY TABLE'S LABELS (October 2026). They left SettingsTab because the
+     * TABLE left it — it moved, unchanged, to Menu › Kitchen capacity. These six are allowed to be
+     * absent here ONLY because the next assertion proves each one is present in the file it moved to;
+     * a label that vanished from both would still fail. */
+    const MOVED_TO_CAPACITY = ['Kitchen capacity', 'Category', 'Items', 'Prep', 'Counts to total capacity',
+      'Total capacity', 'Set a capacity to choose which categories count.']
+    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY])
     const removed = [...before].filter(x => !after.has(x)).filter(x => !removable.has(x))
     const badAdded = added.filter(x => !allowed.has(x))
     if (badAdded.length || removed.length) {
@@ -1236,6 +1256,25 @@ function runWiringSuite(lib) {
       console.log('      removed: ' + JSON.stringify(removed.slice(0, 6)))
     }
     return badAdded.length === 0 && removed.length === 0
+  })())
+
+  /* 🔴 THE OTHER HALF OF "MOVED, NOT DELETED". Every label the check above allowed to leave Settings
+   * must be present, word for word, in the file it moved to. Without this, allowing a removal would be
+   * indistinguishable from allowing a deletion. */
+  t('🔴 every capacity label that left Settings is present in Menu › Kitchen capacity', (() => {
+    const cap = read('components/manage/KitchenCapacitySection.tsx')
+    const LABELS = ['Kitchen capacity', 'Category', 'Items', 'Prep', 'Counts to total capacity',
+      'Total capacity', 'Set a capacity to choose which categories count.']
+    const missing = LABELS.filter(l => !cap.includes('>' + l + '<'))
+    if (missing.length) console.log('      labels missing from the new file: ' + JSON.stringify(missing))
+    return missing.length === 0
+  })())
+  /* ⚠️ AND THE TWO EXPLANATORY PARAGRAPHS — the mockup's "How capacity works" — travelled as the same
+   * shared constants, so their wording cannot have changed in the move. */
+  t('⚠️ the capacity explainer is still the shared constants, not retyped prose', (() => {
+    const cap = read('components/manage/KitchenCapacitySection.tsx')
+    return /\{KITCHEN_CAPACITY_DESC\}/.test(cap) && /\{KITCHEN_CAPACITY_EXAMPLE\}/.test(cap)
+      && /\{KITCHEN_CAPACITY_WARNING\}/.test(cap)
   })())
 
   /* ══ ⛔ NOTHING WENT MISSING ═══════════════════════════════════════════════════════
@@ -1334,6 +1373,17 @@ function runWiringSuite(lib) {
       "{isActive && section === 'weekly' && <WeeklyPostPane truck={truck} />}",
       'picked. It answers the question the filled fields raise — "will editing this',
       'change the place?" — and the answer is no: nothing below writes back to the place.',
+      /* ⚠️ THE FOUR LINES THIS BUILD EDITED (October 2026), each asserted on its own elsewhere:
+       *   • `MenuSection` and `isMenuSection` gained 'capacity' — the fourth Menu pill;
+       *   • `SettingsTab`'s signature and its mount gained `onOpenKitchenCapacity` — the pointer;
+       *   • the Van interface gained `capacity_same_as_first_van`;
+       *   • the "Counts toward capacity" chip's title now says Menu, not Settings.
+       * The ~50 remaining losses are the capacity CARD, which moved file and is checked below. */
+      "type MenuSection = 'items' | 'extras' | 'deals'",
+      "v === 'items' || v === 'extras' || v === 'deals'",
+      '<span title="Counts toward the kitchen-capacity limit (set in Settings → Kitchen capacity)"',
+      "? 'This van uses the same settings. Changes to the first van are copied here.'",
+      ": 'Copy the first van\u2019s settings and keep them in step.'}",
       /* ⚠️ THE EVENT MODAL'S SHELL MOVED INTO CONSTANTS (October 2026). These four lines were the
        * inline `className={...}` on the modal; they are now `EVENT_MODAL_SHELL`, `EVENT_MODAL_WIDE`
        * and `EVENT_MODAL_NARROW`, which the three assertions above read. The move is what makes Tidy
@@ -1344,9 +1394,79 @@ function runWiringSuite(lib) {
       "${showPicker ? 'md:h-[90vh]' : ''}",
       "${showPicker ? 'md:max-w-[1040px]' : 'sm:max-w-lg lg:max-w-2xl'}`}>",
     ]
+    /* ── 🔴 THE CAPACITY CARD MOVED FILE, AND "MOVED" IS PROVED LINE BY LINE ──────────────────────
+     * This build took ~50 lines out of page.tsx and put them, unchanged, in
+     * components/manage/KitchenCapacitySection.tsx. So a lost line is excused ONLY IF THE SAME LINE IS
+     * PRESENT IN THAT FILE — which turns "I moved it" from a claim into a check. A line that vanished
+     * from both still fails, which is the property that matters: it is how 189 lines once went
+     * silently.
+     * ⚠️ TRIMMED COMPARISON, because the move re-indented the block by two spaces (it left a van card
+     * and became a top-level section). Indentation is not what this guard protects. */
+    /* ⚠️ WHITESPACE IS STRIPPED FOR THIS ONE COMPARISON. The move reformatted lines to the house
+     * style — `{length:20}` → `{ length: 20 }`, `n=>(` → `n => (`, `length>0?` → `length > 0 ? ` — and
+     * that is the SAME CODE. A guard against lost code must not fire on a space.
+     * 🔴 IT IS STILL THE WHOLE LINE, NOT A SUBSTRING. Every character that is not whitespace must be
+     * present, in order, in one line of the file it moved to — so a line that genuinely went, or that
+     * arrived with a token changed, is still reported. The six lines that DID change in the move are
+     * named one by one in `movedEdits` below, each with what changed and a check that the new form is
+     * there. Whitespace is the only thing this hides, and the wording diff above guards the visible
+     * strings separately. */
+    const norm = (l) => l.replace(/\s+/g, '')
+    const movedTo = (() => {
+      try {
+        return new Set(blockStrip(read('components/manage/KitchenCapacitySection.tsx'))
+          .map(norm).filter(Boolean))
+      } catch { return new Set() }
+    })()
+    /* ── 🔴 THE SIX LINES THIS BUILD GENUINELY CHANGED, EACH NAMED WITH WHAT CHANGED ──────────
+     * Whitespace aside, six lines did not survive the move byte for byte. Listing them here is not the
+     * same as waving them through: each entry carries the NEW form, and the check below fails if that
+     * new form is not in the file named. So "I edited this line on purpose" is a claim with a test
+     * attached — if the replacement is later deleted or renamed, this list starts failing.
+     * ⚠️ ADDING AN ENTRY IS THE EXPENSIVE WAY TO SILENCE THIS GUARD, DELIBERATELY. The cheap way is
+     * to leave the line alone. */
+    const movedEdits = [
+      /* 1-2 · SettingsTab gained ONE prop, `onOpenKitchenCapacity`, so that the pointer left behind in
+       * Settings › Kitchen can open Menu › Kitchen capacity. Both the mount and the signature changed,
+       * and both stay in page.tsx. */
+      { was: "{activeTab === 'settings'  && <SettingsTab",
+        reason: 'the mount passes the new onOpenKitchenCapacity prop',
+        nowIn: 'app/manage/[token]/page.tsx', now: 'onOpenKitchenCapacity={() =>' },
+      { was: 'function SettingsTab({ userRole, truck, whatsappConnection',
+        reason: 'the signature declares it',
+        nowIn: 'app/manage/[token]/page.tsx', now: 'onOpenKitchenCapacity: () => void' },
+      /* 3 · `mt-3` WAS A RELATIONSHIP TO THE CARD ABOVE IT, and there is no card above it any more.
+       * The capacity card was the last sub-card inside a van's Kitchen panel; it is now the first
+       * thing on its own screen, where a top margin would be a stray gap. */
+      { was: '<div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">',
+        reason: 'mt-3 spaced it under a sibling sub-card; it has no sibling now',
+        nowIn: 'components/manage/KitchenCapacitySection.tsx',
+        now: '<div className="bg-slate-50 border border-slate-200 rounded-xl p-3">' },
+      /* 4 · `SUBCARD_HEADING` IS A page.tsx LOCAL AND IS NOT EXPORTED. Rather than export a styling
+       * token from a 12k-line page to a component (which would make page.tsx a style module for
+       * everything that moves out of it next), the heading carries the token's literal value — the
+       * same three classes, so the heading renders identically. */
+      { was: '${SUBCARD_HEADING} mb-3`}>Kitchen capacity',
+        reason: 'SUBCARD_HEADING is not exported from page.tsx; its literal value is used instead',
+        nowIn: 'components/manage/KitchenCapacitySection.tsx',
+        now: '<p className="text-sm font-bold text-slate-800 mb-3">Kitchen capacity</p>' },
+      /* 5-6 · `void ` ADDED. Both are `onChange` handlers calling an async function; the new file is
+       * linted with no-floating-promises, which page.tsx predates. `void` is the project's existing
+       * way of saying "fire and forget, deliberately" — it changes no behaviour. */
+      { was: "updateVanSetting(van.id, 'kitchen_capacity'",
+        reason: 'void added for no-floating-promises',
+        nowIn: 'components/manage/KitchenCapacitySection.tsx',
+        now: "void updateVanSetting(van.id, 'kitchen_capacity'" },
+      { was: "updateVanSetting(van.id, 'capacity_window_mins'",
+        reason: 'void added for no-floating-promises',
+        nowIn: 'components/manage/KitchenCapacitySection.tsx',
+        now: "void updateVanSetting(van.id, 'capacity_window_mins'" },
+    ]
     const unexplained = gone.filter(l => {
       if (!l) return false
       if (allowed.includes(l)) return false
+      if (movedTo.has(norm(l))) return false
+      if (movedEdits.some(m => l.includes(m.was))) return false
       // the two pill rows and their button classes, replaced by the shared bar
       if (/rounded-full text-sm font-bold whitespace-nowrap transition-colors/.test(l)) return false
       if (/role="tablist" aria-label="(Menu|Schedule) sections"/.test(l)) return false
@@ -1363,9 +1483,18 @@ function runWiringSuite(lib) {
       if (/^(\{(place|ev)|\{timeRangeLabel|\)\}|<\/(span|p)>)$/.test(l)) return false
       return true
     })
+    /* 🔴 AND HERE IS WHERE THE LIST ABOVE PAYS FOR ITSELF. An entry excuses a lost line only while
+     * its replacement exists. A typo, a revert or a later rename turns the excuse back into a
+     * failure — which is the difference between a changelog and a check. */
+    for (const m of movedEdits) {
+      if (!read(m.nowIn).includes(m.now)) {
+        console.log(`      \u26d4 EDIT CLAIMED BUT NOT PRESENT in ${m.nowIn} (${m.reason}): \`${m.now.slice(0, 70)}\``)
+        return false
+      }
+    }
     if (unexplained.length) {
       console.log('      LINES LOST: ' + unexplained.length)
-      for (const l of unexplained.slice(0, 8)) console.log('        • ' + l.slice(0, 96))
+      for (const l of unexplained.slice(0, 20)) console.log("        • " + l.slice(0, 160))
     }
     return unexplained.length === 0
   })())

@@ -88,6 +88,7 @@ import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'
 import ExtrasEditor from '@/components/manage/ExtrasEditor'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { KitchenCapacityCategoryRow } from '@/components/manage/KitchenCapacityCategoryRow'
+import { KitchenCapacitySection } from '@/components/manage/KitchenCapacitySection'
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
 import { BUZZER_MAX_COUNT, BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
 import { normaliseUrl, isScraperBlockedDomain } from '@/lib/url-normalise'
@@ -121,7 +122,7 @@ interface Bundle { id: string; name: string; description: string | null; bundle_
  * not from its named select, so both are optional here: before the migration they arrive as `[]` and
  * `false`, which is exactly the pre-migration truth rather than a guess. */
 interface VanCategorySetting { category_id: string; prep_secs: number | null; batch_size: number | null; counts_toward_capacity: boolean }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null; collection_interval_mins?: number | null; operator_collection_interval_mins?: number | null; categorySettings?: VanCategorySetting[]; same_as_first_van?: boolean }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null; collection_interval_mins?: number | null; operator_collection_interval_mins?: number | null; categorySettings?: VanCategorySetting[]; same_as_first_van?: boolean; capacity_same_as_first_van?: boolean }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
@@ -173,17 +174,30 @@ const SETTINGS_SECTIONS: { id: string; label: string }[] = [
   { id: 'account-deletion', label: 'Account deletion' },
 ]
 
-type MenuSection = 'items' | 'extras' | 'deals'
+/* 🔴 A FOURTH SECTION (October 2026): Kitchen capacity, SECOND IN THE ROW. It was a sub-card inside
+ * Settings › Kitchen, on each van's card — which put "how many pizzas can you make at once" three
+ * screens away from the menu those pizzas are in. It is the same table, writing the same rows, in the
+ * place the categories it is about already live.
+ * ⚠️ THE ORDER OF THIS ARRAY IS THE ORDER OF THE PILLS, and nothing else keys off it — `?section=`
+ * and the legacy `?tab=` map by ID. So moving an entry moves the pill and changes no link. */
+type MenuSection = 'items' | 'capacity' | 'extras' | 'deals'
 const MENU_SECTIONS: { id: MenuSection; label: string }[] = [
   { id: 'items', label: 'Items' },
+  /* Second, directly after Items (Dominic, 4 October 2026) — it is a property OF the items, not an
+   * extra sold alongside them, so it reads next to them rather than after Deals. */
+  { id: 'capacity', label: 'Kitchen capacity' },
   { id: 'extras', label: 'Extras & upsells' },
   { id: 'deals', label: 'Deals' },
 ]
 const isMenuSection = (v: unknown): v is MenuSection =>
-  v === 'items' || v === 'extras' || v === 'deals'
+  v === 'items' || v === 'capacity' || v === 'extras' || v === 'deals'
 /* 🔴 THE OLD TAB KEYS, MAPPED. `?tab=deals` and `?tab=modifiers` are links that exist in the wild —
  * bookmarks, and anything that was ever pasted. They must land on Menu with the right pill, not on
- * the default tab with no explanation. */
+ * the default tab with no explanation.
+ * ⚠️ THERE IS NO LEGACY KEY FOR CAPACITY, and that is not an omission: capacity never had a tab of
+ * its own. It lived inside Settings › Kitchen, which is reached by `?tab=settings#kitchen` — and that
+ * link still works and still lands on Kitchen, where a one-line pointer now sends the operator here.
+ * Nothing that ever addressed capacity directly is broken, because nothing ever could. */
 const LEGACY_TAB_TO_MENU_SECTION: Record<string, MenuSection> = {
   deals: 'deals',
   modifiers: 'extras',
@@ -1016,6 +1030,10 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} />}
         {activeTab === 'menu' && menuSection === 'extras' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} />}
         {activeTab === 'menu' && menuSection === 'deals' && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={refresh} showToast={showToast} />}
+        {/* 🔴 ONE MOUNT. Everything the capacity screen needs — its own vans, the picker, the switch
+            and the moved table — is inside components/manage/KitchenCapacitySection.tsx, so the Menu
+            tab gains one line rather than eight of SettingsTab's internals. */}
+        {activeTab === 'menu' && menuSection === 'capacity' && <KitchenCapacitySection categories={categories} api={api} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
         <ScheduleTab isActive={activeTab === 'schedule'} section={scheduleSection} onSectionChange={setScheduleSection} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} />
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} showToast={showToast}
@@ -1036,7 +1054,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
+        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} onOpenKitchenCapacity={() => { setMenuSection('capacity'); setActiveTab('menu') }} />}
         {activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
         </div>
@@ -4257,11 +4275,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     <span className="text-[11px] font-bold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{cat.default_stock} per event</span>
                   )}
                   {cat.allow_notes && <span className="text-[11px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Notes on</span>}
-                  {/* "Counts toward kitchen capacity" is configured in Settings → Kitchen capacity
+                  {/* "Counts toward kitchen capacity" is configured in MENU → KITCHEN CAPACITY
                       (the tickbox list under the ceiling), not here — one place, no double-toggle.
+                      ⚠️ THE POINTER WAS "Settings → Kitchen capacity" AND IS NOW ONE PILL AWAY
+                      (October 2026). Capacity moved into this same tab, so the operator no longer
+                      leaves the Menu screen to set it.
                       A tiny read-only indicator for instant categories that are included: */}
                   {cat.prep_secs === 0 && cat.counts_toward_capacity && (
-                    <span title="Counts toward the kitchen-capacity limit (set in Settings → Kitchen capacity)"
+                    <span title="Counts toward the kitchen-capacity limit (set in Menu → Kitchen capacity)"
                       className="text-[11px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">Counts toward capacity</span>
                   )}
                 </div>
@@ -5801,9 +5822,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 {renderWizardStepper('kitchen')}
               </div>
 
-              {/* Copy = the SAME shared constants Settings shows under its Kitchen capacity section
+              {/* Copy = the SAME shared constants Menu › Kitchen capacity shows
                   (KITCHEN_CAPACITY_DESC + KITCHEN_CAPACITY_EXAMPLE in lib/kitchen-capacity.ts) — one source,
-                  no drift. (The old pizza-walkthrough KITCHEN_SETUP_EXPLAINER is now unused — sweep later.) */}
+                  no drift. ⚠️ THE SECTION MOVED (October 2026) and the constants did not, so this grid
+                  needed no change — which is the point of having them in lib/.
+                  (The old pizza-walkthrough KITCHEN_SETUP_EXPLAINER is now unused — sweep later.) */}
               <div className="mx-5 mt-4 mb-0 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex-shrink-0">
                 <p className="text-xs font-semibold text-blue-700 mb-2">How kitchen capacity works</p>
                 <p className="text-xs text-blue-600 mb-1.5">{KITCHEN_CAPACITY_DESC}</p>
@@ -9662,7 +9685,7 @@ function useSettingsJumpBar(active: boolean) {
   return { barRef, sectionEls, pinnedTop, activeId, jumpTo, lastSectionMinHeight }
 }
 
-function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
+function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough, onOpenKitchenCapacity }: {
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
   userRole: UserRole
@@ -9690,6 +9713,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   onTruckUpdate: (partial: Partial<Truck>) => void
   /** K4: the re-open entry point. Opens the page-level walkthrough; stores nothing itself. */
   onOpenWalkthrough: () => void
+  /** Takes the operator to Menu › Kitchen capacity — the pointer where the table used to be. */
+  onOpenKitchenCapacity: () => void
 }) {
   const [form, setForm] = useState({ ...truck })
   // ── CUISINE ROWS, SEEDED ONCE FROM THE STORED STRING ────────────────────────────────────────────
@@ -11470,10 +11495,17 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   <p className="text-sm font-semibold text-slate-800">
                     Same as {vans.find(v => v.id === firstVanId)?.name ?? 'the first van'}
                   </p>
+                  {/* ⚠️ "EVERYTHING EXCEPT CAPACITY" IS NEW WORDING, AND IT HAS TO BE (October 2026).
+                      Kitchen capacity moved to Menu › Kitchen capacity with its own switch, so this
+                      one no longer covers it. Leaving the old line would make this switch claim
+                      something it stopped doing — the quiet kind of wrong. */}
                   <p className="text-xs text-slate-500 mt-0.5">
                     {van.same_as_first_van
-                      ? 'This van uses the same settings. Changes to the first van are copied here.'
-                      : 'Copy the first van\u2019s settings and keep them in step.'}
+                      ? 'This van uses the same settings, except kitchen capacity. Changes to the first van are copied here.'
+                      : 'Copy the first van\u2019s settings — everything except kitchen capacity — and keep them in step.'}
+                  </p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Kitchen capacity has its own switch in Menu › Kitchen capacity.
                   </p>
                 </div>
                 <Toggle
@@ -11757,92 +11789,6 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               })()}
             </div>
 
-            {/* Kitchen capacity — ONE aligned grid (V7.8 §42), matching the dashboard layout:
-                CATEGORY · ITEMS · PREP · COUNTS TO TOTAL CAPACITY, with the Total-capacity ceiling row
-                aligned under it via the SAME column template. Writes unchanged: updateCatField
-                (prep_secs/batch_size via upsert_category), toggleCatCapacity (counts_toward_capacity),
-                updateVanSetting (kitchen_capacity / capacity_window_mins). Cooking cats (prep>0)
-                lock-checked; instant cats toggle once a capacity is set. Window stays plain minutes
-                (engine reads capacity_window_mins as minutes). PrepTimeSelect off-grid-preserving. */}
-            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <p className={`${SUBCARD_HEADING} mb-3`}>Kitchen capacity</p>
-              {categories.length > 0 && (
-                <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
-                  <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
-                  {categories.map(cat => {
-                    /* 🔴 THIS VAN'S OWN VALUES, NOT THE TRUCK'S. `effectiveVanCat` is the same
-                     * resolution the server uses: this van's `van_category_settings` row if it has one,
-                     * otherwise the category's own values. A van with no rows — every van until an
-                     * operator edits one — shows exactly what this card showed before. */
-                    const eff = effectiveVanCat(van, cat)
-                    const hasCap = van.kitchen_capacity != null
-                    const locked = (eff.prep_secs ?? 0) > 0
-                    const capDisabled = locked || !hasCap || !perVanCategoriesAvailable
-                    // Shared <KitchenCapacityCategoryRow> (Fragment-of-cells) — the grid CONTAINER +
-                    // header + total-capacity row stay inline (unchanged), so template-driven alignment
-                    // is preserved. 🔴 THE WRITES ARE NOW PER-VAN (`writeVanCat`), not the truck-level
-                    // updateCatField/toggleCatCapacity those two remain the Menu tab's.
-                    return (
-                      <KitchenCapacityCategoryRow
-                        key={cat.id}
-                        categoryName={cat.name}
-                        batchSize={eff.batch_size ?? 0}
-                        prepSecs={eff.prep_secs ?? 0}
-                        onBatchChange={val => void writeVanCat(van, cat, { batch_size: val ?? 0 })}
-                        onPrepChange={secs => void writeVanCat(van, cat, { prep_secs: secs })}
-                        showCountsColumn
-                        countsToward={eff.counts_toward_capacity}
-                        locked={locked}
-                        capDisabled={capDisabled}
-                        countsTitle={locked
-                          ? 'Cooked — always counts (its prep & batch set the pace)'
-                          : !hasCap ? 'Set a capacity to choose which categories count'
-                          : !perVanCategoriesAvailable ? 'Unavailable until the database is updated'
-                          : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}
-                        onCountsChange={() => { if (!locked && hasCap && perVanCategoriesAvailable) void writeVanCat(van, cat, { counts_toward_capacity: !eff.counts_toward_capacity }) }}
-                      />
-                    )
-                  })}
-                </div>
-              )}
-              {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories. ITEMS
-                  column = kitchen_capacity ceiling, PREP column = window (plain minutes). */}
-              <div className={`${KITCHEN_CAPACITY_GRID} items-center ${categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
-                <span className="text-sm font-semibold text-slate-800 min-w-0">Total capacity</span>
-                <select
-                  value={van.kitchen_capacity ?? ''}
-                  aria-label="Total capacity (items)"
-                  onChange={e => updateVanSetting(van.id, 'kitchen_capacity', e.target.value === '' ? null : parseInt(e.target.value))}
-                  className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                  <option value="">∞</option>
-                  {Array.from({length:20},(_,i)=>i+1).map(n=>(
-                    <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
-                  ))}
-                </select>
-                <select
-                  value={van.capacity_window_mins ?? 5}
-                  aria-label="Capacity window (minutes)"
-                  disabled={van.kitchen_capacity == null}
-                  onChange={e => updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
-                  className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-                  {Array.from({length:20},(_,i)=>i+1).concat(((van.capacity_window_mins??5)>20)?[van.capacity_window_mins as number]:[]).map(n=>(
-                    <option key={n} value={n}>every {formatPrepSecs(n*60)}</option>
-                  ))}
-                </select>
-                <span/>
-              </div>
-              {van.kitchen_capacity == null && categories.length > 0 && (
-                <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
-              )}
-              {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories)&&(
-                <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
-              )}
-              <p className="text-xs text-slate-400 mt-2">{KITCHEN_CAPACITY_DESC}</p>
-              <p className="text-xs text-slate-400 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
-            </div>
             </>)}
 
             {renamingVanId === van.id && (
@@ -11871,6 +11817,30 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             )}
           </div>
         ))}
+        {/* ── ⛔ KITCHEN CAPACITY MOVED TO MENU › KITCHEN CAPACITY (October 2026) ────────────────────
+            The table, the Total-capacity row, the warning and both explanatory paragraphs moved
+            unchanged into components/manage/KitchenCapacitySection.tsx. It is NOT duplicated — this
+            is a pointer, not a second copy.
+            🔴 IT MOVED BECAUSE IT IS ABOUT THE MENU. The numbers in it are per-CATEGORY batch sizes
+            and prep times; asking "how many pizzas at once" three screens from the pizzas was the
+            problem. The new screen also replaces one-card-per-van with a van picker.
+            🔴 ONE LINE, OUTSIDE THE VAN LOOP. A first draft put it inside each van's card, which gave
+            a three-van truck three identical pointers — and, because it sat inside the "Same as Van 1"
+            collapse, showed none at all on a following van. Capacity is no longer a per-van card
+            here, so its pointer is not one either.
+            ⚠️ CAPACITY NOW HAS ITS OWN "same as Van 1" FLAG
+            (`truck_vans.capacity_same_as_first_van`), so the switch on each card above covers
+            everything EXCEPT capacity — which its own helper line now says. 20261010 initialises the
+            new flag from the old one, so no van's behaviour changed on the day it shipped. */}
+        <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <p className="text-sm text-slate-600">
+            Kitchen capacity has moved to{' '}
+            <button type="button" onClick={onOpenKitchenCapacity}
+              className="font-semibold text-orange-700 underline hover:text-orange-800">
+              Menu › Kitchen capacity
+            </button>
+          </p>
+        </div>
 
         {addingVan && (
           <div className="mt-3 flex gap-2">

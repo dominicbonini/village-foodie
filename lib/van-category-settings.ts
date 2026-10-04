@@ -248,14 +248,54 @@ export const VAN_COPY_FIELDS = [
   'offline_auto_reject_mins',
   'show_cooking_step',
   'order_ready_enabled',
-  'kitchen_capacity',
-  'capacity_window_mins',
   'buzzer_count',
   'collection_interval_mins',
   'operator_collection_interval_mins',
 ] as const
 
 export type VanCopyField = typeof VAN_COPY_FIELDS[number]
+
+/**
+ * ── 🔴 THE CAPACITY SWITCH'S OWN FIELDS (October 2026) ────────────────────────────────────────────
+ * `kitchen_capacity` and `capacity_window_mins` LEFT `VAN_COPY_FIELDS` and live here instead, because
+ * capacity moved to Menu › Kitchen capacity with a switch of its own
+ * (`truck_vans.capacity_same_as_first_van`).
+ *
+ * 🔴 THE TWO SETS MUST BE DISJOINT, AND THAT IS THE WHOLE POINT. If a field were in both, turning on
+ * Settings' "Same as Van 1" would also move the van's capacity — which the capacity switch says it
+ * owns — and the operator would have two controls that quietly undo each other. `capacitySplitIsClean`
+ * below is the assertion, and scripts/van-category-settings.cjs runs it.
+ *
+ * ⚠️ THE CATEGORY ROWS (`van_category_settings`) TRAVEL WITH CAPACITY, not with the other settings.
+ * They are per-category batch sizes and prep times — the capacity table's own rows — so the capacity
+ * switch copies and fans them out, and Settings' switch no longer touches them.
+ */
+export const CAPACITY_COPY_FIELDS = [
+  'kitchen_capacity',
+  'capacity_window_mins',
+] as const
+
+export type CapacityCopyField = typeof CAPACITY_COPY_FIELDS[number]
+
+/**
+ * 🔴 NO FIELD IS IN BOTH SETS. Exported so a harness can assert it rather than a comment claiming it.
+ * A field in both would make the two switches fight over one column.
+ */
+export const capacitySplitIsClean = (): boolean =>
+  !(VAN_COPY_FIELDS as readonly string[]).some(f => (CAPACITY_COPY_FIELDS as readonly string[]).includes(f))
+
+/**
+ * Just the CAPACITY fields of a van row, for the capacity switch's copy and fan-out.
+ *
+ * ⚠️ SAME SHAPE AS `vanCopyPayload`, deliberately: one function per switch, each over its own field
+ * list, so neither can carry the other's columns by accident.
+ */
+export function capacityCopyPayload(van: Record<string, unknown> | null | undefined): Record<string, unknown> {
+  const out: Record<string, unknown> = {}
+  if (!van) return out
+  for (const f of CAPACITY_COPY_FIELDS) if (f in van) out[f] = van[f]
+  return out
+}
 
 /** Just the copyable fields of a van row, for the fan-out write. */
 export function vanCopyPayload(van: Record<string, unknown> | null | undefined): Record<string, unknown> {
@@ -357,27 +397,45 @@ export async function readVanCategorySettingsForTruck(
 export async function readVanSameAsFirst(
   supabase: SupabaseClient,
   truckId: string,
-): Promise<{ ok: boolean; byVanId: Map<string, boolean>; createdAt: Map<string, string | null> }> {
+): Promise<{
+  ok: boolean
+  byVanId: Map<string, boolean>
+  /**
+   * 🔴 THE CAPACITY SWITCH, WHICH IS A SECOND, INDEPENDENT FLAG (October 2026). Kitchen capacity
+   * moved to Menu › Kitchen capacity with its own switch, so `same_as_first_van` now covers
+   * everything EXCEPT capacity and this covers capacity alone. The two were one column; a truck must
+   * be able to give Van 2 the same service settings and a smaller kitchen, or the reverse.
+   * ⚠️ READ IN THE SAME QUERY, so the pair cannot come from two different reads of one table.
+   */
+  capacityByVanId: Map<string, boolean>
+  createdAt: Map<string, string | null>
+}> {
   const byVanId = new Map<string, boolean>()
+  const capacityByVanId = new Map<string, boolean>()
   const createdAt = new Map<string, string | null>()
   try {
     const { data, error } = await supabase
       .from('truck_vans')
-      .select('id, same_as_first_van, created_at')
+      .select('id, same_as_first_van, capacity_same_as_first_van, created_at')
       .eq('truck_id', truckId)
     if (error) {
       const code = (error as { code?: string }).code
       console.warn(`[van-category-settings] truck ${truckId}: same_as_first_van unreadable (${code ?? 'no code'}): ${error.message}; every switch reads off`)
-      return { ok: false, byVanId, createdAt }
+      return { ok: false, byVanId, capacityByVanId, createdAt }
     }
-    for (const row of (data ?? []) as Array<{ id: string; same_as_first_van?: boolean | null; created_at?: string | null }>) {
+    for (const row of (data ?? []) as Array<{ id: string; same_as_first_van?: boolean | null; capacity_same_as_first_van?: boolean | null; created_at?: string | null }>) {
       if (!row?.id) continue
       byVanId.set(row.id, !!row.same_as_first_van)
+      /* ⚠️ `undefined` BEFORE THE MIGRATION FALLS BACK TO THE OLD FLAG, not to false. Until 20261010
+       * is applied, `same_as_first_van` IS what covers capacity — so reading the capacity switch as
+       * off would show "set separately" on a van the operator had set to follow. One deploy order,
+       * either way round, and the screen tells the truth in both. */
+      capacityByVanId.set(row.id, row.capacity_same_as_first_van ?? !!row.same_as_first_van)
       createdAt.set(row.id, row.created_at ?? null)
     }
-    return { ok: true, byVanId, createdAt }
+    return { ok: true, byVanId, capacityByVanId, createdAt }
   } catch (e) {
     console.warn(`[van-category-settings] truck ${truckId}: same_as_first_van read threw; every switch reads off:`, e instanceof Error ? e.message : String(e))
-    return { ok: false, byVanId, createdAt }
+    return { ok: false, byVanId, capacityByVanId, createdAt }
   }
 }
