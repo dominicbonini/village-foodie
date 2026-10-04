@@ -29,11 +29,18 @@ version of the document they were holding.** ⚠️ **Grep before finishing:** `
 ## V13.9 — 3–4 October 2026 — SINGLE-EVENT POSTS AND A DESIGN PER PLACE; EVENT TYPES (STAGES 1–2, ON A SECOND BRANCH); KITCHEN CAPACITY UNDER MENU; PILL SUB-TABS. NOTHING DEPLOYED.
 
 **Status — read this first.**
-- **Nothing in this block is live.** There are now **two** unmerged branches:
-  - **`schedule-graphics`** — everything from V13.8, plus the single-event post, a design per place, the
-    Tidy up places fixes, Kitchen capacity under Menu, Schedule settings in a modal, and pill sub-tabs.
-  - **`event-types`** — cut from `main` on 4 October. Event types stages 1 and 2 (service settings), the
-    Event types modal (v3) and the dashboard "This event" card.
+- **Nothing in this block is live.** 🔴 **AMENDED 5 OCTOBER — THERE IS NOW ONE BRANCH.** `event-types`
+  was merged into `schedule-graphics` (`5a50e59`), which is the only branch in use; `event-types` is
+  left where it was and is not to be built on. `schedule-graphics` now carries:
+  - everything from V13.8, plus the single-event post, a design per place, the Tidy up places fixes,
+    Kitchen capacity under Menu and pill sub-tabs;
+  - Event types stages 1 and 2 (service settings), the Event types grid and the dashboard "This event"
+    card — with the grid promoted from an overlay to the **third Schedule pill** (`24e9a78`);
+  - Schedule settings **back in Settings** (the modal of 4 October is reversed and its file deleted).
+  ⚠️ **THE MERGE BASE PREDATED `main`'s REVERT `deec9f5`**, which is in `event-types`' history — so the
+  merge tried to re-apply that revert onto the branch that built on stage 1. Four things it would have
+  taken silently are named in docs/combine-branches-report.md §2; anyone merging these histories again
+  should read that section first.
 - ⚠️ **Every migration below HAS been applied to the production database** by Dominic, with its
   verification selects checked. The tables and columns exist in production; no deployed code reads them.
 - **Next step agreed:** combine the two branches so there is one localhost to test (§72.3). Then the
@@ -130,9 +137,9 @@ carried are resolved — see `docs/reference-manual-v13-9-report.md` for the fou
 
 | Item | State |
 |---|---|
-| **Combine the branches** (event-types into schedule-graphics), Event types as the third Schedule pill, one localhost | next prompt |
-| **Schedule settings back into Settings** (reverse the modal) | decided 4 Oct, not built |
-| **The buzzer row is two settings**: a type sets the per-event *prompt*; Standard's switch sets whether the van *has buzzers* (`buzzer_count`), and toggling it resets the count to the default. Proposed fix: a per-van "Remind me to add a buzzer" default (needs SQL) | awaiting Dominic |
+| ~~**Combine the branches** (event-types into schedule-graphics), Event types as the third Schedule pill, one localhost~~ | **DONE 5 Oct** — merge `5a50e59`, pill `24e9a78`. `schedule-graphics` is the only branch in use; `event-types` is left as it was. See docs/combine-branches-report.md |
+| ~~**Schedule settings back into Settings** (reverse the modal)~~ | **DONE 5 Oct** (`24e9a78`). "Your schedule" and "Import exclusions" restored above `CustomDomainSetup`, byte-identical to the commit before they moved; the modal file, the finding-events card and the Settings pointer are deleted |
+| ~~**The buzzer row is two settings**~~ | **CLOSED 5 Oct — NO CHANGE, by Dominic's decision.** The rule stands as built: **if a van has buzzers, the reminder is on.** The proposed per-van "Remind me to add a buzzer" default is NOT wanted, so the migration it needed is not written. ⚠️ The three layers of §39 are unchanged — `truck_vans.buzzer_count` is capability, `truck_events.buzzer_prompt` is behaviour, `orders.buzzer_number` is the fact — and this decision is about the DEFAULT only, not about collapsing them |
 | Event types: **prices** (types and dashboard together), **items sold and stock**, **deals per type**, **private events + private link + QR** | designed (§68.2–68.3, Event types canvas), not built |
 | **Places tab** in Schedule | decided, to mock up after the merge |
 | Posts visible on **Pizza Kitchen only** at first deploy | for the release prompt |
