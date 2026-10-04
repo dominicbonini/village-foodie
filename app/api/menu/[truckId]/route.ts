@@ -12,6 +12,8 @@ import { isPreorderDeadlinePassed, preorderDeadlineClock, formatPreorderLabel, i
 import { canAccess } from '@/lib/features'
 // ⚠️ TEMPORARY — delete with the online-payments switch. See the migration named in that file.
 import { resolveOnlineCardPayments } from '@/lib/payments/online-payments-switch'
+import { resolveOfflineWithType } from '@/lib/event-types/resolve'
+import { readEventType } from '@/lib/event-types/read'
 
 // ── PER-ROUTE CEILING ─────────────────────────────────────────────────────────────────────────────
 // THE CUSTOMER MENU. Read-only: menu items, categories, modifier groups/options, per-event stock
@@ -259,6 +261,11 @@ export async function GET(
         preorderEventStartMins = (sh || 0) * 60 + (sm || 0)
       }
       preorderEventDate = ev.event_date ?? null
+      /* 🔴 THE EVENT'S TYPE, READ SEPARATELY AND PROBED. NOT added to the named select above: this
+       * route serves the CUSTOMER menu, and a 42703 there would fail the whole statement and take the
+       * pause state, the times and the extra-wait with it. `readEventType` resolves to "no type" on
+       * any failure, which is today's behaviour for every event. */
+      const eventTypeForOffline = (await readEventType(supabase, effectiveEventId)).type
       let vanAutoPause = false
       if (ev.van_id) {
         const { data: van } = await supabase
@@ -268,10 +275,17 @@ export async function GET(
           .single()
         vanAutoPause = van?.auto_pause_on_offline ?? false
       }
-      const offlineProtectionEnabled =
-        ev.offline_protection_override !== null && ev.offline_protection_override !== undefined
-          ? ev.offline_protection_override
-          : vanAutoPause
+      /* 🔴 THROUGH THE RESOLVER (October 2026). This decided the CUSTOMER pause gate from the event
+       * override and the van default; a type can now sit between them, and this is the surface that
+       * tells a customer whether they can order — so it must agree with the monitor that pauses and
+       * with the dashboard that displays. With no type it is exactly the expression it replaced.
+       * ⚠️ ONLY `.enabled` IS USED HERE. The mode decides which marker the monitor writes; this gate
+       * reads `online_paused_until`, which only the pause mode ever sets. */
+      const offlineProtectionEnabled = resolveOfflineWithType(
+        ev as never,
+        eventTypeForOffline,
+        { auto_pause_on_offline: vanAutoPause },
+      ).enabled
 
       const manualPaused = ev.paused_until ? new Date(ev.paused_until) > new Date() : false
       const offlinePaused = offlineProtectionEnabled && ev.online_paused_until

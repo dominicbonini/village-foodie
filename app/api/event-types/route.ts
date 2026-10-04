@@ -37,6 +37,7 @@ import {
 import { readTypesForTruck, countUpcomingByType, usualTypeForVenue } from '@/lib/event-types/read'
 import { isIntervalChoice } from '@/lib/slot-interval-core'
 import { readVanIntervalsForTruck } from '@/lib/slot-interval'
+import { OFFLINE_PROTECTION_MODES } from '@/lib/copy/offlineProtection'
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
@@ -68,10 +69,22 @@ const allowed = (truck: TruckRow): boolean =>
  * five intervals; a value outside it cannot be honoured, and "same as Standard" is the only safe
  * reading of a value nobody can act on.
  */
-function cleanValue(key: ServiceKey, raw: unknown): boolean | number | null {
+function cleanValue(key: ServiceKey, raw: unknown): boolean | number | string | null {
   if (key === 'collection_interval_mins') {
     const n = typeof raw === 'number' ? raw : Number(raw)
     return isIntervalChoice(n) ? n : null
+  }
+  /* 🔴 THE MODE'S VOCABULARY IS THE COPY MODULE'S, not a pair of literals written here. Anything else
+   * becomes NULL ("same as Standard"), which is also what the database CHECK would allow. */
+  if (key === 'offline_protection_mode') {
+    return OFFLINE_PROTECTION_MODES.some(m => m.value === raw) ? String(raw) : null
+  }
+  /* 🔴 5-30, THE SAME BOUNDS the van column's CHECK, this type's CHECK and `set_offline_protection`
+   * all use. The picker's six values are a UI affordance; any integer in range is accepted, exactly
+   * as the van column accepts one. */
+  if (key === 'offline_auto_reject_mins') {
+    const n = typeof raw === 'number' ? raw : Number(raw)
+    return Number.isInteger(n) && n >= 5 && n <= 30 ? n : null
   }
   return raw === true ? true : raw === false ? false : null
 }
@@ -119,12 +132,18 @@ export async function POST(req: NextRequest) {
      * ⚠️ THE FIRST DRAFT OF THIS HANDLER SELECTED ALL THREE TOGETHER and that harness caught it. */
     const [{ data: vans }, vanGrids] = await Promise.all([
       supabase.from('truck_vans')
-        .select('id, order_ready_enabled, buzzer_count')
+        /* ⚠️ STILL NO INTERVAL COLUMN HERE — scripts/slot-interval-van-list-tolerance.cjs refuses a
+         * `truck_vans` select that mixes `collection_interval_mins` with other van fields, because one
+         * 42703 would fail the whole statement. The grid comes from `readVanIntervalsForTruck` below. */
+        .select('id, order_ready_enabled, buzzer_count, auto_pause_on_offline, offline_protection_mode')
         .eq('truck_id', truck.id).eq('active', true),
       readVanIntervalsForTruck(supabase, truck.id),
     ])
 
-    const vanRows = (vans as { id: string; order_ready_enabled?: boolean | null; buzzer_count?: number | null }[] | null) ?? []
+    const vanRows = (vans as {
+      id: string; order_ready_enabled?: boolean | null; buzzer_count?: number | null
+      auto_pause_on_offline?: boolean | null; offline_protection_mode?: string | null
+    }[] | null) ?? []
     const distinct = <T,>(pick: (v: typeof vanRows[number]) => T): { same: boolean; value: T | null } => {
       if (vanRows.length === 0) return { same: true, value: null }
       const first = pick(vanRows[0])
@@ -132,6 +151,10 @@ export async function POST(req: NextRequest) {
     }
     const ready = distinct(v => v.order_ready_enabled ?? false)
     const rack = distinct(v => (v.buzzer_count ?? null) !== null)
+    /* ⚠️ OFFLINE PROTECTION'S STANDARD IS THE VAN'S SWITCH AND MODE TOGETHER, summarised as one
+     * string because the modal shows it as one row. "Set per van" when the vans disagree on either. */
+    const offSwitch = distinct(v => v.auto_pause_on_offline === true)
+    const offMode = distinct(v => (v.offline_protection_mode ?? 'pause'))
     /* ⚠️ THE CUSTOMER GRID, NOT THE OPERATOR ONE — a type sets only the customer grid, so Standard's
      * column must show the same thing a type would be replacing. */
     const gridValues = vanRows.map(v => vanGrids.byVanId.get(v.id)?.customer ?? 5)
@@ -153,6 +176,11 @@ export async function POST(req: NextRequest) {
         buzzer_prompt: { value: rack.value === true, perVan: !rack.same },
         takes_cash: { value: truck.takes_cash ?? false, perVan: false },
         order_ready: { value: ready.value === true, perVan: !ready.same },
+        offline_protection: {
+          enabled: offSwitch.value === true,
+          mode: offMode.value ?? 'pause',
+          perVan: !offSwitch.same || !offMode.same,
+        },
         collection_interval_mins: { value: grid.value ?? 5, perVan: !grid.same },
       },
     })

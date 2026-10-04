@@ -919,6 +919,9 @@ export async function GET(req: NextRequest) {
           takes_cash: eventTypeRead.type.takes_cash,
           order_ready: eventTypeRead.type.order_ready,
           collection_interval_mins: eventTypeRead.type.collection_interval_mins,
+          offline_protection: eventTypeRead.type.offline_protection,
+          offline_protection_mode: eventTypeRead.type.offline_protection_mode,
+          offline_auto_reject_mins: eventTypeRead.type.offline_auto_reject_mins,
         }
       : null,
     /* Which settings on this event are the truck's own hand changes — the "THIS EVENT" badges and the
@@ -927,6 +930,17 @@ export async function GET(req: NextRequest) {
       buzzer_prompt: (selectedEvent as any)?.buzzer_prompt !== null && (selectedEvent as any)?.buzzer_prompt !== undefined,
       takes_cash: (selectedEvent as any)?.takes_cash_override !== null && (selectedEvent as any)?.takes_cash_override !== undefined,
       order_ready: orderReadyIsOwn,
+      /* ⛔ OFFLINE PROTECTION'S FLAG IS NOT HERE, AND THAT IS DELIBERATE. Its three override columns are
+       * not on the named `truck_events` select above, and this file's own comment records what adding a
+       * column to that select costs if the database disagrees: PostgREST answers 42703, the whole
+       * statement fails, and the operator's board goes blank. `offline_auto_reject_mins_override` has no
+       * migration in this repository at all (only 20260819's function references it), so I will not make
+       * the board depend on it.
+       * 🔴 THE CLIENT ALREADY HAS ALL THREE. app/dashboard/[token]/page.tsx reads them in its own
+       * separate query (`eventOfflineOverride` / `eventOfflineModeOverride` / `eventAutoRejectOverride`),
+       * which is a read that can fail harmlessly. The card computes the flag from those with the same
+       * `offlineIsHandChange` this file would have used, so there is still one test — it just runs where
+       * the data safely is. */
       /* ⚠️ FROM THE TRUCK-WIDE MAP THAT IS ALREADY LOADED, keyed by the selected event — no extra
        * read. `hasEventOverride` is slot-interval's own test for "this event carries its own pair",
        * so this badge and `applyEventIntervals` agree about what that means. */

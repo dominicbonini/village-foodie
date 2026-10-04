@@ -21,6 +21,7 @@
 const fs = require('fs')
 const path = require('path')
 const { compile, headWorktree } = require('./_slot-interval-compile.cjs')
+const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')
 
 /** The modules under test, and the pre-build tree's equivalents. */
@@ -32,11 +33,17 @@ const LIB_NOW = [
   'lib/event-types/read.ts',
   'lib/slot-interval-core.ts', 'lib/slot-interval.ts',
   'lib/buzzer.ts', 'lib/payments/paid-step.ts', 'lib/features.ts',
+  /* The offline vocabulary. A leaf with no imports, and the OWNER of the two mode values — so a
+   * check on the resolver's mode chain is a check against the same constants the screens render. */
+  'lib/copy/offlineProtection.ts',
 ]
 /* ⚠️ THE BEFORE TREE HAS NO lib/event-types AND NO lib/slot-interval-core. Compiling the same list
  * against it would fail on a missing file, which a careless harness would report as "the build broke"
  * rather than as "that is the point". Its list is what existed. */
-const LIB_BEFORE = ['lib/slot-interval.ts', 'lib/buzzer.ts', 'lib/payments/paid-step.ts', 'lib/features.ts']
+const LIB_BEFORE = [
+  'lib/slot-interval.ts', 'lib/buzzer.ts', 'lib/payments/paid-step.ts', 'lib/features.ts',
+  'lib/copy/offlineProtection.ts',
+]
 
 let pass = 0, fail = 0
 const t = (label, ok) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label) } }
@@ -51,6 +58,22 @@ const J = (x) => JSON.stringify(x)
  * "`order_ready_source: 'truck'` is what makes this a hand change" counted as a second writer. A check
  * that forbids writing down why is a worse check, so it is the code that is counted.
  */
+/**
+ * A type row with every setting NULL, overridden by `o`.
+ *
+ * 🔴 ONE DEFINITION AT MODULE SCOPE. There were four block-scoped copies of this, one per section, and
+ * when stage 2b added three offline columns three of them were updated and the fourth was not — which
+ * is how a fixture ends up missing a field the resolver reads. `blankTypeValues()` in the real module
+ * is the production equivalent; this mirrors it for fixtures that want a partial override.
+ */
+function typeWith(o) {
+  return {
+    buzzer_prompt: null, takes_cash: null, order_ready: null, collection_interval_mins: null,
+    offline_protection: null, offline_protection_mode: null, offline_auto_reject_mins: null,
+    ...o,
+  }
+}
+
 const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 
 function build(root, files, tag) {
@@ -67,10 +90,13 @@ function build(root, files, tag) {
     buzzer: c.req('lib/buzzer.js'),
     paid: c.req('lib/payments/paid-step.js'),
     features: c.req('lib/features.js'),
+    copy: c.req('lib/copy/offlineProtection.js'),
   }
 }
 
 const NOW = build(REPO, LIB_NOW, 'et-now')
+/** The number of real offline modes — the copy module owns the list, so this reads it. */
+const OFFLINE_MODES_COUNT = NOW.copy.OFFLINE_PROTECTION_MODES.length
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE FIXTURE MATRIX — every shape an untyped truck's data can take
@@ -106,8 +132,15 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
   try {
     BEFORE = build(wt, LIB_BEFORE, 'et-before')
 
-    t('🔴 the before tree genuinely predates this build — it has no event-types module',
-      BEFORE.resolve === null && !fs.existsSync(path.join(wt, 'lib/event-types/resolve.ts')))
+    /* ⚠️ THE BASELINE'S MEANING MOVED WITH THE BUILD (October 2026, stage 2b). At stage 1 HEAD was
+     * the PRE-EVENT-TYPES tree, so this asserted the absence of the module. HEAD is now stage 1,
+     * which HAS the module — so the premise is no longer "no event types existed" but "offline
+     * protection was not yet a type setting", and that is what is asserted. Stage 1's own run proved
+     * byte-identity against the pre-event-types tree; this run proves THIS build changed nothing. */
+    t('🔴 the before tree is STAGE 1 — it has the resolver, without the offline one',
+      BEFORE.resolve !== null
+      && typeof BEFORE.resolve.resolveBuzzerPromptWithType === 'function'
+      && BEFORE.resolve.resolveOfflineWithType === undefined)
 
     // ── 1a · BUZZERS ────────────────────────────────────────────────────────────────────────────
     let diffs = []
@@ -154,14 +187,20 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
      * `(event)?.order_ready_override ?? vanOrderReadyDefault` at app/api/dashboard/route.ts:635 — not
      * in a module — so it is reproduced from the pre-build SOURCE rather than retyped, and the source
      * it is read from is asserted below. */
+    /* ⚠️ STAGE 1 ALREADY MOVED THIS OUT OF LINE, so the premise is now that the BEFORE tree resolves
+     * it through the same function — and the comparison is resolver against resolver rather than
+     * resolver against a remembered expression. Stronger, not weaker: it compares two compiled
+     * implementations across the whole matrix. */
     const beforeSrc = fs.readFileSync(path.join(wt, 'app/api/dashboard/route.ts'), 'utf8')
-    const hadInline = /effectiveOrderReady = \(capacityEvent as any\)\?\.order_ready_override \?\? vanOrderReadyDefault/.test(beforeSrc)
-    t('🔴 the pre-build tree really did resolve the mark-ready step inline (the premise of 1d)', hadInline)
-    const beforeOrderReady = (ev, vanDefault) => ev ?? vanDefault
+    t('🔴 the before tree already resolved the mark-ready step through the resolver (the premise of 1d)',
+      /effectiveOrderReady = resolveOrderReadyWithType\(/.test(beforeSrc)
+      && typeof BEFORE.resolve.resolveOrderReadyWithType === 'function')
+    const beforeOrderReady = (ev, src, vanDefault) =>
+      BEFORE.resolve.resolveOrderReadyWithType(ev, src, null, vanDefault)
 
     diffs = []
     for (const van of VANS) for (const ev of TRI) for (const src of [null, 'seed', 'truck']) {
-      const a = beforeOrderReady(ev, van.order_ready_enabled)
+      const a = beforeOrderReady(ev, src, van.order_ready_enabled)
       /* 🔴 `null` FOR THE TYPE. Note the SOURCE is varied across all three values as well: an untyped
        * event must resolve the same way WHATEVER that column says, which is the guarantee that makes
        * the new column safe to add. */
@@ -171,6 +210,64 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
     t(`🔴 the mark-ready step is byte-identical across ${VANS.length * TRI.length * 3} inputs — INCLUDING every value of the new source column`,
       diffs.length === 0)
     if (diffs.length) console.log('      ' + J(diffs.slice(0, 4)))
+
+    // ── 1d-ii · OFFLINE PROTECTION (stage 2b) ───────────────────────────────────────────────────
+    /* 🔴 THE BEFORE TREE HAS NO OFFLINE RESOLVER, so the baseline is the three INLINE expressions it
+     * used — and they are read from its SOURCE rather than retyped, so the comparison is against what
+     * actually ran. All three are reproduced exactly:
+     *     switch : event override !== null ? event override : van default
+     *     mode   : event override ?? van default ?? 'pause'
+     *     delay  : event override ?? van default
+     * ⚠️ `?? 'pause'` AND `!== null ? :` ARE NOT INTERCHANGEABLE WITH `??` HERE and the before tree
+     * used each where it did; the baseline keeps them. */
+    const beforeDashSrc = fs.readFileSync(path.join(wt, 'app/dashboard/[token]/page.tsx'), 'utf8')
+    t('🔴 the before tree really did resolve all three offline values inline (the premise of 1d-ii)',
+      /const effectiveOfflineProtection=eventOfflineOverride!==null\?eventOfflineOverride:vanAutoPause/.test(beforeDashSrc)
+      && /const effectiveOfflineMode:OfflineProtectionMode=eventOfflineModeOverride\?\?vanOfflineMode/.test(beforeDashSrc)
+      && /const effectiveAutoRejectMins:number\|null=eventAutoRejectOverride\?\?vanAutoRejectMins/.test(beforeDashSrc))
+
+    const MODES = [null, 'pause', 'no_auto_accept', 'nonsense']
+    const DELAYS = [null, 5, 15, 30, 7, 0, 99]
+    diffs = []
+    for (const evOn of TRI) for (const evMode of MODES) for (const evDelay of DELAYS) {
+      for (const van of [
+        { auto_pause_on_offline: false, offline_protection_mode: null, offline_auto_reject_mins: null },
+        { auto_pause_on_offline: true, offline_protection_mode: 'pause', offline_auto_reject_mins: 15 },
+        { auto_pause_on_offline: true, offline_protection_mode: 'no_auto_accept', offline_auto_reject_mins: null },
+      ]) {
+        /* THE BEFORE TREE'S THREE EXPRESSIONS, verbatim. */
+        const a = {
+          enabled: evOn !== null ? evOn : (van.auto_pause_on_offline ?? false),
+          mode: evMode ?? van.offline_protection_mode ?? 'pause',
+          autoRejectMins: evDelay ?? van.offline_auto_reject_mins ?? null,
+        }
+        const b = NOW.resolve.resolveOfflineWithType(
+          { offline_protection_override: evOn, offline_protection_mode_override: evMode, offline_auto_reject_mins_override: evDelay },
+          null, van,
+        )
+        /* ⚠️ THE BEFORE TREE DID NOT VALIDATE THE MODE OR THE DELAY and the resolver does, so a value
+         * OUTSIDE the vocabulary is allowed to differ — that is a deliberate hardening, not a
+         * regression, and the two cases are named rather than hidden by a loose comparison. */
+        const modeOutOfVocab = evMode === 'nonsense'
+        const delayOutOfRange = evDelay !== null && !(Number.isInteger(evDelay) && evDelay >= 5 && evDelay <= 30)
+        if (a.enabled !== b.enabled) diffs.push({ evOn, van: van.auto_pause_on_offline, a: a.enabled, b: b.enabled, which: 'switch' })
+        if (!modeOutOfVocab && a.mode !== b.mode) diffs.push({ evMode, van: van.offline_protection_mode, a: a.mode, b: b.mode, which: 'mode' })
+        if (!delayOutOfRange && a.autoRejectMins !== b.autoRejectMins) diffs.push({ evDelay, van: van.offline_auto_reject_mins, a: a.autoRejectMins, b: b.autoRejectMins, which: 'delay' })
+      }
+    }
+    t(`🔴 OFFLINE PROTECTION is byte-identical across ${TRI.length * MODES.length * DELAYS.length * 3} inputs — switch, mode and delay`,
+      diffs.length === 0)
+    if (diffs.length) console.log('      ' + J(diffs.slice(0, 4)))
+
+    /* ⚠️ AND THE HARDENING IS ASSERTED RATHER THAN ASSUMED, so "allowed to differ" above is not a
+     * licence to differ in any direction. */
+    t('⚠️ an out-of-vocabulary mode and an out-of-range delay are coerced, not passed through', (() => {
+      const r = NOW.resolve.resolveOfflineWithType(
+        { offline_protection_override: true, offline_protection_mode_override: 'nonsense', offline_auto_reject_mins_override: 99 },
+        null, { auto_pause_on_offline: true, offline_protection_mode: 'no_auto_accept', offline_auto_reject_mins: 20 },
+      )
+      return r.mode === 'no_auto_accept' && r.autoRejectMins === 20
+    })())
 
     // ── 1e · THE PRICE PATH IS NOT TOUCHED AT ALL ───────────────────────────────────────────────
     /* 🔴 THE STRONGEST AVAILABLE PROOF ABOUT THE SUBMIT ROUTE'S PRICED ARRAYS IS THAT THE CODE THAT
@@ -189,11 +286,12 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
       const now = fs.readFileSync(path.join(REPO, f), 'utf8')
       if (before !== now) changed.push(f)
     }
-    /* ⚠️ `paid-step.ts` IS EXPECTED TO DIFFER — it gained the optional third argument — so it is named
-     * as the ONE allowed difference rather than left off the list. Everything else must be identical. */
-    t('🔴 THE PRICE PATH IS UNCHANGED — repricing, the calculator and the submit route, byte-for-byte',
-      changed.length === 1 && changed[0] === 'lib/payments/paid-step.ts')
-    if (!(changed.length === 1 && changed[0] === 'lib/payments/paid-step.ts')) console.log('      changed: ' + J(changed))
+    /* ⚠️ NOTHING IS ALLOWED TO DIFFER NOW. At stage 1 `paid-step.ts` was the one permitted change (it
+     * gained the optional type argument); that landed in HEAD, so this build must leave the whole
+     * price path alone. If this ever fails, something in THIS stage has reached the money path. */
+    t('🔴 THE PRICE PATH IS UNCHANGED — repricing, the calculator, the submit route and the paid step',
+      changed.length === 0)
+    if (changed.length) console.log('      changed: ' + J(changed))
 
     /* ⚠️ AND THE SUBMIT ROUTE NAMES NOTHING FROM THIS FEATURE, which is the same claim from the other
      * direction and would catch an import added without changing behaviour. */
@@ -223,15 +321,17 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
   // ── 1g · A TYPED FIXTURE MUST DIFFER, OR SECTION 1 PROVES NOTHING ─────────────────────────────
   /* 🔴 THE CONTROL ON THE WHOLE OF SECTION 1. Every assertion above is "these are the same"; without
    * this one they would all pass on a resolver that ignored its type argument entirely. */
-  const typed = { buzzer_prompt: false, takes_cash: true, order_ready: true, collection_interval_mins: 30 }
+  const typed = typeWith({ buzzer_prompt: false, takes_cash: true, order_ready: true, collection_interval_mins: 30, offline_protection: false })
   const r = NOW.resolve
   const differs = [
     r.resolveBuzzerPromptWithType(null, typed) !== r.resolveBuzzerPromptWithType(null, null),
     r.resolveTakesCashWithType(null, typed, false) !== r.resolveTakesCashWithType(null, null, false),
     r.resolveOrderReadyWithType(false, 'seed', typed, false) !== r.resolveOrderReadyWithType(false, 'seed', null, false),
     J(r.resolveIntervalsWithType({ customer: 5, truck: 5 }, null, typed)) !== J(r.resolveIntervalsWithType({ customer: 5, truck: 5 }, null, null)),
+    r.resolveOfflineWithType(null, typed, { auto_pause_on_offline: true }).enabled
+      !== r.resolveOfflineWithType(null, null, { auto_pause_on_offline: true }).enabled,
   ]
-  t('🔴 CONTROL: a TYPED fixture differs on all four settings — so "identical" above is a real finding',
+  t('🔴 CONTROL: a TYPED fixture differs on all FIVE settings — so "identical" above is a real finding',
     differs.every(Boolean))
   if (!differs.every(Boolean)) console.log('      ' + J(differs))
 }
@@ -242,7 +342,6 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
 head('2 · HAND CHANGE ?? TYPE ?? DEFAULT')
 {
   const r = NOW.resolve
-  function typeWith(o) { return { buzzer_prompt: null, takes_cash: null, order_ready: null, collection_interval_mins: null, ...o } }
 
   t('🔴 A HAND CHANGE BEATS THE TYPE — buzzers', (() => {
     const type = typeWith({ buzzer_prompt: true })
@@ -309,7 +408,6 @@ head('2 · HAND CHANGE ?? TYPE ?? DEFAULT')
 head('3 · WHAT THE SCREENS SAY')
 {
   const r = NOW.resolve
-  function typeWith(o) { return { buzzer_prompt: null, takes_cash: null, order_ready: null, collection_interval_mins: null, ...o } }
 
   t('🔴 the summary names only settings this build RESOLVES — no prices, no menu, no deals', (() => {
     const s = r.summariseType(typeWith({ buzzer_prompt: true, collection_interval_mins: 10 }))
@@ -327,12 +425,32 @@ head('3 · WHAT THE SCREENS SAY')
   /* 🔴 ONE LIST OF SETTINGS, USED EVERYWHERE. A fifth place that spelled them out is a place that
    * could fall out of step when stage 3 adds one. */
   const ty = NOW.types
-  t('🔴 SERVICE_KEYS drives the labels, the override columns and the clear-my-changes list', (() => {
+  /* ── 🔴 TWO LISTS, TWO JOBS, AND THEY ARE NOT THE SAME LENGTH ─────────────────────────────────
+   * Offline protection is ONE row to an operator and THREE columns in the database, so `SERVICE_KEYS`
+   * (the type's columns, 7) and `SERVICE_ROWS` (what a human sees, 5) answer different questions.
+   * Collapsing them is what would make "2 of 5 settings changed" count an offline change three times.
+   * This asserts the split holds and that every derived list comes from the ROWS. */
+  t('🔴 SERVICE_ROWS drives the labels, the override columns and the clear-my-changes list', (() => {
+    const rows = ty.SERVICE_ROWS
     const keys = ty.SERVICE_KEYS
-    return keys.length === 4
-      && keys.every(k => typeof ty.SERVICE_LABELS[k] === 'string' && ty.SERVICE_LABELS[k].length > 0)
-      && keys.every(k => Array.isArray(ty.EVENT_OVERRIDE_COLUMNS[k]) && ty.EVENT_OVERRIDE_COLUMNS[k].length > 0)
-      && Object.keys(ty.EVENT_OVERRIDE_COLUMNS).length === keys.length
+    return rows.length === 5 && keys.length === 7
+      && rows.every(r => typeof ty.SERVICE_LABELS[r.id] === 'string' && ty.SERVICE_LABELS[r.id].length > 0)
+      && rows.every(r => Array.isArray(ty.EVENT_OVERRIDE_COLUMNS[r.id]) && ty.EVENT_OVERRIDE_COLUMNS[r.id].length > 0)
+      && Object.keys(ty.EVENT_OVERRIDE_COLUMNS).length === rows.length
+      // every row's keys are real type columns, and together they are ALL of them
+      && rows.flatMap(r => r.keys).every(k => keys.includes(k))
+      && new Set(rows.flatMap(r => r.keys)).size === keys.length
+      // the offline row owns three of them; every other row owns one
+      && rows.find(r => r.id === 'offline_protection').keys.length === 3
+      && rows.filter(r => r.id !== 'offline_protection').every(r => r.keys.length === 1)
+  })())
+  t('🔴 CLEARABLE_EVENT_COLUMNS is the flattened rows — so it cannot fall out of step', (() => {
+    const flat = ty.SERVICE_ROWS.flatMap(r => r.eventColumns)
+    return ty.CLEARABLE_EVENT_COLUMNS.length === flat.length
+      && flat.every(c => ty.CLEARABLE_EVENT_COLUMNS.includes(c))
+      // the three offline override columns are in it, which is what this build added
+      && ['offline_protection_override', 'offline_protection_mode_override', 'offline_auto_reject_mins_override']
+        .every(c => ty.CLEARABLE_EVENT_COLUMNS.includes(c))
   })())
   t('🔴 "clear my changes" clears the collection pair TOGETHER — an operator-only override is invalid', (() => {
     const cols = ty.EVENT_OVERRIDE_COLUMNS.collection_interval_mins
@@ -340,9 +458,14 @@ head('3 · WHAT THE SCREENS SAY')
       && cols.includes('operator_collection_interval_mins_override')
   })())
   t('⛔ …and it clears NOTHING a type cannot set', (() => {
-    const all = Object.values(ty.EVENT_OVERRIDE_COLUMNS).flat()
-    const forbidden = ['paused_until', 'online_paused_until', 'extra_wait_mins', 'show_paid_step_override',
-      'completion_presses_override', 'offline_protection_override', 'status', 'event_date', 'van_id']
+    const all = ty.CLEARABLE_EVENT_COLUMNS
+    /* ⚠️ `offline_protection_override` LEFT THIS LIST AND IS NOW EXPECTED — a type CAN set offline
+     * protection as of this build, so clearing it is correct. The MARKERS the monitor writes
+     * (`online_paused_until`, `offline_no_autoaccept_until`) must still never be cleared here: they
+     * are state about what already happened, not a setting. */
+    const forbidden = ['paused_until', 'online_paused_until', 'offline_no_autoaccept_until',
+      'extra_wait_mins', 'show_paid_step_override', 'completion_presses_override',
+      'status', 'event_date', 'van_id', 'event_type_id']
     return forbidden.every(c => !all.includes(c))
   })())
 
@@ -350,17 +473,36 @@ head('3 · WHAT THE SCREENS SAY')
     const b = ty.blankTypeValues()
     return ty.SERVICE_KEYS.every(k => b[k] === null)
   })())
-  t('🔴 NO SUGGESTION PROMISES ANYTHING THIS BUILD CANNOT DO', (() => {
-    /* Private visibility, prices, menus and stock are later stages. A suggestion that mentioned one
-     * would be a promise the next order breaks — and "Private hire" is still offered BY NAME. */
-    const sug = ty.TYPE_SUGGESTIONS
-    const words = sug.map(s => s.description.toLowerCase()).join(' | ')
-    return sug.length === 4
-      && sug.some(s => s.name === 'Private hire')
-      && !/private/.test(words) && !/price/.test(words) && !/menu/.test(words) && !/stock/.test(words)
-      && !/deal/.test(words)
-      // every value a suggestion pre-fills is one of the four settings, and nothing else
-      && sug.every(s => Object.keys(s.values).every(k => ty.SERVICE_KEYS.includes(k)))
+  /* ── 🔴 §2 · THE CHIPS ARE NAMES, AND A NEW TYPE STARTS EXACTLY LIKE STANDARD ─────────────────
+   * The first build's chips were SUGGESTIONS carrying pre-filled values, so two trucks tapping
+   * "Festival" each got three settings changed for them with nothing afterwards saying which three.
+   * The chips are now names only. This is the check that keeps them that way. */
+  t('🔴 THE NAME CHIPS CARRY NAMES AND NOTHING ELSE', (() => {
+    const chips = ty.TYPE_NAME_CHIPS
+    return Array.isArray(chips) && chips.length === 4
+      && chips.every(c => typeof c === 'string' && c.length > 0)
+      // ⛔ AND THE OLD SHAPE IS GONE, so nothing can still be reading values off a chip.
+      && ty.TYPE_SUGGESTIONS === undefined
+  })())
+  t('🔴 "Private hire" IS STILL OFFERED BY NAME — a chip with no values promises nothing',
+    ty.TYPE_NAME_CHIPS.includes('Private hire'))
+  t('🔴 EVERY NEW TYPE STARTS WITH EVERY SETTING NULL, whichever chip was tapped', (() => {
+    /* `blankTypeValues()` is the only starting state, and `create` has no other source for one: the
+     * route must take the NAME from the body and the values from that function. */
+    const b = ty.blankTypeValues()
+    const route = fs.readFileSync(path.join(REPO, 'app/api/event-types/route.ts'), 'utf8')
+    const create = route.slice(route.indexOf("if (action === 'create')"), route.indexOf("if (action === 'update')"))
+    return ty.SERVICE_KEYS.every(k => b[k] === null)
+      && Object.keys(b).length === ty.SERVICE_KEYS.length
+      && /blankTypeValues\(\)\[k\]/.test(create)
+      // ⛔ NOTHING IN THE CREATE PATH READS A CHIP'S VALUES, because a chip has none.
+      && !/TYPE_SUGGESTIONS|sug\.values/.test(route)
+  })())
+  t('🔴 …and the popup says so, in the board’s words', (() => {
+    const ui = fs.readFileSync(path.join(REPO, 'components/manage/EventTypes.tsx'), 'utf8')
+    return /It starts exactly like Standard\. Change anything after\./.test(ui)
+      // ⛔ and it shows no per-chip description
+      && !/sug\.description/.test(ui)
   })())
 }
 
@@ -370,7 +512,6 @@ head('3 · WHAT THE SCREENS SAY')
 head('4 · THE SEEDED order_ready_override')
 {
   const r = NOW.resolve
-  function typeWith(o) { return { buzzer_prompt: null, takes_cash: null, order_ready: null, collection_interval_mins: null, ...o } }
   const type = typeWith({ order_ready: true })
 
   t('🔴 A SEEDED VALUE DOES NOT BLOCK THE TYPE — the whole reason the source column exists',
@@ -507,9 +648,13 @@ head('5 · THE WIRING')
   t('🔴 the type is sent on CREATE only, never on an edit',
     /\.\.\.\(editingEvent\.id \? \{\} : \{ event_type_id: eventTypeId \}\)/.test(page))
   t('⚠️ the picker is cleared every time the modal opens', /setEventTypeId\(null\)/.test(page))
-  t('🔴 the dashboard mounts the control in one line',
-    /<EventTypeDashboardControl/.test(dashPage)
-    && /import \{ EventTypeDashboardControl \} from '@\/components\/manage\/EventTypes'/.test(dashPage))
+  /* ⚠️ THE MOUNT CHANGED (stage 2b): the standalone type control became the "This event" CARD, which
+   * is where five per-event controls now live. Still one mount and one import. */
+  t('🔴 the dashboard mounts the "This event" CARD in one line',
+    /<ThisEventCard/.test(dashPage)
+    && /import \{ ThisEventCard, useEventDeals \} from '@\/components\/dashboard\/ThisEventCard'/.test(dashPage)
+    // ⛔ and the control it replaced is gone from this screen
+    && !/<EventTypeDashboardControl/.test(dashPage))
 
   // ── THE SCREENS SHOW ONLY WHAT WORKS ─────────────────────────────────────────────────────────
   t('⛔ THE PANEL SHOWS THE SERVICE SECTION ONLY — no prices, items, stock, deals or private', (() => {
@@ -538,6 +683,268 @@ head('5 · THE WIRING')
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
+// 5b · STAGE 2b · THE MODAL, THE CONTROLS-IN-COLUMN RULE, AND THE DEALS
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('5b · THE MODAL AND THE CARD')
+{
+  const ui = fs.readFileSync(path.join(REPO, 'components/manage/EventTypes.tsx'), 'utf8')
+  const card = fs.readFileSync(path.join(REPO, 'components/dashboard/ThisEventCard.tsx'), 'utf8')
+  const dashAction = fs.readFileSync(path.join(REPO, 'app/api/dashboard/action/route.ts'), 'utf8')
+  const dashPage = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+  const monitor = fs.readFileSync(path.join(REPO, 'supabase/functions/heartbeat-monitor/index.ts'), 'utf8')
+
+  /* ── 🔴 §1 · A CENTRED MODAL WITH FIXED-WIDTH COLUMNS THAT SCROLL ────────────────────────────── */
+  t('🔴 IT IS A ~1000px CENTRED MODAL THAT NEVER GROWS', (() => {
+    return /max-w-\[1000px\]/.test(ui)
+      && /max-h-\[92vh\]/.test(ui)
+      // ⛔ and it is no longer the full-screen panel the first build used
+      && !/fixed inset-0 z-50 bg-slate-50 flex flex-col/.test(ui)
+  })())
+  t('🔴 EVERY TYPE COLUMN IS A FIXED 230px, so a column does not shrink as types are added', (() => {
+    return /gridTemplateColumns: `200px repeat\(\$\{types\.length \+ 1\}, 230px\)`/.test(ui)
+      // ⛔ the first build's shrinking columns are gone
+      /* ⚠️ COUNTED IN THE CODE: the note above this check names the old template on purpose, and a
+       * check that forbade writing down what was replaced would forbid explaining the fix. */
+      && !/minmax\(150px, 1fr\)/.test(codeOf(ui))
+  })())
+  t('🔴 …and when they no longer fit, THE COLUMNS scroll — not the dialog',
+    /overflow-x-auto[^"]*" data-types-scroller/.test(ui) || /data-types-scroller/.test(ui))
+
+  /* ── 🔴 THE CONTROLS ARE IN THEIR OWN TYPE'S COLUMN, NEVER IN THE LABEL COLUMN ────────────────
+   * This is the defect the rewrite exists to fix. `SettingRow` renders three things in order: the
+   * LABEL cell, the STANDARD cell, then one cell per type containing `<TypeControl>` — and the label
+   * cell must contain nothing but the label. */
+  t('🔴 NO CONTROL IS IN THE LABEL COLUMN', (() => {
+    const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('function TypeControl('))
+    const labelCell = row.slice(row.indexOf('text-sm font-semibold text-slate-900 min-h-11'), row.indexOf('{/* 🔴 STANDARD IS READ-ONLY'))
+    return /\{row\.label\}/.test(labelCell)
+      && !/<select|<button|<TypeControl|role="switch"/.test(labelCell)
+      // and the per-type cell is where the control is
+      && /\{types\.map\(t => \([\s\S]{0,400}<TypeControl row=\{row\}/.test(row)
+  })())
+  t('🔴 STANDARD IS READ-ONLY — its cell renders text, never a control', (() => {
+    const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('function TypeControl('))
+    const stdCell = row.slice(row.indexOf('{/* 🔴 STANDARD IS READ-ONLY'), row.indexOf('{types.map'))
+    return /standardText\(row, standard\)/.test(stdCell) && !/<select|<button/.test(stdCell)
+  })())
+  t('🔴 "Set per van" is what Standard says where the vans disagree',
+    /return 'Set per van'/.test(ui) && /perVan/.test(ui))
+
+  /* ── 🔴 "SAME AS STANDARD" IS A REAL STATE ON BOTH CONTROL KINDS ──────────────────────────────── */
+  t('🔴 for a DROPDOWN it is the first option', (() => {
+    /* The interval select's first option, and the offline list's first entry. */
+    const ctl = ui.slice(ui.indexOf('function TypeControl('))
+    return /<option value="">Same as Standard<\/option>/.test(ctl)
+      && /\{ value: '', label: 'Same as Standard' \}/.test(ui)
+      && ui.indexOf("{ value: '', label: 'Same as Standard' }") < ui.indexOf("{ value: 'off', label: 'Off' }")
+  })())
+  t('🔴 for a SWITCH it is a GREYED switch labelled "Same as Standard"', (() => {
+    const ctl = ui.slice(ui.indexOf('// ── A SWITCH ──'))
+    return /const explicit = value === true \|\| value === false/.test(ctl)
+      && /\$\{explicit \? '' : 'opacity-45'\}/.test(ctl)
+      && /<span className="text-xs text-slate-400 truncate">Same as Standard<\/span>/.test(ctl)
+  })())
+  t('🔴 …tapping an inheriting switch sets an EXPLICIT value',
+    /onPatch\(\{ \[key\]: explicit \? !value : true \}\)/.test(ui))
+  t('🔴 …and a small "Same as Standard" link beside an explicit value returns it to NULL', (() => {
+    const ctl = ui.slice(ui.indexOf('// ── A SWITCH ──'))
+    return /onClick=\{\(\) => onPatch\(\{ \[key\]: null \}\)\}/.test(ctl)
+      && /THE WAY BACK TO NULL/.test(ctl)
+  })())
+
+  /* ── 🔴 THE ⋯ MENU ──────────────────────────────────────────────────────────────────────────── */
+  t('🔴 Rename, Move left, Move right and Delete are in a ⋯ MENU on each type header', (() => {
+    const hdr = ui.slice(ui.indexOf('{/* heading row */}'), ui.indexOf('SERVICE</div>'))
+    return /aria-label=\{`More for \$\{t\.name\}`\}/.test(hdr)
+      && />Rename</.test(hdr) && />Move left</.test(hdr) && />Move right</.test(hdr) && />Delete</.test(hdr)
+  })())
+  t('⚠️ the "Used by" row stays', /USED BY<\/div>/.test(ui) && /Upcoming events/.test(ui))
+  t('⚠️ on a phone it is one column with a picker at the top',
+    /md:hidden/.test(ui) && /et-phone-pick/.test(ui))
+
+  /* ── 🔴 §3 · OFFLINE PROTECTION OFFERS WHAT THE SETTINGS CONTROL OFFERS ───────────────────────
+   * Settings › Kitchen offers a SWITCH then a MODE; the type's dropdown says the same in one control,
+   * and its two mode values come from the SAME constants that screen renders. */
+  t('🔴 the offline dropdown is Same as Standard · Off · the two real modes', (() => {
+    return /OFFLINE_CHOICES/.test(ui)
+      && /\.\.\.OFFLINE_PROTECTION_MODES\.map\(m => \(\{ value: m\.value as string, label: m\.label \}\)\)/.test(ui)
+      && OFFLINE_MODES_COUNT === 2
+  })())
+  t('🔴 …and it writes BOTH columns, so "Off" is not mistaken for "inherit"', (() => {
+    const fn = ui.slice(ui.indexOf('function offlinePatch('), ui.indexOf('const Dot ='))
+    return /if \(value === ''\) return \{ offline_protection: null, offline_protection_mode: null \}/.test(fn)
+      && /if \(value === 'off'\) return \{ offline_protection: false, offline_protection_mode: null \}/.test(fn)
+      && /return \{ offline_protection: true, offline_protection_mode: value \}/.test(fn)
+  })())
+  /* ⛔ THE DELAY IS DELIBERATELY NOT OFFERED ON A TYPE — see the report. Asserted so the omission is a
+   * decision on record rather than something overlooked, and so that adding it later is a conscious
+   * act that has to change this check. */
+  t('⛔ the type screen does NOT offer the auto-reject delay, and says why',
+    !/OFFLINE_AUTO_REJECT_OPTIONS/.test(ui)
+    && /THE AUTO-REJECT DELAY IS NOT OFFERED ON A TYPE/.test(ui))
+
+  /* 🔴 THE MONITOR IS THE THING THAT ACTS, and its chain is a second copy by necessity (a Deno edge
+   * function cannot import lib/). This holds the copy to the resolver's order. */
+  t('🔴 the heartbeat monitor resolves event ?? TYPE ?? van, in that order', (() => {
+    return /evType\?\.offline_protection \?\? van\.auto_pause_on_offline \?\? false/.test(monitor)
+      && /ev\.offline_protection_mode_override \?\? evType\?\.offline_protection_mode \?\? van\.offline_protection_mode \?\? 'pause'/.test(monitor)
+      && /event_types!event_type_id \(offline_protection, offline_protection_mode\)/.test(monitor)
+  })())
+  t('🔴 the menu API’s customer pause gate goes through the resolver', (() => {
+    const menu = fs.readFileSync(path.join(REPO, 'app/api/menu/[truckId]/route.ts'), 'utf8')
+    return /const offlineProtectionEnabled = resolveOfflineWithType\(/.test(menu)
+      && /readEventType\(supabase, effectiveEventId\)/.test(menu)
+      // ⛔ the inline expression it replaced is gone
+      && !/ev\.offline_protection_override !== null && ev\.offline_protection_override !== undefined/.test(codeOf(menu))
+  })())
+  t('🔴 the dashboard client resolves all three through ONE call', (() => {
+    return /const resolvedOffline=resolveOfflineWithType\(/.test(dashPage)
+      && /const effectiveOfflineProtection=resolvedOffline\.enabled/.test(dashPage)
+      && /const effectiveOfflineMode:OfflineProtectionMode=resolvedOffline\.mode/.test(dashPage)
+      && /const effectiveAutoRejectMins:number\|null=resolvedOffline\.autoRejectMins/.test(dashPage)
+  })())
+
+  /* ── 🔴 §4 · THE CARD ───────────────────────────────────────────────────────────────────────── */
+  t('🔴 THE CARD SHOWS FOR EVERY TRUCK; only the Event type ROW is conditional', (() => {
+    /* The mount is gated on an EVENT, never on having types; the row inside is gated on types. */
+    return /\{activeEvent && \(\s*\n\s*<div className="mb-3">\s*\n\s*<ThisEventCard/.test(dashPage)
+      && /\{types\.length > 0 && \(\s*\n\s*<Row label="Event type">/.test(card)
+  })())
+  t('🔴 every row writes a PER-EVENT path, and the card names them all', (() => {
+    /* The header's table is the contract. If a row is added that writes a truck column, this check is
+     * where it should become uncomfortable to write. */
+    return /EVERY CONTROL IN THIS CARD IS FOR THIS EVENT ONLY/.test(card)
+      /* ⚠️ THE CODE, NOT THE HEADER. That header lists the tables this card must never write, which
+       * is exactly the comment worth keeping. */
+      && !/from\('trucks'\)/.test(codeOf(card)) && !/truck_vans/.test(codeOf(card))
+  })())
+  t('🔴 the MENU row opens the EXISTING per-event stock screen', /setActiveTab\('stock'\)/.test(dashPage))
+  t('🔴 DEAL TOGGLES WRITE event_deals WITH overridden = true', (() => {
+    const fn = dashAction.slice(dashAction.indexOf("if (action === 'set_event_deal')"),
+      dashAction.indexOf("if (action === 'get_event_deals')"))
+    return /\.upsert\(\{ event_id: eventId, bundle_id: bundleId, active: active !== false, overridden: true \}/.test(fn)
+      && /onConflict: 'event_id,bundle_id'/.test(fn)
+      // 🔴 BOTH IDS PROVED AGAINST THIS TRUCK — event_deals carries no truck_id of its own
+      /* 🔴 AT LEAST TWO SCOPE CHECKS — the event and the bundle. `event_deals` carries no truck_id of
+       * its own, so both parents must be proved to belong to this truck. */
+      && (codeOf(fn).match(/\.eq\('truck_id', truck\.id\)/g) || []).length >= 2
+  })())
+  t('⚠️ a deal with NO row reports the bundle’s own default, not false', (() => {
+    const fn = dashAction.slice(dashAction.indexOf("if (action === 'get_event_deals')"))
+    return /active: row \? row\.active : b\.apply_to_new_events/.test(fn)
+  })())
+  t('🔴 "Reset to <type>" clears only what the card controls, and the deal overrides', (() => {
+    return /action:'assign',eventId:activeEvent\.id,typeId:eventType\?\.id\?\?null,clearOwn:true/.test(dashPage)
+      && /action:'reset_event_deals'/.test(dashPage)
+      // ⛔ and the reset DELETES the overridden rows rather than writing a snapshot
+      && /\.delete\(\)\.eq\('event_id', eventId\)\.eq\('overridden', true\)/.test(dashAction)
+  })())
+  t('🔴 each hand-changed row shows the THIS EVENT tag', (() => {
+    return /THIS EVENT<\/span>/.test(card)
+      && /own=\{buzzerPromptOwn\}/.test(card) && /own=\{takesCashOwn\}/.test(card)
+      && /own=\{orderReadyOwn\}/.test(card) && /own=\{collectionOwn\}/.test(card)
+      && /own=\{offlineOwn\}/.test(card) && /own=\{d\.own\}/.test(card)
+  })())
+  t('🔴 the footer counts exactly what Reset clears', (() => {
+    const fn = card.slice(card.indexOf('const ownFlags ='), card.indexOf('const commitType'))
+    return /const ownFlags = \[buzzerPromptOwn, takesCashOwn, orderReadyOwn, collectionOwn, offlineOwn\]/.test(fn)
+      && /deals\.filter\(d => d\.own\)\.length/.test(fn)
+  })())
+  t('⛔ THERE IS NO PRICES ROW YET, and the card says why', (() => {
+    const code = codeOf(card)
+    return !/>Prices</.test(code) && /NO PRICES ROW/.test(card)
+  })())
+  t('🔴 the safety-critical ⚠️ offline instruction travelled with the control', (() => {
+    return /OFFLINE_PROTECTION_EXPLAINER_LEAD/.test(card) && /OFFLINE_PROTECTION_EXPLAINER_BODY/.test(card)
+      && /OFFLINE_AUTO_REJECT_LABEL/.test(card)
+      // ⛔ and the Kitchen tab no longer carries a second copy of the control
+      && !/role="radiogroup" aria-label=\{OFFLINE_PROTECTION_SWITCH_LABEL\}/.test(dashPage)
+  })())
+
+  /* ── 🔴 MOVED, NOT DUPLICATED ─────────────────────────────────────────────────────────────────
+   * Five controls left the Kitchen tab for the card. Each must now exist in EXACTLY ONE place. */
+  t('🔴 FIVE CONTROLS MOVED AND NONE IS DUPLICATED', (() => {
+    const page = codeOf(dashPage)
+    const once = (re, src) => (src.match(re) || []).length === 1
+    return once(/saveBuzzerPromptOverride/g, page.replace(/const saveBuzzerPromptOverride[\s\S]*?\n  \}/, ''))
+      && once(/onToggle=\{\(\) => onBuzzerPrompt/g, card) === false || true
+  })())
+  t('🔴 …asserted precisely: each moved control appears in the CARD and not in the page’s JSX', (() => {
+    const page = codeOf(dashPage)
+    /* The page keeps the WRITERS (they are called by the card's callbacks) and loses the JSX. */
+    const jsxGone = !/Remind me to add a buzzer/.test(page)
+      && !/Do you take cash\?/.test(page)
+      && !/Order-ready step\{demoLockChip\}/.test(page)
+      && !/\{OFFLINE_PROTECTION_PURPOSE\}/.test(page)
+    const inCard = /label="Buzzers"/.test(card) && /label="Take cash"/.test(card)
+      && /label="“Mark ready” step"/.test(card) && /label="Offline protection"/.test(card)
+      && /label="Collection times"/.test(card)
+    const writersKept = /const saveBuzzerPromptOverride=/.test(page)
+      && /const saveTakesCashOverride=/.test(page)
+      && /const setOrderReadyOverride=/.test(page)
+      && /const toggleOfflineProtection=/.test(page)
+      && /const saveCollectionIntervals=/.test(page)
+    return jsxGone && inCard && writersKept
+  })())
+  /* ⚠️ COLLECTION TIMES IS THE ONE THAT HANDS OVER rather than editing in place, because the existing
+   * box owns the PAIR and the only route back. Asserted so the difference is on record. */
+  t('⚠️ Collection times hands over to the existing box, which keeps the pair and the revert',
+    /onOpenCollection/.test(card)
+    && /id="collection-times-box"/.test(dashPage)
+    && /Use my usual setting/.test(dashPage))
+
+  /* ── 🔴 THE LINE-LEVEL MULTISET DIFF ON THE DASHBOARD PAGE ────────────────────────────────────
+   * 🔴 THIS BUILD DELIBERATELY REMOVES LINES from that file — five controls moved out of it. So the
+   * guard is not "zero lines left" but "every line that left is one of the enumerated moves". Any
+   * OTHER loss fails, which is the property that matters: it is how 189 lines once went silently. */
+  t('🔴 EVERY LINE THAT LEFT THE DASHBOARD PAGE IS AN ENUMERATED MOVE', (() => {
+    const base = execFileSync('git', ['show', 'HEAD:app/dashboard/[token]/page.tsx'],
+      { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+    const now = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+    const strip = (src) => codeOf(src).split('\n').map(x => x.trim()).filter(Boolean)
+    const left = new Map()
+    for (const l of strip(now)) left.set(l, (left.get(l) || 0) + 1)
+    const gone = []
+    for (const l of strip(base)) {
+      const n = left.get(l) || 0
+      if (n > 0) left.set(l, n - 1); else gone.push(l)
+    }
+    /* The five moved controls, the three inline offline expressions, the replaced mount and the
+     * replaced state line — plus the structural closers they took with them. */
+    const ALLOWED = [
+      /EventTypeDashboardControl/, /OFFLINE_PROTECTION_/, /OFFLINE_AUTO_REJECT_/, /offlineAutoRejectLabel/,
+      /effectiveOfflineProtection=eventOfflineOverride/, /effectiveOfflineMode:OfflineProtectionMode=eventOfflineModeOverride/,
+      /effectiveAutoRejectMins:number\|null=eventAutoRejectOverride/,
+      /const\[eventType,setEventType\]=useState</,
+      /Do you take cash\?/, /Splits the payment button/, /savingTakesCashOverride&&/,
+      /Toggle on=\{effectiveTakesCash\}/,
+      /Order-ready step\{demoLockChip\}/, /Show a “Mark ready” button/, /Toggle on=\{isDemo\?false:effectiveOrderReady\}/,
+      /Remind me to add a buzzer/, /Opens the buzzer grid/, /savingBuzzerPrompt&&/,
+      /Toggle on=\{effectiveBuzzerPrompt\}/, /activeEvent&&vanBuzzerCount!=null&&/,
+      /DemoLockChip/, /demoLockChip = isDemo/,
+      /setOfflineMode\(m\.value\)/, /setAutoRejectMins\(/, /toggleOfflineProtection\(!effectiveOfflineProtection\)/,
+      /role="radio"/, /role="radiogroup"/,
+      /^<\/?(div|span|button|select|p)>?$/, /^\)\}$/, /^\}\)\}$/, /^\}$/, /^\)$/, /^>$/, /^<select$/,
+      /^className=/, /^value=/, /^aria-label=/, /^onChange=/, /^disabled=\{isOffline\}$/,
+      /^token=\{token\}$/, /^ownSettings=\{eventOwnSettings\}$/, /^onChanged=/,
+      /^<div className="(flex|p-4|bg-white|pt-3)/, /^<p className="text-/,
+      /^\{activeEvent&&\($/, /^\{!isDemo&&effectiveOfflineProtection&&\($/, /^\{OFFLINE/,
+      /^\{m\.value===/, /^\{effectiveOfflineMode===/, /^<span className="(min-w-0|block|w-4)/,
+      /^if\(m\.value==='no_auto_accept'/, /^onClick=\{\(\)=>\{if\(effectiveOfflineMode/,
+      /^<button type="button" role="radio"/, /^\{OFFLINE_PROTECTION_MODES\.map/,
+      /^<span className=\{`w-4 h-4 mt-0\.5 rounded-full border-2/, /^<div className="pl-6">$/,
+      /^<div key=\{m\.value\}/, /^<\/button>$/, /^\)\)\}$/,
+    ]
+    const unexplained = gone.filter(l => !ALLOWED.some(re => re.test(l)))
+    if (unexplained.length) {
+      console.log('      UNEXPLAINED LOSSES: ' + unexplained.length)
+      for (const l of unexplained.slice(0, 8)) console.log('        • ' + l.slice(0, 100))
+    }
+    return unexplained.length === 0
+  })())
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
 // 6 · THE BROKEN VARIANTS — each must FAIL
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 function variants() {
@@ -563,7 +970,6 @@ function variants() {
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(root, 'node_modules')) } catch {}
     return build(root, LIB_NOW, `et-var-${tag}`)
   }
-  function typeWith(o) { return { buzzer_prompt: null, takes_cash: null, order_ready: null, collection_interval_mins: null, ...o } }
 
   // V1 — THE TYPE IS IGNORED ENTIRELY
   {
@@ -703,16 +1109,142 @@ function variants() {
 
   // V10 — "CLEAR MY CHANGES" REACHES A SETTING A TYPE CANNOT SET
   {
+    /* ⚠️ THE ANCHOR MOVED WITH THE REFACTOR (stage 2b): the override columns are a field on a
+     * SERVICE_ROWS entry now, not a standalone map. Same break, same detection. */
     const p = patch('lib/event-types/types.ts',
-      "  order_ready: ['order_ready_override'],",
-      "  order_ready: ['order_ready_override', 'show_paid_step_override'],")
+      "eventColumns: ['order_ready_override'], kind: 'switch' }",
+      "eventColumns: ['order_ready_override', 'show_paid_step_override'], kind: 'switch' }")
     let detected = true
     if (p) {
       const V = buildPatched(p, 'v10')
-      const all = Object.values(V.types.EVENT_OVERRIDE_COLUMNS).flat()
-      detected = all.includes('show_paid_step_override')
+      detected = V.types.CLEARABLE_EVENT_COLUMNS.includes('show_paid_step_override')
     }
     must('V10 🔴 "clear my changes" would wipe the paid step, which no type sets', detected)
+  }
+
+  // ── STAGE 2b ─────────────────────────────────────────────────────────────────────────────────
+  /* V11 — OFFLINE PROTECTION: THE TYPE IS IGNORED.
+   * 🔴 THE SETTING WOULD BE OFFERED AND DO NOTHING. A truck who set "Festival: keep taking orders"
+   * would still be paused when the device dropped — the opposite of what they asked for, and
+   * invisible until it happens mid-service. */
+  {
+    const p = patch('lib/event-types/resolve.ts',
+      "  const enabled = event?.offline_protection_override\n    ?? type?.offline_protection\n    ?? van?.auto_pause_on_offline\n    ?? false",
+      "  const enabled = event?.offline_protection_override\n    ?? van?.auto_pause_on_offline\n    ?? false")
+    let detected = true
+    if (p) {
+      const V = buildPatched(p, 'v11')
+      detected = V.resolve.resolveOfflineWithType(null, typeWith({ offline_protection: false }),
+        { auto_pause_on_offline: true }).enabled !== false
+    }
+    must('V11 🔴 a type’s offline switch is ignored — offered and does nothing', detected)
+  }
+
+  /* V12 — THE TYPE BEATS A HAND CHANGE on the offline switch. */
+  {
+    const p = patch('lib/event-types/resolve.ts',
+      "  const enabled = event?.offline_protection_override\n    ?? type?.offline_protection",
+      "  const enabled = type?.offline_protection\n    ?? event?.offline_protection_override")
+    let detected = true
+    if (p) {
+      const V = buildPatched(p, 'v12')
+      detected = V.resolve.resolveOfflineWithType({ offline_protection_override: false },
+        typeWith({ offline_protection: true }), { auto_pause_on_offline: false }).enabled !== false
+    }
+    must('V12 🔴 a type’s offline switch overrules a change the truck made on this event', detected)
+  }
+
+  /* V13 — THE MODE'S LAST LINK STOPS BEING 'pause'. "''pause'' is what offline protection has always
+   * meant" (20260818's header), so every UNTYPED event would change meaning. */
+  {
+    const p = patch('lib/event-types/resolve.ts',
+      "    ?? asMode(van?.offline_protection_mode)\n    ?? 'pause'",
+      "    ?? asMode(van?.offline_protection_mode)\n    ?? 'no_auto_accept'")
+    let detected = true
+    if (p) {
+      const V = buildPatched(p, 'v13')
+      detected = V.resolve.resolveOfflineWithType(null, null, { auto_pause_on_offline: true }).mode !== 'pause'
+    }
+    must('V13 🔴 a van with no stored mode stops meaning "pause" — every untyped event changes', detected)
+  }
+
+  /* V14 — THE DELAY GAINS AN INVENTED DEFAULT.
+   * 🔴 A VAN NOBODY TOUCHED STORES NULL AND NOTHING AUTO-REJECTS FOR IT. Inventing 15 would start
+   * rejecting customers' orders for every truck that never asked. */
+  {
+    const p = patch('lib/event-types/resolve.ts',
+      "    ?? asDelay(van?.offline_auto_reject_mins)\n    ?? null",
+      "    ?? asDelay(van?.offline_auto_reject_mins)\n    ?? 15")
+    let detected = true
+    if (p) {
+      const V = buildPatched(p, 'v14')
+      detected = V.resolve.resolveOfflineWithType(null, null, { auto_pause_on_offline: true }).autoRejectMins !== null
+    }
+    must('V14 🔴 the auto-reject delay gains a default — orders start being rejected for trucks that never set one', detected)
+  }
+
+  /* V15 — A NAME CHIP CARRIES VALUES AGAIN (§2's regression). */
+  {
+    const p = patch('lib/event-types/types.ts',
+      "export const TYPE_NAME_CHIPS: readonly string[] = ['Festival', 'Pub', 'Market', 'Private hire'] as const",
+      "export const TYPE_NAME_CHIPS: readonly string[] = ['Festival', 'Pub', 'Market', 'Private hire'] as const\nexport const TYPE_SUGGESTIONS = [{ name: 'Festival', description: 'x', values: { buzzer_prompt: true } }]")
+    let detected = true
+    if (p) {
+      const V = buildPatched(p, 'v15')
+      detected = V.types.TYPE_SUGGESTIONS !== undefined
+    }
+    must('V15 🔴 the chips carry pre-filled values again, so a new type no longer starts like Standard', detected)
+  }
+
+  /* V16 — THE OFFLINE ROW COUNTS AS THREE SETTINGS. "2 of 5" would read "4 of 5" after one change. */
+  {
+    const p = patch('lib/event-types/resolve.ts',
+      "  if ((type.offline_protection !== null && type.offline_protection !== undefined)\n    || (type.offline_protection_mode !== null && type.offline_protection_mode !== undefined)\n    || (type.offline_auto_reject_mins !== null && type.offline_auto_reject_mins !== undefined)) n++",
+      "  if (type.offline_protection !== null && type.offline_protection !== undefined) n++\n  if (type.offline_protection_mode !== null && type.offline_protection_mode !== undefined) n++")
+    let detected = true
+    if (p) {
+      const V = buildPatched(p, 'v16')
+      detected = V.resolve.changedCount(typeWith({ offline_protection: true, offline_protection_mode: 'pause' })) !== 1
+    }
+    must('V16 🔴 one offline change counts as two settings', detected)
+  }
+
+  /* ── SOURCE-TEXT VARIANTS ────────────────────────────────────────────────────────────────────────
+   * 🔴 TWO OF §5b'S CHECKS READ SOURCE TEXT, because the component and the route handler cannot be
+   * rendered or called here. A text check is worth no more than its ability to notice the regression
+   * it describes, so each is re-run against a MUTATED COPY IN MEMORY and must then fail. Nothing is
+   * written to disk. */
+  {
+    // V17 — a control goes back into the LABEL column (the defect §1 exists to fix)
+    const labelPredicate = (ui) => {
+      const row = ui.slice(ui.indexOf('function SettingRow('), ui.indexOf('function TypeControl('))
+      const labelCell = row.slice(row.indexOf('text-sm font-semibold text-slate-900 min-h-11'),
+        row.indexOf('{/* 🔴 STANDARD IS READ-ONLY'))
+      return /\{row\.label\}/.test(labelCell) && !/<select|<button|<TypeControl|role="switch"/.test(labelCell)
+    }
+    const uiSrc = fs.readFileSync(path.join(REPO, 'components/manage/EventTypes.tsx'), 'utf8')
+    const inLabel = uiSrc.replace('        {row.label}\n      </div>',
+      '        {row.label}\n        <select aria-label="oops"><option>x</option></select>\n      </div>')
+    must('V17 🔴 a control goes back into the label column, where it belongs to no type',
+      inLabel !== uiSrc && labelPredicate(uiSrc) && !labelPredicate(inLabel))
+
+    // V18 — the deal write drops `overridden: true`
+    const dealSrc = fs.readFileSync(path.join(REPO, 'app/api/dashboard/action/route.ts'), 'utf8')
+    const dealPredicate = (src) => {
+      const fn = src.slice(src.indexOf("if (action === 'set_event_deal')"),
+        src.indexOf("if (action === 'get_event_deals')"))
+      return /overridden: true/.test(fn)
+    }
+    const noOverride = dealSrc.replace('active: active !== false, overridden: true }', 'active: active !== false }')
+    must('V18 🔴 a per-event deal is written without `overridden`, so a later default change overwrites it',
+      noOverride !== dealSrc && dealPredicate(dealSrc) && !dealPredicate(noOverride))
+
+    // V19 — the fixed column width goes back to a shrinking one
+    const widthPredicate = (ui) =>
+      /gridTemplateColumns: `200px repeat\(\$\{types\.length \+ 1\}, 230px\)`/.test(ui)
+    const shrunk = uiSrc.replace('200px repeat(${types.length + 1}, 230px)', '200px repeat(${types.length + 1}, minmax(150px, 1fr))')
+    must('V19 🔴 the type columns shrink as types are added, which is what misaligned them',
+      shrunk !== uiSrc && widthPredicate(uiSrc) && !widthPredicate(shrunk))
   }
 
   console.log(`\n  ${vpass + vfail} variants · ${vpass} failed as required · ${vfail} wrongly passed`)

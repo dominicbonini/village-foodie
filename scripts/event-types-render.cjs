@@ -71,63 +71,96 @@ const HEAD = css => `<!doctype html><html><head><meta charset="utf-8">
  *                  the fix. The grid then widens the PAGE instead of itself.
  */
 function panelFixture(css, typeCount, breakScroll = false) {
-  const shell = lift(UI, /<div className="(fixed inset-0 z-50 bg-slate-50 flex flex-col)"/, 'the panel shell')
-  const header = lift(UI, /<div className="(shrink-0 bg-white border-b border-slate-200 px-4 sm:px-6 py-3 flex items-center gap-3)">/, 'the panel header')
-  const body = lift(UI, /<div className="(flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-4 space-y-3)">/, 'the panel body')
-  const scroller = lift(UI, /<div className="(hidden md:block overflow-x-auto)">/, 'the grid scroller')
-  const grid = lift(UI, /className="(bg-white border border-slate-200 rounded-2xl overflow-hidden)"/, 'the grid')
-  const phone = lift(UI, /<div className="(md:hidden space-y-3)">/, 'the phone column')
+  const shell = lift(UI, /className="(bg-white w-full max-w-\[1000px\] max-h-\[92vh\] rounded-2xl shadow-2xl flex flex-col overflow-hidden)"/, 'the modal shell')
+  const header = lift(UI, /<div className="(shrink-0 flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-slate-200)">/, 'the modal header')
+  const body = lift(UI, /<div className="(flex-1 min-h-0 overflow-y-auto)">/, 'the modal body')
+  const scroller = lift(UI, /<div className="(hidden md:block overflow-x-auto px-2 pb-2)" data-types-scroller>/, 'the columns scroller')
+  const phone = lift(UI, /<div className="(md:hidden p-4 space-y-3)">/, 'the phone column')
+  const cell = lift(UI, /<div key=\{t\.id\} className="(px-3\.5 py-2\.5 border-t border-slate-100 min-h-11 flex items-center gap-2)">/, 'a control cell')
+  const labelCell = lift(UI, /<div className="(px-3\.5 py-2\.5 border-t border-slate-100 text-sm font-semibold text-slate-900 min-h-11 flex items-center)">/, 'a label cell')
+  const stdCell = lift(UI, /<div className="(px-3\.5 py-2\.5 border-t border-slate-100 bg-slate-50 text-sm text-slate-600 min-h-11 flex items-center)">/, 'a Standard cell')
 
-  /* The grid template is BUILT from the component's own expression, not retyped. */
-  const cols = `200px repeat(${typeCount + 1}, minmax(150px, 1fr))`
-  const names = ['Standard', 'Festival', 'Pub', 'Market', 'Private hire', 'School fete', 'Christmas market']
+  /* 🔴 THE TEMPLATE IS BUILT FROM THE COMPONENT'S OWN EXPRESSION, not retyped — 200px for the labels
+   * and a FIXED 230px per type. `breakScroll` is the broken variant: it drops the scroller so the
+   * fixed columns have nowhere to go. */
+  const cols = `200px repeat(${typeCount + 1}, 230px)`
+  const names = ['Standard', 'Festival', 'Market', 'Pub', 'Private hire', 'School fete', 'Christmas market']
     .slice(0, typeCount + 1)
+  const SETTINGS = ['Buzzers', 'Take cash', '“Mark ready” step', 'Collection times', 'Offline protection']
 
-  const cell = (text, extra = '') =>
-    `<div class="px-3 py-2 border-t border-l border-slate-100" style="${extra}">${text}</div>`
-  const sel = (label) =>
-    `<div class="px-3 py-2 border-t border-l border-slate-100"><select aria-label="${label}" class="w-full border border-slate-200 rounded-lg px-2 py-1 text-sm bg-white"><option>Same as Standard</option><option>On</option><option>Off</option></select></div>`
-
-  const SETTINGS = ['Buzzers', 'Take cash', '“Mark ready” step', 'Collection times']
+  /* One control per type per row, IN THAT TYPE'S OWN COLUMN — the thing being measured. */
+  const control = (row, name) => row === 'Collection times' || row === 'Offline protection'
+    ? `<select aria-label="${row} for ${name}" class="w-full border border-slate-200 rounded-lg px-2.5 h-9 text-[13px] font-semibold bg-white"><option>Same as Standard</option></select>`
+    : `<button type="button" role="switch" aria-checked="false" aria-label="${row} for ${name}" class="relative w-[42px] h-6 rounded-full bg-slate-300 shrink-0 opacity-45"><span class="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white"></span></button><span class="text-xs text-slate-400 truncate">Same as Standard</span>`
 
   return `${HEAD(css)}
-<div id="panel" class="${shell}">
-  <div id="header" class="${header}">
-    <div class="min-w-0 flex-1">
-      <h2 class="font-black text-slate-900">Event types</h2>
-      <p class="text-xs text-slate-500 truncate">Each column is an event type. Grey = same as Standard.</p>
+<div class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4" style="position:fixed;inset:0">
+  <div id="modal" data-event-types-modal class="${shell}">
+    <div id="header" class="${header}">
+      <div class="min-w-0 flex-1">
+        <h2 class="font-bold text-slate-900 text-lg">Event types</h2>
+        <p class="text-xs sm:text-[13px] text-slate-500">Grey = same as Standard. Changes save as you go.</p>
+      </div>
+      <button id="newtype" class="hover:bg-slate-100 text-slate-600 border border-slate-200 text-sm px-4 py-2 font-bold rounded-xl">+ New event type</button>
+      <button id="close" aria-label="Close" class="shrink-0 w-10 h-10 rounded-full bg-slate-100 text-slate-600 text-lg font-bold">✕</button>
     </div>
-    <button id="done" class="bg-slate-100 text-slate-700 text-sm px-4 py-2 font-bold rounded-xl">Done</button>
-  </div>
-  <div id="body" class="${body}">
-    <div id="phone" class="${phone}">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-        <label class="block text-xs font-bold text-slate-600 mb-1" for="pick">Event type</label>
-        <select id="pick" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+    <div id="body" class="${body}">
+      <div id="phone" class="${phone}">
+        <div><label class="block text-xs font-bold text-slate-600 mb-1" for="pick">Event type</label>
+        <select id="pick" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white h-11">
           ${names.map(n => `<option>${n}</option>`).join('')}
-        </select>
+        </select></div>
+        <div id="phonecard" class="rounded-2xl border border-slate-200 p-4">
+          <p class="font-bold text-slate-900">Festival</p>
+          ${SETTINGS.map(x => `<div class="py-1.5 border-t border-slate-100"><span class="text-xs font-bold text-slate-600">${x}</span><div class="flex items-center gap-2">${control(x, 'Festival')}</div></div>`).join('')}
+        </div>
       </div>
-      <div id="phonecard" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-        <p class="font-bold text-slate-900">Festival</p>
-        ${SETTINGS.map(s => `<div class="py-1 border-t border-slate-100"><label class="block text-xs font-bold text-slate-600 mb-1">${s}</label><select class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"><option>Same as Standard</option></select></div>`).join('')}
-      </div>
-    </div>
-    <div id="scroller" class="${breakScroll ? 'hidden md:block' : scroller}">
-      <div class="min-w-max">
-        <div id="grid" class="${grid}" style="display:grid;grid-template-columns:${cols}">
-          <div class="bg-slate-50 px-3 py-2"></div>
-          ${names.map(n => `<div class="bg-slate-50 px-3 py-2 border-l border-slate-100 flex items-center gap-2 min-w-0"><span class="inline-block w-2.5 h-2.5 rounded-full shrink-0" style="background:#E8550F"></span><span class="text-sm font-bold text-slate-800 truncate">${n}</span></div>`).join('')}
-          <div class="px-3 py-2 border-t border-slate-100 text-sm font-bold text-slate-700">Changes</div>
-          ${names.map(() => cell('<span class="text-xs text-slate-500">2 of 4 service settings</span>')).join('')}
-          <div class="col-span-full bg-slate-100 px-3 py-1.5 text-[11px] font-bold text-slate-600 tracking-wider" style="grid-column:1/-1">SERVICE</div>
-          ${SETTINGS.map(s => `<div class="px-3 py-2 border-t border-slate-100 text-sm text-slate-700">${s}</div>${cell('<span class="text-sm text-slate-700">On</span>')}${names.slice(1).map(() => sel(s)).join('')}`).join('')}
-          <div class="px-3 py-2 border-t border-slate-100 text-sm font-bold text-slate-700">Used by</div>
-          ${names.map(() => cell('<span class="text-xs text-slate-500">3 upcoming events</span>')).join('')}
+      <div id="scroller" class="${breakScroll ? 'hidden md:block px-2 pb-2' : scroller}" data-types-scroller>
+        <div class="min-w-max" style="display:grid;grid-template-columns:${cols}" id="grid" data-types-grid>
+          <div class="px-3.5 py-3"></div>
+          <div class="px-3.5 py-3 bg-slate-50 flex items-center gap-2 min-w-0"><span class="inline-block w-2.5 h-2.5 rounded-full shrink-0" style="background:#94A3B8"></span><span class="text-[15px] font-bold text-slate-800 truncate">Standard</span><span class="text-[11px] text-slate-400 font-semibold shrink-0">default</span></div>
+          ${names.slice(1).map(n => `<div class="px-3.5 py-3 flex items-center gap-2 min-w-0 relative"><span class="inline-block w-2.5 h-2.5 rounded-full shrink-0" style="background:#E8550F"></span><span class="text-[15px] font-bold text-slate-800 truncate">${n}</span><button aria-label="More for ${n}" class="ml-auto shrink-0 w-[30px] h-[30px] rounded-lg border border-slate-200 text-slate-500 font-bold">⋯</button></div>`).join('')}
+          <div class="px-3.5 pt-3.5 pb-1.5 text-[11px] font-bold text-slate-500" style="grid-column:1/-1">SERVICE</div>
+          ${SETTINGS.map((x, i) => `<div class="${labelCell}"${i === 0 ? ' id="firstLabel"' : ''}>${x}</div><div class="${stdCell}">On</div>${names.slice(1).map((n, j) => `<div class="${cell}"${i === 0 && j === 0 ? ' id="firstControl"' : ''}>${control(x, n)}</div>`).join('')}`).join('')}
+          <div class="px-3.5 pt-3.5 pb-1.5 text-[11px] font-bold text-slate-500" style="grid-column:1/-1">USED BY</div>
+          <div class="${labelCell}">Upcoming events</div><div class="${stdCell}">Everything else</div>
+          ${names.slice(1).map(() => `<div class="${labelCell}">2 events</div>`).join('')}
         </div>
       </div>
     </div>
-    <div id="newtype" class="flex items-center gap-3">
-      <button class="bg-orange-600 text-white text-sm px-4 py-2 font-bold rounded-xl">+ New event type</button>
+    <div id="footer" class="shrink-0 px-4 sm:px-5 py-3 border-t border-slate-200 text-[13px] text-slate-500">
+      Standard is your normal setup. Change it in Settings. Anything you change on one event’s dashboard still wins.
+    </div>
+  </div>
+</div></body></html>`
+}
+
+/**
+ * THE "+ NEW EVENT TYPE" POPUP (NewType2 board).
+ *
+ * ⚠️ MEASURED SEPARATELY because it is its own dialog over the modal, and the question is whether the
+ * four name chips wrap rather than overflow at 390px.
+ */
+function newTypeFixture(css) {
+  const shell = lift(UI, /className="(bg-white rounded-2xl w-full max-w-\[460px\] p-5 flex flex-col gap-3\.5)"/, 'the new-type popup')
+  return `${HEAD(css)}
+<div class="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4" style="position:fixed;inset:0">
+  <div id="popup" data-new-type-popup class="${shell}">
+    <div class="flex items-center gap-3">
+      <p class="font-bold text-slate-900 text-lg flex-1">New event type</p>
+      <button aria-label="Close" class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 font-bold">✕</button>
+    </div>
+    <div>
+      <label class="block text-[13px] font-semibold text-slate-700 mb-1.5" for="nm">Name</label>
+      <input id="nm" placeholder="e.g. School fete" class="w-full border border-slate-300 rounded-xl px-3 h-11 text-[15px] bg-white" />
+    </div>
+    <div id="chips" class="flex flex-wrap gap-2">
+      ${['Festival', 'Pub', 'Market', 'Private hire'].map(c => `<button class="border border-slate-300 rounded-full px-3.5 h-10 text-sm font-semibold text-slate-900 bg-white">${c}</button>`).join('')}
+    </div>
+    <p id="note" class="text-[13px] text-slate-500">Tap a name or type your own. It starts exactly like Standard. Change anything after.</p>
+    <div id="actions" class="flex gap-2.5 justify-end">
+      <button class="bg-slate-100 text-slate-700 text-sm px-4 py-2 font-bold rounded-xl">Cancel</button>
+      <button class="bg-orange-600 text-white text-sm px-4 py-2 font-bold rounded-xl">Create</button>
     </div>
   </div>
 </div></body></html>`
@@ -176,29 +209,74 @@ function pickerFixture(css) {
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-// FIXTURE 3 — THE DASHBOARD CONTROL
+// FIXTURE 3 — THE DASHBOARD "This event" CARD (Dashboard2 board)
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-function dashFixture(css) {
-  const row = lift(UI, /<div className="(flex items-center gap-2)">\s*\n\s*<span className="text-sm font-semibold text-slate-700 flex-1">Event type<\/span>/, 'the control row')
-  /* ⚠️ `h-10`, which is what the component uses after WebKit was found to ignore `min-height` on a
-   * `<select>`. The lift is what makes this file break rather than silently measure the old class. */
-  const select = lift(UI, /className="(border border-slate-200 rounded-xl px-2\.5 py-1\.5 text-sm font-semibold text-slate-900 bg-white h-10)">/, 'the control select')
-  return `${HEAD(css)}
-<div style="background:#f8fafc;padding:16px;max-width:100%">
-  <div id="card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-3">
-    <div id="ctl" data-event-type-dashboard>
-      <div class="${row}">
-        <span class="text-sm font-semibold text-slate-700 flex-1">Event type</span>
-        <select id="etsel" aria-label="Event type" class="${select}">
-          <option>Standard</option><option>Festival</option><option>Private hire</option>
-        </select>
-      </div>
-      <p id="ownline" class="text-xs text-slate-500 mt-1">2 settings changed for this event only.</p>
-    </div>
+/**
+ * @param withTypes  false renders the card for a truck with NO event types, which must still show —
+ *                   only the Event type row is conditional. That is the "before" shape for the
+ *                   before/after comparison in the report.
+ * @param old        THE PRE-MOVE SHAPE: the five controls as separate cards down the Kitchen tab,
+ *                   which is what the operator saw before this build. Rendered so the report can show
+ *                   both and so the measurement can prove the card is not taller than what it replaced.
+ */
+function cardFixture(css, withTypes = true, old = false) {
+  const CARD = read('components/dashboard/ThisEventCard.tsx')
+  const card = lift(CARD, /className="(bg-white rounded-2xl shadow-sm border border-slate-200 p-4)">/, 'the card')
+  const row = lift(CARD, /<div className="(flex items-center gap-2\.5 py-2\.5 border-t border-slate-100 min-h-\[44px\])">/, 'a card row')
+  /* ⚠️ LIFTED, so the `max-w-[58%]` fix cannot be reverted without this file noticing. */
+  const sel = lift(CARD, /^const SELECT = '(.+)'$/m, 'the card select')
+  const heading = lift(CARD, /<p className="(text-\[11px\] font-bold tracking-\[0\.06em\] text-slate-500 pt-3 pb-0\.5)">/, 'a section heading')
+
+  const tag = '<span class="text-[10px] font-bold text-blue-700 bg-blue-100 rounded px-1.5 py-px shrink-0">THIS EVENT</span>'
+  const sw = (on, label) => `<button type="button" role="switch" aria-checked="${on}" aria-label="${label}" class="relative w-[42px] h-6 rounded-full shrink-0 ${on ? 'bg-orange-600' : 'bg-slate-300'}"><span class="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white"></span></button>`
+  const link = t => `<button type="button" class="text-sm font-semibold text-orange-700 shrink-0">${t}</button>`
+  const r = (label, hint, right, own) => `<div class="${row}"><div class="min-w-0 flex-1"><p class="text-[15px] font-semibold text-slate-800">${label}</p>${hint ? `<p class="text-[13px] text-slate-500 font-normal">${hint}</p>` : ''}</div>${own ? tag : ''}${right}</div>`
+
+  if (old) {
+    /* ── THE "BEFORE": five separate cards, as the Kitchen tab had them ───────────────────────── */
+    const oldCard = 'flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200'
+    const oldOne = (title, body, right) =>
+      `<div class="${oldCard}" style="margin-bottom:12px"><div class="flex-1 min-w-0"><p class="text-sm font-semibold text-slate-800">${title}</p><p class="text-xs text-slate-500 mt-0.5">${body}</p></div>${right}</div>`
+    return `${HEAD(css)}
+<div id="scope" style="background:#f8fafc;padding:16px">
+  <div id="before">
+    ${oldOne('Offline Order Protection', "If your device loses its connection, this stops orders arriving while you can't see them.", sw(true, 'Offline'))}
+    ${oldOne('Remind me to add a buzzer', 'Opens the buzzer grid as soon as you place an order.', sw(true, 'Buzzers'))}
+    ${oldOne('Order-ready step', 'Show a “Mark ready” button on the orders screen.', sw(false, 'Mark ready'))}
+    ${oldOne('Do you take cash?', 'Splits the payment button into "Cash" and "Card".', sw(false, 'Take cash'))}
+    ${oldOne('Customer Collection Times', 'How often a collection slot is offered.', `<select class="${sel}"><option>Every 15 min</option></select>`)}
   </div>
-  <div id="settings" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
-    <div class="flex items-center justify-between py-2"><span class="text-sm">Buzzers</span><span>On</span></div>
-    <div class="flex items-center justify-between py-2"><span class="text-sm">Take cash</span><span>Off</span></div>
+</div></body></html>`
+  }
+
+  return `${HEAD(css)}
+<div id="scope" style="background:#f8fafc;padding:16px">
+  <div id="card" data-this-event-card class="${card}">
+    <div class="flex items-center gap-3 pb-1">
+      <p class="font-bold text-slate-900 text-base flex-1">This event</p>
+      <p class="text-[13px] text-slate-500">Changes here are for this event only</p>
+    </div>
+    ${withTypes ? r('Event type', null, `<select id="etsel" aria-label="Event type" class="${sel}"><option>Festival</option></select>`, false) : ''}
+    <p class="${heading}">MENU</p>
+    ${r('Stock and items sold', 'Pizza 120 · Margherita 60 · Nduja not sold', link('Change'), false)}
+    <p class="${heading}">DEALS</p>
+    ${r('Festival meal deal', null, sw(true, 'Festival meal deal'), false)}
+    ${r('Kids eat for £5', null, sw(false, 'Kids eat for £5'), true)}
+    <p class="${heading}">SERVICE</p>
+    ${r('Buzzers', null, sw(true, 'Buzzers'), false)}
+    ${r('Take cash', null, sw(false, 'Take cash'), true)}
+    ${r('“Mark ready” step', null, sw(true, 'Mark ready step'), false)}
+    ${r('Collection times', 'Every 10 min', link('Change'), false)}
+    ${r('Offline protection', null, `<select id="offsel" aria-label="Offline protection" class="${sel}"><option>Keep taking orders, confirm them yourself</option></select>`, true)}
+    <p id="warn" class="text-[13px] text-amber-600 -mt-1 pb-1.5">⚠️ <strong>You must keep your dashboard or kitchen screen on and online during service.</strong> If the screen goes off, the device loses internet, or you switch to another website, offline protection takes over — either pausing ordering or turning auto-accept off, whichever you chose.</p>
+    <div class="flex items-center justify-between gap-3 pl-4 pb-2">
+      <p class="text-[13px] font-semibold text-slate-700">Reject orders waiting longer than</p>
+      <select id="delaysel" aria-label="Reject orders waiting longer than" class="border border-slate-300 rounded-lg px-2 h-9 text-sm bg-white"><option>15 mins</option></select>
+    </div>
+    <div id="cardfooter" class="flex items-center gap-3 py-2.5 border-t border-slate-100">
+      <p class="text-[13px] text-slate-500 flex-1">3 settings changed for this event only.</p>
+      ${link('Reset to Festival')}
+    </div>
   </div>
 </div></body></html>`
 }
@@ -210,13 +288,18 @@ async function engines() {
     const puppeteer = require('puppeteer')
     const b = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] })
     const page = await b.newPage()
-    out.push({ name: 'Chromium', close: () => b.close(), page, setViewport: (w, h) => page.setViewport({ width: w, height: h }) })
+    out.push({ name: 'Chromium', close: () => b.close(), page,
+      setViewport: (w, h) => page.setViewport({ width: w, height: h }),
+      /* ⚠️ THE ELEMENT, NOT THE PAGE. A full-page shot of a fixture is mostly backdrop. */
+      shot: async (file, id) => { const el = await page.$('#' + id); if (el) await el.screenshot({ path: file }) } })
   } catch (e) { out.push({ name: 'Chromium', skip: String(e.message).split('\n')[0].slice(0, 110) }) }
   try {
     const { webkit } = require('playwright')
     const b = await webkit.launch()
     const page = await b.newPage()
-    out.push({ name: 'WebKit', close: () => b.close(), page, setViewportSize: true, setViewport: (w, h) => page.setViewportSize({ width: w, height: h }) })
+    out.push({ name: 'WebKit', close: () => b.close(), page,
+      setViewport: (w, h) => page.setViewportSize({ width: w, height: h }),
+      shot: async (file, id) => { const el = await page.locator('#' + id).first(); await el.screenshot({ path: file }) } })
   } catch (e) { out.push({ name: 'WebKit', skip: String(e.message).split('\n')[0].slice(0, 110) }) }
   return out
 }
@@ -261,6 +344,10 @@ const probe = () => {
     modal: box('modal'), etfield: box('etfield'), ethint: box('ethint'), footer: box('footer'),
     card: box('card'), ctl: box('ctl'), etsel: box('etsel'), ownline: box('ownline'),
     settings: box('settings'),
+    close: box('close'), firstLabel: box('firstLabel'), firstControl: box('firstControl'),
+    popup: box('popup'), chips: box('chips'), note: box('note'), actions: box('actions'),
+    offsel: box('offsel'), delaysel: box('delaysel'), warn: box('warn'), cardfooter: box('cardfooter'),
+    noteTruncated: truncated('note'), warnTruncated: truncated('warn'),
     gridScrolls: scrolls('scroller'),
     hintTruncated: truncated('ethint'),
     ownTruncated: truncated('ownline'),
@@ -279,6 +366,12 @@ async function main() {
   const css = appCss()
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'et-render-'))
   const write = (name, html) => { const f = path.join(tmp, name); fs.writeFileSync(f, html); return 'file://' + f }
+  /* 🔴 SCREENSHOTS GO IN THE REPO so the report can point at them and Dominic can approve the moved
+   * controls before this deploys. They are renders of FIXTURES built from the real class strings, not
+   * captures of a running dashboard — that would need a database and a live truck, which this harness
+   * must never touch. The report says so where it links them. */
+  const shotDir = path.join(REPO, 'docs/screenshots/event-types')
+  fs.mkdirSync(shotDir, { recursive: true })
 
   const list = await engines()
   for (const eng of list) {
@@ -286,84 +379,98 @@ async function main() {
     lines.push(`── ${eng.name} ──────────────────────────────────────────────────────────────`)
 
     for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
-      // ── 1 · THE PANEL, with six types (the wide case) ─────────────────────────────────────────
+      // ── 1 · THE MODAL, with SIX types (the brief's wide case) ─────────────────────────────────
       await eng.setViewport(w, h)
-      await eng.page.goto(write(`panel-${w}-${eng.name}.html`, panelFixture(css, 6)))
+      await eng.page.goto(write(`modal-${w}-${eng.name}.html`, panelFixture(css, 6)))
       const p = await eng.page.evaluate(probe)
-      lines.push(`  panel ${w}×${h}  grid ${p.grid.width}px in scroller ${p.scroller ? p.scroller.width : 0}px · doc ${p.docScrollW} vs ${p.innerW}`)
+      lines.push(`  modal ${w}×${h}  dialog ${p.modal.width}×${p.modal.height} · grid ${p.grid.width}px in ${p.scroller ? p.scroller.width : 0}px · doc ${p.docScrollW} vs ${p.innerW}`)
 
-      t(!p.pageScrollsSideways, `🔴 panel ${w}: NO HORIZONTAL PAGE SCROLL with six types`)
-      t(p.panel.width <= w + 1 && p.panel.height <= h + 1, `🔴 panel ${w}: the panel fits the viewport`)
-      /* 🔴 THE DONE BUTTON MUST STAY REACHABLE. It is the only way out of a full-screen panel. */
-      t(p.done.right <= w + 1 && p.done.top >= 0 && p.done.bottom <= h + 1,
-        `🔴 panel ${w}: Done is on screen and not clipped`)
-      t(p.header.top === 0 && p.header.width <= w + 1, `⚠️ panel ${w}: the header is flush and full width`)
+      t(!p.pageScrollsSideways, `🔴 modal ${w}: NO HORIZONTAL PAGE SCROLL with six types`)
+      /* 🔴 ~1000px AND IT NEVER GROWS. Six types make the grid 1580px wide; the dialog must not. */
+      t(p.modal.width <= Math.min(1000, w) + 1,
+        `🔴 modal ${w}: the dialog is at most 1000px and does not grow with the types (${p.modal.width}px)`)
+      t(p.modal.height <= h + 1, `🔴 modal ${w}: the dialog fits the viewport (${p.modal.height}px)`)
+      t(p.close.right <= p.modal.right + 1 && p.close.top >= 0,
+        `🔴 modal ${w}: the close button is on screen and inside the dialog`)
+      t(p.footer.bottom <= p.modal.bottom + 1, `⚠️ modal ${w}: the footer sits inside the dialog`)
 
       if (w >= 768) {
-        t(p.phone.width === 0 || p.phone.height === 0, `⚠️ panel ${w}: the phone column is hidden`)
-        t(!!p.grid && p.grid.width > 0, `🔴 panel ${w}: the grid is drawn`)
-        /* 🔴 WITH SIX TYPES THE GRID IS WIDER THAN THE SCROLLER AT EVERY ONE OF THESE WIDTHS, so the
-         * scroller must be what scrolls. The alternative is the page scrolling, which is asserted
-         * against above — these two together are the finding. */
-        t(p.gridScrolls, `🔴 panel ${w}: the GRID scrolls inside its own box (grid ${p.grid.width} > ${p.scroller.width})`)
-        t(p.newtype.right <= w + 1, `⚠️ panel ${w}: "+ New event type" is not clipped`)
+        t(p.phone.width === 0 || p.phone.height === 0, `⚠️ modal ${w}: the phone column is hidden`)
+        /* 🔴 THE COLUMNS SCROLL INSIDE THE MODAL — asserted by trying to scroll, not by comparing
+         * widths, because a plain overflowing block reports the same widths and cannot be scrolled. */
+        t(p.gridScrolls, `🔴 modal ${w}: THE COLUMNS scroll inside the dialog (grid ${p.grid.width} in ${p.scroller.width})`)
+        /* 🔴 EVERY TYPE COLUMN IS 230px, measured — not read off a class. */
+        t(Math.abs(p.firstControl.width - 230) <= 1,
+          `🔴 modal ${w}: a type column is 230px wide (${p.firstControl.width}px)`)
+        t(Math.abs(p.firstLabel.width - 200) <= 1,
+          `⚠️ modal ${w}: the label column is 200px (${p.firstLabel.width}px)`)
+        /* 🔴 THE CONTROL IS IN THE TYPE'S COLUMN, NOT THE LABEL'S — the defect this rewrite fixes,
+         * asserted in the geometry: the control's box starts after the label column ends. */
+        t(p.firstControl.left >= p.firstLabel.right - 1,
+          `🔴 modal ${w}: the control sits in its type's column, right of the labels (${p.firstControl.left} ≥ ${p.firstLabel.right})`)
       } else {
-        t(p.phone.height > 0, `🔴 panel ${w}: the PHONE column is shown instead of the grid`)
-        t(!p.scroller || p.scroller.height === 0 || p.scroller.width === 0,
-          `🔴 panel ${w}: the side-by-side grid is hidden on a phone`)
+        t(p.phone.height > 0, `🔴 modal ${w}: the PHONE column is shown instead of the grid`)
+        t(!p.scroller || p.scroller.width === 0 || p.scroller.height === 0,
+          `🔴 modal ${w}: the side-by-side columns are hidden on a phone`)
       }
 
-      // ── 2 · THE ADD EVENT PICKER ──────────────────────────────────────────────────────────────
-      await eng.page.goto(write(`picker-${w}-${eng.name}.html`, pickerFixture(css)))
-      const k = await eng.page.evaluate(probe)
-      lines.push(`  picker ${w}×${h}  field ${k.etfield.width}px · modal ${k.modal.width}px · hint clipped: ${k.hintTruncated}`)
+      // ── 2 · THE NEW-TYPE POPUP ────────────────────────────────────────────────────────────────
+      await eng.page.goto(write(`newtype-${w}-${eng.name}.html`, newTypeFixture(css)))
+      const n = await eng.page.evaluate(probe)
+      lines.push(`  newtype ${w}×${h}  popup ${n.popup.width}px · chips ${n.chips.height}px · note clipped: ${n.noteTruncated}`)
+      t(!n.pageScrollsSideways, `🔴 newtype ${w}: NO HORIZONTAL PAGE SCROLL`)
+      t(n.popup.width <= Math.min(460, w - 32) + 2,
+        `🔴 newtype ${w}: the popup fits (${n.popup.width}px)`)
+      /* 🔴 THE FOUR CHIPS WRAP RATHER THAN OVERFLOW. At 390 they take two rows; neither may escape. */
+      t(n.chips.right <= n.popup.right + 1, `🔴 newtype ${w}: the name chips stay inside the popup`)
+      t(n.noteTruncated === false, `🔴 newtype ${w}: "It starts exactly like Standard" is not cut off`)
+      t(n.actions.bottom <= n.popup.bottom + 1, `⚠️ newtype ${w}: Cancel / Create sit inside the popup`)
 
-      t(!k.pageScrollsSideways, `🔴 picker ${w}: NO HORIZONTAL PAGE SCROLL`)
-      t(k.etfield.width > 120, `🔴 picker ${w}: the field has a usable width (${k.etfield.width}px)`)
-      t(k.etfield.left >= k.modal.left - 1 && k.etfield.right <= k.modal.right + 1,
-        `🔴 picker ${w}: the field is inside the modal, not clipped`)
-      /* 🔴 THE HINT IS THE LONGEST STRING THE FIELD OWNS — "(usual for this place) buzzers on ·
-       * mark-ready step on · collection every 10 min". It is allowed to WRAP but never to be cut off,
-       * which is what `scrollWidth > clientWidth` detects. */
-      t(k.hintTruncated === false, `🔴 picker ${w}: the "(usual for this place)" hint is not cut off`)
-      t(k.footer.bottom <= k.modal.bottom + 1, `⚠️ picker ${w}: Cancel / Add event still sit inside the modal`)
-      /* ⚠️ THE FIELD SITS ABOVE THE ADDRESS FIELDS, which is where the mount puts it. */
-      t(k.etfield.top < k.footer.top, `⚠️ picker ${w}: the field is above the buttons`)
-
-      // ── 3 · THE DASHBOARD CONTROL ─────────────────────────────────────────────────────────────
-      await eng.page.goto(write(`dash-${w}-${eng.name}.html`, dashFixture(css)))
+      // ── 3 · THE DASHBOARD CARD ────────────────────────────────────────────────────────────────
+      await eng.page.goto(write(`card-${w}-${eng.name}.html`, cardFixture(css, true)))
       const d = await eng.page.evaluate(probe)
-      lines.push(`  dash  ${w}×${h}  select ${d.etsel.width}px · own-line clipped: ${d.ownTruncated}`)
+      lines.push(`  card ${w}×${h}  ${d.card.width}×${d.card.height} · select ${d.etsel.height}px · warning clipped: ${d.warnTruncated}`)
+      t(!d.pageScrollsSideways, `🔴 card ${w}: NO HORIZONTAL PAGE SCROLL`)
+      t(d.etsel.right <= d.card.right + 1 && d.offsel.right <= d.card.right + 1,
+        `🔴 card ${w}: both selects are inside the card`)
+      /* 🔴 40px MINIMUM ON EVERY SELECT. WebKit ignores `min-height` on a `<select>`, which is why the
+       * component uses a fixed height — found by this harness at stage 1 and still asserted. */
+      t(d.etsel.height >= 40 && d.offsel.height >= 40,
+        `🔴 card ${w}: the selects are at least 40px tall (${d.etsel.height}px, ${d.offsel.height}px)`)
+      t(d.delaysel.right <= d.card.right + 1, `⚠️ card ${w}: the auto-reject delay is inside the card`)
+      /* 🔴 THE SAFETY-CRITICAL ⚠️ INSTRUCTION MUST BE READABLE IN FULL — it is the one piece of copy in
+       * this card that costs an operator a service if it is clipped. */
+      t(d.warnTruncated === false, `🔴 card ${w}: the ⚠️ offline instruction is not cut off`)
+      t(d.cardfooter.right <= d.card.right + 1, `⚠️ card ${w}: "Reset to Festival" is not clipped`)
 
-      t(!d.pageScrollsSideways, `🔴 dash ${w}: NO HORIZONTAL PAGE SCROLL`)
-      t(d.etsel.right <= d.card.right + 1 && d.etsel.left >= d.card.left - 1,
-        `🔴 dash ${w}: the select is inside its card`)
-      /* 🔴 A 44px TOUCH TARGET IS THE RULE FOR A CONTROL AN OPERATOR USES MID-SERVICE WITH ONE HAND.
-       * The class asks for min-h-[40px]; the rendered height is what is asserted. */
-      t(d.etsel.height >= 40, `🔴 dash ${w}: the select is at least 40px tall (${d.etsel.height}px)`)
-      t(d.ownTruncated === false, `⚠️ dash ${w}: "2 settings changed for this event only." is not cut off`)
-      /* ⚠️ THE FIRST DRAFT READ `d.ctl.bottom <= d.settings_bottom ?? true` — a field this probe never
-       * returned, so the comparison was against `undefined` (always false) and `?? true` never fired
-       * because `<=` binds tighter. It failed on correct markup at every width. The box is probed now. */
-      t(!!d.settings && d.ctl.bottom <= d.settings.top + 1,
-        `⚠️ dash ${w}: the control sits above the per-event settings rows`)
+      // ── 3b · THE CARD FOR A TRUCK WITH NO TYPES — it must still show ──────────────────────────
+      await eng.page.goto(write(`card-notypes-${w}-${eng.name}.html`, cardFixture(css, false)))
+      const nt = await eng.page.evaluate(probe)
+      t(nt.card.height > 0 && !nt.etsel,
+        `🔴 card ${w}: a truck with NO event types still gets the card, without the Event type row`)
+
+      // ── SCREENSHOTS, at 1440 only (the width the report shows) ────────────────────────────────
+      if (w === 1440 && eng.name === 'Chromium') {
+        await eng.page.goto(write(`shot-after-${eng.name}.html`, cardFixture(css, true)))
+        await eng.shot(path.join(shotDir, 'this-event-card-after.png'), 'scope')
+        await eng.page.goto(write(`shot-before-${eng.name}.html`, cardFixture(css, true, true)))
+        await eng.shot(path.join(shotDir, 'this-event-card-before.png'), 'scope')
+        await eng.page.goto(write(`shot-modal-${eng.name}.html`, panelFixture(css, 6)))
+        await eng.shot(path.join(shotDir, 'event-types-modal.png'), 'modal')
+        await eng.page.goto(write(`shot-newtype-${eng.name}.html`, newTypeFixture(css)))
+        await eng.shot(path.join(shotDir, 'new-event-type.png'), 'popup')
+        lines.push(`  📸 four screenshots written to docs/screenshots/event-types/`)
+      }
     }
 
-    // ── THE CONTROL: WITHOUT THE SCROLLER, 1440 MUST WIDEN THE PAGE ──────────────────────────────
-    /* 🔴 WITHOUT THIS, "the page does not scroll sideways" would pass on a panel that never had a
-     * grid wide enough to make it — and the file would be measuring that 200px fits in 1440. */
+    // ── THE CONTROL: WITHOUT THE SCROLLER, SIX FIXED COLUMNS ARE UNREACHABLE ────────────────────
+    /* 🔴 WITHOUT THIS, "the columns scroll" would pass on a grid that was never wider than its box. */
     {
       await eng.setViewport(1440, 900)
       await eng.page.goto(write(`ctl-${eng.name}.html`, panelFixture(css, 6, true)))
       const r = await eng.page.evaluate(probe)
-      /* 🔴 THE CONTROL ASSERTS WHAT ACTUALLY DIFFERS, which is not what its first draft assumed.
-       * It expected the page to widen without `overflow-x-auto`; it does not, because the panel is
-       * `fixed inset-0` and its body CLIPS the overflow instead. So "no horizontal page scroll" above
-       * is true either way and proves nothing on its own — the real difference is REACHABILITY: with
-       * the scroller the wide grid can be scrolled to, and without it the overflow is clipped and the
-       * last columns are unreachable. That is the finding, and this is the pair that establishes it. */
       t(r.gridScrolls === false,
-        `🔴 CONTROL: with overflow-x-auto removed the wide grid is CLIPPED, not scrollable — so "the grid scrolls in its own box" above is a real finding`)
+        `🔴 CONTROL: with the scroller removed the six fixed columns are CLIPPED, not scrollable — so the assertions above are real`)
       t(r.grid.width > r.scroller.width,
         `⚠️ CONTROL: …and the grid really is wider than its box (${r.grid.width} > ${r.scroller.width})`)
     }
@@ -373,7 +480,7 @@ async function main() {
 
   console.log(lines.join('\n'))
   if (list.every(e => e.skip)) { console.log('\n🔴 NO ENGINE AVAILABLE — nothing was measured'); process.exit(1) }
-  console.log(fails ? `\n🔴 ${fails} MEASUREMENT(S) FAILED` : '\n✅ the panel, the picker and the dashboard control measured in every available engine')
+  console.log(fails ? `\n🔴 ${fails} MEASUREMENT(S) FAILED` : '\n✅ the modal, the new-type popup and the dashboard card measured in every available engine')
   process.exit(fails ? 1 : 0)
 }
 

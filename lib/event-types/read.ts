@@ -20,7 +20,7 @@ import type { EventType } from './types'
 import type { OrderReadySource } from './resolve'
 
 /** The columns a resolver needs from the type row. */
-const TYPE_COLS = 'id, truck_id, name, sort_order, buzzer_prompt, takes_cash, order_ready, collection_interval_mins'
+const TYPE_COLS = 'id, truck_id, name, sort_order, buzzer_prompt, takes_cash, order_ready, collection_interval_mins, offline_protection, offline_protection_mode, offline_auto_reject_mins'
 
 /** What one event contributes to the resolvers, beyond the columns its callers already hold. */
 export interface EventTypeRead {

@@ -68,13 +68,25 @@ Deno.serve(async () => {
     const { data: liveEvents } = await supabase
       .from('truck_events')
       // NOTE: Same named-select caveat as the van query above — migration first, then deploy.
-      .select('id, online_paused_until, offline_no_autoaccept_until, offline_protection_override, offline_protection_mode_override, status, event_date, start_time')
+      // ── 🔴 THE EVENT'S TYPE IS EMBEDDED (October 2026) ────────────────────────────────────────
+      // An event type can set offline protection, and THIS FUNCTION IS WHAT ACTS ON IT. A monitor that
+      // ignored the type would pause a festival the truck had told it not to pause — the type would be
+      // a setting that displays and does nothing, which is worse than not offering it.
+      // ⚠️ THE EMBED IS PART OF THE SAME NAMED SELECT and carries the same caveat as the two columns
+      // beside it: apply 20261009 and 20261010 BEFORE deploying this, or PostgREST answers 42703 and
+      // the monitor pauses nothing at all. That is the existing instruction two lines up, unchanged.
+      .select('id, online_paused_until, offline_no_autoaccept_until, offline_protection_override, offline_protection_mode_override, status, event_date, start_time, event_types!event_type_id (offline_protection, offline_protection_mode)')
       .eq('van_id', van.id)
       .eq('status', 'open')
 
     console.log(`[heartbeat-monitor]   van ${van.id}: ${liveEvents?.length ?? 0} open (live) event(s) — ${(liveEvents ?? []).map(e => e.id).join(', ') || 'none'}`)
 
     for (const ev of liveEvents || []) {
+      /* The embedded type, normalised. PostgREST returns a one-row embed as an object OR an array
+       * depending on how it reads the relationship, and both shapes have arrived in this codebase. */
+      const embedded = (ev as { event_types?: unknown }).event_types
+      const evType = (Array.isArray(embedded) ? embedded[0] : embedded) as
+        { offline_protection?: boolean | null; offline_protection_mode?: string | null } | null | undefined
       // Only skip if the pause is STILL ACTIVE (expiry in the FUTURE). A non-null-but-PAST
       // online_paused_until (an expired pause that was never cleared — e.g. an offline van that
       // never reconnected, so /api/heartbeat never nulled it) is NOT a live pause: fall through and
@@ -93,7 +105,15 @@ Deno.serve(async () => {
       }
       const effective = ev.offline_protection_override !== null && ev.offline_protection_override !== undefined
         ? ev.offline_protection_override
-        : (van.auto_pause_on_offline ?? false)
+        /* 🔴 THE TYPE SITS BETWEEN THE EVENT AND THE VAN, which is the order every other reader uses:
+         * event hand change ?? type ?? van default. `evType` normalises PostgREST's embed, which
+         * arrives as an object or a one-element array depending on how it reads the relationship.
+         * ⚠️ THIS CHAIN IS A SECOND COPY OF lib/event-types/resolve.ts's, AND IT HAS TO BE. This is a
+         * Deno edge function on a different runtime; it cannot import from `lib/`, which is exactly why
+         * the mode chain below was already duplicated here before event types existed. The resolver is
+         * the OWNER of the order; scripts/event-types.cjs asserts this file's two expressions still
+         * match it, so the copies cannot drift silently. */
+        : (evType?.offline_protection ?? van.auto_pause_on_offline ?? false)
       if (!effective) {
         console.log(`[heartbeat-monitor]     event ${ev.id}: SKIP — offline protection OFF (override=${ev.offline_protection_override}, vanDefault=${van.auto_pause_on_offline})`)
         continue // offline protection off for this event → don't pause
@@ -103,7 +123,7 @@ Deno.serve(async () => {
       // uses two lines up, so the two cannot resolve against different events.
       // 'pause' IS THE FALLBACK FOR EVERY UNKNOWN VALUE, including a column that does not exist yet:
       // it is what offline protection has always done, so a partial deploy behaves exactly like today.
-      const modeRaw = ev.offline_protection_mode_override ?? van.offline_protection_mode ?? 'pause'
+      const modeRaw = ev.offline_protection_mode_override ?? evType?.offline_protection_mode ?? van.offline_protection_mode ?? 'pause'
       const mode = modeRaw === 'no_auto_accept' ? 'no_auto_accept' : 'pause'
       // THE TWO WRITES ARE DELIBERATELY DIFFERENT COLUMNS, AND MUST STAY SO.
       //   pause          → online_paused_until, which the CUSTOMER GATE reads. Writing it IS the pause.

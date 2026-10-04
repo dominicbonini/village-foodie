@@ -19,13 +19,16 @@
 // behaviour the next order does not deliver. They arrive with their own stages.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Btn, Card } from './primitives'
+import { Btn } from './primitives'
 import {
-  SERVICE_KEYS, SERVICE_LABELS, TYPE_SUGGESTIONS, MAX_TYPE_NAME,
+  SERVICE_ROWS, TYPE_NAME_CHIPS, MAX_TYPE_NAME,
   colourFor, STANDARD_COLOUR, TYPE_INTERVAL_CHOICES,
-  type EventType, type ServiceKey,
+  type EventType, type ServiceRow,
 } from '@/lib/event-types/types'
-import { summariseType, changedCount, type TypeFor } from '@/lib/event-types/resolve'
+import { summariseType, changedCount, SERVICE_ROW_COUNT, type TypeFor } from '@/lib/event-types/resolve'
+import {
+  OFFLINE_PROTECTION_MODES, OFFLINE_MODE_PAUSE_LABEL, OFFLINE_MODE_NO_AUTO_ACCEPT_LABEL,
+} from '@/lib/copy/offlineProtection'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // SHARED
@@ -40,6 +43,8 @@ export interface StandardValues {
   takes_cash: { value: boolean; perVan: boolean }
   order_ready: { value: boolean; perVan: boolean }
   collection_interval_mins: { value: number; perVan: boolean }
+  /** The van switch and mode together — the modal shows offline protection as ONE row. */
+  offline_protection: { enabled: boolean; mode: string; perVan: boolean }
 }
 
 const api = async (token: string, body: Record<string, unknown>) => {
@@ -53,38 +58,95 @@ const api = async (token: string, body: Record<string, unknown>) => {
 }
 
 /**
- * What one setting reads as, on one type.
+ * What Standard reads as, for one row.
  *
- * 🔴 GREY MEANS "SAME AS STANDARD", which is the Main board's `.std` class and the one piece of
- * information the side-by-side layout exists to convey: a truck scanning a column wants to see at a
- * glance what this type actually changes. The grey value is STANDARD'S value, not a dash — "the same
- * as Standard" is only useful if you can see what that is without looking across.
+ * 🔴 IT SHOWS STANDARD'S ACTUAL VALUE, NOT A DASH. "Same as Standard" is only useful information if
+ * you can see what Standard IS without looking across the table — which is the whole reason the
+ * columns sit side by side.
+ * ⚠️ "Set per van" WHERE THE VANS DISAGREE. A truck with two vans configured differently has no single
+ * Standard for that row, and printing one of them as "your normal setup" would be false.
  */
-function settingText(key: ServiceKey, type: TypeFor, standard: StandardValues): { text: string; own: boolean } {
-  const v = type[key]
-  if (v === null || v === undefined) {
-    const s = standard[key]
-    if (s.perVan) return { text: 'Set per van', own: false }
-    return {
-      text: key === 'collection_interval_mins'
-        ? `Every ${standard.collection_interval_mins.value} min`
-        : (s.value as boolean) ? 'On' : 'Off',
-      own: false,
-    }
+function standardText(row: ServiceRow, standard: StandardValues): string {
+  if (row.id === 'collection_interval_mins') {
+    const s = standard.collection_interval_mins
+    return s.perVan ? 'Set per van' : `Every ${s.value} min`
   }
-  return {
-    text: key === 'collection_interval_mins' ? `Every ${v as number} min` : (v as boolean) ? 'On' : 'Off',
-    own: true,
+  if (row.id === 'offline_protection') {
+    const s = standard.offline_protection
+    if (s.perVan) return 'Set per van'
+    if (!s.enabled) return 'Off'
+    return s.mode === 'no_auto_accept' ? OFFLINE_MODE_NO_AUTO_ACCEPT_LABEL : OFFLINE_MODE_PAUSE_LABEL
   }
+  const s = standard[row.id as 'buzzer_prompt' | 'takes_cash' | 'order_ready']
+  return s.perVan ? 'Set per van' : s.value ? 'On' : 'Off'
+}
+
+/** Does this type say anything of its own for this row? Drives the grey "same as Standard" look. */
+function rowIsOwn(row: ServiceRow, type: TypeFor): boolean {
+  return row.keys.some(k => {
+    const v = (type as unknown as Record<string, unknown>)[k]
+    return v !== null && v !== undefined
+  })
+}
+
+/**
+ * ── 🔴 THE OFFLINE DROPDOWN'S FOUR CHOICES ────────────────────────────────────────────────────────
+ * Settings › Kitchen offers a SWITCH and then, when it is on, a MODE. One dropdown says the same
+ * thing in one control, which is what the TypesModal board shows — and it is one row because a
+ * three-row offline section inside a type column would dwarf every other setting.
+ *
+ * ⛔ THE AUTO-REJECT DELAY IS NOT OFFERED ON A TYPE, and that is a decision, not an omission. See
+ * docs/event-types-stage2b-report.md: the only thing that acts on the delay is a plpgsql function
+ * (`claim_order_for_auto_reject`, 20260819) which resolves it as
+ * `coalesce(event_override, van)` and cannot read this resolver. Offering a delay here that the
+ * rejecter ignores would be a setting that displays and does nothing — the exact failure the mode
+ * chain in heartbeat-monitor was changed to avoid. The COLUMN exists so the later stage needs no
+ * migration, and the per-event delay control on the dashboard still works, because the function does
+ * read the event override.
+ */
+const OFFLINE_CHOICES = [
+  { value: '', label: 'Same as Standard' },
+  { value: 'off', label: 'Off' },
+  ...OFFLINE_PROTECTION_MODES.map(m => ({ value: m.value as string, label: m.label })),
+] as const
+
+/** The dropdown's current value, from the type's two columns. */
+function offlineValue(type: TypeFor): string {
+  if (type.offline_protection === false) return 'off'
+  if (type.offline_protection === true || type.offline_protection_mode) {
+    return type.offline_protection_mode ?? 'pause'
+  }
+  return ''
+}
+
+/** What a dropdown choice writes to the type's two columns. */
+function offlinePatch(value: string): Record<string, unknown> {
+  if (value === '') return { offline_protection: null, offline_protection_mode: null }
+  if (value === 'off') return { offline_protection: false, offline_protection_mode: null }
+  return { offline_protection: true, offline_protection_mode: value }
 }
 
 const Dot = ({ colour }: { colour: string }) => (
   <span className="inline-block w-2.5 h-2.5 rounded-full shrink-0" style={{ background: colour }} aria-hidden="true" />
 )
 
+
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-// 1 · THE SETUP PANEL
+// 1 · THE MODAL (TypesModal board)
 // ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// ── 🔴 A CENTRED MODAL, NOT A FULL-SCREEN PANEL, AND FIXED-WIDTH COLUMNS ──────────────────────────
+// The first build made this a full-screen panel with `minmax(150px, 1fr)` columns, so every type
+// column got narrower as types were added and the controls sat in the LABEL column, misaligned with
+// the rows they belonged to.
+//
+// Three things follow from the board and all three are load-bearing:
+//   1. THE MODAL IS ~1000px AND NEVER GROWS. A truck with nine types does not get a wider dialog.
+//   2. EVERY TYPE COLUMN IS A FIXED 230px. So a column is the same size whatever else exists, and
+//      when they no longer fit THE COLUMNS SCROLL SIDEWAYS inside the modal — the label column stays
+//      put, because it is what tells you which row you are reading.
+//   3. EVERY CONTROL IS IN ITS OWN TYPE'S COLUMN, on the row its name is on. Nothing is in the label
+//      column.
 
 export function EventTypesPanel({ token, onClose }: { token: string; onClose: () => void }) {
   const [loading, setLoading] = useState(true)
@@ -95,14 +157,14 @@ export function EventTypesPanel({ token, onClose }: { token: string; onClose: ()
   const [missingTable, setMissingTable] = useState(false)
   const [msg, setMsg] = useState<{ text: string; bad: boolean } | null>(null)
   const [busy, setBusy] = useState(false)
-  const [picking, setPicking] = useState(false)
-  const [customName, setCustomName] = useState('')
+  const [creating, setCreating] = useState(false)
+  const [menuFor, setMenuFor] = useState<string | null>(null)
   const [renaming, setRenaming] = useState<string | null>(null)
   const [renameTo, setRenameTo] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
-  /* 🔴 ON A PHONE, ONE COLUMN AT A TIME WITH A PICKER AT THE TOP. Five columns side by side on a 390px
-   * screen is five unreadable columns; the brief's instruction, and the same answer the weekly-post
-   * setup reached for its own three-column grid. `null` is Standard. */
+  /* 🔴 ON A PHONE, ONE COLUMN AT A TIME WITH A PICKER AT THE TOP. Three fixed 230px columns beside a
+   * 200px label column cannot be read on a 390px screen, and shrinking them is what produced the
+   * misalignment this rewrite exists to fix. `null` is Standard. */
   const [phoneType, setPhoneType] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -127,8 +189,7 @@ export function EventTypesPanel({ token, onClose }: { token: string; onClose: ()
     finally { setBusy(false) }
   }
 
-  const setValue = (id: string, key: ServiceKey, value: boolean | number | null) =>
-    act({ action: 'update', id, [key]: value })
+  const patch = (id: string, values: Record<string, unknown>) => act({ action: 'update', id, ...values })
 
   const move = (id: string, by: -1 | 1) => {
     const i = types.findIndex(t => t.id === id)
@@ -136,226 +197,206 @@ export function EventTypesPanel({ token, onClose }: { token: string; onClose: ()
     if (i < 0 || j < 0 || j >= types.length) return
     const ids = types.map(t => t.id)
     ;[ids[i], ids[j]] = [ids[j], ids[i]]
+    setMenuFor(null)
     return act({ action: 'reorder', ids })
   }
 
   const editable = !readOnly && !busy
-
-  /* The columns, Standard first. Standard is not a row in the table — it is the absence of a type —
-   * so it is built here rather than fetched as one. */
+  const typeById = useMemo(() => new Map(types.map(t => [t.id, t])), [types])
   const columns = useMemo(
     () => [{ id: null as string | null, name: 'Standard' }, ...types.map(t => ({ id: t.id, name: t.name }))],
     [types],
   )
-  const typeById = useMemo(() => new Map(types.map(t => [t.id, t])), [types])
+
+  /* ⚠️ CLOSING THE ⋯ MENU ON ANY OUTSIDE CLICK. A menu that stays open while the operator clicks a
+   * control in the next column would sit over the thing they are trying to change. */
+  useEffect(() => {
+    if (!menuFor) return
+    const close = () => setMenuFor(null)
+    window.addEventListener('click', close)
+    return () => window.removeEventListener('click', close)
+  }, [menuFor])
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-50 flex flex-col" role="dialog" aria-modal="true" aria-label="Event types">
-      {/* ── HEADER ─────────────────────────────────────────────────────────────────────────────── */}
-      <div className="shrink-0 bg-white border-b border-slate-200 px-4 sm:px-6 py-3 flex items-center gap-3">
-        <div className="min-w-0 flex-1">
-          <h2 className="font-black text-slate-900">Event types</h2>
-          <p className="text-xs text-slate-500 truncate">
-            Each column is an event type. Grey = same as Standard.
-          </p>
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4"
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      {/* 🔴 ~1000px AND IT NEVER GROWS. `w-full max-w-[1000px]` with `max-h-[92vh]`, and the columns
+        * scroll inside — not the dialog. */}
+      <div role="dialog" aria-modal="true" aria-label="Event types"
+        data-event-types-modal
+        className="bg-white w-full max-w-[1000px] max-h-[92vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+
+        {/* ── HEADER ───────────────────────────────────────────────────────────────────────────── */}
+        <div className="shrink-0 flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-slate-200">
+          <div className="min-w-0 flex-1">
+            <h2 className="font-bold text-slate-900 text-lg">Event types</h2>
+            <p className="text-xs sm:text-[13px] text-slate-500">
+              Grey = same as Standard. Changes save as you go.
+            </p>
+          </div>
+          <Btn label="+ New event type" colour="ghost" disabled={!editable}
+            onClick={() => setCreating(true)} />
+          <button type="button" onClick={onClose} aria-label="Close"
+            className="shrink-0 w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-lg font-bold">✕</button>
         </div>
-        <Btn label="Done" colour="slate" onClick={onClose} />
-      </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-4 space-y-3">
-        {loading && <p className="text-sm text-slate-400">Loading…</p>}
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          {loading && <p className="text-sm text-slate-400 p-5">Loading…</p>}
 
-        {/* 🔴 THE MIGRATION HAS NOT BEEN APPLIED. Said plainly rather than showing an empty screen that
-          * looks like "you have no types" — the two are completely different problems. */}
-        {!loading && missingTable && (
-          <Card className="p-4">
-            <p className="text-sm font-bold text-slate-800">Event types aren’t switched on yet.</p>
-            <p className="text-sm text-slate-600 mt-1">
-              The database update for this feature hasn’t been applied. Nothing is broken — every event
-              is using your normal setup.
-            </p>
-          </Card>
-        )}
-
-        {/* The upgrade line, per decision 4: existing types keep working, nothing can be changed. */}
-        {!loading && readOnly && (
-          <Card className="p-4 border-amber-200 bg-amber-50">
-            <p className="text-sm font-bold text-amber-900">{upgradeMessage ?? 'Event types are part of the Max plan.'}</p>
-            <p className="text-sm text-amber-800 mt-1">
-              Events that already have a type keep using it. To add, change or assign types, move to Max.
-            </p>
-          </Card>
-        )}
-
-        {msg && (
-          <p className={`text-sm rounded-xl px-3 py-2 border ${msg.bad
-            ? 'text-red-700 bg-red-50 border-red-200'
-            : 'text-slate-600 bg-slate-50 border-slate-200'}`}>{msg.text}</p>
-        )}
-
-        {!loading && !missingTable && standard && (
-          <>
-            {/* ── PHONE: a picker, then one column ────────────────────────────────────────────── */}
-            <div className="md:hidden space-y-3">
-              <Card className="p-3">
-                <label className="block text-xs font-bold text-slate-600 mb-1" htmlFor="et-phone-pick">Event type</label>
-                <select id="et-phone-pick" value={phoneType ?? ''} onChange={e => setPhoneType(e.target.value || null)}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white h-11">
-                  {columns.map(c => <option key={c.id ?? 'standard'} value={c.id ?? ''}>{c.name}</option>)}
-                </select>
-              </Card>
-              {phoneType === null
-                ? <StandardCard standard={standard} />
-                : (() => {
-                    const t = typeById.get(phoneType)
-                    if (!t) return <p className="text-sm text-slate-400">That type has gone.</p>
-                    return (
-                      <TypeCard
-                        type={t} standard={standard} editable={editable}
-                        colour={colourFor(types.findIndex(x => x.id === t.id))}
-                        onValue={(k, v) => void setValue(t.id, k, v)}
-                        onRename={() => { setRenaming(t.id); setRenameTo(t.name) }}
-                        onDelete={() => setConfirmDelete(t.id)}
-                      />
-                    )
-                  })()}
+          {!loading && missingTable && (
+            <div className="p-5">
+              <p className="text-sm font-bold text-slate-800">Event types aren’t switched on yet.</p>
+              <p className="text-sm text-slate-600 mt-1">
+                The database update for this feature hasn’t been applied. Nothing is broken — every
+                event is using your normal setup.
+              </p>
             </div>
+          )}
 
-            {/* ── TABLET AND UP: the side-by-side grid, from the Main board ───────────────────── */}
-            {/* ⚠️ THE WHOLE GRID SCROLLS SIDEWAYS IN ITS OWN BOX rather than squeezing the columns.
-              * A truck with six types has a grid wider than 1440; letting the page scroll sideways
-              * instead would take the Done button with it. */}
-            <div className="hidden md:block overflow-x-auto">
-              <div className="min-w-max">
+          {!loading && readOnly && (
+            <div className="m-4 p-3 rounded-xl border border-amber-200 bg-amber-50">
+              <p className="text-sm font-bold text-amber-900">{upgradeMessage ?? 'Event types are part of the Max plan.'}</p>
+              <p className="text-sm text-amber-800 mt-1">
+                Events that already have a type keep using it. To add, change or assign types, move to Max.
+              </p>
+            </div>
+          )}
+
+          {msg && (
+            <p className={`m-4 text-sm rounded-xl px-3 py-2 border ${msg.bad
+              ? 'text-red-700 bg-red-50 border-red-200'
+              : 'text-slate-600 bg-slate-50 border-slate-200'}`}>{msg.text}</p>
+          )}
+
+          {!loading && !missingTable && standard && (
+            <>
+              {/* ── PHONE: a picker, then one column ──────────────────────────────────────────── */}
+              <div className="md:hidden p-4 space-y-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1" htmlFor="et-phone-pick">Event type</label>
+                  <select id="et-phone-pick" value={phoneType ?? ''} onChange={e => setPhoneType(e.target.value || null)}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white h-11">
+                    {columns.map(c => <option key={c.id ?? 'standard'} value={c.id ?? ''}>{c.name}</option>)}
+                  </select>
+                </div>
+                {phoneType === null
+                  ? <StandardCard standard={standard} />
+                  : (() => {
+                      const t = typeById.get(phoneType)
+                      if (!t) return <p className="text-sm text-slate-400">That type has gone.</p>
+                      return (
+                        <TypeCard
+                          type={t} standard={standard} editable={editable}
+                          colour={colourFor(types.findIndex(x => x.id === t.id))}
+                          onPatch={v => void patch(t.id, v)}
+                          onRename={() => { setRenaming(t.id); setRenameTo(t.name) }}
+                          onDelete={() => setConfirmDelete(t.id)}
+                        />
+                      )
+                    })()}
+              </div>
+
+              {/* ── TABLET AND UP: the fixed-width columns, scrolling sideways ────────────────── */}
+              {/* ⚠️ THE SCROLLER IS THE ROW AREA, so the modal's own width never changes. */}
+              <div className="hidden md:block overflow-x-auto px-2 pb-2" data-types-scroller>
                 <div
-                  className="bg-white border border-slate-200 rounded-2xl overflow-hidden"
-                  style={{ display: 'grid', gridTemplateColumns: `200px repeat(${columns.length}, minmax(150px, 1fr))` }}
-                  data-event-types-grid
+                  className="min-w-max"
+                  style={{ display: 'grid', gridTemplateColumns: `200px repeat(${types.length + 1}, 230px)` }}
+                  data-types-grid
                 >
                   {/* heading row */}
-                  <div className="bg-slate-50 px-3 py-2" />
-                  {columns.map((c, i) => (
-                    <div key={c.id ?? 'standard'} className="bg-slate-50 px-3 py-2 border-l border-slate-100 flex items-center gap-2 min-w-0">
-                      <Dot colour={c.id === null ? STANDARD_COLOUR : colourFor(i - 1)} />
-                      <span className="text-sm font-bold text-slate-800 truncate">{c.name}</span>
-                      {c.id === null && <span className="text-[11px] text-slate-400 font-medium shrink-0">default</span>}
-                    </div>
-                  ))}
-
-                  {/* what each type changes */}
-                  <div className="px-3 py-2 border-t border-slate-100 text-sm font-bold text-slate-700">Changes</div>
-                  <div className="px-3 py-2 border-t border-l border-slate-100 text-xs text-slate-500">Your normal setup</div>
-                  {types.map(t => (
-                    <div key={t.id} className="px-3 py-2 border-t border-l border-slate-100 text-xs text-slate-500">
-                      {changedCount(t) === 0 ? 'Nothing yet' : `${changedCount(t)} of 4 service settings`}
-                    </div>
-                  ))}
-
-                  {/* the SERVICE section — the only one this build resolves */}
-                  <div className="col-span-full bg-slate-100 px-3 py-1.5 text-[11px] font-bold text-slate-600 tracking-wider">SERVICE</div>
-                  {SERVICE_KEYS.map(key => (
-                    <SettingRow
-                      key={key} settingKey={key} types={types} standard={standard} editable={editable}
-                      onValue={(id, v) => void setValue(id, key, v)}
-                    />
-                  ))}
-
-                  {/* used by */}
-                  <div className="px-3 py-2 border-t border-slate-100 text-sm font-bold text-slate-700">Used by</div>
-                  <div className="px-3 py-2 border-t border-l border-slate-100 text-xs text-slate-500">Everything else</div>
-                  {types.map(t => (
-                    <div key={t.id} className="px-3 py-2 border-t border-l border-slate-100 text-xs text-slate-500">
-                      {t.upcoming} upcoming event{t.upcoming === 1 ? '' : 's'}
-                    </div>
-                  ))}
-
-                  {/* rename / reorder / delete */}
-                  <div className="px-3 py-2 border-t border-slate-100" />
-                  <div className="px-3 py-2 border-t border-l border-slate-100 text-xs text-slate-400">Can’t be changed</div>
+                  <div className="px-3.5 py-3" />
+                  <div className="px-3.5 py-3 bg-slate-50 flex items-center gap-2 min-w-0">
+                    <Dot colour={STANDARD_COLOUR} />
+                    <span className="text-[15px] font-bold text-slate-800 truncate">Standard</span>
+                    <span className="text-[11px] text-slate-400 font-semibold shrink-0">default</span>
+                  </div>
                   {types.map((t, i) => (
-                    <div key={t.id} className="px-3 py-2 border-t border-l border-slate-100 flex flex-wrap gap-2">
-                      <button type="button" disabled={!editable} onClick={() => { setRenaming(t.id); setRenameTo(t.name) }}
-                        className="text-xs font-bold text-slate-600 disabled:text-slate-300">Rename</button>
-                      <button type="button" disabled={!editable || i === 0} onClick={() => void move(t.id, -1)}
-                        aria-label={`Move ${t.name} left`}
-                        className="text-xs font-bold text-slate-600 disabled:text-slate-300">←</button>
-                      <button type="button" disabled={!editable || i === types.length - 1} onClick={() => void move(t.id, 1)}
-                        aria-label={`Move ${t.name} right`}
-                        className="text-xs font-bold text-slate-600 disabled:text-slate-300">→</button>
-                      <button type="button" disabled={!editable} onClick={() => setConfirmDelete(t.id)}
-                        className="text-xs font-bold text-red-600 disabled:text-slate-300">Delete</button>
+                    <div key={t.id} className="px-3.5 py-3 flex items-center gap-2 min-w-0 relative">
+                      <Dot colour={colourFor(i)} />
+                      <span className="text-[15px] font-bold text-slate-800 truncate">{t.name}</span>
+                      {/* 🔴 RENAME / MOVE / DELETE LIVE IN A ⋯ MENU, not as four links under every
+                        * column. Four links per column is four links × nine types of chrome competing
+                        * with the settings, which are what the screen is for. */}
+                      <button type="button" aria-label={`More for ${t.name}`} disabled={!editable}
+                        onClick={e => { e.stopPropagation(); setMenuFor(menuFor === t.id ? null : t.id) }}
+                        className="ml-auto shrink-0 w-[30px] h-[30px] rounded-lg border border-slate-200 text-slate-500 font-bold disabled:text-slate-300">⋯</button>
+                      {menuFor === t.id && (
+                        <div className="absolute right-2 top-11 z-10 w-[170px] bg-white rounded-xl shadow-xl border border-slate-100 p-1.5 text-sm"
+                          onClick={e => e.stopPropagation()}>
+                          <button type="button" className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50"
+                            onClick={() => { setRenaming(t.id); setRenameTo(t.name); setMenuFor(null) }}>Rename</button>
+                          <button type="button" disabled={i === 0}
+                            className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50 disabled:text-slate-300"
+                            onClick={() => void move(t.id, -1)}>Move left</button>
+                          <button type="button" disabled={i === types.length - 1}
+                            className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50 disabled:text-slate-300"
+                            onClick={() => void move(t.id, 1)}>Move right</button>
+                          <button type="button" className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50 text-red-700"
+                            onClick={() => { setConfirmDelete(t.id); setMenuFor(null) }}>Delete</button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  <div className="col-span-full px-3.5 pt-3.5 pb-1.5 text-[11px] font-bold text-slate-500 tracking-[0.06em]"
+                    style={{ gridColumn: '1 / -1' }}>SERVICE</div>
+
+                  {SERVICE_ROWS.map(row => (
+                    <SettingRow key={row.id} row={row} types={types} standard={standard}
+                      editable={editable} onPatch={patch} />
+                  ))}
+
+                  <div className="col-span-full px-3.5 pt-3.5 pb-1.5 text-[11px] font-bold text-slate-500 tracking-[0.06em]"
+                    style={{ gridColumn: '1 / -1' }}>USED BY</div>
+                  <div className="px-3.5 py-2.5 border-t border-slate-100 text-sm font-semibold text-slate-900 min-h-11 flex items-center">
+                    Upcoming events
+                  </div>
+                  <div className="px-3.5 py-2.5 border-t border-slate-100 bg-slate-50 text-sm text-slate-600 min-h-11 flex items-center">
+                    Everything else
+                  </div>
+                  {types.map(t => (
+                    <div key={t.id} className="px-3.5 py-2.5 border-t border-slate-100 text-sm text-slate-700 min-h-11 flex items-center">
+                      {t.upcoming} event{t.upcoming === 1 ? '' : 's'}
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-3">
-              <Btn label="+ New event type" disabled={!editable}
-                onClick={() => { setPicking(true); setCustomName('') }} />
               {types.length === 0 && (
-                <p className="text-xs text-slate-500">
+                <p className="px-5 pb-4 text-xs text-slate-500">
                   You have no event types yet, so every event uses your normal setup.
                 </p>
               )}
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
+
+        {/* ── FOOTER ───────────────────────────────────────────────────────────────────────────── */}
+        <div className="shrink-0 px-4 sm:px-5 py-3 border-t border-slate-200 text-[13px] text-slate-500">
+          Standard is your normal setup. Change it in Settings. Anything you change on one event’s
+          dashboard still wins.
+        </div>
       </div>
 
-      {/* ── + NEW EVENT TYPE — the NewType board ─────────────────────────────────────────────── */}
-      {picking && (
-        <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
-          onClick={() => setPicking(false)}>
-          <div className="bg-slate-50 rounded-2xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden"
-            onClick={e => e.stopPropagation()}>
-            <div className="p-4 flex items-center gap-3">
-              <p className="font-bold text-slate-900 text-lg flex-1">New event type</p>
-              <button type="button" onClick={() => setPicking(false)} aria-label="Close"
-                className="w-9 h-9 rounded-full bg-slate-200 text-slate-600 font-bold">✕</button>
-            </div>
-            <div className="px-4 pb-2 text-[11px] font-bold text-slate-500 tracking-wider">SUGGESTIONS</div>
-            <div className="overflow-y-auto px-4 space-y-2">
-              {TYPE_SUGGESTIONS.map(sug => (
-                <div key={sug.name} className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-slate-800">{sug.name}</p>
-                    {/* ⚠️ THE DESCRIPTION NAMES ONLY WHAT THIS BUILD DOES. The board's Festival line
-                      * reads "Shorter menu, prices up, buzzers on"; menus and prices are later stages,
-                      * so saying so now would be a promise the next order breaks. */}
-                    <p className="text-xs text-slate-500">{sug.description}</p>
-                  </div>
-                  <Btn label="Add" colour="slate" size="sm" disabled={!editable}
-                    onClick={() => void act({ action: 'create', name: sug.name, values: sug.values }, () => setPicking(false))} />
-                </div>
-              ))}
-            </div>
-            <div className="px-4 pt-3 pb-1 text-[11px] font-bold text-slate-500 tracking-wider">OR YOUR OWN</div>
-            <div className="px-4 pb-4 space-y-2">
-              <div className="flex gap-2">
-                <input value={customName} onChange={e => setCustomName(e.target.value)} maxLength={MAX_TYPE_NAME}
-                  placeholder="e.g. School fete" aria-label="New event type name"
-                  className="flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
-                <Btn label="Create" disabled={!editable || !customName.trim()}
-                  onClick={() => void act({ action: 'create', name: customName }, () => setPicking(false))} />
-              </div>
-              <p className="text-xs text-slate-500">
-                New types start as a copy of Standard. Change anything after.
-              </p>
-            </div>
-          </div>
-        </div>
+      {/* ── + NEW EVENT TYPE (NewType2 board) ───────────────────────────────────────────────────── */}
+      {creating && (
+        <NewTypePopup
+          busy={!editable}
+          onCancel={() => setCreating(false)}
+          onCreate={name => void act({ action: 'create', name }, () => setCreating(false))}
+        />
       )}
 
       {/* ── RENAME ───────────────────────────────────────────────────────────────────────────── */}
       {renaming && (
         <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
-          onClick={() => setRenaming(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-sm p-4 space-y-3" onClick={e => e.stopPropagation()}>
+          onClick={e => { if (e.target === e.currentTarget) setRenaming(null) }}>
+          <div className="bg-white rounded-2xl w-full max-w-sm p-4 space-y-3">
             <p className="font-bold text-slate-900">Rename this type</p>
             <input value={renameTo} onChange={e => setRenameTo(e.target.value)} maxLength={MAX_TYPE_NAME}
               aria-label="Type name"
-              className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
+              className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white h-11" />
             <div className="flex gap-2 justify-end">
               <Btn label="Cancel" colour="slate" size="sm" onClick={() => setRenaming(null)} />
               <Btn label="Save" size="sm" disabled={!editable || !renameTo.trim()}
@@ -365,11 +406,11 @@ export function EventTypesPanel({ token, onClose }: { token: string; onClose: ()
         </div>
       )}
 
-      {/* ── DELETE, WITH THE CONFIRM THAT SAYS WHAT HAPPENS TO ITS EVENTS ────────────────────── */}
+      {/* ── DELETE ───────────────────────────────────────────────────────────────────────────── */}
       {confirmDelete && (
         <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
-          onClick={() => setConfirmDelete(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-sm p-4 space-y-3" onClick={e => e.stopPropagation()}>
+          onClick={e => { if (e.target === e.currentTarget) setConfirmDelete(null) }}>
+          <div className="bg-white rounded-2xl w-full max-w-sm p-4 space-y-3">
             <p className="font-bold text-slate-900">
               Delete “{typeById.get(confirmDelete)?.name ?? 'this type'}”?
             </p>
@@ -392,102 +433,160 @@ export function EventTypesPanel({ token, onClose }: { token: string; onClose: ()
   )
 }
 
-/** One row of the grid: the label, Standard's value, then each type's. */
-function SettingRow({ settingKey, types, standard, editable, onValue }: {
-  settingKey: ServiceKey
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 1a · ONE ROW OF THE GRID
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+
+/**
+ * The label, then Standard's value, then one control PER TYPE IN THAT TYPE'S OWN COLUMN.
+ *
+ * 🔴 NOTHING GOES IN THE LABEL COLUMN. The first build put the controls there, so a row read
+ * "Buzzers [switch] | On | On | Off" and the switch belonged to no column at all.
+ */
+function SettingRow({ row, types, standard, editable, onPatch }: {
+  row: ServiceRow
   types: TypeRow[]
   standard: StandardValues
   editable: boolean
-  onValue: (id: string, v: boolean | number | null) => void
+  onPatch: (id: string, values: Record<string, unknown>) => void
 }) {
-  const std = standard[settingKey]
   return (
     <>
-      <div className="px-3 py-2 border-t border-slate-100 text-sm text-slate-700">{SERVICE_LABELS[settingKey]}</div>
-      {/* 🔴 STANDARD IS READ-ONLY HERE. Its values live on the truck and the vans, and editing them
-        * from this screen would be a second route to Settings that could disagree with it. */}
-      <div className="px-3 py-2 border-t border-l border-slate-100 text-sm text-slate-700">
-        {std.perVan
-          ? <span className="text-slate-500">Set per van</span>
-          : settingKey === 'collection_interval_mins'
-            ? `Every ${standard.collection_interval_mins.value} min`
-            : (std.value as boolean) ? 'On' : 'Off'}
+      <div className="px-3.5 py-2.5 border-t border-slate-100 text-sm font-semibold text-slate-900 min-h-11 flex items-center">
+        {row.label}
       </div>
-      {types.map(t => {
-        const { own } = settingText(settingKey, t, standard)
-        return (
-          <div key={t.id} className="px-3 py-2 border-t border-l border-slate-100">
-            {settingKey === 'collection_interval_mins' ? (
-              <select
-                aria-label={`${SERVICE_LABELS[settingKey]} for ${t.name}`}
-                value={t.collection_interval_mins ?? ''}
-                disabled={!editable}
-                onChange={e => onValue(t.id, e.target.value === '' ? null : Number(e.target.value))}
-                /* ⚠️ GREY WHEN IT MATCHES STANDARD — the `.std` treatment from the board, applied to a
-                 * real control rather than to text, so it can be both seen and changed. */
-                className={`w-full border border-slate-200 rounded-lg px-2 py-1 text-sm bg-white ${own ? 'text-slate-900 font-semibold' : 'text-slate-400'}`}>
-                <option value="">Same as Standard</option>
-                {TYPE_INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} min</option>)}
-              </select>
-            ) : (
-              <select
-                aria-label={`${SERVICE_LABELS[settingKey]} for ${t.name}`}
-                value={t[settingKey] === null || t[settingKey] === undefined ? '' : (t[settingKey] ? 'on' : 'off')}
-                disabled={!editable}
-                onChange={e => onValue(t.id, e.target.value === '' ? null : e.target.value === 'on')}
-                className={`w-full border border-slate-200 rounded-lg px-2 py-1 text-sm bg-white ${own ? 'text-slate-900 font-semibold' : 'text-slate-400'}`}>
-                <option value="">Same as Standard</option>
-                <option value="on">On</option>
-                <option value="off">Off</option>
-              </select>
-            )}
-          </div>
-        )
-      })}
+      {/* 🔴 STANDARD IS READ-ONLY. Its values live on the truck and the vans, and editing them from
+        * here would be a second route to Settings that could disagree with it. */}
+      <div className="px-3.5 py-2.5 border-t border-slate-100 bg-slate-50 text-sm text-slate-600 min-h-11 flex items-center">
+        {standardText(row, standard)}
+      </div>
+      {types.map(t => (
+        <div key={t.id} className="px-3.5 py-2.5 border-t border-slate-100 min-h-11 flex items-center gap-2">
+          <TypeControl row={row} type={t} editable={editable} onPatch={v => onPatch(t.id, v)} />
+        </div>
+      ))}
     </>
   )
 }
 
-/** The phone view of Standard. Read-only, and it says why. */
+/**
+ * One type's control for one row.
+ *
+ * ── 🔴 "SAME AS STANDARD" IS A REAL STATE, AND IT LOOKS LIKE ONE ─────────────────────────────────
+ * For a DROPDOWN it is the first option, so it needs no extra affordance.
+ * For a SWITCH there is no third position, so: a GREYED switch labelled "Same as Standard", and
+ * tapping it sets an explicit On/Off. Once explicit, a small "Same as Standard" link beside the value
+ * puts it back to NULL — without that link a truck could set a switch and never get back to
+ * inheriting, which is the state they started in.
+ */
+function TypeControl({ row, type, editable, onPatch }: {
+  row: ServiceRow
+  type: TypeRow
+  editable: boolean
+  onPatch: (values: Record<string, unknown>) => void
+}) {
+  const own = rowIsOwn(row, type)
+
+  if (row.kind === 'interval') {
+    return (
+      <select
+        aria-label={`${row.label} for ${type.name}`}
+        value={type.collection_interval_mins ?? ''}
+        disabled={!editable}
+        onChange={e => onPatch({ collection_interval_mins: e.target.value === '' ? null : Number(e.target.value) })}
+        className={`w-full border rounded-lg px-2.5 h-9 text-[13px] font-semibold bg-white ${own
+          ? 'border-slate-300 text-slate-900' : 'border-slate-200 text-slate-400'}`}>
+        <option value="">Same as Standard</option>
+        {TYPE_INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} min</option>)}
+      </select>
+    )
+  }
+
+  if (row.kind === 'offline') {
+    return (
+      <select
+        aria-label={`${row.label} for ${type.name}`}
+        value={offlineValue(type)}
+        disabled={!editable}
+        onChange={e => onPatch(offlinePatch(e.target.value))}
+        className={`w-full border rounded-lg px-2.5 h-9 text-[13px] font-semibold bg-white ${own
+          ? 'border-slate-300 text-slate-900' : 'border-slate-200 text-slate-400'}`}>
+        {OFFLINE_CHOICES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+      </select>
+    )
+  }
+
+  // ── A SWITCH ──────────────────────────────────────────────────────────────────────────────────
+  const key = row.keys[0]
+  const value = (type as unknown as Record<string, unknown>)[key] as boolean | null | undefined
+  const explicit = value === true || value === false
+
+  return (
+    <>
+      <button type="button" role="switch" aria-checked={value === true} disabled={!editable}
+        aria-label={`${row.label} for ${type.name}`}
+        /* ⚠️ TAPPING AN INHERITING SWITCH SETS AN EXPLICIT VALUE, and the value it sets is the
+         * OPPOSITE of what it is showing — which is what a switch does. An inheriting switch shows
+         * Standard's position greyed; tapping it means "no, for this type, the other one". */
+        onClick={() => onPatch({ [key]: explicit ? !value : true })}
+        className={`relative w-[42px] h-6 rounded-full transition-colors shrink-0 disabled:opacity-40 ${
+          value === true ? 'bg-orange-600' : 'bg-slate-300'} ${explicit ? '' : 'opacity-45'}`}>
+        <span className={`absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform ${
+          value === true ? 'translate-x-[21px]' : 'translate-x-[3px]'}`} />
+      </button>
+      {explicit ? (
+        <span className="flex items-center gap-2 min-w-0">
+          <span className="text-[13px] font-semibold text-slate-900">{value ? 'On' : 'Off'}</span>
+          {/* 🔴 THE WAY BACK TO NULL. Without it a switch is a one-way door out of inheriting. */}
+          <button type="button" disabled={!editable} onClick={() => onPatch({ [key]: null })}
+            className="text-[11px] text-slate-400 underline hover:text-slate-600 disabled:text-slate-300 truncate">
+            Same as Standard
+          </button>
+        </span>
+      ) : (
+        <span className="text-xs text-slate-400 truncate">Same as Standard</span>
+      )}
+    </>
+  )
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 1b · THE PHONE CARDS
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+
+/** Standard on a phone. Read-only, and it says why. */
 function StandardCard({ standard }: { standard: StandardValues }) {
   return (
-    <Card className="p-4 space-y-2">
+    <div className="rounded-2xl border border-slate-200 p-4 space-y-2">
       <div className="flex items-center gap-2">
         <Dot colour={STANDARD_COLOUR} />
         <p className="font-bold text-slate-900">Standard</p>
         <span className="text-xs text-slate-400">default</span>
       </div>
       <p className="text-xs text-slate-500">Your normal setup — used at every event with no type.</p>
-      {SERVICE_KEYS.map(key => {
-        const s = standard[key]
-        return (
-          <div key={key} className="flex items-center justify-between text-sm py-1 border-t border-slate-100">
-            <span className="text-slate-700">{SERVICE_LABELS[key]}</span>
-            <span className="text-slate-700">
-              {s.perVan ? <span className="text-slate-500">Set per van</span>
-                : key === 'collection_interval_mins' ? `Every ${standard.collection_interval_mins.value} min`
-                : (s.value as boolean) ? 'On' : 'Off'}
-            </span>
-          </div>
-        )
-      })}
+      {SERVICE_ROWS.map(row => (
+        <div key={row.id} className="flex items-center justify-between gap-3 text-sm py-1.5 border-t border-slate-100">
+          <span className="text-slate-700">{row.label}</span>
+          <span className="text-slate-600 text-right">{standardText(row, standard)}</span>
+        </div>
+      ))}
       <p className="text-xs text-slate-400">Change these in Settings, not here.</p>
-    </Card>
+    </div>
   )
 }
 
-/** The phone view of one type. */
-function TypeCard({ type, standard, editable, colour, onValue, onRename, onDelete }: {
+/** One type on a phone. The same controls, stacked. */
+function TypeCard({ type, standard, editable, colour, onPatch, onRename, onDelete }: {
   type: TypeRow
   standard: StandardValues
   editable: boolean
   colour: string
-  onValue: (k: ServiceKey, v: boolean | number | null) => void
+  onPatch: (values: Record<string, unknown>) => void
   onRename: () => void
   onDelete: () => void
 }) {
   return (
-    <Card className="p-4 space-y-2">
+    <div className="rounded-2xl border border-slate-200 p-4 space-y-2">
       <div className="flex items-center gap-2">
         <Dot colour={colour} />
         <p className="font-bold text-slate-900 min-w-0 flex-1 truncate">{type.name}</p>
@@ -496,38 +595,89 @@ function TypeCard({ type, standard, editable, colour, onValue, onRename, onDelet
         <button type="button" onClick={onDelete} disabled={!editable}
           className="text-xs font-bold text-red-600 disabled:text-slate-300">Delete</button>
       </div>
-      <p className="text-xs text-slate-500">{type.upcoming} upcoming event{type.upcoming === 1 ? '' : 's'}</p>
-      {SERVICE_KEYS.map(key => {
-        const { own } = settingText(key, type, standard)
-        return (
-          <div key={key} className="py-1 border-t border-slate-100">
-            <label className="block text-xs font-bold text-slate-600 mb-1" htmlFor={`et-${type.id}-${key}`}>
-              {SERVICE_LABELS[key]}
-            </label>
-            {key === 'collection_interval_mins' ? (
-              <select id={`et-${type.id}-${key}`} value={type.collection_interval_mins ?? ''} disabled={!editable}
-                onChange={e => onValue(key, e.target.value === '' ? null : Number(e.target.value))}
-                className={`w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white h-11 ${own ? 'text-slate-900 font-semibold' : 'text-slate-400'}`}>
-                <option value="">Same as Standard</option>
-                {TYPE_INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} min</option>)}
-              </select>
-            ) : (
-              <select id={`et-${type.id}-${key}`} disabled={!editable}
-                value={type[key] === null || type[key] === undefined ? '' : (type[key] ? 'on' : 'off')}
-                onChange={e => onValue(key, e.target.value === '' ? null : e.target.value === 'on')}
-                className={`w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white h-11 ${own ? 'text-slate-900 font-semibold' : 'text-slate-400'}`}>
-                <option value="">Same as Standard</option>
-                <option value="on">On</option>
-                <option value="off">Off</option>
-              </select>
-            )}
+      <p className="text-xs text-slate-500">
+        {type.upcoming} upcoming event{type.upcoming === 1 ? '' : 's'} ·{' '}
+        {changedCount(type) === 0 ? 'nothing changed yet' : `${changedCount(type)} of ${SERVICE_ROW_COUNT} changed`}
+      </p>
+      {SERVICE_ROWS.map(row => (
+        <div key={row.id} className="py-1.5 border-t border-slate-100">
+          <div className="flex items-baseline justify-between gap-2 mb-1">
+            <span className="text-xs font-bold text-slate-600">{row.label}</span>
+            <span className="text-[11px] text-slate-400">Standard: {standardText(row, standard)}</span>
           </div>
-        )
-      })}
-    </Card>
+          <div className="flex items-center gap-2">
+            <TypeControl row={row} type={type} editable={editable} onPatch={onPatch} />
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 2 · NEW EVENT TYPE (NewType2 board)
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+
+/**
+ * A name field and four name chips. Nothing else.
+ *
+ * ── 🔴 THE CHIPS FILL THE NAME AND DO NOTHING ELSE ────────────────────────────────────────────────
+ * The first build's chips were SUGGESTIONS that pre-filled settings. Two trucks tapping "Festival"
+ * got three settings already changed, chosen for them, with nothing afterwards saying which three —
+ * so the first thing they had to do was work out what to undo. Every new type now starts with every
+ * setting NULL, whichever chip was tapped, and the line under the chips says so.
+ */
+function NewTypePopup({ busy, onCancel, onCreate }: {
+  busy: boolean
+  onCancel: () => void
+  onCreate: (name: string) => void
+}) {
+  const [name, setName] = useState('')
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  useEffect(() => { inputRef.current?.focus() }, [])
+
+  return (
+    <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
+      onClick={e => { if (e.target === e.currentTarget) onCancel() }}>
+      <div role="dialog" aria-modal="true" aria-label="New event type" data-new-type-popup
+        className="bg-white rounded-2xl w-full max-w-[460px] p-5 flex flex-col gap-3.5">
+        <div className="flex items-center gap-3">
+          <p className="font-bold text-slate-900 text-lg flex-1">New event type</p>
+          <button type="button" onClick={onCancel} aria-label="Close"
+            className="w-9 h-9 rounded-full bg-slate-100 text-slate-600 font-bold">✕</button>
+        </div>
+
+        <div>
+          <label className="block text-[13px] font-semibold text-slate-700 mb-1.5" htmlFor="et-new-name">Name</label>
+          <input id="et-new-name" ref={inputRef} value={name} maxLength={MAX_TYPE_NAME}
+            onChange={e => setName(e.target.value)}
+            placeholder="e.g. School fete"
+            className="w-full border border-slate-300 rounded-xl px-3 h-11 text-[15px] text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400" />
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {TYPE_NAME_CHIPS.map(chip => (
+            /* ⚠️ A CHIP SETS THE NAME FIELD, which stays editable — so "Festival" can become
+             * "Festival (Saturday)" without retyping it. */
+            <button key={chip} type="button" onClick={() => { setName(chip); inputRef.current?.focus() }}
+              className="border border-slate-300 rounded-full px-3.5 h-10 text-sm font-semibold text-slate-900 bg-white hover:bg-slate-50">
+              {chip}
+            </button>
+          ))}
+        </div>
+
+        <p className="text-[13px] text-slate-500">
+          Tap a name or type your own. It starts exactly like Standard. Change anything after.
+        </p>
+
+        <div className="flex gap-2.5 justify-end">
+          <Btn label="Cancel" colour="slate" onClick={onCancel} />
+          <Btn label="Create" disabled={busy || !name.trim()} onClick={() => onCreate(name)} />
+        </div>
+      </div>
+    </div>
+  )
+}
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // 2 · THE ADD EVENT PICKER — one <select>, from the AddEventType board
 // ════════════════════════════════════════════════════════════════════════════════════════════════

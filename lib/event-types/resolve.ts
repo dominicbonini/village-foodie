@@ -27,9 +27,12 @@
  * would be a cycle — see lib/slot-interval-core.ts's header for why one that "works" was not left. */
 import { normaliseInterval, type VanIntervals } from '@/lib/slot-interval-core'
 import type { EventType } from './types'
+import type { OfflineProtectionMode } from '@/lib/copy/offlineProtection'
 
 /** Only the fields a resolver reads, so a caller may pass the row it already has. */
-export type TypeFor = Pick<EventType, 'buzzer_prompt' | 'takes_cash' | 'order_ready' | 'collection_interval_mins'>
+export type TypeFor = Pick<EventType,
+  | 'buzzer_prompt' | 'takes_cash' | 'order_ready' | 'collection_interval_mins'
+  | 'offline_protection' | 'offline_protection_mode' | 'offline_auto_reject_mins'>
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // 1 · THE BUZZER PROMPT
@@ -205,7 +208,106 @@ export function resolveIntervalsWithType(
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-// 5 · WHAT THE SCREENS SAY
+// 5 · OFFLINE ORDER PROTECTION
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+
+/** The van's defaults, as `truck_vans` holds them. */
+export interface OfflineVanDefaults {
+  auto_pause_on_offline?: boolean | null
+  offline_protection_mode?: string | null
+  offline_auto_reject_mins?: number | null
+}
+
+/** The event's own overrides, as `truck_events` holds them. */
+export interface OfflineEventOverride {
+  offline_protection_override?: boolean | null
+  offline_protection_mode_override?: string | null
+  offline_auto_reject_mins_override?: number | null
+}
+
+export interface ResolvedOffline {
+  /** Does offline protection apply to this event at all? */
+  enabled: boolean
+  /** What it does when it applies. Meaningless when `enabled` is false — see below. */
+  mode: OfflineProtectionMode
+  /** The auto-reject delay. null = none stored anywhere, which means nothing auto-rejects. */
+  autoRejectMins: number | null
+}
+
+const asMode = (v: unknown): OfflineProtectionMode | null =>
+  v === 'pause' || v === 'no_auto_accept' ? v : null
+
+/** 5-30, the bounds the van column, the CHECK and `set_offline_protection` all share. */
+const asDelay = (v: unknown): number | null =>
+  typeof v === 'number' && Number.isInteger(v) && v >= 5 && v <= 30 ? v : null
+
+/**
+ * Offline order protection: the switch, the mode and the delay — each `event ?? type ?? van`.
+ *
+ * ── 🔴 THREE INDEPENDENT CHAINS, NOT ONE ──────────────────────────────────────────────────────────
+ * This is the shape the feature already has and the shape this preserves. `set_offline_protection`
+ * (app/api/dashboard/action/route.ts) treats the mode and the delay as "optional and independent":
+ * either may arrive with or without the switch, and an absent one leaves its column untouched. So an
+ * event may override the switch and inherit the mode, or override the mode and inherit the switch.
+ * Resolving them as one unit would invent combinations no screen can produce and lose ones it can.
+ *
+ * ⚠️ THE MODE IS STILL RESOLVED WHEN THE SWITCH IS OFF, AND THAT IS DELIBERATE. `truck_vans`'s own
+ * comment says the mode is "ignored entirely when the switch is OFF" — ignored by the MONITOR, which
+ * is a statement about who acts on it, not about what it is. The screens show the stored mode so that
+ * switching protection back on does not silently change what it will do, which is what returning a
+ * hard-coded 'pause' here would cause.
+ *
+ * ⚠️ `?? 'pause'` IS THE LAST LINK ON THE MODE, matching `heartbeat-monitor/index.ts:106`
+ * (`ev.offline_protection_mode_override ?? van.offline_protection_mode ?? 'pause'`) — "''pause'' is
+ * what offline protection has always meant", per 20260818's header.
+ *
+ * ⚠️ THE DELAY'S LAST LINK IS `null`, NOT A DEFAULT. A van nobody has touched stores NULL and nothing
+ * auto-rejects for it; inventing 15 here would start auto-rejecting orders for every truck that never
+ * asked. The DEFAULT is written by the screens on the operator's own interaction, which is the rule
+ * Settings › Kitchen and the dashboard already follow.
+ *
+ * ⚠️ WITH `type` NULL, ALL THREE REDUCE TO TODAY'S EXPRESSIONS EXACTLY. Proved against the pre-build
+ * tree by scripts/event-types.cjs.
+ */
+export function resolveOfflineWithType(
+  event: OfflineEventOverride | null | undefined,
+  type: TypeFor | null | undefined,
+  van: OfflineVanDefaults | null | undefined,
+): ResolvedOffline {
+  const enabled = event?.offline_protection_override
+    ?? type?.offline_protection
+    ?? van?.auto_pause_on_offline
+    ?? false
+
+  const mode = asMode(event?.offline_protection_mode_override)
+    ?? asMode(type?.offline_protection_mode)
+    ?? asMode(van?.offline_protection_mode)
+    ?? 'pause'
+
+  const autoRejectMins = asDelay(event?.offline_auto_reject_mins_override)
+    ?? asDelay(type?.offline_auto_reject_mins)
+    ?? asDelay(van?.offline_auto_reject_mins)
+    ?? null
+
+  return { enabled, mode, autoRejectMins }
+}
+
+/**
+ * Which of offline protection's three columns this EVENT has set by hand.
+ *
+ * 🔴 USED BY THE SCREENS FOR THE "THIS EVENT" TAG, so the tag and the value come from one place. Any
+ * one of the three being non-null is a hand change for the row, because the row is one row to an
+ * operator even though it is three columns underneath.
+ */
+export function offlineIsHandChange(event: OfflineEventOverride | null | undefined): boolean {
+  if (!event) return false
+  return (event.offline_protection_override !== null && event.offline_protection_override !== undefined)
+    || (event.offline_protection_mode_override !== null && event.offline_protection_mode_override !== undefined)
+    || (event.offline_auto_reject_mins_override !== null && event.offline_auto_reject_mins_override !== undefined)
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 6 · WHAT THE SCREENS SAY
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
 /**
@@ -232,6 +334,14 @@ export function summariseType(type: TypeFor | null | undefined): string {
   if (type.collection_interval_mins !== null && type.collection_interval_mins !== undefined) {
     parts.push(`collection every ${normaliseInterval(type.collection_interval_mins)} min`)
   }
+  /* ⚠️ ONE PHRASE FOR THE WHOLE OFFLINE ROW, because it is one row to an operator. "offline protection
+   * off · pause · 15 mins" would read as three settings and two of them are meaningless on their own. */
+  if (type.offline_protection === false) parts.push('offline protection off')
+  else if (type.offline_protection === true || type.offline_protection_mode) {
+    parts.push(type.offline_protection_mode === 'no_auto_accept'
+      ? 'offline: keep taking orders'
+      : 'offline: pause ordering')
+  }
   return parts.length ? parts.join(' · ') : 'Same as Standard'
 }
 
@@ -243,5 +353,14 @@ export function changedCount(type: TypeFor | null | undefined): number {
   if (type.takes_cash !== null && type.takes_cash !== undefined) n++
   if (type.order_ready !== null && type.order_ready !== undefined) n++
   if (type.collection_interval_mins !== null && type.collection_interval_mins !== undefined) n++
+  /* 🔴 THE OFFLINE ROW COUNTS ONCE, NOT THREE TIMES. Its three columns are one setting to the person
+   * reading "2 of 5 service settings"; counting the mode and the delay separately would report a
+   * number no screen shows. */
+  if ((type.offline_protection !== null && type.offline_protection !== undefined)
+    || (type.offline_protection_mode !== null && type.offline_protection_mode !== undefined)
+    || (type.offline_auto_reject_mins !== null && type.offline_auto_reject_mins !== undefined)) n++
   return n
 }
+
+/** How many rows a type could change — the denominator in "2 of 5 service settings". */
+export const SERVICE_ROW_COUNT = 5
