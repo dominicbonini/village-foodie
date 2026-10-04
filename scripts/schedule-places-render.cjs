@@ -313,6 +313,15 @@ const filler = (label, h) =>
 
 /* 🔴 ONE NOTIFICATION BANNER, used by both sticky fixtures. Where it goes is the whole question: ABOVE
  * a sub-tab bar it costs the bar its flush resting position, BELOW it costs nothing. */
+/* 🔴 THE WRAPPER'S CLASS AND ITS CONDITIONAL PADDING, FROM THE REAL TERNARY (4 October 2026).
+ * The page used to hard-code `pt-6 manage-tab-pad` and let a `:has()` rule take the padding away. It
+ * does not any more: the padding is applied only on tabs with no sub-tab bar, decided in JSX by
+ * `TABS_WITH_SUBTABS`. A fixture that kept hard-coding `pt-6` would be measuring the old page, so both
+ * halves are lifted and `padded` is what the fixture passes when it wants the bar-less case. */
+const PAD_CLASS = lift(PAGE, /className=\{`(manage-tab-pad)\$\{TABS_WITH_SUBTABS\.includes\(activeTab\) \? '' : ' pt-6'\}`\}/, 'the tab wrapper')
+const PAD_PT = lift(PAGE, /className=\{`manage-tab-pad\$\{TABS_WITH_SUBTABS\.includes\(activeTab\) \? '' : '( pt-6)'\}`\}/, "the wrapper's conditional padding").trim()
+const padClass = (padded = false) => padded ? `${PAD_PT} ${PAD_CLASS}` : PAD_CLASS
+
 const BANNER = `<div id="banner" style="background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:12px" class="mb-4">a notification banner</div>`
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -579,14 +588,17 @@ function menuPillFixture(css, pillCount) {
  *                    `<main>` comment warns about — a sticky child then pins 24px down, so the bar
  *                    detaches from the top of the scroller and content shows above it.
  */
-function settingsFixture(css, breakSticky = false, breakFlush = false, withBanner = false, direct = false, bannerAbove = false) {
+function settingsFixture(css, breakSticky = false, breakFlush = false, withBanner = false, direct = false, bannerAbove = false, breakPad = false) {
   /* 🔴 LIFTED FROM THE SHARED CONSTANT all three sub-tab rows now use. If the real class list
    * changes, `lift` throws rather than quietly measuring a bar the page no longer has. */
   const bar = lift(PAGE, /const SUBTAB_BAR = '(.+?)'/, 'the shared sub-tab bar')
   const barInnerC = lift(PAGE, /const SUBTAB_ROW = '(.+?)'/, 'the sub-tab row')
   /* 🔴 AND THE WRAPPER CLASS, because the flush-top fix is a RULE ON THE WRAPPER keyed on
    * `data-subtab-bar`, not a margin on the bar. Measuring the bar alone would not exercise it. */
-  const pad = lift(PAGE, /<div className="(pt-6 manage-tab-pad)">/, 'the padded tab wrapper')
+  /* 🔴 THE WRAPPER'S PADDING IS A JSX BOOLEAN NOW, not a `:has()` rule, so `breakPad` is what puts it
+   * back — i.e. a tab wrongly left out of `TABS_WITH_SUBTABS`. `breakFlush` still drops
+   * `data-subtab-bar`, which is now only enough to disable the SECOND belt. */
+  const pad = padClass(breakPad)
   // ⚠️ THE BROKEN-FLUSH VARIANT DROPS EXACTLY THE ATTRIBUTE THE RULE KEYS ON, nothing else.
   const barInner = barInnerC
   const shell = lift(PAGE, /<div className="(bg-slate-50 h-dvh flex flex-col overflow-hidden)">/, 'the app shell')
@@ -925,7 +937,7 @@ function scheduleModalFixture(css) {
  * child of a NON-DOCUMENT scroller. A fixture that scrolled the document would answer a different
  * question — the bar would stick to the viewport and every assertion would pass for the wrong reason.
  */
-function barFixture(css, labels, activeIdx = 0, { notice = false, noticeAbove = false } = {}) {
+function barFixture(css, labels, activeIdx = 0, { notice = false, noticeAbove = false, breakFlush = false, breakPad = false } = {}) {
   const bar = lift(PAGE, /const SUBTAB_BAR = '(.+?)'/, 'the shared sub-tab bar')
   const row = lift(PAGE, /const SUBTAB_ROW = '(.+?)'/, 'the shared sub-tab row')
   const btn = lift(PAGE, /const subtabBtn = \(on: boolean\) =>\s*\n\s*`(.+?) \$\{/, 'the shared pill')
@@ -938,7 +950,7 @@ function barFixture(css, labels, activeIdx = 0, { notice = false, noticeAbove = 
    * reproduce the defect is not measuring the page; both classes are lifted from the source now. */
   const shell = lift(PAGE, /<div className="(bg-slate-50 h-dvh flex flex-col overflow-hidden)">/, 'the app shell')
   const main = lift(PAGE, /<main id=\{MANAGE_SCROLLER_ID\} className=\{"(.+?)"\}>/, 'the manage scroller')
-  const pad = lift(PAGE, /<div className="(pt-6 manage-tab-pad)">/, 'the padded tab wrapper')
+  const pad = padClass(breakPad)
   const notif = `<div id="notice" style="background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:12px" class="mb-4">a notification banner</div>`
   return `${HEAD(css)}
 <div class="${shell}">
@@ -946,7 +958,7 @@ function barFixture(css, labels, activeIdx = 0, { notice = false, noticeAbove = 
   <main id="scroller" class="${main}">
     <div class="${pad}">
       ${noticeAbove ? notif : ''}
-      <div id="bar" data-subtab-bar class="${bar} mb-4">
+      <div id="bar" ${breakFlush ? '' : 'data-subtab-bar'} class="${bar} mb-4">
         <div id="barRow" class="${row}">
           ${labels.map((l, i) => `<button id="pill${i}" class="${btn} ${i === activeIdx ? on : off}">${l}</button>`).join('')}
         </div>
@@ -1340,7 +1352,11 @@ async function measure() {
          * or neither run is measuring anything. */
         for (const [variant, opts, wantFlush] of [
           ['notice BELOW', { notice: true }, true],
+          /* 🔴 `:has()` UNABLE TO MATCH — the bar must still be flush, because the wrapper's padding is
+           * a JSX boolean and was never applied. See the Settings block below for why this matters. */
+          ['no-has', { breakFlush: true }, true],
           ['notice ABOVE (broken)', { noticeAbove: true }, false],
+          ['pt-6 back AND no-has (broken)', { breakFlush: true, breakPad: true }, false],
         ]) {
           await eng.page.goto(write(`bar-${barName}-${w}-${variant.split(' ')[1]}-${eng.name}.html`, barFixture(css, labels, 0, opts)))
           const n = await eng.page.evaluate(() => {
@@ -1354,10 +1370,10 @@ async function measure() {
           lines.push(`    …${variant}: at rest ${n.rest}px, after scrolling ${n.scrolled}px`)
           if (wantFlush) {
             t(n.rest <= 1 && n.scrolled <= 1,
-              `🔴 ${barName} ${w}: A NOTICE BELOW THE BAR COSTS IT NOTHING — flush at rest and still flush scrolled`)
+              `🔴 ${barName} ${w}: ${variant} — flush at rest (${n.rest}px) and still flush scrolled`)
           } else {
             t(n.rest > 1 && n.scrolled <= 1,
-              `🔴 ${barName} ${w}: BROKEN VARIANT — a notice ABOVE the bar gives it two resting positions`)
+              `🔴 ${barName} ${w}: BROKEN VARIANT ${variant} — two resting positions (${n.rest}px then ${n.scrolled}px), reproduced`)
           }
         }
         if (w === 1440 || w === 390) {
@@ -1569,15 +1585,60 @@ async function measure() {
         '🔴 A BAR THAT IS A DIRECT CHILD (Menu/Schedule) IS ALSO FLUSH AT REST — the second `:has()` selector works')
     }
 
-    /* ── 🔴 THE RESTING-GAP BROKEN VARIANT ──────────────────────────────────────
-     * The bar loses `data-subtab-bar`, so the wrapper's `:has()` rule stops matching and keeps its
-     * padding — the exact bug the operator reported. Sticky cannot hold an element ABOVE its flow
-     * position, so at scrollTop 0 the pin has nothing to do and the 24px gap shows.
+    /* ══ 🔴 THE FIX DOES NOT DEPEND ON `:has()` (4 October 2026) ═══════════════════════════════════
+     * 🔴 WHY THIS ASSERTION EXISTS. The 3 October fix was a `:has()` rule, and it was reported as not
+     * working — twice — on a build where this harness measured it working in both engines. The one way
+     * both can be true is a browser WITHOUT `:has()`: Safari 15.4 / Chrome 105, and this app runs in an
+     * iPad WKWebView. An unsupported selector is discarded silently; there is no error and nothing to
+     * see. So the padding is a JSX boolean now (`TABS_WITH_SUBTABS`), and the rule is a second belt.
+     * 🔴 THIS VARIANT DROPS `data-subtab-bar`, which is the closest this harness can get to "the rule
+     * does not apply" — neither selector can match without it. The bar must STILL be flush, because
+     * the wrapper was never given the padding in the first place. If this ever starts failing, the
+     * page has gone back to relying on the rule. */
+    {
+      await eng.setViewport(1440, 900)
+      await eng.page.goto(write(`set-nohas-${eng.name}.html`, settingsFixture(css, false, true)))
+      const noHas = await eng.page.evaluate(() => {
+        const sc = document.getElementById('scroller')
+        const jb = document.getElementById('jumpbar')
+        const at = () => Math.round(jb.getBoundingClientRect().top - sc.getBoundingClientRect().top)
+        const rest = at()
+        sc.scrollTop = 1200
+        return { rest, scrolled: at(), pad: getComputedStyle(jb.closest('.manage-tab-pad')).paddingTop }
+      })
+      lines.push(`  settings WITH THE \`:has()\` RULE UNABLE TO MATCH  at rest ${noHas.rest}px, scrolled ${noHas.scrolled}px · wrapper padding-top ${noHas.pad}`)
+      t(noHas.rest <= 1 && noHas.scrolled <= 1,
+        '🔴 THE BAR IS FLUSH EVEN WHEN THE `:has()` RULE CANNOT MATCH — the fix is the JSX boolean, not the selector')
+      t(noHas.pad === '0px',
+        '⚠️ …because the wrapper is never given the padding on a tab that has a bar')
+    }
+
+    /* ── 🔴 THE SECOND BELT STILL WORKS ──────────────────────────────────────────────────────────
+     * The wrapper is given `pt-6` back — a tab left out of `TABS_WITH_SUBTABS` — but keeps
+     * `data-subtab-bar`. In a browser that HAS `:has()` the rule catches that mistake and the bar is
+     * still flush. This is what the rule is kept for; it is not what the fix rests on. */
+    {
+      await eng.setViewport(1440, 900)
+      await eng.page.goto(write(`set-belt-${eng.name}.html`, settingsFixture(css, false, false, false, false, false, true)))
+      const belt = await eng.page.evaluate(() => {
+        const sc = document.getElementById('scroller')
+        const jb = document.getElementById('jumpbar')
+        return { rest: Math.round(jb.getBoundingClientRect().top - sc.getBoundingClientRect().top) }
+      })
+      lines.push(`  settings WITH \`pt-6\` PUT BACK but \`data-subtab-bar\` present  at rest ${belt.rest}px`)
+      t(belt.rest <= 1,
+        '⚠️ THE `:has()` RULE IS STILL A WORKING SECOND BELT where the browser supports it')
+    }
+
+    /* ── 🔴 THE RESTING-GAP BROKEN VARIANT ──────────────────────────────────────────────────────
+     * BOTH belts removed: the wrapper keeps `pt-6` AND the bar has no `data-subtab-bar`. This is the
+     * reported defect — sticky cannot hold an element ABOVE its flow position, so at scrollTop 0 the
+     * pin has nothing to do and the 24px gap shows, then vanishes on the first scroll.
      * 🔴 IT MUST SHOW AT REST AND VANISH AFTER SCROLLING — both halves, because "two resting
      * positions" is the defect, and a variant that was simply always-offset would not reproduce it. */
     {
       await eng.setViewport(1440, 900)
-      await eng.page.goto(write(`set-gap-${eng.name}.html`, settingsFixture(css, false, true)))
+      await eng.page.goto(write(`set-gap-${eng.name}.html`, settingsFixture(css, false, true, false, false, false, true)))
       const gapV = await eng.page.evaluate(() => {
         const sc = document.getElementById('scroller')
         const jb = document.getElementById('jumpbar')
@@ -1586,9 +1647,9 @@ async function measure() {
         sc.scrollTop = 1200
         return { rest, scrolled: at() }
       })
-      lines.push(`  settings BROKEN (no data-subtab-bar)  at rest ${gapV.rest}px below the top, after scrolling ${gapV.scrolled}px`)
+      lines.push(`  settings BROKEN (pt-6 back AND no data-subtab-bar)  at rest ${gapV.rest}px below the top, after scrolling ${gapV.scrolled}px`)
       t(gapV.rest > 1 && gapV.scrolled <= 1,
-        '🔴 BROKEN VARIANT: without `data-subtab-bar` the bar rests below the top and snaps flush once scrolled — the two resting positions, reproduced')
+        '🔴 BROKEN VARIANT: with both belts gone the bar rests below the top and snaps flush once scrolled — the two resting positions, reproduced')
     }
 
     /* ══ 🔴 THE WEEKLY POST'S TWO SCREENS ════════════════════════════════════════════

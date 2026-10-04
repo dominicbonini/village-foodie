@@ -151,6 +151,19 @@ html:not([data-brand="hatchgrab"]) .brand-mark-hg { display: none; }
    THE FIX: when a sub-tab bar IS the first thing in the wrapper, the wrapper gives up its top padding,
    so the bar's flow position and its pinned position are the same pixel and it never moves.
 
+   ⛔ THIS RULE IS NO LONGER THE FIX — IT IS A SECOND BELT (4 October 2026, after two reports).
+   It is correct, it is unlayered so it beats the `pt-6` utility, and scripts/schedule-places-render.cjs
+   measures it working at three widths in Chromium and WebKit. Dominic still reported the gap, twice,
+   on builds carrying it. The only way both of those are true is a browser with NO `:has()` support:
+   it landed in Safari 15.4 (March 2022) and Chrome 105, this app is used in an iPad WKWebView, and an
+   unsupported selector is DISCARDED IN SILENCE — no error, no warning, nothing to see in the source.
+   So the padding is applied in JSX now, by `TABS_WITH_SUBTABS` in app/manage/[token]/page.tsx: a tab
+   whose first element is a sticky bar is never given it. The page already knew the answer; asking it
+   in a selector was what made the answer depend on the browser.
+   ⚠️ THE RULE STAYS because it costs nothing and still catches a bar added to a tab nobody listed
+   — but nothing should be written that RELIES on it. The harness asserts the bar is flush with this
+   rule unable to match, which is the measurement that says the fix does not rest on it.
+
    ⚠️ WHY `:has()` AND NOT A `-mt-6` ON THE BAR. A fixed negative margin pulls the bar up whether or
    not there is room, so on any day something else rendered above it the bar would overlap that thing.
    This rule applies only when the bar really IS the first child, so it can never produce an overlap,

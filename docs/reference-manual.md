@@ -27195,6 +27195,30 @@ undo this, and nothing in CSS will say so — the bar simply starts moving. Two 
 notice below (flush at rest, 0px, and still 0px scrolled) and with one above (90px at rest, 0px scrolled
 — the defect, reproduced).
 
+**AMENDED AGAIN, SAME DAY — THE RULE WAS NOT THE MECHANISM.** Moving the notices below the bars changed
+nothing on the operator's screen, and the gap was reported a third time, narrowed to Settings ("that is
+the page you can scroll against"). The rule above is correct, it is **unlayered** (so it beats the `pt-6`
+utility, which Tailwind emits inside `@layer utilities`), and it measures flush in Chromium and WebKit.
+Both of those can only be true at once in **a browser with no `:has()`** — Safari 15.4 (March 2022) and
+Chrome 105 — and this app is used in an iPad WKWebView. **An unsupported selector is discarded in
+silence:** no error, no warning, and nothing in the source to look at.
+
+So the top gap is a **JSX boolean** now, not a selector:
+
+```jsx
+<div className={`manage-tab-pad${TABS_WITH_SUBTABS.includes(activeTab) ? '' : ' pt-6'}`}>
+```
+
+The page already knew whether the tab it is rendering has a sub-tab bar — `TABS_WITH_SUBTABS` is the same
+single list the notices use. Asking the question in a selector is what made the answer depend on the
+browser. The `:has()` rule stays as a second belt, for a bar added to a tab nobody listed, and
+`scripts/schedule-places-render.cjs` asserts the bar is flush **with that rule unable to match** — the
+measurement that says the fix does not rest on it. Both belts removed (padding back **and** no
+`data-subtab-bar`) is the reproduced defect: 24px at rest, 0px scrolled.
+
+⚠️ **THE GENERAL LESSON.** A CSS feature that degrades silently is not a mechanism you can verify by
+measuring it in the engines you happen to have. If the page can answer the question itself, let it.
+
 ## 65.5 "Van", not "Truck"
 
 The event form's field writes `truck_events.van_id`, so it is labelled **Van**; the van filter reads "All

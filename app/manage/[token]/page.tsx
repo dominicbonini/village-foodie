@@ -1052,7 +1052,23 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           `window.scrollY` is always 0 here and a spy written against the window would never fire.
           Everything in `useSettingsJumpBar` reads this element's `scrollTop`/`clientHeight`/`scrollHeight`. */}
       <main id={MANAGE_SCROLLER_ID} className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6"}>
-        <div className="pt-6 manage-tab-pad">
+        {/* ══ 🔴 THE TOP GAP IS A BOOLEAN, NOT A `:has()` RULE (4 October 2026, second attempt) ══════
+            🔴 WHY THIS CHANGED. The gap above the sub-tab bars was "fixed" on 3 October with a CSS
+            rule — `.manage-tab-pad:has(> [data-subtab-bar]:first-child) { padding-top: 0 }` — and
+            Dominic reported it still there on 4 October, twice, after the notices had been moved below
+            the bars. The rule is correct, unlayered, and measurably works in Chromium and WebKit; what
+            it cannot do is work in a browser with no `:has()`. `:has()` is Safari 15.4 (March 2022)
+            and Chrome 105; this app is used in an iPad WKWebView, and on anything older the selector
+            is simply discarded, the `pt-6` stays, and the bar rests 24px down and snaps flush on the
+            first scroll — the exact report, with nothing in the CSS to say so.
+            🔴 THE PAGE ALREADY KNOWS THE ANSWER, so it does not need to be asked in a selector. The
+            padding is a gap for tab content; a tab whose first element is a sticky bar must not have
+            it. That is `TABS_WITH_SUBTABS`, the same single list the notices use, evaluated here.
+            No browser feature, no `:first-child`, no DOM-order dependency.
+            ⚠️ THE `:has()` RULE STAYS IN app/globals.css AND IS NOW A SECOND BELT, not the mechanism.
+            It costs nothing, and it still covers a bar added to a tab that someone forgets to list.
+            ⚠️ `manage-tab-pad` STAYS ON THE ELEMENT for that rule and for the harnesses that find it. */}
+        <div className={`manage-tab-pad${TABS_WITH_SUBTABS.includes(activeTab) ? '' : ' pt-6'}`}>
         {/* 🔴 THE NOTIFICATION STACK IS NOT HERE ANY MORE — IT IS BELOW EACH SUB-TAB BAR ──────────
             The six banners and the staleness bar used to be the first children of this wrapper. On a
             day any ONE of them was showing, the sub-tab bar below it was no longer the first child:

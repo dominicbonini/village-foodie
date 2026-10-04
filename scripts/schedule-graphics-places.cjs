@@ -1229,6 +1229,10 @@ function runWiringSuite(lib) {
     /min-w-0 overflow-x-auto/.test(P) && /const SUBTAB_ROW = 'flex gap-1\.5 w-max'/.test(P)
     && (P.match(/className=\{SUBTAB_ROW\}/g) || []).length === 3)
 
+  /* 🔴 THE WRAPPER'S OPENING TAG, WRITTEN OUT ONCE. It is matched exactly, so a change to how the top
+   * padding is decided breaks these checks rather than letting them read a tag that no longer exists. */
+  const PAD_OPEN = "<div className={`manage-tab-pad${TABS_WITH_SUBTABS.includes(activeTab) ? '' : ' pt-6'}`}>"
+
   /* ══ 🔴 NOTHING RENDERS ABOVE A SUB-TAB BAR (4 October 2026) ═══════════════════════════════════════
    * THE REPORT: "for the pils under menu, schedule and settings, they have been pushed down the screen
    * a little so when you scroll down the screen they move up … make sure the pils are locked as well."
@@ -1247,7 +1251,7 @@ function runWiringSuite(lib) {
     && /const TABS_WITH_SUBTABS: Tab\[\] = \['menu', 'schedule', 'settings'\]/.test(P))
   t('🔴 NOTHING IS RENDERED BETWEEN THE PADDED WRAPPER AND THE FIRST SUB-TAB BAR but the notices gate',
     (() => {
-      const open = P.indexOf('<div className="pt-6 manage-tab-pad">')
+      const open = P.indexOf(PAD_OPEN)
       const bar = P.indexOf('data-subtab-bar', open)
       if (open < 0 || bar < 0) return false
       /* every JSX expression or element between the two, with blank lines dropped.
@@ -1255,7 +1259,7 @@ function runWiringSuite(lib) {
        * JSX one, so every `{/* … *\/}` line collapses to `{}` — a token pair that renders nothing.
        * Counting those as content would make this check fail on a comment, which is not what it is
        * for; what it must catch is an ELEMENT or a real expression sneaking in above the bar. */
-      const between = P.slice(open + '<div className="pt-6 manage-tab-pad">'.length, P.lastIndexOf('{activeTab ===', bar))
+      const between = P.slice(open + PAD_OPEN.length, P.lastIndexOf('{activeTab ===', bar))
         .split('\n').map(l => l.trim()).filter(l => l && l !== '{}')
       return between.length === 1
         && between[0] === "{!TABS_WITH_SUBTABS.includes(activeTab) && notices}"
@@ -1278,7 +1282,7 @@ function runWiringSuite(lib) {
     /const staleBar = refreshFailedAt \?/.test(P)
     && (() => {
       const n = P.indexOf('const notices = (')
-      const end = P.indexOf('<div className="pt-6 manage-tab-pad">')
+      const end = P.indexOf(PAD_OPEN)
       return P.slice(n, end).includes('{staleBar}') && !P.slice(end).includes('{staleBar}')
     })())
   t('🔴 the `:has()` rule that gives the wrapper up its padding is still there, both depths',
@@ -1619,6 +1623,16 @@ function runWiringSuite(lib) {
        * reported ⛔ EDIT CLAIMED BUT NOT PRESENT — which is exactly what it exists to do. Both lines
        * are back to HEAD's shape bar the other October changes, so what is asserted now is that the
        * prop is NOT there. */
+      /* ── 🔴 THE TAB WRAPPER'S TOP PADDING BECAME A JSX BOOLEAN (4 October 2026, 2nd attempt) ──
+       * It was `<div className="pt-6 manage-tab-pad">` with a `:has()` rule taking the padding away
+       * when a sub-tab bar was the first child. The rule is correct and measures correct in both
+       * engines; it was still reported as not working, which only a browser WITHOUT `:has()` explains
+       * (Safari 15.4 / Chrome 105 — this app runs in an iPad WKWebView). The page decides it itself
+       * now. The class stays on the element, for the rule's second belt and for the harnesses. */
+      { was: '<div className="pt-6 manage-tab-pad">',
+        reason: 'the top gap is decided by TABS_WITH_SUBTABS, not by a :has() selector',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "className={`manage-tab-pad${TABS_WITH_SUBTABS.includes(activeTab) ? '' : ' pt-6'}`}" },
       /* ── 🔴 THE PILL RESTYLE (4 October 2026) ─────────────────────────────────────────────────
        * Three constants changed, once, so all three sub-tab bars match: Menu's, Schedule's and
        * Settings' sticky jump tabs. The look changed and nothing else did — the bar keeps `sticky
@@ -1845,7 +1859,14 @@ function runWiringSuite(lib) {
   t('🔴 THE JUMP BAR IS FLUSH AT THE TOP ON LOAD, not only after scrolling', (() => {
     const css = read('app/globals.css')
     return /data-subtab-bar\n        className=\{SUBTAB_BAR\}/.test(P)
-      && /<div className="pt-6 manage-tab-pad">/.test(RAWP)
+      /* 🔴 THE MECHANISM IS A JSX BOOLEAN, NOT THE SELECTOR (4 October 2026, second attempt). The
+       * `:has()` rule measured correct in both engines and was STILL reported as not working — the one
+       * way both are true is a browser without `:has()` (Safari 15.4 / Chrome 105; this app runs in an
+       * iPad WKWebView, where an unsupported selector is discarded in silence). The padding is now
+       * applied only on tabs with no bar, decided here. The rule stays as a second belt and is still
+       * asserted below, but it is no longer what the fix rests on. */
+      && P.includes(PAD_OPEN)
+      && !/<div className="pt-6 manage-tab-pad">/.test(RAWP)
       && /\.manage-tab-pad:has\(> \[data-subtab-bar\]:first-child\)/.test(css)
       && /\.manage-tab-pad:has\(> \*:first-child > \[data-subtab-bar\]:first-child\)/.test(css)
       /* ⛔ AND NOT BY A NEGATIVE MARGIN. `-mt-6` was the first fix and it was wrong: SIX different

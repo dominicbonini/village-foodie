@@ -479,3 +479,99 @@ word and it goes.
 never overlaps a banner" — a sentence describing the degrade that turned out to be the bug. It is amended
 in place, dated, with the old wording quoted so the history is readable, and lesson 5 in the lessons list
 is marked **REOPENED AND CLOSED AGAIN**. No other section was touched and no hash was changed.
+
+---
+
+# ADDENDUM 2 · 4 OCTOBER 2026 — THE `:has()` RULE WAS NEVER THE MECHANISM
+
+> *"the gap is still there nothing has changed. the sticky headers are in exactly same place. when you
+> scroll down the page they move up slightly. you had solved this before they were pils"*
+> *"check against the settings tab as that is the page you can scroll against."*
+
+## B1 · WHY ADDENDUM 1 DID NOTHING
+
+It fixed a real failure mode — a notice above the bar costs it its flush resting position, and that was
+measurably true — but it was not **this** failure. The gap was there with no notice showing.
+
+## B2 · THE THING THAT WAS TRUE AND THE THING THAT WAS FALSE
+
+Everything I could check said the rule worked:
+
+* it is in the compiled CSS, correct, both selectors;
+* it is **unlayered**, while `.pt-6` is inside `@layer utilities` — so it wins the cascade outright,
+  before specificity is even consulted (verified by computing the layer ranges of the built chunk);
+* a fixture reproducing the real shell, the real `<main>`, the real wrapper and the real bar at both
+  depths measures the bar flush at rest and flush scrolled, in Chromium **and** WebKit.
+
+And the operator, looking at the actual screen, said the gap was still there. Both can only be true at
+once in **a browser without `:has()`**. It landed in Safari 15.4 (March 2022) and Chrome 105. This app is
+used in an iPad WKWebView — the same device the app shell's own comment was written for ("keeps the
+header+tabs locked in the iPad WKWebView where stacked `position: sticky`-against-body-scroll was
+unreliable"). **An unsupported selector is discarded in silence.** No error, no warning, nothing to see
+in the source, and no way for either of my harnesses — which run the browsers I have, not the browser the
+operator has — to notice.
+
+That also explains "you had solved this before they were pills": the 3 October fix was verified by
+measurement, not on the operator's device, and it had never worked there.
+
+## B3 · THE FIX — THE PAGE ANSWERS ITS OWN QUESTION
+
+```jsx
+<div className={`manage-tab-pad${TABS_WITH_SUBTABS.includes(activeTab) ? '' : ' pt-6'}`}>
+```
+
+The padding is a gap for tab content; a tab whose first element is a sticky bar must not have it. The page
+already knows which tabs those are — `TABS_WITH_SUBTABS` is the same single list Addendum 1 added for the
+notices. No browser feature, no `:first-child`, no DOM-order dependency, nothing that can degrade quietly.
+
+The `:has()` rule stays in `app/globals.css` as a **second belt** — it costs nothing and still catches a
+bar added to a tab nobody listed — with a ⛔ note saying nothing may be written that relies on it.
+
+## B4 · THE MEASUREMENT THAT NOW MEANS SOMETHING
+
+`scripts/schedule-places-render.cjs` asserts the bar is flush **with the `:has()` rule unable to match**
+(the fixture drops `data-subtab-bar`, so neither selector can apply). Four states, per bar, per width,
+per engine:
+
+| | at rest | after a 1200px scroll |
+|---|---|---|
+| normal | 0px | 0px |
+| notice below the bar | 0px | 0px |
+| **`:has()` unable to match** | **0px** | 0px |
+| both belts removed (`pt-6` back **and** no `data-subtab-bar`) | **24px** | 0px |
+
+The third row is the new one and it is the point: before this change it would have read 24px. The fourth
+is the reported defect, reproduced, so the passing rows mean something. A fifth measurement confirms the
+rule is still a working belt where the browser supports it (`pt-6` put back, `data-subtab-bar` present →
+0px).
+
+`scripts/schedule-graphics-places.cjs` now asserts the wrapper is the ternary and **not** the old
+hard-coded `pt-6 manage-tab-pad`, so the page cannot drift back to depending on the selector.
+
+## B5 · IF IT IS STILL THERE
+
+Then the cause is not what I think, and this will say so in one line. On the Settings tab, in the
+browser's console:
+
+```js
+(()=>{const s=document.getElementById('manage-scroller'),b=document.querySelector('[data-subtab-bar]'),
+p=b.querySelector('button'),r=()=>({bar:Math.round(b.getBoundingClientRect().top-s.getBoundingClientRect().top),
+pill:Math.round(p.getBoundingClientRect().top-s.getBoundingClientRect().top)}),a=r(),w=s.scrollTop;
+s.scrollTop=600;const c=r();s.scrollTop=w;console.log(JSON.stringify({rest:a,scrolled:c,
+pad:getComputedStyle(b.closest('.manage-tab-pad')).paddingTop,
+first:b.closest('.manage-tab-pad').firstElementChild.className.slice(0,50),
+hasSupport:CSS.supports('selector(:has(*))')}))})()
+```
+
+`rest.bar` and `scrolled.bar` should both be `0`. `pad` should be `0px`. `hasSupport:false` would confirm
+the diagnosis above; `hasSupport:true` with a non-zero `rest.bar` would mean something is rendering above
+the bar that I have not found, and `first` names it.
+
+## B6 · RESULTS
+
+| | |
+|---|---|
+| `scripts/schedule-places-render.cjs` | **976 passed** in Chromium and WebKit, 0 failed |
+| `scripts/schedule-graphics-places.cjs` | **249 passed**, 11 variants failed as required |
+| `npx tsc --noEmit` | clean |
+| `npm run build` | compiled successfully |
