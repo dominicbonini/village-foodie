@@ -453,16 +453,27 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
         * ⚠️ THE OTHER THREE ARE SHORT AND STAY IN PAIRS. A short name, an area and a postcode are all
         * well under a line; giving each its own row would make a five-field card scroll for no reason. */}
       <Card className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* ══ 🔴 THE TWO NAME LABELS WERE THE WRONG WAY ROUND (decided 6 October 2026, Dominic) ═════
+          * ⛔ `name` WAS LABELLED "Name on posts" AND IT IS NOT THE FIELD A POST PRINTS.
+          * `locationName()` in lib/weekly-post/week-data.ts reads `short_name` FIRST and falls back to
+          * `name` — so filling in the field labelled "Short name" silently stopped the poster printing
+          * the field labelled "Name on posts". The label was a lie about the one thing it names.
+          * 🔴 LABELS ONLY. No column, no data, no save path changed: `saveField('name', …)` and
+          * `saveField('short_name', …)` are untouched, and `scripts/places-tab.cjs` §4 now asserts
+          * which label is bound to which field so they cannot drift apart again.
+          * ⚠️ THE PLACE DESIGN EDITOR'S "Name on posts" IS BOUND TO `short_name` AND STAYS THAT WAY —
+          * it was right; this card was the one that disagreed with the renderer. */}
         <div className="sm:col-span-2 min-w-0">
-          <Input label="Name on posts" value={name} onChange={setName}
+          <Input label="Full name" value={name} onChange={setName}
             onBlur={() => saveField('name', name, place.name)} />
         </div>
         <div className="sm:col-span-2 min-w-0">
           <Input label="Address" value={address} onChange={setAddress}
             onBlur={() => saveField('address', address, place.address)} />
         </div>
-        <Input label="Short name" value={shortName} onChange={setShortName}
-          onBlur={() => saveField('short_name', shortName, place.short_name)} />
+        <Input label="Name on posts" value={shortName} onChange={setShortName}
+          onBlur={() => saveField('short_name', shortName, place.short_name)}
+          hint="Leave blank to use the full name." />
         <Input label="Area" value={area} onChange={setArea}
           onBlur={() => saveField('area', area, place.area)} />
         <Input label="Postcode" value={postcode} onChange={setPostcode}

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V14.3
+HatchGrab Engineering Reference Manual · V14.4
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 14.3**
+**Version 14.4**
 
 October 2026
 
@@ -25,6 +25,73 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V14.4 — 6 October 2026 — SOCIAL POSTS MATCHES THE AGREED LAYOUT: SIDE BY SIDE FROM 900px, AND ONE READINESS PREDICATE. STILL NOT DEPLOYED.
+
+**Status — read this first.**
+- 🔴 **ON `main`, LOCAL, NOTHING PUSHED.** `schedule-graphics` is fast-forwarded to match.
+- 🔴 **NO SQL, AND NO SAVED DESIGN DATA TOUCHED.**
+- ⚠️ It amends **§64.12** (the six boxes) and **§64.11** (the Tidy up field labels).
+  `docs/social-posts-layout-report.md` is the full account.
+
+### What changed
+
+| | |
+|---|---|
+| ⛔ **The breakpoint was `lg` (1024px) and the laptop is 1000–1100px** | A 16in MacBook Pro in Safari with a normal window showed all three boxes **stacked**. Both grids go side by side from **900px** now |
+| ⛔ **And the render harness could not see it** | it measured 1440 (side by side) and 820 (stacked) — both correct — and nothing between them. **A breakpoint with no measurement between its two sides is a breakpoint nobody has checked.** Seven widths now: 1000, 1100, 1280, 1440, 1728, 820, 390 |
+| 🔴 **Box headings are headings** | bold, title case, 17px, dark — not `SUBCARD_HEADING`'s uppercase letter-spaced label treatment. The computed `text-transform` is asserted in the browser |
+| 🔴 **Orange means "make something", and nothing else** | exactly **three** buttons may be primary. Every Edit, every per-row Make post and "Give own design" is outlined. Counted on the **computed background**, over every button on the screen |
+| 🔴 **The segmented control is a light grey track with a white selected segment** | it was orange-on-pale-orange, which is this product's primary colour — and a view switch is not an action |
+| 🔴 **A design preview is a fixed tile in the design's own shape** | the empty state used to be a thin bar, because an `aspect-[4/5]` box with no image collapses. Same size either way, "No design yet" centred, and the server now sends the design's `width`/`height` |
+| 🔴 **A place on Standard gets a plain 28×35 tile with NO text in it** | it said "Standard" in 9px inside a 40px box. The tag beside it says the same word at a readable size |
+| 🔴 **The colour bar is 4px, full row height, navy for Standard** | it was a 32px stub beside a taller row, in grey-300 — invisible at 4px at arm's length |
+| 🔴 **ONE readiness predicate: `lib/weekly-post/ready.ts`** | §64.13. Four readers were asking "is this design set up?" four different ways, and the screens applied a fifth |
+| 🔴 **A button that cannot work says so** | with no weekly design the orange button reads **"Set up weekly design"**; with no event design, boxes 2 and 3 carry one grey line with a link and their Make post buttons go **disabled** |
+| 🔴 **The Tidy up name labels are swapped** | `name` is **"Full name"**, `short_name` is **"Name on posts"** — because `short_name` is what the renderer prints. Labels only |
+| ⛔ **`timeLabel` was a second time formatter** | `17:00–20:00` with no spaces, while the product writes `17:00 – 20:00` through `formatTimeRange` — whose own note says to use it everywhere so no surface re-introduces seconds |
+
+### The failure classes — one in the product, four in the measurements
+
+1. ⛔ **A BREAKPOINT WITH NO MEASUREMENT BETWEEN ITS TWO SIDES.** Both measured widths were correct and
+   the machine the product is used on was never measured. This is the finding of the build.
+2. ⛔ **A PURE-ABSENCE ASSERTION CANNOT TELL "CORRECT" FROM "MEASURED NOTHING".** "Only the allowed
+   buttons are orange" passed on the first run **because the colour matcher found no orange at all** —
+   Tailwind 4 writes colours as `oklch()` and the matcher only knew `rgb()`. It was caught only because
+   a positive claim ("the weekly button IS orange") was asserted beside it. The colour is resolved
+   through a canvas now, so any notation works.
+3. ⚠️ **A STALENESS CHECK MUST NAME WHAT THE MEASUREMENT DEPENDS ON.** The render harness's "is this
+   build current?" marker was `1.4fr` — the Designs grid's old ratio. When the ratio changed the marker
+   went on passing against a stylesheet with no `min-[900px]` rule at all, so every box stacked at 1440
+   and three assertions failed on correct source. The marker is the media query now.
+4. ⚠️ **A SLICE THAT SILENTLY WIDENS.** `weekly-post.cjs` bounded the place-fields card with
+   `indexOf('Events here')` — deleted on 5 October — so `indexOf` returned −1 and `slice(start, -1)`
+   ran to EOF. It kept passing. Third sibling of this class in three days; anchored on the card's own
+   closing tag now.
+5. ⚠️ **COMPARE AGAINST THE CONTENT BOX, NOT THE BORDER BOX.** "The bar is full row height" failed at
+   all seven widths on correct markup, because the row carries `py-2`.
+
+### What was run
+
+`tsc --noEmit` clean · `npx next build` ✓ compiled · **ESLint: warnings level with baseline (340),
+errors +1 (1,303 → 1,304)** — one `no-require-imports` in `social-posts.cjs`, which is the `require()`
+that lets the harness **call** `designIsReady` over real shapes instead of pattern-matching its source
+· named harnesses green (`places-tab` **95**, `social-posts` **53**, `places-posts-gating` **44**,
+`weekly-post` **207**, `schedule-graphics-places` **258**) · **full sweep 94 run · 94 passed** ·
+**`social-posts-render.cjs` 295 assertions per engine at seven widths, in Chromium AND WebKit.**
+
+⚠️ **CHROMIUM STILL CANNOT TAKE A SCREENSHOT ON THIS MACHINE** — measurements unaffected in both
+engines; the committed screenshots are WebKit's, in `docs/screenshots/social-posts-layout/`.
+
+### Open items
+
+| Item | State |
+|---|---|
+| **Deploy** | **not done — Dominic deploys by hand** |
+| ⚠️ **Whether Pizza Kitchen really has no designs** | "Not set up" could not be verified against the live row — see §64.13 and the report's read-only SQL. The code-level disagreement is fixed either way |
+| From V14.3 | `public.place_pictures` unread in the database; Chromium screenshots on this machine |
+
+---
 
 ## V14.3 — 6 October 2026 — SOCIAL POSTS BECOMES SIX BOXES, THE PLACES TAB IS DELETED, AND A PLACE'S TYPE IS SET FROM ADD EVENT. STILL NOT DEPLOYED.
 
@@ -27796,9 +27863,19 @@ editor**, and a footer with "Make post for `<date>`" and the quiet way out.
 the field that decides what a poster prints. It is written with `sg_upsert_place` — the action "Tidy up
 places" already uses. **No column was added.**
 
-⛔ **AND THERE IS A MISLABELLING ON RECORD.** The "Tidy up places" card labels **`name`** "Name on
-posts", which is the field the renderer uses **second**. It was left alone because the brief says to
-keep Tidy up as it is; it is named in `docs/social-posts-report.md` as a decision for Dominic.
+⛔ **AND THE "Tidy up places" LABELS WERE WRONG — FIXED IN V14.4 (decided 6 October 2026).** That card
+labelled **`name`** "Name on posts", which is the field the renderer uses **second**: filling in the
+field labelled "Short name" silently stopped the poster printing the one labelled "Name on posts".
+
+| Column | Label now |
+|---|---|
+| `name` | **Full name** |
+| `short_name` | **Name on posts**, hint "Leave blank to use the full name." |
+
+⚠️ **LABELS ONLY.** No column, no data and no save path changed — `saveField('name', …)` and
+`saveField('short_name', …)` are untouched — and `scripts/places-tab.cjs` §4 now asserts which label
+sits on which input's `onBlur`, **and** that the renderer still prefers `short_name`. If that
+preference ever changes, these labels become wrong again and that check is what says so.
 
 ⛔ **"Use Standard design here instead" IS THE REMOVE, CONFIRMED, AND THERE IS ONE OF IT.** The editor's
 own "Remove this place's design" panel is suppressed in the focused mode, so two controls for one
@@ -27814,6 +27891,95 @@ the preview key is on Pizza Kitchen, which is on `trial`, and `TRIAL_FEATURES` s
 
 🔴 **ONE GATE HELPER, SIX CALLERS.** Six separate `<FeatureGate>`s could be given six different
 features; `scripts/social-posts.cjs` §4 counts one `feature="schedule_graphics"` in the file.
+
+## 64.13 "Is this design set up?", answered once — `lib/weekly-post/ready.ts` (V14.4 — 6 Oct 2026)
+
+⛔ **FOUR READERS WERE ASKING ONE QUESTION FOUR DIFFERENT WAYS, AND THE SCREENS APPLIED A FIFTH.**
+
+| Reader | Asked |
+|---|---|
+| `load` → `WeeklyPostApp` | does a ROW exist |
+| `event_load` → `EventSetupScreen` | does a ROW exist |
+| `event_post` → `EventPostModal` | does a ROW exist |
+| `social_overview` → the Designs boxes | does a row with a `blank_path` exist |
+| the weekly setup screen | `!layout \|\| !size \|\| !blankUrl` |
+| the event setup screen | `!standard` — a row — and then read `standard.width` off it |
+
+🔴 **SO A HALF-WRITTEN ROW MADE THEM DISAGREE, IN BOTH DIRECTIONS:**
+
+- a row with a picture but **no layout** ⇒ Social posts said **"✓ Set up"**; the setup screen said no;
+- a row with **no picture at all** ⇒ Social posts said **"Not set up"**; the event editor opened anyway
+  and read `standard.width` off a null.
+
+⛔ **"Not set up" ON A BOX WHOSE BUTTON OPENS A WORKING EDITOR IS A SCREEN CALLING ITSELF A LIAR**, and
+an operator cannot tell which half to believe.
+
+```ts
+designIsReady(d)  //  d && d.blank_path && d.width && d.height && d.layout != null
+```
+
+Each part is something a render would otherwise die on: no `blank_path` is no picture; a missing size
+makes every stored box coordinate meaningless (`eventPostContext` already refused on exactly those
+three); a missing `layout` renders artwork with no date, place or time on it — which is not a post, it
+is the blank. ⚠️ **`layout == null`, NOT FALSY**: `{}` is not a sensible layout but it is a **saved**
+one, and refusing it would hide a real design from its owner.
+
+🔴 **FIVE CALL SITES, ACROSS THE FOUR ACTIONS, AND NO READER DECIDES FOR ITSELF.**
+⚠️ **IT IS IN `lib/`, NOT IN THE ROUTE, SO A HARNESS CAN CALL IT.** `scripts/social-posts.cjs` §3b
+`require`s it — Node 22 strips the types — and exercises all five half-written states plus the empty
+layout. **A predicate nothing can call is a predicate nobody checks.**
+
+⚠️ **WHETHER PIZZA KITCHEN ACTUALLY HAS A DESIGN WAS NOT VERIFIED.** Opening the setup screens needs a
+dev server and an operator session, which this work could not do; the read-only SQL is in
+`docs/social-posts-layout-report.md`. The code-level disagreement is closed either way.
+
+## 64.14 The agreed layout — side by side from 900px (V14.4 — 6 October 2026)
+
+> 🔴 **AMENDS §64.12.** The boxes and what they open are unchanged; this is how they are laid out and
+> what they look like.
+
+⛔ **THE BREAKPOINT WAS `lg` (1024px) AND THE MACHINE THIS IS USED ON IS 1000–1100px WIDE.** A 16in
+MacBook Pro in Safari with a normal window showed all three boxes stacked, full width — on the screen
+size the design was drawn for.
+
+⛔ **AND THE RENDER HARNESS COULD NOT SEE IT.** It measured **1440** (side by side) and **820**
+(stacked). Both were correct. **A breakpoint with no measurement between its two sides is a breakpoint
+nobody has checked.** Seven widths now: **1000, 1100, 1280, 1440, 1728** above it and **820, 390** below.
+
+| | |
+|---|---|
+| **Make a post** | `min-[900px]:grid-cols-3` — three equal columns |
+| **Designs** | `min-[900px]:grid-cols-[minmax(200px,320px)_minmax(200px,320px)_minmax(0,1fr)]` — the two design boxes comfortable at ~320px, allowed to shrink to 200px below ~1100 **without leaving the row**, and the place list takes the rest |
+| ⚠️ **`min-[900px]:` is an arbitrary variant** | not a custom screen. Tailwind 4 supports it, and a one-off breakpoint used by two grids does not belong in the theme |
+| **Rows wrap, they do not overflow** | the text block is `min-w-[9rem] flex-1` in a `flex-wrap` row, so at a comfortable width the date, the venue and the button are on one line and at a narrow one the BUTTON drops under the text |
+
+### The look
+
+| | |
+|---|---|
+| **Box headings** | bold, title case, **17px**, dark — `BOX_HEADING`, one constant for all six. ⛔ Not `SUBCARD_HEADING`, whose uppercase letter-spacing is the treatment for a label above a group of controls and made three choices read as three form sections. The **computed `text-transform`** is asserted in the browser, because a source string can be title case and still render shouting |
+| **Orange** | means "make something" **and nothing else**. Exactly three buttons may carry `data-primary`: "Make this week's post", "Set up weekly design" (the same button with no design), and "Make post for `<date>`". Everything else is `BTN_OUTLINE`. ⚠️ Counted on the **computed background** over every button on the screen — a class-name count cannot see a colour arriving from elsewhere |
+| **The segmented control** | a light grey track with the selected option as a **white segment with a soft shadow**. It was orange-on-pale-orange, which is the primary colour — and a view switch is not an action |
+| **Design previews** | a **fixed-height tile with a derived width**, in the design's own shape (`width`/`height` from the row). ⛔ Not `aspect-ratio` on a full-width box: three boxes in a row are three widths, so a width-driven ratio gives three different heights. With no picture the **same-sized** tile shows "No design yet" centred — it used to collapse to a thin bar |
+| **Place tiles** | 28×35 portrait; a thumbnail, or a plain grey tile with **no text**. It said "Standard" in 9px inside a 40px box — unreadable, and the tag beside it says the same word legibly |
+| **The design tag** | "Own design" (pale orange) / "Standard" (pale grey), to the right of the name and **before** the button. It used to be a coloured word inside the sub-line, where a row with no town read "Own design" as the address |
+| **The colour bar** | **4px, full row height**, orange for a place's own design and **dark navy** for Standard. It was `h-8 w-1` — a stub beside a taller row, reading as a bullet — in grey-300, which is invisible at 4px at arm's length |
+| **Times** | `formatTimeRange`, the product's one formatter. This file had its own (`17:00–20:00`, no spaces); that formatter's own note says to use it everywhere "so no surface re-introduces seconds" |
+
+### When a design is not set up
+
+⛔ **THE EXISTING FLOWS DO NOT EXPLAIN IT.**
+
+- **Weekly:** `WeeklyPostApp` falls back to its setup screen when `load` returns no design — so the
+  button said "Make this week's post" and opened setup. It **handled** it by doing something other than
+  what the button promised. The button now reads **"Set up weekly design"** and goes to Designs: same
+  destination, honest label, still the orange one (setting it up IS the thing to do from that box).
+- **Event:** `EventPostModal` asks the server, gets `hasDesign: false` and calls `onNeedsSetup()` — the
+  modal flashes and the operator lands on the editor with **no sentence anywhere**. Boxes 2 and 3 now
+  carry one grey line, "Set up your event design first · Set it up", and their Make post buttons are
+  **disabled, not hidden** — a row that lost its button would have the operator wondering what is
+  different about that EVENT, rather than about the truck.
+- ⚠️ **A private row still has NO button at all.** Disabled is for "not yet"; absent is for "never".
 
 # 65. Navigation: sub-tabs, and Settings as one list (V13.8 — 3 October 2026, branch only)
 

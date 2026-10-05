@@ -484,13 +484,39 @@ head('4 · hiding a place is in Add event now, and there is still only one list'
   t('🔴 …and it edits all five fields, with the detail KEYED by place id', (() => {
     const detail = SHARED.slice(SHARED.indexOf('export function PlaceDetail'),
       SHARED.indexOf('export function TidyUpPlaces'))
-    const five = ['Name on posts', 'Short name', 'Address', 'Area', 'Postcode']
+    /* ⚠️ "Full name" REPLACED "Short name" IN THIS LIST (6 October 2026) — the two name labels were
+     * swapped, and WHICH LABEL IS BOUND TO WHICH COLUMN is asserted on its own below. */
+    const five = ['Full name', 'Name on posts', 'Address', 'Area', 'Postcode']
       .every(f => detail.includes(`label="${f}"`))
     /* ⛔ THE `key` IS NOT DECORATION. `PlaceDetail` holds the five fields as LOCAL DRAFT STATE and
      * saves them ON BLUR, so without a remount per place the pane shows the previous place's values
      * and blurring writes them onto the current one. That was a real defect on the deleted tab. */
     return five && /<PlaceDetail key=\{selected\.id\}/.test(SHARED)
   })())
+  /* ══ ⛔ THE TWO NAME LABELS, AND WHICH COLUMN EACH ONE WRITES (6 October 2026) ═══════════════════
+   * `name` was labelled "Name on posts" and it is NOT the field a post prints: `locationName()` reads
+   * `short_name` FIRST and falls back to `name`. So filling in "Short name" silently stopped the poster
+   * printing the field called "Name on posts" — a label that was a lie about the one thing it names.
+   * 🔴 ASSERTED AS A BINDING, NOT AS A PRESENCE. Both labels still exist either way round; what this
+   * pins is that each one sits on the input whose `onBlur` writes the matching column, and that the
+   * renderer still prefers the one now called "Name on posts". */
+  t('🔴 "Name on posts" writes `short_name` — the column the renderer actually prints', (() => {
+    const detail = SHARED.slice(SHARED.indexOf('export function PlaceDetail'),
+      SHARED.indexOf('export function TidyUpPlaces'))
+    const bound = (label, field) => new RegExp(
+      `label="${label}"[^>]*?onBlur=\\{\\(\\) => saveField\\('${field}'`, 's').test(detail)
+    return bound('Name on posts', 'short_name')
+      && bound('Full name', 'name')
+      /* ⛔ AND THE RENDERER STILL PREFERS IT. If that ever changes, these labels become wrong again. */
+      && /const short = String\(place\?\.short_name \?\? ''\)\.trim\(\)\s*\n\s*if \(short\) return short/
+        .test(read('lib/weekly-post/week-data.ts'))
+  })())
+  t('⚠️ …and "Name on posts" says what blank means',
+    /hint="Leave blank to use the full name\."/.test(SHARED))
+  /* ⚠️ THE PLACE DESIGN EDITOR'S "Name on posts" IS THE SAME COLUMN — it was already right. */
+  t('⛔ …and the place design editor\'s field writes the same column',
+    /manageApi\('sg_upsert_place', \{ id: placeId, short_name: next \}\)/.test(SOCIAL))
+
   t('⛔ …and nothing else defines a place list, detail or loader', (() => {
     const owners = walk('components').concat(walk('app'))
       .filter(f => /export function PlaceList|export function PlaceDetail|export function usePlaces/

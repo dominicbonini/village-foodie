@@ -1120,7 +1120,10 @@ function runWiringSuite(lib) {
   t('⚠️ the two controls, and Card 1\'s five fields including Area',
     /Hide this place/.test(U) && /Restore this place/.test(U)
     && !/Merge into another place/.test(U)
-    && ['Name on posts', 'Short name', 'Address', 'Area', 'Postcode'].every(f => U.includes(`label="${f}"`)))
+    /* ⚠️ "Full name" REPLACED "Short name" (6 October 2026). The two name labels were swapped —
+     * `short_name` is what the renderer prints, so it is the one called "Name on posts" now. Five
+     * fields, same five columns; `scripts/places-tab.cjs` §4 asserts which label writes which. */
+    && ['Full name', 'Name on posts', 'Address', 'Area', 'Postcode'].every(f => U.includes(`label="${f}"`)))
   /* ══ ⛔ CARD 2 — "Events here" — IS DELETED, AND SO IS THIS CHECK'S CLAIM (5 October 2026) ════════
    * It asserted that the card named Next, Last and "N times in the last year". It passed, and the card
    * went anyway: it printed the schedule on the screen whose job is a place's SETTINGS, and the Events

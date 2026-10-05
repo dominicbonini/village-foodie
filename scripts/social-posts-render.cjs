@@ -55,8 +55,13 @@ function appCss() {
   /* 🔴 THE STALENESS CHECK. Tailwind only emits classes it finds in the source, so a build from before
    * this screen existed has no rule for the Designs grid — and the fixture would lay out as one column
    * at EVERY width and report the phone case passing for the wrong reason. */
-  if (!/1\.4fr/.test(css)) {
-    throw new Error('the compiled CSS has no `lg:grid-cols-[1fr_1fr_1.4fr]` rule — the build predates this screen; run `npx next build`')
+  /* ⚠️ THE MARKER IS THE 900px MEDIA QUERY, which is the one thing this file exists to measure. The
+   * old marker was `1.4fr` — the Designs grid's ratio — and when that ratio changed the check went on
+   * passing against a stylesheet that had no `min-[900px]` rule at all, so every box STACKED at 1440
+   * and three "side by side" assertions failed on correct source. A staleness check has to name the
+   * thing the measurement depends on, not something that happens to be nearby. */
+  if (!/min-width:\s*900px/.test(css)) {
+    throw new Error('the compiled CSS has no `min-[900px]` rule — the build predates this layout; run `npx next build`')
   }
   return css
 }
@@ -79,126 +84,147 @@ const LONG_NAME = 'The Kings Arms at Great Finborough'
  *                assertions would pass on a page that never had three columns.
  */
 function socialFixture(css, { area = 'posts', rows = 20, oneCol = false } = {}) {
-  const makeGrid = lift(SOCIAL, /<div className="(grid grid-cols-1 items-stretch gap-3 lg:grid-cols-3)" data-make-boxes>/, 'the Make a post grid')
-  const designGrid = lift(SOCIAL, /<div className="(grid grid-cols-1 items-stretch gap-3 lg:grid-cols-\[1fr_1fr_1\.4fr\])" data-design-boxes>/, 'the Designs grid')
+  const makeGrid = lift(SOCIAL, /<div className="(grid grid-cols-1 items-stretch gap-3 min-\[900px\]:grid-cols-3)" data-make-boxes>/, 'the Make a post grid')
+  const designGrid = lift(SOCIAL, /<div className="(grid grid-cols-1 items-stretch gap-3 min-\[900px\]:grid-cols-\[minmax\(200px,320px\)_minmax\(200px,320px\)_minmax\(0,1fr\)\])"/, 'the Designs grid')
   const boxCard = lift(SOCIAL, /<Card className=\{`(flex min-w-0 flex-col p-4) \$\{className\}`\}>/, 'a box')
-  const boxBody = lift(SOCIAL, /<div className="(mt-2 flex min-h-0 min-w-0 flex-1 flex-col)">\{children\}<\/div>/, "a box's body")
+  const boxBody = lift(SOCIAL, /<div className="(mt-3 flex min-h-0 min-w-0 flex-1 flex-col)">\{children\}<\/div>/, "a box's body")
+  const boxHeading = lift(SOCIAL, /const BOX_HEADING = '([^']+)'/, 'the box heading')
+  const boxBlurb = lift(SOCIAL, /const BOX_BLURB = '([^']+)'/, 'the box blurb')
+  const btnPrimary = lift(SOCIAL, /const BTN_PRIMARY =\n\s*'([^']+)'/, 'the primary button')
+  const btnOutline = lift(SOCIAL, /const BTN_OUTLINE =\n\s*'([^']+)'/, 'the outlined button')
   const listUl = lift(SOCIAL, /<ul className="(mt-2 max-h-72 min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto)"\n\s*data-upcoming-list>/, 'the upcoming list')
   const seg = lift(SOCIAL, /data-social-area\n\s*className="([^"]+)"/, 'the segmented control')
-  const segBtn = lift(SOCIAL, /className=\{`(px-3 py-1\.5 text-xs font-bold) \$\{area === k/, 'a segment')
-  const thumb = lift(SOCIAL, /<div className=\{`(flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100 text-center text-\[9px\] font-semibold leading-tight text-slate-400) \$\{className\}`\}>/, 'a thumbnail')
+  const segBtn = lift(SOCIAL, /className=\{`(rounded-lg px-3 py-1\.5 text-sm font-semibold transition-colors) \$\{area === k/, 'a segment')
+  const segOn = lift(SOCIAL, /\? '(bg-white text-slate-900 shadow-sm)'/, 'the selected segment')
+  const segOff = lift(SOCIAL, /: '(text-slate-500 hover:text-slate-800)'/, 'an unselected segment')
+  const designTile = lift(SOCIAL, /data-design-tile\n\s*style=\{\{ height: H, width: Math\.round\(H \* ratio\) \}\}\n\s*className="([^"]+)"/, 'the design tile')
+  const placeTile = lift(SOCIAL, /<div data-place-tile\n\s*className="([^"]+)">/, 'a place tile')
+  const tagOwn = lift(SOCIAL, /<span data-design-tag className="([^"]+)">Own design<\/span>/, 'the Own design tag')
+  const tagStd = lift(SOCIAL, /<span data-design-tag className="([^"]+)">Standard<\/span>/, 'the Standard tag')
+  const barCls = lift(SOCIAL, /data-design-bar\n\s*className=\{`(w-1 shrink-0 self-stretch rounded-full)/, 'the design bar')
   const footnote = lift(COPY, /export const MAKE_POST_FOOTNOTE =\n\s*'([^']+)'/, 'the footnote')
 
-  /* ⚠️ THE BUTTONS ARE THE REAL `Btn` SHAPE. What is measured is whether a full-width primary button
-   * with a four-word label stays inside a third-width box at 390. */
+  /* 🔴 THE BUTTONS ARE THE COMPONENT'S OWN TWO CLASS STRINGS, lifted. What is measured is whether a
+   * full-width primary with a four-word label stays inside a third-width box at 900 — AND which ones
+   * are orange, which is a claim about the computed background, not about a class name. */
   const btn = (label, cls = '') =>
-    `<button class="bg-orange-600 text-white font-semibold rounded-xl px-4 py-2 text-sm ${cls}">${label}</button>`
-  const ghost = (label) =>
-    `<button class="hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0">${label}</button>`
+    `<button data-primary class="${btnPrimary} ${cls}">${label}</button>`
+  const ghost = (label) => `<button class="${btnOutline}">${label}</button>`
 
   const eventRow = (i, priv) => `
-    <li class="flex items-center gap-2 py-2">
-      <span class="h-8 w-1 shrink-0 rounded-full ${priv ? 'bg-transparent' : i % 2 ? 'bg-orange-500' : 'bg-slate-300'}"></span>
-      <span class="min-w-0 flex-1">
-        <span id="evDate-${i}" class="block truncate text-sm font-bold ${priv ? 'text-slate-400' : 'text-slate-900'}">Tue 13 Oct<span class="ml-1.5 font-medium text-slate-400">17:00–20:00</span></span>
-        <span id="evSub-${i}" class="block truncate text-xs ${priv ? 'italic text-slate-400' : 'text-slate-500'}">${priv ? 'Private event · no post' : LONG_NAME}</span>
+    <li class="flex flex-wrap items-stretch gap-x-2 gap-y-1.5 py-2">
+      <span id="evBar-${i}" class="${barCls} ${priv ? 'bg-transparent' : i % 2 ? 'bg-orange-500' : 'bg-slate-800'}"></span>
+      <span class="min-w-[9rem] flex-1">
+        <span id="evDate-${i}" class="block truncate text-sm font-bold ${priv ? 'text-slate-400' : 'text-slate-900'}">Tue 13 Oct<span class="ml-1.5 font-medium text-slate-400">17:00 – 20:00</span></span>
+        <span id="evSub-${i}" class="block truncate text-sm ${priv ? 'italic text-slate-400' : 'text-slate-500'}">${priv ? 'Private event · no post' : LONG_NAME}</span>
       </span>
-      ${priv ? '' : `<span id="evBtn-${i}">${ghost('Make post')}</span>`}
+      ${priv ? '' : `<span id="evBtn-${i}"><button class="${btnOutline} self-center">Make post</button></span>`}
     </li>`
 
   const placeRow = (i) => `
-    <li class="flex items-center gap-2 py-2">
-      <span class="min-w-0 flex-1">
+    <li class="flex flex-wrap items-center gap-x-2 gap-y-1.5 py-2">
+      <span class="min-w-[9rem] flex-1">
         <span id="plName-${i}" class="block truncate text-sm font-bold text-slate-900">${LONG_NAME}<span class="font-medium text-slate-400"> · Wickhambrook</span></span>
-        <span class="block truncate text-xs text-slate-500">Next: Tue 13 Oct</span>
+        <span class="block truncate text-sm text-slate-500">Next: Tue 13 Oct</span>
       </span>
       <span id="plBtn-${i}">${ghost('Make post')}</span>
     </li>`
 
   const designRow = (i, own) => `
-    <li class="flex items-center gap-2 py-2">
-      <div class="${thumb} h-12 w-10">${own ? '' : 'Standard'}</div>
-      <span class="min-w-0 flex-1">
+    <li class="flex flex-wrap items-center gap-x-2 gap-y-1.5 py-2">
+      <div id="dsTile-${i}" class="${placeTile}">${own ? '<span style="display:block;width:100%;height:100%;background:#cbd5e1"></span>' : ''}</div>
+      <span class="min-w-[8rem] flex-1">
         <span id="dsName-${i}" class="block truncate text-sm font-bold text-slate-900">${LONG_NAME}</span>
-        <span class="block truncate text-xs text-slate-400">Wickhambrook · <span class="font-semibold ${own ? 'text-orange-700' : 'text-slate-500'}">${own ? 'Own design' : 'Standard'}</span></span>
+        <span class="block truncate text-sm text-slate-400">Wickhambrook</span>
       </span>
+      <span id="dsTag-${i}" class="${own ? tagOwn : tagStd}">${own ? 'Own design' : 'Standard'}</span>
       <span id="dsBtn-${i}">${ghost(own ? 'Edit' : 'Give own design')}</span>
     </li>`
+
+  /* 🔴 THE DESIGN TILE, DRAWN EXACTLY AS THE COMPONENT DRAWS IT — a fixed height and a derived width.
+   * ⚠️ BOTH STATES ARE RENDERED IN THE SAME FIXTURE so the harness can compare their boxes: "the empty
+   * tile is the same size as a filled one" is a comparison, not a number. */
+  const designTileHtml = (id, filled, w, h) => {
+    const ratio = w && h ? w / h : 4 / 5
+    const H = 150
+    return `<div id="${id}" class="${designTile}" style="height:${H}px;width:${Math.round(H * ratio)}px">${
+      filled ? '<span style="display:block;width:100%;height:100%;background:#cbd5e1"></span>' : 'No design yet'}</div>`
+  }
 
   const field = (label) =>
     `<div><label class="block text-xs font-bold text-slate-600 mb-1">${label}</label>
       <input class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" value="" /></div>`
 
+  /** A box heading and its description, exactly as `<Box>` composes them. */
+  const boxHead = (id, title, blurb) =>
+    `<p id="${id}" class="${boxHeading}">${title}</p><p class="${boxBlurb}">${blurb}</p>`
+
   const makeBoxes = `
   <div id="grid" class="${oneCol ? 'grid grid-cols-1 gap-3' : makeGrid}">
     <div id="box1" class="${boxCard}">
-      <p class="text-xs font-black text-slate-800 uppercase tracking-widest">Weekly post</p>
+      ${boxHead('head1', 'Weekly post', 'Your whole week on one picture.')}
       <div class="${boxBody}">
-        <div class="flex items-start gap-3">
-          <div class="${thumb} h-16 w-12">No design</div>
-          <p class="min-w-0 flex-1 text-xs text-slate-500">Your whole week on one picture.</p>
-        </div>
-        <label class="mt-3 block text-xs font-bold text-slate-600">Which week</label>
+        <label class="block text-xs font-bold text-slate-600">Which week</label>
         <select id="weekSelect" class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
           <option>This week · Mon 6 Oct – Sun 12 Oct</option>
         </select>
         <p class="mt-1.5 text-[11px] text-slate-400">4 events</p>
-        <div class="mt-auto pt-3"><span id="box1btn">${btn('Make this week’s post', 'w-full justify-center block')}</span></div>
+        <div class="mt-auto pt-3"><span id="box1btn">${btn('Make this week’s post', 'w-full')}</span></div>
       </div>
     </div>
     <div id="box2" class="${boxCard}">
-      <p class="text-xs font-black text-slate-800 uppercase tracking-widest">Single event post</p>
+      ${boxHead('head2', 'Single event post', 'One picture for one event. Pick from your next events.')}
       <div class="${boxBody}">
-        <p class="text-xs text-slate-500">One picture for one event. Pick from your next events.</p>
         <ul id="list2" class="${listUl}">
           ${Array.from({ length: 6 }, (_, i) => eventRow(i, i === 2)).join('')}
         </ul>
-        <div class="mt-auto pt-2"><a id="allEvents" class="text-xs font-bold text-orange-700 underline">See all upcoming events</a></div>
+        <div class="mt-auto pt-2"><a id="allEvents" class="text-sm font-semibold text-slate-600 underline">See all upcoming events</a></div>
       </div>
     </div>
     <div id="box3" class="${boxCard}">
-      <p class="text-xs font-black text-slate-800 uppercase tracking-widest">Post for a place</p>
+      ${boxHead('head3', 'Post for a place', 'Pick a place to post its next event.')}
       <div class="${boxBody}">
-        <p class="text-xs text-slate-500">Pick a place to post its next event.</p>
-        <div class="mt-2">${field('Search places')}</div>
+        ${field('Search places')}
         <ul id="list3" class="${listUl}">
           ${Array.from({ length: rows }, (_, i) => placeRow(i)).join('')}
         </ul>
-        <p class="mt-auto pt-2 text-[11px] text-slate-400">${rows} places · hidden places aren’t listed</p>
+        <p class="mt-auto pt-2 text-xs text-slate-400">${rows} places · hidden places aren’t listed</p>
       </div>
     </div>
   </div>
-  <p id="footnote" class="text-[11px] leading-relaxed text-slate-400">${footnote}</p>`
+  <p id="footnote" class="text-xs leading-relaxed text-slate-400">${footnote}</p>`
 
+  /* ⚠️ BOX 1 IS DRAWN **FILLED** AND BOX 2 **EMPTY**, deliberately: the two tiles are then measured
+   * against each other, which is the only way to prove "the empty one is the same size as a filled
+   * one" without writing a number into this file. */
   const designBoxes = `
   <div id="grid" class="${oneCol ? 'grid grid-cols-1 gap-3' : designGrid}">
     <div id="box1" class="${boxCard}">
-      <p class="text-xs font-black text-slate-800 uppercase tracking-widest">Weekly post design</p>
+      ${boxHead('head1', 'Weekly post design', 'The picture, the rows and where the text goes on your weekly post.')}
       <div class="${boxBody}">
-        <div class="${thumb} aspect-[4/5] w-full">No picture yet</div>
-        <div class="mt-2 flex items-center gap-2"><span class="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">✓ Set up</span></div>
-        <p class="mt-1.5 text-xs text-slate-500">The picture, the rows and where the text goes on your weekly post.</p>
-        <div class="mt-auto pt-3"><span id="box1btn">${btn('Edit weekly design', 'w-full justify-center block')}</span></div>
+        ${designTileHtml('tileFilled', true, 1080, 1350)}
+        <div class="mt-2 flex items-center gap-2"><span class="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-bold text-green-700">✓ Set up</span></div>
+        <!-- FULL WIDTH, AS THE COMPONENT RENDERS IT: BTN_OUTLINE plus w-full. A fixture that drew it
+             auto-width would be measuring a narrower button than the one served. -->
+        <div class="mt-auto pt-3"><span id="box1btn"><button class="${btnOutline} w-full">Edit weekly design</button></span></div>
       </div>
     </div>
     <div id="box2" class="${boxCard}">
-      <p class="text-xs font-black text-slate-800 uppercase tracking-widest">Event post design</p>
+      ${boxHead('head2', 'Event post design', 'Your Standard design for single event posts. Used at every place that doesn’t have its own.')}
       <div class="${boxBody}">
-        <div class="${thumb} aspect-[4/5] w-full">No picture yet</div>
-        <div class="mt-2 flex items-center gap-2"><span class="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">✓ Set up</span></div>
-        <p class="mt-1.5 text-xs text-slate-500">Your Standard design for single event posts. Used at every place that doesn’t have its own.</p>
-        <div class="mt-auto pt-3"><span id="box2btn">${btn('Edit event design', 'w-full justify-center block')}</span></div>
+        ${designTileHtml('tileEmpty', false, 1080, 1350)}
+        <div class="mt-2 flex items-center gap-2"><span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500">Not set up</span></div>
+        <div class="mt-auto pt-3"><span id="box2btn"><button class="${btnOutline} w-full">Edit event design</button></span></div>
       </div>
     </div>
     <div id="box3" class="${boxCard}">
-      <p class="text-xs font-black text-slate-800 uppercase tracking-widest">Designs for a place</p>
+      ${boxHead('head3', 'Designs for a place', 'Give a place its own picture — a pub’s logo, a brewery’s colours. Its event posts use it instead of Standard.')}
       <div class="${boxBody}">
-        <p class="text-xs text-slate-500">Give a place its own picture — a pub’s logo, a brewery’s colours. Its event posts use it instead of Standard.</p>
-        <div class="mt-2">${field('Search places')}</div>
+        ${field('Search places')}
         <ul id="list3" class="${listUl}">
           ${Array.from({ length: rows }, (_, i) => designRow(i, i < 2)).join('')}
         </ul>
-        <p class="mt-auto pt-2 text-[11px] text-slate-400">2 with their own design · ${rows - 2} using Standard</p>
+        <p class="mt-auto pt-2 text-xs text-slate-400">2 with their own design · ${rows - 2} using Standard</p>
       </div>
     </div>
   </div>`
@@ -208,12 +234,12 @@ function socialFixture(css, { area = 'posts', rows = 20, oneCol = false } = {}) 
   <div class="space-y-3">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="min-w-0">
-        <p class="text-base font-black text-slate-900">Social posts</p>
-        <p class="mt-0.5 text-xs text-slate-500">Make a picture for your week, an event or a place — and set up how they look.</p>
+        <p class="text-xl font-black text-slate-900">Social posts</p>
+        <p class="mt-0.5 text-sm text-slate-500">Make a picture for your week, an event or a place — and set up how they look.</p>
       </div>
       <div id="seg" class="${seg}">
-        <button id="segPosts" class="${segBtn} ${area === 'posts' ? 'bg-orange-50 text-orange-700' : 'text-slate-600'}">Make a post</button>
-        <button id="segDesigns" class="${segBtn} ${area === 'designs' ? 'bg-orange-50 text-orange-700' : 'text-slate-600'}">Designs</button>
+        <button id="segPosts" class="${segBtn} ${area === 'posts' ? segOn : segOff}">Make a post</button>
+        <button id="segDesigns" class="${segBtn} ${area === 'designs' ? segOn : segOff}">Designs</button>
       </div>
     </div>
     ${area === 'posts' ? makeBoxes : designBoxes}
@@ -265,6 +291,13 @@ function placeEditorFixture(css) {
 </div></body></html>`
 }
 
+/* ══ 🔴 THE ONLY BUTTONS THAT MAY BE ORANGE ═══════════════════════════════════════════════════════
+ * Orange is this product's "make something" colour. ⛔ IT IS A SET OF IDS, so adding an orange button
+ * is a visible change to this line rather than a quiet drift back to fourteen of them. `box1btn` on
+ * Make a post is "Make this week's post" (or "Set up weekly design" when there is none, which is the
+ * thing to do from that box); `makePost` is the place editor's "Make post for <date>". */
+const ALLOWED_ORANGE = new Set(['box1btn', 'makePost'])
+
 const rects = () => {
   const box = (id) => {
     const el = document.getElementById(id)
@@ -285,9 +318,79 @@ const rects = () => {
     const b = box(id)
     if (b) btns.push({ id, ...b })
   }
+  /* ⛔ THE COMPUTED STYLE, NOT THE CLASS. `text-transform` is the only honest test of "title case, not
+   * uppercased": a source string can be title case and still render shouting. */
+  const headings = []
+  for (const id of ['head1', 'head2', 'head3']) {
+    const el = document.getElementById(id)
+    if (!el) continue
+    const cs = getComputedStyle(el)
+    headings.push({ id, transform: cs.textTransform, size: parseFloat(cs.fontSize) })
+  }
+  /* 🔴 EVERY BUTTON ON THE SCREEN, AND WHICH OF THEM ARE ORANGE — read off the computed background, so
+   * a colour arriving from anywhere is caught, not only one spelled `bg-orange-600`. */
+  const orangeButtons = []
+  const buttonBg = []
+  for (const el of document.querySelectorAll('button')) {
+    const id = el.id || el.closest('[id]')?.id || '(unnamed)'
+    const bg = getComputedStyle(el).backgroundColor
+    /* ⛔ THE COMPUTED VALUE IS NOT ALWAYS `rgb(...)`. Tailwind 4 writes colours as `oklch()`, and a
+     * browser may hand the computed background back in that form — the first version of this matched
+     * `rgba?\(` only, found nothing, and reported that NO button was orange, which passed the
+     * "only the allowed ones are orange" check for the worst possible reason.
+     * 🔴 SO THE COLOUR IS RESOLVED BY THE BROWSER ITSELF, through a canvas, which gives real channel
+     * values whatever notation the stylesheet used. */
+    buttonBg.push(id + '=' + bg)
+    const c = (() => {
+      const m = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+      if (m) return [Number(m[1]), Number(m[2]), Number(m[3])]
+      try {
+        const cv = document.createElement('canvas')
+        cv.width = 1; cv.height = 1
+        const ctx = cv.getContext('2d')
+        if (!ctx) return null
+        ctx.fillStyle = '#000'
+        ctx.fillStyle = bg
+        ctx.fillRect(0, 0, 1, 1)
+        const d = ctx.getImageData(0, 0, 1, 1).data
+        return [d[0], d[1], d[2]]
+      } catch { return null }
+    })()
+    if (!c) continue
+    const [r0, g0, b0] = c
+    /* ⚠️ "ORANGE" IS A RANGE, NOT A HEX. Red well above green, green above blue — which catches
+     * orange-600 and any neighbour somebody reaches for later. */
+    if (r0 > 180 && g0 < r0 - 50 && b0 < g0) orangeButtons.push(id)
+  }
+  /* ⚠️ THE BARS, WITH THEIR ROW'S HEIGHT, because "full row height" is a comparison. */
+  const bars = []
+  for (let i = 0; i < 6; i++) {
+    const el = document.getElementById('evBar-' + i)
+    if (!el || !el.parentElement) continue
+    const b = el.getBoundingClientRect()
+    const row = el.parentElement
+    const cs = getComputedStyle(row)
+    /* ⛔ THE ROW'S **CONTENT** HEIGHT, NOT ITS BORDER BOX. The row carries `py-2`, so a bar that
+     * stretches the full content height still measures 16px short of the box — the first version
+     * compared against the border box and failed on correct markup at all seven widths. */
+    const rowContent = row.getBoundingClientRect().height
+      - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
+    if (b.height === 0) continue
+    bars.push({
+      height: Math.round(b.height), width: Math.round(b.width), rowHeight: Math.round(rowContent),
+    })
+  }
+  const stdTile = document.getElementById('dsTile-5')
   return {
     innerW: window.innerWidth,
     docScrollW: document.documentElement.scrollWidth,
+    headings, orangeButtons, buttonBg, bars,
+    tileFilled: box('tileFilled'), tileEmpty: box('tileEmpty'),
+    placeTile: box('dsTile-5'),
+    /* ⛔ `textContent`, TRIMMED. A tile with a picture in it has no text either; `dsTile-5` is one of
+     * the Standard rows, which is the case the claim is about. */
+    standardTileText: stdTile ? (stdTile.textContent || '').trim() : '',
+    designTag: box('dsTag-5'), dsName: box('dsName-5'),
     grid: box('grid'), box1: box('box1'), box2: box('box2'), box3: box('box3'),
     seg: box('seg'), footnote: box('footnote'),
     list2Scrolls: scrolls('list2'), list3Scrolls: scrolls('list3'),
@@ -348,6 +451,10 @@ async function measure() {
   const write = (name, html) => { const f = path.join(tmp, name); fs.writeFileSync(f, html); return 'file://' + f }
   const shotDir = path.join(REPO, 'docs/screenshots/social-posts')
   fs.mkdirSync(shotDir, { recursive: true })
+  /* 🔴 THE LAYOUT SHOTS ARE THEIR OWN FOLDER, at the two widths that matter for the side-by-side
+   * claim: 1100 (a normal laptop window — the width the bug was reported at) and 1728 (full screen). */
+  const layoutShots = path.join(REPO, 'docs/screenshots/social-posts-layout')
+  fs.mkdirSync(layoutShots, { recursive: true })
 
   const list = await engines()
   let measured = 0
@@ -356,7 +463,26 @@ async function measure() {
     measured++
     lines.push(`── ${eng.name} ────────────────────────────────────────────────────────────────`)
 
-    for (const [w, h, label] of [[1440, 900, 'desktop'], [820, 1180, 'iPad portrait'], [390, 844, 'phone']]) {
+    /* ══ 🔴 FIVE WIDTHS ABOVE THE BREAKPOINT AND TWO BELOW (6 October 2026) ═══════════════════════
+     * ⛔ THIS FILE USED TO MEASURE 1440 AND 820 AND NOTHING BETWEEN THEM, and that is exactly how the
+     * reported bug got through: the grid went side-by-side at `lg` (1024), and a 16in MacBook Pro in
+     * Safari with a normal window is 1000–1100px wide. Both measured widths were CORRECT and the
+     * laptop — the machine this is used on — was not measured at all.
+     * 🔴 A BREAKPOINT WITH NO MEASUREMENT BETWEEN ITS TWO SIDES IS A BREAKPOINT NOBODY HAS CHECKED.
+     * 1000 and 1100 are the real window; 1280 and 1440 are external monitors; 1728 is this laptop's
+     * full-screen width. 820 and 390 are the two that must STACK. */
+    const WIDTHS = [
+      [1000, 800, 'laptop window'],
+      [1100, 800, 'laptop window, wider'],
+      [1280, 800, 'desktop'],
+      [1440, 900, 'desktop, wide'],
+      [1728, 1117, 'MacBook Pro 16in, full screen'],
+      [820, 1180, 'iPad portrait'],
+      [390, 844, 'phone'],
+    ]
+    /** The breakpoint itself, in one place — every "side by side or stacked?" branch reads it. */
+    const SIDE_BY_SIDE = 900
+    for (const [w, h, label] of WIDTHS) {
       await eng.setViewport(w, h)
 
       for (const area of ['posts', 'designs']) {
@@ -369,7 +495,7 @@ async function measure() {
           `🔴 ${w} ${area}: all three boxes fit across the viewport`)
         t(r.seg.right <= r.innerW + 1 && r.seg.visible,
           `⚠️ ${w} ${area}: the segmented control is on screen and inside the page`)
-        if (w >= 1024) {
+        if (w >= SIDE_BY_SIDE) {
           /* 🔴 THREE IN A ROW, which is the brief's layout — asserted as "same top", not as three
            * widths, so a design change to the column ratios does not fail a claim about the ROW. */
           t(r.box1.top === r.box2.top && r.box2.top === r.box3.top,
@@ -382,7 +508,55 @@ async function measure() {
             `🔴 ${w} ${area}: …and the same height (${r.box1.height}/${r.box2.height}/${r.box3.height})`)
         } else {
           t(r.box2.top >= r.box1.bottom && r.box3.top >= r.box2.bottom,
-            `🔴 ${w} ${area}: the boxes STACK below lg`)
+            `🔴 ${w} ${area}: the boxes STACK below ${SIDE_BY_SIDE}px`)
+        }
+
+        /* ══ 🔴 THE LOOK, MEASURED RATHER THAN READ OFF THE SOURCE ═══════════════════════════════
+         * ⛔ A HEADING IS TITLE CASE. `text-transform` is the only honest test: a source string can be
+         * title case and still render shouting, which is exactly what `uppercase tracking-widest` did
+         * to all six of these. */
+        t(r.headings.length === 3 && r.headings.every(x => x.transform === 'none'),
+          `🔴 ${w} ${area}: the box headings are title case, not uppercased (${r.headings.map(x => x.transform).join('/')})`)
+        t(r.headings.every(x => x.size >= 16 && x.size <= 18),
+          `⚠️ ${w} ${area}: …at about 17px (${r.headings.map(x => Math.round(x.size)).join('/')})`)
+        /* ⛔ ORANGE MEANS "MAKE SOMETHING". Counted on the COMPUTED background, over every button on the
+         * screen — a class-name count cannot see a colour arriving from somewhere else. */
+        /* ⛔ AND THE POSITIVE HALF IS ASSERTED TOO, BELOW. "Only the allowed ones are orange" passes
+         * when the measurement finds NOTHING orange — which is exactly what happened on the first run
+         * of this check, because the computed background came back as `oklch(…)` and the matcher only
+         * knew `rgb(…)`. **A pure-absence assertion cannot tell "correct" from "measured nothing."** */
+        t(r.orangeButtons.every(id => ALLOWED_ORANGE.has(id)),
+          `🔴 ${w} ${area}: only the make/set-up buttons are orange (orange: ${r.orangeButtons.join(', ') || 'none'}${
+            r.orangeButtons.every(id => ALLOWED_ORANGE.has(id)) ? '' : ` · all: ${r.buttonBg.join(' ')}`})`)
+        if (area === 'posts') {
+          t(r.orangeButtons.includes('box1btn'),
+            `⚠️ ${w}: …and the weekly button IS one of them`)
+        } else {
+          t(r.orangeButtons.length === 0,
+            `⛔ ${w} designs: …so NOTHING on Designs is orange — every button there edits`)
+          /* 🔴 THE EMPTY TILE IS THE SAME SIZE AS A FILLED ONE. Asserted as a COMPARISON between the
+           * two tiles rendered side by side in this fixture, not against a number written in here. */
+          t(r.tileFilled && r.tileEmpty
+            && r.tileFilled.width === r.tileEmpty.width
+            && r.tileFilled.height === r.tileEmpty.height,
+            `🔴 ${w} designs: the empty design tile is the same size as a filled one (${r.tileEmpty?.width}×${r.tileEmpty?.height} vs ${r.tileFilled?.width}×${r.tileFilled?.height})`)
+          t((r.tileEmpty?.height ?? 0) >= 120,
+            `⚠️ ${w} designs: …and it is a TILE, not a thin bar (${r.tileEmpty?.height}px tall)`)
+          /* ⛔ NO TEXT IN A STANDARD PLACE TILE. It said "Standard" in 9px inside a 40px box —
+           * unreadable, and the tag beside it says the same word at a size somebody can read. */
+          t(r.standardTileText === '',
+            `🔴 ${w} designs: a Standard place tile holds no text (saw "${r.standardTileText}")`)
+          t(r.placeTile && r.placeTile.width === 28 && r.placeTile.height === 35,
+            `⚠️ ${w} designs: …and it is the 28×35 portrait tile (${r.placeTile?.width}×${r.placeTile?.height})`)
+          t(!!r.designTag && r.designTag.left > (r.dsName?.right ?? 0) - 1,
+            `⚠️ ${w} designs: the Own design / Standard tag sits after the name`)
+        }
+        if (area === 'posts') {
+          /* 🔴 THE COLOUR BAR IS FULL ROW HEIGHT. It was a 32px stub beside a taller row. */
+          t(r.bars.length > 0 && r.bars.every(b => b.height >= b.rowHeight - 2),
+            `🔴 ${w} posts: the design bar is full row height (${r.bars.map(b => `${b.height}/${b.rowHeight}`).join(' ')})`)
+          t(r.bars.every(b => b.width >= 3 && b.width <= 5),
+            `⚠️ ${w} posts: …and 4px wide (${r.bars.map(b => b.width).join('/')})`)
         }
         /* 🔴 EVERY BUTTON INSIDE ITS BOX. A full-width primary with a four-word label in a third-width
          * column at 390 is the case this exists for. */
@@ -411,7 +585,7 @@ async function measure() {
       for (const area of ['posts', 'designs']) {
         await eng.page.goto(write(`sp-long-${area}-${w}-${eng.name}.html`, socialFixture(css, { area, rows: 20 })))
         const r = await eng.page.evaluate(rects)
-        if (w >= 1024) {
+        if (w >= SIDE_BY_SIDE) {
           t(r.list3Scrolls, `🔴 ${w} ${area}: a 20-place list scrolls INSIDE its box`)
           t(Math.abs(r.box1.height - r.box3.height) <= 1,
             `🔴 ${w} ${area}: …so the box is no taller than the others (${r.box1.height} vs ${r.box3.height})`)
@@ -439,11 +613,16 @@ async function measure() {
           `⚠️ ${w} editor: …and they are on one row, at opposite ends`)
       }
 
-      if (w === 1440 || w === 390) {
+      /* ⚠️ 1100 AND 1728 — the laptop window and the laptop full screen. ⛔ 1440 WAS THE OLD SET AND IT
+       * IS THE ONE WIDTH THAT HID THE BUG: the layout was right there and wrong on the machine. The
+       * phone shot stays, because stacking is the other half of the claim. */
+      if (w === 1100 || w === 1728 || w === 390) {
         await eng.page.goto(write(`sp-shot-posts-${w}-${eng.name}.html`, socialFixture(css, { area: 'posts' })))
-        await eng.shot(path.join(shotDir, `social-make-${w}-${eng.name.toLowerCase()}.png`))
+        await eng.shot(path.join(layoutShots, `social-make-${w}-${eng.name.toLowerCase()}.png`))
         await eng.page.goto(write(`sp-shot-designs-${w}-${eng.name}.html`, socialFixture(css, { area: 'designs' })))
-        await eng.shot(path.join(shotDir, `social-designs-${w}-${eng.name.toLowerCase()}.png`))
+        await eng.shot(path.join(layoutShots, `social-designs-${w}-${eng.name.toLowerCase()}.png`))
+      }
+      if (w === 1440 || w === 390) {
         await eng.page.goto(write(`sp-shot-editor-${w}-${eng.name}.html`, placeEditorFixture(css)))
         await eng.shot(path.join(shotDir, `social-place-editor-${w}-${eng.name.toLowerCase()}.png`))
       }

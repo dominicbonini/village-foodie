@@ -29,8 +29,12 @@
 // next PUBLIC event, because that is the event its button would post. Nothing here decides any of that.
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Btn, Card, Input, Spinner } from '@/components/manage/primitives'
-import { SUBCARD_HEADING } from '@/lib/ui-tokens'
+/* ⛔ `Btn` IS NO LONGER IMPORTED (6 October 2026). Its `colour` palette is the dashboard's, where
+ * orange is the ordinary button; on this screen orange MEANS "make something" and nothing else, so the
+ * two shapes are `BTN_PRIMARY` and `BTN_OUTLINE` below and there are exactly two primaries. */
+import { Card, Input, Spinner } from '@/components/manage/primitives'
+/* 🔴 THE ONE TIME-RANGE FORMATTER. See the tombstone where this file had its own. */
+import { formatTimeRange } from '@/lib/time-utils'
 import { WeeklyPostApp } from '@/components/manage/WeeklyPost'
 import { EventSetupScreen, EventPostModal } from '@/components/manage/EventPost'
 import { FeatureGate } from '@/components/FeatureGate'
@@ -39,6 +43,7 @@ import { manageSectionHref } from '@/lib/manage-links'
 import type { Plan } from '@/lib/features'
 import {
   MAKE_POST_FOOTNOTE, WEEKLY_BOX_BLURB, EVENT_BOX_BLURB, PLACE_POST_BOX_BLURB, PRIVATE_EVENT_ROW,
+  EVENT_DESIGN_FIRST, EVENT_DESIGN_FIRST_LINK,
   WEEKLY_DESIGN_BLURB, EVENT_DESIGN_BLURB, PLACE_DESIGN_BLURB, PLACE_POST_FOOTER_NOTE,
   placeDesignScope, standardDesignConfirm, USE_STANDARD_LINK, POST_NAME_HINT,
 } from '@/lib/copy/socialPosts'
@@ -82,6 +87,9 @@ interface Overview {
   weekly: {
     ready: boolean
     previewUrl: string | null
+    /** The design's own pixel size, so the preview tile is drawn in its shape rather than a guess. */
+    width: number | null
+    height: number | null
     thisWeek: { start: string; end: string; events: number }
     nextWeek: { start: string; end: string; events: number }
     defaultWeek: 'this' | 'next'
@@ -106,55 +114,129 @@ export function shortDate(ymd: string | null | undefined): string {
     .format(new Date(Date.UTC(y, m - 1, d)))
 }
 
-/** "17:00–20:00", or "17:00", or ''. */
-function timeLabel(start: string | null, end: string | null): string {
-  const a = start ? String(start).slice(0, 5) : ''
-  const b = end ? String(end).slice(0, 5) : ''
-  return a && b ? `${a}–${b}` : a
-}
+/* ⛔ `timeLabel` WAS A SECOND TIME FORMATTER (6 October 2026). It wrote `17:00–20:00` with no spaces
+ * around the dash while the rest of the product writes `17:00 – 20:00`, through `formatTimeRange` —
+ * whose own note says "use this everywhere a start–end pair is shown so no surface re-introduces
+ * seconds (the recurring bug)". This surface was the next one to re-introduce it. */
 
-/* 🔴 THE COLOUR BAR ON AN EVENT ROW SAYS WHICH DESIGN THE POST WILL USE, which is the one thing an
- * operator cannot otherwise tell before pressing the button. Orange = this place's own picture, grey =
- * your Standard design. ⚠️ A PRIVATE ROW HAS NO BAR, because it has no post. */
+/* ══ 🔴 THE COLOUR BAR SAYS WHICH DESIGN THE POST WILL USE ═══════════════════════════════════════
+ * It is the one thing an operator cannot otherwise tell before pressing the button.
+ * ⛔ IT IS 4px AND FULL ROW HEIGHT (6 October 2026). It was `h-8 w-1` — a 4px stub floating beside a
+ * taller row, which read as a bullet rather than as the row's own marker.
+ * ⚠️ DARK NAVY FOR STANDARD, NOT GREY. Grey on white at 4px is invisible at arm's length on a laptop,
+ * and "which design" is the question the bar exists to answer.
+ * ⚠️ A PRIVATE ROW HAS NO BAR AT ALL, because it has no post — `none` is transparent and keeps the
+ * row's text aligned with the ones above and below it. */
 const DESIGN_BAR: Record<PostEvent['design'], string> = {
   own: 'bg-orange-500',
-  standard: 'bg-slate-300',
+  standard: 'bg-slate-800',
   none: 'bg-transparent',
 }
 
-/** A box on either area. ⚠️ `min-w-0` on every one: three equal columns of a grid will not shrink
- *  below their content without it, and a long venue name would push the page sideways. */
-function Box({ title, children, className = '' }: {
+/* ══ 🔴 A BOX HEADING IS A HEADING, NOT A LABEL (6 October 2026) ══════════════════════════════════
+ * ⛔ IT WAS `SUBCARD_HEADING` — `text-xs font-black uppercase tracking-widest`. That treatment is for
+ * a label ABOVE a group of controls; on a card that is one of three choices it made the three boxes
+ * read as three form sections rather than as three things you can do. Bold, title case, 17px, dark.
+ * ⚠️ ASSERTED BY scripts/social-posts-render.cjs AS A COMPUTED `text-transform: none`, which is the
+ * only way to tell a title-case string from an uppercased one after the browser has had it. */
+const BOX_HEADING = 'text-[17px] font-bold leading-tight text-slate-900'
+
+/** The description line, directly under the heading. */
+const BOX_BLURB = 'mt-1 text-sm text-slate-500'
+
+/* ══ 🔴 BUTTON HIERARCHY: ORANGE MEANS "MAKE SOMETHING" ══════════════════════════════════════════
+ * ⛔ AND NOTHING ELSE. Two orange buttons in this product now: "Make this week's post" and "Make post
+ * for <date>" in the place editor. Every per-row Make post, every Edit, and "Give own design" are
+ * OUTLINED — white, grey border, dark text.
+ * 🔴 WHY IT MATTERS ON THIS SCREEN IN PARTICULAR: an operator scanning six boxes should be able to see
+ * where the irreversible-ish act is. Fourteen orange buttons on one page is no hierarchy at all.
+ * ⚠️ `scripts/social-posts-render.cjs` COUNTS THE ORANGE ONES and names which ids may be orange. */
+const BTN_PRIMARY =
+  'inline-flex items-center justify-center rounded-xl bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50'
+const BTN_OUTLINE =
+  'inline-flex shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50'
+
+/** A box on either area. ⚠️ `min-w-0` on every one: a grid column will not shrink below its content
+ *  without it, and one long venue name would then push the whole page sideways. */
+function Box({ title, blurb, children, className = '' }: {
   title: string
+  /** The description line. ⚠️ It belongs to the HEADING, so it is a prop rather than the first child —
+   *  that is what keeps the gap between them the same in all six boxes. */
+  blurb?: string
   children: React.ReactNode
   className?: string
 }) {
   return (
     <Card className={`flex min-w-0 flex-col p-4 ${className}`}>
-      <p className={SUBCARD_HEADING}>{title}</p>
-      <div className="mt-2 flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
+      <p className={BOX_HEADING}>{title}</p>
+      {blurb && <p className={BOX_BLURB}>{blurb}</p>}
+      <div className="mt-3 flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
     </Card>
   )
 }
 
-/** The grey tile a box shows where a picture would be. */
-function Thumb({ url, label, className = '' }: { url: string | null; label: string; className?: string }) {
+/**
+ * ══ 🔴 A DESIGN PREVIEW TILE — THE SAME SIZE WHETHER OR NOT THERE IS A PICTURE ════════════════════
+ *
+ * ⛔ THE EMPTY STATE USED TO BE A DIFFERENT SHAPE. An `aspect-[4/5]` box with no image collapsed to
+ * whatever its content needed, so "Not set up" drew a thin bar where a tall tile would be — and the
+ * two Designs boxes were then different heights for a reason that had nothing to do with the designs.
+ * 🔴 THE SIZE IS FIXED AND IS THE DESIGN'S OWN SHAPE: `width`/`height` come from the row, so an event
+ * design that is square previews square. ⚠️ FALLS BACK TO 4:5, which is what the weekly poster is.
+ * ⚠️ "No design yet" IS CENTRED IN THE SAME TILE, not beside it — that is the whole point.
+ */
+function DesignTile({ url, w, h }: { url: string | null; w: number | null; h: number | null }) {
+  /* 🔴 A FIXED HEIGHT AND A DERIVED WIDTH, not `aspect-ratio` on a full-width box. Three boxes in a
+   * row are different widths; a width-driven aspect ratio would make the three previews three
+   * different heights, which is the thing this is here to stop. */
+  const ratio = w && h ? w / h : 4 / 5
+  const H = 150
   return (
-    <div className={`flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100 text-center text-[9px] font-semibold leading-tight text-slate-400 ${className}`}>
+    <div
+      data-design-tile
+      style={{ height: H, width: Math.round(H * ratio) }}
+      className="flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100 text-center text-[11px] font-semibold text-slate-400"
+    >
       {url
         /* eslint-disable-next-line @next/next/no-img-element -- a signed, expiring Supabase URL;
            next/image would need the host in `remotePatterns` and would proxy a private object. */
         ? <img src={url} alt="" className="h-full w-full object-cover" />
-        : label}
+        : 'No design yet'}
     </div>
   )
+}
+
+/**
+ * A place's tile in "Designs for a place" — 28×35, portrait.
+ *
+ * ⛔ A PLACE ON STANDARD GETS A PLAIN TILE WITH NO TEXT IN IT. It said "Standard" in 9px inside a
+ * 40px box, which is unreadable AND redundant: the tag beside it says the same word at a size somebody
+ * can read. A tile is there to show a picture or to show that there is not one.
+ */
+function PlaceTile({ url }: { url: string | null }) {
+  return (
+    <div data-place-tile
+      className="flex h-[35px] w-[28px] shrink-0 items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-slate-100">
+      {url
+        /* eslint-disable-next-line @next/next/no-img-element -- a signed, expiring Supabase URL. */
+        ? <img src={url} alt="" className="h-full w-full object-cover" />
+        : null}
+    </div>
+  )
+}
+
+/** "Own design" / "Standard" — a small rounded tag, to the right of the name and before the button. */
+function DesignTag({ own }: { own: boolean }) {
+  return own
+    ? <span data-design-tag className="shrink-0 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-semibold text-orange-700">Own design</span>
+    : <span data-design-tag className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500">Standard</span>
 }
 
 /** "✓ Set up" / "Not set up". */
 function ReadyBadge({ ready }: { ready: boolean }) {
   return ready
-    ? <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">✓ Set up</span>
-    : <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">Not set up</span>
+    ? <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-bold text-green-700">✓ Set up</span>
+    : <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500">Not set up</span>
 }
 
 /** The back link at the top of every full-page view this file opens. */
@@ -329,26 +411,53 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
 
   const weekChoice = week === 'this' ? data?.weekly.thisWeek : data?.weekly.nextWeek
 
+  /* ══ 🔴 "Set up your event design first" — ONE GREY LINE, ON BOXES 2 AND 3 (6 October 2026) ═══════
+   *
+   * ⛔ THE EXISTING FLOW DOES NOT EXPLAIN THIS. `EventPostModal` asks the server, gets
+   * `hasDesign: false`, and calls `onNeedsSetup()` — which here opens the design editor. So the modal
+   * flashes and the operator lands somewhere else with no sentence anywhere saying why. That is not
+   * "handled clearly"; it is a redirect.
+   * ⚠️ THE BUTTONS STAY VISIBLE AND GO DISABLED. A row that lost its button would have the operator
+   * wondering what is different about that EVENT; a disabled one under a line above the list says what
+   * is different about the TRUCK.
+   * 🔴 THE LINK GOES STRAIGHT TO THE EVENT SETUP, not to Designs generally — one press from the
+   * sentence to the screen that fixes it. */
+  const eventSetupNote = data && !data.standard.ready ? (
+    <p data-event-setup-note className="mb-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs text-slate-500">
+      {EVENT_DESIGN_FIRST}{' '}
+      <button type="button"
+        onClick={() => { onArea('designs'); setView({ kind: 'event-design' }) }}
+        className="font-semibold text-slate-700 underline hover:no-underline">
+        {EVENT_DESIGN_FIRST_LINK}
+      </button>
+    </p>
+  ) : null
+
   return (
     <div className="space-y-3" data-social-posts>
       {/* ── HEADER ───────────────────────────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-base font-black text-slate-900">Social posts</p>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="text-xl font-black text-slate-900">Social posts</p>
+          <p className="mt-0.5 text-sm text-slate-500">
             Make a picture for your week, an event or a place — and set up how they look.
           </p>
         </div>
-        {/* 🔴 A SEGMENTED CONTROL, AND IT IS IN THE URL. "Send me the designs screen" has to be a link
-          * somebody can send, so the choice is `?section=posts` / `?section=designs` through the one
-          * builder rather than React state nobody can address. */}
+        {/* ══ 🔴 A SEGMENTED CONTROL, AND IT IS IN THE URL ═══════════════════════════════════════
+          * "Send me the designs screen" has to be a link somebody can send, so the choice is
+          * `?section=posts` / `?section=designs` through the one builder rather than React state
+          * nobody can address.
+          * ⛔ A LIGHT GREY TRACK WITH A WHITE SELECTED SEGMENT, NOT ORANGE TEXT (6 October 2026). It
+          * was an orange-on-pale-orange pill in a bordered box, which is this product's PRIMARY
+          * colour — and a view switch is not an action. Orange is reserved for making something. */}
         <div role="tablist" aria-label="Social posts area" data-social-area
-          className="inline-flex shrink-0 overflow-hidden rounded-xl border border-slate-200">
+          className="inline-flex shrink-0 gap-1 rounded-xl bg-slate-100 p-1">
           {([['posts', 'Make a post'], ['designs', 'Designs']] as const).map(([k, label]) => (
             <button key={k} type="button" role="tab" aria-selected={area === k}
               onClick={() => onArea(k)}
-              className={`px-3 py-1.5 text-xs font-bold ${area === k
-                ? 'bg-orange-50 text-orange-700' : 'text-slate-600 hover:bg-slate-50'}`}>
+              className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${area === k
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'}`}>
               {label}
             </button>
           ))}
@@ -366,20 +475,24 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
 
       {data && area === 'posts' && (
         <>
-          {/* ── 🔴 THREE EQUAL COLUMNS FROM `lg` UP, ONE BELOW IT ───────────────────────────────
-            * ⚠️ `items-stretch` AND `h-full` ON THE BOXES, so three boxes of very different content
-            * lengths are the same height — which is what makes them read as three choices of one kind
-            * rather than three unrelated cards. */}
-          <div className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-3" data-make-boxes>
+          {/* ══ 🔴 THREE EQUAL COLUMNS FROM **900px**, ONE BELOW IT (6 October 2026) ═══════════════
+            * ⛔ IT WAS `lg:` — 1024px — AND THAT WAS WRONG ON THE MACHINE THIS IS USED ON. A 16in
+            * MacBook Pro in Safari with a normal window is 1000–1100px wide, so the three boxes
+            * STACKED on a laptop, which is the width the design was drawn for.
+            * ⛔ AND THE RENDER HARNESS COULD NOT SEE IT: it measured 1440 (side by side) and 820
+            * (stacked) and never a laptop window. **A breakpoint with no measurement between its two
+            * sides is a breakpoint nobody has checked.** It is measured at 1000, 1100, 1280, 1440 and
+            * 1728 now, and 900 is below every one of them.
+            * ⚠️ `min-[900px]:` IS AN ARBITRARY VARIANT, not a custom screen. Tailwind 4 supports it,
+            * and a one-off breakpoint used by exactly two grids does not belong in the theme.
+            * ⚠️ `items-stretch`, so three boxes of very different content lengths are the same height —
+            * which is what makes them read as three choices of one kind rather than three loose cards. */}
+          <div className="grid grid-cols-1 items-stretch gap-3 min-[900px]:grid-cols-3" data-make-boxes>
             {/* ── BOX 1 · WEEKLY ─────────────────────────────────────────────────────────────── */}
-            <Box title="Weekly post">
+            <Box title="Weekly post" blurb={WEEKLY_BOX_BLURB}>
               {gate(
                 <>
-                  <div className="flex items-start gap-3">
-                    <Thumb url={data.weekly.previewUrl} label="No design" className="h-16 w-12" />
-                    <p className="min-w-0 flex-1 text-xs text-slate-500">{WEEKLY_BOX_BLURB}</p>
-                  </div>
-                  <label className="mt-3 block text-xs font-bold text-slate-600">Which week</label>
+                  <label className="block text-xs font-bold text-slate-600">Which week</label>
                   <select value={week} onChange={e => setWeek(e.target.value as 'this' | 'next')}
                     data-week-select
                     className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
@@ -391,20 +504,36 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
                   <p className="mt-1.5 text-[11px] text-slate-400">
                     {weekChoice?.events ?? 0} event{(weekChoice?.events ?? 0) === 1 ? '' : 's'}
                   </p>
+                  {/* ══ 🔴 THE BUTTON SAYS WHAT IT WILL DO (6 October 2026) ═══════════════════════
+                    * ⛔ WITH NO WEEKLY DESIGN, "Make this week's post" OPENED THE SETUP SCREEN. The
+                    * existing flow does handle it — `WeeklyPostApp` falls back to setup when `load`
+                    * returns no design — but it handles it by doing something other than what the
+                    * button promised, which is the worst kind of handled.
+                    * 🔴 SO THE BUTTON READS "Set up weekly design" AND GOES STRAIGHT TO DESIGNS. Same
+                    * destination, honest label. It is still the orange one: setting the design up IS
+                    * the thing to do from this box when there is no design. */}
                   <div className="mt-auto pt-3">
-                    <Btn label="Make this week’s post" colour="orange"
-                      className="w-full justify-center"
-                      onClick={() => setView({ kind: 'weekly-post', week })} />
+                    {data.weekly.ready ? (
+                      <button type="button" data-primary className={`${BTN_PRIMARY} w-full`}
+                        onClick={() => setView({ kind: 'weekly-post', week })}>
+                        Make this week’s post
+                      </button>
+                    ) : (
+                      <button type="button" data-primary className={`${BTN_PRIMARY} w-full`}
+                        onClick={() => { onArea('designs'); setView({ kind: 'weekly-design' }) }}>
+                        Set up weekly design
+                      </button>
+                    )}
                   </div>
                 </>,
               )}
             </Box>
 
             {/* ── BOX 2 · SINGLE EVENT ───────────────────────────────────────────────────────── */}
-            <Box title="Single event post">
+            <Box title="Single event post" blurb={EVENT_BOX_BLURB}>
               {gate(
                 <>
-                  <p className="text-xs text-slate-500">{EVENT_BOX_BLURB}</p>
+                  {eventSetupNote}
                   {/* ⛔ `max-h-72` IS NOT DECORATION — IT IS WHAT MAKES THE LIST SCROLL (6 Oct 2026).
                       `flex-1 min-h-0 overflow-y-auto` lets a child be SHORTER than its content only
                       when something above it decides the height. These boxes sit in the page's own
@@ -414,36 +543,46 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
                   <ul className="mt-2 max-h-72 min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto"
                     data-upcoming-list>
                     {data.upcoming.length === 0 && (
-                      <li className="py-3 text-xs text-slate-400">Nothing coming up.</li>
+                      <li className="py-3 text-sm text-slate-400">Nothing coming up.</li>
                     )}
+                    {/* ══ 🔴 THE ROW WRAPS RATHER THAN OVERFLOWS AT A NARROW COLUMN WIDTH ═══════════
+                      * `flex-wrap` with the text block at `min-w-[9rem] flex-1`: at a comfortable
+                      * width the date, the venue and the button sit on one line; when the column is
+                      * too narrow for that the BUTTON drops under the text. ⛔ IT NEVER OVERFLOWS,
+                      * which is what a `shrink-0` button in a `nowrap` row would do. */}
                     {data.upcoming.map(ev => (
-                      <li key={ev.id} className="flex items-center gap-2 py-2">
-                        {/* ⚠️ THE BAR IS `aria-hidden`: it says which design, and the row already says
-                            everything a screen reader needs. */}
-                        <span aria-hidden="true"
-                          className={`h-8 w-1 shrink-0 rounded-full ${DESIGN_BAR[ev.design]}`} />
-                        <span className="min-w-0 flex-1">
+                      <li key={ev.id} className="flex flex-wrap items-stretch gap-x-2 gap-y-1.5 py-2">
+                        {/* ⚠️ `self-stretch` IS WHAT MAKES IT FULL ROW HEIGHT. `aria-hidden` because it
+                            says which design, and the row already says everything a reader needs. */}
+                        <span aria-hidden="true" data-design-bar
+                          className={`w-1 shrink-0 self-stretch rounded-full ${DESIGN_BAR[ev.design]}`} />
+                        <span className="min-w-[9rem] flex-1">
                           {/* ⛔ A PRIVATE EVENT KEEPS ITS DATE AND LOSES EVERYTHING ELSE. Its venue and
                               town never left the server. */}
                           <span className={`block truncate text-sm font-bold ${ev.isPrivate ? 'text-slate-400' : 'text-slate-900'}`}>
                             {shortDate(ev.date)}
-                            <span className="ml-1.5 font-medium text-slate-400">{timeLabel(ev.startTime, ev.endTime)}</span>
+                            <span className="ml-1.5 font-medium text-slate-400">{formatTimeRange(ev.startTime, ev.endTime)}</span>
                           </span>
-                          <span className={`block truncate text-xs ${ev.isPrivate ? 'italic text-slate-400' : 'text-slate-500'}`}>
+                          <span className={`block truncate text-sm ${ev.isPrivate ? 'italic text-slate-400' : 'text-slate-500'}`}>
                             {ev.isPrivate ? PRIVATE_EVENT_ROW : (ev.venue ?? '—')}
                           </span>
                         </span>
                         {/* ⛔ NO BUTTON ON A PRIVATE EVENT, EVER. There is no post for one — the route
-                            refuses `event_post` for it — so a button here would be one that cannot work. */}
+                            refuses `event_post` for it — so a button here would be one that cannot work.
+                            ⚠️ DISABLED, NOT HIDDEN, WHEN THE EVENT DESIGN IS NOT SET UP: the note above
+                            the list says why and what to do, and a row that lost its button would make
+                            the operator wonder what is different about that event. */}
                         {!ev.isPrivate && (
-                          <Btn label="Make post" colour="ghost" size="sm" onClick={() => setPosting(ev.id)} />
+                          <button type="button" className={`${BTN_OUTLINE} self-center`}
+                            disabled={!data.standard.ready}
+                            onClick={() => setPosting(ev.id)}>Make post</button>
                         )}
                       </li>
                     ))}
                   </ul>
                   <div className="mt-auto pt-2">
                     <a href={manageSectionHref('events')}
-                      className="text-xs font-bold text-orange-700 underline hover:no-underline">
+                      className="text-sm font-semibold text-slate-600 underline hover:no-underline">
                       See all upcoming events
                     </a>
                   </div>
@@ -452,121 +591,129 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
             </Box>
 
             {/* ── BOX 3 · POST FOR A PLACE ───────────────────────────────────────────────────── */}
-            <Box title="Post for a place">
+            <Box title="Post for a place" blurb={PLACE_POST_BOX_BLURB}>
               {gate(
                 <>
-                  <p className="text-xs text-slate-500">{PLACE_POST_BOX_BLURB}</p>
-                  <div className="mt-2">
-                    <Input label="Search places" value={eventSearch} onChange={setEventSearch}
-                      placeholder="Name or area" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
-                  </div>
+                  {eventSetupNote}
+                  <Input label="Search places" value={eventSearch} onChange={setEventSearch}
+                    placeholder="Name or area" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
                   <ul className="mt-2 max-h-72 min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto"
                     data-place-post-list>
                     {postList.length === 0 && (
-                      <li className="py-3 text-xs text-slate-400">
+                      <li className="py-3 text-sm text-slate-400">
                         {places.length === 0 ? 'No places yet.' : 'Nothing matches that.'}
                       </li>
                     )}
                     {postList.map(pl => (
-                      <li key={pl.id} className="flex items-center gap-2 py-2">
-                        <span className="min-w-0 flex-1">
+                      <li key={pl.id} className="flex flex-wrap items-center gap-x-2 gap-y-1.5 py-2">
+                        <span className="min-w-[9rem] flex-1">
                           <span className="block truncate text-sm font-bold text-slate-900">
                             {pl.name}{pl.area ? <span className="font-medium text-slate-400"> · {pl.area}</span> : null}
                           </span>
-                          <span className="block truncate text-xs text-slate-500">
+                          <span className="block truncate text-sm text-slate-500">
                             {pl.next ? `Next: ${shortDate(pl.next.date)}` : 'Nothing booked'}
                           </span>
                         </span>
                         {pl.next
-                          ? <Btn label="Make post" colour="ghost" size="sm" onClick={() => setPosting(pl.next!.id)} />
+                          ? <button type="button" className={BTN_OUTLINE}
+                              disabled={!data.standard.ready}
+                              onClick={() => setPosting(pl.next!.id)}>Make post</button>
                           /* ⚠️ A DASH, NOT A DISABLED BUTTON. A greyed button invites a press and then
                              explains nothing; a dash says there is nothing to do here. */
                           : <span aria-hidden="true" className="px-2 text-sm text-slate-300">—</span>}
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-auto pt-2 text-[11px] text-slate-400">
+                  <p className="mt-auto pt-2 text-xs text-slate-400">
                     {places.length} place{places.length === 1 ? '' : 's'} · {PLACE_POST_FOOTER_NOTE}
                   </p>
                 </>,
               )}
             </Box>
           </div>
-          <p className="text-[11px] leading-relaxed text-slate-400">{MAKE_POST_FOOTNOTE}</p>
+          <p className="text-xs leading-relaxed text-slate-400">{MAKE_POST_FOOTNOTE}</p>
         </>
       )}
 
+      {/* ══ 🔴 TWO FIXED-ISH COLUMNS AND THE REST (6 October 2026) ═════════════════════════════════
+        * The two design boxes hold a preview tile and a button; "Designs for a place" holds a list
+        * that benefits from every pixel. ⛔ `1fr_1fr_1.4fr` GAVE THE LIST TOO LITTLE at 1000px and the
+        * two previews too much at 1728.
+        * ⚠️ `minmax(200px, 320px)` IS BOTH HALVES OF THE BRIEF: comfortable at ~320px on a wide
+        * screen, and allowed to shrink to 200px below ~1100 **without leaving the row**.
+        * ⚠️ AND THIS COMMENT IS OUT HERE RATHER THAN INSIDE THE `&& (` BELOW: a JSX comment cannot be
+        * the first thing in a JavaScript parenthesis, only inside JSX. (Writing one out INSIDE a JSX
+        * comment does not work either — its closing marker ends the comment it is being quoted in.) */}
       {data && area === 'designs' && (
-        <div className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-[1fr_1fr_1.4fr]" data-design-boxes>
+        <div className="grid grid-cols-1 items-stretch gap-3 min-[900px]:grid-cols-[minmax(200px,320px)_minmax(200px,320px)_minmax(0,1fr)]"
+          data-design-boxes>
           {/* ── BOX 1 · WEEKLY DESIGN ──────────────────────────────────────────────────────────── */}
-          <Box title="Weekly post design">
+          <Box title="Weekly post design" blurb={WEEKLY_DESIGN_BLURB}>
             {gate(
               <>
-                <Thumb url={data.weekly.previewUrl} label="No picture yet" className="aspect-[4/5] w-full" />
+                {/* ⚠️ THE DESIGN'S OWN SHAPE, from the row — not a guessed 4:5. */}
+                <DesignTile url={data.weekly.previewUrl} w={data.weekly.width} h={data.weekly.height} />
                 <div className="mt-2 flex items-center gap-2">
                   <ReadyBadge ready={data.weekly.ready} />
                 </div>
-                <p className="mt-1.5 text-xs text-slate-500">{WEEKLY_DESIGN_BLURB}</p>
+                {/* ⛔ OUTLINED, NOT ORANGE. Editing a design is not making something. */}
                 <div className="mt-auto pt-3">
-                  <Btn label="Edit weekly design" colour="orange" className="w-full justify-center"
-                    onClick={() => setView({ kind: 'weekly-design' })} />
+                  <button type="button" className={`${BTN_OUTLINE} w-full`}
+                    onClick={() => setView({ kind: 'weekly-design' })}>Edit weekly design</button>
                 </div>
               </>,
             )}
           </Box>
 
           {/* ── BOX 2 · EVENT DESIGN ───────────────────────────────────────────────────────────── */}
-          <Box title="Event post design">
+          <Box title="Event post design" blurb={EVENT_DESIGN_BLURB}>
             {gate(
               <>
-                <Thumb url={data.standard.previewUrl} label="No picture yet" className="aspect-[4/5] w-full" />
+                <DesignTile url={data.standard.previewUrl} w={data.standard.width} h={data.standard.height} />
                 <div className="mt-2 flex items-center gap-2">
                   <ReadyBadge ready={data.standard.ready} />
                 </div>
-                <p className="mt-1.5 text-xs text-slate-500">{EVENT_DESIGN_BLURB}</p>
                 <div className="mt-auto pt-3">
-                  <Btn label="Edit event design" colour="orange" className="w-full justify-center"
-                    onClick={() => setView({ kind: 'event-design' })} />
+                  <button type="button" className={`${BTN_OUTLINE} w-full`}
+                    onClick={() => setView({ kind: 'event-design' })}>Edit event design</button>
                 </div>
               </>,
             )}
           </Box>
 
           {/* ── BOX 3 · DESIGNS FOR A PLACE ────────────────────────────────────────────────────── */}
-          <Box title="Designs for a place">
+          <Box title="Designs for a place" blurb={PLACE_DESIGN_BLURB}>
             {gate(
               <>
-                <p className="text-xs text-slate-500">{PLACE_DESIGN_BLURB}</p>
-                <div className="mt-2">
-                  <Input label="Search places" value={designSearch} onChange={setDesignSearch}
-                    placeholder="Name or area" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
-                </div>
+                <Input label="Search places" value={designSearch} onChange={setDesignSearch}
+                  placeholder="Name or area" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
                 <ul className="mt-2 max-h-72 min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto"
                   data-place-design-list>
                   {designList.length === 0 && (
-                    <li className="py-3 text-xs text-slate-400">
+                    <li className="py-3 text-sm text-slate-400">
                       {places.length === 0 ? 'No places yet.' : 'Nothing matches that.'}
                     </li>
                   )}
                   {designList.map(pl => (
-                    <li key={pl.id} className="flex items-center gap-2 py-2">
+                    <li key={pl.id} className="flex flex-wrap items-center gap-x-2 gap-y-1.5 py-2">
                       {/* 🔴 THE THUMBNAIL IS THE SIGNED URL FROM THE ONE READ. No per-place call. */}
-                      <Thumb url={pl.imageUrl} label="Standard" className="h-12 w-10" />
-                      <span className="min-w-0 flex-1">
+                      <PlaceTile url={pl.imageUrl} />
+                      <span className="min-w-[8rem] flex-1">
                         <span className="block truncate text-sm font-bold text-slate-900">{pl.name}</span>
-                        <span className="block truncate text-xs text-slate-400">
-                          {pl.area ? `${pl.area} · ` : ''}
-                          {pl.hasPicture
-                            ? <span className="font-semibold text-orange-700">Own design</span>
-                            : <span className="font-semibold text-slate-500">Standard</span>}
-                        </span>
+                        {pl.area && <span className="block truncate text-sm text-slate-400">{pl.area}</span>}
                       </span>
-                      <Btn label={pl.hasPicture ? 'Edit' : 'Give own design'} colour="ghost" size="sm"
-                        onClick={() => setView({ kind: 'place-design', placeId: pl.id })} />
+                      {/* ⛔ THE TAG IS TO THE RIGHT OF THE NAME AND BEFORE THE BUTTON. It used to be a
+                        * coloured word inside the sub-line, where it competed with the town for the
+                        * same sentence — and a row with no town read "Own design" as the address. */}
+                      <DesignTag own={pl.hasPicture} />
+                      <button type="button" className={BTN_OUTLINE}
+                        onClick={() => setView({ kind: 'place-design', placeId: pl.id })}>
+                        {pl.hasPicture ? 'Edit' : 'Give own design'}
+                      </button>
                     </li>
                   ))}
                 </ul>
-                <p className="mt-auto pt-2 text-[11px] text-slate-400">
+                <p className="mt-auto pt-2 text-xs text-slate-400">
                   {withOwn} with their own design · {places.length - withOwn} using Standard
                 </p>
               </>,
@@ -689,7 +836,7 @@ function PlaceDesignPage({ token, manageApi, place, placeId, onBack, onMakePost,
               className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
               {upcoming.map(ev => (
                 <option key={ev.id} value={ev.id}>
-                  {shortDate(ev.date)} · {timeLabel(ev.startTime, ev.endTime)}
+                  {shortDate(ev.date)} · {formatTimeRange(ev.startTime, ev.endTime)}
                 </option>
               ))}
             </select>
@@ -707,8 +854,10 @@ function PlaceDesignPage({ token, manageApi, place, placeId, onBack, onMakePost,
 
       <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
         {next
-          ? <Btn label={`Make post for ${shortDate(next.date)}`} colour="orange"
-              onClick={() => onMakePost(next.id)} />
+          /* 🔴 ONE OF THE TWO ORANGE BUTTONS IN THIS PRODUCT. Making a post is the act; everything
+           * else on these screens edits or opens something. */
+          ? <button type="button" data-primary className={BTN_PRIMARY}
+              onClick={() => onMakePost(next.id)}>Make post for {shortDate(next.date)}</button>
           /* ⚠️ HIDDEN, NOT DISABLED, when there is nothing to post — the brief's rule and the honest
            * one: there is no event for this button to be about. */
           : <span />}

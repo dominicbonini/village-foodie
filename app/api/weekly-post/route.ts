@@ -38,6 +38,10 @@ import { readPrivateEventIds } from '@/lib/private-events/read'
 import { PRIVATE_NO_SINGLE_POST } from '@/lib/private-events/copy'
 import { entryFor } from '@/lib/weekly-post/week-data'
 import { checkUpload, readImageInfo, toDataUri } from '@/lib/weekly-post/image-info'
+/* 🔴 "IS THIS DESIGN SET UP?", ANSWERED ONCE. Four readers in this file were asking it four different
+ * ways and the screens they feed applied a fifth — see the header of that file for the two directions
+ * in which they disagreed. Every `design ? …` in this route goes through it now. */
+import { designIsReady } from '@/lib/weekly-post/ready'
 import { renderWeeklyPost } from '@/lib/weekly-post/render'
 import { weekRange, defaultWeekChoice, todayInWeekTz, type WeekChoice } from '@/lib/weekly-post/week'
 import { eventPostText, weekCaption } from '@/lib/weekly-post/caption'
@@ -380,11 +384,14 @@ export async function POST(req: NextRequest) {
     })
     return NextResponse.json({
       missingTable,
-      design: design ? {
-        width: design.width, height: design.height, layout: design.layout,
-        blankUrl: await signed(design.blank_path),
-        exampleUrl: await signed(design.example_path),
-        updatedAt: design.updated_at,
+      /* ⚠️ `designIsReady`, NOT `design ?`. A half-written row used to come back as a design, and
+       * `WeeklyPostApp` then opened the POST screen — which has nothing to post from. It opens setup
+       * now, which is where a half-written design belongs. */
+      design: designIsReady(design) ? {
+        width: design!.width, height: design!.height, layout: design!.layout,
+        blankUrl: await signed(design!.blank_path),
+        exampleUrl: await signed(design!.example_path),
+        updatedAt: design!.updated_at,
       } : null,
       week: {
         which: range.which, start: range.start, end: range.end,
@@ -490,14 +497,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       weekly: {
-        ready: !!weekDesign?.blank_path,
+        /* 🔴 THE SAME PREDICATE THE SETUP SCREEN APPLIES, so the badge and the screen its button opens
+         * cannot disagree. `!!blank_path` said "✓ Set up" for a picture with no boxes placed on it. */
+        ready: designIsReady(weekDesign),
+        /* ⚠️ THE EXAMPLE FIRST, THE BLANK SECOND. The example is what the truck's post actually looks
+         * like; the blank is the artwork with no text. Either is a true preview of the design. */
         previewUrl: await signed(weekDesign?.example_path ?? weekDesign?.blank_path ?? null),
+        /* ⚠️ THE DESIGN'S OWN SHAPE, so the box draws a tile in it rather than guessing portrait. */
+        width: weekDesign?.width ?? null,
+        height: weekDesign?.height ?? null,
         thisWeek: { start: thisWeek.start, end: thisWeek.end, events: countIn(thisWeek.start, thisWeek.end) },
         nextWeek: { start: nextWeek.start, end: nextWeek.end, events: countIn(nextWeek.start, nextWeek.end) },
         defaultWeek: defaultWeekChoice(),
       },
       standard: {
-        ready: !!evDesign?.blank_path,
+        ready: designIsReady(evDesign),
         previewUrl: await signed(evDesign?.example_path ?? evDesign?.blank_path ?? null),
         width: evDesign?.width ?? null,
         height: evDesign?.height ?? null,
@@ -949,9 +963,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       missingTable,
-      design: design ? {
-        width: design.width, height: design.height, layout: design.layout,
-        backgroundUrl: await signed(design.blank_path),
+      /* ⛔ `designIsReady`, NOT `design ?`. This one was the worse of the two: a row with NO
+       * `blank_path` came back as a design, `EventSetupScreen` skipped its "Set up your event post"
+       * card on `!standard`, and the editor then read `standard.width` off a null. */
+      design: designIsReady(design) ? {
+        width: design!.width, height: design!.height, layout: design!.layout,
+        backgroundUrl: await signed(design!.blank_path),
         status: 'Used at every other place',
         preview: previewFor(null),
       } : null,
@@ -1098,7 +1115,10 @@ export async function POST(req: NextRequest) {
       timeStyle: layout?.timeStyle ?? '12h', now: new Date(),
     })
     return NextResponse.json({
-      hasDesign: !!design,
+      /* 🔴 `designIsReady`, so the modal routes to setup rather than proceeding into
+       * `eventPostContext`, which refuses a half-written row with "No event design yet." — a sentence
+       * that reads like a bug to the operator who has just pressed Make post. */
+      hasDesign: designIsReady(design),
       event: { id: eventId, date: ctx.date, name: ctx.entry.name, town: ctx.entry.town, time: ctx.entry.time, status: ctx.entry.status },
       options: ctx.options,
       chosen: ctx.chosen.source,

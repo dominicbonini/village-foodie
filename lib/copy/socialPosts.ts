@@ -77,3 +77,16 @@ export const PLACE_POST_FOOTER_NOTE = 'hidden places aren’t listed'
  */
 export const POST_NAME_HINT = (fullName: string): string =>
   `Printed on posts for this place. Leave it blank to use “${fullName}”.`
+
+/**
+ * ══ 🔴 THE LINE ABOVE BOXES 2 AND 3 WHEN THE STANDARD EVENT DESIGN IS NOT SET UP ═════════════════
+ *
+ * ⛔ IT EXISTS BECAUSE THE EXISTING FLOW EXPLAINS NOTHING. `EventPostModal` asks the server, gets
+ * `hasDesign: false`, and calls `onNeedsSetup()` — so the modal flashes and the operator lands on the
+ * design editor with no sentence anywhere saying why they were moved.
+ * ⚠️ IT NAMES THE ORDER OF THINGS TO DO, not the problem. "No design yet" describes a state; "first"
+ * tells the operator what to do about it, which is the only part they can act on.
+ */
+export const EVENT_DESIGN_FIRST = 'Set up your event design first.'
+/** The link's words. ⚠️ A separate constant so the sentence and the link can be read as one line. */
+export const EVENT_DESIGN_FIRST_LINK = 'Set it up'

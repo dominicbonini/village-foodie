@@ -1505,7 +1505,14 @@ head('9c · THE WIRING')
      * offset 630, long before the card — so the slice came out empty and every field read as paired.
      * A slice whose end can precede its start is a check that silently tests nothing. */
     const cardAt = places.indexOf('<Card className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">')
-    const card = cardAt < 0 ? '' : places.slice(cardAt, places.indexOf('Events here', cardAt))
+    /* ⛔ THE END ANCHOR WAS `'Events here'`, AND THAT CARD WAS DELETED ON 5 OCTOBER. `indexOf` then
+     * returned -1 and `slice(cardAt, -1)` ran to one character short of EOF — so this check has been
+     * reading the whole rest of the file as "the card" ever since. It still found the five fields, so
+     * it still passed; a slice that silently widens is the same class as a slice with no end anchor,
+     * which this build has now met three times.
+     * 🔴 THE ANCHOR IS THE CARD'S OWN CLOSING TAG, which cannot be deleted without deleting the card. */
+    const cardEnd = cardAt < 0 ? -1 : places.indexOf('</Card>', cardAt)
+    const card = cardAt < 0 || cardEnd < 0 ? '' : places.slice(cardAt, cardEnd)
     /* ⚠️ READ STRUCTURALLY, BY WHAT SITS BETWEEN THE FIELDS. An earlier draft searched backwards for
      * the nearest `sm:col-span-2` and compared it with the nearest `<Input`, which is always the
      * field's own tag — so every field looked paired and the check could not pass. Splitting on
@@ -1516,8 +1523,12 @@ head('9c · THE WIRING')
       const m = /^\s*label="([^"]+)"/.exec(seg[i])
       if (m) widths[m[1]] = seg[i - 1].includes('sm:col-span-2')
     }
-    return widths['Name on posts'] === true && widths['Address'] === true
-      && widths['Short name'] === false && widths['Area'] === false && widths['Postcode'] === false
+    /* ⚠️ "Full name" IS THE LONG ONE NOW (6 October 2026). The two name labels were swapped: `name` is
+     * "Full name" and `short_name` is "Name on posts", because `short_name` is what the renderer
+     * prints. The CLAIM is unchanged — the two long fields get a row each — only which label is on
+     * the long field moved. `scripts/places-tab.cjs` §4 asserts the bindings. */
+    return widths['Full name'] === true && widths['Address'] === true
+      && widths['Name on posts'] === false && widths['Area'] === false && widths['Postcode'] === false
   })())
 
   t('🔴 the event renderer reuses boxEl, the mark and paint — it does not draw its own', (() => {

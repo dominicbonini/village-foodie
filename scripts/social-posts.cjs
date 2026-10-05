@@ -162,7 +162,8 @@ head('3 · every box opens an existing flow — one modal, one drag surface')
   /* ⛔ "Give own design" AND "Edit" OPEN THE SAME PAGE. A place only counts as "Own design" once a
    * picture is saved, which is the server's `hasPicture`, not a client flag. */
   t('⛔ "Give own design" and "Edit" open the same page, and the tag follows the SERVER',
-    /label=\{pl\.hasPicture \? 'Edit' : 'Give own design'\}/.test(SOCIAL)
+    /\{pl\.hasPicture \? 'Edit' : 'Give own design'\}/.test(SOCIAL)
+    && /<DesignTag own=\{pl\.hasPicture\} \/>/.test(SOCIAL)
     && /hasPicture: !!path/.test(actionBody('social_overview')))
   /* 🔴 "Name on posts" IS BOUND TO `short_name`, WHICH IS WHAT THE RENDERER PRINTS. */
   t('🔴 "Name on posts" writes `short_name`, which is the field the renderer prints',
@@ -171,6 +172,86 @@ head('3 · every box opens an existing flow — one modal, one drag surface')
       .test(read('lib/weekly-post/week-data.ts')))
   t('⛔ …and it adds no column — `sg_upsert_place` is the action Tidy up already uses',
     /action === 'sg_upsert_place'/.test(codeOf(read('app/api/manage/route.ts'))))
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 3b · "IS THIS DESIGN SET UP?", ANSWERED ONCE
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('3b · one readiness predicate, and every reader calls it')
+
+{
+  /* ══ ⛔ FOUR READERS WERE ASKING ONE QUESTION FOUR WAYS, AND THEY DISAGREED BOTH DIRECTIONS ═══════
+   *   `load` / `event_load` / `event_post`  → a ROW exists
+   *   `social_overview`                     → a row WITH a picture
+   * …and the screens they feed applied a FIFTH test: the weekly setup screen on
+   * `!layout || !size || !blankUrl`, the event one on `!standard` alone.
+   * 🔴 SO A HALF-WRITTEN ROW MADE SOCIAL POSTS SAY "✓ Set up" OVER A SCREEN THAT SAID THE OPPOSITE —
+   * and, the other way, made it say "Not set up" over a button that opened a working editor.
+   * ⛔ "Not set up" ON A BOX WHOSE BUTTON OPENS AN EDITOR IS A SCREEN CALLING ITSELF A LIAR. */
+  /* 🔴 IT IS IN `lib/`, AND THIS HARNESS **CALLS** IT. Node 22 strips types from a `require`d `.ts`,
+   * so the real function is exercised over real shapes rather than its source being pattern-matched.
+   * ⛔ A PREDICATE NOTHING CAN CALL IS A PREDICATE NOBODY CHECKS — that is why it is not in the route. */
+  const { designIsReady } = require(path.join(REPO, 'lib/weekly-post/ready.ts'))
+  const whole = { blank_path: 'x.png', width: 1080, height: 1350, layout: { date: {} } }
+  t('🔴 a complete design is ready', designIsReady(whole) === true)
+  t('⛔ …and all five half-written states are NOT', (() => {
+    const no = (patch) => designIsReady({ ...whole, ...patch }) === false
+    return designIsReady(null) === false
+      && designIsReady(undefined) === false
+      /* a row with nothing uploaded — `event_load` used to call this a design and open the editor */
+      && no({ blank_path: null })
+      /* a picture with no size — every box coordinate is in the canvas's pixels */
+      && no({ width: null }) && no({ height: 0 })
+      /* a picture with no boxes — `social_overview` used to call this "✓ Set up" */
+      && no({ layout: null }) && no({ layout: undefined })
+  })())
+  /* ⚠️ AND AN EMPTY LAYOUT OBJECT IS **READY**. `{}` is not a sensible layout, but it is a SAVED one,
+   * and refusing it would hide a real design from its owner. Null is the state that means "nobody has
+   * placed the boxes yet"; `== null` and not a falsy test is what keeps those apart. */
+  t('⚠️ …but a SAVED empty layout is ready — `== null`, not falsy',
+    designIsReady({ ...whole, layout: {} }) === true)
+  /* 🔴 AND EVERY READER CALLS IT. Asserted as a COUNT and by name: five call sites across the four
+   * actions, and no `design ? {` or `!!design` left in the route deciding the same thing on its own. */
+  t('🔴 all five call sites use it, and none decides for itself', (() => {
+    const code = codeOf(ROUTE)
+    const calls = (code.match(/designIsReady\(/g) || []).length
+    return calls === 5
+      && /design: designIsReady\(design\) \? \{/.test(code)
+      && /ready: designIsReady\(weekDesign\)/.test(code)
+      && /ready: designIsReady\(evDesign\)/.test(code)
+      && /hasDesign: designIsReady\(design\)/.test(code)
+      /* ⛔ AND THE OLD SHAPES ARE GONE, or a fifth reader could be added beside the four. */
+      && !/design: design \? \{/.test(code)
+      && !/hasDesign: !!design/.test(code)
+      && !/ready: !!\w+Design\?\.blank_path/.test(code)
+  })())
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 3c · WHEN A DESIGN IS NOT SET UP
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('3c · a button that cannot work says so instead')
+
+{
+  /* ⛔ THE WEEKLY BUTTON USED TO PROMISE A POST AND OPEN THE SETUP SCREEN. The existing flow DOES
+   * handle a missing design — `WeeklyPostApp` falls back to setup — but it handles it by doing
+   * something other than what the button said, which is the worst kind of handled. */
+  t('🔴 with no weekly design the button reads "Set up weekly design" and goes to Designs',
+    /\{data\.weekly\.ready \? \(/.test(SOCIAL)
+    && /Set up weekly design/.test(SOCIAL)
+    && /onArea\('designs'\); setView\(\{ kind: 'weekly-design' \}\)/.test(SOCIAL))
+  /* ⛔ AND THE EVENT CASE EXPLAINS NOTHING ON ITS OWN. `EventPostModal` asks the server, gets
+   * `hasDesign: false` and calls `onNeedsSetup()` — the modal flashes and the operator lands somewhere
+   * else with no sentence anywhere. One grey line above boxes 2 AND 3, and the buttons go disabled. */
+  t('🔴 with no event design, boxes 2 and 3 carry one grey line with a link',
+    /const eventSetupNote = data && !data\.standard\.ready \? \(/.test(codeOf(SOCIAL))
+    && (codeOf(SOCIAL).match(/\{eventSetupNote\}/g) || []).length === 2
+    && /EVENT_DESIGN_FIRST/.test(SOCIAL) && /EVENT_DESIGN_FIRST_LINK/.test(SOCIAL))
+  t('⚠️ …and every Make post button is DISABLED, not hidden',
+    (codeOf(SOCIAL).match(/disabled=\{!data\.standard\.ready\}/g) || []).length === 2)
+  /* ⚠️ A PRIVATE ROW STILL HAS NO BUTTON AT ALL — disabled is for "not yet", absent is for "never". */
+  t('⛔ …while a private row still has NO button at all',
+    /\{!ev\.isPrivate && \(/.test(SOCIAL))
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -203,6 +284,88 @@ head('4 · a truck without the preview key sees no change at all')
    * form has always had. ⚠️ SAID OUT LOUD IN THE REPORT rather than asserted falsely here. */
   t('⚠️ the Add event additions are in the modal every truck already has',
     /const wantPicker = \(!!editingEvent && !editingEvent\.id\) \|\| modalView === 'tidy'/.test(codeOf(MANAGE)))
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 4b · THE LOOK — the agreed mockup, in source terms
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('4b · headings, buttons and tiles match the agreed design')
+
+{
+  /* ⛔ A BOX HEADING IS A HEADING, NOT A LABEL. It was `SUBCARD_HEADING` — uppercase, letter-spaced,
+   * 12px — which is the treatment for a label above a group of controls. On a card that is one of
+   * three choices it made the boxes read as form sections rather than as three things you can do.
+   * ⚠️ THE COMPUTED `text-transform` IS ASSERTED IN THE BROWSER, by the render harness. Here what is
+   * pinned is that the uppercase token is GONE and one heading constant is used by all six. */
+  /* ⚠️ `codeOf` ON BOTH ABSENCE TESTS. The tombstone above `BOX_HEADING` NAMES the token it replaced
+   * and quotes its classes — so a raw-source test for "SUBCARD_HEADING is gone" is failed by the
+   * comment that explains why it went. Third time in this build's harnesses that prose has decided a
+   * claim about code; `codeOf` first, every time. */
+  t('🔴 one heading style, bold and title case, and `SUBCARD_HEADING` is not it',
+    /const BOX_HEADING = 'text-\[17px\] font-bold leading-tight text-slate-900'/.test(SOCIAL)
+    && !/SUBCARD_HEADING/.test(codeOf(SOCIAL))
+    && !/uppercase/.test(codeOf(SOCIAL)))
+  t('⚠️ …and every box passes its description as the heading\'s own prop',
+    (codeOf(SOCIAL).match(/<Box title="[^"]+" blurb=\{/g) || []).length === 6)
+
+  /* ══ ⛔ ORANGE MEANS "MAKE SOMETHING", AND NOTHING ELSE ═══════════════════════════════════════════
+   * 🔴 ASSERTED AS A COUNT OF THE MARKER, not of the colour. Every primary carries `data-primary`, and
+   * there are exactly three places it may appear: "Make this week's post", "Set up weekly design"
+   * (the same button when there is no design) and "Make post for <date>". Everything else — the
+   * per-row Make post, all three Edit buttons, "Give own design" — is `BTN_OUTLINE`.
+   * ⚠️ THE RENDER HARNESS CHECKS THE COMPUTED BACKGROUND, which is the half this cannot see. */
+  t('🔴 exactly three buttons may be primary, and they are the make/set-up ones',
+    (SOCIAL.match(/data-primary/g) || []).length === 3)
+  t('⛔ …and no other button uses the primary class',
+    (codeOf(SOCIAL).match(/BTN_PRIMARY/g) || []).length === 4)
+  t('⛔ …and `Btn` is not imported at all, so its orange default cannot leak in',
+    !/import \{[^}]*\bBtn\b[^}]*\} from '@\/components\/manage\/primitives'/.test(SOCIAL))
+
+  /* 🔴 THE EMPTY DESIGN TILE IS THE SAME SIZE AS A FILLED ONE. It was `aspect-[4/5] w-full` with no
+   * image, which collapses to whatever the content needs — "Not set up" drew a thin bar where a tall
+   * tile should be, and the two Designs boxes were then different heights for no reason to do with
+   * the designs. ⚠️ A FIXED HEIGHT AND A DERIVED WIDTH, because three boxes in a row are three widths
+   * and a width-driven aspect ratio would give three different heights. */
+  t('🔴 the design tile is one component, sized the same with or without a picture',
+    /style=\{\{ height: H, width: Math\.round\(H \* ratio\) \}\}/.test(SOCIAL)
+    && /const ratio = w && h \? w \/ h : 4 \/ 5/.test(SOCIAL)
+    && /: 'No design yet'/.test(SOCIAL))
+  t('⚠️ …and it is drawn in the DESIGN\'s own shape, which the server now sends',
+    /width: weekDesign\?\.width \?\? null/.test(codeOf(ROUTE))
+    && /<DesignTile url=\{data\.weekly\.previewUrl\} w=\{data\.weekly\.width\} h=\{data\.weekly\.height\} \/>/.test(SOCIAL))
+
+  /* ⛔ A PLACE ON STANDARD GETS A PLAIN TILE WITH NO TEXT IN IT. It said "Standard" in 9px inside a
+   * 40px box — unreadable AND redundant, because the tag beside it says the same word at a size
+   * somebody can read. */
+  t('🔴 the place tile is 28×35 and holds a picture or nothing',
+    /className="flex h-\[35px\] w-\[28px\] shrink-0/.test(SOCIAL)
+    && /: null\}/.test(SOCIAL.slice(SOCIAL.indexOf('function PlaceTile'), SOCIAL.indexOf('function DesignTag'))))
+  t('⛔ …and the tag is its own element, to the right of the name and before the button',
+    /function DesignTag/.test(SOCIAL)
+    && /<DesignTag own=\{pl\.hasPicture\} \/>\s*\n\s*<button/.test(SOCIAL))
+
+  /* 🔴 THE COLOUR BAR IS FULL ROW HEIGHT AND DARK NAVY FOR STANDARD. It was `h-8 w-1` — a stub beside
+   * a taller row, which read as a bullet — and grey-300 at 4px is invisible at arm's length. */
+  t('🔴 the design bar is 4px, full row height, and navy for Standard',
+    /standard: 'bg-slate-800'/.test(SOCIAL)
+    && /own: 'bg-orange-500'/.test(SOCIAL)
+    && /className=\{`w-1 shrink-0 self-stretch rounded-full \$\{DESIGN_BAR\[ev\.design\]\}`\}/.test(SOCIAL))
+
+  /* ⛔ AND THE TIME FORMAT IS THE PRODUCT'S ONE FORMATTER. This file had its own — `17:00–20:00` with
+   * no spaces — while everything else writes `17:00 – 20:00` through `formatTimeRange`, whose own note
+   * says "use this everywhere a start–end pair is shown so no surface re-introduces seconds". */
+  t('⛔ times come from the shared formatter, not a second copy',
+    /import \{ formatTimeRange \} from '@\/lib\/time-utils'/.test(SOCIAL)
+    && !/function timeLabel/.test(codeOf(SOCIAL)))
+
+  /* ══ 🔴 THE BREAKPOINT IS 900px, AND IT IS THE SAME ONE ON BOTH GRIDS ════════════════════════════
+   * ⛔ IT WAS `lg:` — 1024px. A 16in MacBook Pro in Safari with a normal window is 1000–1100px wide,
+   * so the three boxes STACKED on a laptop, which is the width the design was drawn for. */
+  t('🔴 both grids go side-by-side from 900px, not from `lg`',
+    (SOCIAL.match(/min-\[900px\]:grid-cols-/g) || []).length === 2
+    && !/lg:grid-cols-/.test(SOCIAL))
+  t('⚠️ …and the Designs row gives the two design boxes a comfortable, shrinkable width',
+    /min-\[900px\]:grid-cols-\[minmax\(200px,320px\)_minmax\(200px,320px\)_minmax\(0,1fr\)\]/.test(SOCIAL))
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
