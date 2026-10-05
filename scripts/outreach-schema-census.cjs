@@ -334,13 +334,23 @@ function runTreeSuite() {
      * one event has one background and a surrogate key would allow two. */
     && TABLES.every(tb => r.declared.get(tb).has('id')
       || tb === 'outreach_settings'
-      || (tb === 'event_post_backgrounds' && r.declared.get(tb).has('event_id'))))
+      || (tb === 'event_post_backgrounds' && r.declared.get(tb).has('event_id'))
+      /* ⚠️ A THIRD TABLE WITH NO `id`, AND IT IS THE STRONGEST CASE OF THE THREE.
+       * `private_event_links.token` IS the primary key (20261014:217) — the token is the identity of
+       * the link, and a surrogate id would allow two rows claiming the same token. */
+      || (tb === 'private_event_links' && r.declared.get(tb).has('token'))))
 
   /* ⚠️ THE WAIVER LIST STAYS SHORT OR IT STOPS MEANING ANYTHING. One entry today: the capability
    * probe that passes its own parameter to `.select()`. It is not an exemption — the columns its
    * call sites pass are listed in it and censused like any others. */
-  t(`⚠️ exactly ${WAIVED.length} waiver, and it carries the columns it stands for`,
-    WAIVED.length === 1 && WAIVED[0].columns.length === 6 && WAIVED.every(w => w.why && w.columns.length))
+  /* ⚠️ TWO WAIVERS NOW (5 October 2026), AND THE COUNT IS STILL PINNED. The second is
+   * `readTypedPrices`' `column` parameter — `'event_id' | 'event_type_id'` — which is a literal at
+   * every call site and never at the call. ⛔ THE LIST STAYS SHORT OR IT STOPS MEANING ANYTHING: the
+   * count is asserted so a third arrives as a visible change to this harness rather than quietly. */
+  t(`⚠️ exactly ${WAIVED.length} waivers, and each carries the columns it stands for`,
+    WAIVED.length === 2
+    && WAIVED[0].columns.length === 6 && WAIVED[1].columns.length === 2
+    && WAIVED.every(w => w.why && w.columns.length))
 
   /* ── 🔴 THE CONTROL FOR THE SCOPING FIX. `app/api/manage/route.ts` declares `patch` five times; the
    * schedule-graphics update is the last of them. A file-wide reader attributes the embed handler's

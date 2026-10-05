@@ -18,6 +18,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Btn, Card, Input, Spinner } from '@/components/manage/primitives'
 import { FeatureGate } from '@/components/FeatureGate'
 import type { Plan } from '@/lib/features'
+/* 🔴 THE PLAN SENTENCE, FROM THE ONE MODULE THAT HOLDS IT, so the refused screen and the refused call
+ * say the same thing. ⛔ NOT FROM THE ROUTE — importing it from there pulled the route's server-only
+ * dependencies into the client bundle and failed the build. See the note in lib/copy/weeklyPost.ts. */
+import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
 import { placeWhenLine, timeRangeLabel } from '@/lib/schedule-graphics/places'
 import { WeeklyPostApp } from './WeeklyPost'
 
@@ -526,7 +530,11 @@ export function WeeklyPostPane({ truck, token }: {
       plan={truck?.plan}
       overrides={truck?.feature_overrides}
       trialExpiresAt={truck?.trial_expires_at}
-      upgradeMessage="The weekly post is on Pro and Max"
+      /* ⛔ "Max", NOT "Pro and Max", AND IT IS THE ROUTE'S OWN CONSTANT NOW (5 October 2026).
+       * `schedule_graphics` lives in `MAX_FEATURES`, so a Pro truck is refused — and was being told
+       * the feature came with their plan while being refused it. The string was written out here AND
+       * in the route, both wrong in the same way, which is what two copies of one claim buys. */
+      upgradeMessage={WEEKLY_POST_PLAN_REFUSAL}
     >
       <WeeklyPostApp token={token} truckName={truck?.name ?? 'Your truck'} />
     </FeatureGate>

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V13.9
+HatchGrab Engineering Reference Manual · V14.0
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 13.9**
+**Version 14.0**
 
 October 2026
 
@@ -25,6 +25,124 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V14.0 — 5 October 2026 — THE RELEASE: EVENT PRICING, PRIVATE EVENTS, THE PLACES TAB, EVENT TYPES AS A PILL, AND A PREVIEW KEY. MERGED INTO `main` LOCALLY; **DEPLOY DATE: ________**
+
+**Status — read this first.**
+- 🔴 **`schedule-graphics` IS MERGED INTO `main`, LOCALLY, AND NOTHING IS PUSHED.** Dominic deploys by
+  hand. `main` is at `bdf962a`, 36 commits ahead of `origin/main`.
+- 🔴 **THE MERGE WAS A FAST-FORWARD, AND THAT IS THE WHOLE SAFETY ARGUMENT.** `main`'s tip was
+  `deec9f5` — the revert — and that commit is also the merge base, because the branch had already
+  merged it and then restored the work (V13.9's note, and docs/combine-branches-report.md §2). So
+  `main` was an **ancestor** of the branch: there was nothing on `main` the branch lacked, no conflict
+  to resolve, and no revert to re-apply. `git merge --ff-only` was used deliberately, because it
+  SUCCEEDS ONLY IF that is true — the command is itself the assertion.
+  ⚠️ **A merge across a revert is not a merge, it is a merge plus a revert**, and the revert is the half
+  with no conflict markers. That was V13.9's lesson and it is why the three-way audit was run anyway:
+  **FORM 2 = 0, FORM 3 = 0, and no file present on either side is missing from the result.**
+- ⚠️ **Every migration in this release has been applied to production by Dominic.** No SQL was run by
+  this build, and no deployed code reads a column that is not in one of them (§74.4).
+- ⚠️ **Places and Social posts are switched on for ONE truck** — `test-kitchen` ("Pizza Kitchen") —
+  through `trucks.feature_overrides`, because `places_posts_preview` is in no plan at all.
+
+**Covers:** new **§74** (the release: the audit, the migrations, what Gusto sees, the deploy steps);
+additions in place to **§70** (pricing, the pin), **§73** (private events) and **§65** (the `<label>`
+class). The report is `docs/release-prep-report.md`.
+
+### What shipped, in one table
+
+| | What | Who sees it |
+|---|---|---|
+| **Event pricing** (§70) | A type can change prices by a percentage or a fixed amount, rounded how the truck chooses, with per-item typed prices on top. Nothing changes until a truck sets one | **Max** (`event_types`) |
+| **Private events** (§73) | An event that shows as "Private event" with its date and times, never on the map, with its own `/p/<token>` ordering link and QR code | **Pro and Max** (`private_events`) |
+| **Event types as the third Schedule pill** | The grid left its overlay; the schedule cards went back to Settings | **Max** |
+| **The Places tab** | Each place's details, its usual event type, its pictures and its events | **`places_posts_preview` only** |
+| **Social posts** | The weekly poster and the single-event post, in one pill | **`schedule_graphics` (Max) AND `places_posts_preview`** |
+| **"Do you take cash?" per van** | It was per truck; it is now a per-van setting, copied by "Same as Van 1" | every plan |
+| **Kitchen capacity under Menu** | Second Menu pill, with one "Same kitchen capacity for all vans?" switch | every plan |
+| **The dashboard "This event" card** | Five per-event controls in one card, plus the type switch and the private link | every plan |
+| **Add event** | A places list down the side, Tidy up places, a type pill row, a live preview | every plan |
+| **The outreach composer** | The bold bug, the silent Send, the past follow-up date, and Undo | **admin only** |
+
+### The two defects worth remembering
+
+1. 🔴 **A `<label>` AROUND A TOOLBAR ACTIVATES ITS FIRST BUTTON.** The outreach composer wrapped the
+   message field — editor toolbar included — in a `<label>`, so every mousedown in the message body
+   dispatched a real, trusted activation click to the **first labelable descendant**, which was **B**.
+   Selecting text and pressing B twice then clicking looked like "the text goes back to bold on its
+   own". **Italic worked, and that is the clue that found it**: a label activates exactly one control.
+   ⚠️ `htmlFor` does not help — a label with a `for` still forwards the click, it just forwards it
+   somewhere else. **⛔ NEVER PUT A TOOLBAR INSIDE A `<label>`.** See §65 and
+   docs/fixes-and-gating-report.md §1.
+2. 🔴 **A HAND-BUILT EXTENSION LIST HAS NO UNDO.** The composer's editor builds its TipTap list by
+   hand and `StarterKit` is deliberately absent, so nothing had ever loaded `prosemirror-history`:
+   **every Cmd+Z in that box had done nothing since it shipped**, and only a real-browser test found
+   it. Fixed with a local extension on the already-pinned `@tiptap/pm`.
+
+### The five release-prep findings, each fixed at its cause
+
+| Finding | Fix |
+|---|---|
+| 🔴 **"The weekly post is on Pro and Max" was false.** `schedule_graphics` is in `MAX_FEATURES`, so `canAccess('pro', …)` is **false** — a Pro truck was told the feature came with their plan and then refused it. The string was written out **twice**, both copies wrong the same way | One constant, `lib/copy/weeklyPost.ts`, read by the route and the screen. `scripts/places-posts-gating.cjs` now **calls `canAccess` for all four plans** and asserts the key is Max-only *alongside* the wording, so the two cannot drift apart |
+| ⚠️ **Four tables this release adds were not censused** — `event_types`, `event_item_prices`, `private_event_links`, `place_pictures`. The census exists so "a feature can never name a column that does not exist", and `truck_places` was added to it at creation for exactly that reason | All four added. **1,565 column references on 14 tables, every one proved present in a migration** (was 1,354 on 10). It needed one new waiver and one new "no `id`" exception, both reasoned in place |
+| ⚠️ **The harness runner was warning about four unaccounted files** in `scripts/` | A new `one_off_tools` excluded group for the two tools that **write files into the repository** (running them in a sweep would rewrite committed bytes), `_png-decode.cjs` into `shared_modules`, `add-order-stale-browser.cjs` into `needs_a_browser` |
+| ⚠️ **`_pretest.cjs` sits UNTRACKED in the repository root**, builds a service-role client and writes to production | **Not touched** — it is not mine to delete and it will not be pushed (untracked). ⛔ But it is **not in `scripts/`**, so the harness screen that refuses a service-role client never sees it. Recorded as an open item |
+| ⚠️ **Four migrations are outside the range Dominic listed as applied** (`20261003`–`20261006`) | Earlier reports record them as applied by hand. A read-only `information_schema` SELECT is in the release report to confirm it in one query before deploy |
+
+### The audit of the merge
+
+| Form | What it catches | Result |
+|---|---|---|
+| **1** · merged vs each tip | everything, legitimate replacements included | 530 lines, **all from the base**, and every one of the 45 files was touched by a branch commit after it |
+| **2** · lines a side ADDED that the merge dropped | unambiguous losses | **0** |
+| **3** · base lines `main` removed that the branch still needs | the form that caught the two census files in V13.9, because those lines are *in* the base | **0** |
+| files on a side and absent from the result | the "deleted cleanly, no conflict" class | **none** |
+
+⚠️ **The audit script recomputed the merge base AFTER merging**, which returns the merged tip — and with
+that as the base, forms 2 and 3 reduce to "the tree against itself" and report nothing **for the wrong
+reason**. Pinning the base is what made them mean anything. **A clean audit whose inputs are wrong looks
+exactly like a clean audit.**
+
+The four at-risk classes V13.9 named were checked by name: **15 migrations added, 0 lost**; **harness
+registrations 81 → 93, 0 lost, none registered-but-missing**; **Feature keys 24 → 28, 0 lost**; and the
+census's scoped write-payload reader (`declarationInScope`) is present, with `soleDeclaration` surviving
+only in the two places that are correct.
+
+### Migrations in this release — ALL applied to production by Dominic
+
+`20261003` truck_places · `20261004` places stage 2 · `20261005` van_category_settings ·
+`20261006` truck_post_designs · `20261007` event_post_backgrounds · `20261008` event_post_place_layouts ·
+`20261009` event_types · `20261010` capacity_same_as_first_van · `20261010` event_types_offline ·
+`20261011` event_pricing · `20261012` van_cash_and_type_values · `20261013` event_item_prices_unique ·
+`20261014` private_events · `20261015` places_tab · `20261016` place_usual_standard
+
+🔴 **NOTHING BREAKS IF THE CODE GOES LIVE FIRST, AND IT IS NOT GOING TO HAVE TO.** All fifteen are
+applied. And every new column is read behind a **capability probe** that degrades rather than throws:
+pricing falls back to menu prices, the Places pin falls back to "Automatic", the private-event probes
+fail **closed**. The one place that is deliberately *not* open is privacy — a failed read hides rather
+than reveals. See §74.4.
+
+### The Gusto approval list
+
+Closed — it is §74.5, and `docs/release-prep-report.md` carries it in full, each item marked **VISIBLE**
+or **BEHAVIOUR-ONLY** with the Pro/Max difference stated where there is one. The short version: the nav
+and Settings reorganisation, Kitchen capacity under Menu, pill sub-tabs, Schedule's two pills (Places and
+Social posts are **hidden** for them), the dashboard "This event" card, Event types on Max, private
+events on Pro, "Do you take cash?" per van, the new Add event, and the landing/Billing plan wording.
+**Prices change nothing until a truck sets them, and a customer only ever sees one final price.**
+
+### Open items
+
+| Item | State |
+|---|---|
+| **Deploy** | `git push origin main`, then the live-site checks in §74.6. **Not done — Dominic deploys by hand** |
+| `_pretest.cjs`, untracked in the repository root, builds a service-role client and writes to production | ⛔ Outside `scripts/`, so the harness screen never sees it. Move it into `scripts/` (where the screen would refuse it) or delete it |
+| The four pre-`20261007` migrations are outside the applied range Dominic stated | one read-only SELECT before deploy — §74.4 |
+| `add-order-refresh-inputs.cjs` takes ~210s, the longest in the sweep | noted, not a failure |
+| ESLint: **+5 errors in `app/` and `lib/`** against the base, in rules this repository already carries in bulk (`no-explicit-any` +6, `preserve-manual-memoization` +2, `set-state-in-effect` +1, `no-unescaped-entities` −4) — and **+78 in `scripts/`, every one `no-require-imports`** from the seven new `.cjs` harnesses | no new rule class; recorded rather than suppressed |
+| From V13.9, still open | `claim_order_for_auto_reject` cannot read event types; `offline_auto_reject_mins` has no DDL in the repo; `DemoLockChip.tsx` has no consumer; the stale-stage SQL |
+
+---
 
 ## V13.9 — 3–4 October 2026 — SINGLE-EVENT POSTS AND A DESIGN PER PLACE; EVENT TYPES (STAGES 1–2, ON A SECOND BRANCH); KITCHEN CAPACITY UNDER MENU; PILL SUB-TABS. NOTHING DEPLOYED.
 
@@ -28491,6 +28609,117 @@ nothing checks them against each other — change both or neither):
 failures from **that** build surfaced here: a new Settings sub-label, and the `Toggle` signature gaining
 `compact`. Both were honest updates, neither was this build's. The rule trades latency for time, and
 this is the latency.
+
+---
+
+# §74 · THE RELEASE (V14.0)
+
+The merge into `main`, what was proved about it, and what Dominic runs. The full account is
+`docs/release-prep-report.md`; this is the part that outlives it.
+
+## 74.1 A merge whose safety the command itself asserts
+
+`main`'s tip was `deec9f5`, the revert that took Schedule graphics stage 1 off production — and that
+commit was also the **merge base**, because the branch had already merged it and then restored the work
+by hand (§72, docs/combine-branches-report.md §2). So `main` was an **ancestor** of
+`schedule-graphics`: nothing on `main` was absent from the branch.
+
+🔴 **`git merge --ff-only` IS THE ASSERTION, NOT JUST THE METHOD.** It succeeds only if the target is an
+ancestor, so the command refuses exactly the case where a silent loss is possible. A `--no-ff` merge
+commit would have looked tidier in the log and proved nothing.
+
+⚠️ **THE AUDIT WAS STILL RUN**, because V13.9's lesson is that a merge across a revert has no conflict
+markers. Three forms, from docs/combine-branches-report.md §2:
+
+| Form | Catches | Here |
+|---|---|---|
+| 1 · merged vs each tip | everything, replacements included | 530 lines, all from the base; every one of the 45 files has a branch commit after it |
+| 2 · lines a side ADDED that the merge dropped | unambiguous loss | **0** |
+| 3 · base lines `main` removed that the branch needs | the form that caught the census files, because those lines are *in* the base | **0** |
+
+⛔ **AND THE AUDIT'S OWN INPUTS HAVE TO BE CHECKED.** The first run recomputed
+`git merge-base main schedule-graphics` **after** the merge — which returns the merged tip, so forms 2
+and 3 became "the tree against itself" and reported nothing for the wrong reason. **A clean audit whose
+inputs are wrong looks exactly like a clean audit.** The base is pinned as a literal with an
+`--is-ancestor` check beside it.
+
+## 74.2 The four classes a merge loses silently
+
+Checked by name every time, because each one lands staged as a clean `D` or a dropped array entry with
+no conflict to notice:
+
+1. **`supabase/migrations/*`** — 148 → 163, nothing lost. A migration file lost after the SQL has been
+   applied leaves a schema with no record of itself.
+2. **`scripts/harnesses.json` entries** — 81 → 93, nothing lost, nothing registered-but-missing. The
+   *file* conflicts and survives; its **registration** does not, and the harness silently stops being
+   swept.
+3. **`lib/features.ts` keys** — 24 → 28, nothing lost. A dropped key makes `canAccess` return false and
+   the feature simply disappears.
+4. **The census's scoped write-payload reader** — `declarationInScope` present; `soleDeclaration`
+   surviving only where it is correct (two AST helpers, not the payload reader).
+
+## 74.3 The release gate
+
+`tsc --noEmit` clean · `npx next build` ✓ compiled · **93 of 93 harnesses green**, run in five chunks
+with `--list=` one at a time, plus every browser-backed harness with `HG_RENDER=1` in **Chromium and
+WebKit**.
+
+⚠️ **A CHUNKED SWEEP WARNS ABOUT THE OTHER 74 FILES**, because the drift check compares `scripts/`
+against the list it was given. It is an artifact of chunking, not a finding — confirm it against the
+full list before believing it.
+
+## 74.4 Migrations, and whether the code can go live first
+
+All fifteen (`20261003`–`20261016`) are applied to production by hand. **Nothing breaks if code lands
+before SQL, and nothing has to**: every new column is read behind a capability probe that **degrades**
+rather than throws — pricing falls back to menu prices, the Places pin falls back to "Automatic".
+
+⛔ **PRIVACY IS THE ONE THAT FAILS CLOSED**, deliberately: a failed probe hides an event rather than
+revealing it, because the cost of the two errors is not symmetrical.
+
+🔴 **THE CLAIM "THE CODE READS NO COLUMN THAT IS NOT IN A MIGRATION" IS MECHANICAL, NOT A PROMISE.**
+`scripts/outreach-schema-census.cjs` parses every `.select()`, `.insert()`, `.update()`, `.upsert()`,
+`.or()` and filter call in `app/`, `lib/` and `components/` against the DDL in `supabase/migrations/`:
+**1,565 column references on 14 tables, all present.** The four tables this release adds were missing
+from it until release prep — the census was built so a feature could never name a column that does not
+exist, and four features shipped reading four uncensused tables. Adding a table at creation is the
+rule; this release is the counter-example.
+
+## 74.5 What an existing truck sees
+
+See `docs/release-prep-report.md` §5 for the item-by-item list. The two rules behind it:
+
+- 🔴 **PRICES CHANGE NOTHING UNTIL A TRUCK SETS THEM**, and a customer never sees a rule — the menu,
+  the order page and the receipt all show one resolved figure, and `orders.items[].unit_price` still
+  locks it at the moment of ordering.
+- 🔴 **A PREVIEW KEY IS HOW AN UNFINISHED SCREEN SHIPS SAFELY.** `places_posts_preview` is a `Feature`
+  in **no plan**, so `canAccess` can only grant it from `trucks.feature_overrides`. It gates two pills,
+  two panes, one button and seven route actions, and an old `?section=` bookmark lands on Events in the
+  same render. ⛔ It deliberately does **not** gate what every truck already has: Add event's place
+  picker, Tidy up places, the usual-type pre-selection, event types, private events, pricing.
+
+⚠️ **AND A PLAN SENTENCE IS A CLAIM THAT NEEDS A TEST.** "The weekly post is on Pro and Max" was false —
+`schedule_graphics` is Max-only — and it was written out twice, both copies wrong the same way. The fix
+is one constant plus a harness that **calls `canAccess` for all four plans** and asserts the key's tier
+*alongside* the wording. A comment about a plan is not a plan.
+
+## 74.6 Deploy
+
+```
+git push origin main
+```
+
+Vercel builds from `main`. Nothing else to run: no SQL (all applied), no env var, no cron change.
+
+Then, on the live site:
+
+1. **Pizza Kitchen** → Schedule shows four pills, including **Places** and **Social posts**.
+2. **Any other truck** → Schedule shows **two** pills, and no "Make post" on any event row.
+3. A truck with a private event → its public schedule reads **"Private event"** with the date and times,
+   **no venue, town or postcode**, and the event is **absent from the map**.
+4. **Pizzeria Gusto** → the order page loads and takes an order; the dashboard loads and shows today.
+5. **The landing page** → Pro says "Private events with their own ordering link"; Max says "Custom event
+   types & pricing"; neither carries "Coming soon".
 
 ---
 

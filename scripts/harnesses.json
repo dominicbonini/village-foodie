@@ -131,6 +131,7 @@
         "_batch-rolling-snapshot.cjs",
         "_mini-dom.cjs",
         "_outreach-schema-census.cjs",
+        "_png-decode.cjs",
         "_printing-mocks.cjs",
         "_slot-interval-compile.cjs"
       ]
@@ -142,9 +143,17 @@
         "_batch-rolling-golden-generate.cjs"
       ]
     },
-    "needs_a_browser": {
-      "$why": "🔴 NOT A PROOF THE SWEEP CAN RUN. It needs `.next/static/css` from a completed build and a local Chromium, and a sweep that silently skips when either is missing would be a sweep that reports green for a layout nobody measured. It is a MODULE (`outreach-workspace-v3-fixes.cjs` requires it behind HG_RENDER=1) and a standalone command. Run it by hand after a build.",
+    "one_off_tools": {
+      "$why": "🔴 PROVISIONING AND DOCUMENT TOOLS, NOT PROOFS. `_fetch-weekly-post-fonts.cjs` downloads the pinned font files into assets/ (a network fetch, run once and committed); `_weekly-post-examples.cjs` writes the example posters that appear in the report. Both WRITE FILES INTO THE REPOSITORY, which is exactly what a sweep must not do: running them would rewrite committed bytes and could quietly change what the weekly-post harness measures against. Run by hand, deliberately.",
       "files": [
+        "_fetch-weekly-post-fonts.cjs",
+        "_weekly-post-examples.cjs"
+      ]
+    },
+    "needs_a_browser": {
+      "$why": "🔴 NOT A PROOF THE SWEEP CAN RUN. It needs `.next/static/css` from a completed build and a local Chromium, and a sweep that silently skips when either is missing would be a sweep that reports green for a layout nobody measured. Most are a MODULE (`outreach-workspace-v3-fixes.cjs` requires one behind HG_RENDER=1) and a standalone command; run them by hand after a build. ⚠️ `add-order-stale-browser.cjs` is the stricter case and its own header says so: it needs the DEV SERVER, the Supabase project and an operator session, so it can never be swept — it is run by hand against test-truck with the token in the environment.",
+      "files": [
+        "add-order-stale-browser.cjs",
         "outreach-bold-persists-render.cjs",
         "outreach-editor-render.cjs",
         "outreach-templates-render.cjs",

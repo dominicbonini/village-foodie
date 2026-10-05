@@ -69,6 +69,22 @@ const TABLES = [
    * censue now, which is what the stage 1 note said to wait for. */
   'truck_post_designs',
   'event_post_backgrounds',
+  /* ══ 🔴 THE FOUR TABLES THIS RELEASE ADDS (5 October 2026, release prep) ═════════════════════════
+   * Added at release prep rather than at creation, and the omission is the finding: the census exists
+   * so that "a feature can never name a column that does not exist", `truck_places` and
+   * `van_category_settings` were both added AT CREATION for exactly that reason, and these four were
+   * not. Four features shipped reading four uncensused tables.
+   * ⛔ WHY IT MATTERS MORE ON THESE THAN ON MOST. Every one of them is read by a path that FAILS OPEN
+   * or fails quietly by design: the pricing resolvers fall back to menu prices, the Places tab's pin
+   * probe falls back to "Automatic", and the private-event probes fail CLOSED but still answer. A
+   * column that does not exist therefore produces the DEGRADED behaviour rather than an error — the
+   * one failure mode a census is for.
+   * ⚠️ `event_types` CARRIES THE PRICE COLUMNS (20261011) AND THE PRIVATE FLAGS (20261014), so this
+   * also censuses the two migrations that are easiest to half-apply. */
+  'event_types',
+  'event_item_prices',
+  'private_event_links',
+  'place_pictures',
 ]
 
 const CODE_DIRS = ['app', 'lib', 'components']
@@ -92,6 +108,25 @@ const WAIVED = [
       'do_not_contact', 'entity_type',
       'lead_type_at_first_contact',
     ],
+  },
+  {
+    /* ── 🔴 ONE READER, TWO OWNERS — AND THAT IS THE DESIGN (20261011, §70) ───────────────────────
+     * `event_item_prices` carries a typed price owned EITHER by an event or by an event type, and the
+     * resolver reads both with one function whose `column` parameter is `'event_id' | 'event_type_id'`
+     * — a UNION TYPE, so the value is a literal at every call site and never a literal here.
+     * ⛔ IT IS NOT AN EXEMPTION. Both names are listed below and are censused exactly like a literal
+     * select's, which is what makes this a waiver rather than a hole: the parser cannot read the
+     * argument, and the two columns it can be are still checked against the migrations.
+     * ⚠️ A SECOND READER WITH ITS OWN PARAMETER WOULD NEED ITS OWN ENTRY, and the stale-waiver check
+     * fails if this `arg` text ever stops matching the call site — so editing that line breaks the
+     * match rather than silently trusting this note. */
+    file: 'lib/event-pricing/read.ts',
+    table: 'event_item_prices',
+    method: 'eq',
+    arg: 'column',
+    why: "`readTypedPrices(column: 'event_id' | 'event_type_id')` passes its PARAMETER to .eq(), so the "
+      + 'column name is in the type rather than at this call. Both values are listed and censused.',
+    columns: ['event_id', 'event_type_id'],
   },
 ]
 
@@ -611,7 +646,20 @@ function codeColumns(root = REPO, dirs = CODE_DIRS, patch = {}) {
           if (cols) for (const c of cols) named.push({ ...at, col: c })
           else unresolved.push({ ...at, code: srcOf(argNode).slice(0, 90), why: `cannot read \`.${method}()\`'s column` })
         } else {
-          unresolved.push({ ...at, code: srcOf(argNode).slice(0, 90), why: `\`.${method}()\`'s column is not a literal` })
+          /* ⚠️ A WAIVER APPLIES HERE TOO, NOT ONLY TO `.select()` (5 October 2026). The filter methods
+           * take a COLUMN NAME as their first argument, and `readTypedPrices` passes a parameter typed
+           * `'event_id' | 'event_type_id'` — a literal at every call site and never at the call. The
+           * waiver's own columns are censused like any others, so this stays a waiver and not a hole.
+           * ⛔ IT IS KEYED ON THE METHOD AS WELL AS THE ARGUMENT TEXT, so a waiver written for a
+           * `.select()` cannot silently excuse an `.eq()`. */
+          const code = srcOf(argNode)
+          const waiver = WAIVED.find(w => w.file === rel && w.table === table && w.method === method && w.arg === code)
+          if (waiver) {
+            waiverHits.add(waiver)
+            for (const c of waiver.columns) named.push({ ...at, col: c.toLowerCase(), via: 'waiver' })
+            return
+          }
+          unresolved.push({ ...at, code: code.slice(0, 90), why: `\`.${method}()\`'s column is not a literal` })
         }
         return
       }

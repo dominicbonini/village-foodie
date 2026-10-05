@@ -14,6 +14,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { canAccess } from '@/lib/features'
+/* 🔴 THE PLAN SENTENCE, SHARED WITH THE SCREEN. See the note in that file for why it is not declared
+ * here: the component needs it too, and a route file cannot be imported into the client bundle. */
+import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
 import { scanUrl } from '@/lib/custom-domain/copy'
 import type { Place } from '@/lib/schedule-graphics/places'
 import { buildWeekData, busyWeekData, type WeekEvent } from '@/lib/weekly-post/week-data'
@@ -72,7 +75,7 @@ async function getTruck(token: string): Promise<TruckRow | null> {
  *                             holds it today: test-kitchen ("Pizza Kitchen").
  * 🔴 BOTH MUST PASS, AND THE PREVIEW KEY IS CHECKED FIRST because it is the more specific refusal: a
  * Max truck without it is not being asked to upgrade, it is being told the screen is not switched on,
- * and "The weekly post is on Pro and Max" would be a lie told to someone who already has Max.
+ * and the plan sentence would be a lie told to someone who already has Max.
  * ⚠️ IT GUARDS EVERY ACTION IN THIS ROUTE, which is deliberate: `gated` is called once at the top of
  * POST, so the weekly post's render and save AND the single-event post's `event_post` / `event_render`
  * are all behind it. There is no second entry point to this file. */
@@ -93,7 +96,15 @@ function gated(truck: TruckRow): NextResponse | null {
     truck.feature_overrides ?? undefined,
     truck.trial_expires_at ?? undefined,
   )
-  return ok ? null : NextResponse.json({ error: 'The weekly post is on Pro and Max' }, { status: 403 })
+  /* ⛔ "Max", NOT "Pro and Max" — CORRECTED AT RELEASE PREP (5 October 2026). `schedule_graphics` is
+   * in `MAX_FEATURES`, not `PRO_FEATURES`, so `canAccess('pro', 'schedule_graphics', {}, null)` is
+   * FALSE. The old sentence told a Pro truck the feature was included on their plan and then refused
+   * it — and it sent them to look for a screen they cannot have. Proved by calling `canAccess`
+   * directly for all four plans; `scripts/places-posts-gating.cjs` now pins the corrected wording and
+   * asserts that the KEY is Max-only, so the two cannot drift apart again.
+   * ⚠️ TRIAL, TESTER AND DEMO ALSO PASS, because TRIAL_FEATURES spreads MAX_FEATURES. The sentence
+   * names the plan a paying truck would buy, which is what an upgrade prompt is for. */
+  return ok ? null : NextResponse.json({ error: WEEKLY_POST_PLAN_REFUSAL }, { status: 403 })
 }
 
 async function loadDesign(truckId: string, kind: DesignKind = KIND) {

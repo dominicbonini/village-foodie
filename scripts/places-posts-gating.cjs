@@ -30,6 +30,8 @@ const MANAGE_PAGE = read('app/manage/[token]/page.tsx')
 const MANAGE_ROUTE = read('app/api/manage/route.ts')
 const POST_ROUTE = read('app/api/weekly-post/route.ts')
 const KEY = 'places_posts_preview'
+/** The plan sentence, read from the one module that holds it. */
+const WEEKLY_POST_COPY = (read('lib/copy/weeklyPost.ts').match(/WEEKLY_POST_PLAN_REFUSAL = '([^']+)'/) || [])[1]
 
 let fails = 0
 const ok = [], bad = []
@@ -143,13 +145,53 @@ head('4 · the routes refuse without the key — and refuse with the right sente
   const g = code.slice(code.indexOf('function gated(truck: TruckRow)'), code.indexOf('async function loadDesign'))
   const previewAt = g.indexOf(KEY)
   const planAt = g.indexOf('schedule_graphics')
-  /* ⛔ THE ORDER MATTERS AND IT IS NOT COSMETIC. "The weekly post is on Pro and Max" told to a MAX
-   * truck that simply does not hold the preview key is a lie, and it sends them to billing. */
+  /* ⛔ THE ORDER MATTERS AND IT IS NOT COSMETIC. The plan sentence, told to a MAX truck that simply
+   * does not hold the preview key, is a lie, and it sends them to billing. */
   t('⛔ …before `schedule_graphics`, so a Max truck is not told to upgrade',
     previewAt > 0 && planAt > previewAt)
   t('⚠️ …and the refusal says "not switched on", never "upgrade" — no plan sells this yet',
     /Social posts are not switched on for this truck\./.test(g)
-    && /The weekly post is on Pro and Max/.test(g))
+    && /WEEKLY_POST_PLAN_REFUSAL/.test(g))
+
+  /* ══ 🔴 THE PLAN SENTENCE SAYS "Max", BECAUSE THE KEY IS MAX-ONLY (5 October 2026) ═══════════════
+   * ⛔ IT SAID "Pro and Max", in TWO places, about a key that lives in `MAX_FEATURES` alone — so
+   * `canAccess('pro', 'schedule_graphics', {}, null)` is FALSE and a Pro truck was told the weekly
+   * post came with their plan and then refused it. Found at release prep by calling `canAccess` for
+   * all four plans rather than reading the comments.
+   * 🔴 THE GATE AND THE SENTENCE ARE ASSERTED TOGETHER, which is the point: pinning the wording alone
+   * would pass again the moment the key moved to `PRO_FEATURES`, and pinning the key alone would pass
+   * with the wrong sentence. ⚠️ `canAccess` IS CALLED, not read — a comment about a plan is not a
+   * plan. */
+  {
+    const { compile } = require('./_slot-interval-compile.cjs')
+    const F = compile(REPO, ['lib/features.ts'], 'gating-features').req('lib/features.js')
+    const can = (plan, key) => F.canAccess(plan, key, {}, null)
+    t('🔴 `schedule_graphics` is MAX-only — canAccess says so for all four plans, not a comment',
+      can('starter', 'schedule_graphics') === false
+      && can('pro', 'schedule_graphics') === false
+      && can('max', 'schedule_graphics') === true
+      && can('trial', 'schedule_graphics') === true)
+    t('⛔ …so the refusal names Max, and does NOT say "Pro and Max"',
+      WEEKLY_POST_COPY === 'The weekly post is on Max'
+      && !/Pro and Max/.test(WEEKLY_POST_COPY))
+    /* ⚠️ AND IT IS THE SAME STRING ON BOTH SURFACES. Two copies is what made the error possible. */
+    t('⚠️ …and the screen and the route read that ONE constant, not two literals',
+      /import \{ WEEKLY_POST_PLAN_REFUSAL \} from '@\/lib\/copy\/weeklyPost'/.test(read('components/manage/SchedulePlaces.tsx'))
+      && /import \{ WEEKLY_POST_PLAN_REFUSAL \} from '@\/lib\/copy\/weeklyPost'/.test(POST_ROUTE)
+      && !/'The weekly post is on/.test(codeOf(read('components/manage/SchedulePlaces.tsx')))
+      && !/'The weekly post is on/.test(codeOf(POST_ROUTE)))
+    /* 🔴 AND THE OTHER THREE KEYS, FOR THE SAME REASON — the Gusto list in
+     * docs/release-prep-report.md states each one's plan, and this is what makes that statement a
+     * check rather than a claim. */
+    t('🔴 `event_types` is Max-only · `private_events` is Pro AND Max · `places_posts_preview` is in NO plan',
+      can('pro', 'event_types') === false && can('max', 'event_types') === true
+      && can('pro', 'private_events') === true && can('max', 'private_events') === true
+      && can('starter', 'private_events') === false
+      && can('pro', 'places_posts_preview') === false
+      && can('max', 'places_posts_preview') === false
+      && can('trial', 'places_posts_preview') === false
+      && F.canAccess('pro', 'places_posts_preview', { places_posts_preview: true }, null) === true)
+  }
   t('🔴 …and the gate runs before any action is dispatched',
     /const blocked = gated\(truck\)\s*\n\s*if \(blocked\) return blocked\s*\n\s*\n?\s*const action = String\(body\.action \?\? ''\)/.test(code))
 
