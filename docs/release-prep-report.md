@@ -141,9 +141,8 @@ rule** — because the whole-repo number moves for a reason that is not a regres
 
 **The `scripts/` +79 is entirely `@typescript-eslint/no-require-imports`** (+78 from the seven new
 harnesses, and one more from the `require` this build added to `places-posts-gating.cjs` so it can
-compile `lib/features.ts` and call `canAccess`). — seven new `.cjs` harnesses,
-and `require()` is the idiom every one of the 93 harnesses uses (the rule already had 434 hits at the
-base). Not a quality change.
+compile `lib/features.ts` and call `canAccess`). `require()` is the idiom every one of the 93 harnesses
+uses, and the rule already had 434 hits at the base. Not a quality change.
 
 **The src +7, by rule and file:**
 
