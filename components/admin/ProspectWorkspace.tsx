@@ -916,7 +916,6 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
               snippets={snippets}
               replyTo={replyTarget}
               followUpDate={followUpDate}
-              sendLabelSuffix={followUpDate ? ` · follow up ${shortDate(followUpDate)}` : null}
               hideCopyAndLog
               onDirtyChange={setDirty}
               onClose={closePanel}

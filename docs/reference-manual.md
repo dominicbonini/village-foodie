@@ -139,7 +139,7 @@ carried are resolved — see `docs/reference-manual-v13-9-report.md` for the fou
 |---|---|
 | ~~**Combine the branches** (event-types into schedule-graphics), Event types as the third Schedule pill, one localhost~~ | **DONE 5 Oct** — merge `5a50e59`, pill `24e9a78`. `schedule-graphics` is the only branch in use; `event-types` is left as it was. See docs/combine-branches-report.md |
 | ~~**Schedule settings back into Settings** (reverse the modal)~~ | **DONE 5 Oct** (`24e9a78`). "Your schedule" and "Import exclusions" restored above `CustomDomainSetup`, byte-identical to the commit before they moved; the modal file, the finding-events card and the Settings pointer are deleted |
-| ~~**The buzzer row is two settings**~~ | **CLOSED 5 Oct — NO CHANGE, by Dominic's decision.** The rule stands as built: **if a van has buzzers, the reminder is on.** The proposed per-van "Remind me to add a buzzer" default is NOT wanted, so the migration it needed is not written. ⚠️ The three layers of §39 are unchanged — `truck_vans.buzzer_count` is capability, `truck_events.buzzer_prompt` is behaviour, `orders.buzzer_number` is the fact — and this decision is about the DEFAULT only, not about collapsing them |
+| ~~**The buzzer row is two settings**~~ | **CLOSED 4 Oct — NO CHANGE, by Dominic's decision.** The rule stands as built: **if a van has buzzers, the reminder is on.** The proposed per-van "Remind me to add a buzzer" default is NOT wanted, so the migration it needed is not written. ⚠️ The three layers of §39 are unchanged — `truck_vans.buzzer_count` is capability, `truck_events.buzzer_prompt` is behaviour, `orders.buzzer_number` is the fact — and this decision is about the DEFAULT only, not about collapsing them |
 | Event types: **prices** (types and dashboard together), **items sold and stock**, **deals per type**, **private events + private link + QR** | designed (§68.2–68.3, Event types canvas), not built |
 | **Places tab** in Schedule | decided, to mock up after the merge |
 | Posts visible on **Pizza Kitchen only** at first deploy | for the release prompt |
@@ -27144,6 +27144,79 @@ Stage 1 built Facebook group storage per place. It was removed: Meta's Groups AP
 so nothing can post to a group, and storing group links saved trucks almost nothing. `truck_place_groups`
 was dropped. The per-truck post wording column survives as `trucks.event_post_wording` (dormant).
 
+## 64.9 The Places TAB (V13.9 — 5 October 2026)
+
+> 🔴 **PLACES IS A SCHEDULE PILL AGAIN.** §64 above describes the state from 3 October, when the list
+> moved into the Add event window and the pill was removed. It is a tab again, with a detail pane —
+> and "Tidy up places" inside Add event **stays**, calling the same components and the same actions.
+
+**The four pills, in order: Events · Event types · Places · Social posts.** Migration
+`supabase/migrations/20261015_places_tab.sql` — **applied by Dominic, 5 October 2026** (21 places
+untouched, no pins, no pictures).
+
+⛔ **"Weekly post" BECAME "Social posts" AND THE SECTION ID DID NOT CHANGE WITH IT.** The id is what
+`?section=` carries: `?section=weekly` is in operators' bookmarks, in the setup wizard's links and in
+`onSectionChange('weekly')` calls inside the page. Renaming the id to match the label would have broken
+every one of them to change a word. ⚠️ **`?section=places` now lands on Places** rather than falling
+through to Events, which is what it meant when it was written.
+
+### No second implementation, and that is the design
+The tab is a **composition**: `usePlaces` for the load-and-seed, `PlaceList` for the search and the
+FAVOURITES/ALL PLACES split, `PlaceDetail` for the five fields — the same pieces Tidy up uses, imported
+rather than copied. `scripts/places-tab.cjs` §4 asserts the tab defines **no list, no detail and no
+loader of its own** and that `TidyUpPlaces` is still mounted. ⚠️ **So the tab seeds**: `sg_places` seeds
+before it answers, and opening the tab is now a deliberate act that needs the list — the same argument
+the window made for itself.
+
+### The pin — `truck_places.usual_event_type_id`
+| | |
+|---|---|
+| **NULL = "Automatic"** | the EXISTING rule: the newest event at this place supplies the type (§70.3) |
+| **A type id** | always that type here, whatever happened last time |
+
+🔴 **THE READ ORDER IS THE WHOLE FEATURE: `pin ?? the existing rule`,** in `usual_for_venue`. The other
+way round, the pin would be unreachable for any place that has ever had an event — which is every place
+a truck actually trades at — and the control would save and then change nothing.
+⛔ **`scripts/places-tab.cjs` CAUGHT EXACTLY THAT.** The column, the migration, the select and the
+save were all built before the read was wired; the first version of the check was "the column name
+appears somewhere in the route", which passed. Asserting the **order** failed, correctly.
+
+⚠️ **PRIVATE CAN BE PINNED** (Dominic, 5 October). A wedding venue that only ever has private bookings
+should come up as Private, and it is not silent: Add event opens the purple panel with the explanation
+before anything is saved. The automatic rule already behaves this way — a place whose last event was
+private pre-selects Private — so the pin only makes it deliberate.
+⛔ **"Standard" IN THAT SELECT CLEARS THE PIN, i.e. it means Automatic**, and the row says so. There is
+one column and `null` already means Automatic, so "pinned to Standard" is not expressible without a
+second column. Named here rather than faked; it is a schema decision, not one to take inside a select.
+⚠️ **A PRO TRUCK SEES STANDARD AND PRIVATE ONLY** — custom types are `event_types` (Max), the Private
+type is `private_events` (Pro). Filtered on the keys, never on the plan name.
+
+### Pictures for this place — two kinds, and the difference is the pane
+| | |
+|---|---|
+| **The post picture** | `truck_places.event_bg_path` + `event_bg_width/height` + `event_layout`. ONE per place, with text positions on it. What a single-event poster draws. Replace and Text positions **link to the existing flow** in Social posts › Single event — the drag surface whose pointer handling took three fixes is not re-implemented here. |
+| **Extra pictures** | `place_pictures` (20261015). As many as they like, for the truck's OWN use: a photo of the pitch, the venue's artwork, a map of where to park. |
+
+⛔ **AN EXTRA PICTURE CAN NEVER REACH A POSTER, AND THAT IS WHY IT IS A SEPARATE TABLE.** A second row
+in the place's own picture column could not express "this one is not for a poster", and the renderer
+would have to learn a flag it has no reason to know. `scripts/places-tab.cjs` §3 searches
+`lib/weekly-post`, the weekly-post route and both post components for the table name and fails if any
+of them reads it — because a parking map behind Friday's dates is a valid image and nothing would fail.
+🔴 **AND THE PANE SAYS IT IN WORDS** ("For your reference only… never used on a post"), because the
+proof only catches the mistake after somebody has made it in code.
+
+**The upload is three steps, in the safe order:** a signed URL whose **path is built server-side and
+starts with the truck id** (a signed upload URL is authority over exactly the path it names); a direct
+PUT to storage, so a 10MB file never passes through a route handler; then a save that **re-reads the
+real bytes** rather than trusting the browser's number. 10MB is capped in the handler **and** in the
+table's CHECK. ⚠️ **Remove deletes the storage object BEFORE the row** — the other order leaves a row
+pointing at nothing, which is a broken thumbnail the operator cannot remove.
+
+### Events here
+The next upcoming and the recent past, with each past one's order count, grouped through `placeForEvent`
+so a **merged** place's events land on its target. ⚠️ **Private events are shown, with a chip** — this
+is the truck's own screen, and the redaction is a property of the public feeds (§73).
+
 ---
 
 # 65. Navigation: sub-tabs, and Settings as one list (V13.8 — 3 October 2026, branch only)
@@ -27363,6 +27436,27 @@ comparing outputs byte for byte, then running both through the real capacity eng
 
 > **V13.9.** "Same as Van 1" no longer covers kitchen capacity. Capacity has its own flag
 > (`capacity_same_as_first_van`) and its own question on Menu › Kitchen capacity (§71.1).
+
+> **V13.9, 5 October 2026 — TWO ADDITIONS.**
+>
+> 1. **`takes_cash` JOINED `VAN_COPY_FIELDS`.** "Do you take cash?" became a per-van setting
+>    (`truck_vans.takes_cash`, 20261012) because `trucks.takes_cash` is one column for the whole truck
+>    and the Event types grid drew one switch per van column over that single value — so Van 1's switch
+>    moved Van 2's. The rule written above `VAN_COPY_FIELDS` is explicit: *"adding a per-van setting
+>    later means adding it here too, or the switch silently stops meaning same."* ⚠️ The column is
+>    NULLABLE and NULL ("follow the truck") copies as happily as true or false — `vanCopyPayload` copies
+>    the VALUE, whatever it is. The two sets stay disjoint, so `capacitySplitIsClean()` still holds.
+>    Full account in §70.10.
+> 2. **THE SWITCH HAS A SECOND SURFACE: the Event types grid's "Same settings for all vans" row.** It is
+>    the SAME flag and the SAME action (`set_van_same_as_first`) — no new column, no second save path.
+>    The grid shows it as ONE truck-level question ("are they all the same?"), computed by READING every
+>    non-first active van's flag: on when all are on, off on any mix, and nothing is written on load.
+>    Turning it on from the grid asks first, because it copies Van 1 over every other van; turning it
+>    off keeps every van's values, exactly as the Settings switch does. ⚠️ It also decides the SHAPE of
+>    that grid — one "All vans" column when on, one column per van when off — which supersedes the
+>    4 October rule that the grid's shape is never a function of state (§70.10 explains why that is
+>    deliberate: this is a switch the operator pressed, not a value that drifted).
+
 ## 66.5 Noticed, not changed
 
 - An unset `batch_size` resolves to **999** in `buildCatConfigs` (acceptance) and to **1** in
@@ -27490,8 +27584,10 @@ and times only — no venue or address. Ordering by a **private link** (long ran
 and its **QR code**. A numeric code was considered and deferred (guessable, needs attempt limits).
 
 
-> **V13.9.** Not built. Design unchanged (one private link per event, replaceable; QR). See §70.2 for the
-> public surfaces it must change and §70.8 for its place in the stages.
+> ✅ **BUILT, 5 October 2026 — see §73.** The design above is what shipped, plus a built-in **Private**
+> event type, a **Pro** plan key (`private_events`, split from Max's `event_types`), scraper marking,
+> and a retired-token table so a replaced link says *"[Truck] has replaced it"* instead of 404ing a
+> printed QR code. `docs/private-events-report.md` has the full account.
 ## 68.4 Posting to Facebook
 
 Groups: **impossible** (API closed 2024). Personal profiles: impossible. **Pages and Instagram
@@ -27549,17 +27645,64 @@ Same modal shell as Add event at every breakpoint (`EVENT_MODAL_SHELL`/`_WIDE`/`
 "Name on posts" and "Address" are full-width rows. **Merge is gone from the screen**; `sg_merge_place` and
 `merged_into_id` resolution are untouched, and Restore still un-merges.
 
+## 69.6 "Social posts" — the page, renamed and tidied (V13.9 — 5 October 2026)
+
+The pill and the page are **Social posts**; the section id stays `weekly` (§64.9 — the id is the URL
+contract). The page holds both posters, which is why "Weekly post" had stopped being the truth about it.
+
+| | |
+|---|---|
+| the toggle | **"Single event"** then **"Weekly"**, in that order, and Single event is **selected by default** |
+| was | "Week (7 days)" then "Single event", opening on Week |
+
+🔴 **SINGLE EVENT IS THE DEFAULT BECAUSE IT IS THE COMMON JOB** — one post per pitch, every week, where
+the weekly poster is made once and then rarely touched. Opening on the rarer one made the common one a
+click away every time. ⚠️ **"Week (7 days)" lost its parenthetical:** it explained a format nobody was
+confused about and made the two options read as different kinds of thing.
+
+⛔ **ONE HEADING PER VIEW.** The weekly view rendered **"Set up your weekly post" twice** — a large bold
+page heading, and the card heading immediately below it. The outer `<h2>` is gone and the card's heading
+now uses the event card's style (`font-bold text-slate-800`), which was already right. ⚠️ **The editing
+screens carry no heading at all**, as they already did; only the two "nothing uploaded yet" cards name
+the job.
+
+**Copy:** "HatchGrab adds those three for each event" → **"those"** (the sentence already lists the
+three, so counting them sent the reader back to check). And under the event upload hint:
+**"A different picture for one place? Add it in Places."** — linking to `?section=places`, because a
+truck reading that card is thinking about pictures, which is the moment to say one pitch can have its
+own.
+
 # 70. Event types (V13.9 — 4 October 2026, `event-types` branch)
 
 ## 70.1 What a type is
-A named preset a truck picks when adding an event (Festival, Pub…). Built so far: **service settings only**
-— Collection times, Order-ready step, Do you take cash?, Offline order protection, Remind me to add a
-buzzer. Prices, items sold, stock, deals and private visibility are later stages.
+A named preset a truck picks when adding an event (Festival, Pub…). Built: **service settings** —
+Collection times, Order-ready step, Do you take cash?, Offline order protection, Remind me to add a
+buzzer — **and PRICES** (§70.9, 5 October 2026). Items sold, stock, deals and private visibility are
+later stages.
+
+🔴 **A TYPE HOLDS ITS OWN VALUES (5 October 2026).** A new type is created as a **copy** of Van 1's
+resolved service values, and `Match Standard` re-copies on demand. It used to be created with every
+column NULL ("same as Standard") and the grid drew each NULL cell **faded at the first van's value** —
+so changing Standard appeared to change every untouched type. That is the rule this replaces; see
+§70.10.
 
 ## 70.2 What the investigation found (read before building prices)
-- **There is no per-event pricing anywhere.** `loadPriceBook(supabase, truckId)` is scoped by truck only;
-  the menu API serves `menu_items_db.price`. Prices must be **built**: an event-aware price book **beside**
-  `loadPriceBook` (not a changed signature), and the menu API's price leg.
+
+> 🔴 **CORRECTION, 5 October 2026 — `event_price_overrides` EXISTS.** This section and
+> `docs/event-types-investigation-report.md` both said it does not. It does: `public.event_price_overrides`
+> is in production with **0 rows**, columns `id, item_id (FK menu_items_db ON DELETE CASCADE), event_id
+> (no FK), event_name, price, valid_from, valid_until, created_at`. It is read and written by **nothing** —
+> no code path, no function, no view (searched across `app`, `lib`, `components`, `supabase`, `scripts`;
+> `scripts/event-pricing.cjs` re-runs that search on every run). It is **unused legacy, NOT dropped** —
+> Dominic decides its fate separately — and event pricing deliberately **does not use it**: it keys on an
+> `event_name` text column and carries `valid_from`/`valid_until` windows nothing enforces, and it has no
+> per-TYPE form at all. ⛔ **Do not "tidy" it into this feature.** A table with a plausible name and the
+> wrong shape is how a later reader comes to write prices into a column nothing reads.
+> The real tables are `event_item_prices` plus columns on `event_types` / `truck_events` (§70.9).
+
+- **There was no per-event pricing anywhere.** `loadPriceBook(supabase, truckId)` is scoped by truck only;
+  the menu API served `menu_items_db.price`. Prices were **built** as §70.9 describes: an event-aware price
+  book **beside** `loadPriceBook` (not a changed signature), and the menu API's price leg.
 - The server is the only price authority; orders store `items[].unit_price`, so **placed orders never
   move**. Operator hand-prices are audited (`price_override` / `book_price`) — the precedent for typed prices.
 - **The no-id event fallback** picks "the earliest" event, and the menu API and submit route order
@@ -27572,6 +27715,11 @@ buzzer. Prices, items sold, stock, deals and private visibility are later stages
   listing, the truck page **and** the map — one mapper to change; the schedule feed's dedup key must be built
   before substituting "Private event"; the menu API's auto-detect must never pick a private event. A private
   link needs its own noindex header and rate-limit entry, like `/o`.
+  > ✅ **ALL OF THAT IS BUILT AND MEASURED — §73.** The list above turned out to be **eight** surfaces, not
+  > three: the two WhatsApp webhooks each carry their own copy of the upcoming-events query, and the embed
+  > endpoint serves the custom-domain page as well. The register lives in `scripts/private-events.cjs`
+  > §1 as DATA, so a named surface that stops consulting the privacy read fails the harness — a list in a
+  > manual is a list somebody has to remember.
 
 ## 70.3 Resolve on read
 `truck_events.event_type_id` (nullable, no default, on delete set null) is the whole state. One pure function
@@ -27613,10 +27761,393 @@ the existing box). Five controls moved into it from separate cards — the list 
 deploy. Footer: "N settings changed for this event only" + Reset.
 
 ## 70.8 Remaining stages (designed on the Event types canvas)
-Items sold + stock per type; deals per type (Menu › Deals: "applies to event types"); **prices** (type +/− £
-or %, rounding none / nearest £1 / always up, typed per-item overrides; and the same on the dashboard per
-event, with the live-event warning); **private events** (shown as "Private event", no address, no map pin;
-one private link per event, replaceable; QR code).
+Items sold + stock per type; deals per type (Menu › Deals: "applies to event types"); **private events**
+(shown as "Private event", no address, no map pin; one private link per event, replaceable; QR code).
+~~prices~~ — **BUILT 5 October 2026, §70.9.**
+
+## 70.9 Event pricing (V13.9 — 5 October 2026, `schedule-graphics`)
+
+Per event TYPE and per EVENT. Pre-build tree: **`0ce4c83`**. Migration
+`supabase/migrations/20261011_event_pricing.sql` — **written, not run.**
+
+### The rule
+```
+effective = the EVENT's own prices (truck_events.price_own)
+         ?? the TYPE's prices       (event_types.price_change_on)
+         ?? menu_items_db.price
+
+and within whichever applies:  that setup's TYPED price for the item ?? its RULE on the menu price
+```
+- **Mode** `none | add_gbp | add_pct | sub_gbp | sub_pct`. `'none'` means **typed prices only**, not "no
+  pricing" — that is the switch being off. **Amount** is POUNDS for a £ mode and PERCENT for a % mode, one
+  column, always `>= 0` (the direction is the mode's). **Rounding** `none | nearest_1 | up_1`.
+- Applies to **every menu item**. ⛔ It does **not** change `modifier_options.price_adjustment` or
+  `bundles_db.bundle_price` — extras and deals stay at menu prices. `PriceBook.menuItems` is therefore
+  **not** moved either: it is read only for a deal's original price, so moving it would make a deal's
+  *saving* follow event pricing while its *price* did not.
+- **A typed price overrides the rule for that item and is NEVER rounded.** £0 is a real typed price.
+- **"Own prices for this event" REPLACES the type's whole.** The copy happens ONCE, in the sheet, at the
+  moment of choosing (a copy of the type's rule + typed prices, or of the menu if the type's switch is off).
+  Afterwards the two are independent. ⚠️ Merging at read time instead would mean an operator who REMOVED a
+  typed price silently got the type's back.
+- **Switching a type's "Change prices" OFF keeps its rule and its typed rows, unused.** Nothing is cleared
+  and nothing is deleted, so switching it back on restores the setup.
+
+### The arithmetic — `lib/event-pricing/price.ts`, integer pence, the ONLY implementation
+1. ⚠️ **A £0 menu item stays £0 under any rule** (a typed price may still set one). Returns first.
+2. £ modes add/subtract pence; % modes multiply via **basis points** and round **half up to the penny**
+   first, so "£11.50 +15%, nearest £1" is £13 (13.225 → £13.23 → £13), not £14.
+3. **Never below £0**, clamped before rounding (£1.50 − £2 = £0).
+4. The pound rounding: `nearest_1` = nearest 100p **halves up** (£11.50 → £12); `up_1` = ceiling.
+5. 🔴 **Rounding never creates a free item.** £0.40 − 10% is 36p and "nearest £1" on 36p is £0 — so the
+   **unrounded** price stands. The operator asked for a discount, not a giveaway.
+
+🔴 **POUNDS ⇄ PENCE CROSSES ONLY THROUGH `toPence` / `toPounds`.** `11.50 * 100` is 1149.9999999999998 in a
+double and `1.15 * 100` is 114.99999999999999, so pounds arithmetic on a percentage drifts by a penny with
+nothing to catch it. `cleanPriceAmount` rounds to 2dp **through the exponent** (`Number('1.005e2')`), because
+`Math.round(1.005 * 100)` gives 100 while Postgres' `numeric(8,2)` gives 1.01 — the two would disagree about
+a value the operator typed. ⛔ **Never open-code ×100 or ÷100**; `scripts/event-pricing.cjs` refuses one.
+
+### Data (20261011)
+- `event_types`: `price_change_on bool NOT NULL DEFAULT false`, `price_mode text NULL CHECK`,
+  `price_amount numeric(8,2) NULL CHECK >= 0`, `price_rounding text NOT NULL DEFAULT 'none' CHECK`.
+- `truck_events`: `price_own bool NOT NULL DEFAULT false`, plus the same three (`price_rounding` nullable
+  here — it is only meaningful when `price_own`). Partial index `where price_own`.
+- `event_item_prices`: `id uuid PK`, `truck_id text` (slug — `trucks.id` is TEXT), `event_type_id uuid NULL`,
+  `event_id uuid NULL`, `item_id uuid NOT NULL REFERENCES menu_items_db(id) ON DELETE CASCADE`,
+  `price numeric(8,2) NOT NULL CHECK >= 0`. **CHECK exactly one owner.** RLS on, service-role only, grants
+  revoked.
+  - 🔴 **TWO PLAIN UNIQUE CONSTRAINTS** — `event_item_prices_type_item_key (event_type_id, item_id)` and
+    `event_item_prices_event_item_key (event_id, item_id)`, from **20261013**.
+    > ⛔ **CORRECTION, 5 October 2026.** 20261011 created these as PARTIAL indexes
+    > (`… where event_type_id is not null`) and argued that plain constraints "would not hold because
+    > NULLs are DISTINCT". **That reasoning is wrong for this table, and the predicates broke the
+    > feature.** PostgREST's `on_conflict=` becomes `ON CONFLICT (cols)`, and Postgres' conflict
+    > inference **cannot target a partial index** — so every save of a typed per-item price failed at
+    > planning time with **42P10**, *"there is no unique or exclusion constraint matching the ON
+    > CONFLICT specification"*, before writing anything.
+    > **Why plain is enough:** a TYPE row always has `event_type_id` set, so plain uniqueness is fully
+    > enforced for it; an EVENT row always has `event_id` set; and `event_item_prices_one_owner`
+    > guarantees exactly one owner, so **every row falls under one of the two constraints**. The
+    > NULLs-are-distinct concern only bites a row with BOTH owners null, which the CHECK forbids.
+    > ⚠️ 20261011 is **not edited** — it has been applied, and an applied migration is a record of what
+    > ran. It carries a correction header pointing at 20261013.
+    > 🔴 **THE LESSON, AND IT IS THE REASON THIS GOT THROUGH:** `scripts/event-pricing.cjs` runs against
+    > a **stub Supabase client**, which has no query planner — so it "upserts" happily and a
+    > database-level rule like this is **invisible to it**. 92 checks passed over a call that could
+    > never have worked against Postgres. A stub proves logic, never schema. §7b of that harness now
+    > reads the **migrations** instead of the client: every `onConflict:` in `app/` and `lib/` on a
+    > table this repository creates must match a **non-partial** unique index or constraint declared
+    > there, the matcher is self-tested against a partial index (the exact shape 20261011 shipped), and
+    > two sites whose uniqueness lives only in the hosted database (`venues`,
+    > `discovery_events` — `lib/discovery-gate.ts`) are **allowlisted by name** so a third one fails.
+  - 🔴 **Keyed on `item_id`, not `item_name`** (unlike `event_item_stock`): a rename keeps the price and a
+    delete cascades it away. The price BOOK is still keyed by name — an order line carries a name and no id —
+    and the id→name mapping happens once, in `loadEventPriceBook`.
+- The migration opens with a **shape guard** that aborts before any `ALTER` if `truck_events.id` or
+  `menu_items_db.id` is not uuid, or `trucks.id` is not text.
+
+### Where it is wired
+| Surface | How |
+|---|---|
+| `app/api/menu/[truckId]/route.ts` | one line: `price: eventItemPrice[i.id] ?? i.price`. The map is populated **only where the price moved**, from a **separate probed** `readEventPricing` — a 42703 on the named truck/event selects would blank a customer's menu |
+| `app/api/orders/submit/route.ts` | `loadEventPriceBook` replaces `loadPriceBook`; a **pricing-event resolution** runs *before* the book because `eventRow` is resolved ~60 lines later |
+| `app/api/dashboard/action/route.ts` (walk-up) | same wrapper; `orderEventId` is already null when the date is ambiguous |
+| `app/api/dashboard/action/route.ts` (edit) | same wrapper, for **new lines only** — price-lock is unchanged |
+| the grid, the dashboard sheet | `components/shared/PriceControls.tsx`, the same components and the same `priceForItem` |
+
+🔴 **`loadPriceBook`'s SIGNATURE AND BYTES ARE UNCHANGED.** `loadEventPriceBook(supabase, truckId, eventId)`
+**wraps** it, and for a truck with no types and no own-prices it returns **`loadPriceBook`'s own object by
+reference** with an empty `menuPrice` — so "deep-equal" is identity, not a property to maintain. Neither
+order route imports the raw book any more: one door, named, and the harness asserts it.
+
+### The order-line fields
+On a line whose price event pricing **moved**: `menu_price` (the menu price) and
+`price_basis` (`'event_type' | 'event'`). **Only on moved lines**, so an untouched order's jsonb is
+byte-identical to before this build. Both are **stripped off the wire** on both order paths, like
+`price_override`.
+
+🔴 **`book_price` IS NOT "THE MENU PRICE", AND SINCE THIS BUILD THE TWO CAN DIFFER.** It is what the system
+would have charged — the EVENT price where event pricing applies — which is the right quantity for an
+override audit, and why the menu price has its own field. **Nothing in the product reads `book_price`**
+(one writer, no readers, checked across the repo), so correcting its meaning changes no behaviour. On an
+EDIT, a **price-locked** line keeps the `menu_price` / `price_basis` it was stored with; only a line the
+edit ADDS gets today's. `stampEditedLines` replicates `repriceOrder`'s identity-**queue** pairing so
+duplicate names line up — keying on the identity without the queue gives both duplicates the first line's
+fields.
+
+### Decisions
+- **The server is the only price authority**; placed orders never move; an operator `price_override` still
+  wins. All three prices stay recoverable: `unit_price` 9, `book_price` 11, `menu_price` 10.
+- 🔴 **An ambiguous event is REFUSED, never guessed** (`candidatesChangePrices`). With no `event_id` and two
+  events on the date, `eventRow` takes "earliest by start_time" while `/api/menu` takes "earliest by
+  event_date" — two answers to one question. Where **any** candidate would charge something other than the
+  menu, the order gets the existing `menuChanged` 409. Where none would, it proceeds at menu prices, which
+  is every truck today. ⚠️ The explicit `event_id` is verified against the truck: without that filter a
+  customer could post another truck's event id and pick one with "−50%".
+- **Max + trial only**, through the one gate on `/api/event-types`. On a downgrade saved prices **keep
+  resolving** and the screens go read-only. `event_pricing_summary` joined `load` as an exempt READ so a
+  downgraded truck's card goes on telling the truth.
+- **Customers see the number and nothing else** — no crossed-out "was" price, no second field.
+- 🔴 **A SOLD-OUT ITEM STAYS PRICEABLE.** `loadPricingItems` filters on `truck_id` and nothing else, and
+  carries `loadPriceBook`'s own warning: both order paths price BEFORE the stock guard, so an availability
+  filter here would tell a customer "the menu has changed" instead of "only 2 Margherita left".
+- **Fails OPEN to menu prices on 42703 / 42P01 / PGRST204 / PGRST205**, which is safe here because it
+  **equals today**. A code-before-migration deploy is a no-op on the money path.
+
+## 70.10 "Do you take cash?" per van, and types holding their own values (5 October 2026)
+
+**One report, two defects.** Dominic, on localhost (Pizza Kitchen, Schedule › Event types): *"Turning on
+'Do you take cash?' for Van 1 also turned it on for Van 2 and showed Market changing."*
+
+| Half | Cause | Fix |
+|---|---|---|
+| "also turned it on for Van 2" | **There was no per-van cash setting.** `trucks.takes_cash` is ONE column for the whole truck, and the grid drew one switch per van column over that single value, with "Applies to all your vans" to explain it | `truck_vans.takes_cash` (20261012), nullable, **no backfill** |
+| "and showed Market changing" | A type's untouched settings were NULL and drawn **faded at the first van's value**. Market never had a cash value of its own — it was showing Van 1's | a new type is a **copy** of Van 1's resolved values; no service cell fades |
+
+### The cash chain
+```
+takesCash = event.takes_cash_override ?? event type ?? truck_vans.takes_cash ?? trucks.takes_cash ?? false
+```
+🔴 **ONE RESOLVER, AND IT ALREADY EXISTED.** `resolvePaidStep` (`lib/payments/paid-step.ts`) gained a fourth
+argument; `resolveTakesCashWithType` gained a van link. Every reader goes through it:
+`components/dashboard/OrderCard.tsx:289` (Mark paid split), `components/dashboard/AddOrderPanel.tsx:1260`
+(Take payment split), `app/dashboard/[token]/page.tsx:3326` (the card's resolved values),
+`app/api/dashboard/action/route.ts` (the server's own resolve), `lib/printing/mapOrderToTicket.ts` (resolved
+and deliberately unused — a ticket has no cash/card concept). `resolveVanTakesCash` is the chain's **tail**,
+for Settings' per-van switch, so screen and hatch cannot disagree about one van.
+- ⚠️ **The van sits BELOW the type, not above it.** A type is a statement about *this event*; the van is the
+  standing setup of the trailer running it. The more specific statement wins.
+- ⚠️ **The two components take the RAW nullable value as a prop, not a resolved boolean** — an input to the
+  one resolver, never a second copy of the chain on the busiest screen in the product.
+- 🔴 **`truck_vans.takes_cash` IS READ THROUGH A SEPARATE PROBED READER** (`lib/payments/van-cash.ts`), never
+  as a column on an existing `truck_vans` select. `/api/dashboard`'s van select feeds capacity, the cooking
+  step and order-ready, and its own comment records that a 42703 there degrades all three — a cash migration
+  must not be able to turn the mark-ready button off. `get_vans` is the same argument for Settings.
+- **Settings:** the switch moved onto each van's card. A NULL van shows the truck value and says "Following
+  your truck setting". The truck-level control stays, **gated on `!vanCashAvailable`**, so there is never no
+  cash control before the migration — and `trucks.takes_cash` is still the chain's last link, not dead data.
+- **`takes_cash` joined `VAN_COPY_FIELDS`**, so "Same as Van 1" copies it. The two sets stay disjoint
+  (`capacitySplitIsClean()`).
+- ⛔ **"Applies to all your vans" is DELETED, not reworded.** There is nothing left to explain.
+
+### "Same settings for all vans" in the grid
+A **VANS** section, first, one row, **2+ active vans only**. It reads and writes the **existing**
+`truck_vans.same_as_first_van` through Settings' own `set_van_same_as_first` — no new flag and no second
+save path. **ON when every non-first active van has it on; any mix reads OFF**; the answer is read, never
+stored, and nothing is written on load (the model Menu › Kitchen capacity already uses).
+- **ON** ⇒ one Standard column headed **STANDARD** over **"All vans"**; edits go to Van 1 and the existing
+  follow behaviour fans them out. **OFF** ⇒ one column per active van, oldest first, each saving to that van.
+- **OFF → ON asks first**, because it overwrites: *"Copy Van 1's settings to every van? This copies all of
+  Van 1's van settings, the same as 'Same as Van 1' in Settings. Kitchen capacity has its own switch."*
+  Cancel writes nothing. **ON → OFF keeps every van's current values.**
+- ⚠️ **THIS SUPERSEDES THE 4 OCTOBER RULE** that "the shape of the screen is a fact about the truck, never
+  about the values in it". That rule existed because the columns used to appear and disappear as *values*
+  changed (`perVan`), so equalising two vans made every row jump. The shape now follows an **explicit switch
+  the operator pressed**, and the row that changes it is the first row on the screen. The part that stands:
+  nothing keys the layout off `standardIsPerVan`.
+
+### Types hold their own values
+- A new type is created as a **copy of Van 1's resolved service values** (`vanOneServiceValues`,
+  server-side: buzzer rack, cash, order-ready, the customer collection grid, offline switch + mode).
+  ⚠️ `offline_auto_reject_mins` is **not** seeded — it is not offered on a type at all. Prices still start
+  with "Change prices" off.
+- **`Match Standard` COPIES now; it used to CLEAR.** Same words, same intent, different mechanism: a
+  **snapshot** rather than a **subscription** — and a subscription is what made Market move. The server
+  computes the copy, and the confirm shows what it will be before it is pressed.
+- ⛔ **No service cell fades and none claims to follow.** `rowIsOwn`, `inheritTitle` and
+  `TYPE_FOLLOWS_VAN_TITLE` are deleted. The **only** fade left in the product is an untouched price
+  **Rounding**, where `price_rounding` is `NOT NULL DEFAULT 'none'` and the screen has no other way to say
+  "not chosen".
+- 🔴 **THE RESOLVER CHAIN IS UNCHANGED**: a NULL still falls back to the van, so every type that exists
+  today goes on resolving exactly as it does now and the code works with or without the backfill. 20261012
+  §2 fills those NULLs from the truck's first active van, **after a read-only preview** showing truck slug,
+  type name and each column before → after. Event types are unreleased, so the preview should name test
+  trucks only.
+
+## 70.11 The denser Event types grid (V13.9 — 5 October 2026)
+
+Schedule › Event types only. ⛔ **The dashboard "Prices for this event" sheet is deliberately NOT
+changed** — Dominic: *"it's used by touch during service."* A 28px select is a poor target on an iPad at
+a hatch; the grid is a sit-down configuration screen read with a mouse that has to show a whole menu's
+prices across several type columns.
+
+🔴 **SO THE TWO SCREENS HAVE SEPARATE CONSTANTS**, in `components/shared/PriceControls.tsx`:
+
+| | Grid | Sheet |
+|---|---|---|
+| rows | `ROW_H` = control 36 · item 28 · category 22 · section 28 | — (the sheet has no grid) |
+| selects / inputs | `GRID_CONTROL_H` 28 | `CONTROL_H` 32 |
+| typed-price box | `GRID_TYPED_H` 22 | `CONTROL_H` 32 |
+| switch | `Toggle compact` — 38×22, 16px knob | `Toggle` — 44×24, 16px knob |
+
+⚠️ **`CONTROL_H` GENUINELY WAS SHARED** (through this module's control style), so the controls take an
+optional `height` and **the grid is the only caller that passes one**. `ROW_H` was only ever the grid's,
+which is why those numbers could move freely.
+⚠️ **THE COMPACT SWITCH IS A PROP ON THE ONE SHARED `Toggle`, NOT A SECOND COMPONENT AND NOT A LOCAL
+RESTYLE.** `components/manage/primitives.tsx` records that there were once THREE switch definitions in
+the product and that the Event types modal's copy had taken the dashboard's orange geometry into a
+Manage screen; `scripts/event-types.cjs` still refuses a locally-styled switch there. `compact` changes
+the track and the travel and nothing else — same radius, same transition, same green-500/slate-300, same
+16px knob — and defaults to `false`, so all fifteen `page.tsx` usages and the dashboard card are
+byte-identical. Text: row labels 14px semibold, item names 13.5px, section headings 11px small caps.
+
+### ITEM PRICES is a section band
+It was a ROW with a small "Hide" link at the right of its label cell. It is now **its own band, like
+PRICES and SERVICE**, carrying the *"Press a price to type your own"* hint and a **pill button placed
+immediately after the heading text** — `Hide N items ▴` / `Show N items ▾`. The whole band toggles.
+
+🔴 **THE PILL'S POSITION IS LOAD-BEARING:** the grid scrolls **sideways**, so anything further right is
+off-screen on exactly the truck with enough types to need it. Inside the band, right after the heading,
+is the one position visible at every scroll offset. It names the **count**, so "Show 23 items" says what
+is about to unfold.
+
+⚠️ **ONE THING WAS LOST WITH THE ROW, AND IT IS NAMED RATHER THAN HIDDEN.** The old row's per-type cells
+read "N typed" / "Menu prices"; a band has empty type cells (as PRICES and SERVICE do), so that per-type
+count is gone. What survives is the evidence itself — a typed price is a blue outlined box in the item
+rows — and the dashboard card's summary, which still says "N typed" for an **event**. Restoring it is one
+cell in the band's `typeCells` branch; it was dropped to follow "a band like PRICES and SERVICE"
+literally. `PRICES_TYPE_OFF_CELL` is kept in `lib/copy/serviceSettings.ts` as the record of it.
+
+### "None" blanks the Amount and the Rounding
+`price_mode: 'none'` means **typed prices only** — no across-the-board change — so there is no amount to
+enter and nothing for a rounding to round. Both cells are **blank**, not an empty input and a faded
+select: two controls that could not affect anything, and the Amount box in particular invited a number
+`cleanPriceAmount` would then discard (its unit is `null` for that mode).
+⚠️ **The stored values are not cleared, only hidden** — switching back to `+ %` brings the operator's
+amount and rounding back, the same promise the "Change prices" switch itself makes.
+
+Everything else from §70.9 stands: continuous column lines, centred headers, the band restarting the
+striping, VANS/PRICES/SERVICE/USED BY, the offline switch and its "When offline" sub-row.
+
+## 70.12 What finishing the measurements taught (5 October 2026)
+
+The render harness had never completed a full run; getting it to one found three faults, **all three in
+the measuring, none in the screen**. They are recorded because each is a way a green harness can be lying.
+
+**1 · A measurement against a stale build artefact.** `scripts/event-types-render.cjs` lays its fixture out
+with the CSS from `.next/static`, and the denser grid is built from **arbitrary** Tailwind values —
+`w-[38px]`, `h-[22px]`, `top-[3px]`, `translate-x-[18px]`. Tailwind emits a rule for one of those only if
+it was in the source when the CSS was compiled, so against a pre-`compact` build the browser had **no rule
+for either dimension** and the switch measured 0×0. The harness then said *"the switch is 38×22 (0×0)"*
+**36 times**, which reads as "the component draws no switch" — a design fault that did not exist.
+🔴 `appCss()`'s staleness check was one `overflow-x-auto` probe, which has been in every build this app has
+ever had. It now **reads the arbitrary classes out of `primitives.tsx` and looks each one up in the CSS**,
+so a stale artefact says *"run `npx next build`"* instead of blaming the component.
+
+**2 · A rect measured inside a hidden subtree.** The grid (`hidden md:block`) and the phone column
+(`md:hidden`) are **both in the document at every width** — the screen swaps them at the breakpoint rather
+than rendering one. An unscoped `document.querySelector('[role="switch"] > div')` therefore took the
+**phone** column's switch at 1440, inside `display: none`.
+⚠️ **A hidden element's COMPUTED width still reports `38px` while its `getBoundingClientRect()` is zero.**
+The two disagreed and only the rect was asserted. The probe is now scoped to `#grid`. ⛔ It was **not**
+taught to ignore a zero rect: if the grid's switch is ever genuinely unrendered, that must still fail.
+
+**3 · A mutation variant that silently stopped mutating.** `event-types.cjs`'s V29 proved the Event types
+modal defines no switch of its own by **replacing a literal call site** — `<Toggle on={value === true}
+disabled={!editable} ariaLabel={label}`. The grid's switches gained `compact`, so that exact text stopped
+existing, and `String.replace` of an absent needle **returns the string unchanged**: the variant mutated
+nothing, the predicate still held, and the suite reported **"MUST FAIL BUT PASSED"**.
+🔴 **That is the failure mode a mutation suite exists to catch, and it caught it in itself.** The needle is
+now **found, not typed** — the first `<Toggle` in the modal, whatever its props — and the variant **throws**
+if there is none, because "no Toggle in the modal" is not a state to accept quietly either.
+
+### And one real defect, found by re-aiming rather than by measuring
+`stripeIndex` restarted the zebra counter at `section` and `category` but **not** at `items-band`. Today a
+category always follows the band and resets it anyway, so the screen was right **by accident**; the day the
+band has items directly beneath it, the parity of every item row would have been decided by how many
+setting rows happened to sit above. The band resets it now.
+
+### The dates in this section were wrong
+Everything §70.9–§70.11 describes was built on **5 October 2026**, in one sitting. Earlier drafts dated the
+pricing work "11 October" and the cash-per-van addition "12 October", which are **migration filenames**
+(`20261011`, `20261012`, `20261013`) read as dates. 35 authorship dates were corrected across ten files.
+⚠️ Two "12 October" strings in this manual are **left alone** — Between Buns Royston's demo truck really
+does expire on 12 October; that is a product fact, not a byline.
+⚠️ `20261012_van_cash_and_type_values.sql` has been **applied**, and the principle that an applied
+migration is a record stands — the correction there is inside a **comment**, changes nothing executable,
+and the file's SQL is byte-identical.
+
+### What was run
+| | |
+|---|---|
+| `scripts/event-pricing.cjs` | **104 passed · 14/14 variants caught** |
+| `scripts/event-types.cjs` | **154 passed · 42/42 variants caught** |
+| `scripts/event-types-render.cjs` | **1326 measurements passed · 0 failed**, Chromium **and** WebKit, 1440 / 820 / 390, **all 20 screenshots taken** — the first complete run |
+
+⚠️ **Run it alone.** It takes **7 seconds**; the runs that felt minutes long were overlapping copies of
+itself driving the same two browsers, which is also what left a screenshot set with mtimes spread across
+three minutes. ⛔ `run-harnesses.cjs` has **no `--only` flag** — `--list=<file.json>` or `--dry-run`. Passing
+an unknown flag starts the **full three-hour sweep**, which includes this harness and overwrites the same
+PNGs underneath a run already in progress.
+| `tsc --noEmit`, `npx next build` | clean |
+| ESLint | the six touched components/routes clean; the new harness adds **5 `no-require-imports`**, the same count every other `.cjs` harness carries |
+| `run-harnesses.cjs --dry-run` | all 88 listed files pass the source screen |
+
+## 70.13 The grid cleaned up (V13.9 — 5 October 2026)
+
+Dominic, from localhost. Everything in §70.11 stands except where contradicted here.
+
+| | was | is |
+|---|---|---|
+| **Private's column** | last, after every custom type | **straight after Standard**, always |
+| row labels | 14px **semibold**, truncated | 14px **regular**, slate-800, **wrapping** |
+| sub-row labels | semibold | regular, slate-600 |
+| label column | 212px | **260px** |
+| category headings | 11px bold slate-500, light rule above | **12px extrabold near-black, NO rule** |
+| item names | flush with the heading | **12px indented** under it |
+| ITEM PRICES pill | "Show 23 items" | **"Show prices" / "Hide prices"** |
+| the band's hint | "Press a price to type your own" | **gone** (kept on the dashboard sheet) |
+| ORDERING, Standard side | "Open to everyone" | **blank**, one divided cell per van column |
+| `'none'` mode | "None" | **"Set each price myself"** (stored value unchanged) |
+| Amount & Rounding | always shown when the switch is on | **only for the four £/% modes** |
+| faded Rounding | faded while untouched | **nothing fades anywhere** |
+| USED BY / Upcoming events | a band and a row | **gone** — the count is in the delete confirm |
+
+🔴 **PRIVATE MOVED TO THE FRONT BECAUSE ITS POSITION WAS MOVING.** Last meant its column sat after
+however many custom types a truck happened to have made, so it was in a different place on every truck
+— and on a six-type truck it was off the right-hand edge behind a sideways scroll. The one column
+nobody can create or delete was the hardest to reach. ⛔ **Move left/right now reorders CUSTOM types
+among themselves** and Private's id is never sent to `reorder`: with Private at grid index 0, the old
+`i === 0` check would have let the first custom type swap **with the built-in**.
+
+⛔ **NOTHING IS GREYED OR FADED.** The last exception — an untouched price Rounding, faded on the
+argument that `price_rounding` is NOT NULL DEFAULT 'none' so the screen had no other way to say "not
+chosen" — is gone. "No rounding" **is** the value the rule uses, whoever chose it, and half strength
+told the operator their rule was unsettled. The file-wide `faded=` count is asserted at **zero**, which
+is stronger than "exactly two, both Rounding": there is no exception left to multiply. ⚠️ **The only
+grey left is `grey={!on}`** on a menu price in a column that is not changing prices — a statement of
+fact, not a control at reduced strength.
+
+### Labels wrap, and a row grows to fit
+🔴 **`ROW_H` IS A MINIMUM NOW, NOT A HEIGHT.** Every body cell sets `minHeight` and the grid's rows are
+`auto`, so a row becomes as tall as its tallest cell — which is the label when it takes two lines. One-
+line rows are unchanged at 36/28/22/28; only a row that needs more takes more.
+⚠️ **`leading-tight` (17.5px) IS WHAT MAKES TWO LINES FIT 36px** — 35px against the browser's default
+40px. That broke the older "same line height as a dropdown" assertion, which was re-aimed to the claim
+that actually holds: the label's line height is **tighter**, and two of its lines fit the minimum.
+⛔ **Measured, both engines, 1440 and 820: every row at its minimum, nothing clipped, no ellipsis.**
+390 is excluded because the grid is `display: none` there — the phone picker is shown instead.
+
+### Typed prices: a no-op press creates nothing
+🔴 **THE BUG:** `if (toPence(next) !== toPence(typed ?? NaN)) onType(next)`. On an untyped cell `typed`
+is null, so the comparison was against **NaN**, which is unequal to everything — so pressing a price and
+clicking away, changing nothing, **stored a typed price identical to the calculated one**. A blue box
+the operator never asked for, on a cell they only looked at, with the × the only way back.
+✅ **The comparison is against the RULE-ONLY price** (`applyPriceRule`, not `priceForItem`, which
+honours the typed value and would have compared a number with itself). Both of Dominic's cases then fall
+out of one rule: press-and-leave creates nothing, and typing the rule's own number **clears** an
+existing typed price. Escape still abandons. No data fix — behaviour going forward only.
+
+### The difference in brackets
+"(+£1.30)" / "(−£1.00)" after each price in the **type columns only**, smaller and lighter, against the
+**menu** price, nothing when equal, and typed prices show it too.
+🔴 **ALWAYS IN POUNDS, EVEN FOR A % RULE.** "+10%" is already on the Amount row; what an operator cannot
+do in their head is what 10% of £11.50 is, and that is the number a customer pays. ⛔ **Not in the
+Standard column** — that column *is* the menu price, so it is opt-in (`showDiff`) rather than
+conditional, which means a changed default cannot start showing it there. The dashboard sheet does not
+pass it either, so the sheet is byte-identical.
+
 
 # 71. Manage moves on `schedule-graphics` (V13.9 — 4 October 2026)
 
@@ -27667,6 +28198,299 @@ file. Each must still carry the garbled/contradiction line and the FINALLY line.
 2. Remaining event-type stages and the Places tab, tested on that localhost.
 3. Release prompt: posts limited to `test-truck`; full sweep; a list of everything Pizzeria Gusto will see,
    approved by Dominic; Dominic deploys by hand.
+
+# 73. Private events (V13.9 — 5 October 2026, `schedule-graphics`)
+
+A private event is somebody's wedding. Pre-build tree: **`0ce4c83`**. Migration
+`supabase/migrations/20261014_private_events.sql` — **applied by Dominic, 5 October 2026** (§2's
+verification returned 0 private events, 0 tokens, 0 private-type rows, 0 retired links, and Pizzeria
+Gusto's six "Private Hire" rows still `cancelled`).
+
+## 73.1 What a private event is
+
+| | |
+|---|---|
+| **Its type IS Private** | A built-in type, one per truck, created lazily. It cannot be renamed, moved or deleted; its ⋯ menu offers only **Match Standard**. Always the **last** column on the grid. A private event cannot also be Festival or Pub — a Max truck wanting different prices for one uses that event's **own** prices on the dashboard. |
+| **Its visibility lives on the EVENT** | `truck_events.is_private`, NOT a join through the type. |
+| **Ordering is ONLY by its private link** | `/p/<token>` and the QR code that encodes it. No other way in. |
+| **It still shows on the truck's own public schedule** | As **"Private event"** with the date and times. Never the venue, address, town, postcode or coordinates. No Order button. |
+| **It is absent from the map and Village Foodie** | Dropped, not redacted. |
+
+🔴 **WHY `is_private` IS A COLUMN AND NOT A JOIN, AND THIS IS THE LOAD-BEARING DECISION.**
+`truck_events.event_type_id` is **`on delete set null`** — deleting a type must not delete a truck's
+events. So if visibility were read through the type, deleting the Private type would turn **every
+private event into a public one with its venue, town and coordinates on the map**, silently. A
+visibility rule cannot live on a nullable FK. The type is what the *operator* configures; the boolean
+is what every public surface filters on.
+
+## 73.2 The eight public surfaces
+
+⛔ **THE REGISTER IS DATA IN `scripts/private-events.cjs` §1, NOT PROSE HERE.** A named surface that
+stops consulting the privacy read fails the harness. §70.2 listed three; it is eight.
+
+| Surface | file | Handling |
+|---|---|---|
+| VF listing + truck page + **the map** (one mapper) | `app/api/discovery/events/route.ts` | **drop** |
+| the customer schedule the order page reads | `app/api/events/route.ts` | redact |
+| the embed widget **and** the custom-domain page | `app/api/embed/events/route.ts` | redact |
+| the weekly poster | `app/api/weekly-post/route.ts` → `lib/weekly-post/week-data.ts` | redact |
+| the single-event post | `app/api/weekly-post/route.ts` | **refused** |
+| the menu API's event auto-detect | `app/api/menu/[truckId]/route.ts` | **drop** |
+| the WhatsApp reply's grounding | `lib/whatsapp/upcoming-events.ts` | redact |
+| …and the two webhooks' own copies of that query | `app/api/webhooks/{meta/,}whatsapp/route.ts` | redact |
+
+🔴 **DROP vs REDACT IS A DECISION, NOT A STYLE.** The map plots coordinates, so a redacted row there
+would still be a row — in the listing, in "events near you", and needing a special case in every
+consumer. Absence needs no special case. The truck's **own** schedule is the opposite: a customer
+should see the truck is busy that evening, which is the whole reason an operator wants it listed.
+
+⛔ **EVERY PRIVACY READ FAILS *CLOSED*, AND THAT IS THE OPPOSITE OF EVENT PRICING.** Pricing fails
+**open** because open means "charge the menu price", which is today's behaviour (§70.9). Privacy has
+no such luck: open means publishing a wedding's address. So `readPrivateEventIds` answers **true for
+everything** when it cannot read, including ids it was never given, and `scripts/private-events.cjs`
+§2 asserts the direction so nobody "fixes" it.
+
+⚠️ **THE DEDUP KEY IS BUILT BEFORE THE SUBSTITUTION** (§70.2 flagged this and it is real). Substituting
+first gives every private event on one date the key `date|Private event|`, and the second is dropped as
+a duplicate — a truck with two private bookings in an evening publishes one of them. Asserted by
+**order in the source**, which is the only thing that decides it.
+
+🔴 **THE REDACTION IS A WHITELIST, NOT A BLACKLIST.** `redactPrivate` builds a **new** object from the
+fields allowed out. A function that *deleted* the five location columns would be correct today and
+wrong the first time a sixth is added to `truck_events` — the new one would publish by default and
+nothing would fail. ⚠️ `notes` is redacted too, which the brief does not list: "date and times only",
+and an operator's note is where a location most often sits in prose.
+
+## 73.3 The link
+
+- **`/p/<token>`** resolves the token **on the server** and forwards to the normal ordering page
+  (`?event_id=…&pt=<token>`). ⛔ It is not a second ordering page — a private event's prices, slots,
+  deals, stock and capacity all work because they are the same code.
+- **Token**: 24 random bytes → 32 base64url characters (**192 bits**, above the brief's 128 floor),
+  from `crypto.randomBytes`. UNIQUE across the table, because it is resolved with no truck in hand.
+  The table CHECKs its shape (22-64, `[A-Za-z0-9_-]`) so a short one cannot be written by hand.
+- **Registrations**, both asserted: `/p/(.*)` X-Robots-Tag `noindex` in `vercel.json`, and `/p` **plus
+  `/api/private-event`** in `proxy.ts`'s `isGeneralPublic`. Without the second, both would be
+  **unmetered public database reads** keyed on a string anyone can vary — the regression the `/o/` note
+  in that file records. A token is unguessable; the *endpoint* is not.
+- **Orders**: `app/api/orders/submit/route.ts` admits an order against a private event **only** with
+  the event's current token, **matched together with the event id in one query** — a token proves
+  access to one event, not to the truck. The gate sits **before** `loadEventPriceBook` and **before**
+  the card fork, so a refused order never reaches the money path or the stock decrement, and one check
+  covers card and pay-at-hatch.
+- **`/api/private-event?t=`** is the one endpoint allowed to publish `private_name` (the guest's
+  heading), and it publishes **no location at all**. One refusal shape for every failure, so probing
+  learns nothing.
+
+### "Make a new link", and why there is a table for it
+🔴 **`public.private_event_links` IS NOT IN THE BRIEF AND THE BRIEF CANNOT BE BUILT WITHOUT IT.**
+Decision 7 requires the old link to say *"This link no longer works — [Truck] has replaced it."*
+Naming the truck means resolving the **old** token after it has been replaced — and overwriting
+`private_token` destroys it, so `/p/<old>` could only 404. A guest holding a printed card would get
+"not found", indistinguishable from a typo. Every retired token is recorded there, append-only,
+service-role only, with a reason (`replaced` / `made_public`). The **live** token stays on the event
+row; the table never holds it.
+
+⚠️ **AN EXISTING TOKEN IS KEPT ON AN ORDINARY SAVE.** Guests have it on paper. It changes only when the
+operator presses "Make a new link", or when link ordering is switched off, or on untick.
+
+## 73.4 Plans — and why the key was split
+
+| | |
+|---|---|
+| `event_types` (**Max**) | making your own named presets; the PRICES rows |
+| `private_events` (**Pro**) | the built-in Private type, the link/QR switch, the private link |
+
+So a **Pro** truck sees the Event types tab with **Standard + Private only**: "+ New event type" and
+the PRICES band carry a **Max** badge and are refused server-side. ⛔ A single key could not express
+that, and gating the tab on `event_types` would have hidden a Pro feature behind a Max wall.
+`load` is open to **either** key — otherwise a Pro truck would reach a screen it is entitled to and be
+told to upgrade.
+
+⛔ **A DOWNGRADE UNPUBLISHES NOTHING.** An existing private event keeps `is_private` and its token: the
+link goes on working and the venue stays off the map; the screens go read-only. And **making an event
+public is never gated** — a downgraded truck must always be able to do that, and it is the safe
+direction anyway.
+
+## 73.5 Marking, by hand and by scraper
+
+- **The tick** is in Add/Edit event, in a purple panel **above the address fields** — ticking it is the
+  operator saying "the address below is not for the public", so they meet the question before they type
+  it. Ticking reveals **Event name** ("Guests see this at the top of the order page.").
+- **Scraper**: `\bprivate\b`, case-insensitive, **whole word, and nothing else**. "Private Hire",
+  "private event", "PRIVATE PARTY" → private. "Privateer Brewery", "privately" → not. ⛔ **"wedding" is
+  NOT a trigger, by decision** — a wedding fair is public trade a truck wants on the map, and the cost
+  of a miss is one tick in the approval queue while the cost of a false positive is trade that silently
+  never appears.
+- 🔴 **THE SCRAPED INSERT SETS VISIBILITY AND *NOT* THE TOKEN.** `is_private` must be right from the
+  instant the row exists; the type and the token are decisions about service, and nobody has looked at
+  the event yet — issuing a live ordering link from a scraped guess would publish something no operator
+  approved. Both are written by `applyPrivacy` at **confirm**.
+- ⚠️ **NO BACKFILL ANYWHERE.** Gusto's six existing rows are `cancelled` and untouched; the harness
+  asserts the migration contains no `update` or `insert` on `truck_events` at all.
+- A private event with link ordering on **cannot be confirmed without times** — the guest's page shows
+  a closing time and the ordering window derives from them. The scraper never captures times for these
+  rows, so that is the normal path, not an edge case.
+
+## 73.6 One writer, proved
+
+`is_private`, `event_type_id`-for-private, `private_name` and `private_token` are **four facts about
+one state**, and every inconsistent combination is a defect with teeth: a private event nobody can
+order from, a live link to a public pitch, a wedding's name left on a public event. So
+`lib/private-events/write.ts` is the only door, and `scripts/private-events.cjs` §5 reads the whole
+repository to prove it — with **two sites allowlisted by name**, so an unlisted third fails.
+
+⛔ **WHAT COUNTS AS A "WRITE", AND THE MATCHER THAT GOT IT WRONG FIRST.** The first version looked for
+the column name as an object key anywhere in a file and reported **six** writers of `is_private`; five
+were false positives (an interface field, the redaction whitelist, a key in a JSON response, a row
+flagged in memory for the poster, the edit form's local state). A write is now defined structurally: a
+key inside the argument to `.insert(`/`.update(` in a chain whose nearest preceding `.from('…')` names
+the table. ⚠️ And the file is **split** on `.from('` rather than matched with a bounded lookahead — the
+bounded version skipped any chain whose next `.from(` was more than 1200 characters away, which made
+the approval queue's confirm invisible to it and let variant V14 pass.
+
+## 73.7 The defect this build found in its own work
+
+🔴 **THREE EDIT BUTTONS EACH BUILT THE EVENT FORM'S INITIAL STATE INLINE.** Survivable while the form's
+fields never changed; not survivable once one of them was a privacy flag. The save sends an **explicit**
+`is_private` — it has to, or unticking would be a no-op — so a builder that omitted it seeded the form
+as "not private", and **an operator opening Edit on a wedding to fix a typo in the time and pressing
+Save would have published its address**, silently, with no warning. Three copies meant three chances to
+miss it. There is now one `editFormFor(event)`, it carries both private fields, and V15/V15b are the
+variants that keep it that way.
+
+⚠️ **"Duplicate" deliberately does NOT copy privacy or the name.** Copying `true` would silently make a
+new public pitch private; copying the name would put "Sarah & Tom's wedding" on an unrelated event.
+
+## 73.8 What was run
+
+| | |
+|---|---|
+| `scripts/private-events.cjs` (new, registered) | **176 passed · 24/24 variants caught** |
+| `scripts/event-types.cjs` | **155 passed · 42/42 variants caught** |
+| `scripts/event-pricing.cjs` | **104 passed · 14/14 variants caught** |
+| `scripts/event-types-render.cjs` | **1506 measurements passed · 0 failed**, Chromium **and** WebKit, 1440/820/390, all 20 PNGs |
+| `tsc --noEmit`, `npx next build` | clean |
+| ESLint | no new error in any touched file (the manage page back to its 366 baseline, the dashboard page to 83) |
+| `run-harnesses.cjs --dry-run` | all **89** listed files pass the source screen |
+
+⚠️ **TWO RENDER-HARNESS SLIPS, BOTH MINE, BOTH RECORDED IN THE FILE.** A `.slice(0, typeCount)` left
+dangling onto the next statement threw `1.slice is not a function` before a single measurement ran; and
+an assertion pinned the computed colour as `rgb(126, 34, 206)` when both engines serialise it as
+`lab(…)`, failing 37 times against a screen that was drawing the purple correctly. The colour is now
+measured as a **difference** from a custom type's heading, which is the design fact rather than the
+browser's string formatting.
+
+## 73.9 ONE event-type control, with Private as one of its choices (V13.9 — 5 October 2026)
+
+### The bug, and it had teeth
+🔴 **ADD EVENT HAD TWO CONTROLS FOR ONE FACT.** The "Event type" dropdown offered **Private**, and a
+separate **"Private event" tick** sat beside it — and the save read **the tick**. So choosing Private
+from the dropdown produced a **public event carrying the Private type**: silently, with the address on
+the map and the venue on every feed, and the operator's screen showing "Private" the whole time.
+
+✅ **ONE CONTROL OWNS IT NOW.** A **pill row** — Standard · 🔒 Private · the truck's own types in the
+grid's order — placed **straight after Date and before Venue**, with exactly one selected. Selecting
+the purple pill **is** making the event private, and `is_private` is read off the same value the type
+is, so the two cannot disagree.
+
+⛔ **THE POSITION IS LOAD-BEARING.** Selecting Private is the operator saying "the address I am about to
+type is not for the public", so they meet the question **before** they type it. That was the old tick's
+reasoning and it transfers.
+⚠️ **THE FIELD IS DRAWN EVEN FOR A TRUCK WITH NO CUSTOM TYPES.** It used to return null when the type
+list was empty — right when the only options were Standard and the truck's own. Private is always a
+choice, so that rule is now wrong; and hiding it was the far side of this very bug, because the tick
+existed precisely because the dropdown could not express Private.
+
+### Where it appears
+| Surface | What it does |
+|---|---|
+| **Add event** | pill row after Date; the purple panel and the Event name field open with the Private pill |
+| **Edit event** | the same control — which the dropdown never had, because changing a live type needs a confirm. **Privacy is the exception**, and it goes through the one writer |
+| **The approval card** | the same control; a scraped private event arrives with **Private selected**, and the truck can pick another type. Plus the missing-times prompt |
+| **Dashboard "This event"** | Private is in the type list, with a confirm **in both directions** |
+
+🔴 **THE PANEL'S TWO SENTENCES ARE ONE BLOCK, THEN THE NAME FIELD** (Dominic, 5 October). The link/QR
+sentence used to sit **below** the input, which split one explanation of what the choice does into two
+halves separated by a text box.
+
+### The two dashboard confirms
+Both directions are visible to customers on the **next request**, and neither has a draft state to undo
+in — which is why neither is a toast:
+- **To Private:** *"This hides the address and the event from the map. Guests will need the private link to order."*
+- **From Private:** *"This makes the event public: its address and map pin will show, and the private link will stop working."*
+
+⚠️ **THEY APPEAR ONLY ON A CROSSING.** Market → Festival says nothing about privacy, and a sentence
+about the map on that switch would be noise. ⛔ **The crossing is decided from `is_private`**, never
+from the current type's kind — `is_private` is the source of truth (§73.1).
+
+### The §7 regression, and the fourth builder
+§73.7 recorded three Edit buttons each building the form's initial state inline, fixed with one
+`editFormFor`. **A fourth was missed, and it was the dangerous one:** `openForFix` — the path a
+**scraped private event** takes, because the bridge never gives such an event times, so "Approve"
+always lands there. With `is_private` absent from the form, pressing Save **published the address**.
+
+🔴 **AND THE PILL NEEDED THE SAME TREATMENT FROM THE OTHER SIDE.** A scraped private event has
+`is_private: true` and `event_type_id: null` — the type is deliberately not set until confirm (§73.5).
+Seeding the pill from `event_type_id` alone would have selected **Standard** for it, and because the
+save derives privacy from the pill, approving would have made it public. `seedTypePill` reads
+`is_private` first.
+
+### And the form's last native selects
+The start/end hour and minute boxes and the **Van** picker became the shared non-native `Select`.
+⛔ **WebKit ignores vertical padding and `min-height` on a native `<select>` and renders it at 23px**
+(§65), so on an iPad these were half the height of every field around them. The options, the values and
+the "hour first" rule are untouched — only the box changed.
+
+## 73.10 Plan wording — one row became two (V13.9 — 5 October 2026)
+
+`'Event & festival pricing' · Set different prices for specific events or festivals. · Max · coming_soon`
+was **one row for two products on two tiers**, and a single row could not say that: it would have had to
+show Pro as `false` (hiding a feature a Pro truck pays for) or `true` (promising Max's pricing to Pro).
+
+| Row | Tier | Key |
+|---|---|---|
+| **Private events** — "Add private events that don't show on the map, with their own private ordering link and QR code." | Pro and above | `private_events` |
+| **Custom event types & pricing** — "Create your own event types, with custom prices and settings for events and festivals." | Max | `event_types` |
+
+🔴 **BOTH ARE HARD `true`, NOT 'coming_soon', AND THAT ADDS TWO CHECKS RATHER THAN REMOVING THEM.**
+`findPlanParityViolations()` inspects cells that are hard `true` and fails when `canAccess` disagrees; a
+'coming_soon' cell is explicitly exempt. Both pass because `ROW_FEATURE_MAP` points each row at its real
+key — **without those two entries the guard would `continue` past the rows and the table could promise
+Pro a Max feature with nothing failing.**
+
+**Changed in three places** (the pricing-card bullets are hand-written twins of the matrix rows and
+nothing checks them against each other — change both or neither):
+1. `lib/plan-features.ts` — the two rows and the two `ROW_FEATURE_MAP` entries;
+2. `app/landing/page.tsx` Max card — the bullet, **un-badged**;
+3. `app/landing/page.tsx` Pro card — a new bullet, "Private events with their own ordering link".
+
+## 73.11 Lessons from this build's own harnesses
+
+🔴 **A CHECK THAT CANNOT FAIL IS NOT CHECKING, AND IT HAPPENED FOUR MORE TIMES.**
+
+1. **`showItems: true` HAD NEVER BEEN PASSED** to `scripts/event-types-render.cjs`. No category row and
+   no item row had ever been drawn — so the `price-item` and `category` height assertions, which are
+   written guarded (`!rowHeights['price-item'] || …`), had been **passing vacuously since they were
+   written**, and four new ones for the category heading and the item indent would have done the same.
+   There is now a dedicated items-open pass that asserts the rows are **present** before measuring them.
+2. **V17 HAD SILENTLY STOPPED MUTATING** — the second time this failure mode has appeared here (V29 was
+   the first). It replaced a literal that no longer existed; `String.replace` of an absent needle
+   returns the string unchanged, so the variant mutated nothing and reported "MUST FAIL BUT PASSED".
+   It now **finds** its insertion point and **throws** if it is not there.
+3. **A COUNT OF OCCURRENCES IS NOT A CLAIM.** "`justify-center` appears at least seven times" went red
+   because removing the USED BY row took two centred cells with it — a row deletion turning a centring
+   check red. It asserts the property now.
+4. **PROSE DECIDED WHETHER THREE ASSERTIONS MATCHED.** A bounded `[\s\S]{0,300}` could not bridge an
+   explanatory comment longer than 300 characters; two others matched their own notes quoting the old
+   string. `codeOf`/comment-stripping is the rule for **every** source-text claim, and this build
+   re-learned it three times in one day.
+
+⚠️ **AND A PROCESS COST, WORTH NAMING.** §72.2's rule — run only the harnesses a build touches — meant
+`schedule-graphics-places.cjs` had not run since the per-van cash work two prompts earlier, so two
+failures from **that** build surfaced here: a new Settings sub-label, and the `Toggle` signature gaining
+`compact`. Both were honest updates, neither was this build's. The rule trades latency for time, and
+this is the latency.
 
 ---
 

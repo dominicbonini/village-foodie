@@ -27,10 +27,14 @@
 // decision. A preview tool that silently disagreed with the live path about what day it is would be
 // worse than one that reproduces the defect faithfully. Fix both together or neither.
 import type { SupabaseClient } from '@supabase/supabase-js'
+/* 🔴 PRIVATE EVENTS NEVER GROUND THE MODEL ON A VENUE. See the call below. */
+import { redactPrivateRows } from '@/lib/private-events/read'
 
 /** The exact shape `generateWhatsAppReply` reads. Kept structural, not imported, because the
  *  classifier's own `TruckEvent` is not exported. */
 export interface UpcomingTruckEvent {
+  /** 🔴 ADDED 20261014 so the privacy probe has something to ask about. See `UPCOMING_EVENT_COLUMNS`. */
+  id: string
   event_date: string
   start_time: string | null
   end_time: string | null
@@ -44,8 +48,11 @@ export interface UpcomingTruckEvent {
 // The column list is what the classifier destructures; the status list is what "upcoming" means here
 // (note `unconfirmed` IS included -- the classifier labels it [UNCONFIRMED] rather than hiding it);
 // the limit is what bounds the prompt. Changing any of them changes what a customer is told.
+/* ⚠️ `id` JOINED THE LIST ON 20261014, AND IT IS NOT A COPY-SENSITIVE CHANGE. The classifier does not
+ * destructure it; it is here solely so `redactPrivateRows` can ask which of these events are private.
+ * Every other column, the status list and the limit are unchanged. */
 export const UPCOMING_EVENT_COLUMNS =
-  'event_date, start_time, end_time, venue_name, town, postcode, status'
+  'id, event_date, start_time, end_time, venue_name, town, postcode, status'
 export const UPCOMING_EVENT_STATUSES = ['confirmed', 'open', 'unconfirmed']
 export const UPCOMING_EVENT_LIMIT = 10
 
@@ -79,5 +86,9 @@ export async function fetchUpcomingTruckEvents(
     console.error('[whatsapp/upcoming-events] query failed for truck', truckId, '--', error.message)
     return []
   }
-  return (data as UpcomingTruckEvent[] | null) ?? []
+  /* ⛔ PRIVATE EVENTS ARE REDACTED BEFORE THEY REACH THE MODEL (20261014). The reply is prose a
+   * customer reads; a venue that got into the prompt would be published in a sentence nobody wrote.
+   * The row SURVIVES as "Private event" so the truck still reads as busy that day. */
+  return await redactPrivateRows(
+    supabase, (data as UpcomingTruckEvent[] | null) ?? [], 'whatsapp/upcoming-events')
 }

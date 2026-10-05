@@ -198,8 +198,24 @@ head('3 · THE SWITCH IS A WRITE FAN-OUT, NOT A READ')
     'app/api/manage/route.ts', 'lib/van-category-settings.ts', 'app/manage/[token]/page.tsx',
     'components/manage/KitchenCapacitySection.tsx',
   ])
-  t('🔴 only the writer, the resolver module and the two switch UIs name the column at all',
-    files.every(f => WRITE_SITES.has(f)))
+  /* ══ 🔴 `codeOnly`, BECAUSE THREE FILES EXPLAIN THE COLUMN WITHOUT USING IT (5 October 2026) ══════
+   * `grep -rl` found seven files; three of them — app/api/event-types/route.ts,
+   * lib/copy/serviceSettings.ts and components/manage/EventTypes.tsx — name
+   * `truck_vans.same_as_first_van` only in a COMMENT, each one saying the same correct thing: that
+   * "Same settings as Van 1" reads and writes the EXISTING column through Settings' own action and
+   * adds no new one. ⛔ THE CHECK REPORTED THEM AS READERS, which is this repository's recurring
+   * failure in reverse: prose BREAKING an assertion about code. Explaining a column is not using it.
+   * 🔴 THE CLAIM IS UNCHANGED AND IS NOW ABOUT CODE: the set of files whose CODE names the column is
+   * closed, and it is the writer, the resolver module and the two switch UIs. */
+  const codeSites = files.filter(f => { try { return /same_as_first_van/.test(codeOnly(read(f))) } catch { return false } })
+  const offenders = codeSites.filter(f => !WRITE_SITES.has(f))
+  t(`🔴 only the writer, the resolver module and the two switch UIs name the column IN CODE (${codeSites.length} file(s))`
+    + (offenders.length ? ` · ⛔ ${offenders.join(', ')}` : ''),
+    offenders.length === 0)
+  /* ⚠️ AND THE SET IS NOT MERELY A SUBSET — every listed site must really be one, or a deleted writer
+   * would leave an entry that excuses nothing and the check would pass on a shrinking set. */
+  t('⚠️ …and every file on that list really does name it in code',
+    [...WRITE_SITES].every(f => codeSites.includes(f)))
   t('⛔ NO READER ON THE ORDER PATH NAMES IT', (() => {
     const order = ['app/api/slots/[truckId]/route.ts', 'app/api/dashboard/route.ts',
       'app/api/menu/[truckId]/route.ts', 'lib/prep-utils.ts', 'app/api/orders/submit/route.ts',

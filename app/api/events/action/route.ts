@@ -4,6 +4,11 @@ import { sendEventCancellationEmail } from '@/lib/email'
 import { getSoleActiveVanId } from '@/lib/van-utils'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { hasValidEventTimes } from '@/lib/time-utils'
+/* ── 🔴 PRIVATE EVENTS (20261014) ──────────────────────────────────────────────────────────────── */
+import { applyPrivacy } from '@/lib/private-events/write'
+import { isEventPrivate } from '@/lib/private-events/read'
+import { PRIVATE_NEEDS_TIMES } from '@/lib/private-events/copy'
+import { canAccess } from '@/lib/features'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -54,7 +59,17 @@ export async function POST(req: NextRequest) {
     // LIVE-TIME GATE: an event can't go live without both times (the engine needs them). Drafts stay null-OK
     // — this fires only on the confirm transition.
     if (!hasValidEventTimes(ev?.start_time, ev?.end_time)) {
-      return NextResponse.json({ error: 'Add a start and end time before this event can go live.' }, { status: 400 })
+      /* ⚠️ A PRIVATE EVENT GETS THE SHARPER MESSAGE (20261014, decision 9). The scraper never captures
+       * times for these rows, so this is the NORMAL path for an approved private event, not an edge
+       * case — and "a private event taking orders by link needs them" tells the operator why, where
+       * the generic sentence just says no. The RULE is identical; only the wording differs. */
+      const stillPrivate = payload.is_private === undefined
+        ? await isEventPrivate(supabase, eventId, 'events/action confirm')
+        : payload.is_private === true
+      return NextResponse.json(
+        { error: stillPrivate ? PRIVATE_NEEDS_TIMES : 'Add a start and end time before this event can go live.' },
+        { status: 400 },
+      )
     }
     const soleVanId = ev?.van_id ? null : await getSoleActiveVanId(supabase, truck.id)
     const vanPatch = (!ev?.van_id) ? { van_id: soleVanId } : {}
@@ -111,6 +126,40 @@ export async function POST(req: NextRequest) {
       .eq('truck_id', truck.id)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    /* ══ 🔴 THE APPROVAL CARD'S PRIVATE TICK, APPLIED ON CONFIRM (20261014, decision 9) ═════════════
+     * The card arrives already marked private when the scraper found the word (`is_private` was set at
+     * insert, by the bridge). Confirming is where the operator's decision is recorded:
+     *   • they left it ticked  ⇒ `applyPrivacy` writes the Private type and ISSUES THE TOKEN, so the
+     *     link exists from the moment the event goes live and not before;
+     *   • they unticked it     ⇒ the event becomes an ordinary public one.
+     * ⛔ ONLY WHEN THE CLIENT SENT THE KEY. `undefined` means "this caller did not ask about privacy"
+     * — the same rule `upsert_event` follows — so every other path that confirms an event leaves the
+     * flag exactly as the bridge set it, rather than silently publishing it.
+     * ⚠️ A FAILURE DOES NOT UNDO THE CONFIRM. The event is live either way; the operator is told the
+     * privacy part failed and can fix it from Edit event. Rolling the confirm back would leave a truck
+     * unable to approve an event because a type row could not be made.
+     * ⚠️ THE GATE IS CHECKED ONLY WHEN KEEPING IT PRIVATE — a downgraded truck must always be able to
+     * make an event public. */
+    if (payload.is_private !== undefined) {
+      const wantPrivate = payload.is_private === true
+      if (wantPrivate
+        && !canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+        return NextResponse.json({ error: 'Private events are part of the Pro plan.', upgrade: true }, { status: 403 })
+      }
+      const pr = await applyPrivacy(supabase, truck.id, eventId, {
+        isPrivate: wantPrivate,
+        /* The operator may type a name on the approval card. Never from the scrape — see
+         * `scrapedPrivacyFields`. */
+        name: payload.private_name,
+      })
+      if (!pr.ok) {
+        return NextResponse.json(
+          { ok: true, warning: pr.error || 'The event is live, but its privacy could not be saved.' },
+        )
+      }
+      return NextResponse.json({ ok: true, isPrivate: pr.isPrivate, token: pr.token })
+    }
     return NextResponse.json({ ok: true })
   }
 

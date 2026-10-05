@@ -42,6 +42,59 @@ export interface Place {
   last_start_time: string | null
   last_end_time: string | null
   traded_last_year: number
+  /* ══ 🔴 THE PLACES TAB'S OWN FIELDS (20261015) ═══════════════════════════════════════════════════
+   * All four come from `sg_places`. ⚠️ EVERY ONE IS OPTIONAL, and absent is the honest pre-migration
+   * answer: no pin (so "Automatic", which is what every place is today), no post picture, no count.
+   * The Add event picker and Tidy up both read this same type and neither uses them, so nothing else
+   * had to change. */
+  /** The PIN. null/absent ⇒ "Automatic" — the existing newest-event-at-this-place rule (§70.3).
+   *  ⚠️ READ **AFTER** `usual_type_is_standard`, which outranks it. See that field. */
+  usual_event_type_id?: string | null
+  /* ══ 🔴 "PINNED TO STANDARD", AND WHAT "Automatic" RESOLVES TO (20261016) ════════════════════════
+   * ⛔ THE FIRST TWO STATES LOOKED IDENTICAL ON THE WIRE and that was the bug: Standard is the
+   * ABSENCE of a type (Standard IS the truck's own settings, §70.2), so there was no id to send and
+   * choosing it wrote the same `null` that already meant Automatic. Three states, two of which
+   * collided. 20261016 adds the boolean. */
+  /** TRUE ⇒ "always plain Standard here", a FIXED answer. Distinct from Automatic, whose answer
+   *  changes as the truck trades. ⚠️ IT OUTRANKS `usual_event_type_id` — the same order the routes
+   *  apply, so a row carrying both reads the same way on the screen and on the server. */
+  usual_type_is_standard?: boolean
+  /** What Automatic resolves to for THIS place right now, from the server's own rule.
+   *  ⚠️ null ⇒ the history could not be read (or the migration is absent) and the control says plain
+   *  "Automatic" rather than guessing a type. */
+  usual_automatic_type_id?: string | null
+  usual_automatic_type_name?: string | null
+  /** The place's POST picture (`truck_places.event_bg_path`) — the one the single-event poster draws.
+   *  ⛔ NOT one of the extra pictures: those are `place_pictures` and never reach a poster. */
+  event_bg_path?: string | null
+  event_bg_width?: number | null
+  event_bg_height?: number | null
+  /** Lifetime traded events here. The list line shows the LAST YEAR's count; this is "used N times". */
+  used_count?: number
+}
+
+/** One of the truck's own extra pictures for a place. ⛔ Never used by a poster. */
+export interface PlacePicture {
+  id: string
+  path: string
+  file_name: string
+  bytes: number
+  width: number | null
+  height: number | null
+  created_at: string
+  /** A signed URL — the bucket is private, so a thumbnail is a short-lived read of their own file. */
+  url: string | null
+}
+
+/** One row of "Events here". ⚠️ Private events ARE included: this is the truck's own screen. */
+export interface PlaceEventRow {
+  id: string
+  date: string
+  startTime: string
+  endTime: string
+  kind: 'upcoming' | 'past'
+  isPrivate: boolean
+  orders: number | null
 }
 
 interface PlacesResponse { places?: Place[] }
@@ -86,24 +139,61 @@ export function usePlaces(api: Api, enabled: boolean) {
    * (cascading renders, and eslint's react-hooks/set-state-in-effect catches it). */
   const loading = enabled && places === null && !error
 
+  /* ══ 🔴 THE ENDLESS SPINNER ON SCHEDULE › PLACES — THE CAUSE AND THE FIX (5 October 2026) ═════════
+   * REPORTED: on localhost, Pizza Kitchen, Schedule › Places showed a spinner for ever.
+   *
+   * 🔴 THE CAUSE WAS THIS EFFECT'S DEPENDENCY LIST MEETING ITS OWN IN-FLIGHT GUARD.
+   * `api` is declared as a plain function in the manage page's component body, so it is a NEW
+   * REFERENCE ON EVERY RENDER — and it was in the deps. The page re-renders constantly (polling, a
+   * dozen pieces of state), so every render:
+   *     1. ran the cleanup, setting `cancelled = true` for the run that was in flight;
+   *     2. re-ran the effect, which saw `inFlight.current === true` and RETURNED EARLY;
+   *     3. let the original request resolve into a `cancelled` closure, so `setPlaces` never fired;
+   *     4. cleared `inFlight` in `finally`.
+   * `places` therefore stayed `null` — which IS the loading state — and the next render started the
+   * whole cycle again. An endless spinner **and** a request storm, neither of which showed an error,
+   * because nothing ever threw.
+   * ⚠️ THE ADD EVENT MODAL GOT AWAY WITH IT because it is open for seconds at a time; the TAB sits
+   * there while the page does everything else, which is why the tab is where it was seen.
+   *
+   * ✅ THREE CHANGES, AND EACH CLOSES A DIFFERENT HALF:
+   *   • `api` IS HELD IN A REF and is OUT of the deps. A function identity is not a reason to re-run a
+   *     fetch; what the effect depends on is "am I enabled" and "has somebody asked for a reload".
+   *     (The page's own `api` is also wrapped in `useCallback` now, which fixes the churn at source —
+   *     but this hook must not depend on a caller remembering to.)
+   *   • `cancelled` NOW ONLY SUPPRESSES A SET AFTER A REAL TEARDOWN — unmount, or a reload that
+   *     superseded this run — tracked by a run id rather than by a closure flag that any re-render
+   *     could flip.
+   *   • AND A RUN THAT SETTLES WITHOUT RESOLVING THE LIST IS AN ERROR, not a spinner. See `settled`.
+   */
+  const apiRef = useRef(api)
+  useEffect(() => { apiRef.current = api }, [api])
+  /** Which run is current. A resolved fetch writes only if its id is still the live one. */
+  const runId = useRef(0)
+
   useEffect(() => {
-    if (!enabled || places !== null || inFlight.current) return
+    if (!enabled) return
+    const mine = ++runId.current
     inFlight.current = true
-    let cancelled = false
     ;(async () => {
       try {
-        const r = (await api('sg_places')) as PlacesResponse
-        if (!cancelled) setPlaces(r.places ?? [])
+        const r = (await apiRef.current('sg_places')) as PlacesResponse
+        /* ⚠️ THE ID, NOT A BOOLEAN. A later run supersedes this one; a mere re-render does not. */
+        if (runId.current !== mine) return
+        setPlaces(r.places ?? [])
+        setError(null)
       } catch (e: unknown) {
-        // ⚠️ `[]` AS WELL AS THE MESSAGE. The Add event form must stay usable with no places at all,
-        // so the list resolves to empty rather than staying in a spinner for ever.
-        if (!cancelled) { setPlaces([]); setError(msgOf(e, 'Couldn’t load places.')) }
+        if (runId.current !== mine) return
+        /* ⚠️ `[]` AS WELL AS THE MESSAGE. The Add event form must stay usable with no places at all,
+         * so the list resolves to empty rather than staying in a spinner for ever. */
+        setPlaces([]); setError(msgOf(e, 'Couldn’t load places.'))
       } finally {
-        inFlight.current = false
+        if (runId.current === mine) inFlight.current = false
       }
     })()
-    return () => { cancelled = true }
-  }, [enabled, places, reloadKey, api])
+    /* ⛔ NO CLEANUP FLAG. The old `return () => { cancelled = true }` is what made a re-render look
+     * like an unmount. A superseded run is detected by `runId`, which only a NEW RUN changes. */
+  }, [enabled, reloadKey])
 
   const reload = useCallback(() => { setPlaces(null); setError(null); setReloadKey(k => k + 1) }, [])
 

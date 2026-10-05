@@ -12,12 +12,25 @@
 // ⚠️ PURE. Events and places in, seven days out. No clock beyond the week it is handed, no database.
 
 import { placeForEvent, type Place, type PlaceEvent } from '@/lib/schedule-graphics/places'
+/* 🔴 ONE DEFINITION OF THE PUBLIC LABEL, shared with every feed. */
+import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 import { formatTimeRangeFor, type TimeStyle } from './format'
 import type { WeekRange } from './week'
 
 /** An event as this module needs it: `PlaceEvent` plus the id, so one can be left off the image. */
 export interface WeekEvent extends PlaceEvent {
   id: string
+  /**
+   * 🔴 PRIVATE EVENTS GO ON THE POSTER AS "Private event" WITH NO LOCATION (20261014, decision 4).
+   *
+   * ⚠️ OPTIONAL, AND ABSENT MEANS PUBLIC. Every existing caller and every fixture omits it, so a
+   * poster for a truck with no private events is byte-identical — the two functions below take the
+   * same branch they always did.
+   * ⚠️ IT IS SET ON THE ROW BY THE ROUTE, FROM A SEPARATE PROBED READ — not selected alongside
+   * `venue_name`. The weekly post is the operator's own poster, and a missing migration must not stop
+   * them making one; see the note at `loadWeek`.
+   */
+  is_private?: boolean | null
 }
 
 export type TradingStatus = 'trading' | 'cancelled'
@@ -94,6 +107,11 @@ export function tradingStatusOf(status: string | null | undefined): TradingStatu
  * event with neither gets a dash rather than an empty box, so the row still reads as a row.
  */
 export function locationName(ev: WeekEvent, place: Place | null): string {
+  /* ⛔ FIRST, AND BEFORE THE PLACE IS CONSULTED AT ALL (20261014). A private event's row says
+   * "Private event" and nothing else — not the place's "Name on posts", not its short name, not the
+   * venue. Returning early is what makes that true however the place resolved: a private booking at
+   * a pitch the truck uses publicly would otherwise print that pitch's name. */
+  if (ev.is_private) return PRIVATE_PUBLIC_LABEL
   const short = String(place?.short_name ?? '').trim()
   if (short) return short
   const name = String(place?.name ?? '').trim()
@@ -110,6 +128,9 @@ export function locationName(ev: WeekEvent, place: Place | null): string {
  * on whole words so "Hall" in "Halltown" does not count as a match.
  */
 export function townLine(ev: WeekEvent, place: Place | null, name: string): string | null {
+  /* ⛔ AND NO TOWN LINE EITHER. The brief's "date and times only" means the second line goes too —
+   * "Private event / Lavenham" would publish the village. */
+  if (ev.is_private) return null
   const town = String(place?.area ?? '').trim() || String(ev.town ?? '').trim()
   if (!town) return null
   const inName = new RegExp(`\\b${town.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(name)

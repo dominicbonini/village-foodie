@@ -415,8 +415,27 @@ function fakeDb(opts = {}) {
    * 🔴 SO THE GUARD NOW ALLOWS EXACTLY THAT ONE LINE AND NOTHING ELSE. Every other difference still
    * fails it, which is the property worth keeping. A harness that pins HEAD must say what it tolerates;
    * see the note in scripts/_slot-interval-compile.cjs about pinning a commit rather than HEAD. */
-  t('🔴 /api/inbound-schedule is unchanged apart from the one event-types seed marker', (() => {
+  /* ══ 🔴 THE ALLOWLIST GREW BY ONE BUILD, AND IT IS A LIST NOW RATHER THAN A SINGLE STRING ════════
+   * Private events (20261014) added the second tolerated change: the scraped-privacy spread, and the
+   * import that supplies it. "Private Hire" in a scraped venue name marks the event private, and the
+   * signal is already in the data this bridge receives — so the decision belongs here.
+   * ⛔ SPREAD, NOT A COLUMN. `is_private` has ONE writer in this repository and
+   * scripts/private-events.cjs proves it by searching for the column name; a literal `is_private:`
+   * here would break that proof, which is why the tolerated line is a spread.
+   * 🔴 EVERY OTHER DIFFERENCE STILL FAILS THIS, which is the property worth keeping: the guard means
+   * "the screenshot/truck-details work did not touch the scraped-event bridge", and a floating-HEAD
+   * byte-identity check cannot tell a legitimate later build apart from a change to the bridging
+   * logic. Each entry is a claim with a test attached — the loop below fails if a tolerated line is
+   * no longer in the file, so a revert or a rename turns the excuse back into a failure. */
+  t('🔴 /api/inbound-schedule is unchanged apart from two named later builds', (() => {
     const f = 'app/api/inbound-schedule/route.ts'
+    const TOLERATED = [
+      // event types stage 1-2: a creation path records that IT wrote order_ready_override.
+      "order_ready_source: 'seed',",
+      // private events 20261014: "private" in the found text, through the one privacy writer.
+      "...scrapedPrivacyFields(row.venue_name, row.event_notes),",
+      "import { scrapedPrivacyFields } from '@/lib/private-events/write'",
+    ]
     if (gitClean(f)) return true
     let diff = ''
     try { diff = execFileSync('git', ['diff', '-U0', 'HEAD', '--', f], { cwd: REPO, encoding: 'utf8' }) }
@@ -427,7 +446,21 @@ function fakeDb(opts = {}) {
       .filter(Boolean)
       /* comment lines are not behaviour */
       .filter(l => !/^(\/\*|\*|\/\/)/.test(l))
-    return changed.length === 1 && changed[0] === "order_ready_source: 'seed',"
+    const unexplained = changed.filter(l => !TOLERATED.includes(l))
+    if (unexplained.length) {
+      console.log('      LINES CHANGED AND NOT ALLOWED: ' + unexplained.length)
+      for (const l of unexplained.slice(0, 10)) console.log('        • ' + l.slice(0, 140))
+      return false
+    }
+    /* ⛔ AND THE EXCUSE EXPIRES IF THE LINE GOES. A tolerated change that is no longer in the file is
+     * not a tolerated change; it is a revert nobody noticed. */
+    const now = read(f)
+    const missing = TOLERATED.filter(l => !now.includes(l))
+    if (missing.length) {
+      console.log('      ⛔ TOLERATED LINE CLAIMED BUT NOT PRESENT: ' + missing.join(' | ').slice(0, 160))
+      return false
+    }
+    return true
   })())
   t('🔴 lib/schedule-extract.ts (the operator path) is byte-identical to HEAD', gitClean('lib/schedule-extract.ts'))
   t('the one contact writer is untouched', gitClean('lib/outreach-contact-log.ts'))

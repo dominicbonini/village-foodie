@@ -54,6 +54,26 @@ function appCss() {
   if (!/overflow-x-auto/.test(css)) {
     throw new Error('the compiled CSS has no `overflow-x-auto` rule — the build predates this panel; run `npx next build`')
   }
+  /* ══ 🔴 THE STALENESS CHECK EXTENDED TO THE ARBITRARY VALUES (5 October 2026) ═══════════════════
+   * `overflow-x-auto` is in every build this app has ever had, so it only catches a CSS from before
+   * the panel existed. The denser grid is built out of ARBITRARY Tailwind values — `w-[38px]`,
+   * `h-[22px]`, `top-[3px]`, `translate-x-[18px]` — and Tailwind emits a rule for one of those only
+   * if it was in the source when the CSS was compiled.
+   * 🔴 THIS COST A FULL RUN, AND THE RUN LOOKED LIKE A DESIGN FAULT. The compact switch measured
+   * 0×0 in all 36 van-state cases, and the harness said "the switch is 38×22 (0×0)" thirty-six
+   * times — which reads as "the component draws no switch", when what had happened is
+   * that `.next/static` was built before `compact` existed, so the browser had no rule for either
+   * dimension and an unstyled div is zero high.
+   * ⛔ SO THE CLASSES ARE READ OUT OF primitives.tsx AND LOOKED UP BY NAME. A missing rule now says
+   * "run `npx next build`", which is true and actionable, instead of 36 measurements blaming the
+   * component for something the build artefact did. */
+  const arbitrary = [...new Set((PRIM.match(/(?:w|h|top|translate-x)-\[\d+px\]/g) || []))]
+  const missing = arbitrary.filter(c => !css.includes('.' + c.replace('[', '\\[').replace(']', '\\]')))
+  if (missing.length) {
+    throw new Error(`the compiled CSS has no rule for ${missing.join(', ')} — these are arbitrary `
+      + `Tailwind values in components/manage/primitives.tsx and the CSS predates them, so the `
+      + `switch would measure 0×0; run \`npx next build\``)
+  }
   return css
 }
 
@@ -73,7 +93,19 @@ const HEAD = css => `<!doctype html><html><head><meta charset="utf-8">
  * @param breakScroll THE BROKEN VARIANT: drops `overflow-x-auto` from the grid's wrapper, which is
  *                  the fix. The grid then widens the PAGE instead of itself.
  */
-function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline = false) {
+function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline = false, opts = {}) {
+  /* ── 🔴 THE FOUR STATES THIS FIXTURE HAS TO BE ABLE TO DRAW (5 October 2026) ─────────────────
+   *  `pricesOn`      — at least one type's "Change prices" switch is on, so the three RULE rows and
+   *                    the "Item prices" row EXIST. With it false they must fold away entirely, and
+   *                    that folding is itself a measurement.
+   *  `showItems`     — the per-item rows are expanded (the Hide/Show button's state).
+   *  `sameSettings`  — "Same settings for all vans" is ON, so the Standard side is ONE column headed
+   *                    "All vans" instead of one per van. Both states are measured.
+   * ⚠️ DEFAULTED SO EVERY EXISTING CALL SITE KEEPS ITS MEANING: a call that passes no `opts` draws
+   * prices ON with the items collapsed, which is the state with the most to measure. */
+  const pricesOn = opts.pricesOn !== false
+  const showItems = opts.showItems === true
+  const sameSettings = opts.sameSettings === true
   /* ── 🔴 EVERY CLASS AND EVERY NUMBER IS LIFTED FROM THE COMPONENT ────────────────────────────────
    * `lift` THROWS if a pattern is not found, which is the point: each time this build changed shape —
    * the shell, the Standard cell, both control looks, the grid template, and then the whole Standard
@@ -89,21 +121,86 @@ function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline 
   const body = lift(UI, /inline \? '' : '(flex-1 min-h-0 overflow-y-auto)'/, 'the modal body')
   const scroller = lift(UI, /<div className="(hidden md:block overflow-x-auto px-2 pb-2)" data-types-scroller>/, 'the columns scroller')
   const phone = lift(UI, /<div className="(md:hidden p-4 space-y-3)">/, 'the phone column')
+  /* The planned label cell: two paddings (indented sub-rows get `pl-7 pr-3`), lifted from the ternary. */
+  /* ── 🔴 THREE PADDINGS NOW, ALL LIFTED (5 October 2026) ─────────────────────────────────────────
+   * A setting row is `px-3`, a sub-row is `pl-7 pr-3`, and an ITEM is `pl-6 pr-3` — 12px in from its
+   * category heading, so a category reads as a group. Lifted from the component's own ternary, so a
+   * change there stops this file BUILDING rather than leaving it measuring the old indent. */
+  const labelPads = (() => {
+    const m = UI.match(/\$\{\s*\n?\s*r\.indent \? '(pl-7 pr-3)' : r\.k === 'price-item' \? '(pl-6 pr-3)' : '(px-3)'\}/)
+    if (!m) throw new Error("the fixture cannot be built: the label cell's three paddings were not found in components/manage/EventTypes.tsx")
+    return { sub: m[1], item: m[2], plain: m[3] }
+  })()
+  const labelBase = 'flex items-center gap-2 border-t border-slate-100 '
+  const labelCell = labelBase + labelPads.plain
+  const labelIndent = labelBase + labelPads.sub
+  const labelItem = labelBase + labelPads.item
   /* 🔴 THE DIVIDER IS PART OF EVERY VALUE CELL NOW, and both halves are lifted so the fixture cannot
    * draw a grid with different lines from the screen's. */
   const divider = lift(UI, /const CELL_DIVIDER = '(.+?)'/, 'the column divider')
-  const cell = `${divider} ` + lift(UI, /<div key=\{t\.id\} className=\{`\$\{CELL_DIVIDER\} (px-2\.5 py-2\.5 border-t border-slate-100 min-h-11 flex items-center justify-center gap-2)`\}>/, 'a type cell')
-  const labelCell = lift(UI, /<div className="(px-3 py-2\.5 border-t border-slate-100 text-sm font-semibold text-slate-900 min-h-11 flex items-center)">/, 'a label cell')
-  /* 🔴 THE STANDARD CELL IS A CONSTANT IN THE COMPONENT NOW, because every van column shares it —
-   * so a highlight applied unevenly is impossible there and in here. */
-  const stdCell = `${divider} ` + lift(UI, /const STD_CELL = `\$\{CELL_DIVIDER\} (.+?)`/, 'the Standard cell class')
+  /* ══ 🔴 RE-LIFTED FOR THE PLANNED GRID (5 October 2026) ═════════════════════════════════════
+   * The grid plans its rows and places every cell explicitly, so there is no longer a `STD_CELL`
+   * constant and no `min-h-11` anywhere — the HEIGHTS ARE NUMBERS, shared with the component through
+   * `components/shared/PriceControls.tsx`'s `ROW_H`. Every cell right of the labels now shares ONE
+   * class string, `base`, which is what makes "values centred in every value column" a property of
+   * one definition rather than of forty call sites.
+   * 🔴 LIFTED, NOT TYPED: if the component's cell class changes, this fixture stops BUILDING instead
+   * of going on measuring a screen nobody is served. */
+  const cell = `${divider} ` + lift(UI, /const base = `(px-2\.5 flex items-center justify-center min-w-0 border-t border-slate-100)`/, 'the value cell class')
+  const stdCell = cell
+  /* 🔴 THE ROW HEIGHTS AND THE CONTROL HEIGHT, from the shared module both screens read. */
+  const ROW_H = (() => {
+    const src = read('components/shared/PriceControls.tsx')
+    const m = src.match(/export const ROW_H = \{ control: (\d+), item: (\d+), category: (\d+), section: (\d+) \}/)
+    if (!m) throw new Error('the fixture cannot be built: ROW_H not found in components/shared/PriceControls.tsx')
+    return { control: +m[1], item: +m[2], category: +m[3], section: +m[4] }
+  })()
+  /* 🔴 THE **GRID'S** CONTROL HEIGHTS, NOT THE SHEET'S. `CONTROL_H` (32) is the dashboard sheet's and
+   * must not shrink — it is touched during service. The grid has its own, and this fixture measures
+   * the grid, so it lifts those. Lifting the wrong one would measure a screen nobody is served. */
+  const CONTROL_H = Number(lift(read('components/shared/PriceControls.tsx'), /export const GRID_CONTROL_H = (\d+)/, 'the grid control height'))
+  const TYPED_H = Number(lift(read('components/shared/PriceControls.tsx'), /export const GRID_TYPED_H = (\d+)/, 'the grid typed-price height'))
+  /* ══ 🔴 THE SHARED TOGGLE, LIFTED AS BOTH ARMS (5 October 2026) ════════════════════════════════
+   * The Toggle grew a `compact` prop, so its track and knob are no longer one flat class string —
+   * each is a base plus a ternary. These five pieces are lifted out of that ONE definition, and the
+   * fixture's switch is assembled from them rather than retyped, so the grid's 38×22 and the phone
+   * card's 44×24 both come from the component.
+   * 🔴 THIS THREW, AND THAT IS THE DESIGN: adding `compact` broke the old flat lifts and the harness
+   * refused to build instead of measuring a switch primitives.tsx had stopped drawing. */
+  const TOGGLE = (() => {
+    const track = PRIM.match(/<div className=\{`(relative rounded-full transition-colors shrink-0) \$\{compact \? '(w-\[\d+px\] h-\[\d+px\])' : '(w-11 h-6)'\} \$\{on \? 'bg-green-500' : 'bg-slate-300'\}`\}>/)
+    const knob = PRIM.match(/<div className=\{`(absolute w-4 h-4 rounded-full bg-white shadow transition-transform) \$\{compact \? '(top-\[\d+px\])' : '(top-1)'\} \$\{on \? \(compact \? '(translate-x-\[\d+px\])' : '(translate-x-6)'\) : '(translate-x-1)'\}`\} \/>/)
+    if (!track) throw new Error('the fixture cannot be built: no toggle track found in components/manage/primitives.tsx')
+    if (!knob) throw new Error('the fixture cannot be built: no toggle knob found in components/manage/primitives.tsx')
+    return { trackBase: track[1], trackCompact: track[2], trackFull: track[3],
+      knobBase: knob[1], knobTopCompact: knob[2], knobTopFull: knob[3],
+      onCompact: knob[4], onFull: knob[5], off: knob[6] }
+  })()
+  /* ── 🔴 PRIVATE EVENTS (20261014), LIFTED FROM THE COPY MODULE ─────────────────────────────────
+   * The ORDERING band, its one row, and Standard's statement cell. Lifted, not typed, for the reason
+   * every other string here is: if the component's wording changes this fixture stops BUILDING
+   * instead of going on measuring a screen nobody is served. */
+  const PE = read('lib/private-events/copy.ts')
+  const ORDERING_SECTION = lift(PE, /export const ORDERING_SECTION = '(.+?)'/, 'the ORDERING band label')
+  const PRIVATE_LINK_ROW = lift(PE, /export const PRIVATE_LINK_ROW_LABEL =\n?\s*'(.+?)'/, 'the link/QR row label')
+  const PRIVATE_LINK_STD = lift(PE, /export const PRIVATE_LINK_STANDARD_CELL = '(.+?)'/, 'Standard\'s link/QR cell')
+  const PRIVATE_TYPE_NAME = lift(PE, /export const PRIVATE_TYPE_NAME = '(.+?)'/, 'the Private type name')
+
+  /* 🔴 THE THREE BACKGROUNDS, as hex, because neither of the two greys is a Tailwind value and the
+   * measurement reads the computed `background-color`. */
+  /* ⚠️ "THE BANDING", NOT THE SINGULAR OF "STRIPES", in this file's prose. The harness runner's
+   * screen refuses that word as a whole word, case-insensitively, because it is the card processor's
+   * name — so writing it here would make this file unrunnable through the runner, which is the
+   * pre-existing fault this build fixed in two other harnesses. The IDENTIFIER is safe:
+   * `\bstripe\b` does not match `STRIPE_BG`, because `_` is a word character. */
+  const STRIPE_BG = lift(UI, /const STRIPE_BG = '(#[0-9A-F]{6})'/, 'the banding colour')
+  const SECTION_BG = lift(UI, /const SECTION_BG = '(#[0-9A-F]{6})'/, 'the section band')
+  const WHITE_BG = lift(UI, /const WHITE_BG = '(#[0-9A-F]{6})'/, 'the white background')
   /* The shared controls' own classes, so the fixture renders the components' output rather than a
    * look-alike. They live in primitives.tsx now; this file no longer defines a control. */
   /* ⚠️ FROM lib/ui-tokens.ts, which is where the box is DEFINED — primitives.tsx only re-exports
    * it under its old name. Lifting from the re-export would lift nothing. */
   const selBase = lift(TOKENS, /export const CONTROL_BOX =\n\s*'(.+?)'/, 'the control box')
-  const toggleTrack = lift(PRIM, /<div className=\{`(relative w-11 h-6 rounded-full transition-colors shrink-0) \$\{on \? 'bg-green-500' : 'bg-slate-300'\}`\}>/, 'the toggle track')
-  const toggleKnob = lift(PRIM, /<div className=\{`(absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform)/, 'the toggle knob')
   const LABEL_W = Number(lift(UI, /const GRID_LABEL_W = (\d+)/, 'the label column width'))
   const COL_W = Number(lift(UI, /const GRID_COL_W = (\d+)/, 'the value column width'))
   const PAD = Number(lift(UI, /const MODAL_SIDE_PADDING = (\d+)/, 'the modal side padding'))
@@ -116,14 +213,35 @@ function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline 
    * exists for: the columns are a fact about how many vans the truck has, never about the values in
    * them, so equalising two vans must not move anything. */
   const vanNames = vans === 'one' ? ['Main van'] : ['Main van', 'Festival trailer']
-  const vanCols = vanNames.length > 1 ? vanNames : []
+  /* 🔴 THE SWITCH DECIDES THE SHAPE AS WELL AS THE VAN COUNT (5 October 2026). ON ⇒ one combined
+   * column, headed "All vans"; OFF ⇒ one per active van. A one-van truck is the combined column
+   * either way and its header reads "Standard", unchanged. */
+  const vanCols = vanNames.length > 1 && !sameSettings ? vanNames : []
+  /** The Standard column HEADINGS, in render order. One entry ⇒ the combined column. */
+  const stdNames = vanCols.length > 1
+    ? vanCols
+    : [vanNames.length > 1 ? ALL_VANS_HEADER : 'Standard']
   const standardCols = vanCols.length > 1 ? vanCols.length : 1
   const valueColumnCount = standardCols + typeCount
   const cols = `${LABEL_W}px repeat(${valueColumnCount}, ${COL_W}px)`
   const dialogW = LABEL_W + COL_W * valueColumnCount + PAD
 
-  const typeNames = ['Festival', 'Market', 'Pub', 'Private hire', 'School fete', 'Christmas market']
-    .slice(0, typeCount)
+  /* ── 🔴 THE LAST COLUMN IS THE BUILT-IN PRIVATE TYPE (20261014) ───────────────────────────────
+   * The component sorts `kind: 'private'` last explicitly, so the fixture draws it last too — and
+   * every width/overflow measurement then covers the real column count a truck actually gets.
+   * ⚠️ "Private hire" (a plausible CUSTOM name) STAYS IN THE LIST, deliberately: it is a different
+   * thing from the built-in, and keeping both proves the lock and the purple heading attach to the
+   * built-in rather than to anything whose name contains "private". */
+  const customTypeNames = ['Festival', 'Market', 'Pub', 'Private hire', 'School fete']
+  /* ⚠️ `typeCount` IS THE TOTAL NUMBER OF TYPE COLUMNS, AND THE BUILT-IN IS ONE OF THEM. So the
+   * custom names are cut to `typeCount - 1` and Private is appended — `typeCount: 1` is a truck with
+   * nothing but the built-in, which is what every truck gets the first time it opens the grid.
+   * 🔴 THIS LINE PREVIOUSLY ENDED `.slice(0, typeCount)` ON THE ARRAY LITERAL, and the first version
+   * of this edit left that `.slice` dangling onto the next statement — `1.slice is not a function`,
+   * thrown before a single measurement ran. Written out in full so it cannot happen again. */
+  const typeNames = [...customTypeNames.slice(0, Math.max(0, typeCount - 1)), PRIVATE_TYPE_NAME]
+  /** True for the column index that is the built-in — always the last one. */
+  const isPrivateCol = (ti) => ti === typeNames.length - 1
 
   /* 🔴 THE FIVE ROWS, IN SERVICE_ROWS' ORDER, UNDER SERVICE_ROWS' LABELS — read out of the real
    * arrays, so the fixture cannot measure a row order or a wording the screen does not have.
@@ -139,19 +257,40 @@ function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline 
     if (order.length !== 5) throw new Error('the fixture cannot be built: SERVICE_ROWS did not yield five imported labels')
     return order.map(k => ({ k, label: pick(k) }))
   })()
-  /* 🔴 WHICH ROW IS TRUCK-LEVEL, READ OUT OF `standardWriteFor` RATHER THAN LISTED HERE. A truck-level
-   * row renders ONE control spanning the van columns, and that is a layout fact this must measure. */
-  const TRUCK_LEVEL = (() => {
-    const fn = UI.slice(UI.indexOf('function standardWriteFor('), UI.indexOf('const GRID_LABEL_W'))
-    return new Set([...fn.split(/\n\s{4}(?=case '|default:)/).slice(1)]
-      .filter(b => /scope: 'truck'/.test(b))
-      .map(b => (b.match(/^case '(\w+)':/) || [])[1])
-      .filter(Boolean))
-  })()
+  /* ══ ⛔ `TRUCK_LEVEL` IS DELETED (5 October 2026) ═══════════════════════════════════════════
+   * It read `standardWriteFor` for rows returning `scope: 'truck'`, because "Do you take cash?" was
+   * one — `trucks.takes_cash`, a single column for the whole truck — and that was a LAYOUT fact this
+   * fixture had to mirror. `truck_vans.takes_cash` (20261012) makes cash a van setting like the other
+   * four, so EVERY service row is per van and there is nothing to branch on.
+   * 🔴 THE HARNESS ASSERTS THE ABSENCE rather than trusting it: `scripts/event-types.cjs` refuses any
+   * `scope: 'truck'` in that function. */
 
-  const OFFLINE_LABELS = ['Off',
+  /* ══ 🔴 THE OFFLINE ROW IS A **SWITCH** NOW, AND THE MODE IS A SUB-ROW (5 October 2026) ═══════
+   * It was one three-choice dropdown — `Off` plus the two mode labels — and this list mirrored it.
+   * The row is a switch, and the mode lives in an indented "When offline" sub-row that is absent when
+   * protection is off in every column. So the list here is the TWO REAL MODES and no "Off".
+   * ⚠️ STILL LIFTED FROM `lib/copy/offlineProtection.ts`: the shape changed, the vocabulary did not,
+   * and a fixture that retyped the labels could measure a wording the screen does not have. */
+  const OFFLINE_LABELS = [
     lift(read('lib/copy/offlineProtection.ts'), /OFFLINE_MODE_PAUSE_LABEL = '(.+?)'/, 'the pause label'),
     lift(read('lib/copy/offlineProtection.ts'), /OFFLINE_MODE_NO_AUTO_ACCEPT_LABEL = '(.+?)'/, 'the no-auto-accept label')]
+  const WHEN_OFFLINE = lift(read('lib/copy/serviceSettings.ts'), /OFFLINE_WHEN_OFFLINE_LABEL = '(.+?)'/, 'the when-offline label')
+  const PRICE_TYPE_HINT = lift(read('lib/copy/serviceSettings.ts'), /PRICE_TYPE_HINT = '(.+?)'/, 'the type-a-price hint')
+  const SAME_SETTINGS_LABEL = lift(read('lib/copy/serviceSettings.ts'), /SAME_SETTINGS_ALL_VANS_LABEL = '(.+?)'/, 'the same-settings label')
+  const ALL_VANS_HEADER = lift(read('lib/copy/serviceSettings.ts'), /SAME_SETTINGS_ALL_VANS_HEADER = '(.+?)'/, 'the all-vans header')
+  const PRICE_LABELS = (() => {
+    const lib = read('lib/copy/serviceSettings.ts')
+    return {
+      on: lift(lib, /price_change_on: '(.+?)'/, 'the change-prices label'),
+      mode: lift(lib, /price_mode: '(.+?)'/, 'the price-change label'),
+      amount: lift(lib, /price_amount: '(.+?)'/, 'the amount label'),
+      rounding: lift(lib, /price_rounding: '(.+?)'/, 'the rounding label'),
+      items: lift(lib, /item_prices: '(.+?)'/, 'the item-prices label'),
+      stdCell: lift(lib, /PRICES_STANDARD_CELL = '(.+?)'/, 'the prices Standard cell'),
+    }
+  })()
+  const PRICE_MODE_LABELS = ['None', '+ \u00a3', '+ %', '\u2212 \u00a3', '\u2212 %']
+  const ROUNDING_LABELS = ['None', 'Nearest \u00a31', 'Always round up']
 
   /* The shared <Select>: `appearance-none` plus a chevron, so it is measured with its own arrow and
    * not the platform's — which is the one visual difference from Settings' native selects. */
@@ -170,48 +309,267 @@ function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline 
      * what a native select looks like, so a reader comparing the shot to the screen would be misled. */
     + '</select><svg aria-hidden="true" viewBox="0 0 20 20" fill="none" class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400">'
     + '<path d="M5 7.5 10 12.5 15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>'
-  const toggle = (label, on, faded, id, title) =>
+  /* 🔴 THE GRID'S SWITCH IS THE **COMPACT** ONE (5 October 2026): 38×22 with the same 16px knob, so
+   * the travel is 18px rather than 24. `toggleTrack` (44×24) is kept for the phone card, which is not
+   * dense — drawing the grid with it would measure a switch the grid does not render. */
+  const toggle = (label, on, faded, id, title, dense = true) =>
     `<button type="button"${id ? ` id="${id}"` : ''} role="switch" aria-checked="${on}" aria-label="${label}"${title ? ` title="${title}"` : ''} class="flex items-center gap-2 group ${faded ? 'opacity-50' : ''}">`
-    + `<div class="${toggleTrack} ${on ? 'bg-green-500' : 'bg-slate-300'}"><div class="${toggleKnob} ${on ? 'translate-x-6' : 'translate-x-1'}"></div></div></button>`
+    + `<div class="${TOGGLE.trackBase} ${dense ? TOGGLE.trackCompact : TOGGLE.trackFull} ${on ? 'bg-green-500' : 'bg-slate-300'}">`
+    + `<div class="${TOGGLE.knobBase} ${dense ? TOGGLE.knobTopCompact : TOGGLE.knobTopFull} ${on ? (dense ? TOGGLE.onCompact : TOGGLE.onFull) : TOGGLE.off}"></div></div></button>`
 
   /** One control for a row, at a given value. */
-  /* The two hover titles, lifted — they are the only place the nuances live now. */
-  const FOLLOWS_TITLE = lift(read('lib/copy/serviceSettings.ts'), /TYPE_FOLLOWS_VAN_TITLE = "(.+?)"/, 'the follows-van title')
-  const ALL_VANS_TITLE = lift(read('lib/copy/serviceSettings.ts'), /TAKES_CASH_ALL_VANS_TITLE = '(.+?)'/, 'the all-vans title')
+  /* ══ ⛔ THE TWO HOVER TITLES ARE DELETED, AND SO IS THE FADE (5 October 2026) ═════════════════
+   * `TYPE_FOLLOWS_VAN_TITLE` said "Follows each van's usual setting" on a FADED control, and
+   * `TAKES_CASH_ALL_VANS_TITLE` said "Applies to all your vans" on the one truck-level row. Both
+   * described the design the localhost report killed: a cell showing somebody else's setting.
+   * 🔴 A TYPE HOLDS ITS OWN VALUES NOW, so every cell is a real control at full strength. The only
+   * fade left anywhere is an untouched price Rounding, and that one is measured below by name.
+   * ⚠️ `faded` SURVIVES AS A PARAMETER because the Rounding still uses it — it is no longer passed by
+   * any service row, which `scripts/event-types.cjs` asserts. */
   const controlFor = (row, label, valueIdx, faded, id, title) => {
     if (row.k === 'collection_interval_mins') return sel(label, [`Every ${valueIdx ? 10 : 15} min`], faded, id, title)
-    if (row.k === 'offline_protection') return sel(label, OFFLINE_LABELS, faded, id, title)
+    /* 🔴 A SWITCH, not the three-choice dropdown it was. */
     return toggle(label, valueIdx === 0, faded, id, title)
   }
 
-  /* ── THE STANDARD SIDE OF ONE ROW ─────────────────────────────────────────────────────────────── */
-  const standardCellsFor = (row, i) => {
-    const idAttr = i === 0 ? ' id="firstStd"' : ''
-    if (vanCols.length > 1) {
-      /* 🔴 ONE CELL PER VAN FOR EVERY ROW, INCLUDING THE TRUCK-LEVEL ONE. The span is gone: it drew
-       * one switch under the first van's header and nothing under the second's, which reads as "van 2
-       * has no toggle". A truck-level row shows the SAME value in every column, with a hover title
-       * saying it applies to all vans. */
-      return vanCols.map((n, vi) => {
-        const v = TRUCK_LEVEL.has(row.k) ? 0 : (vans === 'differ' ? vi : 0)
-        const id = vi === 0 ? idAttr : (i === 0 && vi === 1 ? ' id="secondStd"' : '')
-        const tl = TRUCK_LEVEL.has(row.k) && i === 2 ? ' id="truckCell"' : ''
-        return `<div class="${stdCell}"${id}${tl}>${controlFor(row, `${row.label} for ${n}`, v, false, undefined, TRUCK_LEVEL.has(row.k) ? ALL_VANS_TITLE : undefined)}</div>`
-      }).join('')
-    }
-    return `<div class="${stdCell}"${idAttr}>${controlFor(row, `${row.label} for Standard`, 0, false)}</div>`
+  /* ══ 🔴 THE ROW PLAN — THE SAME MODEL THE COMPONENT USES ════════════════════════════════════════
+   * The component plans its rows and then places every cell with an explicit `gridColumn` /
+   * `gridRow`, because spans shear an auto-placed grid. This fixture does the same, for the same
+   * reason: a fixture that auto-placed would measure a grid the screen does not draw.
+   *
+   * 🔴 THE ROWS, IN THE COMPONENT'S ORDER: VANS (2+ vans only) · PRICES · SERVICE · USED BY.
+   */
+  const plan = []
+  if (vanCols.length > 1 || vans !== 'one') {
+    plan.push({ k: 'section', label: 'VANS' })
+    plan.push({ k: 'same-settings', label: SAME_SETTINGS_LABEL })
   }
+  /* 🔴 ORDERING, ABOVE PRICES AND BELOW VANS — it decides whether there is anything to price. */
+  plan.push({ k: 'section', label: ORDERING_SECTION })
+  plan.push({ k: 'private-link', label: PRIVATE_LINK_ROW })
+  plan.push({ k: 'section', label: 'PRICES' })
+  plan.push({ k: 'price-switch', label: PRICE_LABELS.on })
+  if (pricesOn) {
+    plan.push({ k: 'price-rule', which: 'mode', label: PRICE_LABELS.mode, indent: true })
+    plan.push({ k: 'price-rule', which: 'amount', label: PRICE_LABELS.amount, indent: true })
+    plan.push({ k: 'price-rule', which: 'rounding', label: PRICE_LABELS.rounding, indent: true })
+    plan.push({ k: 'items-band', label: 'ITEM PRICES' })
+    if (showItems) {
+      plan.push({ k: 'category', label: 'Pizzas' })
+      plan.push({ k: 'price-item', label: 'Margherita', price: '£10.00' })
+      plan.push({ k: 'price-item', label: 'Pepperoni', price: '£11.50' })
+      plan.push({ k: 'category', label: 'Sides' })
+      plan.push({ k: 'price-item', label: 'Garlic bread', price: '£2.00' })
+    }
+  }
+  plan.push({ k: 'section', label: 'SERVICE' })
+  for (const row of LABELS) {
+    plan.push({ k: 'service', row, label: row.label })
+    /* The "When offline" sub-row, which the component emits after the offline row when protection is
+     * on in any column. The fixture draws it ON, because that is the state with something to measure. */
+    if (row.k === 'offline_protection') plan.push({ k: 'offline-mode', label: WHEN_OFFLINE, indent: true })
+  }
+  plan.push({ k: 'section', label: 'USED BY' })
+  plan.push({ k: 'used-by', label: 'Upcoming events' })
 
-  /* ── ONE TYPE'S CELL ──────────────────────────────────────────────────────────────────────────── */
-  const typeCellFor = (row, name, i, j) => {
-    const idAttr = i === 0 && j === 0 ? ' id="firstControl"' : ''
-    /* 🔴 EVERY TYPE HERE IS INHERITING, which is the look worth measuring. Where the vans DIFFER and
-     * the row is per-van, an inheriting type has no single value to show — so it reads "Varies by
-     * van", faded, with no underline. */
-    /* ⛔ NO SPECIAL CASE FOR "the vans differ" ANY MORE. Every type cell is a real control at a real
-     * value, faded when the type has set nothing — the first van's value, with a hover title. The
-     * three phrases that used to live here are gone, and the harness asserts they are. */
-    return `<div class="${cell}"${idAttr}>${controlFor(row, `${row.label} for ${name}`, 0, true, i === 0 ? 'firstTypeCtl' : undefined, FOLLOWS_TITLE)}</div>`
+  /* 🔴 THE BANDING, RESTARTING AFTER EVERY HEADING — the component's own rule, replicated so the
+   * measurement has something to compare the computed background against. */
+  const stripeOf = (() => {
+    const out = []
+    let n = 0
+    for (const r of plan) {
+      if (r.k === 'section' || r.k === 'items-band' || r.k === 'category') { n = 0; out.push(false); continue }
+      out.push(n % 2 === 1)
+      n++
+    }
+    return out
+  })()
+  /* `items-band` IS A SECTION in every respect the layout cares about — band colour, heading type,
+   * height, and restarting the striping. */
+  const heightOf = (r) => (r.k === 'section' || r.k === 'items-band') ? ROW_H.section
+    : r.k === 'category' ? ROW_H.category
+    : r.k === 'price-item' ? ROW_H.item
+    : ROW_H.control
+  const bgOf = (r, idx) => (r.k === 'section' || r.k === 'items-band') ? SECTION_BG
+    : r.k === 'category' ? WHITE_BG
+    : (stripeOf[idx] ? STRIPE_BG : WHITE_BG)
+
+  /** How many rows the "Your menu prices" cell spans down through, beyond its own. */
+  const ruleRowCount = pricesOn ? 3 : 0
+
+  const priceInput = (label, id) =>
+    `<span class="relative inline-flex w-full min-w-0 items-stretch text-sm">`
+    + `<input${id ? ` id="${id}"` : ''} type="text" aria-label="${label}" value="10" style="height:${CONTROL_H}px"`
+    + ` class="w-full min-w-0 pr-6 text-center ${selBase}">`
+    + `<span aria-hidden="true" class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400">%</span></span>`
+
+  /** One body row, as the component places it: label cell, Standard side, then the type columns. */
+  const rowHtml = (r, idx) => {
+    const gr = 3 + idx
+    const h = heightOf(r)
+    const bg = bgOf(r, idx)
+    /* ══ 🔴 THE LABEL COLUMN MIRRORS THE COMPONENT (5 October 2026) ═══════════════════════════════
+     * Regular weight, WRAPPING (no `truncate`), item names indented 12px under their category, and a
+     * category heading with NO horizontal rule. Every one of those is a thing the measurement below
+     * checks, so the fixture has to draw them — a fixture that still truncated would measure a screen
+     * nobody is served and would report "nothing is clipped" for the wrong reason. */
+    /* 🔴 `data-rowkind` ON THE LABEL CELL OF EVERY ROW, so the probe can measure heights BY KIND on
+     * the rendered boxes. A class census cannot tell a 28px row from a 36px one. */
+    const kindAttr = ` data-rowkind="${r.k}"`
+    const st = (extra) => `style="${extra};min-height:${h}px;background:${bg}"`
+    const out = []
+
+    // ── the label cell ──
+    if (r.k === 'section' || r.k === 'items-band') {
+      /* 🔴 THE PILL IS INSIDE THE BAND, IMMEDIATELY AFTER THE HEADING TEXT. The grid scrolls
+       * sideways; this is the one position visible at every scroll offset, which is the whole reason
+       * it moved out of the label cell. */
+      const pill = r.k === 'items-band'
+        ? `<button id="itemsToggle" class="shrink-0 rounded-full border border-slate-300 bg-white px-2 py-px text-[10px] font-bold text-slate-700 normal-case tracking-normal">`
+          + `${showItems ? 'Hide' : 'Show'} 3 items ${showItems ? '\u25b4' : '\u25be'}</button>`
+        : ''
+      out.push(`<div${kindAttr} class="px-3 flex items-center gap-2 ${heading} border-t border-slate-100" ${st(`grid-column:1;grid-row:${gr}`)}`
+        + ` id="${'sec-' + r.label.replace(/\s/g, '').toLowerCase()}"><span class="shrink-0">${r.label}</span>${pill}</div>`)
+    } else if (r.k === 'category') {
+      /* 🔴 NEAR-BLACK, EXTRABOLD, 12px — and ⛔ NO `border-t` AT ALL. A darker rule on the label cell
+       * only drew a stub under the label column (the "looks broken" Dominic reported); the heading
+       * separates the group by being a heading. The VERTICAL dividers still run through the row. */
+      out.push(`<div${kindAttr} id="catLabel" class="px-3 flex items-center text-[12px] font-extrabold text-slate-900 tracking-[0.04em] uppercase leading-tight" ${st(`grid-column:1;grid-row:${gr}`)}><span>${r.label}</span></div>`)
+    } else {
+      const cls = r.indent ? labelIndent : r.k === 'price-item' ? labelItem : labelCell
+      /* 🔴 THE ID GOES ON THE **SPAN**, NOT ON THE CELL, and that is a measurement decision. The probe's
+       * `labelLines` counts the rects of `selectNodeContents`, and the cell now contains a span PLUS
+       * (on one row) the Hide/Show button — so selecting the CELL's contents returns two rects for a
+       * label that is on one line, and "does the longest label wrap?" would answer yes at every
+       * width. The text node is what the question is about. */
+      /* 🔴 TWO IDS, AND THEY MEASURE TWO DIFFERENT THINGS. `firstLabel` stays on the CELL, because the
+       * label-column WIDTH is a property of the cell (212px). `firstLabelText` / `lastLabel` go on the
+       * SPAN, because the FONT SIZE and the WRAP are properties of the text — and in the component the
+       * size class (`text-sm`) is on the span, with nothing on the div. Measuring the div's font would
+       * read `<body>`'s 16px and report a mismatch that is not on screen. */
+      const spanId = r.k === 'service' && r.row === LABELS[LABELS.length - 1] ? ' id="lastLabel"'
+        : r.k === 'service' && r.row === LABELS[0] ? ' id="firstLabelText"' : ''
+      /* ⛔ NO `truncate`, AND REGULAR WEIGHT. Labels WRAP now — no ellipsis anywhere — and bold
+       * belongs only to section bands and column titles. `leading-tight` is what lets two lines fit a
+       * row that grew to hold them. A fixture that kept `truncate` would report "nothing is clipped"
+       * because nothing CAN be clipped when it is ellipsised, which is the opposite of the question. */
+      const inner = r.k === 'price-item'
+        ? `<span${spanId} class="min-w-0 flex-1 leading-tight text-[13.5px] text-slate-700">${r.label}</span>`
+        : r.indent
+          ? `<span${spanId} class="min-w-0 flex-1 leading-tight text-sm text-slate-600">${r.label}</span>`
+          : `<span${spanId} class="min-w-0 flex-1 leading-tight text-sm text-slate-800">${r.label}</span>`
+      /* ⛔ NO BUTTON IN THE LABEL CELL ANY MORE — it is a pill in the band (above). */
+      const id = r.k === 'service' && r.row === LABELS[0] ? ' id="firstLabel"' : ''
+      out.push(`<div${kindAttr} class="${cls}"${id} ${st(`grid-column:1;grid-row:${gr}`)}>${inner}</div>`)
+    }
+
+    // ── the Standard side ──
+    if (r.k === 'section' || r.k === 'category') {
+      /* 🔴 ONE EMPTY, DIVIDED CELL PER COLUMN — which is what makes the vertical rules continuous.
+       * A `col-span-full` heading is what used to break them. */
+      /* ⛔ A CATEGORY ROW TAKES NO `border-t`, EITHER SIDE. See the label cell's note. */
+      const rule = r.k === 'category' ? '' : ' border-t border-slate-100'
+      out.push(...stdNames.map((n, vi) =>
+        `<div class="${divider}${rule}"${r.k === 'category' && vi === 0 ? ' id="catValueCell"' : ''} ${st(`grid-column:${2 + vi};grid-row:${gr}`)}></div>`))
+    } else if (r.k === 'price-switch') {
+      out.push(`<div id="pricesStdCell" class="${divider} px-2.5 flex items-center justify-center text-center border-t border-slate-100"`
+        + ` style="grid-column:2 / span ${stdNames.length};grid-row:${gr} / span ${1 + ruleRowCount};background:${WHITE_BG}">`
+        + `<span class="text-[13px] text-slate-600">${PRICE_LABELS.stdCell}</span></div>`)
+    } else if (r.k === 'price-rule') {
+      /* no Standard cell — the span above covers these rows */
+    } else if (r.k === 'items-band') {
+      /* 🔴 THE HINT LIVES IN THE BAND, spanning the van columns — and it still draws the divider, so
+       * the column lines stay continuous through the band like every other row. */
+      out.push(`<div id="itemsHint" class="${divider} px-2.5 flex items-center border-t border-slate-100"`
+        + ` style="grid-column:2 / span ${stdNames.length};grid-row:${gr};min-height:${h}px;background:${bg}">`
+        + `<span class="text-[10px] font-semibold text-slate-500 normal-case tracking-normal truncate">${PRICE_TYPE_HINT}</span></div>`)
+    } else if (r.k === 'price-item') {
+      out.push(`<div class="${divider} px-2.5 flex items-center justify-center border-t border-slate-100"`
+        + ` style="grid-column:2 / span ${stdNames.length};grid-row:${gr};min-height:${h}px;background:${bg}">`
+        + `<span class="text-[13.5px] text-slate-700 tabular-nums">${r.price}</span></div>`)
+    } else if (r.k === 'private-link') {
+      /* 🔴 STANDARD SAYS WHAT IS TRUE — a STATEMENT across the van columns, not a switch that could
+       * only ever be off. Measured as text, and measured as spanning. */
+      out.push(`<div id="privateLinkStd" class="${divider} px-2.5 flex items-center border-t border-slate-100"`
+        + ` style="grid-column:2 / span ${stdNames.length};grid-row:${gr};min-height:${h}px;background:${bg}">`
+        + `<span class="text-[11px] font-semibold text-slate-500 truncate">${PRIVATE_LINK_STD}</span></div>`)
+    } else if (r.k === 'same-settings') {
+      out.push(`<div id="sameSettingsCell" class="${divider} ${cell}"`
+        + ` style="grid-column:2 / span ${stdNames.length};grid-row:${gr};min-height:${h}px;background:${bg}">`
+        + `${toggle(SAME_SETTINGS_LABEL, sameSettings, false, 'sameSettingsSwitch')}</div>`)
+    } else if (r.k === 'used-by') {
+      out.push(`<div class="${divider} px-2.5 flex items-center justify-center border-t border-slate-100"`
+        + ` style="grid-column:2 / span ${stdNames.length};grid-row:${gr};min-height:${h}px;background:${bg}">`
+        + `<span class="text-sm text-slate-600">Everything else</span></div>`)
+    } else if (r.k === 'offline-mode') {
+      out.push(...stdNames.map((n, vi) =>
+        `<div class="${divider} ${cell}" ${st(`grid-column:${2 + vi};grid-row:${gr}`)}>`
+        + `${sel(`${WHEN_OFFLINE} for ${n}`, OFFLINE_LABELS, false, vi === 0 ? 'whenOfflineSel' : undefined)}</div>`))
+    } else {
+      /* A SERVICE row: ONE CELL PER VAN COLUMN, every row — no truck-level exception any more. */
+      out.push(...stdNames.map((n, vi) => {
+        const v = vans === 'differ' ? vi : 0
+        const id = r.row === LABELS[0] && vi === 0 ? ' id="firstStd"'
+          : r.row === LABELS[0] && vi === 1 ? ' id="secondStd"' : ''
+        /* `data-svc` marks EVERY service row's Standard cell, so the probe can ask "does any of them
+         * span?" on the rendered boxes rather than on class names. */
+        return `<div data-svc class="${divider} ${cell}"${id} ${st(`grid-column:${2 + vi};grid-row:${gr}`)}>`
+          + `${controlFor(r.row, `${r.row.label} for ${n}`, v, false)}</div>`
+      }))
+    }
+
+    // ── the type columns ──
+    out.push(...typeNames.map((n, ti) => {
+      const col = 2 + stdNames.length + ti
+      const base = `grid-column:${col};grid-row:${gr}`
+      if (r.k === 'section' || r.k === 'items-band' || r.k === 'category') {
+        return `<div class="${divider}${r.k === 'category' ? '' : ' border-t border-slate-100'}" ${st(base)}></div>`
+      }
+      if (r.k === 'private-link') {
+        /* 🔴 THE SWITCH IS IN THE **PRIVATE** COLUMN AND NOWHERE ELSE. Blank in every custom type's
+         * column: a Festival is not private and has no link to switch. */
+        return `<div class="${divider} ${cell}"${isPrivateCol(ti) ? ' id="privateLinkCell"' : ''} ${st(base)}>`
+          + `${isPrivateCol(ti) ? toggle(PRIVATE_LINK_ROW, true, false, 'privateLinkSwitch') : ''}</div>`
+      }
+      if (r.k === 'same-settings') {
+        /* ⚠️ BLANK IN A TYPE COLUMN — a type has no vans. */
+        return `<div class="${divider} ${cell}" ${st(base)}></div>`
+      }
+      if (r.k === 'price-switch') {
+        return `<div class="${divider} ${cell}" ${st(base)}>${toggle(`${PRICE_LABELS.on} for ${n}`, pricesOn && ti === 0, false, ti === 0 ? 'priceSwitch' : undefined)}</div>`
+      }
+      if (r.k === 'price-rule') {
+        /* 🔴 CONTROLS ONLY WHERE THE SWITCH IS ON; BLANK CELLS ELSEWHERE. */
+        const on = pricesOn && ti === 0
+        const inner = !on ? ''
+          : r.which === 'mode' ? sel(`${PRICE_LABELS.mode} for ${n}`, PRICE_MODE_LABELS, false, 'priceModeSel')
+          : r.which === 'amount' ? priceInput(`${PRICE_LABELS.amount} for ${n}`, 'priceAmount')
+          : sel(`${PRICE_LABELS.rounding} for ${n}`, ROUNDING_LABELS, true, 'priceRounding')
+        return `<div class="${divider} ${cell}" ${st(base)}>${inner}</div>`
+      }
+      /* ⚠️ EMPTY, like PRICES and SERVICE. The old ROW carried a per-type "N typed" count; a BAND
+       * does not, and that loss is recorded in §70.11 of the manual rather than hidden here. */
+      if (r.k === 'items-band') {
+        return `<div class="${divider} border-t border-slate-100" ${st(base)}></div>`
+      }
+      if (r.k === 'price-item') {
+        const on = pricesOn && ti === 0
+        const inner = on
+          ? `<span${ti === 0 ? ' id="priceCell"' : ''} class="inline-flex items-center rounded-lg border border-blue-300 bg-blue-50 px-2 text-sm text-blue-800 tabular-nums" style="height:${TYPED_H}px">£11.00</span>`
+          : `<span class="text-sm text-slate-400 tabular-nums">${r.price}</span>`
+        return `<div class="${divider} ${cell}" ${st(base)}>${inner}</div>`
+      }
+      if (r.k === 'used-by') {
+        return `<div class="${divider} ${cell}" ${st(base)}><span class="text-sm text-slate-700">2 events</span></div>`
+      }
+      if (r.k === 'offline-mode') {
+        return `<div class="${divider} ${cell}" ${st(base)}>${sel(`${WHEN_OFFLINE} for ${n}`, OFFLINE_LABELS, false)}</div>`
+      }
+      const id = r.row === LABELS[0] && ti === 0 ? ' id="firstControl"' : ''
+      return `<div class="${divider} ${cell}"${id} ${st(base)}>`
+        + `${controlFor(r.row, `${r.row.label} for ${n}`, 0, false, r.row === LABELS[0] && ti === 0 ? 'firstTypeCtl' : undefined)}</div>`
+    }))
+    return out.join('')
   }
 
   const footer = (() => {
@@ -246,15 +604,25 @@ ${inline ? '<div style="padding:16px">' : '<div class="fixed inset-0 z-50 bg-bla
       </div>
       <div id="scroller" class="${breakScroll ? 'hidden md:block px-2 pb-2' : scroller}" data-types-scroller>
         <div class="min-w-max" style="display:grid;grid-template-columns:${cols}" id="grid" data-types-grid>
-          <div class="px-3.5 py-3"></div>
-          ${(vanCols.length > 1 ? vanCols : ['Standard']).map((n, k) => `<div class="${divider} px-2.5 py-3 flex items-center gap-1.5 min-w-0"${k === 0 ? ' id="firstStdHdr"' : ''}><span class="inline-block w-2.5 h-2.5 rounded-full shrink-0" style="background:#94A3B8"></span><span class="text-[13px] font-bold text-slate-800 truncate" title="${n}">${n}</span><span class="text-[11px] text-slate-400 font-semibold shrink-0">${vanCols.length > 1 ? 'Standard' : 'default'}</span></div>`).join('')}
-          ${typeNames.map(n => `<div class="${divider} px-2.5 py-3 flex items-center gap-1.5 min-w-0 relative"><span class="inline-block w-2.5 h-2.5 rounded-full shrink-0" style="background:#E8550F"></span><span class="text-[13px] font-bold text-slate-800 truncate">${n}</span><button aria-label="More for ${n}" class="ml-auto shrink-0 w-[30px] h-[30px] rounded-lg border border-slate-200 text-slate-500 font-bold">⋯</button></div>`).join('')}
-          <div class="px-3 pt-3.5 pb-1.5 ${heading}" style="grid-column:1/-1">SERVICE</div>
-          ${LABELS.map((x, i) => `<div class="${labelCell}"${i === 0 ? ' id="firstLabel"' : ''}${i === 4 ? ' id="lastLabel"' : ''}>${x.label}</div>${standardCellsFor(x, i)}${typeNames.map((n, j) => typeCellFor(x, n, i, j)).join('')}`).join('')}
-          <div class="px-3 pt-3.5 pb-1.5 ${heading}" style="grid-column:1/-1">USED BY</div>
-          <div class="${labelCell}">Upcoming events</div>
-          <div class="${divider} px-2.5 py-2.5 border-t border-slate-100 text-sm text-slate-600 min-h-11 flex items-center justify-center"${vanCols.length > 1 ? ` style="grid-column:span ${vanCols.length}"` : ''}>Everything else</div>
-          ${typeNames.map(() => `<div class="${divider} px-2.5 py-2.5 border-t border-slate-100 text-sm text-slate-700 min-h-11 flex items-center justify-center">2 events</div>`).join('')}
+          ${/* ══ 🔴 HEADER ROW 1-2 — THE SHARED "STANDARD" HEADING, THEN THE VAN NAMES ═══════════════
+             * One heading spanning the van columns, van names centred below it with NO dot, and each
+             * type header spanning BOTH rows with its ⋯ taken out of the flex flow so the name is
+             * centred on the whole column. Every cell is placed explicitly. */''}
+          <div id="corner" class="px-3 flex items-end" style="grid-column:1;grid-row:1 / span 2;background:${WHITE_BG}"></div>
+          <div id="stdHeading" class="${divider} px-2.5 flex items-center justify-center ${heading}"
+            style="grid-column:2 / span ${stdNames.length};grid-row:1;height:${ROW_H.category}px;background:${WHITE_BG}">STANDARD</div>
+          ${typeNames.map((n, k) => {
+            /* 🔴 THE BUILT-IN READS AS BUILT-IN: a LOCK instead of a colour dot, purple text. The
+             * dots exist so two CUSTOM columns can be told apart; Private is the same on every
+             * truck, so a dot would be claiming it is one of theirs. */
+            const priv = isPrivateCol(k)
+            const mark = priv
+              ? `<span class="text-[11px] leading-none text-purple-500">🔒</span>`
+              : `<span class="inline-block w-2.5 h-2.5 rounded-full shrink-0" style="background:#E8550F"></span>`
+            return `<div class="${divider} relative px-7 flex items-center justify-center gap-1.5 min-w-0"${priv ? ' id="privateTypeHdr" data-private-column' : (k === 0 ? ' id="firstTypeHdr"' : '')} style="grid-column:${2 + stdNames.length + k};grid-row:1 / span 2;background:${WHITE_BG}">${mark}<span class="text-[13px] font-bold truncate ${priv ? 'text-purple-700' : 'text-slate-800'}">${n}</span><button${k === 0 ? ' id="firstDots"' : ''} aria-label="More for ${n}" class="absolute right-1 top-1/2 -translate-y-1/2 w-[26px] h-[26px] rounded-lg border border-slate-200 text-slate-500 font-bold leading-none">⋯</button></div>`
+          }).join('')}
+          ${stdNames.map((n, k) => `<div class="${divider} px-2.5 flex items-center justify-center min-w-0"${k === 0 ? ' id="firstStdHdr"' : ''} style="grid-column:${2 + k};grid-row:2;height:${ROW_H.control}px;background:${WHITE_BG}"><span class="text-[13px] font-bold text-slate-800 truncate" title="${n}">${n}</span></div>`).join('')}
+          ${plan.map((r, idx) => rowHtml(r, idx)).join('')}
         </div>
       </div>
     </div>
@@ -417,16 +785,51 @@ function cardFixture(css, withTypes = true, old = false) {
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
+/** Screenshots that could not be taken. Reported in the summary, never thrown. */
+const SHOT_FAILURES = []
+/**
+ * ── 🔴 ONE DEAD SHOT ENGINE COSTS **ONE** TIMEOUT, NOT ONE PER SHOT ──────────────────────────────
+ * On this machine's Chromium (`chromium_headless_shell` 153) `el.screenshot()` HANGS rather than
+ * throwing, so each attempt costs the full `protocolTimeout` before the guard below catches it. With
+ * a dozen shot fixtures that is minutes of dead time *after* every measurement has already been
+ * taken — which is precisely how a run that had passed 228 assertions never reached its summary.
+ *
+ * So the FIRST failure on an engine disables that engine's remaining shots. The measurements are
+ * unaffected (they do not use `shot`), and the summary still reports every skip by name, so
+ * "the pictures are missing" stays visible rather than becoming silently true.
+ * ⚠️ PER ENGINE, NOT GLOBAL: WebKit's shots work here and must not be disabled by Chromium's.
+ */
+const SHOTS_DEAD = new Set()
+
 async function engines() {
   const out = []
   try {
     const puppeteer = require('puppeteer')
-    const b = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] })
+    /* ⚠️ `protocolTimeout` IS SET DELIBERATELY. Puppeteer's default is 180 SECONDS, so one hung
+     * `page.evaluate` costs three minutes and then throws `Runtime.callFunctionOn timed out` with no
+     * indication of which fixture was being measured. 30s is far more than any probe here needs
+     * (they take milliseconds) and turns a hang into a prompt, locatable failure. */
+    const b = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'], protocolTimeout: 30000 })
     const page = await b.newPage()
     out.push({ name: 'Chromium', close: () => b.close(), page,
       setViewport: (w, h) => page.setViewport({ width: w, height: h }),
       /* ⚠️ THE ELEMENT, NOT THE PAGE. A full-page shot of a fixture is mostly backdrop. */
-      shot: async (file, id) => { const el = await page.$('#' + id); if (el) await el.screenshot({ path: file }) } })
+      /* ══ 🔴 A SCREENSHOT FAILURE MUST NOT ABORT THE MEASUREMENTS ══════════════════════════════
+       * A shot is an ARTEFACT; the assertions are the measurement. This was unguarded, and on
+       * Chromium's new `headless_shell` the element screenshot hangs until the protocol timeout —
+       * so one unviewable PNG threw away every measurement after it, and the only output was a
+       * `Runtime.callFunctionOn timed out` stack naming no fixture. Measured: five checks ran, the
+       * shot hung, and forty-odd never ran at all.
+       * ⚠️ IT IS REPORTED, NOT SWALLOWED. `shotFailures` is printed in the summary, so "the pictures
+       * are missing" is visible rather than silently true. */
+      shot: async (file, id) => {
+        if (SHOTS_DEAD.has('Chromium')) { SHOT_FAILURES.push(`Chromium ${path.basename(file)}: skipped (shots disabled after the first failure)`); return }
+        try { const el = await page.$('#' + id); if (el) await el.screenshot({ path: file }) }
+        catch (e) {
+          SHOT_FAILURES.push(`Chromium ${path.basename(file)}: ${String(e.message).split('\n')[0].slice(0, 70)}`)
+          SHOTS_DEAD.add('Chromium')
+        }
+      } })
   } catch (e) { out.push({ name: 'Chromium', skip: String(e.message).split('\n')[0].slice(0, 110) }) }
   try {
     const { webkit } = require('playwright')
@@ -434,7 +837,15 @@ async function engines() {
     const page = await b.newPage()
     out.push({ name: 'WebKit', close: () => b.close(), page,
       setViewport: (w, h) => page.setViewportSize({ width: w, height: h }),
-      shot: async (file, id) => { const el = await page.locator('#' + id).first(); await el.screenshot({ path: file }) } })
+      /* Guarded for the reason above — one unviewable PNG must not cost the whole engine's run. */
+      shot: async (file, id) => {
+        if (SHOTS_DEAD.has('WebKit')) { SHOT_FAILURES.push(`WebKit ${path.basename(file)}: skipped (shots disabled after the first failure)`); return }
+        try { const el = await page.locator('#' + id).first(); await el.screenshot({ path: file, timeout: 15000 }) }
+        catch (e) {
+          SHOT_FAILURES.push(`WebKit ${path.basename(file)}: ${String(e.message).split('\n')[0].slice(0, 70)}`)
+          SHOTS_DEAD.add('WebKit')
+        }
+      } })
   } catch (e) { out.push({ name: 'WebKit', skip: String(e.message).split('\n')[0].slice(0, 110) }) }
   return out
 }
@@ -489,6 +900,61 @@ const probe = () => {
     /* The truck-level row's cell in the FIRST van column, and the hover text that explains why the
      * same switch appears in every column. One cell wide, never a span. */
     truckCell: box('truckCell'),
+    /* ── 🔴 "DOES ANY SERVICE CELL SPAN MORE THAN ONE COLUMN?" ───────────────────────────────────
+     * Measured on the rendered boxes, not on class names: a `grid-column: 2 / span 2` and a plain
+     * one-column cell have the same classes and different widths, which is the whole point. Every
+     * service row's Standard cells carry `data-svc`; the widest must be one column wide.
+     * ⚠️ `firstStd` IS THE REFERENCE because it IS a one-column cell by construction. */
+    /* ── 🔴 THE DENSER GRID'S GEOMETRY, MEASURED (5 October 2026) ────────────────────────────────
+     * Every row carries `data-rowkind`, so "item rows are 28px" is a measurement of the rendered box
+     * rather than a class census. ⚠️ ROUNDED: a fractional height from a border is not a design fault.
+     */
+    rowHeights: (() => {
+      const out = {}
+      for (const e of document.querySelectorAll('[data-rowkind]')) {
+        const k = e.getAttribute('data-rowkind')
+        const h = Math.round(e.getBoundingClientRect().height)
+        if (!out[k]) out[k] = []
+        if (!out[k].includes(h)) out[k].push(h)
+      }
+      return out
+    })(),
+    /* ── 🔴 THE COMPACT SWITCH'S TRACK, MEASURED **INSIDE THE GRID** ─────────────────────────────
+     * The grid's switch is the compact one; the phone column's is the full 44×24. Both are in the
+     * document at every width — one of the two is always `display: none`, because the screen swaps
+     * them at the `md` breakpoint rather than rendering one.
+     * 🔴 SCOPED TO `#grid`, AND THAT IS NOT TIDINESS. An unscoped `document.querySelector` took the
+     * FIRST switch in document order, which at 1440 is the phone column's — inside a `md:hidden`
+     * subtree. A hidden element's computed width still reports the specified `38px`, so the harness
+     * said "the switch is 38×22 (0×0)" in all 36 van-state cases while the component was drawing it
+     * correctly: `getBoundingClientRect()` is zero for anything under `display: none`, and the
+     * COMPUTED style is not, so the two disagreed and only the rect was being asserted.
+     * ⛔ AND A ZERO RECT IS REPORTED AS ZERO, NOT SKIPPED. If the grid's switch is ever genuinely
+     * unrendered this must fail — so the query is narrowed to the right element rather than the
+     * measurement being taught to ignore an awkward answer. */
+    switchBox: (() => {
+      const g = document.getElementById('grid')
+      const b = g && g.querySelector('[role="switch"] > div')
+      if (!b) return null
+      const r = b.getBoundingClientRect()
+      return { w: Math.round(r.width), h: Math.round(r.height) }
+    })(),
+    /** The ITEM PRICES band's pill, and whether it is left of the first value column. */
+    itemsToggle: box('itemsToggle'),
+    itemsHint: box('itemsHint'),
+    priceCell: box('priceCell'),
+    widestServiceCell: (() => {
+      const els = [...document.querySelectorAll('[data-svc]')]
+      if (!els.length) return null
+      return Math.round(Math.max(...els.map(e => e.getBoundingClientRect().width)))
+    })(),
+    serviceCellSpans: (() => {
+      const els = [...document.querySelectorAll('[data-svc]')]
+      const ref = document.getElementById('firstStd')
+      if (!els.length || !ref) return null
+      const one = ref.getBoundingClientRect().width
+      return els.some(e => e.getBoundingClientRect().width > one + 1)
+    })(),
     truckCellTitle: (() => {
       const el = document.getElementById('truckCell')
       const c = el && el.querySelector('[title]')
@@ -518,8 +984,10 @@ const probe = () => {
       const txt = (document.getElementById('grid') || document.body).innerText || ''
       return ['Varies by van', 'Set per van', 'Same as Standard'].some(p => txt.includes(p))
     })(),
-    fontOfLabel: (() => { const e = document.getElementById('firstLabel'); return e ? getComputedStyle(e).fontSize : null })(),
-    lineHeightOfLabel: (() => { const e = document.getElementById('firstLabel'); return e ? getComputedStyle(e).lineHeight : null })(),
+    /* ⚠️ THE TEXT NODE'S OWN ELEMENT, NOT THE CELL. The grid's label cell is a flex row whose SPAN
+     * carries the size class; the cell itself carries none, so reading the cell measures <body>. */
+    fontOfLabel: (() => { const e = document.getElementById('firstLabelText') || document.getElementById('firstLabel'); return e ? getComputedStyle(e).fontSize : null })(),
+    lineHeightOfLabel: (() => { const e = document.getElementById('firstLabelText') || document.getElementById('firstLabel'); return e ? getComputedStyle(e).lineHeight : null })(),
     fontOfSelect: (() => {
       const e = (document.getElementById('grid') || document).querySelector('select')
       return e ? getComputedStyle(e).fontSize : null
@@ -543,6 +1011,118 @@ const probe = () => {
       const g = document.getElementById('grid')
       if (!g) return 0
       return [...g.children].filter(el => parseFloat(getComputedStyle(el).borderLeftWidth) > 0).length
+    })(),
+    /** The first value column's header box, so the pill can be shown to sit LEFT of it. */
+    firstStdHdr: box('firstStdHdr'),
+    /* ── 🔴 PRIVATE EVENTS (20261014) ──────────────────────────────────────────────────────────── */
+    privateLinkStd: box('privateLinkStd'),
+    privateLinkCell: box('privateLinkCell'),
+    privateTypeHdr: box('privateTypeHdr'),
+    /** The FIRST type column's header, so "the built-in is last" is measured rather than assumed. */
+    firstTypeHdr: box('firstTypeHdr'),
+    /** Standard's cell on the link/QR row: its TEXT, and whether it holds a control. */
+    privateLinkStdText: (() => {
+      const e = document.getElementById('privateLinkStd')
+      return e ? (e.textContent || '').trim() : null
+    })(),
+    privateLinkStdHasControl: (() => {
+      const e = document.getElementById('privateLinkStd')
+      return e ? !!e.querySelector('[role="switch"], select, input, button') : null
+    })(),
+    /** 🔴 The built-in's heading colour, computed — a purple CLASS that got purged would still pass a
+     *  class census and fail the comparison this feeds. */
+    privateHdrColour: (() => {
+      const e = document.getElementById('privateTypeHdr')
+      const span = e && e.querySelector('span.font-bold')
+      return span ? getComputedStyle(span).color : null
+    })(),
+    /** A CUSTOM type's heading colour, for the comparison. */
+    customHdrColour: (() => {
+      const e = document.getElementById('firstTypeHdr')
+      const span = e && e.querySelector('span.font-bold')
+      return span ? getComputedStyle(span).color : null
+    })(),
+    /* ══ 🔴 THE THREE THINGS DOMINIC ASKED TO BE MEASURED (5 October 2026) ═══════════════════════ */
+    /** Is ANY label clipped? ⛔ The honest test: the text's own scrollHeight against its clientHeight.
+     *  An ellipsised label has neither, which is why `truncate` had to go from the fixture too. */
+    clippedLabels: (() => {
+      const out = []
+      for (const e of document.querySelectorAll('[data-rowkind] span')) {
+        const txt = (e.textContent || '').trim()
+        if (!txt) continue
+        if (e.scrollWidth > e.clientWidth + 1 || e.scrollHeight > e.clientHeight + 1) out.push(txt.slice(0, 44))
+      }
+      return out
+    })(),
+    /** ⛔ Does any label render an ellipsis? Measured as the COMPUTED text-overflow, not a class. */
+    ellipsisLabels: (() => {
+      const out = []
+      for (const e of document.querySelectorAll('[data-rowkind], [data-rowkind] span')) {
+        if (getComputedStyle(e).textOverflow === 'ellipsis') out.push((e.textContent || '').trim().slice(0, 44))
+      }
+      return out
+    })(),
+    /** The height of the row whose label is the longest — the one that must grow rather than clip. */
+    privateLinkRowHeight: (() => {
+      const e = document.querySelector('[data-rowkind="private-link"]')
+      return e ? Math.round(e.getBoundingClientRect().height) : null
+    })(),
+    /** 🔴 The category heading's own look, computed: colour, weight, size — and its rule. */
+    catLabel: (() => {
+      const e = document.getElementById('catLabel')
+      if (!e) return null
+      const c = getComputedStyle(e)
+      const span = e.querySelector('span')
+      const sc = span ? getComputedStyle(span) : c
+      return {
+        colour: sc.color, weight: sc.fontWeight, size: sc.fontSize,
+        ruleTop: c.borderTopWidth,
+        left: Math.round(e.getBoundingClientRect().left),
+      }
+    })(),
+    /** ⛔ The category row's VALUE cell rule — the half-line that looked broken. */
+    catValueRuleTop: (() => {
+      const e = document.getElementById('catValueCell')
+      return e ? getComputedStyle(e).borderTopWidth : null
+    })(),
+    /** 🔴 …and that the VERTICAL divider still runs through it. */
+    catValueDivided: (() => {
+      const e = document.getElementById('catValueCell')
+      return e ? parseFloat(getComputedStyle(e).borderLeftWidth) > 0 : null
+    })(),
+    /** An item label's left edge, for "indented under its category". */
+    itemLabelLeft: (() => {
+      const e = document.querySelector('[data-rowkind="price-item"]')
+      return e ? Math.round(e.getBoundingClientRect().left) : null
+    })(),
+    itemTextLeft: (() => {
+      const e = document.querySelector('[data-rowkind="price-item"] span')
+      return e ? Math.round(e.getBoundingClientRect().left) : null
+    })(),
+    catTextLeft: (() => {
+      const e = document.querySelector('#catLabel span')
+      return e ? Math.round(e.getBoundingClientRect().left) : null
+    })(),
+    /** Every row's height by kind, as a flat list, so the report can quote the real numbers. */
+    heightsByKind: (() => {
+      const out = {}
+      for (const e of document.querySelectorAll('[data-rowkind]')) {
+        const k = e.getAttribute('data-rowkind')
+        const h = Math.round(e.getBoundingClientRect().height)
+        if (!out[k]) out[k] = []
+        if (!out[k].includes(h)) out[k].push(h)
+      }
+      return out
+    })(),
+    /** How many of the type columns hold a link/QR switch. Must be exactly ONE. */
+    privateSwitchCount: (() => {
+      const g = document.getElementById('grid')
+      if (!g) return null
+      let n = 0
+      for (const el of g.querySelectorAll('[role="switch"]')) {
+        if ((el.getAttribute('aria-label') || '').startsWith('Take orders by private link')) n++
+      }
+      return n
     })(),
     headerDivided: (() => {
       const e = document.getElementById('firstStdHdr')
@@ -580,6 +1160,7 @@ const probe = () => {
 
 async function main() {
   const lines = []
+  global.PROGRESS = lines
   let fails = 0
   const t = (ok, label) => { lines.push(`  ${ok ? '✓' : '🔴'} ${label}`); if (!ok) fails++ }
 
@@ -597,6 +1178,25 @@ async function main() {
   const EXPECTED_LABEL_W = Number(lift(UI, /const GRID_LABEL_W = (\d+)/, 'the label column width'))
   const EXPECTED_COL_W = Number(lift(UI, /const GRID_COL_W = (\d+)/, 'the value column width'))
   const EXPECTED_PAD = Number(lift(UI, /const MODAL_SIDE_PADDING = (\d+)/, 'the modal side padding'))
+  /* ══ 🔴 THE DENSER GRID'S NUMBERS, LIFTED FOR THE ASSERTIONS (5 October 2026) ═══════════════════
+   * The fixture builder lifts these too, but it is a different scope, and a measurement that typed
+   * its own copy of 36 or 22 would keep passing after the component changed. Both ends read the ONE
+   * definition in `components/shared/PriceControls.tsx`.
+   * ⚠️ `GRID_CONTROL_H`/`GRID_TYPED_H`, NOT `CONTROL_H`: 32 is the dashboard sheet's height and must
+   * not move — it is touched during service — and this harness measures the grid. */
+  const PC = read('components/shared/PriceControls.tsx')
+  const ROW_H = (() => {
+    const m = PC.match(/export const ROW_H = \{ control: (\d+), item: (\d+), category: (\d+), section: (\d+) \}/)
+    if (!m) throw new Error('the measurements cannot be aimed: ROW_H not found in components/shared/PriceControls.tsx')
+    return { control: +m[1], item: +m[2], category: +m[3], section: +m[4] }
+  })()
+  const TYPED_H = Number(lift(PC, /export const GRID_TYPED_H = (\d+)/, 'the grid typed-price height'))
+  /* The compact switch's track, read out of the shared Toggle's own class string. */
+  const [SW_W, SW_H] = (() => {
+    const m = PRIM.match(/\$\{compact \? 'w-\[(\d+)px\] h-\[(\d+)px\]' : 'w-11 h-6'\}/)
+    if (!m) throw new Error('the measurements cannot be aimed: no compact toggle track found in components/manage/primitives.tsx')
+    return [+m[1], +m[2]]
+  })()
   /** Dialog widths by `${w}/${nTypes}/${vanState}`. */
   const matrixWidths = {}
   /** Grid widths, same keys — the uncapped measurement, for "did a column appear". */
@@ -703,6 +1303,60 @@ async function main() {
        *    those two ever measure differently, something has started treating "has two vans" as a
        *    reason to show more. 'differ' replaces every Standard control with text PLUS a
        *    right-aligned link inside 200px, which is the widest thing any cell has to hold. */
+      /* ══ 🔴 THE ITEMS-OPEN PASS — THE ONE THAT RENDERS CATEGORIES AND ITEM ROWS ═══════════════
+       * ⛔ NOTHING IN THIS HARNESS HAD EVER PASSED `showItems: true`, so no category row and no item
+       * row had ever been drawn. The consequence was worse than a gap: the pre-existing height
+       * assertions for `price-item` and `category` are written as
+       * `!(m.rowHeights||{})['price-item'] || only(...)` — guarded so a fixture without those rows
+       * does not fail — so they had been passing VACUOUSLY since they were written, and the four
+       * assertions added on 5 October for the category heading and the item indent would have done
+       * the same. A check that cannot fail is not checking.
+       * 🔴 SO THIS PASS EXISTS TO MAKE THEM BITE, and it asserts the rows are PRESENT before
+       * measuring them, which is the part that stops it going quiet again. */
+      /* ⚠️ ONLY WHERE THE GRID IS ON SCREEN. Below `md` the columns scroller is `hidden` and the phone
+       * picker is shown instead, so every row measures 0 — the first run of this pass failed 13 times
+       * at 390 for exactly that reason, against a screen that was correct. The same `w >= 768` gate the
+       * matrix's grid assertions use, and for the same reason. */
+      for (const nTypes of (w >= 768 ? [1, 3] : [])) {
+        await eng.page.goto(write(`items-${w}-${nTypes}-${eng.name}.html`,
+          panelFixture(css, nTypes, false, 'match', false, { showItems: true })))
+        const m = await eng.page.evaluate(probe)
+        const hs = m.rowHeights || {}
+        t(Array.isArray(hs.category) && hs.category.length > 0,
+          `🔴 items ${w}/${nTypes}: the fixture ACTUALLY RENDERS category rows (so the checks below can fail)`)
+        t(Array.isArray(hs['price-item']) && hs['price-item'].length > 0,
+          `🔴 items ${w}/${nTypes}: …and item rows`)
+        t(Array.isArray(hs.category) && hs.category.every(h => Math.abs(h - ROW_H.category) <= 2),
+          `🔴 items ${w}/${nTypes}: category rows are ${ROW_H.category}px (${JSON.stringify(hs.category)})`)
+        t(Array.isArray(hs['price-item']) && hs['price-item'].every(h => Math.abs(h - ROW_H.item) <= 2),
+          `🔴 items ${w}/${nTypes}: item rows are ${ROW_H.item}px (${JSON.stringify(hs['price-item'])})`)
+        /* (3) THE CATEGORY HEADING: dominant, and with NO horizontal rule on either side. */
+        t(!!m.catLabel, `🔴 items ${w}/${nTypes}: the category heading is measurable`)
+        if (m.catLabel) {
+          t(Number(m.catLabel.weight) >= 700,
+            `🔴 items ${w}/${nTypes}: a category heading is heavier than a row label (weight ${m.catLabel.weight})`)
+          t(parseFloat(m.catLabel.size) > 11,
+            `🔴 items ${w}/${nTypes}: …and larger than 11px (${m.catLabel.size})`)
+          t(parseFloat(m.catLabel.ruleTop) === 0,
+            `⛔ items ${w}/${nTypes}: …and has NO rule above it (${m.catLabel.ruleTop})`)
+          t(parseFloat(m.catValueRuleTop || '0') === 0,
+            `⛔ items ${w}/${nTypes}: …nor on its value cells — no half-line (${m.catValueRuleTop})`)
+          t(m.catValueDivided === true,
+            `🔴 items ${w}/${nTypes}: …while the VERTICAL column divider still runs through it`)
+        }
+        /* (4) ITEM NAMES INDENT UNDER THEIR CATEGORY, measured as a left-edge difference. */
+        t(m.itemTextLeft !== null && m.catTextLeft !== null
+          && m.itemTextLeft - m.catTextLeft >= 10 && m.itemTextLeft - m.catTextLeft <= 16,
+          `🔴 items ${w}/${nTypes}: item names sit ~12px in from their category heading (${
+            m.itemTextLeft !== null && m.catTextLeft !== null ? m.itemTextLeft - m.catTextLeft : '?'}px)`)
+        /* ⛔ AND STILL NOTHING CLIPPED OR ELLIPSISED, with the item rows open. */
+        t(Array.isArray(m.clippedLabels) && m.clippedLabels.length === 0,
+          `⛔ items ${w}/${nTypes}: NO label is clipped with prices shown (${(m.clippedLabels || []).join(' | ') || 'none'})`)
+        t(Array.isArray(m.ellipsisLabels) && m.ellipsisLabels.length === 0,
+          `⛔ items ${w}/${nTypes}: NO ellipsis anywhere (${(m.ellipsisLabels || []).join(' | ') || 'none'})`)
+        lines.push(`  items  ${w} · ${nTypes} type${nTypes === 1 ? '' : 's'}  heights ${JSON.stringify(m.heightsByKind)}`)
+      }
+
       for (const nTypes of [1, 3, 6]) {
         for (const vanState of ['one', 'match', 'differ']) {
           await eng.page.goto(write(`matrix-${w}-${nTypes}-${vanState}-${eng.name}.html`,
@@ -759,30 +1413,136 @@ async function main() {
                 `🔴 ${w}/${nTypes}/${vanState}: the second van column is ${EXPECTED_COL_W}px too (${m.secondStd ? m.secondStd.width : '?'}px)`)
               t(m.secondStd && m.firstStd && m.secondStd.left >= m.firstStd.right - 1,
                 `⚠️ ${w}/${nTypes}/${vanState}: the second van column sits right of the first`)
-              /* 🔴 THE TRUCK-LEVEL ROW GETS ITS OWN SWITCH IN EVERY VAN COLUMN — the span is gone.
-               * Dominic: "Each van column gets its own switch, like every other row. No control
-               * spanning two columns." The span drew one switch under the first van's header and
-               * nothing under the second's, which reads as "van 2 has no toggle".
-               * ⚠️ MEASURED AS "ONE COLUMN WIDE", which is what distinguishes it from the span. */
-              t(m.truckCell && Math.abs(m.truckCell.width - EXPECTED_COL_W) <= 1,
-                `🔴 ${w}/${nTypes}/${vanState}: the truck-level row is ONE CELL PER VAN, not a span (${m.truckCell ? m.truckCell.width : '?'}px)`)
-              t(m.truckCellTitle === 'Applies to all your vans',
-                `🔴 ${w}/${nTypes}/${vanState}: …and its switch says so on hover ("${m.truckCellTitle ?? 'none'}")`)
+              /* ══ ⛔ RE-AIMED: THERE IS NO TRUCK-LEVEL ROW TO MEASURE (5 October 2026) ═══════════
+               * This measured that "Do you take cash?" — the one truck-level row — drew a switch one
+               * column wide in EVERY van column, with "Applies to all your vans" on hover. Both were
+               * right at the time and both are gone: `truck_vans.takes_cash` (20261012) makes cash a
+               * van setting like the other four, so every service row is per van and the title has
+               * nothing left to explain.
+               * 🔴 WHAT IS MEASURED INSTEAD IS THE PROPERTY THAT NOW MATTERS: **no service cell spans
+               * more than one column.** Every service row's cells are exactly one column wide, which
+               * is what "every column independent" looks like on screen — and it is a stronger claim
+               * than the old one, because it covers all five rows rather than the one exception. */
+              t(m.serviceCellSpans === false,
+                `⛔ ${w}/${nTypes}/${vanState}: NO service cell spans more than one column (widest ${m.widestServiceCell ?? '?'}px vs ${EXPECTED_COL_W}px)`)
+
+              t(m.truckCellTitle === null,
+                `⛔ ${w}/${nTypes}/${vanState}: …and no "Applies to all your vans" title survives ("${m.truckCellTitle ?? 'none'}")`)
             } else {
               t(!m.secondStd, `⚠️ ${w}/${nTypes}/one: a single van gets ONE Standard column`)
+            }
+            /* ══ 🔴 THE DENSER GRID, MEASURED AGAINST THE COMPONENT'S OWN NUMBERS (5 October 2026) ══
+             * `ROW_H` / `GRID_CONTROL_H` / `GRID_TYPED_H` are lifted at the top of this file, so these
+             * assertions cannot drift from the component — and they are the SHEET-independent set: the
+             * dashboard sheet keeps `CONTROL_H` and is not measured here.
+             * ⚠️ ±2px, as instructed: a sub-pixel border is not a design fault. */
+            {
+              const near = (got, want) => got != null && Math.abs(got - want) <= 2
+              const only = (kind, want) => {
+                const hs = m.rowHeights && m.rowHeights[kind]
+                return Array.isArray(hs) && hs.length > 0 && hs.every(h => near(h, want))
+              }
+              t(only('service', ROW_H.control),
+                `🔴 ${w}/${nTypes}/${vanState}: setting rows are ${ROW_H.control}px (${JSON.stringify((m.rowHeights || {}).service)})`)
+              t(only('section', ROW_H.section),
+                `🔴 ${w}/${nTypes}/${vanState}: section bands are ${ROW_H.section}px (${JSON.stringify((m.rowHeights || {}).section)})`)
+              t(!(m.rowHeights || {})['items-band'] || only('items-band', ROW_H.section),
+                `🔴 ${w}/${nTypes}/${vanState}: the ITEM PRICES band is a section band, ${ROW_H.section}px`)
+              t(!(m.rowHeights || {})['price-item'] || only('price-item', ROW_H.item),
+                `🔴 ${w}/${nTypes}/${vanState}: item rows are ${ROW_H.item}px (${JSON.stringify((m.rowHeights || {})['price-item'])})`)
+              t(!(m.rowHeights || {}).category || only('category', ROW_H.category),
+                `🔴 ${w}/${nTypes}/${vanState}: category rows are ${ROW_H.category}px (${JSON.stringify((m.rowHeights || {}).category)})`)
+              /* 🔴 THE COMPACT SWITCH — the grid's track, not the 44×24 of a Settings row. The two
+               * numbers are READ OUT OF the lifted class string, so a change to the shared Toggle's
+               * `compact` arm moves this assertion with it instead of leaving it measuring 38×22
+               * after the component stopped drawing 38×22. */
+              t(m.switchBox && near(m.switchBox.w, SW_W) && near(m.switchBox.h, SW_H),
+                `🔴 ${w}/${nTypes}/${vanState}: the switch is ${SW_W}×${SW_H} (${m.switchBox ? `${m.switchBox.w}×${m.switchBox.h}` : '?'})`)
+              /* 🔴 THE PILL IS LEFT OF THE FIRST VALUE COLUMN, so no sideways scroll can hide it. */
+              if (m.itemsToggle && m.firstStdHdr) {
+                t(m.itemsToggle.right <= m.firstStdHdr.left + 1,
+                  `🔴 ${w}/${nTypes}/${vanState}: the Hide/Show pill is inside the LABEL column — sideways scroll cannot hide it`)
+              }
+              t(!!m.itemsHint, `⚠️ ${w}/${nTypes}/${vanState}: the "press a price" hint is in the ITEM PRICES band`)
+              /* ══ 🔴 PRIVATE EVENTS: THE ORDERING ROW, MEASURED (20261014) ══════════════════════
+               * Four claims, and each is about the RENDERED screen rather than about a class name:
+               *   • Standard's cell SPANS the van columns and holds TEXT, not a control;
+               *   • exactly ONE type column holds the link/QR switch — the built-in's;
+               *   • the built-in's heading is PURPLE, by computed colour (a purged class would still
+               *     satisfy a class census and fail this);
+               *   • its column is the LAST one, measured by left edge.
+               * ⛔ "EXACTLY ONE SWITCH" IS THE ONE THAT MATTERS. A Festival with a link/QR switch is
+               * a control that writes nothing, and a Private column WITHOUT one is a feature an
+               * operator cannot reach. Counting is the only way to catch both at once. */
+              t(m.privateLinkStdHasControl === false,
+                `⛔ ${w}/${nTypes}/${vanState}: Standard's link/QR cell is a STATEMENT, with no control in it`)
+              t((m.privateLinkStdText || '').length > 0,
+                `🔴 ${w}/${nTypes}/${vanState}: …and it says something ("${m.privateLinkStdText ?? 'nothing'}")`)
+              if (nVanCols === 2 && m.privateLinkStd) {
+                t(m.privateLinkStd.width >= EXPECTED_COL_W * 2 - 2,
+                  `🔴 ${w}/${nTypes}/${vanState}: …and SPANS both van columns (${m.privateLinkStd.width}px)`)
+              }
+              /* ══ 🔴 THE THREE CHANGES OF 5 OCTOBER, MEASURED ════════════════════════════════════
+               * (1) NOTHING IS CLIPPED AND NOTHING ELLIPSISES. Labels wrap now, so the question is
+               * whether any text overflows its box — measured on the text's own scrollHeight, and on
+               * the COMPUTED `text-overflow`, because a purged `truncate` class would still satisfy a
+               * class census while the screen showed a cut-off label.
+               * ⛔ THIS IS THE CHECK THAT WOULD HAVE CAUGHT THE OLD 212px COLUMN. */
+              t(Array.isArray(m.clippedLabels) && m.clippedLabels.length === 0,
+                `⛔ ${w}/${nTypes}/${vanState}: NO label is clipped (${(m.clippedLabels || []).join(' | ') || 'none'})`)
+              t(Array.isArray(m.ellipsisLabels) && m.ellipsisLabels.length === 0,
+                `⛔ ${w}/${nTypes}/${vanState}: NO ellipsis anywhere (${(m.ellipsisLabels || []).join(' | ') || 'none'})`)
+              /* (2) THE ROW GREW RATHER THAN THE WHOLE GRID GETTING TALLER. The longest label's row
+               * is at least the minimum, and the one-line rows are still exactly the minimum. */
+              t(m.privateLinkRowHeight !== null && m.privateLinkRowHeight >= ROW_H.control,
+                `🔴 ${w}/${nTypes}/${vanState}: the link/QR row grew to fit its label (${m.privateLinkRowHeight}px, min ${ROW_H.control})`)
+              t(only('service', ROW_H.control),
+                `⛔ ${w}/${nTypes}/${vanState}: …and the ONE-LINE setting rows are still exactly ${ROW_H.control}px (${JSON.stringify((m.rowHeights || {}).service)})`)
+              /* ⚠️ THE CATEGORY AND ITEM ASSERTIONS ARE **NOT** HERE. These matrix fixtures render
+               * with the item rows COLLAPSED, so there is no category row and no item row to measure
+               * — the first version of them sat in this loop behind `if (m.catLabel)` and therefore
+               * never ran at all. They are in their own items-open pass below. */
+              t(m.privateSwitchCount === 1,
+                `⛔ ${w}/${nTypes}/${vanState}: EXACTLY ONE type column holds the link/QR switch (${m.privateSwitchCount})`)
+              /* ── 🔴 MEASURED AS A **DIFFERENCE**, NOT AS A LITERAL COLOUR ──────────────────────
+               * The first version of this assertion matched `rgb(126, 34, 206)`. Both engines
+               * serialise this colour as `lab(…)` — Tailwind v4 emits oklch and the computed value
+               * comes back in that space — so it failed 37 times against a screen that was drawing
+               * the purple correctly. Pinning a serialisation is pinning the browser's string
+               * formatting, which is not a design fact.
+               * ⛔ WHAT IS A DESIGN FACT: the built-in heading does not look like a custom one. A
+               * purged or renamed purple class makes the two identical, which this catches — and it
+               * catches it in whatever colour space the engine chooses to report. */
+              if (nTypes > 1) {
+                t(!!m.privateHdrColour && !!m.customHdrColour && m.privateHdrColour !== m.customHdrColour,
+                  `🔴 ${w}/${nTypes}/${vanState}: the built-in's heading is a DIFFERENT colour from a custom type's (${m.privateHdrColour ?? '?'} vs ${m.customHdrColour ?? '?'})`)
+              }
+              if (m.privateTypeHdr && m.firstTypeHdr && nTypes > 1) {
+                t(m.privateTypeHdr.left >= m.firstTypeHdr.left,
+                  `🔴 ${w}/${nTypes}/${vanState}: …and the built-in is the LAST column, not the first`)
+              }
+              if (m.priceCell) {
+                t(near(m.priceCell.height, TYPED_H),
+                  `🔴 ${w}/${nTypes}/${vanState}: a typed-price box is ${TYPED_H}px (${m.priceCell.height}px)`)
+              }
             }
             /* ⛔ NONE OF THE THREE PHRASES APPEARS, IN ANY VAN STATE. Measured on the RENDERED TEXT
              * rather than on the source, because that is the question: what does an operator read? */
             t(!m.forbiddenText,
               `⛔ ${w}/${nTypes}/${vanState}: no "Varies by van" / "Set per van" / "Same as Standard" on screen`)
-            /* 🔴 AN INHERITING TYPE CELL IS A REAL CONTROL AT A REAL VALUE, faded, with the title that
-             * explains whose value it is. */
+            /* ══ ⛔ RE-AIMED: A TYPE'S CELL IS ITS OWN, AT FULL STRENGTH (5 October 2026) ══════════
+             * This measured the FADE and the hover title — the "follows Standard" design. That design
+             * is the second half of the localhost report: a NULL column drawn faded at the first van's
+             * value, so changing Van 1 made every untouched type appear to change too.
+             * 🔴 A type holds its own values now, so the cell holds a real control at FULL opacity and
+             * claims nothing about whose value it is. Both halves are measured as absences, which is
+             * the only way to measure a design that was removed. */
             if (nTypes > 0) {
-              t(!!m.firstTypeCtl, `🔴 ${w}/${nTypes}/${vanState}: an inheriting type cell holds a real control`)
-              t(m.firstTypeCtlTitle === "Follows each van's usual setting",
-                `🔴 ${w}/${nTypes}/${vanState}: …with the hover title that says whose value it is ("${m.firstTypeCtlTitle ?? 'none'}")`)
-              t(m.firstTypeCtlFaded === true,
-                `🔴 ${w}/${nTypes}/${vanState}: …and it is faded, because the type has not set it`)
+              t(!!m.firstTypeCtl, `🔴 ${w}/${nTypes}/${vanState}: a type cell holds a real control`)
+              t(m.firstTypeCtlTitle === null,
+                `⛔ ${w}/${nTypes}/${vanState}: …and claims NOTHING about whose value it is ("${m.firstTypeCtlTitle ?? 'none'}")`)
+              t(m.firstTypeCtlFaded === false,
+                `⛔ ${w}/${nTypes}/${vanState}: …and is NOT faded — it is the type's own value`)
             }
             /* ══ 🔴 THE TEXT SIZES MATCH, MEASURED ══════════════════════════════════════════════
              * Dominic: "dropdown text, switch labels and row labels all use the same font size,
@@ -797,8 +1557,29 @@ async function main() {
              * ⚠️ THIS BRANCH IS INSIDE `if (w >= 768)`, so the phone case is checked separately below. */
             t(m.fontOfLabel && m.fontOfSelect && m.fontOfLabel === m.fontOfSelect,
               `🔴 ${w}/${nTypes}/${vanState}: a dropdown's text is the same size as a row label (${m.fontOfSelect} vs ${m.fontOfLabel})`)
-            t(m.lineHeightOfLabel === m.lineHeightOfSelect,
-              `⚠️ ${w}/${nTypes}/${vanState}: …and the same line height (${m.lineHeightOfSelect} vs ${m.lineHeightOfLabel})`)
+            /* ══ 🔴 RE-AIMED: THE SIZES MATCH, THE LINE HEIGHTS DELIBERATELY DO NOT (5 October 2026) ══
+             * This asserted `lineHeightOfLabel === lineHeightOfSelect`, and it went red 37 times the
+             * moment labels started wrapping — correctly, because the label's line height CHANGED on
+             * purpose.
+             *
+             * 🔴 THE ORIGINAL DEFECT THIS CHECK WAS WRITTEN FOR WAS THE FONT **SIZE**: a native
+             * `<select>` rendered its text larger than the row labels beside it, and that assertion
+             * (the line above) still stands unweakened. The line HEIGHT was asserted alongside it as
+             * part of "same size, weight and line height".
+             *
+             * ⛔ LABELS NOW WRAP AND NO ROW MAY BE CLIPPED, and those two requirements decide the line
+             * height: 14px at the browser's default 20px gives 40px for two lines, which would push
+             * every wrapped row past the 36px minimum and un-dense the grid. `leading-tight` gives
+             * 17.5px, so two lines are 35px and fit 36 exactly. Measured: 20px on the dropdown,
+             * 17.5px on the label.
+             *
+             * 🔴 SO THE CLAIM BECOMES THE ONE THAT IS ACTUALLY LOAD-BEARING: the label's line height
+             * is TIGHTER than the dropdown's, and two of its lines fit inside the minimum row height.
+             * That is stronger than equality, not weaker — equality would have forbidden the wrap. */
+            t(parseFloat(m.lineHeightOfLabel) < parseFloat(m.lineHeightOfSelect),
+              `🔴 ${w}/${nTypes}/${vanState}: a row label's line height is TIGHTER than a dropdown's, so two lines fit (${m.lineHeightOfLabel} vs ${m.lineHeightOfSelect})`)
+            t(parseFloat(m.lineHeightOfLabel) * 2 <= ROW_H.control,
+              `⛔ ${w}/${nTypes}/${vanState}: …and TWO lines fit the ${ROW_H.control}px minimum (${parseFloat(m.lineHeightOfLabel) * 2}px)`)
             /* 🔴 THE CHEVRON IS ON THE RIGHT, AND NOTHING SITS BEFORE THE TEXT. Measured as "the
              * chevron's left edge is past the middle of the box" — a chevron rendered inline (the
              * state a purged `right-*` class produces) lands at the far LEFT and fails this. */
@@ -934,9 +1715,29 @@ async function main() {
   }
 
   console.log(lines.join('\n'))
+  /* 🔴 THE SHOTS THAT DID NOT HAPPEN, BY NAME. A screenshot is an artefact and must never fail a run
+   * (see `SHOT_FAILURES`' note), but "the pictures are missing" must not become SILENTLY true either —
+   * a reader comparing a stale PNG to the screen would be misled about which design they are looking
+   * at, which is exactly what happened to this build's own Chromium shots. */
+  if (SHOT_FAILURES.length) {
+    console.log(`\n⚠️  ${SHOT_FAILURES.length} SCREENSHOT(S) NOT TAKEN — the measurements above are unaffected,`)
+    console.log('   but any PNG these name is STALE and must not be read as this build\u2019s output:')
+    for (const f of SHOT_FAILURES) console.log(`      • ${f}`)
+  }
   if (list.every(e => e.skip)) { console.log('\n🔴 NO ENGINE AVAILABLE — nothing was measured'); process.exit(1) }
   console.log(fails ? `\n🔴 ${fails} MEASUREMENT(S) FAILED` : '\n✅ the modal, the new-type popup and the dashboard card measured in every available engine')
   process.exit(fails ? 1 : 0)
 }
 
-main().catch(e => { console.log('🔴 the harness threw: ' + (e && e.stack ? e.stack.split('\n').slice(0, 4).join('\n') : e)); process.exit(1) })
+/* 🔴 A THROW PRINTS THE PROGRESS IT HAD MADE. Every measurement is collected into `lines` and
+ * printed at the END, so a throw halfway through used to discard all of it and report only the stack —
+ * which says nothing about WHICH fixture, width or engine was being measured. `PROGRESS` is the same
+ * array; dumping it is the difference between "it hung" and "it hung on the pill at 820 in WebKit". */
+main().catch(e => {
+  if (Array.isArray(global.PROGRESS) && global.PROGRESS.length) {
+    console.log('── progress before the throw ──')
+    for (const l of global.PROGRESS) console.log(l)
+  }
+  console.log('🔴 the harness threw: ' + (e && e.stack ? e.stack.split('\n').slice(0, 4).join('\n') : e))
+  process.exit(1)
+})

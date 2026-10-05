@@ -44,7 +44,22 @@ const isGeneralPublic = (p: string) =>
   // `/order/` prefix has a deeper child (the customer order-manage page), which `/o/` never metered; a
   // `startsWith('/order/')` here would silently pull that page into the limiter. Matching a single
   // segment keeps the scope identical to what `/o/` covered.
-  p === '/order' || /^\/order\/[^/]+$/.test(p)
+  p === '/order' || /^\/order\/[^/]+$/.test(p) ||
+  // ── 🔴 THE PRIVATE LINK (20261014), FOR THE SAME REASON `/o/` IS HERE ──────────────────────────
+  // `/p/<token>` is a PUBLIC page that reads the database on every request, and its sibling
+  // `/api/private-event` publishes a private event's name to anyone holding the token. Without this
+  // line both would be UNMETERED public reads keyed on a string anyone can vary — the exact
+  // regression the `/o/` note above records, and worse here: a token is unguessable, but the
+  // ENDPOINT is not, so `/p/<junk>` can be hammered forever.
+  // ⛔ THE SHAPE CHECK IN lib/private-events/token.ts IS NOT A SUBSTITUTE FOR THIS. It refuses junk
+  // without a query, which is a cost control inside the handler; this is what bounds how often the
+  // handler runs at all.
+  // ⚠️ BOTH HALVES, LIKE `/embed`: the page and the endpoint that feeds it are one visitor action, so
+  // metering only one would leave the other unbounded.
+  // ⚠️ A SINGLE SEGMENT FOR THE PAGE — `/p/<token>` has no deeper child, and matching a prefix would
+  // silently pull any future one in. Same discipline as the `/order/` leaf above.
+  p === '/p' || /^\/p\/[^/]+$/.test(p) ||
+  p === '/api/private-event'
 // EMBED (600/min, keyed IP+slug) — the operator-website widget and the endpoint that feeds it.
 // 🔴 BOTH HALVES, DELIBERATELY. The page and its data fetch are one visitor action, so limiting only
 // one of them would leave the other unbounded. It also means one embed view spends TWO tokens; the

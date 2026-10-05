@@ -251,6 +251,13 @@ export const VAN_COPY_FIELDS = [
   'buzzer_count',
   'collection_interval_mins',
   'operator_collection_interval_mins',
+  /* 🔴 `takes_cash` (5 October 2026, 20261012). "Do you take cash?" became a PER-VAN setting, so it
+   * belongs here by the rule stated above — "adding a per-van setting later means adding it here too,
+   * or the switch silently stops meaning same". It is nullable, and NULL ("follow the truck") copies
+   * as happily as true or false: `vanCopyPayload` copies the VALUE, whatever it is.
+   * ⚠️ IT IS NOT IN `CAPACITY_COPY_FIELDS`, so `capacitySplitIsClean()` still holds — the two sets
+   * stay disjoint, which is what stops the two switches fighting over one column. */
+  'takes_cash',
 ] as const
 
 export type VanCopyField = typeof VAN_COPY_FIELDS[number]

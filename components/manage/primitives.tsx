@@ -7,7 +7,7 @@
 // single source for Card / Btn / Input / Badge / EmptyState / allergen+dietary toggles.
 // ══════════════════════════════════════════════════════════════
 import { type ReactNode, type HTMLAttributes, type RefObject } from 'react'
-import { GREEN_SOLID, CONTROL_BOX } from '@/lib/ui-tokens'
+import { GREEN_SOLID } from '@/lib/ui-tokens'
 
 export function Spinner() { return <div className="w-5 h-5 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" /> }
 
@@ -84,9 +84,25 @@ export function Input({ label, value, onChange, onBlur, type = 'text', inputMode
  *              uses it for a type that follows Standard; it is the only signal of that state, so it
  *              must stay a visible difference and not a hover-only one.
  */
-export function Toggle({ on, onToggle, label, disabled, faded = false, ariaLabel, title }: {
+export function Toggle({ on, onToggle, label, disabled, faded = false, ariaLabel, title, compact = false }: {
   on: boolean; onToggle: () => void; label?: string; disabled?: boolean
   faded?: boolean
+  /**
+   * ── 🔴 A SECOND, SMALLER GEOMETRY — OPT-IN, AND ONE COMPONENT STILL (5 October 2026) ─────────────
+   * The Event types grid was made denser: 36px setting rows need a switch smaller than the 44×24 one
+   * that suits a 44px settings row. Dominic's figures: **38×22 with a 16px knob.**
+   *
+   * ⛔ IT IS A PROP, NOT A SECOND COMPONENT AND NOT A LOCAL RESTYLE. This file's header records that
+   * there were once THREE switch definitions in the product and that the Event types modal's copy had
+   * taken the DASHBOARD's orange geometry into a MANAGE screen. `scripts/event-types.cjs` refuses a
+   * locally-styled switch in that file for exactly that reason, and it still does — this keeps one
+   * definition and one set of colours, with the size as an argument.
+   * ⚠️ `false` BY DEFAULT, so all fifteen page.tsx usages, the Standard columns and the dashboard card
+   * render byte-identically. The only caller passing it is the grid.
+   * ⚠️ THE KNOB STAYS 16px IN BOTH, which is why the compact travel is `translate-x-[18px]` rather
+   * than `translate-x-6`: 38 − 16 − 2×2 padding = 18.
+   */
+  compact?: boolean
   /** For a switch with no visible text beside it — a table cell, where there is no room for one. */
   ariaLabel?: string
   /** Hover text. In a grid cell this is where a nuance the cell has no room for has to live. */
@@ -96,8 +112,10 @@ export function Toggle({ on, onToggle, label, disabled, faded = false, ariaLabel
     <button onClick={onToggle} disabled={disabled} type="button" role="switch" aria-checked={on}
       aria-label={ariaLabel} title={title}
       className={`flex items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed ${faded ? 'opacity-50' : ''}`}>
-      <div className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
-        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-6' : 'translate-x-1'}`} />
+      {/* ⚠️ THE TWO GEOMETRIES ARE THE ONLY DIFFERENCE. Same radius, same transition, same green-500 /
+        * slate-300 pair, same 16px knob — `compact` changes the TRACK and the travel and nothing else. */}
+      <div className={`relative rounded-full transition-colors shrink-0 ${compact ? 'w-[38px] h-[22px]' : 'w-11 h-6'} ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
+        <div className={`absolute w-4 h-4 rounded-full bg-white shadow transition-transform ${compact ? 'top-[3px]' : 'top-1'} ${on ? (compact ? 'translate-x-[18px]' : 'translate-x-6') : 'translate-x-1'}`} />
       </div>
       {label && <span className="text-sm text-slate-600 font-medium group-hover:text-slate-900">{label}</span>}
     </button>
@@ -105,85 +123,26 @@ export function Toggle({ on, onToggle, label, disabled, faded = false, ariaLabel
 }
 
 /**
- * ══ THE MANAGE DROPDOWN ════════════════════════════════════════════════════════════════════════
+ * ══ THE MANAGE DROPDOWN — 🔴 MOVED TO components/shared/PriceControls.tsx, RE-EXPORTED HERE ═════
  *
- * 🔴 WHY THIS IS NEW RATHER THAN LIFTED, WHICH IS A FINDING AND NOT A FREE CHOICE. Dominic asked for
- * "the same select/dropdown component and styling as Settings (not native browser selects with the
- * system arrows)". Settings has no such component: every `<select>` on the Manage page is a NATIVE
- * one with the platform's own arrow, repeating the same class string inline. The only non-native
- * select in the repository is in components/dashboard/AddOrderPanel.tsx, whose comment explains the
- * trick — `appearance-none` is what lets `rounded-xl` actually take effect, because a native select
- * paints its own chrome over it.
+ * ⚠️ ONE DEFINITION, AND IT IS NO LONGER IN THIS FILE. The dashboard's "Prices for this event" sheet
+ * needs this exact control (a native `<select>` renders 23px in WebKit — measured, see the combine
+ * report §9), and this file's own CONTROL_BOX note states the boundary: "the dashboard uses the same
+ * box and must NOT import from the manage primitives to get it". So the component moved one level up
+ * to `components/shared`, which is where AppHeader and the shared modals already live, and is
+ * re-exported from here BY NAME so every existing manage caller is unchanged.
  *
- * So this is the two halves of that instruction reconciled: the BORDER, RADIUS, TEXT SIZE, COLOUR and
- * FOCUS RING are Settings' own (the class string eight of its selects already share, now named here
- * once), and `appearance-none` plus an inline chevron replaces the system arrow, following the
- * AddOrderPanel precedent rather than inventing a style.
- *
- * ⚠️ SETTINGS ITSELF STILL RENDERS NATIVE SELECTS. Converting all of them is a Manage-wide visual
- * change and was not asked for, so it is named in the report as a follow-up rather than done here. The
- * two therefore differ in their ARROW and in nothing else.
- * ⚠️ `h-9` IS THE ONE VALUE THAT IS NOT SETTINGS'. Settings sizes its selects with `py-1`, which in a
- * table row gives cells of different heights depending on their content. A fixed height is what keeps
- * a grid's rows aligned, and it matches the 36px the switch beside it occupies.
+ * 🔴 THE DEFINITION TRAVELLED VERBATIM, comments included — including the `text-sm`-on-the-wrapper
+ * note, which is the one thing about this control that is not obvious and the reason it exists at
+ * all. Read it there.
+ * ⛔ DO NOT RE-DEFINE A SELECT IN THIS FILE. scripts/event-types.cjs refuses one.
  */
+export { Select } from '@/components/shared/PriceControls'
+
 /* ⚠️ RE-EXPORTED FROM lib/ui-tokens.ts, NOT DEFINED HERE. The dashboard uses the same box and must
  * not import from the manage primitives to get it — so the string lives in the tokens file both
  * surfaces already share, and this name is kept for the callers that had it. */
 export { CONTROL_BOX as MANAGE_CONTROL_CLASS } from '@/lib/ui-tokens'
-
-export function Select({ value, onChange, options, ariaLabel, disabled, faded = false, title, className = '' }: {
-  value: string | number
-  onChange: (v: string) => void
-  options: readonly { value: string | number; label: string }[]
-  ariaLabel: string
-  disabled?: boolean
-  /** Showing an inherited value — see <Toggle>'s `faded`. */
-  faded?: boolean
-  /** The full text, for an option the 200px column truncates. */
-  title?: string
-  className?: string
-}) {
-  return (
-    /* ── 🔴 `text-sm` ON THE WRAPPER, AND THIS IS NOT BELT AND BRACES ────────────────────────────────
-      * app/globals.css carries an iOS zoom guard:
-      *     select, input[type=text], … { font-size: 16px !important }          (below 640px)
-      *     @media (min-width: 640px) { … { font-size: inherit !important } }   (640px and up)
-      * `!important` beats `.text-sm` on the <select> itself, so from `sm` up the control takes
-      * `inherit` — which means ITS PARENT'S size. The parent is this span; with no size on it the
-      * chain ran to <body> and every dropdown rendered at 16px while the labels beside them were 14px.
-      * That is what Dominic saw: "the size of text eg every 15 min is much larger than elsewhere".
-      *
-      * 🔴 PUTTING THE SIZE HERE FIXES IT WITHOUT TOUCHING THE GUARD. Below 640px the select is still
-      * forced to 16px and iOS still does not zoom on focus — which is the right behaviour on the one
-      * device this is used on at the hatch, and must not be "fixed" to match the labels.
-      * ⚠️ `text-sm` STAYS ON THE SELECT TOO (via CONTROL_BOX): it is what applies if that global rule
-      * is ever narrowed, and it costs nothing. */
-    <span className={`relative inline-flex min-w-0 items-stretch text-sm ${className}`}>
-      <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
-        aria-label={ariaLabel} title={title}
-        /* ── 🔴 THE BOX IS SETTINGS' BOX, AND THE CHEVRON IS ON THE RIGHT ──────────────────────────
-          * `CONTROL_BOX` carries Settings' own `px-2 py-1 text-sm rounded-lg` — the same padding, text
-          * size and radius. The only additions are layout:
-          *   • `appearance-none` drops the platform arrow so `rounded-lg` actually takes effect (the
-          *     trick AddOrderPanel's comment explains), and the chevron below replaces it ON THE RIGHT.
-          *   • `pr-7` is the room that chevron sits in. NOTHING is added on the left, so the text
-          *     starts at Settings' own `px-2` — Dominic: "normal left padding before the text. Nothing
-          *     appears before the text."
-          * ⚠️ NO FIXED HEIGHT. A fixed 36px box made this half again as tall as every other dropdown in
-          * Manage, which reads as bigger text although the font was always the same 14px. */
-        className={`w-full min-w-0 truncate appearance-none pr-7 disabled:opacity-50 disabled:cursor-not-allowed ${faded ? 'opacity-50' : ''} ${CONTROL_BOX}`}>
-        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-      </select>
-      {/* ⚠️ `aria-hidden` AND `pointer-events-none`: it is decoration over a real <select>, and a click
-        * on it must reach the control underneath. */}
-      <svg aria-hidden="true" viewBox="0 0 20 20" fill="none"
-        className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400">
-        <path d="M5 7.5 10 12.5 15 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </span>
-  )
-}
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm ${className}`}>{children}</div>

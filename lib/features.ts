@@ -30,6 +30,26 @@ export type Feature =
   | 'embed_schedule'
   | 'schedule_graphics'
   | 'event_types'
+  | 'private_events'
+  // ── 🔴 PLACES AND SOCIAL POSTS — A PREVIEW KEY THAT IS IN NO PLAN AT ALL (5 October 2026) ────────
+  // 🔴 IT IS DELIBERATELY ABSENT FROM `PRO_FEATURES`, `MAX_FEATURES` AND EVERY `PLAN_FEATURES` SET, so
+  // `canAccess` reaches its final line and returns false for every plan, on every tier, including
+  // 'trial', 'tester' and 'demo'. The ONLY way to hold it is `trucks.feature_overrides`, which
+  // `canAccess` consults FIRST (line 184) before it looks at any plan.
+  // ⚠️ THAT IS WHY IT IS A `Feature` AND NOT A SECOND BESPOKE OVERRIDE KEY. `batch_reservations` and
+  // `whatsapp_setup_preview` each grew their own resolver because they are not entitlements; this IS
+  // one — it gates a tab, a pill and five routes — so it belongs in the one function that answers
+  // "may this truck do this", and it reaches that function already able to say no.
+  // 🔴 GRANTED TO EXACTLY ONE TRUCK TODAY: test-kitchen ("Pizza Kitchen"). The grant is an UPDATE to
+  // that row's `feature_overrides` and nothing else; see docs/fixes-and-gating-report.md for the SQL.
+  // ⚠️ NO MARKETING ROW, AND THAT IS NOT AN OVERSIGHT — `findPlanParityViolations()` iterates MATRIX
+  // ROWS and `continue`s on a row with no `ROW_FEATURE_MAP` entry, so a Feature with no row cannot
+  // produce a violation. `schedule_graphics` and `embed_schedule` set that precedent.
+  // ⛔ AND IT IS NOT THE SAME KEY AS `schedule_graphics`. That one gates the weekly post's RENDERING
+  // on Max; this one decides whether the Places and Social posts SURFACES exist for a truck at all,
+  // while they are still being built. A truck can hold `schedule_graphics` from its plan and still
+  // not see these two tabs.
+  | 'places_posts_preview'
 
 const PRO_FEATURES: Feature[] = [
   'discovery_map',
@@ -51,6 +71,31 @@ const PRO_FEATURES: Feature[] = [
   'branded_qr_code',
   'advanced_reporting',
   'whatsapp_replies',   // Pro+Max — moved from Max-only: a Pro truck was sold WhatsApp replies and the gate silently blocked it (canAccess('pro',…)===false)
+  // ── PRIVATE EVENTS — Pro, Max and trial (20261014) ───────────────────────────────────────────────
+  // 🔴 IN `PRO_FEATURES` IS EXACTLY "Pro, Max and trial", for the reason 'schedule_graphics' records:
+  // MAX_FEATURES spreads this array and TRIAL_FEATURES spreads MAX_FEATURES, so one entry here grants
+  // all of pro / max / trial / tester / demo.
+  //
+  // 🔴 AND IT IS DELIBERATELY SPLIT FROM `event_types`, WHICH STAYS MAX-ONLY. They are the same SCREEN
+  // and two different products:
+  //   • `event_types` — making your own named presets, and the PRICES rows. Max.
+  //   • `private_events` — the built-in Private type, the private link and its QR code. Pro.
+  // So a Pro truck sees the Event types tab with Standard + Private and nothing else: "+ New event
+  // type" and the PRICES rows carry a Max badge and refuse server-side. A single key could not express
+  // that, and gating the tab on `event_types` would have hidden a Pro feature behind a Max wall.
+  //
+  // ⚠️ UNLIKE `embed_schedule` THIS NEEDS NO SECOND ENABLE COLUMN. `embed_schedule` publishes a surface
+  // the moment it is on; this one publishes nothing until the truck ticks "Private event" on an event,
+  // and until then every event has `is_private = false` and no token. The feature is INERT until the
+  // truck acts, so the plan key alone is the whole gate — the same argument `event_types` makes.
+  //
+  // 🔴 CHECKED SERVER-SIDE ON EVERY ACTION, not only in the UI: app/api/manage/route.ts refuses to make
+  // an event private without this key, and app/api/event-types/route.ts gates the link/QR row on it.
+  // ⛔ AND A DOWNGRADE DOES NOT UNPUBLISH ANYTHING. An existing private event keeps `is_private` and its
+  // token, so its link goes on working and its venue stays off the map — the screens go read-only
+  // instead. Taking the gate as permission to RE-PUBLISH a wedding would be the worst possible reading
+  // of a billing change.
+  'private_events',
 ]
 
 const MAX_FEATURES: Feature[] = [

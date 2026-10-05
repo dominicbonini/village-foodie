@@ -21,11 +21,16 @@
 // is ~6,000 lines and is the screen Pizzeria Gusto trades on; this card is mounted from one line in it
 // and owns everything else, so the diff on that file stays readable and the merge stays small.
 //
-// ── ⛔ NO PRICES ROW ──────────────────────────────────────────────────────────────────────────────
-// The Dashboard2 board shows one, with a "Prices for this event" sheet. Per-event prices are a LATER
-// stage, built together with type prices, and there is no per-event price mechanism in the database at
-// all (docs/event-types-investigation-report.md: `event_price_overrides` does not exist). A row that
-// opened a sheet writing nothing would be worse than no row.
+// ── ✅ THE PRICES ROW (§70, 5 October 2026) ──────────────────────────────────────────────────────
+//   Prices           → `save_event_pricing` / `clear_event_pricing` → truck_events.price_* +
+//                      event_item_prices rows for THIS event
+//
+// 🔴 THIS BLOCK USED TO SAY "NO PRICES ROW", and that was right until this build: there was no
+// per-event price mechanism in the database at all. There is one now — `truck_events.price_own` plus
+// `event_item_prices` (20261011) — and the row opens `<EventPricesSheet>`, which writes them.
+// ⚠️ THE OLD NOTE ALSO SAID `event_price_overrides` DOES NOT EXIST. It DOES exist in production: 0
+// rows, read by no code path, unused legacy. It is NOT what this feature writes and it was NOT
+// dropped — see §70.2 of the manual. Corrected here rather than left adjacent, which is §37's rule.
 
 import { useCallback, useEffect, useState } from 'react'
 /* ⚠️ THE MODE LABELS COME FROM `OFFLINE_PROTECTION_MODES` ITSELF, not as two separate constants —
@@ -37,11 +42,18 @@ import {
   offlineAutoRejectLabel, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY,
   type OfflineProtectionMode,
 } from '@/lib/copy/offlineProtection'
-/* 🔴 THE FIVE LABELS, FROM WHERE SETTINGS AND THIS CARD BOTH GET THEM. */
-import { SERVICE_SETTING_LABELS } from '@/lib/copy/serviceSettings'
+/* 🔴 THE LABELS, FROM WHERE SETTINGS, THE GRID AND THIS CARD ALL GET THEM. */
+import {
+  SERVICE_SETTING_LABELS, PRICES_ROW_LABEL, OFFLINE_WHEN_OFFLINE_LABEL,
+} from '@/lib/copy/serviceSettings'
 /* 🔴 THE DASHBOARD'S OWN SWITCH, AND THE APP'S CONTROL BOX. Neither is defined in this file. */
 import { Toggle } from '@/components/dashboard/OrderCard'
 import { CONTROL_BOX, ORANGE_SOLID } from '@/lib/ui-tokens'
+/* 🔴 PRIVATE EVENTS (20261014). The words from the one copy module; the name from the one resolver. */
+import {
+  PRIVATE_CHIP, LINK_QR_BUTTON, CONFIRM_TO_PRIVATE, CONFIRM_FROM_PRIVATE,
+} from '@/lib/private-events/copy'
+import { privateDisplayName } from '@/lib/private-events/resolve'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // SHARED BITS
@@ -122,8 +134,11 @@ export interface ThisEventDeal { id: string; name: string; active: boolean; own:
 export interface ThisEventCardProps {
   /** null hides the whole card — there is no "this event" without one. */
   eventId: string | null
-  /** The truck's types. Empty ⇒ the Event type row is not shown, and the card still is. */
-  types: { id: string; name: string }[]
+  /** The truck's types, in the grid's order (Private first). Empty ⇒ the Event type row is not shown,
+   *  and the card still is.
+   *  ⚠️ `kind` ADDED 20261015 so the confirm can tell a switch into/out of PRIVATE from any other
+   *  switch. Optional, and absent reads as 'custom' — which is what every type was before 20261014. */
+  types: { id: string; name: string; kind?: 'custom' | 'private' }[]
   currentTypeId: string | null
   /** Called with the chosen type id (or null for Standard) and whether to clear hand changes. */
   onAssignType: (typeId: string | null, clearOwn: boolean) => Promise<void>
@@ -167,6 +182,41 @@ export interface ThisEventCardProps {
   stockSummary: string | null
   onOpenStock: () => void
 
+  /**
+   * MENU — PRICES (§70).
+   *
+   * 🔴 `pricesSummary` IS COMPUTED ON THE SERVER, by `summarisePricing` over the SAME
+   * `readEventPricing` call `loadEventPriceBook` uses to price an order
+   * (/api/event-types `event_pricing_summary`). So this card's one line and the next customer's
+   * charge come from one read of one pair of columns. It is deliberately NOT derived here from
+   * separate flags: that is how a card comes to promise "+10%" on an event charging menu prices.
+   * `pricesOwn` drives the THIS EVENT tag AND the footer count.
+   */
+  pricesSummary: string
+  pricesOwn: boolean
+  onOpenPrices: () => void
+  /**
+   * 🔴 FALSE ⇒ 20261011 IS NOT APPLIED, AND THE BUTTON IS **VISIBLY** DISABLED, not silently inert.
+   * The row itself still shows and still reads "Menu prices", which is TRUE in that state — every
+   * order is charged the menu price — so there is nothing to hide. What must not happen is a live-
+   * looking "Change" that does nothing when pressed: an operator would press it twice and conclude
+   * the dashboard is broken. A disabled control says "not yet" in the one way nobody misreads.
+   */
+  pricesReady?: boolean
+
+  /**
+   * ── 🔴 PRIVATE EVENTS (20261014) ──────────────────────────────────────────────────────────────
+   * `isPrivate` is read straight off the event (`truck_events.is_private`), never derived from the
+   * type — the type's FK is ON DELETE SET NULL and would publish a wedding if the Private type were
+   * ever removed.
+   * `privateName` is the operator's name for it; `onOpenPrivateLink` opens the shared Link & QR panel.
+   * ⚠️ ALL OPTIONAL, AND ABSENT MEANS "not private" — so every existing render of this card is
+   * unchanged and the row is simply not drawn.
+   */
+  isPrivate?: boolean
+  privateName?: string | null
+  onOpenPrivateLink?: () => void
+
   /** DEALS. */
   deals: ThisEventDeal[]
   onDeal: (bundleId: string, active: boolean) => void
@@ -196,7 +246,9 @@ export function ThisEventCard(props: ThisEventCardProps) {
     orderReady, onOrderReady, orderReadyOwn,
     collectionMins, onOpenCollection, collectionOwn,
     offlineEnabled, offlineMode, offlineAutoRejectMins, onOffline, offlineOwn,
-    stockSummary, onOpenStock, deals, onDeal, onResetToType, disabled, saving, isDemo,
+    stockSummary, onOpenStock, pricesSummary, pricesOwn, onOpenPrices, pricesReady = true,
+    isPrivate, privateName, onOpenPrivateLink,
+    deals, onDeal, onResetToType, disabled, saving, isDemo,
   } = props
 
   const [pending, setPending] = useState<string | null | undefined>(undefined)
@@ -213,7 +265,11 @@ export function ThisEventCard(props: ThisEventCardProps) {
    * that leaves a tag behind.
    * ⚠️ DEALS ARE COUNTED TOO, because a per-event deal row (`overridden = true`) is a hand change on
    * this event in exactly the same sense — and the reset clears them. */
-  const ownFlags = [buzzerPromptOwn, takesCashOwn, orderReadyOwn, collectionOwn, offlineOwn]
+  /* ⚠️ `pricesOwn` IS IN THE LIST, AND IT HAS TO BE. "N settings changed for this event only" and
+   * "Reset to <type>" count the SAME things by rule, and `assign` with `clearOwn: true` — which is
+   * what Reset sends — now clears the event's price columns AND its typed rows. A count that left
+   * prices out would under-report while the button over-delivered. */
+  const ownFlags = [buzzerPromptOwn, takesCashOwn, orderReadyOwn, collectionOwn, offlineOwn, pricesOwn]
   const ownCount = ownFlags.filter(Boolean).length + deals.filter(d => d.own).length
 
   const commitType = async () => {
@@ -223,6 +279,15 @@ export function ThisEventCard(props: ThisEventCardProps) {
   }
 
   const targetName = pending === undefined ? '' : (types.find(t => t.id === pending)?.name ?? 'Standard')
+  /* ── 🔴 IS THIS SWITCH CROSSING THE PRIVACY LINE? (5 October 2026) ──────────────────────────────
+   * ⚠️ DECIDED FROM `isPrivate` (the EVENT's own `truck_events.is_private`) AND the TARGET's kind —
+   * never from the current type's kind, because an event can be private while its type row is being
+   * read, and `is_private` is the source of truth either way (§73).
+   * ⚠️ `pending === undefined` IS "NO SWITCH PENDING", so both are false and neither sentence shows. */
+  const targetIsPrivate = pending !== undefined && !!pending
+    && types.find(t => t.id === pending)?.kind === 'private'
+  const toPrivate = pending !== undefined && targetIsPrivate && !isPrivate
+  const fromPrivate = pending !== undefined && !targetIsPrivate && !!isPrivate
 
   return (
     <div data-this-event-card className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
@@ -238,6 +303,13 @@ export function ThisEventCard(props: ThisEventCardProps) {
         * of a card they use mid-service. */}
       {types.length > 0 && (
         <Row label="Event type">
+          {/* ══ 🔴 PRIVATE IS ONE OF THE CHOICES HERE TOO (5 October 2026) ═══════════════════════
+            * The list comes from the route in the grid's order — Standard, then Private, then the
+            * truck's own types — so the same three screens offer the same choice in the same order.
+            * ⛔ AND SWITCHING INTO OR OUT OF PRIVATE CONFIRMS, with words about what the PUBLIC sees
+            * rather than about columns. Both directions are visible to customers on the next request:
+            * into Private drops the event off the map, out of it publishes the address and kills the
+            * link. Neither has a draft state to undo in, which is why neither is a toast. */}
           <select aria-label="Event type" value={currentTypeId ?? ''} disabled={disabled || busy}
             onChange={e => { setClearOwn(false); setPending(e.target.value || null) }}
             className={SELECT}>
@@ -247,8 +319,38 @@ export function ThisEventCard(props: ThisEventCardProps) {
         </Row>
       )}
 
+      {/* ── 🔴 PRIVATE — ABOVE MENU, BECAUSE IT IS ABOUT WHO CAN ORDER AT ALL (20261014) ───────
+        * Drawn only for a private event. The hint is the operator's name for it, or the generic
+        * label; the action opens the same Link & QR panel the Events list opens.
+        * ⚠️ IT SITS WITH THE EVENT'S OWN FACTS, ABOVE MENU, rather than under it: whether guests can
+        * reach this event at all comes before what is on the menu when they do.
+        * ⚠️ `own` IS NOT PASSED. That marker means "this event has a hand-set value overriding its
+        * type"; being private is not an override of anything — it is what the event IS. */}
+      {isPrivate && (
+        <Row label={PRIVATE_CHIP} hint={privateDisplayName(privateName)}>
+          <button type="button" onClick={onOpenPrivateLink} disabled={disabled || !onOpenPrivateLink}
+            data-open-private-link
+            className="text-sm font-semibold text-purple-700 disabled:text-slate-300 shrink-0">
+            {LINK_QR_BUTTON}
+          </button>
+        </Row>
+      )}
+
       {/* ── MENU ──────────────────────────────────────────────────────────────────────────────── */}
       <SectionHeading>MENU</SectionHeading>
+      {/* ── 🔴 PRICES, FIRST UNDER MENU (§70) ─────────────────────────────────────────────────────
+        * Above stock deliberately: an operator arriving at a festival sets prices once, before
+        * service, and checks stock repeatedly during it — but the price is the thing they must not
+        * forget, because a wrong one is charged to a customer and a wrong stock figure only pauses a
+        * dish. ⚠️ THE SUMMARY IS COMPUTED BY THE PAGE from the same pricing read the order path uses,
+        * never from a second expression in this file. */}
+      <Row label={PRICES_ROW_LABEL} hint={pricesSummary} own={pricesOwn}>
+        <button type="button" onClick={onOpenPrices} disabled={disabled || !pricesReady} data-open-prices
+          /* ⚠️ `title` ONLY WHEN IT IS THE MIGRATION STOPPING IT, so a disabled-because-offline button
+           * does not claim a reason that is not its own. */
+          title={!pricesReady ? 'Prices for one event aren’t switched on yet.' : undefined}
+          className="text-sm font-semibold text-orange-700 disabled:text-slate-300 shrink-0">Change</button>
+      </Row>
       {/* 🔴 IT OPENS THE EXISTING PER-EVENT STOCK SCREEN rather than reimplementing it. That screen
         * is the dashboard's Stock tab, it already writes `event_item_stock` / `event_category_stock`
         * for the selected event, and it already handles the offline outbox. */}
@@ -312,19 +414,31 @@ export function ThisEventCard(props: ThisEventCardProps) {
         * help text; this card has one row per setting, and the Dashboard2 board shows a dropdown. The
         * values and their labels are the SAME constants, so the two surfaces cannot word them
         * differently. */}
+      {/* ── 🔴 A SWITCH, WITH THE MODE UNDERNEATH WHEN IT IS ON (5 October 2026) ─────────────────
+        * It was ONE three-choice `<select>` — Off / Pause ordering / Keep taking orders… — which made
+        * this the only row on the card that was not a switch, and put a safety-critical MODE at the
+        * same level as an on/off. The Event types grid changed the same way in the same build, so the
+        * two surfaces still have the same shape as each other and as Settings › Kitchen (a switch,
+        * then a mode when it is on).
+        * ⚠️ THE SWITCH WRITES **ONLY** `enabled`, leaving the mode stored — turning protection back on
+        * must not silently change what it will then do. That is `set_offline_protection`'s own
+        * "optional and independent" contract, which is why this needed no route change. */}
       <Row label={SERVICE_SETTING_LABELS.offline_protection} own={offlineOwn}>
-        <select aria-label={SERVICE_SETTING_LABELS.offline_protection} disabled={disabled || isDemo}
-          value={!offlineEnabled ? 'off' : offlineMode}
-          onChange={e => {
-            const v = e.target.value
-            if (v === 'off') onOffline({ enabled: false })
-            else onOffline({ enabled: true, mode: v as OfflineProtectionMode })
-          }}
-          className={SELECT}>
-          <option value="off">Off</option>
-          {OFFLINE_PROTECTION_MODES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-        </select>
+        <Switch label={SERVICE_SETTING_LABELS.offline_protection} on={offlineEnabled}
+          disabled={disabled || isDemo}
+          onToggle={() => onOffline({ enabled: !offlineEnabled })} />
       </Row>
+      {offlineEnabled && !isDemo && (
+        <div className="flex items-center justify-between gap-3 pl-4 pb-2">
+          <p className="text-[13px] font-semibold text-slate-700">{OFFLINE_WHEN_OFFLINE_LABEL}</p>
+          <select aria-label={OFFLINE_WHEN_OFFLINE_LABEL} disabled={disabled}
+            value={offlineMode}
+            onChange={e => onOffline({ mode: e.target.value as OfflineProtectionMode })}
+            className={SELECT}>
+            {OFFLINE_PROTECTION_MODES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+          </select>
+        </div>
+      )}
       {offlineEnabled && !isDemo && (
         <p className="text-[13px] text-amber-600 -mt-1 pb-1.5">
           ⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}
@@ -378,6 +492,24 @@ export function ThisEventCard(props: ThisEventCardProps) {
           onClick={e => { if (e.target === e.currentTarget && !busy) setPending(undefined) }}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-5 space-y-3" role="dialog" aria-modal="true">
             <p className="font-bold text-slate-900 text-lg">Switch this event to {targetName}?</p>
+            {/* ══ 🔴 THE PRIVACY SENTENCE COMES FIRST, WHEN THE SWITCH CROSSES THAT LINE ═══════════
+              * ⛔ ABOVE THE SERVICE BULLETS, DELIBERATELY. "New orders use Private's service settings"
+              * is true and is not what the operator needs to read first; what the PUBLIC sees is.
+              * ⚠️ IT APPEARS ONLY ON A CROSSING, not on every switch — Market → Festival says nothing
+              * about privacy, and a sentence about the map on that switch would be noise.
+              * 🔴 BOTH DIRECTIONS, BECAUSE BOTH ARE VISIBLE IMMEDIATELY: into Private the event drops
+              * off the map; out of it the address publishes and the link stops working, including on
+              * cards already printed. */}
+            {toPrivate && (
+              <p className="rounded-xl border border-purple-200 bg-purple-50 p-2.5 text-sm font-semibold text-purple-900">
+                {CONFIRM_TO_PRIVATE}
+              </p>
+            )}
+            {fromPrivate && (
+              <p className="rounded-xl border border-amber-300 bg-amber-50 p-2.5 text-sm font-semibold text-amber-900">
+                {CONFIRM_FROM_PRIVATE}
+              </p>
+            )}
             <div className="text-sm text-slate-700 space-y-1">
               <p>• New orders use {targetName}’s service settings.</p>
               {/* ⚠️ SAID EVEN THOUGH THIS BUILD CHANGES NO PRICES: it is the question a truck asks when

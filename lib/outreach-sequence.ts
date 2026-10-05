@@ -393,8 +393,22 @@ export const STEP_LABELS: Record<LadderKind, string> = {
 
 /** "Send · Chase 1" / "Send reply" — 3g, from one place so every button says the same thing. */
 export function sendButtonLabel(input: { isReply: boolean; step: string | null }): string {
-  if (input.isReply) return 'Send reply'
-  if (input.step && isSlotStep(input.step)) return `Send · ${STEP_LABELS[input.step as LadderKind]}`
+  /* ══ 🔴 IT IS ALWAYS "Send" (5 October 2026, Dominic's instruction) ═══════════════════════════════
+   * It used to read "Send reply" for a reply and "Send · Chase 1" for a rung, with the page appending
+   * "· follow up 2 Oct" on top. Three different labels for one button, and the operator's own report
+   * was that the step name on the button told them nothing they could act on while making the button
+   * a different width every time the ladder moved.
+   *
+   * ⛔ THE SERVER IS UNTOUCHED. `loggedKindFor` and `nextStep` still decide and still log exactly what
+   * they logged before — the label was never an input to either. This function's RETURN VALUE is the
+   * whole change; `isSlotStep`, `STEP_LABELS` and `LadderKind` are still used by the sequence grid and
+   * the timeline, which is why they are not deleted.
+   * ⚠️ THE ARGUMENT IS KEPT, AND DELIBERATELY. Every call site passes it, the shape is in two
+   * harnesses, and a signature change would be a wider diff than the behaviour change. It also leaves
+   * the door open if a step name is ever wanted back.
+   * ⚠️ "Send test to me" IS A DIFFERENT BUTTON and is not touched.
+   */
+  void input
   return 'Send'
 }
 

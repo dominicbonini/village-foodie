@@ -32,7 +32,23 @@ check(F.resolveBatchReservations({ plan: 'trial', feature_overrides: after }) ==
 console.log('\n── it is NOT a plan feature ────────────────────────────────────────────────────────────')
 {
   const src = fs.readFileSync(path.join(REPO, 'lib/features.ts'), 'utf8')
-  const featureUnion = src.slice(src.indexOf('export type Feature ='), src.indexOf('export type Plan') > 0 ? src.indexOf('export type Plan') : src.indexOf('export type Feature =') + 2000)
+  /* ══ 🔴 THE SLICE IS THE UNION, AND IT IS STRIPPED OF COMMENTS (5 October 2026) ══════════════════
+   * ⛔ IT USED TO BE `indexOf('export type Feature =') + 2000` — a CHARACTER COUNT, because the
+   * intended end marker (`export type Plan`) sits at index 0, ABOVE the union, so the `> 0` test was
+   * always false and the fallback was always taken. Two things then went wrong at once: the window
+   * was arbitrary, and it was taken over the raw source.
+   * 🔴 WHAT BROKE IT: `places_posts_preview` joined the union (5 October 2026) with a note explaining
+   * why it is a `Feature` and not a second bespoke override key — a note that NAMES
+   * `batch_reservations`. The assertion found the word in a COMMENT and reported the key as a plan
+   * feature. This repository's recurring failure, in reverse: prose BREAKING a check about code.
+   * ✅ SO THE END IS THE REAL ONE — `const PRO_FEATURES`, the first thing after the union — and the
+   * comments go first. The claim is unchanged and is now about code. */
+  const unionStart = src.indexOf('export type Feature =')
+  const unionEnd = src.indexOf('const PRO_FEATURES')
+  const featureUnion = src.slice(unionStart, unionEnd)
+    .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '')
+  check(unionStart >= 0 && unionEnd > unionStart && featureUnion.includes("| 'qr_menu'"),
+    'the Feature union is found, bounded by PRO_FEATURES — not by a character count')
   check(!/batch_reservations/.test(featureUnion), "'batch_reservations' is not in the Feature union — canAccess never sees it")
   check(!/batch_reservations/.test(fs.readFileSync(path.join(REPO, 'lib/plan-features.ts'), 'utf8')), 'and not in lib/plan-features.ts — the plan matrix and its parity guard are untouched')
   for (const f of ['app/api/slots/[truckId]/route.ts', 'app/api/dashboard/route.ts', 'app/api/orders/submit/route.ts', 'lib/payments/promote-draft.ts', 'app/api/dashboard/action/route.ts'])

@@ -691,12 +691,27 @@ function runWiringSuite(lib) {
   t('🔴 NO `update` OR `upsert` ANYWHERE NAMES IT — an edit cannot move an event\'s place',
     writes.filter(n => n.col === 'truck_place_id' && n.method !== 'insert').length === 0)
 
-  /* 🔴 THE FOUR PAYLOADS THE AST READER CANNOT FULLY RESOLVE, CHECKED BY HAND AND NAMED. A reader
-   * that cannot read a payload proves nothing about it, so each is asserted on its own terms. These
-   * are listed in the report as the paths that were checked. */
+  /* 🔴 THE PAYLOADS THE AST READER CANNOT FULLY RESOLVE, CHECKED BY HAND AND NAMED. A reader that
+   * cannot read a payload proves nothing about it, so each is asserted on its own terms. These are
+   * listed in the report as the paths that were checked.
+   *
+   * ══ ⚠️ FOUR NOW, NOT THREE (5 October 2026) ════════════════════════════════════════════════════
+   * The fourth is `app/api/events/action/route.ts` `update` — `.update({ ...safe, updated_at: now })`,
+   * the approval card's edit path. It was always a spread; the reader's line numbers moved when the
+   * privacy block was added above it, which is what made the census visibly change rather than
+   * anything new becoming unreadable.
+   * ⛔ THE CENSUS IS KEPT AS AN EXACT COUNT ON PURPOSE. A `>=` would let a genuinely new unreadable
+   * payload slip in beside the known ones, and the whole point of this section is that no `update`
+   * anywhere can move an event's PLACE — which is asserted directly above, for every write, read or
+   * unread. The count is the tripwire that makes somebody look at a new one. */
   const unread = ev.unreadWrites.filter(w => w.method !== 'insert')
   t(`⚠️ exactly ${unread.length} truck_events write payloads are not literal, and each is checked below`,
-    unread.length === 3)
+    unread.length === 4)
+  /* ⛔ AND NONE OF THE FOUR NAMES `truck_place_id`, which is the claim the count exists to protect.
+   * Asserted on the payload TEXT the reader did capture, so an unreadable payload is still not an
+   * unchecked one. */
+  t('⛔ …and not one of them mentions `truck_place_id`',
+    unread.every(u => !u.parts.join(';').includes('truck_place_id')))
   for (const u of unread) console.log(`      ? ${u.file}:${u.line} .${u.method}() — ${u.parts.join('; ').slice(0, 60)}`)
 
   const D = stripComments(read(DASH_ACTION))
@@ -879,23 +894,36 @@ function runWiringSuite(lib) {
    * as a button opening an overlay, because main's Schedule tab had no pill bar; it is the third pill.
    * ⚠️ THE ORDER IS ASSERTED, not just the membership: Events is the default and must be first, and
    * Event types is a setting rather than a day's work, so it is last. */
-  t('🔴 the Schedule tab has THREE pills — Events, Weekly post, Event types — and no Places pill',
+  /* ══ 🔴 RE-AIMED TWICE, AND REVERSED THE SECOND TIME (5 October 2026) ═══════════════════════════
+   * This asserted THREE pills with no Places pill — correct on 3 October, when the list had just moved
+   * into the Add event modal and a second route to it would have been the defect.
+   * 🔴 THERE ARE FOUR NOW, BY INSTRUCTION: Events · Event types · Places · Social posts. Places is a
+   * full two-pane screen rather than a second route to the modal's list, and "Weekly post" became
+   * "Social posts" because that page holds the single-event post too.
+   * ⛔ THE ID STAYED `weekly` WHILE THE LABEL MOVED, and that is the part worth asserting: the id is
+   * what `?section=` carries, so renaming it would have broken every bookmark to change a word. */
+  t('🔴 the Schedule tab has FOUR pills — Events · Event types · Places · Social posts',
     /\{ id: 'events', label: 'Events' \}/.test(P)
-    && /\{ id: 'weekly', label: 'Weekly post' \}/.test(P)
     && /\{ id: 'event-types', label: 'Event types' \}/.test(P)
-    && !/id: 'places'/.test(P)
-    && P.indexOf("id: 'events'") < P.indexOf("id: 'weekly'")
-    && P.indexOf("id: 'weekly'") < P.indexOf("id: 'event-types'")
-    && /type ScheduleSection = 'events' \| 'weekly' \| 'event-types'/.test(P)
-    /* 🔴 AND `?section=event-types` REACHES IT — the guard is what the URL is parsed through, so a
-     * pill the guard does not know is a pill no link can reach. */
-    && /v === 'events' \|\| v === 'weekly' \|\| v === 'event-types'/.test(P))
+    && /\{ id: 'places', label: 'Places' \}/.test(P)
+    && /\{ id: 'weekly', label: 'Social posts' \}/.test(P)
+    && P.indexOf("id: 'events'") < P.indexOf("id: 'event-types'")
+    && P.indexOf("id: 'event-types'") < P.indexOf("id: 'places'")
+    && P.indexOf("id: 'places'") < P.indexOf("id: 'weekly'")
+    && /type ScheduleSection = 'events' \| 'event-types' \| 'places' \| 'weekly'/.test(P)
+    /* ⛔ "Weekly post" IS GONE AS A LABEL, and the id it used is still `weekly`. */
+    && !/label: 'Weekly post'/.test(codeOnly(P))
+    /* 🔴 AND EVERY PILL IS REACHABLE — the guard is what the URL is parsed through, so a pill the
+     * guard does not know is a pill no link can reach. */
+    && /v === 'events' \|\| v === 'weekly' \|\| v === 'event-types' \|\| v === 'places'/.test(P))
   /* ⛔ AND THE BUTTON AND THE OVERLAY ARE GONE. Two routes to one screen is what the Places pill was
    * removed for; leaving the button would have rebuilt exactly that. */
   t('⛔ the "Event types" header button and its overlay mount are gone',
     !/Btn label="Event types"/.test(P)
     && !/showEventTypes/.test(P)
-    && /section === 'event-types' && <EventTypesPanel/.test(P))
+    /* ⚠️ `shownSection` (5 October 2026) — Places and Social posts are behind `places_posts_preview`,
+     * so the tab derives which pill is shown. Event types is NOT gated; only the switch moved. */
+    && /shownSection === 'event-types' && <EventTypesPanel/.test(P))
   /* 🔴 AND IT IS THE SAME COMPONENT, INLINE — not a second copy of the grid on the page. `inline`
    * swaps the shell; the grid, the column widths, the header button and the footer are shared code. */
   t('🔴 the pill renders the SAME component with `inline`, not a second grid', (() => {
@@ -917,12 +945,21 @@ function runWiringSuite(lib) {
        * (the manage scroller already does), which is the one behavioural difference between them. */
       && /inline \? '' : 'flex-1 min-h-0 overflow-y-auto'/.test(et)
   })())
-  t("🔴 an old `?section=places` link falls through to Events and does NOT force Tidy up open",
-    /v === 'events' \|\| v === 'weekly'/.test(P)
-    && !/section === 'places'/.test(P)
+  /* ══ 🔴 REVERSED: `?section=places` NOW LANDS ON PLACES (5 October 2026) ════════════════════════
+   * It used to fall through to Events, because the pill had been removed and the validator did not
+   * recognise the value — which was the honest behaviour then. Places is a tab again, so the link
+   * means what it says, and that is the behaviour change rather than a regression.
+   * ⛔ AND IT STILL DOES NOT FORCE "Tidy up" OPEN. A bookmark from a different week must not put
+   * somebody inside a modal they did not open — that part of the original claim survives intact. */
+  t("🔴 an old `?section=places` link lands on PLACES, and still does not force Tidy up open",
+    /v === 'places'/.test(P)
+    && /section === 'places'/.test(P)
     && !/setModalView\('tidy'\)[\s\S]{0,40}sectionParam/.test(P))
-  t('⚠️ …and `?section=` still works for the two that remain',
+  t('⚠️ …and `?section=` still round-trips for every pill',
     /qs\.get\('section'\)/.test(P) && /url\.searchParams\.delete\('section'\)/.test(P))
+  /* 🔴 AND `?section=weekly` — THE LINK IN OPERATORS' BOOKMARKS — STILL RESOLVES, to the renamed tab. */
+  t('⛔ `?section=weekly` still works, and now opens "Social posts"',
+    /v === 'weekly'/.test(P) && /\{ id: 'weekly', label: 'Social posts' \}/.test(P))
   /* ⚠️ ASSERTED ON THE RAW SOURCE, not the stripped one — see `codeOnly`'s note. The loads this checks
    * are one-liners that no comment contains, so raw is both safe and exact here. */
   t("🔴 THE EVENTS SECTION IS THE EXISTING COMPONENT, UNCHANGED — `isActive` still means \"the tab is open\"",
@@ -930,7 +967,7 @@ function runWiringSuite(lib) {
       const RAW = read(PAGE)
       return /isActive: boolean; section: ScheduleSection/.test(RAW)
         && /useEffect\(\(\) => \{ if \(isActive\) loadEvents\(\) \}, \[isActive, loadEvents\]\)/.test(RAW)
-        && /\{isActive && section === 'events' && \(/.test(RAW)
+        && /\{isActive && shownSection === 'events' && \(/.test(RAW)
         // the vans read and the conflict scan still key off the TAB, not the section
         && /if \(isActive\) api\('get_vans'\)/.test(RAW)
     })())
@@ -1079,7 +1116,11 @@ function runWiringSuite(lib) {
   t('⚠️ ONE hook owns the list, so Tidy up and the picker cannot seed twice on one screen',
     (P.match(/usePlaces\(/g) || []).length === 1
     && /ctl=\{placesCtl\}/.test(P)
-    && (U.match(/api\('sg_places'\)/g) || []).length === 1)
+    /* ⚠️ `apiRef.current('sg_places')`, NOT `api('sg_places')` (5 October 2026). The hook calls it
+     * through a ref, because `api` was an unstable prop whose new identity on every render re-ran the
+     * load effect and stranded the list at `null` — the endless spinner. The literal moved with it, so
+     * the count is taken on the ACTION NAME rather than on one spelling of the call. */
+    && (U.match(/'sg_places'/g) || []).length === 1)
   // ════════════════════════════════════════════════════════════════════════════════════════════
   // THE QUICK FIXES (3 October 2026): the pane scroll, the upload switch, Van, the Menu pills
   // ════════════════════════════════════════════════════════════════════════════════════════════
@@ -1148,10 +1189,20 @@ function runWiringSuite(lib) {
 
   /* 🔴 "VAN", WHEREVER A VAN IS CHOSEN. Copy only — the column, the options and the predicate are
    * untouched, which is what these assert alongside the labels. */
-  t('🔴 the event form\'s van picker says "Van", and still writes `van_id`',
+  /* ══ 🔴 RE-AIMED: THE VAN PICKER IS THE SHARED `Select` NOW (5 October 2026) ═════════════════════
+   * It was a native `<select>` with an `<option value="">Select a van</option>`. WebKit ignores
+   * vertical padding and `min-height` on a native select and renders it at 23px (§65), so on an iPad
+   * this field was half the height of every field around it — the last three in this form to be
+   * converted.
+   * ⛔ THE CLAIM IS UNCHANGED AND IS ASSERTED IN FULL: the LABEL still says "Van" (it was renamed
+   * from "Truck" because the options come from `truck_vans`), the placeholder still says "Select a
+   * van", and the write is still `van_id`. Only the box changed. */
+  t('🔴 the event form\'s van picker says "Van", writes `van_id`, and uses the shared Select',
     /<label className="block text-xs font-bold text-slate-600 mb-1">Van <span className="text-red-500">\*<\/span><\/label>/.test(P)
-    && /<option value="">Select a van<\/option>/.test(P)
-    && /setEditingEvent\(p => \(\{ \.\.\.p!, van_id: e\.target\.value \|\| null \}\)\)/.test(P))
+    && /\{ value: '', label: 'Select a van' \}/.test(P)
+    && /van_id: v \|\| null/.test(P)
+    /* ⛔ AND IT IS NOT A NATIVE SELECT ANY MORE — the thing §65 exists to prevent. */
+    && /<Select\s*\n\s*ariaLabel="Van"/.test(P))
   t('🔴 the van FILTER says "vans" — it predicates on `van_id`, so "All trucks" was simply wrong',
     (() => {
       const V = read('components/manage/VanFilter.tsx')
@@ -1307,7 +1358,7 @@ function runWiringSuite(lib) {
    * THE REPORT: "for the pils under menu, schedule and settings, they have been pushed down the screen
    * a little so when you scroll down the screen they move up … make sure the pils are locked as well."
    * THE CAUSE: the page's seven notices (walkthrough strip, approvals, allergens, custom domain,
-   * Stripe, missing fields, staleness bar) were the FIRST children of the `pt-6 manage-tab-pad`
+   * card payouts, missing fields, staleness bar) were the FIRST children of the `pt-6 manage-tab-pad`
    * wrapper. With any one of them showing, the bar below it was no longer the wrapper's first child,
    * the `:has()` rule in app/globals.css stopped matching, the `pt-6` stayed, and the bar rested low
    * and snapped flush on the first scroll. `position: sticky` has no upward reach, so there is no CSS
@@ -1377,6 +1428,17 @@ function runWiringSuite(lib) {
     const before = strings(base), after = strings(RAWP)
     const added = [...after].filter(x => !before.has(x))
     const allowed = new Set(SETTINGS_LABELS)
+    /* ══ ⚠️ ONE MORE ALLOWED ADDITION, AND IT IS AN ADDITION RATHER THAN A CHANGE ══════════════════
+     * `'Following your truck setting.'` is a NEW sub-label under each van's "Do you take cash?" switch,
+     * from the per-van cash work (20261012): a van with no value of its own shows the truck's, and the
+     * line says so. No existing Settings wording was touched — the `removed` list is empty, which is
+     * the half of this check that proves it.
+     * 🔴 LISTED HERE RATHER THAN SILENCED BY LOOSENING THE CHECK. The guard still fails on any OTHER
+     * addition and on ANY removal, which is what it exists for.
+     * ⚠️ IT SURFACED ON THIS BUILD BECAUSE THIS IS THE FIRST RUN OF THIS HARNESS SINCE 20261012 — the
+     * standing rule is to run only the harnesses a build touches, so a copy change made two prompts
+     * ago arrived here now. Worth recording: the rule trades latency for time, and this is the latency. */
+    allowed.add('Following your truck setting.')
     /* ⚠️ THE THREE REMOVALS THAT ARE ALLOWED, AND ONLY THOSE THREE: a card title that said exactly
      * what its section's new `<h2>` says. The words did not leave Settings — they moved up one level.
      * Any OTHER removal is a wording change and fails. */
@@ -1556,10 +1618,24 @@ function runWiringSuite(lib) {
      * the form pane re-indented eleven lines of real code, and an exact-string multiset read every one
      * of them as lost. Indentation is not what this guard protects; a line that genuinely goes still
      * goes, at any indentation. */
+    /* ══ ⚠️ A LINE THAT IS ONLY JSX PUNCTUATION IS NOT A LINE THIS GUARD PROTECTS ═══════════════════
+     * The third narrowing, after comment-prose and indentation, and for the same reason: it keeps the
+     * guard aimed at lost CODE.
+     * 🔴 WHAT FORCED IT: converting a multi-line `<select … >` to a self-closing `<Select … />` leaves
+     * no line holding the opening tag's closing bracket. Three bare `>` lines therefore "disappeared",
+     * and the only way to list them in `movedEdits` would have been three entries whose `was` is one
+     * character — which matches hundreds of places and proves nothing about any of them.
+     * ⛔ IT IS A **CHARACTER-CLASS** NARROWING, NOT A LENGTH ONE. `>`, `)`, `}`, `/>`, `)}` and the
+     * like go; anything containing a letter, a digit or a quote stays. A deleted `</div>` is still a
+     * deleted line, and so is `)}` followed by anything. The 189 lines this check was built after were
+     * a confirmation modal, two billing modals, an emoji picker and a card — not one of them was
+     * punctuation. */
+    const isPunctuation = (l) => /^[>)}\]/,;:+&|?.`'"\s-]*$/.test(l) && !/[A-Za-z0-9]/.test(l)
+    const meaningful = (lines) => lines.map(x => x.trim()).filter(Boolean).filter(l => !isPunctuation(l))
     const left = new Map()
-    for (const l of now.map(x => x.trim()).filter(Boolean)) left.set(l, (left.get(l) || 0) + 1)
+    for (const l of meaningful(now)) left.set(l, (left.get(l) || 0) + 1)
     const gone = []
-    for (const l of blockStrip(base).map(x => x.trim()).filter(Boolean)) {
+    for (const l of meaningful(blockStrip(base))) {
       const n = left.get(l) || 0
       if (n > 0) left.set(l, n - 1)
       else gone.push(l)
@@ -1786,7 +1862,12 @@ function runWiringSuite(lib) {
       { was: 'function Toggle({ on, onToggle, label, disabled }: { on: boolean',
         reason: 'the switch moved to primitives, exported, and merged with event-types\' superset',
         nowIn: 'components/manage/primitives.tsx',
-        now: 'export function Toggle({ on, onToggle, label, disabled, faded = false, ariaLabel, title }' },
+        /* ⚠️ RE-STATED 5 OCTOBER. The shared `Toggle` gained an opt-in `compact` prop for the Event
+         * types grid's dense rows (38×22 instead of 44×24). It DEFAULTS TO FALSE, so every existing
+         * caller — all fifteen on this page and the dashboard card — renders byte-identically; the
+         * grid is the only caller that passes it. ⛔ THIS ENTRY CAUGHT THE SIGNATURE CHANGE, which is
+         * what it is for: "I edited this line on purpose" with a test attached. */
+        now: 'export function Toggle({ on, onToggle, label, disabled, faded = false, ariaLabel, title, compact = false }' },
       /* ══ 🔴 THE FIVE LINES THE MERGE EDITED (October 2026, event-types merged in) ══════════════
        * Each carries its NEW form and the file it is in, so this stays a claim with a test attached:
        * if a replacement is deleted or renamed the companion check below reports it, which is exactly
@@ -1801,14 +1882,23 @@ function runWiringSuite(lib) {
       { was: '<div className={`relative w-11 h-6 rounded-full transition-colors ${on ?',
         reason: 'the track gained `shrink-0` so it cannot squash beside a long label',
         nowIn: 'components/manage/primitives.tsx',
-        now: 'relative w-11 h-6 rounded-full transition-colors shrink-0' },
+        /* ⚠️ RE-STATED 5 OCTOBER, with the `compact` prop. The track is now a base plus a ternary —
+         * `relative rounded-full transition-colors shrink-0 ${compact ? 'w-[38px] h-[22px]' : 'w-11 h-6'}`
+         * — so the full 44×24 arm still carries `shrink-0` and `w-11 h-6`, which is what this entry
+         * claimed; they are simply no longer adjacent in the string. What is asserted is the BASE,
+         * which both arms share, plus the full arm's own size. */
+        now: "relative rounded-full transition-colors shrink-0 ${compact ? 'w-[38px] h-[22px]' : 'w-11 h-6'}" },
       /* 3 · the Add event save. A NEW event now carries the picked type; an EDIT does not send the key
        * at all, and `upsert_event`'s update path destructures a fixed list that does not name it — so
        * this form cannot move a live event's type. */
       { was: "await api('upsert_event', { ...editingEvent, latitude: lat, longitude: lng })",
-        reason: 'a new event carries its chosen event type; an edit sends no such key',
+        /* ⚠️ RE-STATED 5 OCTOBER. The key is still create-only and still spread behind
+         * `editingEvent.id ? {} :` — what changed is WHAT it sends: a PRIVATE event sends no type at
+         * all, because the server sets the Private type itself through the one privacy writer. Sending
+         * both would be two writers of one state, which is the bug §5 exists to close. */
+        reason: 'create-only still; and a private event sends no type — the writer sets it',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: '...(editingEvent.id ? {} : { event_type_id: eventTypeId }),' },
+        now: '...(editingEvent.id ? {} : { event_type_id: chosenPrivate ? null : eventTypeId }),' },
       /* 4-6 · the three setting names became shared constants — see `MOVED_TO_SERVICE_COPY` above,
        * which proves each one is still spelled identically in lib/copy/serviceSettings.ts. */
       { was: '<p className="text-sm font-semibold text-slate-800">Do you take cash?</p>',
@@ -1827,19 +1917,137 @@ function runWiringSuite(lib) {
       { was: 'import { Spinner, Badge, Btn, Input, Card, EmptyState,',
         reason: '`Toggle` moved to primitives, so the import names it',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: 'EmptyState, Toggle, AllergenToggles' },
+        /* ⚠️ `Select` JOINED THE LIST ON 5 OCTOBER, between Toggle and AllergenToggles. The Add/Edit
+         * event form's last three native `<select>`s (start/end hour and minute, Van) became the
+         * shared non-native control, because WebKit renders a native one at 23px whatever its padding
+         * says (§65). ⛔ THIS ENTRY CAUGHT THE CHANGE — which is what `movedEdits` is for: the claim
+         * "I edited this line on purpose" has a test attached. */
+        now: 'EmptyState, Toggle, Select, AllergenToggles' },
       /* ══ 🔴 EVENT TYPES BECAME THE THIRD SCHEDULE PILL ═══════════════════════════════════
        * Two lines carry the section vocabulary and both gained the new id. They are claimed rather
        * than waived: the pill assertions in PART A read these same two strings, so a revert fails
        * there too — this entry only keeps the line-level guard honest about WHY they changed. */
+      /* ══ 🔴 THE 5 OCTOBER BUILD'S OWN EDITS, EACH NAMED (Places tab, Social posts, §4, §5) ════════
+       * ⚠️ EVERY ONE CARRIES ITS NEW FORM, so "I edited this on purpose" is a claim with a test: if a
+       * replacement is later deleted or renamed, this list starts failing rather than going quiet. */
+
+      /* 0 · THE LAST FIVE ARE STRUCTURAL REMNANTS OF THE SELECT SWAP, AND ONE REAL TYPE WIDENING.
+       * ⚠️ THREE OF THEM ARE A BARE `>` — the closing bracket of a multi-line `<select … >` opening
+       * tag. A self-closing `<Select … />` has no such line, so they go with the tag. A line that is
+       * one character of punctuation is not something this guard exists to protect, and listing them
+       * is cheaper than teaching the stripper about JSX.
+       * ⚠️ `{vans.map(van => (` likewise: the options are a list prop now, asserted above. */
+      { was: '{vans.map(van => (',
+        reason: 'the van options are a list prop, not children — asserted above',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'vans.map(van => ({ value: van.id, label: van.name }))' },
+
+      /* 🔴 AND THE ONE REAL WIDENING: `updateVanSetting`'s field union gained `takes_cash`, from the
+       * per-van cash work (20261012). It is an ADDITION to a union — every existing caller still
+       * type-checks — and it is what makes "Do you take cash?" a van setting rather than a truck one. */
+      { was: "field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count' | 'offline_protection_mode' | 'offline_auto_reject_mins'",
+        reason: '`takes_cash` joined the union — cash is a van setting now (20261012)',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "'takes_cash'" },
+
+      /* 1 · "Weekly post" BECAME "Social posts" — the label only. The id stays `weekly`, because the
+       * id is what `?section=` carries and operators have it bookmarked. */
+      { was: "{ id: 'weekly', label: 'Weekly post' },",
+        reason: 'the page holds the single-event post too, so "Weekly post" had stopped being true',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "{ id: 'weekly', label: 'Social posts' }," },
+
+      /* 2 · THE SHARED TOGGLE'S KNOB gained the `compact` travel (18px instead of 24), because the
+       * Event types grid draws a 38×22 track. The 16px knob is unchanged in both arms. */
+      { was: "<div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-6' : 'translate-x-1'}`} />",
+        reason: 'the knob gained the compact travel; its size is the same in both arms',
+        nowIn: 'components/manage/primitives.tsx',
+        now: "absolute w-4 h-4 rounded-full bg-white shadow transition-transform" },
+
+      /* 3 · THE EDIT FORM'S SHAPE gained the two privacy fields. ⛔ THIS IS THE §7 FIX: three Edit
+       * buttons each built this object inline, the save sends an EXPLICIT `is_private`, and a builder
+       * that omitted it published a wedding's address on any edit. There is one builder now. */
+      { was: "type EditingEvent = { id?: string; venue_name: string;",
+        reason: 'the form carries is_private and private_name, through ONE builder (§7)',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'is_private?: boolean; private_name?: string }' },
+      { was: "setEditingEvent({ id: ev.id, venue_name: ev.venue_name,",
+        reason: 'the fourth inline builder — the scraped-approval path — now uses editFormFor',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'const editFormFor = (event: TruckEvent): EditingEvent => ({' },
+      { was: "<button onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id,",
+        reason: 'the Edit buttons call the one builder and seed the type pill',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'setEditingEvent(editFormFor(event)); seedTypePill(event)' },
+      { was: "<button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent({ id: event.id,",
+        reason: 'the two Edit & Approve buttons call the one builder too',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event)' },
+
+      /* 4 · THE FORM'S LAST THREE NATIVE SELECTS became the shared non-native control. ⛔ WebKit
+       * renders a native `<select>` at 23px whatever its padding says (§65), so on an iPad these were
+       * half the height of the fields around them. The options, the values and the "hour first" rule
+       * are untouched — only the box changed. */
+      { was: "aria-label={label ? `${label} hour` : 'Hour'}",
+        reason: 'the hour box is the shared Select — WebKit renders a native one at 23px',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "ariaLabel={label ? `${label} hour` : 'Hour'}" },
+      { was: "aria-label={label ? `${label} minute` : 'Minute'}",
+        reason: 'the minute box likewise',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "ariaLabel={label ? `${label} minute` : 'Minute'}" },
+      { was: 'onChange={e => onHour(e.target.value)}',
+        reason: 'Select hands over the value, not the event',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'onChange={v => onHour(v)}' },
+      { was: '<option value="">{placeholder}</option>',
+        reason: 'the options are a list prop now',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "{ value: '', label: placeholder ?? '--' }" },
+      { was: '{hours.map(h => <option key={h} value={h}>{h}</option>)}',
+        reason: 'the options are a list prop now',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'hours.map(h => ({ value: h, label: h }))' },
+      { was: 'onChange={e => { if (curH) onChange(`${curH}:${e.target.value}`) }}',
+        reason: 'Select hands over the value, not the event',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'onChange={v => { if (curH) onChange(`${curH}:${v}`) }}' },
+      { was: '{!curH && <option value="">--</option>}',
+        reason: 'the options are a list prop now',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "...(!curH ? [{ value: '', label: '--' }] : [])" },
+      { was: '{minuteOptions.map(m => <option key={m} value={m}>{m}</option>)}',
+        reason: 'the options are a list prop now',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'minuteOptions.map(m => ({ value: m, label: m }))' },
+      { was: '<option value="">Select a van</option>',
+        reason: 'the van box is the shared Select too',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "{ value: '', label: 'Select a van' }" },
+      { was: '<option key={van.id} value={van.id}>{van.name}</option>',
+        reason: 'the van options are a list prop now',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'vans.map(van => ({ value: van.id, label: van.name }))' },
+      { was: 'onChange={e => { setEditingEvent(p => ({ ...p!, van_id: e.target.value || null })); if (formErrors.van_id)',
+        reason: 'Select hands over the value, not the event',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'onChange={v => { setEditingEvent(p => ({ ...p!, van_id: v || null }));' },
+      { was: 'className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.van_id',
+        reason: 'Select owns the box styling; only the error state is passed through className',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "className={`w-full ${formErrors.van_id ? 'border-red-400 bg-red-50' : ''}`}" },
+
       { was: "type ScheduleSection = 'events' | 'weekly'",
-        reason: 'Event types is the third pill, reachable as ?section=event-types',
+        /* ⚠️ RE-STATED TWICE NOW. Event types became the third pill in October; on 5 October Places
+         * returned as a pill and "Weekly post" was relabelled "Social posts" — keeping the id
+         * `weekly`, because the id is what `?section=` carries and operators have it bookmarked. */
+        reason: 'four pills now — Events · Event types · Places · Social posts (id `weekly` kept)',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: "type ScheduleSection = 'events' | 'weekly' | 'event-types'" },
+        now: "type ScheduleSection = 'events' | 'event-types' | 'places' | 'weekly'" },
       { was: "v === 'events' || v === 'weekly'",
-        reason: 'the URL guard has to know the new id or no link can reach the pill',
+        reason: 'the URL guard has to know every id or no link can reach that pill',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: "v === 'events' || v === 'weekly' || v === 'event-types'" },
+        now: "v === 'events' || v === 'weekly' || v === 'event-types' || v === 'places'" },
       /* ⚠️ THIS MOUNT HAS CHANGED THREE TIMES. The capacity pointer prop went; a Schedule settings one
        * arrived; then that one went too when the move was reversed, and `notices` arrived. What is
        * claimed is the prop that is there. */
@@ -1883,6 +2091,46 @@ function runWiringSuite(lib) {
         reason: 'void added for no-floating-promises',
         nowIn: 'components/manage/KitchenCapacitySection.tsx',
         now: "void updateVanSetting(van.id, 'capacity_window_mins'" },
+
+      /* ══ 🔴 THE 5 OCTOBER FIXES AND THE PREVIEW GATE — SEVEN LINES, EACH WITH ITS REPLACEMENT ═════
+       * The Places and Social posts pills went behind `places_posts_preview` (a Feature in no plan,
+       * granted only through `trucks.feature_overrides`), so the Schedule tab DERIVES which pills are
+       * shown and which pane renders. Three lines carry that derivation and one carries the filtered
+       * list. Two more are the Places spinner fix and the private preview card. */
+      { was: '{SCHEDULE_SECTIONS.map(sec => (',
+        reason: 'the pill row renders only the sections this truck may see',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '{visibleSections.map(sec => (' },
+      { was: '<button key={sec.id} role="tab" aria-selected={section === sec.id}',
+        reason: 'the SHOWN section decides which pill is selected, so a stale bookmark reads Events',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '<button key={sec.id} role="tab" aria-selected={shownSection === sec.id}' },
+      { was: 'className={subtabBtn(section === sec.id)}>',
+        reason: 'ditto, for the pill\'s own styling',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'className={subtabBtn(shownSection === sec.id)}>' },
+      { was: "{isActive && section === 'events' && (",
+        reason: 'the Events pane renders for a gated section too, which is what "lands on Events" means',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "{isActive && shownSection === 'events' && (" },
+      /* ⛔ THE PLACES SPINNER. `api` was a plain function, so it was a NEW reference on every render;
+       * the load effect had it in its deps and re-ran forever, and the cleanup flag stranded `places`
+       * at null — an endless spinner with no other state to fall back to. */
+      { was: 'const api = async (action: string, extra: Record<string, any> = {}) => {',
+        reason: 'wrapped in useCallback: an unstable `api` re-ran the Places load effect forever',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'const api = useCallback(async (action: string, extra: Record<string, any> = {}) => {' },
+      /* 🔴 THE PRIVATE PREVIEW CARD. A private event's venue, town and postcode are never published,
+       * so the preview shows a lock, "Private event" in purple, the date, the times and the van — and
+       * the line under it changed from "Filled from …" to a sentence that says where the venue went. */
+      { was: '{!editingEvent.id && editingEvent.truck_place_id && (',
+        reason: 'the line under the preview is now one of two, because the preview is one of two',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: ': !editingEvent.id && editingEvent.truck_place_id ? (' },
+      { was: "import { previewEventFromForm, previewLine, vanForPlace } from '@/lib/schedule-graphics/event-preview'",
+        reason: 'the private card needs `PREVIEW_PLACEHOLDERS.date` for an unfilled date',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "import { previewEventFromForm, previewLine, vanForPlace, PREVIEW_PLACEHOLDERS } from '@/lib/schedule-graphics/event-preview'" },
     ]
     const unexplained = gone.filter(l => {
       if (!l) return false
@@ -2079,7 +2327,7 @@ function runWiringSuite(lib) {
    * is what stops a later tidy-up "unifying" them into Settings' one-long-page behaviour. */
   t('🔴 MENU AND SCHEDULE DID NOT GAIN SETTINGS\' SCROLL BEHAVIOUR', (() => {
     const menu = RAWP.slice(RAWP.indexOf('THE MENU SUB-TABS'), RAWP.indexOf("{activeTab === 'menu' && menuSection === 'items'"))
-    const sched = RAWP.slice(RAWP.indexOf('THE SCHEDULE SUB-TABS'), RAWP.indexOf("{isActive && section === 'events' && ("))
+    const sched = RAWP.slice(RAWP.indexOf('THE SCHEDULE SUB-TABS'), RAWP.indexOf("{isActive && shownSection === 'events' && ("))
     const clean = (seg) => !/useSettingsJumpBar|scrollMarginTop|scrollIntoView|data-settings-tab|jumpTo\(/.test(codeOnly(seg))
     return menu.length > 100 && sched.length > 100 && clean(menu) && clean(sched)
       && /onClick=\{\(\) => setMenuSection\(sec\.id\)\}/.test(P)
@@ -2231,8 +2479,17 @@ function runWiringSuite(lib) {
     return pane > 0 && notes > 0 && pane > notes
       && /<div className="sm:col-span-2 max-md:hidden" data-preview-pane>/.test(RAWP)
       && /<p className="block text-xs font-bold text-slate-400 mb-1">Preview<\/p>/.test(RAWP)
-      // the muted "Filled from" line lives inside the preview, as the brief asks
-      && /Filled from \{pickedPlace\?\.name/.test(RAWP.slice(pane, pane + 1400))
+      /* the muted "Filled from" line lives inside the preview, as the brief asks.
+       * ⛔ IT IS BOUNDED BY THE PANE'S OWN END, NOT BY A CHARACTER COUNT (5 October 2026). It was
+       * `pane + 1400`, then briefly `pane + 4200`, and both are the same mistake: the preview now has
+       * TWO shapes — a private event draws its own card with no venue, town or postcode — so the block
+       * is 4381 characters long today and will be a different length tomorrow. A hand-tuned window is
+       * a check that goes red for a correct screen, which is exactly what it just did.
+       * ⚠️ THE END IS THE NEXT SIBLING COMMENT, which is a real boundary in the file. */
+      && (() => {
+        const end = RAWP.indexOf('⛔ THE "Filled from" LINE AND THE TWO BUTTONS ARE NOT HERE ANY MORE', pane)
+        return end > pane && /Filled from \{pickedPlace\?\.name/.test(RAWP.slice(pane, end))
+      })()
   })())
   t('⛔ …and the FOOTER is back to just Cancel and Add event', (() => {
     const i = RAWP.indexOf('shrink-0 border-t border-slate-200 bg-white px-5')
@@ -2538,13 +2795,27 @@ function runVariants() {
     ['W22 🔴 BUG 2 RETURNS: the list hides non-favourites behind a flag',
       changed(read(PLACES_UI), "            {others.length > 0 && (", "            {others.length > 0 && showHidden && (", 'W22'),
       src => /\{others\.length > 0 && \(/.test(src)],
-    ['W23 🔴 the Places pill comes back, so there are two routes to one screen',
-      /* ⚠️ RE-ANCHORED: Event types is the last entry now, so the old anchor (`Weekly post` followed
-       * by the closing bracket) had left the file and `changed()` reported THE ANCHOR IS GONE — which
-       * is the behaviour that stops a broken variant passing against a string it never replaced. */
-      changed(read(PAGE), "  { id: 'event-types', label: 'Event types' },\n]",
-        "  { id: 'event-types', label: 'Event types' },\n  { id: 'places', label: 'Places' },\n]", 'W23'),
-      src => !/id: 'places'/.test(codeOnly(src))],
+    /* ══ ⛔ W23 IS REVERSED AND RETIRED AS A VARIANT (5 October 2026) ═══════════════════════════════
+     * It proved "the Places pill does not come back, so there are not two routes to one screen" — the
+     * right claim on 3 October, when the list had just moved into the Add event modal.
+     *
+     * 🔴 PLACES IS A PILL AGAIN, BY INSTRUCTION, and it is no longer a second route to the same screen:
+     * the TAB is the full two-pane screen, and the modal's "Tidy up places" is a link into the SAME
+     * components and the SAME `sg_*` actions. The thing W23 guarded against — two implementations of
+     * one list — is now guarded by `scripts/places-tab.cjs` §4, which asserts the tab defines no list,
+     * no detail and no loader of its own and that `TidyUpPlaces` is still mounted.
+     *
+     * ⛔ IT IS REPLACED RATHER THAN DELETED, because the variant's job (catching a SECOND list) still
+     * matters; only the shape of the answer changed. This one mutates the tab into owning its own
+     * list and requires that to be detectable.
+     * ⚠️ AND IT ANCHORS ON THE COMPONENT, NOT ON `SCHEDULE_SECTIONS` — the sections array is exactly
+     * the string that keeps moving under this variant, which is how it came to report THE ANCHOR IS
+     * GONE twice in three days. */
+    ['W23 🔴 the Places tab grows its own list instead of sharing Tidy up\'s',
+      changed(read('components/manage/PlacesTab.tsx'),
+        "import {\n  usePlaces, PlaceList, PlaceDetail, shortDay,",
+        "import {\n  usePlaces, shortDay,", 'W23'),
+      src => /usePlaces, PlaceList, PlaceDetail/.test(src)],
     ['W24 🔴 the sticky footer becomes part of the scrolling body again',
       changed(read(PAGE), '              <div className="shrink-0 border-t border-slate-200 bg-white px-5',
         '              <div className="border-t border-slate-200 bg-white px-5', 'W24'),
@@ -2695,9 +2966,13 @@ function runVariants() {
     ['W34 🔴 the preview stops using the public page\'s card',
       changed(read(PAGE), "import TruckListCard from '@/components/TruckListCard'", '', 'W34'),
       src => /import TruckListCard from '@\/components\/TruckListCard'/.test(src)],
+    /* ⚠️ THE ANCHOR IS INDENTATION-FREE NOW (5 October 2026). The `TruckListCard` mount moved inside
+     * a ternary — a private event draws its own card instead (A.3) — so it gained two spaces and the
+     * literal anchor stopped matching. `changed` throws on an anchor that is absent, which is how
+     * this was caught rather than silently passing. */
     ['W35 🔴 the preview offers an Order button on an event that does not exist',
-      changed(read(PAGE), '                      compact\n                      hideOrderButton',
-        '                      compact', 'W35'),
+      changed(read(PAGE), 'compact\n' + ' '.repeat(24) + 'hideOrderButton',
+        'compact', 'W35'),
       src => /compact\s*\n?\s*hideOrderButton/.test(src)],
     ['W36 🔴 an unfilled date is handed to the card raw, so it renders "Invalid Date"',
       changed(read(PREVIEW_LIB), "  const date = isYmd(form.event_date) ? toDdMmYyyy(form.event_date) : PREVIEW_PLACEHOLDERS.date",

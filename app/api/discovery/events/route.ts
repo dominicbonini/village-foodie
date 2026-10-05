@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import { createSlug, getVenueSlug } from '@/lib/utils'
 import { isHatchGrabHost } from '@/lib/brand'
 import { formatImageUrl } from '@/lib/image-utils'
+/* ⛔ PRIVATE EVENTS NEVER REACH THIS FEED. See the note at the operator-events leg. */
+import { readPrivateEventIds } from '@/lib/private-events/read'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -265,8 +267,27 @@ export async function GET(req: NextRequest) {
           console.error('[Discovery] operator read-through (linked discovery) fetch failed:', err)
         }
       }
+      /* ══ ⛔ PRIVATE EVENTS ARE DROPPED FROM THIS FEED ENTIRELY (20261014) ════════════════════════
+       * This one mapper feeds THREE public surfaces — the Village Foodie listing, the truck page and
+       * the map (§70.2) — so this is the single place that has to hold, and it is the surface where
+       * a leak would be worst: the map plots `latitude`/`longitude`, so publishing a private event
+       * here would put a wedding's coordinates on a public map.
+       * ⛔ DROPPED, NOT REDACTED. Decision 4 is "NEVER on the map, Village Foodie discovery, or the
+       * truck page's event list as an orderable event". A redacted row with null coordinates would
+       * still be a row: it would appear in the listing, count towards "events near you", and have to
+       * be special-cased by every consumer of this payload. Absence needs no special case.
+       * 🔴 FAILING CLOSED HERE MEANS AN EMPTY `mappedOperatorEvents`, which is this leg's existing
+       * behaviour on any error (see the `opResult.error` branch above) — so the failure mode is one
+       * the surface already handles, not a new one. The discovery_events leg above is untouched and
+       * keeps serving scraped rows.
+       * ⚠️ ONE PROBED READ FOR THE WHOLE PAGE (limit 200), not one per event. */
+      const privacy = await readPrivateEventIds(
+        supabase, (opResult.data || []).map((e: any) => e.id), '/api/discovery/events')
+
       mappedOperatorEvents = (opResult.data || [])
         .filter((e: any) => {
+          /* ⛔ FIRST, BEFORE ANY OTHER TEST. Nothing below may short-circuit past it. */
+          if (privacy.isPrivate(e.id)) return false
           const truck = e.trucks as any
           if (!truck) return false
           if (!truck.active) return false

@@ -23,6 +23,13 @@ import { generateSlots } from '@/lib/slots'   // EXTRACTED from this file — no
 import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
 import { hasValidEventTimes, getLocalDateInTz } from '@/lib/time-utils'
 import { canAccess } from '@/lib/features'
+/* ── 🔴 PRIVATE EVENTS (20261014) ─────────────────────────────────────────────────────────────────
+ * `applyPrivacy` is the ONLY writer of is_private / private_name / private_token / the private type
+ * on an event — see its header. Nothing in this file writes those columns directly, and
+ * scripts/private-events.cjs proves it. */
+import { applyPrivacy, replacePrivateLink, privateLinkUrl } from '@/lib/private-events/write'
+import { readPrivateType } from '@/lib/private-events/type'
+import { resolveLinkOrdering } from '@/lib/private-events/resolve'
 import { logAllergenChanges, diffItemAllergens, tagJson, arrEq, type Actor } from '@/lib/allergen-audit'
 import { isDemoIdentifier, DEMO_PREFIX } from '@/lib/demo'
 import { normaliseUrl } from '@/lib/url-normalise'
@@ -68,13 +75,28 @@ import {
   effectiveCategorySettings, firstVanId, vanCopyPayload, vanCategoryCopyRows, VAN_COPY_FIELDS,
   CAPACITY_COPY_FIELDS, capacityCopyPayload, capacityAllSame,
 } from '@/lib/van-category-settings'
+/* 🔴 "Do you take cash?" PER VAN (5 October 2026). Its own PROBED reader, for the reason that file's
+ * header gives: naming `takes_cash` on `get_vans`' select would empty the van list on a 42703. */
+import { readVanTakesCashForTruck } from '@/lib/payments/van-cash'
 // 🔴 ONE DEFINITION OF "WHICH PLACE IS THIS EVENT AT", IMPORTED NOT RE-WRITTEN. Stages 2 and 3 import
 // the same module; a second normaliser here would make events stop finding their place with no error.
 import {
   normalisePlaceName, planPlaceSeed, nextEventAt, lastEventAt, tradedCountInLastYear,
   groupEventsByPlace, seedWindowStart, mergeRefusal, mergePatch, resolvePlaceMerge, placesById,
+  /* 🔴 `countsAsTraded` FOR THE PLACES TAB'S "used N times" (20261015) — the SAME predicate the
+   * last-year count uses, so one place cannot be "used 9 times" by one rule and 7 by another. */
+  countsAsTraded, countsAsUpcoming,
+  /* 🔴 `placeForEvent` FOR THE "Automatic (…)" LABEL — it resolves a place to its MERGE TARGET, so a
+   * merged pitch is labelled from the history its events now belong to. */
+  placeForEvent,
   type PlaceEvent, type Place as SgPlace,
 } from '@/lib/schedule-graphics/places'
+/* 🔴 THE AUTOMATIC RULE AND THE WORD "Standard", both from the event-types module, so the Places
+ * control's label and the Add event pre-selection are the same rule and the same word. */
+import { readPlaceTypeHistory, STANDARD_TYPE_NAME } from '@/lib/event-types/read'
+/* 🔴 THE PICTURE'S REAL DIMENSIONS, from the one reader the weekly post already uses — so a place
+ * picture is measured by the same code as a poster blank rather than by a second decoder. */
+import { readImageInfo } from '@/lib/weekly-post/image-info'
 
 // ── PER-ROUTE CEILING ─────────────────────────────────────────────────────────────────────────────
 // THE MANAGE PAYLOAD. One GET assembling the whole console: truck, categories, items, subcategories,
@@ -927,6 +949,65 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
+  /* ══ 🔴 THE LINK & QR PANEL: READ (20261014) ══════════════════════════════════════════════════════
+   * Returns the event's live link, its name, and whether link ordering is on for it. The TOKEN itself
+   * is returned, because the panel has to show the link, offer Copy, and draw a QR code of it — there
+   * is no way to do that without the secret, and the caller is the operator's own dashboard token.
+   * ⛔ IT IS SCOPED TO THE TOKEN'S TRUCK. `.eq('truck_id', truck.id)` on the read means an operator
+   * cannot ask for another truck's event, which matters more here than almost anywhere else in this
+   * file: the answer is a working credential.
+   * ⚠️ THE URL IS BUILT BY `privateLinkUrl`, the one definition the QR, the Copy button and the
+   * printed cards all use — three places that would otherwise drift. */
+  if (action === 'private_link') {
+    if (!canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+      return NextResponse.json({ error: 'Private events are part of the Pro plan.', upgrade: true }, { status: 403 })
+    }
+    const eventId = String(body.id ?? '')
+    const { data: ev, error } = await supabase
+      .from('truck_events')
+      .select('id, is_private, private_name, private_token, private_link_ordering_override, event_date, start_time, end_time')
+      .eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    if (!ev.is_private) return NextResponse.json({ error: 'This event is not private.' }, { status: 400 })
+
+    const type = await readPrivateType(supabase, truck.id)
+    const linkOrdering = resolveLinkOrdering(ev, type)
+    return NextResponse.json({
+      ok: true,
+      eventId: ev.id,
+      name: ev.private_name ?? null,
+      date: ev.event_date,
+      startTime: ev.start_time ?? '',
+      endTime: ev.end_time ?? '',
+      linkOrdering,
+      /* ⚠️ null WHEN ORDERING BY LINK IS OFF — there genuinely is no link then, and returning a stale
+       * token would let the panel draw a QR code for something that refuses orders. */
+      token: linkOrdering ? (ev.private_token ?? null) : null,
+      url: linkOrdering && ev.private_token ? privateLinkUrl(ev.private_token) : null,
+      truckName: truck.name,
+    })
+  }
+
+  /* ══ 🔴 "MAKE A NEW LINK" (20261014, decision 7) ═══════════════════════════════════════════════════
+   * The old token stops working immediately and is RETIRED, so a printed card says "replaced" rather
+   * than 404ing. The whole of that is in `replacePrivateLink`; this is the gate and the plumbing.
+   * ⛔ THE OPERATOR HAS ALREADY CONFIRMED IN THE UI, and the confirm names the consequence that cannot
+   * be undone — the cards already on the tables. The route does not re-ask, but it also cannot be
+   * reached by accident: it is its own action with its own name. */
+  if (action === 'private_new_link') {
+    if (!canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+      return NextResponse.json({ error: 'Private events are part of the Pro plan.', upgrade: true }, { status: 403 })
+    }
+    const r = await replacePrivateLink(supabase, truck.id, String(body.id ?? ''))
+    if (!r.ok) return NextResponse.json({ error: r.error || 'Could not make a new link.' }, { status: 400 })
+    return NextResponse.json({
+      ok: true, token: r.token,
+      url: r.token ? privateLinkUrl(r.token) : null,
+      name: r.name, truckName: truck.name,
+    })
+  }
+
   // ── EVENT CRUD ────────────────────────────────────────────
   if (action === 'upsert_event') {
     const { id, venue_name, town, postcode, address, event_date, start_time, end_time, notes, latitude, longitude, van_id } = body
@@ -957,6 +1038,35 @@ export async function POST(req: NextRequest) {
       const { data, error } = await supabase.from('truck_events').update({ venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: van_id ?? null, updated_at: new Date().toISOString() }).eq('id', id).eq('truck_id', targetTruckId).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       savedEvent = data
+
+      /* ══ 🔴 THE PRIVATE TICK ON AN EDIT — BOTH DIRECTIONS (20261014) ════════════════════════════
+       * ⛔ ONLY WHEN THE CLIENT ACTUALLY SENT THE KEY. `body.is_private === undefined` means "this
+       * form did not ask about privacy", and treating that as `false` would make every OTHER editor
+       * of an event silently publish a private one. The Edit event panel always sends it; nothing
+       * else does.
+       * 🔴 UNTICKING IS THE DESTRUCTIVE DIRECTION AND IT IS THE ONE THE HELPER HANDLES CAREFULLY: it
+       * retires the token (so printed cards say "replaced" rather than 404), clears the name and
+       * clears the Private type. Decision 8: "Unticking makes the event normal/public and clears its
+       * link."
+       * ⚠️ THE GATE IS CHECKED ONLY WHEN TURNING PRIVACY **ON**. A downgraded truck must still be able
+       * to make a private event public — refusing that would strand them, and it is the safe
+       * direction anyway. */
+      if (body.is_private !== undefined) {
+        const wantPrivate = body.is_private === true
+        if (wantPrivate
+          && !canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+          return NextResponse.json({ error: 'Private events are part of the Pro plan.', upgrade: true }, { status: 403 })
+        }
+        const pr = await applyPrivacy(supabase, targetTruckId, String(id), {
+          isPrivate: wantPrivate,
+          name: body.private_name,
+        })
+        if (!pr.ok) return NextResponse.json({ error: pr.error || 'Could not save this event’s privacy.' }, { status: 400 })
+        savedEvent = {
+          ...(savedEvent as Record<string, unknown>),
+          is_private: pr.isPrivate, private_name: pr.name, private_token: pr.token,
+        }
+      }
     } else {
       // LIVE-TIME GATE (create): manual events auto-confirm (go live immediately) → both times required.
       if (!hasValidEventTimes(start_time, end_time)) {
@@ -1014,6 +1124,31 @@ export async function POST(req: NextRequest) {
       const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: resolvedVanId ?? null, order_ready_override: typedEventTypeId ? null : seededOrderReady, order_ready_source: typedEventTypeId ? null : 'seed', event_type_id: typedEventTypeId, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null, auto_open: truck.default_auto_open ?? true, auto_close: truck.default_auto_close ?? true, truck_place_id: resolvedPlaceId }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       savedEvent = data
+
+      /* ══ 🔴 THE PRIVATE TICK, APPLIED AFTER THE INSERT (20261014) ═══════════════════════════════
+       * ⛔ NOT A COLUMN IN THE INSERT ABOVE, AND THAT IS DELIBERATE. Making an event private is FOUR
+       * coupled writes (is_private, the Private type, the name, a freshly generated token) plus a
+       * lazily created type row — so it goes through the one helper that owns all of them together.
+       * Spreading them into this insert would make this the second writer of a state whose
+       * inconsistent combinations are all defects, and would need the type to exist first.
+       * ⚠️ A FAILURE DOES NOT UNDO THE EVENT. The event is created either way and the operator is told
+       * the privacy part failed — losing an event they just typed in, because a type row could not be
+       * made, would be the worse trade. The event is simply public until they save again.
+       * ⚠️ AND IT IS SKIPPED ENTIRELY WHEN THE TICK IS OFF, which is every event today: `applyPrivacy`
+       * returns without writing for a public event that stays public, so this adds no write to any
+       * existing flow. */
+      if (body.is_private === true) {
+        const gate = canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)
+        if (!gate) {
+          return NextResponse.json({ error: 'Private events are part of the Pro plan.', upgrade: true }, { status: 403 })
+        }
+        const pr = await applyPrivacy(supabase, targetTruckId, String(data.id), {
+          isPrivate: true,
+          name: body.private_name,
+        })
+        if (!pr.ok) return NextResponse.json({ error: pr.error || 'Could not make this event private.' }, { status: 400 })
+        savedEvent = { ...(savedEvent as Record<string, unknown>), is_private: true, private_name: pr.name, private_token: pr.token }
+      }
 
       // Auto-create event_deals from current bundle defaults
       const newEventId = data.id
@@ -2005,10 +2140,21 @@ export async function POST(req: NextRequest) {
      * the van at the top of the operator's own list and cannot drift from it. */
     const vanCats = await readVanCategorySettingsForTruck(supabase, truck.id)
     const sameAs = await readVanSameAsFirst(supabase, truck.id)
+    /* 🔴 A THIRD PROBED READ, FOR THE SAME REASON (5 October 2026). `truck_vans.takes_cash` is added
+     * by 20261012; naming it on the select above would empty the van list on a 42703, and Settings
+     * draws every van from that list. Its failure is an empty map, which every caller reads as "every
+     * van follows the truck" — today's truth for every van in the table. See lib/payments/van-cash.ts. */
+    const vanCash = await readVanTakesCashForTruck(supabase, truck.id)
     const vansOut = vans.map(v => ({
       ...v,
       categorySettings: vanCats.byVanId.get((v as { id: string }).id) ?? [],
       same_as_first_van: sameAs.byVanId.get((v as { id: string }).id) ?? false,
+      /* 🔴 THE RAW NULLABLE VALUE, NOT A RESOLVED BOOLEAN. `null` means "follow `trucks.takes_cash`",
+       * and Settings has to be able to show that state rather than a flattened true/false — otherwise
+       * a van that follows the truck would look like a van that had chosen the truck's value, and
+       * changing the truck would appear not to work. `resolveVanTakesCash` does the flattening where
+       * it is drawn. */
+      takes_cash: vanCash.byVanId.get((v as { id: string }).id) ?? null,
       /* 🔴 THE CAPACITY SWITCH, SENT ALONGSIDE (October 2026). Menu › Kitchen capacity owns it and
        * Settings › Truck settings owns the other; they are two columns because a truck must be able
        * to give Van 2 the same service settings and a different kitchen. `readVanSameAsFirst` falls
@@ -2024,6 +2170,10 @@ export async function POST(req: NextRequest) {
       firstVanId: firstVanId(vans as Array<{ id: string; active?: boolean | null; created_at?: string | null }>)
         ?? (vans[0] as { id?: string } | undefined)?.id ?? null,
       perVanCategoriesAvailable: vanCats.ok && sameAs.ok,
+      /* 🔴 FALSE ⇒ 20261012 IS NOT APPLIED, and the per-van cash control is NOT drawn — the truck-level
+       * one stays. A switch that cannot store anything is worse than no switch: the operator would set
+       * it, see it save, and the hatch would go on using the truck value. */
+      vanCashAvailable: vanCash.ok,
     })
   }
 
@@ -2034,7 +2184,7 @@ export async function POST(req: NextRequest) {
   // array allowlist (:854), which carries the same warning. ADD NEW SETTINGS IN BOTH PLACES:
   // here AND in get_vans' named select above, or the value writes but never reads back.
   if (action === 'update_van_settings') {
-    const { vanId, autoPauseOnOffline, offlineProtectionMode, offlineAutoRejectMins, show_cooking_step, order_ready_enabled, kitchen_capacity, capacity_window_mins, buzzer_count, collection_interval_mins, operator_collection_interval_mins } = body
+    const { vanId, autoPauseOnOffline, offlineProtectionMode, offlineAutoRejectMins, show_cooking_step, order_ready_enabled, kitchen_capacity, capacity_window_mins, buzzer_count, collection_interval_mins, operator_collection_interval_mins, takes_cash } = body
     const updates: Record<string, unknown> = {}
     // Written in their OWN statement — see the two-statement note at the write below.
     const intervalUpdates: Record<string, unknown> = {}
@@ -2062,6 +2212,22 @@ export async function POST(req: NextRequest) {
     // definition lives at lib/buzzer.ts. `!== undefined` and
     // not a truthiness test, so an explicit null CLEARS rather than being skipped.
     if (buzzer_count !== undefined)       updates.buzzer_count = buzzer_count
+    /* ── 🔴 "Do you take cash?" PER VAN (5 October 2026, 20261012) ─────────────────────────────────
+     * `truck_vans.takes_cash` is NULLABLE and the three states are all real:
+     *   true  — this van takes cash
+     *   false — this van does not
+     *   NULL  — this van follows `trucks.takes_cash`, which is EVERY van before the migration is run
+     * So this is `!== undefined` with an explicit null branch, NEVER a truthiness test: a truthy read
+     * would make "no" unwritable and would make "follow the truck" unreachable once set. Same shape as
+     * `buzzer_count` and the interval override above, for the same reason.
+     *
+     * ⚠️ IT IS A SEPARATE FIELD FROM `trucks.takes_cash`, WHICH `update_truck` STILL OWNS. The truck
+     * value is the fallback, not a duplicate — and nothing here writes it.
+     * 🔴 ANYTHING OTHER THAN true/false/null IS DROPPED, not coerced. `Boolean('false')` is true, and a
+     * stringly-typed body is exactly how a van would come to take cash because somebody sent "false". */
+    if (takes_cash !== undefined) {
+      if (takes_cash === null || takes_cash === true || takes_cash === false) updates.takes_cash = takes_cash
+    }
     // ── COLLECTION INTERVALS — VALIDATED, NOT SILENTLY DROPPED ──────────────────────────────────────
     // 🔴 THESE TWO RETURN A 400 RATHER THAN BEING SKIPPED. Every other field in this handler drops a bad
     // value, which is right for a toggle nobody can mistype. These come from a <select> whose options
@@ -2959,6 +3125,33 @@ export async function POST(req: NextRequest) {
   // Feature now gates ONLY the Weekly post sub-tab: Places and the Add event picker are how an
   // operator keeps their own schedule tidy, which every plan pays for. `resolveTruckAccess` and the
   // staff gate are unchanged — access is still deny-by-default and still owner/manager for the writes.
+  //
+  /* ══ 🔴 THE PLACES **TAB** IS IN PREVIEW, AND ITS OWN ACTIONS ARE GATED (5 October 2026) ═════════
+   * `places_posts_preview` is a Feature in NO PLAN (lib/features.ts), so `canAccess` can only grant it
+   * from `trucks.feature_overrides`. One truck holds it today: test-kitchen ("Pizza Kitchen").
+   *
+   * 🔴 AND THE SPLIT IS THE WHOLE POINT, so read it before adding an action to either side:
+   *   UNGATED — `sg_places` and `sg_upsert_place`. They are NOT the Places tab's private API. The Add
+   *     event modal's place picker and "Tidy up places" both call them (app/manage/[token]/page.tsx
+   *     mounts `usePlaces` when the modal opens), and every truck on this branch already has those.
+   *     Gating either one would switch off a shipped control to hide a preview tab — the exact mistake
+   *     the "no plan gate on Places" note above was written to prevent. `sg_merge_place` stays with
+   *     them: it is the tidy-up write, and it is listed as currently unreachable in SchedulePlaces.
+   *   GATED — everything that exists ONLY inside the tab: the pictures pane (list, signed URL, save,
+   *     remove), "Events here", and the usual-type WRITE. ⚠️ THE USUAL-TYPE *READ* IS NOT GATED: it
+   *     arrives with the `sg_places` rows and is what pre-selects a type in the Add event modal, which
+   *     every truck keeps.
+   * ⚠️ THE MESSAGE SAYS "not switched on", not "upgrade". No plan sells this yet, so an upgrade
+   * prompt would be an offer nobody can accept. */
+  const PLACES_TAB_ONLY = [
+    'sg_place_pictures', 'sg_place_picture_url', 'sg_place_picture_save', 'sg_place_picture_remove',
+    'sg_place_events', 'sg_place_usual_type',
+  ]
+  if (PLACES_TAB_ONLY.includes(action)
+      && !canAccess(truck.plan, 'places_posts_preview', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+    return NextResponse.json({ error: 'The Places tab is not switched on for this truck.' }, { status: 403 })
+  }
+
   if (action === 'sg_places') {
     /* ── THE READ, THEN THE SEED, THEN THE READ THAT ANSWERS ──────────────────────────────────────
      * ⚠️ A NAMED SELECT, AND EVERY COLUMN IN IT IS ONE THE BRIEF VERIFIED IN PRODUCTION. A column
@@ -2979,7 +3172,12 @@ export async function POST(req: NextRequest) {
     }
     const events = (evRows ?? []) as PlaceEvent[]
 
-    const PLACE_COLS = 'id, venue_id, name_key, name, short_name, address, postcode, area, is_favourite, is_hidden, merged_into_id'
+    /* ⚠️ THE THREE POST-PICTURE COLUMNS JOINED THIS LIST (20261015), and they are safe to name here:
+     * `event_bg_path/width/height` are added by 20261007, which is long applied — the same migration
+     * the single-event post has depended on since it shipped. ⛔ THE PIN IS **NOT** HERE: it comes
+     * from its own probed read, because 20261015 may not be applied and one 42703 in this select
+     * would empty the whole Places screen rather than show every place as "Automatic". */
+    const PLACE_COLS = 'id, venue_id, name_key, name, short_name, address, postcode, area, is_favourite, is_hidden, merged_into_id, event_bg_path, event_bg_width, event_bg_height'
     const readPlaces = async () => {
       const { data, error } = await supabase
         .from('truck_places').select(PLACE_COLS).eq('truck_id', truck.id).order('name', { ascending: true })
@@ -3059,6 +3257,74 @@ export async function POST(req: NextRequest) {
     // makes "B gains A's events" true for Next, Last and the count without rewriting a single event row.
     const { byPlace } = groupEventsByPlace(events, places)
 
+    /* ══ 🔴 THE PIN, FROM ITS OWN PROBED READ (20261015) ═══════════════════════════════════════
+     * `truck_places.usual_event_type_id` is added by 20261015. Naming it in `PLACE_COLS` would mean
+     * one 42703 fails the WHOLE select and the Places screen shows nothing — a pin migration taking
+     * down the place list. Two reads; one blast radius each, the rule this build follows throughout.
+     * ⚠️ IT FAILS **OPEN** TO "Automatic", which is what every place is today and is a true answer:
+     * no pin is set, so the existing newest-event rule decides. Nothing is published either way. */
+    const usualTypeByPlace = new Map<string, string>()
+    /** Place ids pinned to STANDARD (20261016). ⚠️ A SET, because the value is the membership. */
+    const standardPinned = new Set<string>()
+    {
+      /* ⚠️ 20261016'S COLUMN IS NAMED HERE, AND A 42703 COSTS THE PINS TOO — so the read is retried
+       * with only 20261015's column. A truck on 20261015 must not lose the pins it has already set
+       * because a newer column it does not have yet failed the statement. */
+      let pins: { id: string; usual_event_type_id: string | null; usual_type_is_standard?: boolean | null }[] = []
+      const first = await supabase
+        .from('truck_places').select('id, usual_event_type_id, usual_type_is_standard').eq('truck_id', truck.id)
+      if (!first.error) {
+        pins = (first.data as typeof pins | null) ?? []
+      } else if (['42703', 'PGRST204'].includes(first.error.code || '')) {
+        const again = await supabase
+          .from('truck_places').select('id, usual_event_type_id').eq('truck_id', truck.id)
+        if (!again.error) pins = (again.data as typeof pins | null) ?? []
+      } else if (!['42P01', 'PGRST205'].includes(first.error.code || '')) {
+        console.error('[sg_places] pin read failed:', first.error.code, first.error.message)
+      }
+      for (const r of pins) {
+        if (r.usual_type_is_standard === true) { standardPinned.add(r.id); continue }
+        if (r.usual_event_type_id) usualTypeByPlace.set(r.id, r.usual_event_type_id)
+      }
+    }
+
+    /* ══ 🔴 WHAT "Automatic" ACTUALLY RESOLVES TO, PER PLACE (5 October 2026) ═════════════════════
+     * The control's first option used to read "Automatic (Standard)" for every place, always — a
+     * hardcoded word. For a wedding venue whose last three bookings were Private that was simply
+     * false, and it was false on the screen whose job is to tell the operator what will happen.
+     *
+     * 🔴 IT IS THE SAME FUNCTION THE PRE-SELECTION USES. `readPlaceTypeHistory` is the automatic rule
+     * (§70.3, "the newest event at this place supplies the type") lifted out of
+     * `usualTypeForPlace` so there is ONE definition: the label and the behaviour cannot drift.
+     * ⚠️ `placeForEvent` RESOLVES EACH PLACE TO ITS MERGE TARGET before the lookup, because a pitch
+     * the operator merged away has no history of its own — its events belong to the target now, which
+     * is the same thing `groupEventsByPlace` above does for Next and Last.
+     * ⚠️ THE NAMES COME FROM ONE MORE CHEAP READ, and an id with no name resolves to Standard. The
+     * client could have mapped ids to names from the list it already holds, but that list excludes
+     * the Private type on a truck without the key — and the label would then silently say Standard.
+     * ⚠️ A FAILED READ MEANS NO LABEL, NOT A WRONG ONE: `usual_automatic_type_id` is null and
+     * `usual_automatic_type_name` is null, and the control falls back to the bare word "Automatic". */
+    const autoByPlace = new Map<string, string | null>()
+    let autoNames = new Map<string, string>()
+    let autoOk = false
+    {
+      const hist = await readPlaceTypeHistory(supabase, truck.id, placeForEvent)
+      autoOk = hist.ok
+      if (hist.ok) {
+        for (const p of places) {
+          const target = placeForEvent({ truck_place_id: p.id }, places)
+          const key = target?.id ?? p.id
+          autoByPlace.set(p.id, hist.newestTypeByPlace.has(key) ? (hist.newestTypeByPlace.get(key) ?? null) : null)
+        }
+        const wanted = [...new Set([...autoByPlace.values()].filter((v): v is string => !!v))]
+        if (wanted.length) {
+          const { data: tn } = await supabase
+            .from('event_types').select('id, name').eq('truck_id', truck.id).in('id', wanted)
+          autoNames = new Map(((tn as { id: string; name: string }[] | null) ?? []).map(t => [t.id, t.name]))
+        }
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       places: places.map(p => {
@@ -3088,6 +3354,29 @@ export async function POST(req: NextRequest) {
           last_start_time: last?.start_time ?? null,
           last_end_time: last?.end_time ?? null,
           traded_last_year: tradedCountInLastYear(mine, todayLocal),
+          /* ── 🔴 THE PLACES TAB'S OWN FOUR FIELDS (20261015) ───────────────────────────────────
+           * ⚠️ READ FROM `p`, WHICH IS A `select(PLACE_COLS)` — so the three post-picture columns and
+           * the pin had to join that list. They are all on `truck_places` already except the pin,
+           * which 20261015 adds; `usualTypeByPlace` is a SEPARATE probed read for the reason every
+           * other new column in this build is read separately (see its own note). */
+          event_bg_path: (p as { event_bg_path?: string | null }).event_bg_path ?? null,
+          event_bg_width: (p as { event_bg_width?: number | null }).event_bg_width ?? null,
+          event_bg_height: (p as { event_bg_height?: number | null }).event_bg_height ?? null,
+          usual_event_type_id: usualTypeByPlace.get(p.id) ?? null,
+          /* 🔴 "Pinned to Standard" AS A REAL STATE (20261016) — distinct from Automatic, which is
+           * NULL. See the migration for why it cannot be a sentinel in the id column. */
+          usual_type_is_standard: standardPinned.has(p.id),
+          /* 🔴 WHAT AUTOMATIC RESOLVES TO **TODAY**, so the control can say "Automatic (Private)".
+           * ⚠️ null/null WHEN THE HISTORY READ FAILED, which the control draws as a bare "Automatic"
+           * rather than guessing Standard. */
+          usual_automatic_type_id: autoOk ? (autoByPlace.get(p.id) ?? null) : null,
+          usual_automatic_type_name: autoOk
+            ? (autoNames.get(autoByPlace.get(p.id) ?? '') ?? STANDARD_TYPE_NAME)
+            : null,
+          /* 🔴 "used N times" — EVERY traded event at this place, not the last year's. The list line
+           * already shows "N times in the last year"; the detail pane's heading is the lifetime
+           * figure, which is the one that answers "is this a regular pitch?". */
+          used_count: mine.filter(e => countsAsTraded(e.status)).length,
         }
       }),
     })
@@ -3159,6 +3448,238 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Couldn't save that place." }, { status: 400 })
     }
     return NextResponse.json({ ok: true, id })
+  }
+
+  /* ══ 🔴 THE PLACES TAB: THE PIN (20261015) ═══════════════════════════════════════════════════════
+   * Writes `truck_places.usual_event_type_id`. NULL is "Automatic" — the existing rule that the
+   * newest event at this place supplies the type (§70.3) — and that is the whole vocabulary.
+   *
+   * ⛔ THE TYPE ID IS VALIDATED AGAINST THE TOKEN'S TRUCK, AND A FOREIGN ONE BECOMES NULL rather than
+   * an error. The database cannot enforce it (a composite FK would need `event_types (id, truck_id)`
+   * unique, which it is not declared as — see 20261015's note), so this is the only guard. Silently
+   * resolving to Automatic is the same posture `resolveRequestedTypeId` takes for an event's type:
+   * the FK would refuse a non-existent id anyway, and a failed save of a real edit is worse for the
+   * operator than quietly getting the honest answer.
+   * ⚠️ IT ALSO ACCEPTS THE PRIVATE TYPE, deliberately. A wedding venue that only ever has private
+   * bookings should come up as Private — and it is not silent: Add event opens the purple panel with
+   * the explanation, so the operator sees it before saving. Confirmed by Dominic, 5 October 2026. */
+  if (action === 'sg_place_usual_type') {
+    const placeId = String(body.placeId ?? '')
+    if (!placeId) return NextResponse.json({ error: 'placeId required' }, { status: 400 })
+    /* ══ 🔴 THREE CHOICES, AND EACH WRITES **BOTH** COLUMNS (20261016) ═════════════════════════════
+     * The vocabulary on the wire is: absent/null/'' ⇒ Automatic · `'standard'` ⇒ Standard · a uuid
+     * ⇒ that type. And the three writes are:
+     *     Automatic → usual_event_type_id = NULL,  usual_type_is_standard = false
+     *     Standard  → usual_event_type_id = NULL,  usual_type_is_standard = TRUE
+     *     a type    → usual_event_type_id = <id>,  usual_type_is_standard = false
+     * 🔴 BOTH COLUMNS, IN ONE STATEMENT, EVERY TIME. Writing only the one that changed is how
+     * (true, <uuid>) gets created — switch a place from Standard to Private and the boolean would
+     * still say Standard, which the resolution order then obeys. One statement cannot be half done.
+     * ⛔ `'standard'` IS A LITERAL ON THE WIRE, NOT A RESERVED UUID. Standard has no `event_types`
+     * row — it IS the truck's own settings (§70.2) — so there is no id to send. 20261016's note
+     * records why a magic uuid was refused.
+     *
+     * ⛔ A TYPE ID IS VALIDATED AGAINST THE TOKEN'S TRUCK, AND A FOREIGN ONE BECOMES AUTOMATIC rather
+     * than an error. The database cannot enforce it (a composite FK would need `event_types
+     * (id, truck_id)` unique, which it is not declared as — see 20261015's note), so this is the only
+     * guard. Silently resolving to Automatic is the posture `resolveRequestedTypeId` takes for an
+     * event's type: the FK would refuse a non-existent id anyway, and a failed save of a real edit is
+     * worse for the operator than quietly getting the honest answer. */
+    const raw = body.typeId === null || body.typeId === undefined || body.typeId === ''
+      ? null : String(body.typeId)
+    const wantStandard = raw === 'standard'
+    const wanted = wantStandard ? null : raw
+    let typeId: string | null = null
+    if (wanted) {
+      const { data: t } = await supabase
+        .from('event_types').select('id').eq('id', wanted).eq('truck_id', truck.id).maybeSingle()
+      typeId = (t as { id: string } | null)?.id ?? null
+    }
+    const { error } = await supabase
+      .from('truck_places')
+      .update({
+        usual_event_type_id: typeId,
+        // ⚠️ NEVER BOTH. A type id and the Standard flag are mutually exclusive by construction here.
+        usual_type_is_standard: wantStandard && !typeId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', placeId).eq('truck_id', truck.id)
+    if (error) {
+      /* ⚠️ THE MISSING MIGRATION IS NAMED, not swallowed: an operator pressing a control that cannot
+       * store anything deserves to be told why rather than watching it snap back. */
+      const missing = ['42703', '42P01', 'PGRST204', 'PGRST205'].includes(error.code || '')
+      return NextResponse.json({
+        error: missing
+          /* ⚠️ BOTH MIGRATIONS ARE NAMED. The statement writes both columns, so either one missing
+           * fails it — and telling the operator to run 20261015 when it is 20261016 that is absent
+           * sends them to check something that is already applied. */
+          ? 'The usual event type isn’t available yet — migrations 20261015 and 20261016 must both be applied.'
+          : error.message,
+      }, { status: 400 })
+    }
+    return NextResponse.json({ ok: true, usual_event_type_id: typeId, usual_type_is_standard: wantStandard && !typeId })
+  }
+
+  /* ══ 🔴 THE PLACES TAB: THE TRUCK'S OWN EXTRA PICTURES (20261015) ════════════════════════════════
+   * ⛔ THESE DO NOT AFFECT POSTS. They live in `place_pictures`, never in `truck_places.event_bg_path`,
+   * and nothing in lib/weekly-post or app/api/weekly-post reads them — `scripts/places-tab.cjs`
+   * asserts that, because the whole point of a separate table is that a reference photo of a pitch can
+   * never end up behind a poster's text boxes.
+   * ⚠️ SAME BUCKET AS THE POST PICTURES, under the place's own folder, as instructed. */
+  if (action === 'sg_place_pictures') {
+    const placeId = String(body.placeId ?? '')
+    if (!placeId) return NextResponse.json({ error: 'placeId required' }, { status: 400 })
+    const { data, error } = await supabase
+      .from('place_pictures')
+      .select('id, path, file_name, bytes, width, height, created_at')
+      .eq('truck_id', truck.id).eq('place_id', placeId)
+      .order('created_at', { ascending: false })
+    if (error) {
+      /* ⚠️ A MISSING TABLE IS AN EMPTY PANE, NOT AN ERROR CARD. The rest of the Places tab works. */
+      const missing = ['42703', '42P01', 'PGRST204', 'PGRST205'].includes(error.code || '')
+      if (!missing) console.error('[sg_place_pictures] read failed:', error.code, error.message)
+      return NextResponse.json({ ok: true, pictures: [], available: !missing })
+    }
+    const rows = (data as Array<Record<string, unknown>> | null) ?? []
+    /* 🔴 SIGNED URLS, BECAUSE THE BUCKET IS PRIVATE. Same `SIGNED_URL_SECONDS` posture the weekly post
+     * uses — a thumbnail is a read of somebody's own file, not a public asset. */
+    const withUrls = await Promise.all(rows.map(async r => {
+      const { data: signed } = await supabase.storage
+        .from('post-designs').createSignedUrl(String(r.path), 3600)
+      return { ...r, url: signed?.signedUrl ?? null }
+    }))
+    return NextResponse.json({ ok: true, pictures: withUrls, available: true })
+  }
+
+  if (action === 'sg_place_picture_url') {
+    const placeId = String(body.placeId ?? '')
+    if (!placeId) return NextResponse.json({ error: 'placeId required' }, { status: 400 })
+    const extRaw = String(body.ext ?? 'png').toLowerCase()
+    const ext = extRaw === 'jpg' || extRaw === 'jpeg' ? 'jpg' : 'png'
+    /* ⛔ THE PATH IS BUILT SERVER-SIDE AND STARTS WITH THE TRUCK ID, then the place. A client-supplied
+     * path would let one truck write into another's folder — the bucket is private, but a signed
+     * upload URL is authority over exactly the path it names. The same rule the weekly post follows. */
+    const path = `${truck.id}/places/${placeId}/pic-${Date.now()}.${ext}`
+    const { data, error } = await supabase.storage.from('post-designs').createSignedUploadUrl(path)
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ ok: true, uploadUrl: data.signedUrl, path })
+  }
+
+  if (action === 'sg_place_picture_save') {
+    const placeId = String(body.placeId ?? '')
+    const path = String(body.path ?? '')
+    if (!placeId || !path) return NextResponse.json({ error: 'placeId and path required' }, { status: 400 })
+    /* ⛔ THE PATH IS RE-CHECKED AGAINST THIS TRUCK AND THIS PLACE. It came back from the client, and
+     * the row it names is what a later Remove will delete from storage — so a forged path here would
+     * be a row pointing at somebody else's object. */
+    if (!path.startsWith(`${truck.id}/places/${placeId}/`)) {
+      return NextResponse.json({ error: 'That upload does not belong to this place.' }, { status: 400 })
+    }
+    /* 🔴 THE REAL BYTES ARE READ FROM STORAGE, never trusted from the client. The 10MB cap is in the
+     * table's CHECK as well, so a client that lied about the size fails the insert rather than
+     * storing a number nobody measured. */
+    const { data: blob, error: dlErr } = await supabase.storage.from('post-designs').download(path)
+    if (dlErr || !blob) return NextResponse.json({ error: 'That upload could not be read.' }, { status: 400 })
+    const bytes = blob.size
+    if (bytes <= 0 || bytes > 10 * 1024 * 1024) {
+      await supabase.storage.from('post-designs').remove([path])
+      return NextResponse.json({ error: 'Pictures must be under 10MB.' }, { status: 400 })
+    }
+    const info = await readImageInfo(Buffer.from(await blob.arrayBuffer()))
+    const { data: row, error } = await supabase
+      .from('place_pictures')
+      .insert({
+        truck_id: truck.id, place_id: placeId, path,
+        file_name: String(body.fileName ?? 'picture').slice(0, 120) || 'picture',
+        bytes, width: info?.width ?? null, height: info?.height ?? null,
+      })
+      .select('id, path, file_name, bytes, width, height, created_at')
+      .single()
+    if (error) {
+      /* ⚠️ 23505 MEANS THE SAME PATH IS ALREADY RECORDED — a double-submit. The row that exists is the
+       * right answer, so this re-reads rather than erroring. ⛔ NO `onConflict`: the unique index is
+       * not an upsert target anywhere in this repository (§7b). */
+      if (error.code === '23505') {
+        const { data: again } = await supabase.from('place_pictures')
+          .select('id, path, file_name, bytes, width, height, created_at').eq('path', path).maybeSingle()
+        if (again) return NextResponse.json({ ok: true, picture: again })
+      }
+      await supabase.storage.from('post-designs').remove([path])
+      const missing = ['42703', '42P01', 'PGRST204', 'PGRST205'].includes(error.code || '')
+      return NextResponse.json({
+        error: missing ? 'Extra pictures aren’t available yet — migration 20261015 has not been applied.' : error.message,
+      }, { status: 400 })
+    }
+    return NextResponse.json({ ok: true, picture: row })
+  }
+
+  if (action === 'sg_place_picture_remove') {
+    const id = String(body.id ?? '')
+    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+    /* 🔴 THE ROW IS READ FIRST, SCOPED TO THIS TRUCK, so the path being deleted from storage is one
+     * this truck owns rather than one the client named. */
+    const { data: row } = await supabase
+      .from('place_pictures').select('id, path').eq('id', id).eq('truck_id', truck.id).maybeSingle()
+    if (!row) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    /* ⚠️ THE OBJECT GOES FIRST, THEN THE ROW. A failure between the two leaves a wasted file, which is
+     * recoverable; the other order would leave a row pointing at nothing, which shows the operator a
+     * broken thumbnail they cannot remove. */
+    await supabase.storage.from('post-designs').remove([String(row.path)])
+    const { error } = await supabase.from('place_pictures').delete().eq('id', id).eq('truck_id', truck.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ ok: true })
+  }
+
+  /* ══ 🔴 THE PLACES TAB: "Events here" ═══════════════════════════════════════════════════════════
+   * The next upcoming and the recent past at one place, with the order count for each past one.
+   * ⚠️ PRIVATE EVENTS ARE SHOWN, with their real venue — this is the truck's OWN screen, and the
+   * redaction is a property of the PUBLIC feeds (§73). The chip says which they are.
+   * 🔴 GROUPED THROUGH `placeForEvent`, so a MERGED place's events land on its target — the same rule
+   * `sg_places` uses for Next/Last, rather than a second weaker match on the name. */
+  if (action === 'sg_place_events') {
+    const placeId = String(body.placeId ?? '')
+    if (!placeId) return NextResponse.json({ error: 'placeId required' }, { status: 400 })
+    const [{ data: evRows }, { data: placeRows }] = await Promise.all([
+      supabase.from('truck_events')
+        .select('id, truck_place_id, venue_id, venue_name, event_date, start_time, end_time, status, is_private, private_name')
+        .eq('truck_id', truck.id).order('event_date', { ascending: false }).limit(2000),
+      supabase.from('truck_places')
+        .select('id, venue_id, name_key, name, short_name, area, merged_into_id, is_hidden')
+        .eq('truck_id', truck.id),
+    ])
+    const events = (evRows ?? []) as PlaceEvent[]
+    const places = (placeRows ?? []) as SgPlace[]
+    const { byPlace } = groupEventsByPlace(events, places)
+    const mine = (byPlace.get(placeId) ?? []) as Array<PlaceEvent & { id: string; is_private?: boolean | null }>
+    const todayLocal = getLocalDateInTz((truck as { timezone?: string | null }).timezone ?? 'Europe/London')
+
+    const upcoming = mine
+      .filter(e => (e.event_date ?? '') >= todayLocal && countsAsUpcoming(e.status))
+      .sort((a, b) => String(a.event_date).localeCompare(String(b.event_date)))
+    const past = mine
+      .filter(e => (e.event_date ?? '') < todayLocal && countsAsTraded(e.status))
+      .sort((a, b) => String(b.event_date).localeCompare(String(a.event_date)))
+
+    /* The order count for the past ones shown. ⚠️ ONE query for the page, not one per event. */
+    const shownPast = past.slice(0, 5)
+    const counts = new Map<string, number>()
+    if (shownPast.length > 0) {
+      const { data: orders } = await supabase
+        .from('orders').select('event_id').in('event_id', shownPast.map(e => e.id))
+      for (const o of (orders as { event_id: string | null }[] | null) ?? []) {
+        if (o.event_id) counts.set(o.event_id, (counts.get(o.event_id) ?? 0) + 1)
+      }
+    }
+    const shape = (e: PlaceEvent & { id: string; is_private?: boolean | null }, kind: 'upcoming' | 'past') => ({
+      id: e.id, date: e.event_date, startTime: e.start_time ?? '', endTime: e.end_time ?? '',
+      kind, isPrivate: (e as { is_private?: boolean | null }).is_private === true,
+      orders: kind === 'past' ? (counts.get(e.id) ?? 0) : null,
+    })
+    return NextResponse.json({
+      ok: true,
+      total: mine.length,
+      events: [...upcoming.slice(0, 3).map(e => shape(e, 'upcoming')), ...shownPast.map(e => shape(e, 'past'))],
+    })
   }
 
   if (action === 'sg_merge_place') {

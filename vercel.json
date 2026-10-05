@@ -54,6 +54,15 @@
           "value": "noindex, noarchive"
         }
       ]
+    },
+    {
+      "source": "/p/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, noarchive, nosnippet"
+        }
+      ]
     }
   ],
   "crons": [

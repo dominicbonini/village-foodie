@@ -468,7 +468,21 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Kitchen ticket printing',  footnote: '5', detail: 'Print order tickets to a Bluetooth or wired printer in the kitchen.', starter: false, pro: false, max: true },
       // Coming soon (kept at the bottom of the section)
       { name: 'Customer-facing display',   detail: 'A screen customers can see showing order numbers and when they’re ready.', starter: false, pro: false, max: 'coming_soon'  },
-      { name: 'Event & festival pricing', detail: 'Set different prices for specific events or festivals.', starter: false, pro: false, max: 'coming_soon'  },
+      /* ══ 🔴 ONE "coming soon" ROW BECAME TWO BUILT ONES (5 October 2026) ═══════════════════════════
+       * It was `{ name: 'Event & festival pricing', … max: 'coming_soon' }` — one row for what turned
+       * out to be two products on two tiers:
+       *   • PRIVATE EVENTS is `private_events`, which is in `PRO_FEATURES`, so Pro, Max and trial.
+       *   • CUSTOM EVENT TYPES & PRICING is `event_types`, which is Max only.
+       * ⛔ A SINGLE ROW COULD NOT SAY THAT. It would have had to show Pro as either false (hiding a
+       * feature a Pro truck pays for) or true (promising Max's pricing to Pro).
+       *
+       * 🔴 BOTH ARE NOW `true`, NOT 'coming_soon', BECAUSE BOTH ARE BUILT — and that promotion is the
+       * part worth checking: `findPlanParityViolations()` inspects cells that are hard `true` and
+       * fails when `canAccess` disagrees. A 'coming_soon' cell is explicitly exempt from that guard
+       * (:231), so turning these to `true` ADDS two checks rather than removing them. They pass
+       * because the ROW_FEATURE_MAP entries below point at the two real keys. */
+      { name: 'Private events', detail: 'Add private events that don’t show on the map, with their own private ordering link and QR code.', starter: false, pro: true, max: true },
+      { name: 'Custom event types & pricing', detail: 'Create your own event types, with custom prices and settings for events and festivals.', starter: false, pro: false, max: true },
       // LOYALTY STAMP CARDS — Max only, coming soon
       // Schema: loyalty_cards(id, truck_id, customer_email, customer_phone, stamps_earned, stamps_redeemed, created_at, last_stamp_at)
       // Stamp rule V1: 1 per order (not per item — avoids redemption complexity)
@@ -621,6 +635,13 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   // here that lags the row silently removes it from findPlanParityViolations(), which then reports
   // clean because it is no longer looking. The Feature ('ipad_kds') is unchanged: it is the same app.
   'iPhone, iPad and Android kitchen app': 'ipad_kds',
+  /* 🔴 THE TWO ROWS THAT REPLACED 'Event & festival pricing' (5 October 2026). Keyed on the ROW NAME,
+   * like every entry here — and because both rows are hard `true` rather than 'coming_soon', these two
+   * entries are what `findPlanParityViolations()` uses to prove the table matches `canAccess`. Without
+   * them the rows would have no map entry, the guard would `continue` past them, and the table could
+   * promise Pro a Max feature with nothing failing. */
+  'Private events': 'private_events',
+  'Custom event types & pricing': 'event_types',
   'Offline Order Protection': 'offline_protection',
   'Online payments': 'online_payments',
   'Advance pre-ordering': 'advance_preordering',

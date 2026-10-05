@@ -70,7 +70,14 @@ function runReplySuite({ R, S, M }) {
     && S.loggedKindFor({ hasParent: false, inConversation: false, stepKind: null, clientKind: '4_final_chase' }) === '4_final_chase')
   t('⚠️ nothing at all yields null rather than a guess',
     S.loggedKindFor({ hasParent: false, inConversation: false, stepKind: null }) === null)
-  t('🔴 the button says what it will do', S.sendButtonLabel({ isReply: false, step: '2_chase_1' }) === 'Send · Chase 1')
+  /* ══ ⛔ REVERSED: THE BUTTON ALWAYS SAYS "Send" (5 October 2026, Dominic's instruction) ══════════
+   * It named the step — "Send · Chase 1" — and a reply said "Send reply". Three labels for one
+   * button, changing width whenever the ladder moved, telling the operator nothing they could act on.
+   * 🔴 WHAT THIS SECTION IS ACTUALLY ABOUT IS UNTOUCHED: a chaser must still be LOGGED as its step
+   * and not as `reply`, which is `loggedKindFor` and is asserted on the next lines. The label was
+   * never an input to that. */
+  t('⛔ the button says "Send" for a rung, and for a reply', S.sendButtonLabel({ isReply: false, step: '2_chase_1' }) === 'Send'
+    && S.sendButtonLabel({ isReply: true, step: '2_chase_1' }) === 'Send')
 
   // ── 1c · THREADING WITHOUT QUOTING ───────────────────────────────────────────────────────────
   const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Just following up.' }] }] }

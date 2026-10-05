@@ -550,6 +550,10 @@ export default function LandingPage() {
                 </>) : (
                 <li>WhatsApp, Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>
                 )}
+                {/* 🔴 PRIVATE EVENTS IS A **PRO** FEATURE (5 October 2026), the other half of the row
+                    that was "Event & festival pricing · Coming soon" on the Max card. Built, so no
+                    badge — and it twins the `pro: true` cell in lib/plan-features.ts. */}
+                <li>Private events with their own ordering link</li>
                 <li>Take payment on your phone <span className="soon-inline">Coming soon</span></li>
               </ul>
               <DemoCta className="btn btn-primary">Try Free</DemoCta>
@@ -585,7 +589,16 @@ export default function LandingPage() {
                     made the card the longest bullet in the list for the least useful reason. The bullet is
                     now byte-identical to the row's `name`, which is what the rule above asks for. */}
                 <li>Kitchen ticket printing</li>
-                <li>Event &amp; festival pricing <span className="soon-inline">Coming soon</span></li>
+                {/* ══ 🔴 "Event & festival pricing · Coming soon" BECAME TWO BUILT ROWS (5 October 2026)
+                    ⛔ ONE BULLET COULD NOT CARRY BOTH, because they are on different tiers: private
+                    events are Pro (`private_events`) and custom types with their prices are Max
+                    (`event_types`). This card is Max, so it carries the Max one; the Pro bullet is in
+                    the Pro card above.
+                    ⚠️ AND THE BADGE IS GONE — both are built. These bullets are hand-written twins of
+                    the matrix rows in lib/plan-features.ts and nothing checks them against each other,
+                    so a "Coming soon" left here would contradict a `true` cell in the table on the same
+                    page. Change both or neither; this is the "both". */}
+                <li>Custom event types &amp; pricing</li>
                 <li>Digital loyalty stamp cards <span className="soon-inline">Coming soon</span></li>
               </ul>
               <DemoCta className="btn btn-ghost">Try Free</DemoCta>

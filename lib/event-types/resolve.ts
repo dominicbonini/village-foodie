@@ -62,12 +62,27 @@ export function resolveBuzzerPromptWithType(
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
 /**
- * Whether this event splits the paid action into Cash/Card: event override ?? type ?? truck default.
+ * Whether this event splits the paid action into Cash/Card:
+ *
+ *     event override  ??  type  ??  **THE VAN**  ??  truck default
+ *
+ * ── 🔴 THE VAN LINK, ADDED 12 OCTOBER 2026, AND THE DEFECT IT FIXES ───────────────────────────────
+ * Dominic, on localhost: "Turning on 'Do you take cash?' for Van 1 also turned it on for Van 2."
+ * It did, and the cause was that there was no per-van cash setting at all — `trucks.takes_cash` is
+ * ONE column for the whole truck, so the Event types grid drew one switch per van column over a
+ * single value and they moved together. (The second half of that report — "and showed Market
+ * changing" — was the separate "faded follows Standard" rule; see `SERVICE_ROWS`.)
+ *
+ * 🔴 `truck_vans.takes_cash` IS NULLABLE WITH NO BACKFILL, which is what makes this change a no-op
+ * for every existing truck: NULL falls through to `trucks.takes_cash` and this function returns
+ * exactly what it returned before. Only a van the operator has explicitly set differs.
+ * ⚠️ THE VAN SITS **BELOW** THE TYPE, NOT ABOVE IT. A type is a statement about THIS event ("at
+ * festivals we take cash"); the van is the standing setup of the trailer running it. The more
+ * specific statement wins, which is the order every other resolver in this file uses.
  *
  * ⚠️ OPERATOR-SIDE ONLY. `takes_cash` adds a BUTTON on the dashboard and the KDS; it is read by no
  * customer surface, it changes no price, and nothing in the fee engine may read it
- * (20260730_takes_cash_and_payment_method.sql:19-28). So a type setting it cannot affect what a
- * customer is charged or shown — which is why it is safe in a stage that explicitly does no pricing.
+ * (20260730_takes_cash_and_payment_method.sql:19-28).
  *
  * ⚠️ THE LAST LINK IS `?? false`, matching resolvePaidStep: "the state every truck is in today, in
  * which every paid-step affordance is inert".
@@ -75,9 +90,29 @@ export function resolveBuzzerPromptWithType(
 export function resolveTakesCashWithType(
   eventOverride: boolean | null | undefined,
   type: TypeFor | null | undefined,
+  /**
+   * 🔴 `truck_vans.takes_cash` FOR THE VAN RUNNING THIS EVENT. Omitted or null ⇒ the truck default,
+   * which is every van before 20261012 is applied — so an omitted argument is today's behaviour and
+   * no existing caller had to change to keep working.
+   */
+  vanDefault: boolean | null | undefined,
   truckDefault: boolean | null | undefined,
 ): boolean {
-  return eventOverride ?? type?.takes_cash ?? truckDefault ?? false
+  return eventOverride ?? type?.takes_cash ?? vanDefault ?? truckDefault ?? false
+}
+
+/**
+ * The same chain for a VAN with no event in sight — Settings' own per-van control.
+ *
+ * 🔴 IT IS THE TAIL OF THE FUNCTION ABOVE, NOT A SECOND EXPRESSION. Settings shows a van's cash
+ * switch at the value that van will actually use, and if that were computed separately the screen and
+ * the hatch could disagree about the same van.
+ */
+export function resolveVanTakesCash(
+  vanDefault: boolean | null | undefined,
+  truckDefault: boolean | null | undefined,
+): boolean {
+  return resolveTakesCashWithType(null, null, vanDefault, truckDefault)
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════

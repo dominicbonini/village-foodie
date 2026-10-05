@@ -11,7 +11,8 @@
 //
 // ── NULLABLE-MEANS-INHERIT, RESOLVED AT READ TIME ───────────────────────────────────────────────────
 //   showPaidStep = event.show_paid_step_override ?? truck.show_paid_step ?? false
-//   takesCash    = event.takes_cash_override     ?? truck.takes_cash     ?? false
+//   takesCash    = event.takes_cash_override ?? type ?? THE VAN ?? truck.takes_cash ?? false
+//                  (the VAN link added 5 October 2026 — truck_vans.takes_cash, nullable, no backfill)
 // `??` and not `||`: an explicit override of FALSE must be honoured, not fall through to the default.
 // `||` would treat `false` as "unset" and silently re-inherit — the bug this nullish chain avoids.
 //
@@ -59,6 +60,21 @@ export interface PaidStepEvent {
   show_paid_step_override?: boolean | null
   takes_cash_override?: boolean | null
   completion_presses_override?: CompletionPresses | null
+  /**
+   * ── 🔴 THE EVENT'S VAN'S OWN `takes_cash`, WHERE THE CALLER HAS IT ON THE ROW (5 October 2026) ──
+   * `truck_vans.takes_cash` (20261012) is nullable and NULL means "use `trucks.takes_cash`".
+   *
+   * ⚠️ THERE ARE TWO WAYS IN AND THAT IS DELIBERATE, NOT INDECISION. The `vanTakesCash` ARGUMENT is
+   * the primary one, because the three client call sites are handed a van value as a prop and an
+   * argument is the one shape a caller cannot forget silently — TypeScript asks for it. This FIELD
+   * exists for a caller that holds an event row the server has already joined the van onto and has no
+   * van object of its own (`lib/printing/mapOrderToTicket.ts` is the shape, though it does not read
+   * `takesCash` at all). The argument wins where both are present.
+   * ⚠️ BOTH `undefined` ⇒ THE TRUCK DEFAULT, which is what every caller that sets neither gets. So a
+   * partially-hydrated event, an old cached payload and a pre-migration database all resolve to
+   * exactly today's answer.
+   */
+  van_takes_cash?: boolean | null
 }
 
 export interface ResolvedPaidStep {
@@ -88,11 +104,22 @@ export function resolvePaidStep(
    * (20260730_truck_events_show_paid_step_override.sql). Adding them here because they happen to be
    * in the same function would make a type change how payments are recorded. */
   type?: TypeFor | null,
+  /**
+   * 🔴 `truck_vans.takes_cash` FOR THE VAN RUNNING THIS EVENT (5 October 2026). Nullable:
+   * null/undefined ⇒ the truck default, which is every van before 20261012 is applied — so an
+   * omitted argument is today's behaviour exactly, and no existing caller had to change to keep
+   * working. See `van_takes_cash` above for why there are two ways to supply it.
+   */
+  vanTakesCash?: boolean | null,
 ): ResolvedPaidStep {
   const showPaidStep = event?.show_paid_step_override ?? truck?.show_paid_step ?? false
   return {
     showPaidStep,
-    takesCash: resolveTakesCashWithType(event?.takes_cash_override, type, truck?.takes_cash),
+    /* 🔴 FOUR LINKS NOW: event ?? type ?? VAN ?? truck. ⚠️ `??` ON THE VAN TERM TOO, so a van that
+     * has explicitly chosen `false` is honoured rather than read as "unset" — the bug
+     * lib/event-types/resolve.ts's header is about, in the one place it would cost money to make. */
+    takesCash: resolveTakesCashWithType(
+      event?.takes_cash_override, type, vanTakesCash ?? event?.van_takes_cash, truck?.takes_cash),
     // ── THE SAME NULLABLE-MEANS-INHERIT CHAIN THE OTHER TWO USE — event, then truck, then fallback ──
     // ⚠️ `??` and never `||`: 'one' is truthy so `||` happens to work here, but the moment a value like
     // 0 or '' enters this vocabulary it would silently re-inherit. Same chain shape as its neighbours,

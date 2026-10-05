@@ -44,6 +44,22 @@ export interface EventType {
   offline_protection_mode: OfflineProtectionMode | null
   /** The auto-reject delay the 'no_auto_accept' mode requires. null = same as Standard. */
   offline_auto_reject_mins: number | null
+  /**
+   * ── 🔴 WHICH KIND OF TYPE THIS IS (20261014) ──────────────────────────────────────────────────
+   * `'custom'` — the truck made it, and can rename, reorder and delete it.
+   * `'private'` — THE built-in Private type. One per truck, created lazily, never renamed, reordered
+   * or deleted, and always the LAST column on the grid.
+   * ⚠️ OPTIONAL, AND ABSENT MEANS `'custom'`. The column has a NOT NULL default of 'custom', so a
+   * response from before 20261014 — or a read that could not see the column — is read as a custom
+   * type, which is what every existing type is.
+   */
+  kind?: 'custom' | 'private'
+  /**
+   * Private type only: "Take orders by private link and QR code".
+   * ⚠️ NOT three-state. No other type offers link ordering at all, so there is nothing to inherit —
+   * see the column comment in 20261014.
+   */
+  private_link_ordering?: boolean | null
 }
 
 /**

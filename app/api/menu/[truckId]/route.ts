@@ -15,6 +15,13 @@ import { resolveCategoriesForVan } from '@/lib/van-category-settings'
 import { resolveOnlineCardPayments } from '@/lib/payments/online-payments-switch'
 import { resolveOfflineWithType } from '@/lib/event-types/resolve'
 import { readEventType } from '@/lib/event-types/read'
+/* 🔴 THE PRICE LEG (§70, October 2026). Probed and SEPARATE from every select above, so a pricing
+ * migration that has not been applied cannot fail the statement that fetches the MENU — it resolves
+ * to "menu prices", which is what this route served before this build. See lib/event-pricing/read.ts. */
+import { readEventPricing } from '@/lib/event-pricing/read'
+import { priceForItem, toPence, toPounds } from '@/lib/event-pricing/price'
+/* ⛔ THE AUTO-DETECT MUST NEVER PICK A PRIVATE EVENT. See the note at the `else` branch below. */
+import { isEventPrivate } from '@/lib/private-events/read'
 
 // ── PER-ROUTE CEILING ─────────────────────────────────────────────────────────────────────────────
 // THE CUSTOMER MENU. Read-only: menu items, categories, modifier groups/options, per-event stock
@@ -182,6 +189,27 @@ export async function GET(
       .maybeSingle()
     effectiveEventId = openEvent?.id ?? null
 
+    /* ══ ⛔ THE AUTO-DETECT MUST NEVER LAND ON A PRIVATE EVENT (20261014) ════════════════════════
+     * This branch runs when a customer arrives with NO event id — a QR code on the hatch, the truck's
+     * order page, a bare link. It picks "the earliest upcoming confirmed/open event" and serves that
+     * event's menu, deals and prices. §70.2 names this as a surface private events must change, and
+     * the reason is concrete: a truck whose next event is a wedding would otherwise serve the
+     * wedding's menu and ITS EVENT PRICES to anyone who scanned the hatch QR, and the order would be
+     * placed against the private event without a token.
+     * 🔴 SO A PRIVATE PICK IS DISCARDED, AND NOTHING ELSE IS SUBSTITUTED. Ordering is only ever by the
+     * private link (decision 6), so the right answer is the same as having no open event at all: the
+     * customer gets the menu with no event context, exactly as a truck with nothing on today.
+     * ⚠️ THE QUERY ABOVE IS **UNCHANGED**, deliberately. Adding `.eq('is_private', false)` to it would
+     * make a missing migration break the whole auto-detect for every truck; a separate probed read
+     * fails closed on its own. That is the lib/event-pricing/read.ts pattern, with the opposite
+     * failure direction — see lib/private-events/read.ts.
+     * ⚠️ IT DOES NOT FALL THROUGH TO THE NEXT PUBLIC EVENT. "The earliest" is the contract this
+     * endpoint has always had, and silently skipping to a later date would serve a menu for a day the
+     * customer did not ask about. */
+    if (effectiveEventId && await isEventPrivate(supabase, effectiveEventId, '/api/menu auto-detect')) {
+      effectiveEventId = null
+    }
+
     // If no confirmed/open event, check for unconfirmed upcoming events
     if (!effectiveEventId) {
       const { data: unconfirmedEvent } = await supabase
@@ -312,6 +340,40 @@ export async function GET(
   // ⚠️ LAST, so it cannot be overwritten by the pause branches above — this is the reason ordering
   // stopped, and the customer-facing copy should say the business is closing, not that it is "paused".
   if (truck.deletion_requested_at) { isPaused = true; pauseReason = 'account_closing' }
+
+  // ── 🔴 EVENT PRICING — WHAT THIS EVENT CHARGES FOR EACH ITEM (§70) ───────────────────────────────
+  // `effective = the event's own prices ?? its type's prices ?? the menu`, resolved on read by the ONE
+  // implementation in lib/event-pricing/price.ts. This is the surface that tells a CUSTOMER what a
+  // dish costs, so it must agree to the penny with app/api/orders/submit, which charges them — and it
+  // does, because both ask the same function the same question.
+  //
+  // 🔴 A SEPARATE, PROBED READ, NOT A COLUMN ON THE TRUCK/EVENT SELECTS ABOVE. Those are NAMED
+  // selects: one column PostgREST cannot see answers 42703 for the WHOLE statement, and the blast
+  // radius here is every customer's menu. `readEventPricing` resolves to "menu prices" on any
+  // failure, which is this route's behaviour for every truck before this build and for every truck
+  // that never uses the feature.
+  // ⚠️ IT COSTS ONE SELECT, AND ONLY FOR AN EVENT THAT RESOLVED. No event ⇒ no read and no map.
+  // ⚠️ NO AVAILABILITY TERM. It prices `items`, which this route has ALREADY filtered to
+  //    `is_active = true`; a sold-out-but-active dish is still in that list and still gets its price,
+  //    so the crossed-out line a customer sees carries the event's price like every other.
+  // 🔴 THE MAP IS KEYED BY ITEM ID, NOT NAME. A typed price is stored against `menu_items_db.id`
+  //    (20261011), and two dishes may share a name; the emit below has the row in hand, so it looks up
+  //    by the id it already has.
+  const eventItemPrice: Record<string, number> = {}
+  if (effectiveEventId) {
+    const pricing = await readEventPricing(supabase, effectiveEventId)
+    const setup = pricing.resolved.setup
+    if (setup) {
+      for (const i of (items || []) as { id: string; price: unknown }[]) {
+        const menuPence = toPence(i.price)
+        const charged = priceForItem(menuPence, setup, i.id)
+        /* ⚠️ ONLY WHERE IT MOVED. An unchanged item is absent from the map and the emit below reads
+         * `i.price` exactly as it did before this build — so the response for a truck not using this
+         * feature is byte-identical, not merely equal. */
+        if (charged !== menuPence) eventItemPrice[i.id] = toPounds(charged)
+      }
+    }
+  }
 
   // Live order counts — event-scoped (V6.4 invariant), using the resolved event.
   // No confirmed/open event → empty counts.
@@ -617,7 +679,12 @@ export async function GET(
       return {
         name: i.name,
         description: i.description || '',
-        price: i.price,
+        /* 🔴 THE EVENT'S PRICE, OR THE MENU'S. ⚠️ JUST THE NUMBER — no crossed-out "was" price and no
+         * second field, by decision 9: a customer at a festival is being quoted a price, not shown a
+         * discount they are not getting. The menu price reaches the operator's screens through
+         * /api/event-types and the dashboard, never through here.
+         * ⚠️ `?? i.price` AND NOT `|| i.price`: a typed price of £0 is a real instruction. */
+        price: eventItemPrice[i.id] ?? i.price,
         category: (i.menu_categories as any)?.name || 'Uncategorized',
         // Stage B: per-item modifier groups (SOLE resolution source). Customer modal + operator
         // AddOrderPanel read item.modifierGroups directly (no more category name-match).

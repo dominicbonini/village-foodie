@@ -181,9 +181,29 @@ function runGuardSuite(S) {
     all.some(g => g.id === 'shared_address'))
 
   // ── 3g · THE BUTTON NAMES THE STEP ───────────────────────────────────────────────────────────
-  t('🔴 the Send button names the step', S.sendButtonLabel({ isReply: false, step: '2_chase_1' }) === 'Send · Chase 1')
-  t('…and a reply says so', S.sendButtonLabel({ isReply: true, step: '2_chase_1' }) === 'Send reply')
-  t('⚠️ …and an unknown step says neither', S.sendButtonLabel({ isReply: false, step: null }) === 'Send')
+  /* ══ 🔴 REVERSED: THE BUTTON ALWAYS SAYS "Send" (5 October 2026, Dominic's instruction) ═══════════
+   * It said "Send · Chase 1" for a rung and "Send reply" for a reply, with the page appending
+   * "· follow up 2 Oct" on top — three labels and a date for one button, changing width whenever the
+   * ladder moved.
+   * ⛔ THE SERVER IS UNTOUCHED, and that is asserted separately below: `loggedKindFor` and `nextStep`
+   * still decide and still log exactly what they did. The label was never an input to either, which is
+   * why this is a one-line change and not a behaviour change.
+   * 🔴 ASSERTED ACROSS EVERY SHAPE, not just one — a reply, each rung, an unknown step and a reply on a
+   * rung — because "always" is the claim and one case passing is not it. */
+  t('🔴 the Send button always says "Send" — a rung', S.sendButtonLabel({ isReply: false, step: '2_chase_1' }) === 'Send')
+  t('🔴 …a reply', S.sendButtonLabel({ isReply: true, step: '2_chase_1' }) === 'Send')
+  t('🔴 …a reply with no step', S.sendButtonLabel({ isReply: true, step: null }) === 'Send')
+  t('🔴 …no step at all', S.sendButtonLabel({ isReply: false, step: null }) === 'Send')
+  t('🔴 …and an unrecognised step', S.sendButtonLabel({ isReply: false, step: 'not_a_step' }) === 'Send')
+  t('⛔ …EVERY slot step, so no rung can reintroduce its name', (() => {
+    const steps = ['1_intro', '2_chase_1', '3_chase_2', '4_final']
+    return steps.every(k => ['Send'].includes(S.sendButtonLabel({ isReply: false, step: k })))
+  })())
+  /* ⛔ AND THE SERVER'S OWN DECISIONS ARE UNCHANGED — the half of the instruction that matters most. */
+  t('⛔ `loggedKindFor` is untouched: a reply in a conversation still logs `reply`',
+    S.loggedKindFor({ hasParent: true, inConversation: true, stepKind: '2_chase_1' }) === 'reply')
+  t('⛔ …and a follow-up on my own email still logs the STEP, not `reply`',
+    S.loggedKindFor({ hasParent: true, inConversation: false, stepKind: '2_chase_1' }) === '2_chase_1')
   return { ok, bad }
 }
 

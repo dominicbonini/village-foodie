@@ -336,6 +336,17 @@ export interface TruckEvent {
    *  the operator. NULL = this event can be listed but can never be pinned on the map. */
   latitude?: number | null
   longitude?: number | null
+  /**
+   * ── 🔴 PRIVATE EVENTS (20261014) ──────────────────────────────────────────────────────────────
+   * `is_private` is the SOURCE OF TRUTH for whether this event is hidden from public surfaces — not
+   * derived from the type, because `event_type_id` is ON DELETE SET NULL and deleting the Private
+   * type would turn every private event public with its coordinates.
+   * ⚠️ OPERATOR SURFACES ONLY. `private_name` reaches the Events list and the dashboard card; it must
+   * never reach a public feed, and no public route selects it.
+   * ⚠️ BOTH OPTIONAL, AND ABSENT MEANS PUBLIC — a response from before 20261014 omits them.
+   */
+  is_private?: boolean | null
+  private_name?: string | null
   // Order-ready (master-switch model): per-event on/off for the order-ready step/notifications. Concrete
   // true/false (seeded at creation + bulk-set by the Settings master switch); a legacy NULL falls back to
   // the van's order_ready_enabled default server-side → effectiveOrderReady.

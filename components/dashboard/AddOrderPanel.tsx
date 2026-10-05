@@ -175,6 +175,16 @@ interface AddOrderPanelProps {
    *  ⚠️ Optional so the demo dashboard and any future caller that has no buzzers render unchanged. When
    *  absent this path is simply not offered — it is never silently downgraded back to a raw fetch. */
   onSaveBuzzer?: (orderKey: string, buzzerNumber: number | null) => Promise<void>
+  /**
+   * `truck_vans.takes_cash` for the van running this event (5 October 2026).
+   *
+   * 🔴 THE RAW NULLABLE VAN VALUE, NOT A RESOLVED BOOLEAN — it is an INPUT to `resolvePaidStep`,
+   * which is the one place `event ?? type ?? van ?? truck` lives. A resolved boolean here would be a
+   * second copy of that chain on the busiest screen in the product.
+   * ⚠️ `null`/omitted ⇒ this van follows `trucks.takes_cash`, which is every van before 20261012 is
+   * applied — so an un-passed prop renders exactly today's Cash/Card split.
+   */
+  vanTakesCash?: boolean | null
 }
 
 // ─── SCROLL LAYOUT (trucks.add_order_layout === 'scroll', V11.15) ─────────────────────────────────
@@ -327,7 +337,7 @@ export function AddOrderPanel({
   isOffline = false, offlineCapacity = null, isEventLoaded,
   isActive = true,
   isDemo = false, onLockedEventAction,
-  buzzerCount = null, buzzerPromptEnabled = false, onSaveBuzzer,
+  buzzerCount = null, buzzerPromptEnabled = false, onSaveBuzzer, vanTakesCash = null,
 }: AddOrderPanelProps) {
 
   // ── order state ─────────────────────────────────────────────────────────────
@@ -1257,7 +1267,9 @@ setItemModal({ item, modGroups, editCartKey })
   // a walk-up added to Saturday's festival still gets SATURDAY's setting even if the operator is
   // looking at the dashboard on Friday, because liveEvent preserves manualEvent's IDENTITY and only
   // refreshes its VALUES.
-  const { showPaidStep, takesCash } = resolvePaidStep(truck, liveEvent as any)
+  /* ⚠️ THE VAN'S OWN CASH SETTING IS THE FOURTH ARGUMENT (5 October 2026) — a prop, for the reason
+   * OrderCard's note gives. Undefined ⇒ the truck default, i.e. today. */
+  const { showPaidStep, takesCash } = resolvePaidStep(truck, liveEvent as any, null, vanTakesCash)
   // 🔴 NO REMEMBERED DEFAULT — open-check semantics. Walk-ups and phone orders come through THIS panel
   // with OPPOSITE payment timings, so any truck-level default is wrong about half the time and the
   // operator has to check and flip on every order anyway — worse than no default at all. Instead the

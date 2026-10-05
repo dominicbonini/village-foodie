@@ -30,6 +30,12 @@ const LIB = [
   'lib/weekly-post/fonts.ts', 'lib/weekly-post/font-list.ts', 'lib/weekly-post/ttf-metrics.ts', 'lib/weekly-post/caption.ts',
   'lib/weekly-post/render.ts', 'lib/weekly-post/image-info.ts', 'lib/weekly-post/backgrounds.ts',
   'lib/time-utils.ts', 'lib/schedule-graphics/places.ts',
+  /* 🔴 ADDED 5 October 2026. `week-data.ts` now imports `PRIVATE_PUBLIC_LABEL` from here, because a
+   * private event's row on a poster reads "Private event" with no location (§73). The compile is a
+   * COPY of the named files, so an import the list does not include is a `TS2307` that fails the whole
+   * harness — which is exactly what happened and is the right failure: a fixture that silently stubbed
+   * the label would measure a poster nobody is served. */
+  'lib/private-events/resolve.ts',
 ]
 
 /** Compile the library (optionally with one file patched) and bind a require to it. */

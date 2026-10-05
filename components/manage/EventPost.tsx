@@ -386,9 +386,11 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
     return (
       <Card className="p-6">
         <p className="font-bold text-slate-800">Set up your event post</p>
+        {/* ⚠️ "those three" BECAME "those" (5 October 2026). The sentence already lists the three
+          * things, so counting them again made the reader go back and check. */}
         <p className="text-sm text-slate-600 mt-1 max-w-prose">
           Upload the picture you use for a single event — your artwork with no date, place or time on it.
-          HatchGrab adds those three for each event.
+          HatchGrab adds those for each event.
         </p>
         <label className="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer">
           <input type="file" accept="image/png,image/jpeg" className="hidden"
@@ -396,6 +398,15 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
           {busy ? 'Uploading…' : 'Upload your picture'}
         </label>
         <p className="text-xs text-slate-400 mt-2">PNG or JPG, up to 10MB, at least {MIN_UPLOAD_SHORT_SIDE}px on the short side.</p>
+        {/* 🔴 WHERE A PER-PLACE PICTURE LIVES NOW (5 October 2026). A truck reading this card is
+          * thinking about pictures, which is exactly the moment to say that one pitch can have its
+          * own — and the answer is the Places tab, not another control here.
+          * ⚠️ IT IS A LINK TO THE TAB, not an explanation of where to find it. `?section=places` is
+          * the tab's own address and it survives a refresh. */}
+        <p className="text-xs text-slate-500 mt-2">
+          A different picture for one place? Add it in{' '}
+          <a href="?section=places" className="font-semibold text-orange-700 underline hover:no-underline">Places</a>.
+        </p>
         {msg && <p className={`text-sm mt-2 ${msg.bad ? 'text-red-600' : 'text-slate-600'}`}>{msg.text}</p>}
       </Card>
     )

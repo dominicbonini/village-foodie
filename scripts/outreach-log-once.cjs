@@ -123,7 +123,17 @@ async function runSuite(make) {
   const checks = [
     ['a ref exists and starts false', /const logInFlight = useRef\(false\)/.test(SRC)],
     ['🔴 the ref gate is the FIRST statement after setPending', /setPending\(null\)\s*\n(?:\s*\/\/[^\n]*\n)*\s*if \(logInFlight\.current\) return/.test(SRC)],
-    ['the pre-existing guards still run before the write', /if \(logging \|\| !body\.trim\(\)\) return/.test(SRC) && /if \(refusal\) \{ setSendError\(refusal\); return \}/.test(SRC)],
+    /* ══ 🔴 RE-AIMED: THE EMPTY-MESSAGE GUARD READS `hasText`, NOT `body` (5 October 2026) ═════════
+     * It asserted `if (logging || !body.trim()) return`. That line was a DEFECT: `body` is the
+     * TEMPLATE RENDER, and the "Blank" template sets it to `''` — so with Blank chosen, "Log as sent"
+     * did nothing and said nothing either, exactly as Send did. `hasText` reads the DOCUMENT for an
+     * email, which is the one definition of "is there a message".
+     * ⛔ AND THE EMPTY CASE NOW SPEAKS. A bare `return` in a click handler is indistinguishable from
+     * a broken button; `scripts/outreach-send-visible.cjs` §1 asserts no send path exits silently. */
+    ['the pre-existing guards still run before the write',
+      /if \(logging\) return/.test(SRC)
+      && /if \(!hasText\) \{ setSendError\('Write something, or pick a template, first\.'\); return \}/.test(SRC)
+      && /if \(refusal\) \{ setSendError\(refusal\); return \}/.test(SRC)],
     ['🔴 the refusal guard runs BEFORE the ref is claimed (a refusal must not lock the button)',
       SRC.indexOf('if (refusal) { setSendError(refusal); return }') < SRC.indexOf('logInFlight.current = true')],
     ['🔴 the ref is released in a finally', /\} finally \{[\s\S]{0,200}?logInFlight\.current = false/.test(SRC)],

@@ -139,9 +139,24 @@ function census() {
   tt('🔴 the content effect skips this editor\'s own echo, however the parent held it',
     /if \(incoming === lastEmitted\.current\) return/.test(E)
     && /lastEmitted\.current = JSON\.stringify\(json\)/.test(E))
-  tt('🔴 …and a replaced document lands the caret at the start with no stored marks',
-    /editor\.commands\.setTextSelection\(1\)/.test(E)
-    && /setStoredMarks\(null\)/.test(E))
+  /* ══ ⛔ RE-AIMED, AND THE OLD ASSERTION WAS ASSERTING THE BUG (5 October 2026) ═══════════════════
+   * It required `setTextSelection(1)` and `setStoredMarks(null)` — and BOTH were wrong:
+   *   • `setStoredMarks(null)` means "I have no stored marks, use the marks AT the caret". Proven in
+   *     real ProseMirror (`scripts/outreach-send-visible.cjs` §2): a caret resting in a bold run then
+   *     types BOLD. `[]` is what means "explicitly no marks".
+   *   • `setTextSelection(1)` is position 1 unconditionally — correct until the first paragraph is
+   *     marked, which a template whose first line is the signature produces.
+   * 🔴 SO THIS CHECK WAS GREEN WHILE THE REPORTED DEFECT WAS LIVE, which is the useful lesson: it
+   * asserted the MECHANISM somebody had written rather than the PROPERTY the operator needs. It now
+   * asserts the property — the caret lands somewhere plain, and the marks are explicitly cleared. */
+  tt('🔴 …and a replaced document lands the caret at the first PLAIN position, marks explicitly cleared',
+    /setTextSelection\(firstPlainPos\(editor\.state\.doc\)\)/.test(E)
+    && /setStoredMarks\(\[\]\)/.test(E)
+    && !/setStoredMarks\(null\)/.test(E)
+    && !/editor\.commands\.setTextSelection\(1\)/.test(E))
+  tt('⛔ …and inserting the SIGNATURE leaves somewhere plain to type (the reported bug)',
+    /if \(lastIsMarked\) blocks\.push\(\{ type: 'paragraph' \}\)/.test(E)
+    && /insertContent\(blocks\)\.run\(\)[\s\S]{0,200}setStoredMarks\(\[\]\)/.test(E))
   /* ── 🔴 THE EDITOR CANNOT BUILD WHAT THE SEND REFUSES (1 October 2026) ────────────────────────────
    * `validateDoc` refuses a nested list, and Tab used to nest — so the editor built the one shape the
    * send rejects, and the operator found out after writing the email. Tab/Shift-Tab are swallowed inside

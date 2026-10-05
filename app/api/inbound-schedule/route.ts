@@ -5,6 +5,8 @@ import { normalizeVenue, venuesFuzzyMatch } from '@/lib/venue-signature'
 import { findVenue, normName, type VenueRow } from '@/lib/venue-matcher'
 import { admitDiscoveryEvents, type TruckRow } from '@/lib/discovery-gate'
 import { getVanOrderReadyDefault } from '@/lib/van-utils'
+/* 🔴 PRIVATE EVENTS (20261014): the ONE place the "is it private?" decision lives. */
+import { scrapedPrivacyFields } from '@/lib/private-events/write'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -192,6 +194,20 @@ export async function POST(req: NextRequest) {
       order_ready_source: 'seed',
       venue_name: row.venue_name || null,
       town:       row.village || null,
+      /* ══ 🔴 "PRIVATE" IN THE FOUND TEXT MARKS THE EVENT PRIVATE (20261014, decision 9) ══════════
+       * Pizzeria Gusto's schedule lists these as venue_name "Private Hire" with no time and no town,
+       * so the signal is already in the data this bridge receives.
+       * ⛔ WHOLE WORD, CASE-INSENSITIVE, AND NOTHING ELSE — "Private Hire"/"private event"/"PRIVATE
+       * PARTY" yes; "Privateer Brewery" no; "wedding" NO, by decision. A wedding fair is a public
+       * event a truck wants on the map, and hiding it would be hiding trade.
+       * ⛔ SPREAD FROM `scrapedPrivacyFields`, NOT WRITTEN AS A COLUMN HERE. `is_private` has one
+       * writer in this repository and scripts/private-events.cjs proves it by searching for the
+       * column name; this keeps that proof exact. The type and the token come at CONFIRM — nobody has
+       * looked at this event yet, and issuing a live ordering link from a scraped guess would be
+       * publishing something no operator approved.
+       * ⚠️ THIS AFFECTS ROWS CREATED FROM NOW ON. Gusto's six existing 'cancelled' rows are not
+       * touched by this and are not backfilled anywhere — see 20261014's header. */
+      ...scrapedPrivacyFields(row.venue_name, row.event_notes),
       // Scraped postcode first; fall back to the matched venue's postcode; null if neither.
       postcode:   row.postcode || venuePostcode || null,
       event_date: row.event_date,

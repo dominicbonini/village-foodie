@@ -5,7 +5,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import type { DiscountCode } from '@/lib/order-calculations'
-import { loadPriceBook, repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
+/* ⚠️ `loadPriceBook` IS NO LONGER IMPORTED HERE, AND THAT IS THE POINT: this route reaches it
+ * through `loadEventPriceBook` (below), which is the ONE place the event-aware wrapper is
+ * applied. An import of the raw book beside the wrapper is an invitation to call the wrong one. */
+import { repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
+/* 🔴 EVENT PRICING (§70, October 2026). `loadEventPriceBook` wraps `loadPriceBook` — same signature
+ * for the inner call, same PriceBook shape out, only item prices moved. `candidatesChangePrices` is
+ * decision 7's guard: never price against a guessed event. */
+import { loadEventPriceBook, candidatesChangePrices } from '@/lib/event-pricing/read'
+/* 🔴 PRIVATE EVENTS (20261014): an order against one is admitted ONLY by its current token. */
+import { isEventPrivate, tokenAdmitsOrder } from '@/lib/private-events/read'
 import {
   computeEventUnitRows,
   buildItemCatMap,
@@ -218,6 +227,13 @@ export async function POST(req: NextRequest) {
       // ── 🔴 THE KEY OF AN AUTHORISATION THIS ONE REPLACES. See the supersede block in the card fork.
       // Present only when the browser is already holding a live intent whose basket has since changed.
       supersedeOrderKey,
+      // ── 🔴 THE PRIVATE LINK'S TOKEN (20261014) ───────────────────────────────────────────────────
+      // Sent by the guest's page at /p/<token> and by NOTHING ELSE. Absent on every public order,
+      // which is every order this product has ever taken — so its absence is the normal case and
+      // changes nothing: the gate below only fires for an event that is actually private.
+      // ⛔ IT IS A CREDENTIAL, NOT A HINT. It is never logged, never stored on the order, and never
+      // echoed back; it is matched against the event's current token and discarded.
+      privateToken,
     } = body
 
     // ── Validate ──────────────────────────────────────────────────────────────
@@ -445,6 +461,14 @@ export async function POST(req: NextRequest) {
       const copy = { ...it }
       delete copy.price_override
       delete copy.book_price
+      /* 🔴 EVENT PRICING'S TWO AUDIT FIELDS ARE STRIPPED FOR THE SAME REASON AND BY THE SAME
+       * MECHANISM. `repriceOrder` passes unknown keys STRAIGHT THROUGH to the stored row, so a
+       * hand-crafted `menu_price: 99` / `price_basis: 'event'` would land in the jsonb and read
+       * exactly as if the server had written it — a forged audit trail on a real order. They are
+       * server-only fields, re-attached below from the server's own figures. Structural, not a rule
+       * someone has to remember. */
+      delete copy.menu_price
+      delete copy.price_basis
       return copy
     })
     // ── 🔴 THIS RUNS BEFORE THE STOCK GUARD, AND THAT IS ONLY SAFE FOR ONE REASON. ────────────────
@@ -462,7 +486,104 @@ export async function POST(req: NextRequest) {
     // ⚠️ IF THAT EVER CHANGES, THIS ORDERING BECOMES A LIVE DEFECT. Either the price book must keep no
     // availability filter, or this block must move below checkStockShortfall. Do not change one end
     // without the other.
-    const priceBook = await loadPriceBook(supabase, resolvedTruckId)
+    // ── 🔴 THE EVENT, RESOLVED FOR PRICING, **BEFORE** THE BOOK IS LOADED ─────────────────────────
+    // `eventRow` below is resolved ~60 lines further down, which is AFTER the money is decided — so
+    // pricing cannot use it. This is a separate, minimal resolution with the SAME filters
+    // (`truck_id`, `event_date`, `status <> 'cancelled'`), and `eventRow`'s own logic is untouched.
+    //
+    // 🔴 THE EXPLICIT ID IS VERIFIED AGAINST THIS TRUCK, AND THAT IS NOT CEREMONY. `event_id` comes
+    // off the wire. Without the `truck_id` filter a customer could post ANOTHER truck's event id and
+    // have that event's rule applied to this truck's menu — picking one with "−50%" to pay half. One
+    // round trip closes it; `readEventPricing` filters by id alone, by design, because every caller
+    // is expected to have already proved the event is theirs.
+    //
+    // 🔴 DECISION 7 — AN AMBIGUOUS EVENT IS REFUSED, NEVER GUESSED. With no id sent and two events on
+    // the date, `eventRow` takes "the earliest by start_time" while /api/menu takes "the earliest by
+    // event_date" — two different answers to one question (§70.2). Pricing against either would
+    // charge a festival's prices at a pub lunch. So where the date is ambiguous AND any candidate
+    // would charge something other than the menu, the order is refused with the EXISTING
+    // `menuChanged` 409 (whose handler re-fetches the menu and asks the customer to look).
+    // ⚠️ WHERE NO CANDIDATE CHANGES A PRICE THE ORDER PROCEEDS AT MENU PRICES, which is every truck
+    // today and is why this guard costs them nothing. In the last 90 days no order had a null
+    // event_id at all.
+    const pricingEventDate = eventDate ?? new Date().toISOString().split('T')[0]
+    let pricingEventId: string | null = null
+    let pricingCandidates: string[] = []
+    if (eventId) {
+      const { data } = await supabase
+        .from('truck_events').select('id')
+        .eq('id', eventId).eq('truck_id', resolvedTruckId).neq('status', 'cancelled')
+        .maybeSingle()
+      pricingEventId = (data as { id: string } | null)?.id ?? null
+    }
+    if (!pricingEventId) {
+      const { data } = await supabase
+        .from('truck_events').select('id')
+        .eq('truck_id', resolvedTruckId).eq('event_date', pricingEventDate).neq('status', 'cancelled')
+      const ids = ((data as { id: string }[] | null) ?? []).map(r => r.id)
+      if (ids.length === 1) pricingEventId = ids[0]
+      else if (ids.length > 1) pricingCandidates = ids
+    }
+    if (pricingCandidates.length > 0
+      && await candidatesChangePrices(supabase, resolvedTruckId, pricingCandidates)) {
+      console.error(
+        `[submit] REFUSED — ${pricingCandidates.length} events on ${pricingEventDate} for truck `
+        + `${resolvedTruckId} and no event_id sent, and event pricing would change prices. `
+        + 'Refusing rather than guessing which event to price against.',
+      )
+      return NextResponse.json(
+        {
+          error: 'The menu has changed — please check your order before placing it.',
+          stock: true,
+          menuChanged: true,
+          items: [],
+        },
+        { status: 409 },
+      )
+    }
+
+    /* ══ ⛔ A PRIVATE EVENT IS ORDERABLE ONLY WITH ITS CURRENT TOKEN (20261014) ═════════════════════
+     * Decision 6: ordering is ONLY by the private link. So the event id alone — which is all a guest
+     * who once saw the page, or anyone who guessed, would have — is refused.
+     *
+     * 🔴 WHERE THIS SITS IS LOAD-BEARING. It is after the event is resolved (so there is an id to ask
+     * about) and BEFORE `loadEventPriceBook` (so a refused order never reaches the money path, the
+     * stock decrements or the slot booking). Moving it later would leave a window in which an
+     * unauthorised order had already consumed stock.
+     *
+     * ⛔ BOTH PAYMENT PATHS, BECAUSE THIS IS BEFORE THE CARD FORK. `payByCard` is read ~400 lines
+     * below; refusing here covers card and pay-at-hatch with one check rather than two that could
+     * drift.
+     *
+     * ⛔ `tokenAdmitsOrder` MATCHES THE TOKEN **AND** THE EVENT ID IN ONE QUERY. A token proves access
+     * to one event, not to the truck — checking the token and then trusting the posted id separately
+     * would let a guest at one wedding order against another.
+     *
+     * ⚠️ THE REFUSAL IS DELIBERATELY UNINFORMATIVE. It does not say whether the event exists, whether
+     * it is private, or whether the token was once valid; a 403 with one sentence is all a caller
+     * gets. The guest's own page never sees this — it holds a live token — so the only visitors here
+     * are people who should not be.
+     * ⚠️ AND IT IS CHECKED EVEN WHEN NO TOKEN WAS SENT, which is the point: `isEventPrivate` fails
+     * CLOSED, so a probe failure on a private event refuses rather than admits. */
+    if (pricingEventId && await isEventPrivate(supabase, pricingEventId, '/api/orders/submit')) {
+      if (!await tokenAdmitsOrder(supabase, pricingEventId, privateToken)) {
+        console.warn(
+          `[submit] REFUSED — order against private event ${pricingEventId} `
+          + `(truck ${resolvedTruckId}) without a valid current private link token.`,
+        )
+        return NextResponse.json(
+          { error: 'This event takes orders by private link only. Please use the organiser’s link or QR code.' },
+          { status: 403 },
+        )
+      }
+    }
+
+    // ── 🔴 THE EVENT-AWARE BOOK. `loadPriceBook` IS UNCHANGED AND IS WHAT THIS CALLS. ─────────────
+    // For a truck with no event types and no event own-prices, `eventBook.book` IS the object
+    // `loadPriceBook` returned, by reference, and `eventBook.menuPrice` is empty — so nothing below
+    // stamps a line and the stored row is byte-identical to this route's output before this build.
+    const eventBook = await loadEventPriceBook(supabase, resolvedTruckId, pricingEventId)
+    const priceBook = eventBook.book
     const repriced = repriceOrder(
       customerItems,
       deals,
@@ -519,7 +640,27 @@ export async function POST(req: NextRequest) {
     // The authoritative figures. PENCE FIRST, then pounds derived from the pence, so `total` and
     // `total_minor` are the same number by construction — the same ordering the edit path uses
     // (action/route.ts) and the reason a percentage code can't leave them 1p apart.
-    const pricedItems = repriced.items
+    // ── 🔴 THE AUDIT FIELDS, ON THE MOVED LINES ONLY ──────────────────────────────────────────────
+    // `menu_price` = what the menu says; `price_basis` = 'event_type' | 'event', which setup decided
+    // it. `unit_price` keeps its meaning — the effective price — so all thirty-odd existing readers
+    // of an order line are untouched, exactly as `price_override` / `book_price` were added.
+    //
+    // 🔴 ONLY ON A LINE WHOSE PRICE ACTUALLY MOVED, AND THAT IS THE BYTE-IDENTITY PROMISE. A truck not
+    // using this feature has an empty `menuPrice` map, so `pricedItems` is `repriced.items` — the same
+    // array, not a mapped copy — and the jsonb written below is the same bytes as before.
+    // ⚠️ IT KEYS ON THE **NAME**, which is what an order line carries. The map was built from
+    // `menu_items_db.id` and reduced to names in loadEventPriceBook, where the names were in hand.
+    // ⚠️ `book_price` IS NOT WRITTEN HERE AND MUST NOT BE. It means "what the system would have
+    // charged" and is written only beside an operator `price_override` (the walk-up path). Under
+    // event pricing the system's own charge IS `unit_price`; the MENU price is a third quantity and
+    // has its own field. See §70 in the manual.
+    const pricedItems = Object.keys(eventBook.menuPrice).length === 0
+      ? repriced.items
+      : repriced.items.map(line => {
+          const menu = eventBook.menuPrice[String(line.name)]
+          if (menu === undefined || eventBook.basis === null) return line
+          return { ...line, menu_price: menu, price_basis: eventBook.basis }
+        })
     const pricedDeals = repriced.deals
     const serverTotalMinor = toMinor(repriced.calculation.total)
     const serverTotal = serverTotalMinor / 100

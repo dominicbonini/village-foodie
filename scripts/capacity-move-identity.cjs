@@ -128,8 +128,31 @@ try {
   console.log('\n── 3 · THE FIELD SPLIT MOVED FIELDS, IT DID NOT LOSE THEM ──────────────────────────────')
   const beforeUnion = [...BEFORE.VAN_COPY_FIELDS].concat(BEFORE.CAPACITY_COPY_FIELDS || []).sort()
   const afterUnion  = [...AFTER.VAN_COPY_FIELDS].concat(AFTER.CAPACITY_COPY_FIELDS  || []).sort()
-  check(JSON.stringify(beforeUnion) === JSON.stringify(afterUnion),
-    `the union is unchanged (${afterUnion.length} fields): ${afterUnion.join(', ')}`)
+  /* ══ 🔴 "NOTHING LOST", NOT "NOTHING CHANGED" (re-aimed 5 October 2026) ══════════════════════════
+   * This asserted the two unions were EQUAL, against a FLOATING HEAD — and a later, unrelated build
+   * legitimately ADDED a field: `takes_cash` became a per-van setting (20261012), and
+   * `VAN_COPY_FIELDS`' own note says adding a per-van setting means adding it here "or the switch
+   * silently stops meaning same". So the correct change made this check fail.
+   * 🔴 THE CLAIM WAS NEVER "the list is frozen" — it is "the SPLIT moved fields, it did not lose
+   * them". A field ADDED is not a field lost, so the direction that matters is: every field in the
+   * BEFORE union is still in the AFTER union. That is strictly what the regression would violate.
+   * ⛔ AND AN ADDITION IS STILL NAMED, not waved through: anything new has to be on the list below,
+   * so a field appearing by accident is still a failure and a reader can see what arrived and when. */
+  const ADDED_SINCE = [
+    // 20261012 · "Do you take cash?" became per-van, so the "same as Van 1" switch has to copy it.
+    'takes_cash',
+  ]
+  const lost = beforeUnion.filter(f => !afterUnion.includes(f))
+  const gained = afterUnion.filter(f => !beforeUnion.includes(f))
+  const unexpected = gained.filter(f => !ADDED_SINCE.includes(f))
+  check(lost.length === 0 && unexpected.length === 0,
+    `the split LOST nothing (${afterUnion.length} fields${gained.length ? `, ${gained.length} added since: ${gained.join(', ')}` : ''})`
+    + `${lost.length ? ` · ⛔ LOST: ${lost.join(', ')}` : ''}`
+    + `${unexpected.length ? ` · ⛔ UNEXPLAINED ADDITION: ${unexpected.join(', ')}` : ''}`)
+  /* ⚠️ AND THE ALLOWLIST EXPIRES IF THE FIELD GOES. An entry excuses an addition only while the
+   * addition is there; otherwise it is a changelog rather than a check. */
+  check(ADDED_SINCE.every(f => afterUnion.includes(f)),
+    `every field claimed as a deliberate addition is actually present (${ADDED_SINCE.join(', ')})`)
   check(AFTER.capacitySplitIsClean(), '🔴 the two lists are DISJOINT — one switch cannot move the other\'s fields')
   check(AFTER.CAPACITY_COPY_FIELDS.slice().sort().join() === ['capacity_window_mins', 'kitchen_capacity'].join(),
     'capacity owns exactly its two fields')

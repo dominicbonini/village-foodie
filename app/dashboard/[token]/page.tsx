@@ -36,6 +36,7 @@ import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { ThisEventCard, useEventDeals } from '@/components/dashboard/ThisEventCard'
+import { EventPricesSheet } from '@/components/dashboard/EventPricesSheet'
 import { resolveOfflineWithType, offlineIsHandChange } from '@/lib/event-types/resolve'
 import { readSoundConfig, writeSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
 
@@ -113,6 +114,8 @@ import type { EngineReservation } from '@/lib/slot-availability'
 import { normaliseOrderLines } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat, mergeQtyByCat, buildOfflineOccupancy } from '@/lib/slot-capacity'
 import { decideRead, classifyReadFailure, nextDegraded, degradedBanner, type ReadSlot, type Degraded } from '@/lib/dashboard-read'
+/* 🔴 PRIVATE EVENTS (20261014) — the SAME panel the Manage Events list opens. */
+import { PrivateLinkPanel, type PrivateLinkData } from '@/components/manage/PrivateLinkPanel'
 
 /** The ONLY list of valid ?tab= values, shared by the tab bar and the URL validator — so a tab cannot be
  *  added to the UI without becoming linkable, or removed without ceasing to be. */
@@ -561,6 +564,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // server-side by lib/buzzer.ts and delivered by /api/dashboard, so the dashboard, the KDS and Add
   // Order can never disagree about them — the same arrangement the paid step uses.
   const[vanBuzzerCount,setVanBuzzerCount]=useState<number|null>(null)
+  /* 🔴 THIS EVENT'S VAN'S OWN "Do you take cash?" (5 October 2026). null ⇒ the van follows
+   * `trucks.takes_cash`, which is every van before 20261012 is applied. It is an INPUT to
+   * `resolvePaidStep`, never a second answer — the chain still lives in one place. */
+  const[vanTakesCash,setVanTakesCash]=useState<boolean|null>(null)
   const[effectiveBuzzerPrompt,setEffectiveBuzzerPrompt]=useState<boolean>(false)
   const[savingBuzzerPrompt,setSavingBuzzerPrompt]=useState(false)
   // The order whose buzzer grid is open (card path). Null ⇒ closed.
@@ -1205,6 +1212,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // applyPending guards the prompt for the same reason effectiveOrderReady is guarded: a reseed
         // fired by the operator's own write must not clobber the value that write is still committing.
         if(data.vanBuzzerCount !== undefined) setVanBuzzerCount(data.vanBuzzerCount??null)
+        if(data.vanTakesCash !== undefined) setVanTakesCash(data.vanTakesCash??null)
         setEffectiveBuzzerPrompt(applyPending('effectiveBuzzerPrompt',data.effectiveBuzzerPrompt??false))
         configSeededRef.current=true
       }
@@ -3017,14 +3025,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // ── "THIS EVENT" CARD SUPPORT ───────────────────────────────────────────────────────────────────
   /* 🔴 THE TRUCK'S TYPE LIST, FOR THE CARD'S Event type ROW. One read when the card is first needed;
    * the list changes only in Manage, so it is not on the poll. An empty list hides that row. */
-  const[eventTypeList,setEventTypeList]=useState<{id:string;name:string}[]>([])
+  /* ⚠️ `kind` CARRIED (20261015), so the card's confirm can tell a switch into/out of PRIVATE from
+   * any other switch. The route already returns it, in the grid's order (Private first). */
+  const[eventTypeList,setEventTypeList]=useState<{id:string;name:string;kind?:'custom'|'private'}[]>([])
   useEffect(()=>{let live=true
     void (async()=>{try{
       const r=await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'load'})})
       const j=await r.json().catch(()=>({}))
       /* ⚠️ A FAILURE LEAVES THE LIST EMPTY, which hides the row — the card and every other row still
        * work. A truck with no types is in exactly that state anyway. */
-      if(live&&Array.isArray(j.types))setEventTypeList((j.types as {id:string;name:string}[]).map(t=>({id:t.id,name:t.name})))
+      if(live&&Array.isArray(j.types))setEventTypeList((j.types as {id:string;name:string;kind?:string}[]).map(t=>({id:t.id,name:t.name,kind:t.kind==='private'?'private' as const:'custom' as const})))
     }catch{/* the row simply does not appear */}})()
     return()=>{live=false}},[token])
 
@@ -3036,6 +3046,78 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch{return null}
   },[token,pin])
   const{deals:eventDeals,setDeal:setEventDeal,reloadDeals}=useEventDeals(dashPost,activeEvent?.id??null)
+
+  /* ── 🔴 THIS EVENT'S PRICES — THE CARD'S LINE AND THE SHEET (§70) ───────────────────────────────
+   * One light read (`event_pricing_summary`) when the event changes and after a save. It is NOT on
+   * the live poll: prices change only when the operator changes them, and that route's own comment
+   * explains why the summary is computed server-side rather than from flags here.
+   *
+   * ── 🔴 AN EFFECT WITH A TICK, NOT A `useCallback` THE SHEET CALLS BACK INTO ────────────────────
+   * Two reasons, and the second is a bug the first version had:
+   *   1. A `useCallback` here made the React Compiler report "Existing memoization could not be
+   *      preserved" and SKIP COMPILING this 6,000-line component. Measured both ways. The read has
+   *      one trigger (the event changed, or a save happened), which is what an effect's dependency
+   *      list is for.
+   *   2. 🔴 A STALE RESPONSE COULD OVERWRITE A NEWER ONE. Switch event A → B while A's request is in
+   *      flight and A's answer lands last, so the card shows A's prices under B's name — on the one
+   *      row where being wrong means quoting a price. `live` is the guard, and only an effect has the
+   *      cleanup to hang it on.
+   *
+   * ⚠️ `pricesReady` false MEANS 20261011 IS NOT APPLIED. The row still shows and still says "Menu
+   * prices", which is TRUE in that state — every order is charged the menu price — so there is
+   * nothing to hide. What it withholds is the SHEET, whose save would 400.
+   */
+  const[pricesSummary,setPricesSummary]=useState('Menu prices')
+  const[pricesOwn,setPricesOwn]=useState(false)
+  const[pricesReady,setPricesReady]=useState(false)
+  const[pricesSheet,setPricesSheet]=useState(false)
+  /* 🔴 THE PRIVATE LINK & QR PANEL (20261014). The event id it is open for, or null.
+   * ⚠️ THE TOKEN IS FETCHED ON DEMAND, not held in page state: it is a working credential, and the
+   * dashboard polls — there is no reason for it to be in memory for a whole service. */
+  const[privateLinkFor,setPrivateLinkFor]=useState<string|null>(null)
+  const[privateLinkData,setPrivateLinkData]=useState<PrivateLinkData|null>(null)
+  /* 🔴 FETCHED WHEN THE PANEL IS ASKED FOR, through the dashboard's own manage action.
+   * ⚠️ `live` GUARDS THE SET so closing and reopening for a different event cannot land the first
+   * answer over the second. A failure leaves the panel closed rather than showing an empty one. */
+  useEffect(()=>{
+    let live=true
+    ;(async()=>{
+      if(!privateLinkFor){ if(live) setPrivateLinkData(null); return }
+      try{
+        const r=await fetch('/api/manage',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({token,action:'private_link',id:privateLinkFor}),
+        })
+        const j=await r.json()
+        if(live) setPrivateLinkData(r.ok&&j?.ok?(j as PrivateLinkData):null)
+      }catch{ if(live) setPrivateLinkData(null) }
+    })()
+    return()=>{live=false}
+  },[privateLinkFor,token])
+  /** Bumped after a save, to re-read. The sheet never writes this page's price state directly. */
+  const[pricesTick,setPricesTick]=useState(0)
+  const activeEventId=activeEvent?.id??null
+  useEffect(()=>{
+    let live=true
+    const menu=()=>{if(live){setPricesSummary('Menu prices');setPricesOwn(false);setPricesReady(false)}}
+    if(!activeEventId){menu();return}
+    void(async()=>{
+      try{
+        const r=await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({token,action:'event_pricing_summary',eventId:activeEventId})})
+        const j=await r.json().catch(()=>({}))
+        if(!live)return
+        if(!r.ok){menu();return}
+        setPricesSummary(typeof j.summary==='string'?j.summary:'Menu prices')
+        setPricesOwn(j.own===true)
+        /* 🔴 `ok` IS THE PROBE'S VERDICT, not "did the HTTP call work". `readEventPricing` answers 200
+         * with ok:false when the pricing columns are absent — the fail-open state — and that is
+         * exactly the case where the sheet must not be offered. */
+        setPricesReady(j.ok===true)
+      }catch{menu()}
+    })()
+    return()=>{live=false}
+  },[activeEventId,token,pricesTick])
 
   /* ── 🔴 "RESET TO <TYPE>" — IT CLEARS ONLY WHAT THIS CARD CONTROLS ─────────────────────────────
    * Two writes, and both are existing per-event paths:
@@ -3273,7 +3355,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
    * here would show the operator one cash setting while every collect and undo-collect used another —
    * the exact divergence resolvePaidStep exists to make impossible.
    * ⚠️ `showPaidStep` AND `completionPresses` ARE UNAFFECTED: a type does not set them. */
-  const {showPaidStep:effectivePaidStep,takesCash:effectiveTakesCash,completionPresses:effectiveCompletionPresses}=resolvePaidStep(truck,activeEvent,eventType)
+  /* ⚠️ THE VAN IS THE FOURTH ARGUMENT NOW. `resolvePaidStep` resolves
+   * event ?? type ?? VAN ?? truck, and this is the one place on this page that calls it — the order
+   * cards and the Add Order panel are handed `vanTakesCash` as a prop and call the SAME function. */
+  const {showPaidStep:effectivePaidStep,takesCash:effectiveTakesCash,completionPresses:effectiveCompletionPresses}=resolvePaidStep(truck,activeEvent,eventType,vanTakesCash)
     ??(selectedEventId&&lastActiveEventRef.current?.id===selectedEventId?lastActiveEventRef.current:null)
   if(resolvedEvent)lastActiveEventRef.current=resolvedEvent
 
@@ -4418,13 +4503,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={orderAnchorId(o.order_key,isDemo)} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={orderAnchorId(o.order_key,isDemo)} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} vanTakesCash={vanTakesCash} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={orderAnchorId(o.order_key,isDemo)} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={orderAnchorId(o.order_key,isDemo)} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} vanTakesCash={vanTakesCash} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -4613,6 +4698,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             buzzerCount={vanBuzzerCount}
             onSaveBuzzer={async(orderKey,buzzerNumber)=>{await saveBuzzer(orderKey,buzzerNumber)}}
             buzzerPromptEnabled={effectiveBuzzerPrompt}
+            vanTakesCash={vanTakesCash}
             offlineCapacity={offlineCapacity}
             isEventLoaded={(id)=>loadedEventIds.has(id)}
             onEventChange={(id)=>{
@@ -4797,6 +4883,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="mb-3">
                 <ThisEventCard
                   eventId={activeEvent.id}
+                  /* ── 🔴 PRIVATE EVENTS (20261014) ────────────────────────────────────────────
+                   * Straight off the event row — `truck_events.is_private`, the visibility source of
+                   * truth — never derived from the type.
+                   * ⚠️ `?? false` BECAUSE THE COLUMN MAY BE ABSENT on a dashboard payload served
+                   * before 20261014 is applied; absent means not private, which is every event
+                   * today, so the row is simply not drawn. */
+                  isPrivate={(activeEvent as { is_private?: boolean | null }).is_private ?? false}
+                  privateName={(activeEvent as { private_name?: string | null }).private_name ?? null}
+                  onOpenPrivateLink={() => setPrivateLinkFor(activeEvent.id)}
                   types={eventTypeList}
                   currentTypeId={eventType?.id ?? null}
                   onAssignType={async (typeId, clearOwn) => {
@@ -4839,6 +4934,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   })}
                   stockSummary={null}
                   onOpenStock={() => setActiveTab('stock')}
+                  pricesSummary={pricesSummary}
+                  pricesOwn={pricesOwn}
+                  /* ⚠️ THE BUTTON IS VISIBLY DISABLED UNTIL 20261011 IS APPLIED — see the card's own
+                   * `pricesReady` note. The row still reads "Menu prices", which is true in that
+                   * state; a live-looking Change that does nothing is not. */
+                  onOpenPrices={() => setPricesSheet(true)}
+                  pricesReady={pricesReady}
                   deals={eventDeals}
                   onDeal={(bundleId, active) => void setEventDeal(bundleId, active)}
                   onResetToType={() => void resetThisEvent()}
@@ -4846,6 +4948,32 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   saving={savingBuzzerPrompt||savingTakesCashOverride||savingIntervals}
                   isDemo={isDemo}
                 />
+              </div>
+            )}
+            {/* ── 🔴 THE SHEET, MOUNTED FROM ONE LINE ─────────────────────────────────────────────
+              * It is `fixed` itself, so it is correct wherever it is mounted; keeping it beside the
+              * card means this file gains one element and the panel owns everything else.
+              * ⚠️ AFTER A SAVE: the summary re-reads AND a full re-seed runs. The summary is what the
+              * card shows; `fetchAll(pin, true)` is what the page's own config state needs, and the
+              * live poll deliberately never re-seeds config. */}
+            {pricesSheet && activeEvent && (
+              <EventPricesSheet token={token} eventId={activeEvent.id}
+                onClose={() => setPricesSheet(false)}
+                onSaved={async () => { setPricesTick(t => t + 1); await fetchAll(pin, true) }} />
+            )}
+            {/* 🔴 THE PRIVATE LINK & QR PANEL — the SAME component the Events list opens. */}
+            {privateLinkData && (
+              <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 sm:items-center"
+                role="dialog" aria-modal="true" aria-label="Private link and QR code"
+                onClick={() => { setPrivateLinkFor(null); setPrivateLinkData(null) }}>
+                <div className="w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                  <PrivateLinkPanel data={privateLinkData}
+                    onReplaced={next => setPrivateLinkData(p => p ? { ...p, token: next.token, url: next.url } : p)} />
+                  <button type="button" onClick={() => { setPrivateLinkFor(null); setPrivateLinkData(null) }}
+                    className="mt-3 w-full rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow">
+                    Close
+                  </button>
+                </div>
               </div>
             )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">

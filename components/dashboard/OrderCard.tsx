@@ -105,6 +105,7 @@ export function OrderCard({
   kdsMode = false,
   showCookingStep = false,
   effectiveOrderReady = false,
+  vanTakesCash = null,
   readyStepOn = false,
   pendingSync = false,
   anchorId,
@@ -185,6 +186,16 @@ export function OrderCard({
    *  default ?? false). Gates the orders-screen (solo) Ready button — NOT the email (model A: the email
    *  always fires on ready). Defaults off. */
   effectiveOrderReady?: boolean
+  /**
+   * `truck_vans.takes_cash` for the van running this event (5 October 2026).
+   *
+   * 🔴 THE RAW NULLABLE VAN VALUE, NOT A RESOLVED BOOLEAN, and that distinction is the point: it is
+   * an INPUT to `resolvePaidStep`, which is the one place `event ?? type ?? van ?? truck` lives.
+   * Passing a resolved `takesCash` instead would put a second copy of the chain on the page.
+   * ⚠️ `null`/omitted ⇒ this van follows `trucks.takes_cash` — every van before 20261012 is applied,
+   * so an un-passed prop renders exactly today's buttons.
+   */
+  vanTakesCash?: boolean | null
   /** KDS PER-DEVICE "Marks ready" switch, ON. Window view only, and only meaningful alongside
    *  handover — a handover-off device takes the cook branch above and never reaches it. True renders
    *  Ready on confirmed/modified/cooking and the completion control on 'ready', which also DERIVES the
@@ -286,7 +297,13 @@ export function OrderCard({
   // Add Order panel can place one unpaid). An unpaid order reaches this card from the customer path on
   // every truck, whatever that setting says — so nothing about a CARD should depend on it. If you find
   // yourself adding it back, that is the thing to re-examine first.
-  const { takesCash, completionPresses } = resolvePaidStep(truck, event)
+  /* ⚠️ THE VAN'S OWN CASH SETTING IS THE FOURTH ARGUMENT (5 October 2026). It arrives as a prop
+   * because this component is handed an EVENT and nothing else, and `truck_vans.takes_cash` is a van
+   * column — the same shape `effectiveOrderReady` already uses on this card. It is an INPUT to
+   * `resolvePaidStep`, which is still the ONE place the chain lives; resolving it here would be the
+   * second copy that file's header forbids.
+   * ⚠️ UNDEFINED ⇒ THE TRUCK DEFAULT, so an un-passed prop is exactly today's behaviour. */
+  const { takesCash, completionPresses } = resolvePaidStep(truck, event, null, vanTakesCash)
 
   // ── PAYMENT STATE — DERIVED, NEVER RECOMPUTED HERE (V9.4) ───────────────────────────────────────
   // getOrderBalance is the SAME pure function the server rollup uses, so the card and orders.payment_status

@@ -32,7 +32,10 @@ import {
   renderTemplate, unresolvedIn, malformedTokensIn, isMustResolveToken, applyPlaceholderFills, defaultFillsOf, fillSourceOf,
   type MessageTemplate, type TemplateContext,
 } from '@/lib/outreach-template-render'
-import { kindLabel } from '@/lib/outreach'   // one vocabulary, one labeller
+/* ⚠️ `isOverdue` IS THE **EXISTING** "is this date in the past" — the one the Today list and the
+ * overdue flag use. Imported rather than re-written, so the composer's warning and the list it puts
+ * the prospect back onto cannot disagree about what "in the past" means. */
+import { kindLabel, isOverdue } from '@/lib/outreach'   // one vocabulary, one labeller
 import { snippetMapOf, type Snippet } from '@/lib/outreach-snippets'
 import { SizedEmailFrame, GrowingTextarea } from '@/components/admin/outreach-shared'
 // ── 🔴 THE ATTACHMENT AND REPLY RULES LIVE IN lib/, NOT HERE ───────────────────────────────────────
@@ -53,6 +56,13 @@ import {
 /** The message a reply answers. Everything the window needs to show before the server is asked. */
 /** The quoted-parent block's id — the toggle scrolls to it. */
 export const QUOTE_BLOCK_ID = 'hg-previous-email'
+
+/** 🔴 ONE NAME FOR THE MESSAGE BOX, used as the visible label AND as the WhatsApp textarea's
+ *  `aria-label`. It is a function of the channel because the sentence is: the email box IS the email.
+ *  ⚠️ IT IS NOT A `<label>` ANY MORE — see the note at the wrapper. */
+const MESSAGE_LABEL = (isEmail: boolean) => isEmail
+  ? 'Message — this is the email. Exactly what is here is sent, signature and all.'
+  : 'Message — exactly what will be sent.'
 
 export interface ReplyTarget {
   /** The `outreach_messages` row id. The send route re-reads it and checks it belongs here. */
@@ -146,7 +156,7 @@ interface Thread {
 export default function ComposeWindow({
   truckName, prospectId, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
   whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, onSent, replyTo,
-  inline, onDirtyChange, followUpDate, sendLabelSuffix, hideCopyAndLog, contactName, stepKind, sequenceNote,
+  inline, onDirtyChange, followUpDate, hideCopyAndLog, contactName, stepKind, sequenceNote,
   inConversation, apiRef,
 }: {
   truckName: string
@@ -212,8 +222,6 @@ export default function ComposeWindow({
    * through `onLog`'s caller, which writes `next_action_at` in one place.
    */
   followUpDate?: string | null
-  /** "· follow up 3 Oct" — composed by the page from the same date. */
-  sendLabelSuffix?: string | null
   /** The page's action bar owns Copy and Log-as-contact; the inline composer does not repeat them. */
   hideCopyAndLog?: boolean
   /** "To Stephen" rather than "To stephen@…" on the header line. Display only. */
@@ -579,6 +587,15 @@ export default function ComposeWindow({
    *  See docs/outreach-token-guard-report.md — `chase-1` carried `{{truck name}}`, active and offerable. */
   const malformed = useMemo(
     () => malformedTokensIn(`${applyFills(subject)}\n${applyFills(body)}`), [applyFills, subject, body])
+  /**
+   * ⛔ IT NAMES BOTH WAYS OUT, because the operator may want either: a new date, or none at all.
+   * ⚠️ IT SAYS THE DATE BACK. "Your follow-up date is in the past" without the date leaves them
+   * hunting for which one; the picker is a row of chips and the chosen one is not always on screen.
+   */
+  const FOLLOW_UP_PAST_NOTICE =
+    `Your follow-up date (${followUpDate ?? ''}) is in the past — pick a new one or clear it. `
+    + 'Press Send again to send anyway.'
+
   const malformedNotice = malformed.length === 0 ? null
     : `This message contains ${malformed.length === 1 ? 'a token' : 'tokens'} the renderer cannot read: `
       + `${malformed.join(', ')}. It would arrive with the braces in it. Tokens are lower-case with `
@@ -673,6 +690,19 @@ export default function ComposeWindow({
    * disabled Send permanently the moment this row started rendering for blank emails.
    */
   const hasText = plainForHumans.trim().length > 0
+
+  /* ══ 🔴 A FOLLOW-UP DATE IN THE PAST, POINTED OUT BEFORE SENDING (5 October 2026) ════════════════
+   * Dominic's case: the next follow-up was picked as **2 Oct**, which had passed. Nothing said so —
+   * and a date already gone produces a follow-up that is due the instant it is written, so the
+   * prospect reappears in Today immediately, which reads as a bug rather than as the choice it was.
+   *
+   * 🔴 `isOverdue` IS THE EXISTING DEFINITION, IMPORTED, NOT A SECOND COMPARISON. It is what the
+   * Today list and the overdue flag already use (`lib/outreach.ts`), so "in the past" means the same
+   * thing on this button as it does on the list the send puts the prospect back onto. A `<` written
+   * here would be a second answer to one question, and the first time one changed the window would
+   * warn about a date the list thought was fine.
+   * ⚠️ IT IS A WARNING, NOT A REFUSAL — see `askSend`. Catching up on a missed step is legitimate. */
+  const followUpInPast = useMemo(() => isOverdue(followUpDate ?? null), [followUpDate])
   const testBlock: string | null =
     sendingOff ? sendingOff
     : !isEmail ? 'This is a WhatsApp message — log it from the WhatsApp tab'
@@ -1065,10 +1095,39 @@ export default function ComposeWindow({
   }, [expanded])
 
   const askSend = (test: boolean) => {
-    if (!body.trim()) return
+    /* ══ 🔴 "SEND DOES NOTHING" — THIS LINE WAS IT (5 October 2026) ═══════════════════════════════
+     * REPORTED: pressing the orange button showed nothing — no error, no sent message.
+     *
+     * 🔴 THE CAUSE: this function began `if (!body.trim()) return`. `body` is the TEMPLATE RENDER, and
+     * picking **"Blank"** sets it to `''` (see the template effect: `if (!id) { setSubject(''); setBody(''); return }`).
+     * So with Blank chosen, every press of Send hit a bare `return` — no state change, no message, no
+     * request. The button was not disabled, because `sendBlock` reads `hasText`, which reads the
+     * DOCUMENT. The screen had text in it; this guard was looking somewhere else.
+     *
+     * ⛔ AND THE FILE ALREADY KNEW. `hasText`'s own note says: "`body` holds the template render, so a
+     * hand-typed blank email leaves it empty for ever; guarding on `body` would have disabled Send
+     * permanently the moment this row started rendering for blank emails." That fix was applied to
+     * `hasText` and **missed here** — and in `logNow`, which had the same line.
+     *
+     * ✅ IT GUARDS ON WHAT IS ON SCREEN, and it SAYS SO. `hasText` is the one definition of "is there a
+     * message" — the document for an email, the textarea for WhatsApp — and an empty one now produces a
+     * sentence beside the button instead of silence.
+     * ⛔ NOTHING IN THIS FUNCTION MAY `return` WITHOUT EITHER SHOWING A SENTENCE OR OPENING A DIALOG.
+     * `scripts/outreach-send-visible.cjs` asserts that, because a silent refusal is indistinguishable
+     * from a broken button. */
+    if (!hasText) { setSendError('Write something, or pick a template, first.'); return }
+    if (sendBlock) { setSendError(`${sendBlock}.`); return }
     if (refusal) { setSendError(refusal); return }
+    /* ── 🔴 A FOLLOW-UP DATE IN THE PAST IS POINTED OUT, NEVER BLOCKED (5 October 2026) ────────────
+     * Dominic's case: the next follow-up was picked as 2 Oct, which had passed. Nothing said so, and a
+     * date in the past produces a follow-up that is due the moment it is written — so the prospect
+     * appears in Today immediately, which reads as a bug rather than a choice.
+     * ⚠️ IT IS A WARNING AND IT DOES NOT STOP THE SEND. It may be deliberate (catching up on a missed
+     * step), and this window's rule is that only a token that would arrive as literal braces refuses. */
+    if (followUpInPast) { setSendError(FOLLOW_UP_PAST_NOTICE); return }
     // 🔴 WARN, THEN ALLOW. Sending with a placeholder left in may be deliberate.
     if (outstanding.length > 0) { setPending(test ? 'test' : 'send'); return }
+    setSendError(null)
     setConfirmSend(test ? 'test' : 'real')
   }
 
@@ -1081,7 +1140,10 @@ export default function ComposeWindow({
     // ⚠️ THE STATE FLAG STAYS — it is what disables the button and renders "Logging…". The ref is the
     // correctness guard; the state is the UI. Removing either re-opens a different half of the defect.
     if (logInFlight.current) return
-    if (logging || !body.trim()) return
+    /* ⛔ THE SAME `body` GUARD WAS HERE, AND IT WAS THE SAME BUG — see `askSend`. With "Blank" chosen,
+     * "Log as sent" did nothing and said nothing either. `hasText` is the one definition. */
+    if (logging) return
+    if (!hasText) { setSendError('Write something, or pick a template, first.'); return }
     // 🔴 THE LOG IS A RECORD OF WHAT WAS SENT. Writing a row containing `{{truck name}}` would put a
     // message into the history that was never sent in that form — the same reasoning the placeholder
     // warning already applies to logging, taken to a refusal because this one is never deliberate.
@@ -1390,7 +1452,29 @@ export default function ComposeWindow({
             </label>
           )}
 
-          <label className="block">
+          {/* ══ 🔴 A `<div>`, NOT A `<label>` — AND THAT WAS THE BOLD BUG (5 October 2026) ═══════════
+              REPORTED: "select all, press B, press B again, then click to deselect — the text goes
+              back to bold on its own", and separately "clicking in the message body turns the B
+              button on and off". Italic was reported as WORKING, which is the clue that found it.
+
+              🔴 THE CAUSE IS NOT IN THE EDITOR. This wrapper was a `<label>`, and it enclosed the
+              WHOLE editor — toolbar and all. A `<label>` forwards a click anywhere inside it to its
+              labeled control: the FIRST labelable descendant. `<button>` is labelable, and the first
+              button inside this wrapper is **B**. So every mousedown in the message body dispatched a
+              real, trusted activation click to the Bold button, which ran `toggleBold()` against the
+              selection ProseMirror still held — the whole document, because the click's default had
+              not yet collapsed it. Hence: press B (bold), press B (plain), click anywhere → bold again.
+              🧪 Proved in Chromium and WebKit by scripts/outreach-bold-persists-render.cjs, which logs
+              `MOUSEDOWN DIV "Hi George,…"` followed immediately by the B handler running.
+              🔴 AND IT EXPLAINS WHY ITALIC WAS FINE: the label only ever activates ONE control, and B
+              is first in the toolbar. Reordering the buttons would have moved the bug, not fixed it.
+
+              ⚠️ THE ASSOCIATION IS KEPT WITHOUT THE ELEMENT. The rich editor already carries
+              `aria-label="Message"` on its contenteditable; the WhatsApp textarea gets the same text
+              as an explicit `aria-label` below. ⚠️ `htmlFor`/`id` WOULD NOT HELP: a label with a
+              `for` still forwards the click, it just forwards it somewhere else.
+              ⛔ NEVER PUT A TOOLBAR INSIDE A `<label>`. */}
+          <div className="block">
             {/* 🔴 CORRECTED 16 September 2026 — THE OLD LABEL WAS FALSE AND IT WAS FALSE ABOUT A LEGAL LINE.
                 It read "(the footer is added below)". `OPT_OUT_FOOTER` was deleted from the codebase when
                 the sign-off moved into the Outlook signature (lib/outreach-template-render.ts records the
@@ -1405,11 +1489,7 @@ export default function ComposeWindow({
                 "must be in your Outlook signature" (Outlook never touches these emails); then that the
                 tokens "are filled in when it sends" (they are filled in when the template is chosen,
                 and the server expands nothing). What is in the box is what is sent. */}
-            <span className={LABEL}>
-              {isEmailChannel
-                ? 'Message — this is the email. Exactly what is here is sent, signature and all.'
-                : 'Message — exactly what will be sent.'}
-            </span>
+            <span className={LABEL}>{MESSAGE_LABEL(isEmailChannel)}</span>
             {/* 🔴 SIZED WITH `rows`, NOT WITH A FONT CLASS. The unlayered !important rule in globals.css
                 forces `font-size: inherit` on every textarea on desktop, so `text-sm` here is INERT and
                 the box renders at 16px whatever class it carries. `rows` sets the visible line count and
@@ -1498,9 +1578,11 @@ export default function ComposeWindow({
                  white is the history pushed off the page. */
               <GrowingTextarea rows={inline ? 8 : 18} className={`${FIELD} resize-y font-normal leading-relaxed`}
                 placeholder="Choose a template above, or write here."
-                value={body} onChange={e => { setBody(e.target.value); setEdited(true); setLogged(false) }} />
+                value={body} onChange={e => { setBody(e.target.value); setEdited(true); setLogged(false) }}
+                // ⚠️ THE NAME THE `<label>` USED TO CARRY. See the note on the wrapper above.
+                aria-label={MESSAGE_LABEL(isEmailChannel)} />
             )}
-          </label>
+          </div>
 
           {/* ── 🔴 THE ATTACH CONTROLS MOVED ONTO THE TOOLBAR (v4 fixes) ───────────────────────
               They were rendered here, below the editor, with `-mt-8` pulling them back up INSIDE the
@@ -1798,7 +1880,20 @@ export default function ComposeWindow({
                     title={sendBlock
                       ?? `Sends from your mailbox to ${toEmail} and logs the contact.${followUpDate ? ` Follow-up set for ${followUpDate}.` : ''}`}
                     className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
-                    {sending ? 'Sending…' : `${sendButtonLabel({ isReply: !!replyTo, step: stepKind ?? null })}${sendLabelSuffix ?? ''}`}
+                    {/* ══ 🔴 THE LABEL IS "Send", FULL STOP (5 October 2026) ═══════════════════════
+                      * `sendButtonLabel` returns "Send" for every case now, and `sendLabelSuffix` —
+                      * the page's "· follow up 2 Oct" — is no longer appended. Three labels and a
+                      * date became one word.
+                      * ⛔ THE CONSEQUENCE IS STILL VISIBLE, just not on the button: the `title`
+                      * below says "…and logs the contact. Follow-up set for <date>.", and a date in
+                      * the PAST is now called out beside the button before the send goes anywhere.
+                      * That is the information the suffix was carrying, in the place it can be read.
+                      * ⛔ AND `sendLabelSuffix` IS GONE ALTOGETHER (5 October 2026). It was kept for
+                      * one build as an accepted-but-unrendered prop, which is the worst state for a
+                      * prop to be in: the page still computed a string, passed it, and a reader had
+                      * to find this comment to learn it went nowhere. The prop, its type, its call
+                      * site and the expression that built it are all removed. */}
+                    {sending ? 'Sending…' : sendButtonLabel({ isReply: !!replyTo, step: stepKind ?? null })}
                   </button>
                 </>
               )}

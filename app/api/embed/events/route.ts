@@ -7,6 +7,9 @@
 // it — silently. See app/api/manage/route.ts, the domain_provision patch.
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+/* 🔴 PRIVATE EVENTS SHOW HERE, REDACTED — this is the truck's own public schedule. */
+import { readPrivateEventIds } from '@/lib/private-events/read'
+import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 
 /**
  * ── /api/embed/events?slug=<trucks.slug> — ONE TRUCK'S UPCOMING EVENTS, FILTERED IN SQL ─────────
@@ -87,6 +90,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'lookup failed' }, { status: 500 })
   }
 
+  /* ══ 🔴 PRIVATE EVENTS, REDACTED — AND THIS ROUTE SERVES **TWO** SURFACES (20261014) ═══════════
+   * `/embed/<slug>` is the widget an operator frames on their own website, and `app/domain/page.tsx`
+   * renders the same `EmbedSchedule` against this endpoint for a custom domain. Both are "the truck's
+   * public schedule" in decision 4's sense, so both show a private event as "Private event" with the
+   * date and times — and patching this one mapper covers both.
+   * ⛔ `orderLinkHg` IS FORCED FALSE FOR A PRIVATE EVENT, which is how "No Order button on the public
+   * schedule" is enforced on this surface: `TruckListCard` gates its CTA on that flag, so there is no
+   * second place to change and no card that could render a button we did not mean. */
+  const privacy = await readPrivateEventIds(supabase, (rows || []).map(e => e.id), '/api/embed/events')
+
   // Shaped as the VillageEvent fields TruckListCard actually reads, so the card renders unmodified.
   // `source: 'operator'` is a statement of fact, not a flag: these rows come from truck_events.
   const events = (rows || []).map((e) => ({
@@ -95,17 +108,18 @@ export async function GET(req: NextRequest) {
     startTime: e.start_time || '',
     endTime: e.end_time || '',
     truckName: truck.name || '',
-    venueName: e.venue_name || '',
+    venueName: privacy.isPrivate(e.id) ? PRIVATE_PUBLIC_LABEL : (e.venue_name || ''),
     status: e.status,               // 'open' → Order now; 'confirmed' → Pre-order
-    village: e.town || '',
-    postcode: e.postcode || '',
-    notes: e.notes || '',
+    village: privacy.isPrivate(e.id) ? '' : (e.town || ''),
+    postcode: privacy.isPrivate(e.id) ? '' : (e.postcode || ''),
+    notes: privacy.isPrivate(e.id) ? '' : (e.notes || ''),
     eventNotes: '',
+    isPrivate: privacy.isPrivate(e.id),
     source: 'operator' as const,
     // The embed is a HatchGrab surface, so it consults order_link_hg — the SAME column, and the same
     // `?? true` default, that api/discovery/events/route.ts:291 applies. orderLinkVf is deliberately
     // absent: nothing on this route may consult it (see TruckListCard's assumeHatchGrab prop).
-    orderLinkHg: truck.order_link_hg ?? true,
+    orderLinkHg: privacy.isPrivate(e.id) ? false : (truck.order_link_hg ?? true),
   }))
 
   return NextResponse.json({ events }, { headers: CACHE_HEADERS })

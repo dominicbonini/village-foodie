@@ -84,7 +84,10 @@ import AppHeader from '@/components/shared/AppHeader'
 // used to carry for them are gone rather than duplicated.
 import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { configureStatusBar } from '@/lib/native/statusBar'
-import { Spinner, Badge, Btn, Input, Card, EmptyState, Toggle, AllergenToggles, DietaryToggles, AllergenModeChooser, OptionCardChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
+/* ⚠️ `Select` IS THE SHARED NON-NATIVE ONE (5 October 2026). WebKit ignores vertical padding and
+ * `min-height` on a native `<select>` and renders it at 23px — see §65 — so the Add/Edit event form's
+ * last three native selects (start hour/minute, end hour/minute, Van) use this instead. */
+import { Spinner, Badge, Btn, Input, Card, EmptyState, Toggle, Select, AllergenToggles, DietaryToggles, AllergenModeChooser, OptionCardChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
 import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'
 import ExtrasEditor from '@/components/manage/ExtrasEditor'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
@@ -100,6 +103,10 @@ import { SETTING_COPY, TRIAL_NOT_STARTED_BY_EVENTS, TRIAL_NOT_STARTED_HEADING, T
  * still the SOURCE of the words — they were lifted from here — but there is one copy of each now, so
  * the modal cannot call this setting one thing while this screen calls it another. */
 import { SERVICE_SETTING_LABELS } from '@/lib/copy/serviceSettings'
+/* 🔴 ONE RESOLVER FOR "does this van take cash" (5 October 2026). `truck_vans.takes_cash` is
+ * nullable and NULL means "follow `trucks.takes_cash`", so the switch's POSITION is resolved, never
+ * read raw — otherwise a van following the truck would draw as off while the hatch split the button. */
+import { resolveVanTakesCash } from '@/lib/event-types/resolve'
 import { Walkthrough } from '@/components/manage/Walkthrough'
 import { WALKTHROUGH_STOPS, WALKTHROUGH_INTRO, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
@@ -115,7 +122,22 @@ import { fillFromPlace, timeRangeLabel, placeForEvent } from '@/lib/schedule-gra
  * app/trucks/[slug]/TruckClient.tsx renders for every event on a truck's public schedule; this file
  * only builds its props, so the preview cannot drift from the thing it previews. */
 import TruckListCard from '@/components/TruckListCard'
-import { previewEventFromForm, previewLine, vanForPlace } from '@/lib/schedule-graphics/event-preview'
+import { previewEventFromForm, previewLine, vanForPlace, PREVIEW_PLACEHOLDERS } from '@/lib/schedule-graphics/event-preview'
+/* ── 🔴 PRIVATE EVENTS (20261014). Every word from the one copy module. ─────────────────────────── */
+/* 🔴 PRIVATE EVENTS (20261014). The approval card's time prompt, the chip and the panel button.
+ * ⚠️ `PRIVATE_TICK_LABEL` AND THE PANEL'S STRINGS ARE NO LONGER IMPORTED HERE: the separate tick is
+ * gone and the purple panel moved into `<EventTypeSelect>`, which owns those words now. */
+import {
+  PRIVATE_CHIP, LINK_QR_BUTTON, PRIVATE_NEEDS_TIMES,
+  /* 🔴 THE LINE UNDER THE PREVIEW CARD when Private is the chosen type. See the note on it. */
+  PRIVATE_PREVIEW_NOTE,
+} from '@/lib/private-events/copy'
+/* 🔴 "Private event" — THE ONE STRING THE PUBLIC SURFACES SUBSTITUTE, so the preview's purple title
+ * and the title a customer sees are the same constant rather than two copies of two words. */
+import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
+import { PrivateLinkPanel, type PrivateLinkData } from '@/components/manage/PrivateLinkPanel'
+/* 🔴 SCHEDULE › PLACES (5 October 2026). Composes the SHARED list, detail and hook. */
+import { PlacesTab } from '@/components/manage/PlacesTab'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null }
@@ -129,7 +151,7 @@ interface Bundle { id: string; name: string; description: string | null; bundle_
  * not from its named select, so both are optional here: before the migration they arrive as `[]` and
  * `false`, which is exactly the pre-migration truth rather than a guess. */
 interface VanCategorySetting { category_id: string; prep_secs: number | null; batch_size: number | null; counts_toward_capacity: boolean }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null; collection_interval_mins?: number | null; operator_collection_interval_mins?: number | null; categorySettings?: VanCategorySetting[]; same_as_first_van?: boolean; capacity_same_as_first_van?: boolean }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null; collection_interval_mins?: number | null; operator_collection_interval_mins?: number | null; categorySettings?: VanCategorySetting[]; same_as_first_van?: boolean; capacity_same_as_first_van?: boolean; takes_cash?: boolean | null }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
@@ -250,27 +272,34 @@ const LEGACY_TAB_TO_MENU_SECTION: Record<string, MenuSection> = {
  * Back button both work — a section held only in React state is one an operator loses by reloading.
  * ⚠️ 'events' IS THE DEFAULT AND IS NOT WRITTEN TO THE URL, so the existing /manage/<token> link opens
  * exactly where it always did. */
-type ScheduleSection = 'events' | 'weekly' | 'event-types'
+/* ══ 🔴 FOUR PILLS, IN THIS ORDER (5 October 2026) ═══════════════════════════════════════════════
+ * Events · Event types · Places · Social posts.
+ *
+ * 🔴 "Weekly post" BECAME "Social posts", AND THE ID DID NOT CHANGE WITH IT. The id is what appears
+ * in `?section=`, and `?section=weekly` is in operators' bookmarks, in the setup wizard's links and
+ * in `onSectionChange('weekly')` calls elsewhere in this file. Renaming the id would have broken
+ * every one of them to change a label, so the id stays `weekly` and only the LABEL moved. The page
+ * now holds both the single-event and the weekly post, which is why "Weekly post" had stopped being
+ * the truth about it.
+ *
+ * 🔴 `places` IS A SECTION AGAIN. It was removed on 3 October when the list moved into the Add event
+ * modal; it is now its own tab with a detail pane, and the modal's "Tidy up places" link stays and
+ * calls the SAME actions (no second implementation).
+ * ⚠️ SO AN OLD `?section=places` LINK NOW LANDS ON PLACES RATHER THAN FALLING THROUGH TO EVENTS,
+ * which is what it meant when it was written. That is a behaviour change and it is the right one.
+ */
+type ScheduleSection = 'events' | 'event-types' | 'places' | 'weekly'
 const SCHEDULE_SECTIONS: { id: ScheduleSection; label: string }[] = [
   { id: 'events', label: 'Events' },
-  { id: 'weekly', label: 'Weekly post' },
-  /* 🔴 EVENT TYPES IS THE THIRD PILL (October 2026, the branches combined). It arrived on its own
-   * branch as a BUTTON in the Schedule header opening a full-screen overlay, because main's Schedule
-   * tab had no sub-tab bar and adding one would have collided head-on with this one — the plan in
-   * docs/event-types-investigation-report.md §8.3 said so, and said that promoting it afterwards would
-   * be "one entry in SCHEDULE_SECTIONS and one line". This is that entry and that line.
-   * ⚠️ THE ID IS HYPHENATED, matching `?section=event-types`. It is not `eventTypes`: every other id
+  /* ⚠️ THE ID IS HYPHENATED, matching `?section=event-types`. It is not `eventTypes`: every other id
    * here is what appears in the URL, and a camelCase one would need a mapping nothing else needs. */
   { id: 'event-types', label: 'Event types' },
+  { id: 'places', label: 'Places' },
+  /* ⛔ ID `weekly`, LABEL "Social posts". See the note above — the id is the URL contract. */
+  { id: 'weekly', label: 'Social posts' },
 ]
-/* 🔴 `places` IS NO LONGER A SECTION (3 October 2026). The list lives in the Add event modal's left
- * pane and the detail behind its "Tidy up places" link, so a third pill would be a route to a screen
- * that is now part of adding an event.
- * ⚠️ AN OLD `?section=places` LINK STILL WORKS — it simply does not match, so the default stands and
- * the operator lands on Events. It does NOT force Tidy up open: a bookmark from yesterday should not
- * put somebody inside a modal they did not open. */
 const isScheduleSection = (v: unknown): v is ScheduleSection =>
-  v === 'events' || v === 'weekly' || v === 'event-types'
+  v === 'events' || v === 'weekly' || v === 'event-types' || v === 'places'
 type UserRole = 'owner' | 'manager' | 'staff'
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -814,7 +843,17 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     }
   }
 
-  const api = async (action: string, extra: Record<string, any> = {}) => {
+  /* ══ 🔴 `useCallback`, AND THE REASON IS THE PLACES SPINNER (5 October 2026) ══════════════════════
+   * This was a plain function in the component body, so it was a NEW REFERENCE ON EVERY RENDER — and
+   * `usePlaces` had it in an effect's dependency list. The page re-renders constantly, so the fetch
+   * was torn down and restarted on every render and its result discarded each time: an endless
+   * spinner on Schedule › Places, plus a request storm, with nothing ever throwing.
+   * ⛔ `usePlaces` NO LONGER DEPENDS ON THIS IDENTITY EITHER (it holds the function in a ref) — the
+   * hook must not rely on a caller remembering to memoise. Both halves are fixed, deliberately: this
+   * one stops the churn for EVERY consumer of `api`, the other makes the hook correct regardless.
+   * ⚠️ `[token]` IS THE ONLY DEPENDENCY. Everything else it touches is a module-level import or its
+   * own argument. */
+  const api = useCallback(async (action: string, extra: Record<string, any> = {}) => {
     const res = await fetch('/api/manage', {
       method: 'POST',
       // ⚠️ Same reason as the GET above — the native app authenticates by Bearer, not cookie.
@@ -824,7 +863,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     const data = await res.json()
     if (!res.ok) throw new Error(data.error || 'Failed')
     return data
-  }
+  }, [token])
 
   if (loading) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -6923,7 +6962,11 @@ function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent
 /* ⚠️ `truck_place_id` IS SET ONLY ON A NEW EVENT, by the place picker. The edit openers below do not
  * include it, so it arrives `undefined` on every edit — and the server's update branch does not name
  * the column either. Two independent reasons an edit cannot move an event's place. */
-type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null; truck_place_id?: string | null }
+/* 🔴 `is_private` / `private_name` ADDED 20261014. Both are OPTIONAL and both are sent explicitly by
+ * this form — `upsert_event` treats an ABSENT `is_private` as "this caller did not ask about privacy"
+ * and leaves the flag alone, which is what stops every other editor of an event publishing a private
+ * one. See the note at the save call. */
+type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null; truck_place_id?: string | null; is_private?: boolean; private_name?: string }
 
 // ── EVENT TIME CONTROL (V11.15) ──────────────────────────────────────────────────────────────────
 // 🔴 REPLACES `SCHEDULE_TIME_OPTIONS`, which was `Array.from({length: 33}, i => 07:00 + i*30)` — a flat
@@ -7021,30 +7064,37 @@ function EventTimeSelect({
     onChange(`${h}:${keeps ? curM : (minutesFor(h)[0] ?? '00')}`)
   }
 
+  /* ══ 🔴 THE SHARED `Select`, NOT A NATIVE `<select>` (5 October 2026) ═══════════════════════════
+   * ⛔ WEBKIT IGNORES VERTICAL PADDING AND `min-height` ON A NATIVE `<select>` and renders it at 23px
+   * — which is the defect the shared control was built for (§65) and which the render harness measures
+   * in both engines. These two were the last native selects in the Add/Edit event form, so on an iPad
+   * the hour and minute boxes were half the height of every field around them.
+   * ⚠️ THE OPTIONS, THE VALUES AND THE "hour first" RULE ARE UNTOUCHED. `Select` takes the same
+   * `{ value, label }` list the `<option>`s rendered, so this is a swap of the box and nothing else.
+   * ⚠️ `className` IS STILL HONOURED — the caller sizes these, and `Select` merges it. */
   return (
     <div className="flex items-center gap-1 w-full">
-      <select
-        aria-label={label ? `${label} hour` : 'Hour'}
+      <Select
+        ariaLabel={label ? `${label} hour` : 'Hour'}
         value={curH}
         disabled={disabled}
-        onChange={e => onHour(e.target.value)}
+        onChange={v => onHour(v)}
         className={className}
-      >
-        <option value="">{placeholder}</option>
-        {hours.map(h => <option key={h} value={h}>{h}</option>)}
-      </select>
+        options={[{ value: '', label: placeholder ?? '--' }, ...hours.map(h => ({ value: h, label: h }))]}
+      />
       <span className="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>
-      <select
-        aria-label={label ? `${label} minute` : 'Minute'}
+      <Select
+        ariaLabel={label ? `${label} minute` : 'Minute'}
         value={curM}
         // No hour means there is no time to attach a minute to; the hour is always chosen first.
         disabled={disabled || !curH}
-        onChange={e => { if (curH) onChange(`${curH}:${e.target.value}`) }}
+        onChange={v => { if (curH) onChange(`${curH}:${v}`) }}
         className={className}
-      >
-        {!curH && <option value="">--</option>}
-        {minuteOptions.map(m => <option key={m} value={m}>{m}</option>)}
-      </select>
+        options={[
+          ...(!curH ? [{ value: '', label: '--' }] : []),
+          ...minuteOptions.map(m => ({ value: m, label: m })),
+        ]}
+      />
     </div>
   )
 }
@@ -7136,6 +7186,84 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   onPendingCount?: (n: number) => void
 }) {
   const [events, setEvents] = useState<TruckEvent[]>([])
+  /* ── 🔴 PRIVATE EVENTS (20261014) ───────────────────────────────────────────────────────────────
+   * `private_events` is a **Pro** key, deliberately split from `event_types` (Max) — see
+   * lib/features.ts. It gates the tick in the Add/Edit form and the "Link & QR" button on a row.
+   * ⚠️ THE SERVER CHECKS IT TOO, on `upsert_event`, `private_link` and `private_new_link`. This
+   * decides what is DRAWN. */
+  const canPrivateEvents = canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+  /* ── 🔴 PLACES AND SOCIAL POSTS — THE PREVIEW KEY (5 October 2026) ──────────────────────────────
+   * `places_posts_preview` is in NO PLAN (lib/features.ts): `canAccess` can only ever return true for
+   * it from `trucks.feature_overrides`, which it consults before any plan. Today exactly one truck
+   * holds it — test-kitchen ("Pizza Kitchen") — so the Places tab, the Social posts tab and the
+   * "Make post" button on an event exist for that truck and for nobody else while they are finished.
+   * ⚠️ IT GATES WHAT IS DRAWN. Every route behind these surfaces checks the same key, so a truck
+   * without it cannot reach them by URL either — including an old `?section=places` bookmark, which
+   * lands on Events. See `SCHEDULE_SECTIONS` and `/api/weekly-post`.
+   * ⛔ IT DOES NOT GATE what every truck already has on this branch: Add event's places list, Tidy up
+   * places, the usual-type pre-selection, event types, private events or pricing. Those shipped and
+   * are not in preview. */
+  const canPlacesPosts = canAccess(truck.plan, 'places_posts_preview', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+  /** The pills a truck may actually see. ⚠️ FILTERED, NOT DISABLED: a pill that opens a refusal is
+   *  worse than no pill, because nothing on the screen can say when it will work. */
+  const visibleSections = canPlacesPosts
+    ? SCHEDULE_SECTIONS
+    : SCHEDULE_SECTIONS.filter(sec => sec.id !== 'places' && sec.id !== 'weekly')
+  /* 🔴 AN OLD `?section=places` OR `?section=weekly` BOOKMARK LANDS ON EVENTS, and it lands there in
+   * the SAME RENDER — this is a derivation, not a correction applied afterwards. The URL is read at
+   * mount, before the truck row has arrived, so the page cannot know the answer there; it is known
+   * here, where the truck is. ⚠️ `shownSection` IS WHAT EVERY BODY BELOW SWITCHES ON. Using `section`
+   * anywhere past this point would render a gated pane for one frame, or for good. */
+  const shownSection: ScheduleSection =
+    (!canPlacesPosts && (section === 'places' || section === 'weekly')) ? 'events' : section
+  /* ⚠️ AND THE URL IS TIDIED AFTERWARDS, so a refresh does not keep asking for a tab that is not
+   * there. It calls the parent's setter rather than writing state here, and it is a no-op in every
+   * case except the stale-bookmark one. */
+  useEffect(() => {
+    if (shownSection !== section) onSectionChange(shownSection)
+  }, [shownSection, section, onSectionChange])
+  /* ── 🔴 THE TRUCK'S TYPES, IN THE GRID'S ORDER (5 October 2026) ─────────────────────────────────
+   * Private first, then the custom types as the operator arranged them — the order
+   * `/api/event-types` `load` returns, so the pill row, the Places tab's "Usual event type" select
+   * and the Event types grid all name the same columns in the same sequence.
+   * ⚠️ ONE READ PER OPEN, NEVER POLLED. It is config, not live data. It is fetched when the tab
+   * becomes active AND when the Add event modal opens — see `typesWanted` below for why the second
+   * trigger exists — and a failure leaves the list empty, which degrades the pill row to "Standard"
+   * alone rather than breaking the form.
+   * ⚠️ SWITCHING TABS AND BACK RE-READS IT, so a type created in the Event types pill shows up here. */
+  const [placeTypeChoices, setPlaceTypeChoices] = useState<Array<{ id: string; name: string; kind?: 'custom' | 'private' }>>([])
+  /* 🔴 THE PRIVATE TYPE'S ID, so the save can tell "the Private pill is selected" from "a custom type
+   * called something is selected". ⚠️ null until the types load, and the save then reads
+   * `chosenPrivate` as false — which is correct: a form whose types have not loaded cannot have had
+   * the Private pill pressed. */
+  /* ── 🔴 THE APPROVAL CARDS' PENDING CHOICES, KEYED BY EVENT ID ──────────────────────────────────
+   * Several pending cards are on screen at once, so the chosen type and the typed name are per ROW
+   * rather than one value — the same reason `conflictAckId` is an id and not a boolean.
+   * ⚠️ UNSET MEANS "use what the event already says", which `pendingTypeFor` resolves. */
+  const [pendingTypes, setPendingTypes] = useState<Record<string, string | null>>({})
+  const [pendingNames, setPendingNames] = useState<Record<string, string>>({})
+  const privateTypeId = useMemo(
+    () => placeTypeChoices.find(t => t.kind === 'private')?.id ?? null,
+    [placeTypeChoices],
+  )
+  /**
+   * Which pill is selected on a PENDING card: the operator's choice if they made one, else what the
+   * event already says.
+   * ⛔ `is_private` DECIDES BEFORE `event_type_id`, for the reason `seedTypePill` records: a scraped
+   * private event carries the flag and NO type, so reading the type alone would select Standard for
+   * it — and the confirm derives privacy from the pill, so approving would publish it.
+   */
+  const pendingTypeFor = useCallback((event: TruckEvent): string | null => {
+    const chosen = pendingTypes[event.id]
+    if (chosen !== undefined) return chosen
+    if (event.is_private === true && privateTypeId) return privateTypeId
+    return (event as { event_type_id?: string | null }).event_type_id ?? null
+  }, [pendingTypes, privateTypeId])
+  /* ⚠️ THE READ ITSELF IS BELOW, past `editingEvent` — it has to be, because it now also fires when
+   * the Add event modal opens and that state is declared further down. See `loadEventTypes`. */
+  /** The event whose Link & QR panel is open, and the panel's data. One at a time. */
+  const [linkPanel, setLinkPanel] = useState<PrivateLinkData | null>(null)
+  const [linkBusy, setLinkBusy] = useState(false)
   const [loadingEvents, setLoadingEvents] = useState(true)
   const [saving, setSaving] = useState(false)
   const [showPast, setShowPast] = useState(false)
@@ -7146,6 +7274,46 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const [cancellingEvent, setCancellingEvent] = useState<TruckEvent | null>(null)
   const [affectedOrderCount, setAffectedOrderCount] = useState(0)
   const [editingEvent, setEditingEvent] = useState<EditingEvent | null>(null)
+  /* ══ 🔴 THE TYPE LIST LOADS WHEN THE TAB OPENS **AND** WHEN THE MODAL DOES (5 October 2026) ══════
+   * REPORTED: opening Add event shows the pill row as "Standard" alone for a moment before the
+   * truck's own types appear, so the first thing the operator sees is a row that is missing Private.
+   *
+   * 🔴 THE CAUSE WAS THE TRIGGER, NOT THE SPEED. The read fired on `isActive` only, so the list was
+   * fetched when the SCHEDULE TAB became active — which is usually earlier and is sometimes never:
+   *   • a deep link lands on `?tab=schedule` and the modal is opened from the header in the same
+   *     breath, before the first fetch has come back;
+   *   • the fetch FAILED once (the catch degrades to Standard-only on purpose) and nothing retried it,
+   *     so every modal for the rest of the session showed one pill;
+   *   • the native app mounts the tab without the browser's warm cache.
+   * ⚠️ `isActive` IS DELIBERATELY KEPT AS A TRIGGER TOO. The pending approval cards carry the same
+   * pill row and they are on the Events list, not in a modal — they would otherwise wait for a modal
+   * that is never opened.
+   * ⚠️ IT IS STILL CONFIG, NOT LIVE DATA: one read per open, never polled. Two opens in a row cost two
+   * reads of a handful of rows, which is the honest price of the row being right the first time.
+   * ⚠️ AND THE DEGRADATION IS UNCHANGED — a failure leaves the list empty, which draws "Standard"
+   * alone rather than breaking the form. It is now simply retried the next time a form opens.
+   * ⛔ `editingEvent` ITSELF IS NOT A DEPENDENCY, only whether one EXISTS. Keying on the object would
+   * re-fetch the list on every keystroke in the form. */
+  const typesWanted = isActive || editingEvent !== null
+  useEffect(() => {
+    if (!typesWanted) return
+    let live = true
+    ;(async () => {
+      try {
+        const r = await fetch('/api/event-types', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, action: 'load' }),
+        })
+        const j = await r.json()
+        if (!live || !r.ok) return
+        const rows = Array.isArray(j?.types) ? j.types : []
+        setPlaceTypeChoices(rows.map((t: { id: string; name: string; kind?: string }) => ({
+          id: t.id, name: t.name, kind: t.kind === 'private' ? 'private' as const : 'custom' as const,
+        })))
+      } catch { /* an empty list is the safe degradation — Standard only */ }
+    })()
+    return () => { live = false }
+  }, [typesWanted, token])
   /* ── THE PLACES, FOR THE MODAL'S LEFT PANE AND FOR TIDY UP ─────────────────────────────────────
    * 🔴 LOADED WHEN THE MODAL OPENS, not when the tab does. `sg_places` SEEDS, so loading it on tab
    * activation would write places on every visit to Schedule — including visits that never open the
@@ -7294,7 +7462,20 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       notes: '',
       van_id: event.van_id || null,
       truck_id: truck.id,
+      /* ── ⛔ A COPY IS **NOT** PRIVATE, AND IT CARRIES NO NAME (20261014) ──────────────────────────
+       * "Duplicate" copies the pitch and the times so an operator can add next week's. Copying the
+       * privacy as well would be the wrong default in the dangerous direction and the safe one:
+       *   • copying TRUE would silently make a new public pitch private — the truck would wonder why
+       *     their Saturday vanished from the map;
+       *   • copying the NAME would put "Sarah & Tom's wedding" on an unrelated event.
+       * ⚠️ STATED EXPLICITLY RATHER THAN OMITTED. `is_private` absent would be `undefined`, which
+       * `upsert_event` reads as "do not touch" — correct on an edit, meaningless on a create, and a
+       * reader would have to know which branch they were in. `false` is the answer either way. */
+      is_private: false,
+      private_name: '',
     })
+    /* ⛔ A COPY STARTS AT STANDARD. Copying the type would copy Private too — see the note above. */
+    setEventTypeId(null)
     setFormErrors({})
     setTimeout(() => {
       document.getElementById('add-event-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -7308,6 +7489,103 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    * ⚠️ IT NEVER BLOCKS THE FORM. The right pane renders immediately and only the left pane spins, so
    * the operator can start on the date before the places arrive. A failure resolves the list to `[]`
    * with one error line, and the venue they type is still saved as a place on submit. */
+  /**
+   * Open the Link & QR panel for one event.
+   * ⚠️ THE TOKEN IS FETCHED ON DEMAND, NOT LOADED WITH THE EVENTS LIST. It is a working credential;
+   * holding every private event's token in the page's state for the whole session, where any other
+   * component could read it, is not something the list needs in order to show a chip.
+   */
+  const openLinkPanel = async (eventId: string) => {
+    setLinkBusy(true)
+    try {
+      const r = await api('private_link', { id: eventId })
+      if (r?.ok) setLinkPanel(r as PrivateLinkData)
+      else showToast(r?.error || 'Could not load the link', 'error')
+    } catch (e) { showToast(e instanceof Error ? e.message : 'Could not load the link', 'error') }
+    finally { setLinkBusy(false) }
+  }
+
+  /**
+   * ── 🔴 ONE BUILDER FOR THE EDIT FORM'S INITIAL STATE (20261014) ─────────────────────────────────
+   * This object was written out INLINE at three Edit buttons. That was survivable while the form's
+   * fields never changed; it stopped being survivable the moment one of them was a privacy flag.
+   *
+   * ⛔ THE DEFECT IT CLOSES, STATED PLAINLY: `upsert_event` is sent an EXPLICIT `is_private` on every
+   * save — it has to be, or unticking the box would be a no-op. So a builder that omitted
+   * `is_private` would seed the form as "not private", and an operator who opened Edit on a wedding
+   * to fix a typo in the time and pressed Save would have **published its address**, silently, with
+   * no warning and no way to know. Three copies meant three chances to miss it.
+   *
+   * ⚠️ `private_name` IS CARRIED FOR THE SAME REASON — it would otherwise be cleared by any edit.
+   */
+  /* ── 🔴 THE PILL IS SEEDED FROM THE EVENT BEING EDITED (5 October 2026) ─────────────────────────
+   * `eventTypeId` is the pill row's value and it lives outside the form object, so opening Edit has
+   * to set it — otherwise the row would show Standard for an event that has a type, and saving would
+   * send `is_private: false` for a private one. That is the §7 regression, which this is half of:
+   * `editFormFor` carries `private_name` and this carries the TYPE.
+   * ⚠️ A PRIVATE EVENT'S `event_type_id` IS THE PRIVATE TYPE (the writer sets it), so seeding from the
+   * event's own column selects the purple pill with no special case. */
+  const seedTypePill = (event: TruckEvent) => {
+    /* ══ 🔴 A PRIVATE EVENT SELECTS THE PRIVATE PILL EVEN WITH NO `event_type_id` ════════════════
+     * ⛔ THIS IS THE SCRAPED CASE, AND IT IS NOT AN EDGE CASE. The inbound bridge sets `is_private`
+     * at INSERT and deliberately does NOT set the type — nobody has reviewed the event yet, and
+     * issuing a type and a live ordering link from a scraped guess would publish something no
+     * operator approved (§73.5). So a scraped private event arrives with `is_private: true` and
+     * `event_type_id: null`.
+     * 🔴 SEEDING FROM `event_type_id` ALONE WOULD SELECT **Standard** FOR IT — and because the save
+     * derives privacy from the selected pill, approving it would have made it public. `is_private`
+     * is the source of truth (§73), so it is what decides the pill.
+     * ⚠️ `privateTypeId` MAY STILL BE NULL if the types have not loaded; the pill row then shows
+     * Standard, and the save's `chosenPrivate` is false — which is why the TYPES LOAD IS GATED ON THE
+     * TAB BEING ACTIVE rather than on the modal opening. Flagged in the report. */
+    const ev = event as { event_type_id?: string | null; is_private?: boolean | null }
+    if (ev.is_private === true && privateTypeId) { setEventTypeId(privateTypeId); return }
+    setEventTypeId(ev.event_type_id ?? null)
+  }
+
+  const editFormFor = (event: TruckEvent): EditingEvent => ({
+    id: event.id,
+    venue_name: event.venue_name,
+    town: event.town || '',
+    postcode: event.postcode || '',
+    address: event.address || '',
+    event_date: event.event_date,
+    start_time: event.start_time ? event.start_time.substring(0, 5) : '',
+    end_time: event.end_time ? event.end_time.substring(0, 5) : '',
+    notes: event.notes || '',
+    truck_id: event.truck_id || truck.id,
+    van_id: event.van_id || null,
+    is_private: event.is_private === true,
+    private_name: event.private_name || '',
+  })
+
+  /**
+   * The Link & QR panel, as a modal over the Events list.
+   * ⚠️ RENDERED FROM ONE PLACE so the Events list and the dashboard card cannot drift; the panel
+   * component itself is shared (components/manage/PrivateLinkPanel.tsx).
+   */
+  const linkPanelModal = linkPanel ? (
+    <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 sm:items-center"
+      role="dialog" aria-modal="true" aria-label="Private link and QR code"
+      onClick={() => setLinkPanel(null)}>
+      <div className="w-full max-w-lg" onClick={e => e.stopPropagation()}>
+        <PrivateLinkPanel
+          data={linkPanel}
+          logoUrl={truck.logo_storage_path
+            ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
+            : null}
+          /* 🔴 THE PANEL'S STATE IS REPLACED IN PLACE after a successful replace, so the QR on screen
+           * is the NEW one before the operator can print the old one. */
+          onReplaced={next => setLinkPanel(p => p ? { ...p, token: next.token, url: next.url } : p)}
+        />
+        <button type="button" onClick={() => setLinkPanel(null)}
+          className="mt-3 w-full rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow">
+          Close
+        </button>
+      </div>
+    </div>
+  ) : null
+
   const wantPicker = (!!editingEvent && !editingEvent.id) || modalView === 'tidy'
   const placesCtl = usePlaces(api, wantPicker)
 
@@ -7381,6 +7659,18 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const previewVanName = editingEvent?.van_id
     ? (vans.find(v => v.id === editingEvent.van_id)?.name ?? null)
     : null
+  /* ── 🔴 THE PREVIEW HAS TWO SHAPES, BECAUSE A PRIVATE EVENT HAS TWO SHAPES (5 October 2026) ────
+   * A private event's venue, town and postcode are never published — `redactPrivate` drops all three
+   * on every public surface and `publicVenueName` substitutes "Private event". So a preview that
+   * showed the venue the operator had just typed would be previewing something that will never exist,
+   * on the one screen whose whole job is "this is what people will see".
+   * ⚠️ IT READS THE PILL, NOT THE DATABASE. `is_private` is not written until Save, so what the
+   * preview must reflect is the TYPE CURRENTLY SELECTED — the same expression `handleSaveEvent` sends
+   * as `is_private`, so the preview and the write cannot disagree. ⚠️ AND IT FALLS BACK TO THE SAVED
+   * VALUE while the types are still loading, so editing a private event does not flash its address. */
+  const previewIsPrivate = privateTypeId
+    ? eventTypeId === privateTypeId
+    : (editingEvent?.is_private === true)
   const previewEvent = editingEvent
     ? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName })
     : null
@@ -7473,9 +7763,29 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
        * for. On an edit the key is absent, and `upsert_event`'s update path destructures a fixed list
        * that does not name it, so an edit cannot move an event's type from this form — the dashboard's
        * own control does that, with the confirm a live event needs. */
+      /* ══ 🔴 PRIVACY IS DERIVED FROM THE SELECTED PILL (5 October 2026) ═══════════════════════════
+       * ⛔ THE BUG THIS CLOSES: there were TWO controls for one fact — this form's "Private event"
+       * tick and the Event type dropdown's "Private" option — and the save read the TICK. Choosing
+       * Private from the dropdown therefore produced a PUBLIC event with the Private type on it,
+       * silently. One control now owns it, and `is_private` is read off the SAME value the type is.
+       *
+       * ⛔ STILL ALWAYS AN EXPLICIT BOOLEAN, never omitted. `upsert_event` reads `undefined` as "do
+       * not touch privacy" so that other callers cannot publish a private event by accident — which
+       * means this form, the one that owns the control, has to state it every time. Omitting it when
+       * Standard is selected would make switching away from Private a no-op.
+       *
+       * 🔴 AND THE TYPE IS SENT ONLY WHEN IT IS **NOT** PRIVATE. For a private event the server sets
+       * the type itself, through `applyPrivacy` — which is the only thing that can keep `is_private`
+       * and the Private type in step. Sending both would be two writers of one state again.
+       * ⚠️ `event_type_id` REMAINS CREATE-ONLY for a non-private event: `upsert_event`'s update path
+       * destructures a fixed list that does not name it, and changing a live event's type needs the
+       * dashboard card's confirm. PRIVACY is the exception, and it goes through the writer. */
+      const chosenPrivate = !!privateTypeId && eventTypeId === privateTypeId
       await api('upsert_event', {
         ...editingEvent, latitude: lat, longitude: lng,
-        ...(editingEvent.id ? {} : { event_type_id: eventTypeId }),
+        is_private: chosenPrivate,
+        private_name: chosenPrivate ? (editingEvent.private_name ?? '') : '',
+        ...(editingEvent.id ? {} : { event_type_id: chosenPrivate ? null : eventTypeId }),
       })
       if (editingEventConfirmOnSave && editingEvent.id) {
         await handleConfirmEvent(editingEvent.id)
@@ -7582,6 +7892,19 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   }
 
   const handleConfirmEvent = async (eventId: string) => {
+    /* ══ 🔴 THE APPROVAL CARD'S CHOICE GOES THROUGH THE ONE PRIVACY WRITER (5 October 2026) ════════
+     * `events/action` `confirm` accepts `is_private` and `private_name` and applies them through
+     * `applyPrivacy` — which writes the flag, the Private type, the name and the token TOGETHER. So
+     * this sends what the pill shows and nothing else decides it.
+     * ⛔ ALWAYS AN EXPLICIT BOOLEAN. `undefined` means "this caller did not ask about privacy", which
+     * is right for every OTHER path that confirms an event and wrong for this one — the card owns the
+     * control, so it has to state the answer. Omitting it when the operator unticked would leave a
+     * scraped event private after they said it was not.
+     * ⚠️ THE TOKEN IS ISSUED HERE, AT CONFIRM, AND NOT BEFORE — §73.5's split. */
+    const evForPrivacy = events.find(e => e.id === eventId)
+    const confirmPrivate = !!evForPrivacy && !!privateTypeId
+      && pendingTypeFor(evForPrivacy) === privateTypeId
+    const confirmName = evForPrivacy ? (pendingNames[evForPrivacy.id] ?? evForPrivacy.private_name ?? '') : ''
     // LIVE-TIME GATE (UX): a null-time event can't go live (server enforces too). Instead of a blocked
     // error, route the operator to Edit & Approve with the time field flagged — graceful, never broken.
     const evForTime = events.find(e => e.id === eventId)
@@ -7589,7 +7912,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       if (!ev) return
       setEditingEventConfirmOnSave(true)
       setFormErrors(errors)
-      setEditingEvent({ id: ev.id, venue_name: ev.venue_name, town: ev.town || '', postcode: ev.postcode || '', address: ev.address || '', event_date: ev.event_date, start_time: ev.start_time ? ev.start_time.substring(0, 5) : '', end_time: ev.end_time ? ev.end_time.substring(0, 5) : '', notes: ev.notes || '', truck_id: ev.truck_id || truck.id, van_id: ev.van_id || null })
+      /* ══ 🔴 A FOURTH INLINE BUILDER LIVED HERE, AND IT WAS THE DANGEROUS ONE (5 October 2026) ════
+       * §7 of docs/private-events-report.md records three Edit buttons each building this object by
+       * hand, and the fix was one `editFormFor`. This one was MISSED, and it is the worst of the four:
+       * it is the path a SCRAPED PRIVATE EVENT takes. The bridge marks such an event `is_private` and
+       * never gives it times (Pizzeria Gusto's rows have none), so "Approve" always lands here — and
+       * with `is_private` absent from the form, pressing Save published a wedding's address.
+       * ✅ ONE BUILDER, AND THE TYPE PILL SEEDED WITH IT. */
+      setEditingEvent(editFormFor(ev))
+      seedTypePill(ev)
     }
     if (evForTime && (!evForTime.start_time || !evForTime.end_time)) {
       showToast('Add a start and end time before approving — this event needs a time to go live.', 'error')
@@ -7627,6 +7958,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           payload: {
             auto_open: truck.default_auto_open ?? true,
             auto_close: truck.default_auto_close ?? true,
+            /* 🔴 WHAT THE PILL ROW SHOWS, applied by `applyPrivacy` — the one writer of the four
+             * coupled columns. See the note at the top of this function. */
+            is_private: confirmPrivate,
+            private_name: confirmPrivate ? confirmName : '',
           },
         }),
       })
@@ -7764,8 +8099,33 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               {/* Line 1: venue name (+ status) */}
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-sm font-bold text-slate-900">{event.venue_name}</p>
+                {/* ── 🔴 THE PRIVATE CHIP (20261014) ────────────────────────────────────────────────
+                  * Purple with a lock, beside the venue — so an operator scanning the list sees at a
+                  * glance which of this week's pitches the public cannot see.
+                  * ⚠️ THE VENUE NAME IS STILL SHOWN HERE, AND THAT IS CORRECT. This is the operator's
+                  * own schedule; they need to know where they are going. The REDACTION is a property
+                  * of the public feeds, not of the data. */}
+                {event.is_private && (
+                  <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-purple-300 bg-purple-50 px-1.5 py-px text-[10px] font-bold text-purple-700">
+                    <span aria-hidden="true">🔒</span>{PRIVATE_CHIP}
+                  </span>
+                )}
                 <EventStatusBadge status={event.status} event_date={event.event_date} end_time={event.end_time} />
               </div>
+              {/* ── 🔴 THE EVENT'S NAME, OR AN INVITATION TO GIVE IT ONE (20261014, decision 5) ────
+                * "Sarah & Tom's wedding" is what the guests see at the top of their order page, so an
+                * operator who has not set one is shown that there is one to set — the link works
+                * either way, it just says "Private event" instead. */}
+              {event.is_private && (
+                <p className="mt-0.5 text-xs text-purple-700">
+                  {(event.private_name || '').trim()
+                    ? event.private_name
+                    : (
+                      <button type="button" onClick={() => { setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }}
+                        className="font-semibold underline hover:no-underline">Add a name</button>
+                    )}
+                </p>
+              )}
               {/* Line 2: area & postcode */}
               {(event.town || event.postcode) && (
                 <p className="text-xs text-slate-500 mt-0.5">{[event.town, event.postcode].filter(Boolean).join(' · ')}</p>
@@ -7797,13 +8157,24 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       <span className="hidden sm:inline">Confirm</span>
                     </button>
                   )}
+                  {/* ── 🔴 "Link & QR" — ONLY ON A PRIVATE EVENT, AND ONLY WITH THE PRO KEY ───────
+                    * Opens the one shared panel (components/manage/PrivateLinkPanel.tsx). Absent, not
+                    * disabled, on a public event: there is no link, so there is nothing a disabled
+                    * button could be promising. */}
+                  {event.is_private && canPrivateEvents && (
+                    <button onClick={() => void openLinkPanel(event.id)} disabled={linkBusy}
+                      className="text-xs font-semibold text-purple-700 border border-purple-300 bg-white rounded-lg px-2 py-1.5 hover:bg-purple-50 disabled:opacity-50">
+                      <span className="sm:hidden">🔗</span>
+                      <span className="hidden sm:inline">{LINK_QR_BUTTON}</span>
+                    </button>
+                  )}
                   <button onClick={() => { setAddMode('manual'); setExtractedEvents([]); handleCopyEvent(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
                     <span className="sm:hidden">⧉</span>
                     <span className="hidden sm:inline">Copy</span>
                   </button>
                   {!isPast && (
                     <>
-                      <button onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                      <button onClick={() => { setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
                         <span className="sm:hidden">✏</span>
                         <span className="hidden sm:inline">Edit</span>
                       </button>
@@ -7813,13 +8184,25 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                           have a post made for it (the picture reads CANCELLED, which is the apology a
                           truck needs to send), so it is reachable from the weekly post's per-event list
                           rather than from here, where the row is already in its "past" treatment.
-                          ⚠️ THE GATE IS NOT CHECKED HERE. The modal asks the server, which refuses on an
-                          unentitled plan with the one-line upgrade message — one gate, server-side, as
-                          the weekly post does. */}
+                          ⚠️ THE PLAN GATE IS NOT CHECKED HERE. The modal asks the server, which refuses on
+                          an unentitled plan with the one-line upgrade message — one gate, server-side, as
+                          the weekly post does.
+                          ── 🔴 ABSENT ON A PRIVATE EVENT, AND ABSENT WITHOUT THE PREVIEW KEY ──────────
+                          ⛔ A PRIVATE EVENT HAS NO POST. `/api/event-post` already refuses one — the whole
+                          point of a private event is that the venue, the town and the postcode never
+                          appear anywhere public, and a social graphic is the most public thing this app
+                          makes. The button was still ON the row, so the operator pressed it on
+                          "Community Centre, Wed 14 Oct" and got a refusal for something they were offered.
+                          🔴 ABSENT, NOT DISABLED: there is no post to make, so a disabled button would be
+                          promising one that will never exist. The Private chip on the row already says why.
+                          ⚠️ AND IT IS BEHIND `canPlacesPosts` TOO — see the note on that capability. The
+                          routes refuse as well; this is so the control is not offered. */}
+                      {!event.is_private && canPlacesPosts && (
                       <button onClick={() => setPostEventId(event.id)} className="text-xs font-semibold text-orange-700 border border-orange-200 bg-white rounded-lg px-2 py-1.5 hover:bg-orange-50">
                         <span className="sm:hidden">▣</span>
                         <span className="hidden sm:inline">Make post</span>
                       </button>
+                      )}
                       <button onClick={() => openEventCancelModal(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">
                         <span className="sm:hidden">✕</span>
                         <span className="hidden sm:inline">Cancel</span>
@@ -7830,6 +8213,40 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               </div>
             )}
 
+            {/* ══ 🔴 THE APPROVAL CARD'S EVENT TYPE — THE SAME PILL CONTROL (5 October 2026) ══════════
+              * ⛔ A SCRAPED PRIVATE EVENT ARRIVES WITH PRIVATE SELECTED, and the truck can pick another
+              * type right here. The bridge sets `is_private` at insert from the word "private" in the
+              * found text; `pendingTypeFor` seeds the pill from that, because such an event has no
+              * `event_type_id` yet (§73.5 — nobody has reviewed it, so no type and no token are issued
+              * until confirm).
+              * 🔴 IT IS THE SAME `<EventTypeSelect>` AS ADD/EDIT, so the purple panel and the Event
+              * name field come with it, and there is no second control to disagree with the first.
+              * ⚠️ APPROVE THEN CARRIES WHAT THIS ROW SHOWS. A scraped private event has no times (the
+              * live facts say so), so Approve routes the operator into Edit with the time flagged —
+              * where this same control is waiting with Private still selected.
+              * ⚠️ `pending` ONLY. A confirmed event's type is changed from the dashboard card, with the
+              * confirm a live event needs. */}
+            {pending && !isPast && (
+              <div className="mt-3 w-full">
+                <EventTypeSelect token={token} venueName={event.venue_name}
+                  placeId={(event as { truck_place_id?: string | null }).truck_place_id ?? null}
+                  value={pendingTypeFor(event)}
+                  onChange={v => setPendingTypes(m => ({ ...m, [event.id]: v }))}
+                  privateName={pendingNames[event.id] ?? event.private_name ?? ''}
+                  onPrivateName={v => setPendingNames(m => ({ ...m, [event.id]: v }))} />
+                {/* ⛔ THE MISSING-TIMES PROMPT, WHEN PRIVATE IS SELECTED. A private event taking orders
+                  * by link needs times: the guest's page shows a closing time and the ordering window
+                  * derives from them. The scraper never captures times for these rows, so this is the
+                  * normal path — and the server refuses the confirm with the same sentence. */}
+                {privateTypeId && pendingTypeFor(event) === privateTypeId
+                  && (!event.start_time || !event.end_time) && (
+                  <p className="mt-1.5 rounded-lg border border-amber-300 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-900">
+                    {PRIVATE_NEEDS_TIMES}
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Pending (Approve/Edit/Reject) — DESKTOP: compact, right-aligned in the main row (keeps
                 the card short). MOBILE keeps the full-width row below (sm:hidden there). Same handlers
                 as that row, including the conflict-acknowledge gate on Approve. */}
@@ -7837,7 +8254,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0 self-start">
                 <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? 'Set a time first' : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">Approve</button>
                 {!isPast && (
-                  <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">Edit</button>
+                  <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">Edit</button>
                 )}
                 <button onClick={() => handleRejectScrapedEvent(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">Reject</button>
               </div>
@@ -7920,7 +8337,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   → confirms immediately. */}
               <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? 'Set a time first' : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">Approve</button>
               {!isPast && (
-                <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">Edit</button>
+                <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">Edit</button>
               )}
               <button onClick={() => handleRejectScrapedEvent(event)} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-red-50">Reject</button>
             </div>
@@ -8583,10 +9000,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     {isActive && (
       <div role="tablist" aria-label="Schedule sections" data-subtab-bar className={`${SUBTAB_BAR} mb-4`}>
         <div className={SUBTAB_ROW}>
-          {SCHEDULE_SECTIONS.map(sec => (
-            <button key={sec.id} role="tab" aria-selected={section === sec.id}
+          {visibleSections.map(sec => (
+            <button key={sec.id} role="tab" aria-selected={shownSection === sec.id}
               onClick={() => onSectionChange(sec.id)}
-              className={subtabBtn(section === sec.id)}>
+              className={subtabBtn(shownSection === sec.id)}>
               {sec.label}
             </button>
           ))}
@@ -8595,7 +9012,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     )}
     {/* 🔴 THE PAGE'S NOTIFICATION STACK, BELOW THE BAR — see `notices` at the page level. */}
     {isActive && notices}
-    {isActive && section === 'events' && (
+    {isActive && shownSection === 'events' && (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
@@ -8869,6 +9286,27 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   </div>
                   {formErrors.event_date && <p className="text-xs text-red-500 mt-1">{formErrors.event_date}</p>}
                 </div>
+                {/* ══ 🔴 EVENT TYPE — STRAIGHT AFTER DATE, BEFORE VENUE (5 October 2026) ══════════
+                  * ⛔ IT MOVED, AND THE POSITION IS THE POINT. It used to sit below the venue box.
+                  * Selecting **Private** is the operator saying "the address I am about to type is not
+                  * for the public" — so they have to meet the question BEFORE they type it, not after.
+                  * That was the old tick's reasoning and it transfers to the control that replaced it.
+                  * 🔴 ONE CONTROL FOR ONE FACT. Standard, then Private, then the truck's own types in
+                  * the grid's order. Exactly one is selected; the purple pill opens the panel.
+                  * ⚠️ IT IS SHOWN ON AN **EDIT** TOO, which the dropdown was not. The dropdown was
+                  * create-only because changing a live event's type needs a confirm, which the
+                  * dashboard card owns — but an edit must be able to change PRIVACY (and the §7
+                  * regression is that an edit must not silently publish one), so the control is here
+                  * and `upsert_event` routes it through the one privacy writer.
+                  * ⚠️ `event_type_id` IS STILL ONLY SENT ON CREATE for a non-private event — see the
+                  * save call. Privacy goes through `applyPrivacy` on both paths. */}
+                <div className="sm:col-span-2">
+                  <EventTypeSelect token={token} venueName={editingEvent.venue_name}
+                    placeId={editingEvent.truck_place_id ?? null}
+                    value={eventTypeId} onChange={setEventTypeId} disabled={editSaving}
+                    privateName={editingEvent.private_name ?? ''}
+                    onPrivateName={v => setEditingEvent(p => ({ ...p!, private_name: v }))} />
+                </div>
                 {/* ── 🔴 THE ADDRESS GROUP · `md:contents` IS WHAT MAKES ONE JSX SERVE BOTH ───────
                     On md+ this wrapper and its inner div are `display: contents`, so the four fields
                     are grid items exactly where they were — Venue and Address full width, Area and
@@ -8883,6 +9321,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     <span className={`transition-transform ${addrOpen ? 'rotate-90' : ''}`}>▶</span>
                   </button>
                   <div className={`md:contents ${addrOpen ? 'max-md:grid max-md:gap-3 max-md:mt-3' : 'max-md:hidden'}`}>
+                {/* ══ ⛔ THE SEPARATE "Private event" TICK IS GONE (5 October 2026) ══════════════════
+                  * 🔴 IT WAS HALF OF A TWO-CONTROL BUG. The Event type dropdown offered "Private"
+                  * AND this tick existed beside it, and choosing Private in the dropdown left the
+                  * tick unticked — two controls for one fact, free to disagree, with the SAVE reading
+                  * the tick. An operator who picked Private from the list got a public event.
+                  * ✅ ONE CONTROL OWNS IT NOW: the `<EventTypeSelect>` pill row above (after Date,
+                  * before Venue), where selecting the purple Private pill IS making the event private
+                  * and opens the panel with the explanation and the Event name field. */}
                 <div className="sm:col-span-2 relative">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Venue name <span className="text-red-400">*</span></label>
                   <input
@@ -8918,19 +9364,6 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   )}
                   {formErrors.venue_name && <p className="text-xs text-red-500 mt-1">{formErrors.venue_name}</p>}
                 </div>
-                {/* 🔴 EVENT TYPE — ONE MOUNT. Everything the field needs (loading the types, finding
-                  * the usual type for this venue, the hint, the summary) is inside
-                  * components/manage/EventTypes.tsx, so this modal gains one element and the
-                  * schedule-graphics merge is one line. It renders NOTHING for a truck with no types.
-                  * ⚠️ NEW EVENTS ONLY. An edit cannot move an event's type from here — the dashboard's
-                  * own control does that, with the confirm a live event needs. */}
-                {!editingEvent.id && (
-                  <div className="sm:col-span-2">
-                    <EventTypeSelect token={token} venueName={editingEvent.venue_name}
-                      placeId={editingEvent.truck_place_id ?? null}
-                      value={eventTypeId} onChange={setEventTypeId} disabled={editSaving} />
-                  </div>
-                )}
                 {/* ADDRESS FIELDS — order and labels are locale-specific.
                     UK format: street address → village/town + postcode
                     Future: extract to addressFieldConfig(locale) to support US/EU formats */}
@@ -8984,16 +9417,21 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         operator with two trucks on one account read it as "which of my businesses".
                         Copy only; the value, the column and the options are untouched. */}
                     <label className="block text-xs font-bold text-slate-600 mb-1">Van <span className="text-red-500">*</span></label>
-                    <select
+                    {/* 🔴 THE SHARED `Select` — see the note on the time boxes. WebKit renders a native
+                      * `<select>` at 23px whatever its padding says, so this was half the height of
+                      * the fields around it on an iPad.
+                      * ⚠️ THE ERROR STATE IS CARRIED THROUGH `className`, which `Select` merges onto its
+                      * wrapper — so a missing van still shows the red box it always did. */}
+                    <Select
+                      ariaLabel="Van"
                       value={editingEvent.van_id || ''}
-                      onChange={e => { setEditingEvent(p => ({ ...p!, van_id: e.target.value || null })); if (formErrors.van_id) setFormErrors(p => ({ ...p, van_id: '' })) }}
-                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.van_id ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
-                    >
-                      <option value="">Select a van</option>
-                      {vans.map(van => (
-                        <option key={van.id} value={van.id}>{van.name}</option>
-                      ))}
-                    </select>
+                      onChange={v => { setEditingEvent(p => ({ ...p!, van_id: v || null })); if (formErrors.van_id) setFormErrors(p => ({ ...p, van_id: '' })) }}
+                      className={`w-full ${formErrors.van_id ? 'border-red-400 bg-red-50' : ''}`}
+                      options={[
+                        { value: '', label: 'Select a van' },
+                        ...vans.map(van => ({ value: van.id, label: van.name })),
+                      ]}
+                    />
                     {formErrors.van_id && <p className="text-xs text-red-500 mt-1">{formErrors.van_id}</p>}
                   </div>
                 )}
@@ -9022,20 +9460,64 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {previewEvent && (
                   <div className="sm:col-span-2 max-md:hidden" data-preview-pane>
                     <p className="block text-xs font-bold text-slate-400 mb-1">Preview</p>
-                    <TruckListCard
-                      event={previewEvent}
-                      slug={truck.slug ?? ''}
-                      compact
-                      hideOrderButton
-                      cornerAction={previewVanName
-                        ? <span className="text-[11px] font-bold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5">{previewVanName}</span>
-                        : undefined}
-                    />
-                    {!editingEvent.id && editingEvent.truck_place_id && (
+                    {/* ══ 🔴 THE PRIVATE SHAPE — DATE, TIMES, VAN, AND NOTHING THAT LOCATES IT ═══════
+                      * 🔴 IT IS NOT `TruckListCard`, AND THAT IS THE ONE PLACE THIS FEATURE DEPARTS
+                      * FROM "render the public component". The public card for a private event shows
+                      * the redacted row — "Private event", no town, no postcode — and it shows it in
+                      * the ordinary black heading, because to a customer it is just an event with no
+                      * address. The OPERATOR needs to be told something different and stronger: that
+                      * the venue they just typed is deliberately not going to appear. The lock and the
+                      * purple title say that; a faithful public card could not.
+                      * ⚠️ THE WORDS COME FROM `PRIVATE_PUBLIC_LABEL`, the same constant the public
+                      * surfaces substitute, so the title here and the title a customer sees are one
+                      * string. ⛔ THE VENUE, TOWN, POSTCODE AND ADDRESS ARE NOT RENDERED AT ALL — not
+                      * greyed, not struck through, not in a title attribute. A private address that is
+                      * on the screen "but hidden" is an address that leaks the first time someone
+                      * copies the DOM.
+                      * ⚠️ THE VAN CHIP STAYS. It is ours, not the guest's, and it is the one thing on
+                      * this card an operator needs in order to know which screen the orders land on. */}
+                    {previewIsPrivate ? (
+                      <div className="rounded-2xl border border-purple-200 bg-white p-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="font-black text-purple-700 text-sm flex items-center gap-1.5">
+                            <span aria-hidden="true">🔒</span>{PRIVATE_PUBLIC_LABEL}
+                          </p>
+                          {previewVanName && (
+                            <span className="text-[11px] font-bold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 flex-shrink-0">{previewVanName}</span>
+                          )}
+                        </div>
+                        {/* ⚠️ THE SAME TWO FORMATTERS THE ONE-LINE PREVIEW USES, so the pinned phone
+                            card and this card cannot print a date differently. */}
+                        <p className="text-sm font-semibold text-slate-700 mt-1">
+                          {[placeShortDayLocal(editingEvent.event_date || null),
+                            timeRangeLabel(editingEvent.start_time, editingEvent.end_time)]
+                            .filter(Boolean).join(' · ') || PREVIEW_PLACEHOLDERS.date}
+                        </p>
+                      </div>
+                    ) : (
+                      <TruckListCard
+                        event={previewEvent}
+                        slug={truck.slug ?? ''}
+                        compact
+                        hideOrderButton
+                        cornerAction={previewVanName
+                          ? <span className="text-[11px] font-bold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5">{previewVanName}</span>
+                          : undefined}
+                      />
+                    )}
+                    {/* 🔴 ONE LINE UNDER THE CARD, AND WHICH LINE DEPENDS ON THE SHAPE ABOVE IT.
+                        "Filled from …" answers "will editing this change the place?"; on a private
+                        event that is not the question — the question is "where did my venue go?", and
+                        this answers it in place rather than leaving the operator to wonder whether the
+                        preview is broken. ⚠️ THE PRIVATE LINE IS NOT CONDITIONAL ON `truck_place_id`:
+                        it is true of every private event, picked place or typed address. */}
+                    {previewIsPrivate ? (
+                      <p className="text-[11px] text-slate-400 -mt-1">{PRIVATE_PREVIEW_NOTE}</p>
+                    ) : !editingEvent.id && editingEvent.truck_place_id ? (
                       <p className="text-[11px] text-slate-400 truncate -mt-1">
                         Filled from {pickedPlace?.name ?? 'that place'}
                       </p>
-                    )}
+                    ) : null}
                   </div>
                 )}
                 {/* ⛔ THE "Filled from" LINE AND THE TWO BUTTONS ARE NOT HERE ANY MORE. They are in the
@@ -9106,6 +9588,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           onNeedsSetup={() => { setPostEventId(null); onSectionChange('weekly') }} />
       )}
 
+      {/* 🔴 THE PRIVATE LINK & QR PANEL (20261014) — one at a time, over the Events list. */}
+      {linkPanelModal}
+
       {showEventCancelModal && cancellingEvent && (
         <EventCancelModal
           event={cancellingEvent}
@@ -9116,10 +9601,26 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       )}
     </div>
     )}
-    {/* ── THE WEEKLY POST SECTION ─────────────────────────────────────────────────────────────────
-        ⚠️ PLACES IS NOT HERE ANY MORE. Seeding now happens when the Add event modal opens, which is
-        the deliberate act that needs the list; the Schedule tab itself writes nothing. */}
-    {isActive && section === 'weekly' && <WeeklyPostPane truck={truck} token={token} />}
+    {/* ══ 🔴 PLACES IS A SECTION AGAIN (5 October 2026) ═══════════════════════════════════════════
+      * It was removed on 3 October when the list moved into the Add event modal; the note here used
+      * to say so. It is its own tab now, with a detail pane — and the modal's "Tidy up places" link
+      * stays and calls the SAME actions, so there is no second implementation of anything.
+      * ⚠️ SO THE TAB SEEDS. `usePlaces` calls `sg_places`, which seeds before it answers, and opening
+      * this tab is now a deliberate act that needs the list — the same argument the modal made for
+      * itself. The Events section still writes nothing.
+      * ⚠️ `types` IS PASSED IN THE GRID'S ORDER (Private first), so the "Usual event type" select and
+      * the Event types grid name the same columns in the same order. */}
+    {isActive && shownSection === 'places' && (
+      <PlacesTab api={api} showToast={showToast} plan={truck.plan}
+        featureOverrides={truck.feature_overrides ?? null}
+        trialExpiresAt={truck.trial_expires_at ?? null}
+        types={placeTypeChoices} />
+    )}
+    {/* ── SOCIAL POSTS ────────────────────────────────────────────────────────────────────────────
+        ⚠️ THE SECTION ID IS STILL `weekly` — it is the URL contract, and `?section=weekly` is in
+        operators' bookmarks and in `onSectionChange('weekly')` calls elsewhere in this file. Only the
+        LABEL became "Social posts", because the page now holds the single-event post too. */}
+    {isActive && shownSection === 'weekly' && <WeeklyPostPane truck={truck} token={token} />}
     {/* ══ 🔴 EVENT TYPES, INLINE — THE SAME COMPONENT, NOT A SECOND COPY OF ITS GRID ═══════════
       * `inline` swaps the overlay's shell for a card in the page's flow and changes nothing else: the
       * same fixed column widths, the same 1000px cap, the same "+ New event type" in the header and
@@ -9129,7 +9630,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       * and the vans, and this hands the component the SAME function every Settings control calls, with
       * `nativeAuthHeader()` already on it. A fetch written inside the component would 401 in the native
       * app. Unchanged from the overlay mount it replaces. */}
-    {isActive && section === 'event-types' && <EventTypesPanel token={token} manageApi={api} inline />}
+    {isActive && shownSection === 'event-types' && <EventTypesPanel token={token} manageApi={api} inline />}
     {/* Import modal — rendered outside the isActive gate so it can open from any tab */}
     {showImportModal && (
       <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
@@ -9923,6 +10424,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
    * card then says so rather than offering a control that silently writes nothing. */
   const [firstVanId, setFirstVanId] = useState<string | null>(null)
   const [perVanCategoriesAvailable, setPerVanCategoriesAvailable] = useState(true)
+  /* 🔴 `truck_vans.takes_cash` (20261012). FALSE ⇒ the column is not there yet, so the PER-VAN cash
+   * switch is not drawn and the TRUCK-level one in Order settings stays — there is never no cash
+   * control. Defaults TRUE for the same reason `perVanCategoriesAvailable` does: the common case is
+   * that it exists, and a false default would hide a working control for one render. */
+  const [vanCashAvailable, setVanCashAvailable] = useState(true)
   const [savingSameAsFirst, setSavingSameAsFirst] = useState<string | null>(null)
   const [addingVan, setAddingVan] = useState(false)
   const [newVanName, setNewVanName] = useState('')
@@ -10040,6 +10546,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       setFirstVanId(r.firstVanId ?? (r.vans || [])[0]?.id ?? null)
       // Absent ⇒ true, like intervalsAvailable: a missing flag must not disable a working control.
       setPerVanCategoriesAvailable(r.perVanCategoriesAvailable !== false)
+      setVanCashAvailable(r.vanCashAvailable !== false)
     }).catch(() => {})
     api('get_exclusion_terms').then(r => setSettingsExclusionList(r.terms || [])).catch(() => {})
   }, [])
@@ -10581,7 +11088,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
 
   const updateVanSetting = async (
     vanId: string,
-    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count' | 'offline_protection_mode' | 'offline_auto_reject_mins' | 'collection_interval_mins' | 'operator_collection_interval_mins',
+    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count' | 'offline_protection_mode' | 'offline_auto_reject_mins' | 'collection_interval_mins' | 'operator_collection_interval_mins' | 'takes_cash',
     value: boolean | number | string | null
   ) => {
     setVans(prev => prev.map(v => v.id === vanId ? { ...v, [field]: value } : v))
@@ -11308,6 +11815,22 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 goes DISABLED with the reason inline: structure shows the relationship, the text explains
                 it. Both, not either. An operator who cannot find this setting is why it exists on two
                 surfaces at all. */}
+            {/* ══ 🔴 THE TRUCK-LEVEL CASH SWITCH IS NOW A FALLBACK ONLY (5 October 2026) ═════════
+                "Do you take cash?" became a PER-VAN setting — it is drawn on each van's own card in
+                Your trucks, writing `truck_vans.takes_cash`. Dominic, on localhost: "Turning on 'Do
+                you take cash?' for Van 1 also turned it on for Van 2", which it did, because this
+                control is the only one there was and `trucks.takes_cash` is one column for the whole
+                truck.
+                🔴 IT STAYS HERE, GATED ON `!vanCashAvailable`, AND IS NOT DELETED. Two reasons:
+                  • Before 20261012 is applied there IS no per-van column, so this is the only control
+                    that can store anything. A screen with no cash switch at all would be worse than
+                    one in the old place.
+                  • `trucks.takes_cash` remains the LAST LINK of the resolver chain
+                    (event ?? type ?? van ?? truck), so the value it holds still decides what a van
+                    with NULL does. It is not dead data.
+                ⚠️ AFTER THE MIGRATION THIS ROW DISAPPEARS and the per-van switches replace it. A van
+                that has never been touched shows this value and says "Following your truck setting". */}
+            {!vanCashAvailable && (
             <div className="flex items-center justify-between gap-3 py-3">
               <div>
                 <p className="text-sm font-semibold text-slate-800">{SERVICE_SETTING_LABELS.takes_cash}</p>
@@ -11347,6 +11870,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 onToggle={() => { const next = (form as any).takes_cash !== true; setForm(p => ({...p, takes_cash: next} as any)); saveSetting('takes_cash', next) }}
               />
             </div>
+            )}
           </div>
         </div>
 
@@ -11842,6 +12366,43 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   }`} />
                 </button>
               </div>
+
+              {/* ── 🔴 "Do you take cash?" — PER VAN (5 October 2026, 20261012) ────────────────────
+                  Dominic, on localhost: "Turning on 'Do you take cash?' for Van 1 also turned it on
+                  for Van 2." It did, because there was no per-van cash setting at all —
+                  `trucks.takes_cash` is ONE column for the whole truck, and the Event types grid drew
+                  one switch per van column over that single value.
+                  🔴 SO IT LIVES HERE NOW, beside the other per-van service settings, and writes
+                  `truck_vans.takes_cash` through `update_van_settings` — this van and no other.
+                  ⚠️ THE COLUMN IS NULLABLE AND NULL IS A REAL STATE: "follow the truck". A van nobody
+                  has touched shows the truck's value and says so, rather than showing a flattened
+                  true/false that would look like a choice the operator had made. `resolveVanTakesCash`
+                  does the flattening, so this screen and the hatch cannot disagree about one van.
+                  🔴 TOUCHING IT STORES AN EXPLICIT VALUE for this van, which is what a switch does.
+                  ⚠️ IT IS ONLY DRAWN WHEN THE COLUMN EXISTS (`vanCashAvailable`). Before the migration
+                  the TRUCK-level control in Order settings stays, so there is never no cash control —
+                  a switch that cannot store anything is worse than no switch. */}
+              {vanCashAvailable && (
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{SERVICE_SETTING_LABELS.takes_cash}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Splits the payment button into &quot;Cash&quot; and &quot;Card&quot; so your takings reconcile
+                      against the till. You can turn this on for a single event from the dashboard.
+                    </p>
+                    {(van.takes_cash === null || van.takes_cash === undefined) && (
+                      <p className="text-xs text-slate-400 mt-0.5">Following your truck setting.</p>
+                    )}
+                  </div>
+                  <Toggle
+                    on={resolveVanTakesCash(van.takes_cash, (form as Record<string, unknown>).takes_cash as boolean | null)}
+                    onToggle={() => {
+                      const shown = resolveVanTakesCash(van.takes_cash, (form as Record<string, unknown>).takes_cash as boolean | null)
+                      void updateVanSetting(van.id, 'takes_cash', !shown)
+                    }}
+                  />
+                </div>
+              )}
 
               {/* ── BUZZERS — VAN-LEVEL, because they are physical stock in one vehicle ──────────────
                   ⚠️ Writes truck_vans.buzzer_count via update_van_settings, NOT a trucks column. A

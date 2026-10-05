@@ -18,24 +18,47 @@
 // columns; none of those is resolved by anything in this build, and drawing them would promise a truck
 // behaviour the next order does not deliver. They arrive with their own stages.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 /* 🔴 THE SHARED CONTROLS. `Toggle` is the component page.tsx renders; `Select` is Settings' own
  * styling as a component. This file defines neither, by rule — see the note above TypeControl. */
 import { Btn, Toggle, Select, Input } from './primitives'
+/* 🔴 THE PRICE CONTROLS, FROM components/shared — THE SAME COMPONENTS THE DASHBOARD SHEET RENDERS.
+ * Dominic, 5 October 2026: "Same controls, components and arithmetic as the grid — no second
+ * implementation." The sheet is a dashboard surface, so they live one level up; that file's header
+ * makes the argument. ⛔ NOTHING IN THIS FILE MAY DEFINE A PRICE CONTROL. */
+/* ⚠️ `PRICE_TYPE_HINT` IS DELIBERATELY NOT IMPORTED (5 October 2026). "Press a price to type your
+ * own." was removed from the grid; it survives on the dashboard sheet, which still imports it. */
+import {
+  PriceAmountInput, PriceCell, PriceModeSelect, PriceRoundingSelect,
+  ROW_H, GRID_CONTROL_H, GRID_TYPED_H,
+} from '@/components/shared/PriceControls'
 /* Settings' section-heading token — SERVICE and USED BY use it, like every Settings group. */
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
+/* ⚠️ THE TYPES AND NOTHING ELSE. Every price this screen SHOWS is computed inside `<PriceCell>`,
+ * which calls `priceForItem` — so this file never calls the arithmetic directly and cannot drift
+ * from it by calling it slightly differently. */
+import type { PriceMode, PriceRounding, PriceSetup } from '@/lib/event-pricing/price'
 import {
   SERVICE_ROWS, TYPE_NAME_CHIPS, MAX_TYPE_NAME,
-  colourFor, STANDARD_COLOUR, TYPE_INTERVAL_CHOICES, blankTypeValues,
+  /* ⚠️ `blankTypeValues` IS NO LONGER IMPORTED HERE. It was what "Match Standard" sent — every column
+   * NULL, i.e. "follow Standard" — and that mechanism is gone: a type holds its own values, so
+   * matching Standard COPIES Van 1's current ones (server-side, `match_standard`). The function
+   * itself survives in lib/event-types/types.ts as the schema's own notion of "nothing set", which is
+   * what the route still validates against. */
+  colourFor, STANDARD_COLOUR, TYPE_INTERVAL_CHOICES,
   type EventType, type ServiceRow,
 } from '@/lib/event-types/types'
 import { summariseType, changedCount, SERVICE_ROW_COUNT, type TypeFor } from '@/lib/event-types/resolve'
 import { OFFLINE_PROTECTION_MODES } from '@/lib/copy/offlineProtection'
 /* 🔴 EVERY WORD ON THIS SCREEN THAT ALSO APPEARS ON ANOTHER ONE COMES FROM HERE. */
 import {
-  TYPE_FOLLOWS_VAN_TITLE, TAKES_CASH_ALL_VANS_TITLE,
+  SAME_SETTINGS_ALL_VANS_LABEL, SAME_SETTINGS_ALL_VANS_HEADER, SAME_SETTINGS_CONFIRM,
   EVENT_TYPES_FOOTER_STANDARD, EVENT_TYPES_FOOTER_ONE_EVENT, EVENT_TYPES_SUBTITLE,
   MATCH_STANDARD_LABEL, MATCH_STANDARD_CONFIRM,
+  PRICE_SETTING_LABELS, PRICES_STANDARD_CELL, PRICES_TRUCK_WIDE_TITLE,
+  PRICES_MENU_CELL, ITEM_PRICES_SHOW, ITEM_PRICES_HIDE,
+  OFFLINE_WHEN_OFFLINE_LABEL, 
+  PRICE_MODES_WITH_AMOUNT,
 } from '@/lib/copy/serviceSettings'
 /* The rack size Settings' own buzzer toggle writes when it is switched ON. Standard's buzzer switch
  * makes the same call, so it must use the same default rather than pick a number. */
@@ -43,6 +66,17 @@ import { BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
 /* ⚠️ THE SAME `normaliseInterval` SETTINGS USES, so Standard's dropdown cannot send a value its own
  * save path would 400 on. */
 import { normaliseInterval } from '@/lib/slot-interval'
+/* ── 🔴 PRIVATE EVENTS (20261014). Every word from the one copy module. ─────────────────────────── */
+/* ⚠️ `PRIVATE_LINK_STANDARD_CELL` IS DELIBERATELY NOT IMPORTED (5 October 2026). "Open to everyone"
+ * was removed from the screen; the constant survives in the copy module as the record of why, and
+ * `scripts/event-types.cjs` asserts the string reaches no screen — an import here would fail it. */
+import {
+  ORDERING_SECTION, PRIVATE_LINK_ROW_LABEL, PRIVATE_COLUMN_TITLE, MAX_ONLY_TITLE,
+  /* 🔴 THE PURPLE PANEL'S WORDS — the same constants the old separate tick used, so replacing the
+   * control did not reword the explanation. */
+  PRIVATE_TICK_HELP, PRIVATE_LINK_PROMISE, PRIVATE_NAME_LABEL, PRIVATE_NAME_HELP,
+  PRIVATE_NAME_PLACEHOLDER,
+} from '@/lib/private-events/copy'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // SHARED
@@ -70,7 +104,14 @@ export interface VanRow {
   offline_enabled: boolean
   offline_mode: string
   collection_interval_mins: number
+  /** This van's RESOLVED cash setting — `truck_vans.takes_cash ?? trucks.takes_cash` (5 Oct 2026). */
+  takes_cash: boolean
+  /** The RAW column: null ⇒ this van has no opinion and follows the truck. */
+  takes_cash_own: boolean | null
 }
+
+/** Van 1's resolved service values — what a new type and "Match Standard" copy. */
+export type VanOneValues = Partial<Record<string, boolean | number | string | null>>
 
 /** Standard's own values, read from the truck and its vans. `perVan` ⇒ the vans disagree. */
 export interface StandardValues {
@@ -102,63 +143,38 @@ const api = async (token: string, body: Record<string, unknown>) => {
  * names now reach the screen only through `OFFLINE_CHOICES`, which maps them from
  * `OFFLINE_PROTECTION_MODES`. One route from the constants to the screen, not two. */
 
-/** Does this type say anything of its own for this row? Drives the grey "same as Standard" look. */
-function rowIsOwn(row: ServiceRow, type: TypeFor): boolean {
-  return row.keys.some(k => {
-    const v = (type as unknown as Record<string, unknown>)[k]
-    return v !== null && v !== undefined
-  })
-}
+/* ── ⛔ `rowIsOwn` IS DELETED (5 October 2026) ────────────────────────────────────────────────────
+ * It answered "does this type say anything of its own for this row?", and its ONLY consumer was the
+ * FADED look that meant "this cell is showing Standard's value, not mine". A type holds its own
+ * values now, so every cell is its own and the question has one answer. Leaving the function would
+ * leave the faded design in the file for someone to reach for — which is how the defect Dominic met
+ * on localhost would come back. See `TypeControl`'s header for the whole argument. */
 
 /**
- * ── 🔴 THE OFFLINE DROPDOWN'S THREE CHOICES ───────────────────────────────────────────────────────
- * Settings › Kitchen offers a SWITCH and then, when it is on, a MODE. One dropdown says the same
- * thing in one control, which is what the TypesModal board shows — and it is one row because a
- * three-row offline section inside a type column would dwarf every other setting.
+ * ── 🔴 OFFLINE PROTECTION IS A **SWITCH** NOW, AND THE MODE IS A SUB-ROW ──────────────────────────
+ * Dominic, 5 October 2026: "Offline order protection becomes a SWITCH (Standard per van and per
+ * type), and when on, an indented sub-row 'When offline' shows the mode select in that column."
  *
- * 🔴 THERE IS NO "Same as Standard" OPTION, AND THAT IS THE 4 OCTOBER CHANGE. There was one, first in
- * the list. A dropdown now lists ONLY REAL SETTINGS; inheriting is shown by the control being FADED
- * and showing the value it inherits, not by a pseudo-option. The old shape asked the operator to read
- * "Same as Standard" and then look across the table to find out what that meant.
+ * ⛔ WHAT THIS REPLACES, AND WHY IT WAS WRONG. The row was ONE three-choice dropdown —
+ * `Off / Pause ordering / Keep taking orders, confirm them yourself` — which made it the only row in
+ * the grid that was not a switch, and put a SAFETY-CRITICAL mode at the same level as an on/off. An
+ * operator scanning the column for "is protection on here?" had to read and interpret a sentence.
+ * Now the switch is the question and the mode is a detail of the answer, which is also the shape
+ * Settings › Kitchen has always had (a switch, then a mode when it is on).
  *
- * 🔴 THE TWO MODE LABELS ARE MAPPED FROM `OFFLINE_PROTECTION_MODES`, so this screen, Settings ›
- * Kitchen and the dashboard cannot word them differently. "Off" is the switch being off.
+ * 🔴 `OFFLINE_CHOICES`, `standardOfflineValue`, `offlineValue` AND `offlinePatch` ARE DELETED. All
+ * four existed to fold the switch and the mode into one value; with two controls there is nothing to
+ * fold, and a dead `'off'`-bearing choice list is the thing a later reader would reach for to put the
+ * dropdown back. The MODE's two labels still come from `OFFLINE_PROTECTION_MODES` — this is a change
+ * of SHAPE, not of vocabulary, so this screen, Settings › Kitchen and the dashboard still word them
+ * identically.
  *
- * ⛔ THE AUTO-REJECT DELAY IS NOT OFFERED ON A TYPE, and that is a decision Dominic confirmed on
- * 4 October 2026 — it stays per-event on the dashboard. See docs/event-types-stage2b-report.md §0.3:
- * the only thing that acts on the delay is a plpgsql function (`claim_order_for_auto_reject`,
- * 20260819) which resolves it as `coalesce(event_override, van)` and cannot read this resolver.
+ * ⛔ THE AUTO-REJECT DELAY IS STILL NOT OFFERED ON A TYPE, and that stays Dominic's 4 October
+ * decision — it is per-event, on the dashboard, and the only thing that acts on it is a plpgsql
+ * function (`claim_order_for_auto_reject`) that resolves `coalesce(event_override, van)` and cannot
+ * read this resolver.
  */
-const OFFLINE_CHOICES = [
-  { value: 'off', label: 'Off' },
-  ...OFFLINE_PROTECTION_MODES.map(m => ({ value: m.value as string, label: m.label })),
-] as const
-
-/** What Standard's offline row resolves to, as one of OFFLINE_CHOICES' values. */
-function standardOfflineValue(standard: StandardValues): string {
-  return standard.offline_protection.enabled ? standard.offline_protection.mode : 'off'
-}
-
-/**
- * The dropdown's current value for a TYPE.
- *
- * 🔴 WHEN THE TYPE SAYS NOTHING IT SHOWS WHAT IT INHERITS, not an empty option. The control is faded
- * to say "this is not yours"; the VALUE is the one that will actually be used, which is the question
- * an operator is asking when they look at this cell.
- */
-function offlineValue(type: TypeFor, standard: StandardValues): string {
-  if (type.offline_protection === false) return 'off'
-  if (type.offline_protection === true || type.offline_protection_mode) {
-    return type.offline_protection_mode ?? 'pause'
-  }
-  return standardOfflineValue(standard)
-}
-
-/** What a dropdown choice writes to the type's two columns. */
-function offlinePatch(value: string): Record<string, unknown> {
-  if (value === 'off') return { offline_protection: false, offline_protection_mode: null }
-  return { offline_protection: true, offline_protection_mode: value }
-}
+const OFFLINE_MODE_CHOICES = OFFLINE_PROTECTION_MODES.map(m => ({ value: m.value as string, label: m.label }))
 
 /**
  * ── 🔴 DO THIS TRUCK'S ACTIVE VANS DISAGREE ON THIS ROW? ──────────────────────────────────────────
@@ -214,16 +230,34 @@ function standardWriteFor(row: ServiceRow, value: boolean | number | string): St
     case 'order_ready':
       return { scope: 'van', action: 'update_van_settings', payload: { order_ready_enabled: value === true } }
     case 'takes_cash':
-      /* The one truck-level setting of the five — `trucks.takes_cash`, no per-van column. Settings
-       * writes it with `saveSetting('takes_cash', next)`, which is `update_truck` with a data bag. */
-      return { scope: 'truck', action: 'update_truck', payload: { takes_cash: value === true } }
+      /* ══ 🔴 PER VAN NOW (5 October 2026), AND THIS IS THE DEFECT'S ACTUAL FIX ═══════════════════
+       * Dominic, on localhost: "Turning on 'Do you take cash?' for Van 1 also turned it on for Van 2."
+       * It did, and this line is why: it returned `scope: 'truck'`, so every van column's switch wrote
+       * the SAME `trucks.takes_cash` through `update_truck`. There was no per-van column to write.
+       *
+       * 🔴 `truck_vans.takes_cash` (20261012) IS THAT COLUMN, so this row is `scope: 'van'` like the
+       * other four and each column writes its own van. Nullable, so NULL still means "follow
+       * `trucks.takes_cash`" — but a SWITCH always writes an explicit true or false, which is what a
+       * switch means.
+       * ⚠️ `trucks.takes_cash` IS NOT WRITTEN FROM HERE ANY MORE and is not dead: it is the last link
+       * of the resolver chain for a van that has never been touched. Settings owns it, and after
+       * 20261012 its control there is only drawn when the van column is absent.
+       * ⚠️ THE KEY IS THE COLUMN NAME, not a camel one. `update_van_settings` destructures
+       * `takes_cash` (added 5 October) — and that handler's own warning is that a key it does not
+       * name is dropped SILENTLY, i.e. a green save that wrote nothing. */
+      return { scope: 'van', action: 'update_van_settings', payload: { takes_cash: value === true } }
     case 'offline_protection':
-      /* ⚠️ "Off" WRITES ONLY THE SWITCH AND LEAVES THE MODE STORED, which is what Settings does —
-       * turning protection back on should not silently change what it will then do. Choosing a mode
-       * writes both, because a mode with the switch off would display and do nothing. */
-      return value === 'off'
-        ? { scope: 'van', action: 'update_van_settings', payload: { autoPauseOnOffline: false } }
-        : { scope: 'van', action: 'update_van_settings', payload: { autoPauseOnOffline: true, offlineProtectionMode: String(value) } }
+      /* ── 🔴 THREE SHAPES NOW, BECAUSE THE ROW IS A SWITCH PLUS A SUB-ROW ──────────────────────
+       *   false        — the SWITCH off. Writes the switch and NOTHING ELSE.
+       *   true         — the SWITCH on.  Writes the switch and NOTHING ELSE.
+       *   a mode string — the "When offline" sub-row. Writes both, because a mode with the switch off
+       *                   would display and do nothing.
+       * ⚠️ TURNING THE SWITCH ON OR OFF MUST NOT TOUCH THE MODE, which is what Settings does and the
+       * reason it matters: turning protection back on should not silently change what it will then
+       * DO. That is a safety-critical setting changing itself behind an unrelated tap. */
+      if (value === false) return { scope: 'van', action: 'update_van_settings', payload: { autoPauseOnOffline: false } }
+      if (value === true) return { scope: 'van', action: 'update_van_settings', payload: { autoPauseOnOffline: true } }
+      return { scope: 'van', action: 'update_van_settings', payload: { autoPauseOnOffline: true, offlineProtectionMode: String(value) } }
     case 'buzzer_prompt':
       /* ── 🔴 THE BUZZER ROW WRITES THE RACK, THROUGH SETTINGS' OWN TOGGLE CALL ───────────────────
        * Dominic, 4 October 2026: bind Standard to whatever control Settings uses to turn buzzers
@@ -265,7 +299,13 @@ function standardWriteFor(row: ServiceRow, value: boolean | number | string): St
  * "Remind me to add a buzzer" wraps to two lines — scripts/event-types-render.cjs measures the text
  * node's rendered line count at every width and in both engines, so this number has a check behind
  * it. Narrower than this and that harness goes red. */
-const GRID_LABEL_W = 212
+/* 🔴 WIDENED FROM 212 TO 260 (5 October 2026), BECAUSE LABELS WRAP NOW INSTEAD OF TRUNCATING.
+ * Dominic: no ellipsis anywhere; "Take orders by private link and QR code" must be fully readable.
+ * Truncation was the old answer to a narrow column — it hid the end of the longest label behind a
+ * hover title, which is a tooltip nobody on a tablet can reach. Wrapping needs room, so the column
+ * got it; `scripts/event-types-render.cjs` measures that no label is clipped at 1440/820/390 in both
+ * engines, which is the check that would have caught the old width. */
+const GRID_LABEL_W = 260
 const GRID_COL_W = 168
 const MODAL_SIDE_PADDING = 16
 
@@ -277,7 +317,66 @@ const MODAL_SIDE_PADDING = 16
  * alternative — a repeating background gradient sized to the columns — would be a one-off style that
  * silently breaks the moment a width changes. The two full-width section headings (SERVICE, USED BY)
  * are the only rows the line does not cross, because they genuinely span every column. */
+/**
+ * ── 🔴 THE MAX BADGE (20261014) ───────────────────────────────────────────────────────────────────
+ * Shown to a truck that has `private_events` (Pro) but not `event_types` (Max), beside the two things
+ * that key buys: "+ New event type" and the PRICES section.
+ * ⛔ A LOCK **PLUS THE WORD**, not a lock alone. A bare padlock beside a heading is ambiguous — the
+ * Private column already carries one, meaning "built in, cannot be renamed" — so this one names the
+ * plan, which is the only thing an operator can act on.
+ * ⚠️ MODULE SCOPE, NOT A NESTED COMPONENT. Declared inside the panel it would be a new component type
+ * on every render, which remounts its subtree and which `react-hooks/static-components` refuses. It
+ * closes over nothing, so there is no reason for it to live inside.
+ */
+function MaxBadge() {
+  return (
+    <span
+      title={MAX_ONLY_TITLE}
+      className="ml-1.5 inline-flex shrink-0 items-center gap-0.5 rounded-full border border-amber-300 bg-amber-50 px-1.5 py-px text-[9px] font-bold normal-case tracking-wide text-amber-700"
+    >
+      <span aria-hidden="true">🔒</span>{MAX_ONLY_TITLE}
+    </span>
+  )
+}
+
 const CELL_DIVIDER = 'border-l border-slate-100'
+
+/* ── 🔴 THE ZEBRA STRIPES AND THE SECTION BAND, AS TOKENS ─────────────────────────────────────────
+ * Dominic, 5 October 2026: "rows alternate white / a very light grey (about #F6F8FA), restarting
+ * after each section or category heading. Section rows a slightly darker band (about #E9EEF4)."
+ *
+ * 🔴 THEY ARE HEX, IN ONE PLACE, BECAUSE THE RENDER HARNESS MEASURES THEM. Tailwind's slate-50 is
+ * #F8FAFC and slate-100 is #F1F5F9 — neither is either of the two figures asked for, and inventing a
+ * class for "about #F6F8FA" would be a value nobody could check. `scripts/event-types-render.cjs`
+ * reads the computed `background-color` of each row and asserts it alternates and restarts, so these
+ * two strings are the contract.
+ * ⚠️ A SPANNING CELL STAYS WHITE, which is the instruction and also the only thing that works: a cell
+ * covering four striped rows cannot be two colours, and painting it one of them would make the stripe
+ * read as a row boundary in the wrong place. */
+const STRIPE_BG = '#F6F8FA'
+const SECTION_BG = '#E9EEF4'
+const WHITE_BG = '#FFFFFF'
+
+/** A type's pricing as /api/event-types `load` (with `withPrices`) sends it. */
+export interface TypePricingRow {
+  price_change_on: boolean
+  price_mode: PriceMode
+  price_amount: number | null
+  price_rounding: PriceRounding
+  /** POUNDS by `menu_items_db.id`. */
+  typed: Record<string, number>
+}
+
+/** The menu, by category, in menu order — the Item prices rows. */
+export interface PricingMenu {
+  categories: { id: string; name: string; items: { id: string; name: string; price: number }[] }[]
+}
+
+/** A type's pricing as a `PriceSetup`, for the shared arithmetic. */
+const setupOf = (p: TypePricingRow | undefined): PriceSetup | null =>
+  p && p.price_change_on
+    ? { mode: p.price_mode, amount: p.price_amount, rounding: p.price_rounding, typed: p.typed }
+    : null
 
 const Dot = ({ colour }: { colour: string }) => (
   <span className="inline-block w-2.5 h-2.5 rounded-full shrink-0" style={{ background: colour }} aria-hidden="true" />
@@ -334,6 +433,10 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
 }) {
   const [loading, setLoading] = useState(true)
   const [types, setTypes] = useState<TypeRow[]>([])
+  /** 🔴 Pro — the Private column and its link/QR row. */
+  const [canPrivate, setCanPrivate] = useState(false)
+  /** 🔴 Max — "+ New event type", rename/move/delete, and the PRICES rows. */
+  const [canTypes, setCanTypes] = useState(false)
   const [standard, setStandard] = useState<StandardValues | null>(null)
   /* 🔴 THE ACTIVE VANS, WITH THEIR NAMES AND THEIR OWN VALUES. Needed because a Standard row whose
    * vans disagree now renders ONE CONTROL PER VAN rather than a link to Settings. */
@@ -357,16 +460,48 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
   /* `null` is the combined Standard column. With several vans the picker's first entry is
    * `van:<first van>`, and `null` never matches one — so the effect below seeds it. */
   const [phoneType, setPhoneType] = useState<string | null>(null)
+  /* ── PRICING (§70) ───────────────────────────────────────────────────────────────────────────────
+   * 🔴 `pricingReady` false MEANS 20261011 IS NOT APPLIED, and the whole PRICES section is absent —
+   * not disabled, absent. Controls that cannot store anything are worse than no controls: the
+   * operator would set a price, see it save, and the next order would charge the menu. It is the same
+   * honesty `missingTable` already gives the types themselves. */
+  const [pricingReady, setPricingReady] = useState(false)
+  const [pricing, setPricing] = useState<Record<string, TypePricingRow>>({})
+  const [menu, setMenu] = useState<PricingMenu>({ categories: [] })
+  /* ⚠️ PER BROWSER SESSION ONLY, AS INSTRUCTED — plain state, no localStorage and no column. The item
+   * rows are forty rows of controls; an operator who collapsed them does not want them back on the
+   * next render, and does not want that remembered for ever either. */
+  const [showItems, setShowItems] = useState(false)
+  /* ── 🔴 "SAME SETTINGS FOR ALL VANS" (5 October 2026) ───────────────────────────────────────────
+   * `sameSettings` is READ from the route, which computes it from `truck_vans.same_as_first_van`:
+   * ON when every non-first active van has it on, any mix OFF. Nothing is written on load.
+   * ⚠️ `sameSettingsAvailable` false ⇒ the "Same as Van 1" migration is not applied and the VANS row
+   * is not drawn at all — a switch that cannot store anything is worse than no switch. */
+  const [sameSettings, setSameSettings] = useState(false)
+  const [sameSettingsAvailable, setSameSettingsAvailable] = useState(false)
+  const [vanOneValues, setVanOneValues] = useState<VanOneValues>({})
+  /** The OFF → ON confirm. Null = not asking. */
+  const [confirmSameSettings, setConfirmSameSettings] = useState(false)
 
   const load = useCallback(async () => {
     try {
-      const r = await api(token, { action: 'load' })
+      const r = await api(token, { action: 'load', withPrices: true })
       setTypes((r.types ?? []) as TypeRow[])
       setStandard(r.standard ?? null)
       setVans(Array.isArray(r.vans) ? (r.vans as VanRow[]) : [])
       setReadOnly(r.readOnly === true)
       setUpgradeMessage(r.upgradeMessage ?? null)
       setMissingTable(r.missingTable === true)
+      setSameSettings(r.sameSettingsAllVans === true)
+      setSameSettingsAvailable(r.sameSettingsAvailable === true)
+      /* 🔴 THE TWO GATES, SEPARATELY (20261014). `canPrivate` is Pro; `canTypes` is Max. A Pro truck
+       * gets the Private column and the ORDERING row, and a Max badge on everything else. */
+      setCanPrivate(r.canPrivate === true)
+      setCanTypes(r.canTypes === true)
+      setVanOneValues((r.vanOneValues ?? {}) as VanOneValues)
+      setPricingReady(r.pricingReady === true)
+      setPricing((r.pricing ?? {}) as Record<string, TypePricingRow>)
+      setMenu((r.menu ?? { categories: [] }) as PricingMenu)
     } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'Could not load', bad: true }) }
     finally { setLoading(false) }
   }, [token])
@@ -383,6 +518,30 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
 
   const patch = (id: string, values: Record<string, unknown>) => act({ action: 'update', id, ...values })
 
+  /* ── 🔴 PRICING WRITES. SEPARATE ACTIONS, NOT `update`, BECAUSE THEY ARE A SEPARATE ALLOWLIST ────
+   * `update`'s loop writes `SERVICE_KEYS` and nothing else, by design — a client PATCHing a column
+   * outside that list is dropped. Routing prices through it would mean widening that allowlist to
+   * cover money, on the one action the service settings save through. `set_type_pricing` is its own
+   * handler with its own validation (`cleanPricingPatch`), and the plan gate covers both because the
+   * route refuses any non-`load` action by default. */
+  const patchPricing = (id: string, values: Record<string, unknown>) => {
+    /* ══ 🔴 "Set each price myself" OPENS THE ITEM PRICES (5 October 2026) ═══════════════════════
+     * Choosing `'none'` means "there is no across-the-board rule; I will set each price" — and the
+     * Amount and Rounding cells go blank at the same moment. Leaving the item rows folded away would
+     * answer that choice with an emptier screen than before it: the operator has just said where the
+     * prices come from, and the prices are not on screen.
+     * ⚠️ IT ONLY EVER OPENS, NEVER CLOSES. Switching back to "+ %" leaves them open — the operator
+     * may well want to see what their typed prices do to the new rule, and a screen that folded
+     * itself up under them would be taking a decision they did not ask for.
+     * ⚠️ AND IT IS KEYED ON THE **MODE BEING SENT**, not on the type's current state, because this
+     * runs before the save returns. */
+    if (values.price_mode === 'none') setShowItems(true)
+    return act({ action: 'set_type_pricing', id, ...values })
+  }
+
+  const setTypeItemPrice = (id: string, itemId: string, price: number | null) =>
+    act({ action: 'set_type_item_price', id, itemId, price })
+
   /**
    * ── 🔴 MATCH STANDARD — EVERY SETTING ON THIS TYPE BACK TO NULL ────────────────────────────────
    * The way back to inheriting, now that no control carries its own "Same as Standard" affordance.
@@ -391,8 +550,65 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
    * ⚠️ IT SENDS `blankTypeValues()`, the SAME starting state `create` uses, rather than listing the
    * columns here — so a setting added in a later stage is reset by this without touching this line.
    */
+  /* ══ 🔴 MATCH STANDARD **COPIES** NOW; IT USED TO CLEAR (5 October 2026) ═══════════════════════
+   * It sent `blankTypeValues()` — every column NULL — which under the old design meant "follow
+   * Standard from now on". A type holds its own values, so there is no "follow": the same words now
+   * COPY what Standard is right now. The operator's intent is identical; the copy is a snapshot
+   * rather than a subscription, which is exactly the change — a subscription is what made Market move
+   * when Van 1 moved.
+   * 🔴 THE SERVER COMPUTES THE COPY (`match_standard` → `vanOneServiceValues`), so the values the ⋯
+   * menu promises are the values that land. Sending them from here would be a second definition of
+   * "Standard" that could disagree with the one `+ New event type` uses. */
   const matchStandard = (id: string) =>
-    act({ action: 'update', id, ...blankTypeValues() }, () => setConfirmMatch(null))
+    act({ action: 'match_standard', id }, () => setConfirmMatch(null))
+
+  /**
+   * ── 🔴 "SAME SETTINGS FOR ALL VANS" — THROUGH SETTINGS' OWN ACTION, ONCE PER VAN ────────────────
+   * `set_van_same_as_first` is the action the Settings switch calls, and this calls exactly it —
+   * which is what makes the two switches one switch rather than two that could disagree. The grid
+   * sends it for every van EXCEPT the first (a van cannot follow itself; the handler refuses it too).
+   *
+   * ⚠️ SEQUENTIAL, NOT `Promise.all`, for the reason `saveStandard` gives: turning it ON makes each
+   * call COPY the first van's whole settings, and firing N of those in parallel would have them
+   * racing each other for no gain on a truck with two vans.
+   * 🔴 AND IT RELOADS AFTERWARDS rather than guessing. The route recomputes "are they all the same?"
+   * from the vans it reads, and that answer is the whole behaviour of this row.
+   */
+  const saveSameSettings = async (on: boolean) => {
+    if (!manageApi || vans.length < 2) return
+    setStandardBusy(true); setMsg(null)
+    try {
+      const firstId = vans[0]?.id
+      for (const v of vans) {
+        if (v.id === firstId) continue
+        await manageApi('set_van_same_as_first', { vanId: v.id, on })
+      }
+      await load()
+    } catch (e) {
+      setMsg({ text: e instanceof Error ? e.message : 'Could not save', bad: true })
+      await load()
+    } finally { setStandardBusy(false); setConfirmSameSettings(false) }
+  }
+
+  /**
+   * ── 🔴 "Take orders by private link and QR code", SAVED (20261014) ─────────────────────────────
+   * One action, writing `event_types.private_link_ordering` on the kind='private' row. The route
+   * creates the Private type if it is somehow not there yet, so this switch can never be a control
+   * with nothing behind it.
+   * ⚠️ IT RELOADS rather than patching local state, for the reason every other save here does: the
+   * route decides what the row holds, and guessing it locally is how a screen comes to disagree with
+   * the database it is showing.
+   */
+  const saveLinkOrdering = async (on: boolean) => {
+    setStandardBusy(true); setMsg(null)
+    try {
+      await api(token, { action: 'set_private_link_ordering', on })
+      await load()
+    } catch (e) {
+      setMsg({ text: e instanceof Error ? e.message : 'Could not save', bad: true })
+      await load()
+    } finally { setStandardBusy(false) }
+  }
 
   /**
    * ── 🔴 CHANGING STANDARD. ONE SETTING, EVERY ACTIVE VAN, THROUGH SETTINGS' OWN ACTION ──────────
@@ -448,17 +664,41 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
     } finally { setStandardBusy(false) }
   }
 
+  /**
+   * ── 🔴 MOVE LEFT/RIGHT REORDERS **CUSTOM TYPES AMONG THEMSELVES** (5 October 2026) ───────────────
+   * Private is pinned straight after Standard and is not in the running. The swap therefore happens
+   * inside the list of CUSTOM types, and the reorder is sent as the custom ids in their new order.
+   *
+   * ⛔ THE INDICES CANNOT BE THE GRID'S. `types` has Private at index 0, so `i + by` on the grid's
+   * indices would let the first custom type swap WITH Private — moving the built-in, which the server
+   * would then renumber, and the column would drift away from Standard. Working in the custom list is
+   * what makes "only reorders custom types among themselves" true rather than merely intended.
+   * ⚠️ AND PRIVATE'S ID IS NOT SENT AT ALL, so `reorder` cannot renumber it even if asked to.
+   */
   const move = (id: string, by: -1 | 1) => {
-    const i = types.findIndex(t => t.id === id)
+    const customs = types.filter(t => t.kind !== 'private')
+    const i = customs.findIndex(t => t.id === id)
     const j = i + by
-    if (i < 0 || j < 0 || j >= types.length) return
-    const ids = types.map(t => t.id)
+    if (i < 0 || j < 0 || j >= customs.length) return
+    const ids = customs.map(t => t.id)
     ;[ids[i], ids[j]] = [ids[j], ids[i]]
     setMenuFor(null)
     return act({ action: 'reorder', ids })
   }
+  /** The index of a type within the CUSTOM list, for disabling Move left/right at the ends. */
+  const customIndexOf = (id: string) => types.filter(t => t.kind !== 'private').findIndex(t => t.id === id)
+  const customCount = types.filter(t => t.kind !== 'private').length
 
   const editable = !readOnly && !busy
+  /**
+   * ── 🔴 THE **PRO** EDITABILITY, SEPARATE FROM `editable` (20261014) ─────────────────────────────
+   * `readOnly` is `!canWrite` — the MAX gate — so a Pro truck reaches this screen with `editable`
+   * false, which is right for every control except the one it is entitled to. Without this, a Pro
+   * truck would see its own Private column drawn read-only and have no way to use the feature it
+   * pays for.
+   * ⚠️ IT STILL RESPECTS `busy`, so a save in flight disables it like everything else.
+   */
+  const privateEditable = canPrivate && !busy
   const typeById = useMemo(() => new Map(types.map(t => [t.id, t])), [types])
 
   /**
@@ -472,7 +712,22 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
    * grew per-van controls only when the values differed, so equalising two vans made every row below
    * jump upwards.
    */
-  const vanColumns = useMemo(() => (vans.length > 1 ? vans : []), [vans])
+  /* ══ 🔴 THE COLUMN SHAPE IS THE SWITCH'S, NOT ONLY THE VAN COUNT'S (5 October 2026) ════════════
+   * Dominic: "ON: one Standard column, header STANDARD over 'All vans'. OFF: one column per active
+   * van, oldest first, each saving to that van only."
+   *
+   * ⚠️ THIS SUPERSEDES A RULE THIS FILE ARGUED FOR ON 4 OCTOBER — "the shape of the screen is a fact
+   * about the truck (how many vans it has), never about the values in it" — and the supersession is
+   * deliberate rather than an oversight. That rule existed because the columns used to appear and
+   * disappear as VALUES changed (`perVan`), so equalising two vans made every row jump. The shape now
+   * follows an explicit SWITCH the operator pressed, which is the opposite case: they asked for it,
+   * and the row that changes it is the first row on the screen.
+   * ⛔ IT STILL DOES NOT CONSULT `standardIsPerVan`. Nothing keys the layout off whether the values
+   * happen to agree — that is the part of the 4 October rule that stands. */
+  const vanColumns = useMemo(
+    () => (vans.length > 1 && !sameSettings ? vans : []),
+    [vans, sameSettings],
+  )
   /** Every column right of the labels, in render order: the van(s), then the types. */
   const valueColumnCount = (vanColumns.length > 1 ? vanColumns.length : 1) + types.length
   /* The phone picker's list — the van columns, then the types, in the same order as the grid.
@@ -502,6 +757,209 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
     if (phoneType && columns.some(c => c.id === phoneType)) return phoneType
     return columns.length ? columns[0].id : null
   }, [phoneType, columns])
+
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // THE GRID'S SHAPE — PLANNED, THEN DRAWN
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+
+  /** How many columns the Standard side occupies. One van (or none) ⇒ one combined column. */
+  const vanCount = vanColumns.length > 1 ? vanColumns.length : 1
+
+  /**
+   * The Standard column headers, and which van (if any) each one writes to.
+   *
+   * ⚠️ `van: null` IS THE COMBINED "Standard" COLUMN, and it writes EVERY active van — the behaviour
+   * a one-van truck has always had, and the reason a single-van grid has no van name in it. A named
+   * van column writes that van alone.
+   */
+  const vanHeaders = useMemo(() => (
+    vanColumns.length > 1
+      ? vanColumns.map(v => ({ key: v.id, name: v.name, van: v as VanRow | null }))
+      /* 🔴 THE COMBINED COLUMN'S NAME SAYS WHICH CASE IT IS. With several vans following each other it
+       * is "All vans" (the switch is on, and edits go to Van 1 which fans out); with one van it is
+       * "Standard", unchanged. A truck with two vans and the switch on must not read "Standard" over
+       * a column that is really Van 1 — the header is the only thing that says so. */
+      : [{
+          key: 'standard',
+          name: vans.length > 1 ? SAME_SETTINGS_ALL_VANS_HEADER : 'Standard',
+          van: null as VanRow | null,
+        }]
+  ), [vanColumns, vans.length])
+
+  const canEditStandard = editable && !standardBusy && !!manageApi
+
+  /* ── OFFLINE PROTECTION, PER COLUMN — the switch's state and the mode under it ─────────────────── */
+  type VanHeader = (typeof vanHeaders)[number]
+  const standardOfflineOn = (v: VanHeader): boolean =>
+    v.van ? v.van.offline_enabled : (standard?.offline_protection.enabled === true)
+  const standardOfflineMode = (v: VanHeader): string =>
+    v.van ? v.van.offline_mode : (standard?.offline_protection.mode ?? 'pause')
+  const onStandardOfflineMode = (v: VanHeader, mode: string) => {
+    const row = SERVICE_ROWS.find(r => r.id === 'offline_protection')
+    if (!row) return
+    /* ⚠️ THROUGH THE SAME `saveStandard*` PAIR, SO THE SUB-ROW IS NOT A SECOND SAVE PATH. A mode
+     * string reaches `standardWriteFor`'s third shape, which writes the switch AND the mode. */
+    if (v.van) void saveStandardForVan(row, v.van.id, mode)
+    else void saveStandard(row, mode)
+  }
+  /** A type's resolved offline switch — its own value, or Standard's. */
+  const typeOfflineOn = (t: TypeRow): boolean =>
+    t.offline_protection === true || t.offline_protection === false
+      ? t.offline_protection === true
+      : (standard?.offline_protection.enabled === true)
+  /** A type's resolved offline mode — its own, or Standard's. */
+  const typeOfflineMode = (t: TypeRow, std: StandardValues): string =>
+    t.offline_protection_mode ?? std.offline_protection.mode ?? 'pause'
+
+  /* ── 🔴 THE "When offline" ROW DISAPPEARS WHEN PROTECTION IS OFF IN **EVERY** COLUMN ────────────
+   * Not "when Standard is off" and not "when the first van is off": the row exists to hold the mode
+   * for the columns that have one, so one column with protection on is enough to need it, and none
+   * means the row would be a label with nothing under it. Same rule as the price rule rows. */
+  const anyOfflineOn = useMemo(
+    () => vanHeaders.some(standardOfflineOn) || types.some(typeOfflineOn),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [vanHeaders, types, standard],
+  )
+
+  /* ── 🔴 THE PRICE RULE ROWS AND THE ITEM ROWS FOLD AWAY WHEN NO TYPE'S SWITCH IS ON ────────────
+   * Dominic: "the three rows disappear entirely when no type's switch is on". Three dropdowns with
+   * every cell blank is three rows of furniture — and it reads as "nothing is set yet" rather than
+   * "no type changes prices", which is a different and already-answered question (the switch row
+   * above is all off). */
+  const anyPriceOn = useMemo(
+    () => types.some(t => pricing[t.id]?.price_change_on === true),
+    [types, pricing],
+  )
+  /** How many rows the "Your menu prices" cell spans DOWN through, beyond its own. */
+  const ruleRowCount = anyPriceOn ? 3 : 0
+  /**
+   * ── 🔴 THE BUILT-IN PRIVATE TYPE, IF THIS TRUCK HAS ONE (20261014) ───────────────────────────────
+   * The grid draws the ORDERING section only when it exists, which is "20261014 applied AND the truck
+   * is entitled to the feature" — the route creates it on load for exactly those trucks.
+   * ⚠️ `kind` DEFAULTS TO 'custom' WHEN THE PROBE COULD NOT READ IT (see `readTypeKinds`), so a
+   * pre-migration load finds nothing here and the section is absent rather than broken.
+   */
+  const privateType = useMemo(
+    () => types.find(t => t.kind === 'private') ?? null,
+    [types],
+  )
+  /* ⛔ `itemCount` IS GONE (5 October 2026). The pill said "Show 23 items"; it now says
+   * "Show prices" — a count nobody acts on, and "items" in a PRICES band read as availability. */
+
+  /**
+   * ── 🔴 EVERY BODY ROW, IN ORDER, AS DATA ──────────────────────────────────────────────────────
+   * PRICES above SERVICE, as instructed — a truck looks at prices far more often than at the buzzer
+   * prompt, and the section that matters most should not be below the one that matters least.
+   */
+  type PlanRow =
+    | { k: 'section'; id: string; label: string; indent?: boolean }
+    | { k: 'category'; id: string; label: string; indent?: boolean }
+    | { k: 'price-switch'; id: string; label: string; indent?: boolean }
+    | { k: 'price-rule'; id: string; label: string; which: 'mode' | 'amount' | 'rounding'; indent?: boolean }
+    | { k: 'items-band'; id: string; label: string; indent?: boolean }
+    | { k: 'price-item'; id: string; label: string; item: { id: string; name: string; price: number }; indent?: boolean }
+    | { k: 'service'; id: string; label: string; row: ServiceRow; indent?: boolean }
+    | { k: 'offline-mode'; id: string; label: string; indent?: boolean }
+    | { k: 'same-settings'; id: string; label: string; indent?: boolean }
+    /* ⛔ `used-by` IS GONE (5 October 2026) — see the note where the section used to be pushed. */
+    /** 🔴 The one row only the Private type has: "Take orders by private link and QR code". */
+    | { k: 'private-link'; id: string; label: string; indent?: boolean }
+
+  const plan = useMemo<PlanRow[]>(() => {
+    const out: PlanRow[] = []
+    /* ⚠️ THE WHOLE SECTION IS ABSENT BEFORE 20261011 IS APPLIED. Not disabled — absent. See
+     * `pricingReady`'s own note: a control that cannot store anything is worse than no control. */
+    /* ══ 🔴 THE VANS SECTION, FIRST, AND ONLY FOR A TRUCK WITH 2+ ACTIVE VANS ═════════════════════
+     * A one-van truck has nothing to make the same as anything, so the row would be a switch with no
+     * meaning — and the instruction says so explicitly ("2+ active vans only"). The render harness
+     * asserts a one-van truck shows no VANS row.
+     * ⚠️ ALSO ABSENT BEFORE THE "Same as Van 1" MIGRATION (`sameSettingsAvailable`). */
+    if (vans.length > 1 && sameSettingsAvailable) {
+      out.push({ k: 'section', id: 'sec-vans', label: 'VANS' })
+      out.push({ k: 'same-settings', id: 'same-settings', label: SAME_SETTINGS_ALL_VANS_LABEL })
+    }
+    /* ══ 🔴 ORDERING, ABOVE PRICES AND BELOW VANS (20261014) ══════════════════════════════════════
+     * One row, and it belongs to the Private column: Standard's cell is a STATEMENT ("Open to
+     * everyone") and every custom type's cell is blank, because no other type offers link ordering at
+     * all — there is nothing for them to switch.
+     * ⛔ ABSENT, NOT DISABLED, WHEN THERE IS NO PRIVATE TYPE. A truck whose 20261014 has not been
+     * applied, or which is not entitled to the feature, sees no section — the same posture PRICES
+     * takes before 20261011 ("a control that cannot store anything is worse than no control").
+     * ⚠️ IT SITS ABOVE PRICES BECAUSE IT DECIDES WHETHER THERE IS ANYTHING TO PRICE. If a private
+     * event takes no orders online, its prices never reach a customer. */
+    if (privateType) {
+      out.push({ k: 'section', id: 'sec-ordering', label: ORDERING_SECTION })
+      out.push({ k: 'private-link', id: 'private-link', label: PRIVATE_LINK_ROW_LABEL })
+    }
+    if (pricingReady) {
+      out.push({ k: 'section', id: 'sec-prices', label: 'PRICES' })
+      out.push({ k: 'price-switch', id: 'price-on', label: PRICE_SETTING_LABELS.price_change_on })
+      if (anyPriceOn) {
+        out.push({ k: 'price-rule', id: 'price-mode', label: PRICE_SETTING_LABELS.price_mode, which: 'mode', indent: true })
+        out.push({ k: 'price-rule', id: 'price-amount', label: PRICE_SETTING_LABELS.price_amount, which: 'amount', indent: true })
+        out.push({ k: 'price-rule', id: 'price-rounding', label: PRICE_SETTING_LABELS.price_rounding, which: 'rounding', indent: true })
+        /* ITEM PRICES IS A SECTION BAND NOW, NOT A ROW (5 October 2026). The pill sits right after
+         * the heading text, inside the band: the grid scrolls SIDEWAYS, so anything further right is
+         * off-screen on exactly the truck with enough types to need it. It counts the items, so
+         * "Show 23 items" says what is about to unfold. */
+        out.push({ k: 'items-band', id: 'sec-items', label: 'ITEM PRICES' })
+        if (showItems) {
+          for (const c of menu.categories) {
+            out.push({ k: 'category', id: `cat-${c.id}`, label: c.name })
+            for (const it of c.items) {
+              out.push({ k: 'price-item', id: `pi-${c.id}-${it.id}`, label: it.name, item: it })
+            }
+          }
+        }
+      }
+    }
+    out.push({ k: 'section', id: 'sec-service', label: 'SERVICE' })
+    for (const row of SERVICE_ROWS) {
+      out.push({ k: 'service', id: `svc-${row.id}`, label: row.label, row })
+      if (row.id === 'offline_protection' && anyOfflineOn) {
+        out.push({ k: 'offline-mode', id: 'offline-mode', label: OFFLINE_WHEN_OFFLINE_LABEL, indent: true })
+      }
+    }
+    /* ══ ⛔ THE "USED BY / Upcoming events" SECTION IS REMOVED (5 October 2026) ══════════════════
+     * It was a band and a row at the bottom of every grid showing each type's upcoming-event count,
+     * with "Everything else" under Standard. Two rows of screen on a dense grid, carrying a number
+     * that matters at exactly ONE moment: when you are about to delete a type and need to know how
+     * many events it would drop back to Standard.
+     * 🔴 SO THE COUNT MOVED TO WHERE IT IS ACTED ON — the delete confirm, which now reads
+     * "N upcoming events use <Type>. They'll go back to Standard." The count is still loaded
+     * (`countUpcomingByType` in the route, unchanged), so nothing was lost but the two rows.
+     * ⚠️ AND PRIVATE CANNOT BE DELETED, so that confirm is never reached for it. */
+    return out
+  }, [pricingReady, anyPriceOn, showItems, menu, anyOfflineOn, vans.length, sameSettingsAvailable, privateType])
+
+  /**
+   * ── 🔴 THE ZEBRA STRIPE, RESTARTING AFTER EVERY HEADING ───────────────────────────────────────
+   * The counter resets at each section AND each category heading, so the first row under "Margheritas"
+   * is white exactly as the first row under "SERVICE" is. Striping continuously instead would make the
+   * parity depend on how many items the previous category happened to have — the stripe would read as
+   * meaning something, and it would mean nothing.
+   * ⚠️ A HEADING ROW ITSELF IS NEVER STRIPED: a section row has its own darker band, and a category
+   * row is white so it reads as a break rather than as another data row.
+   */
+  const stripeIndex = useMemo(() => {
+    const out: boolean[] = []
+    let n = 0
+    for (const r of plan) {
+      /* 🔴 `items-band` RESTARTS THE COUNTER TOO. It draws as a section — darker band, heading type,
+       * never striped — so a counter that ran straight through it would hand the parity of every item
+       * row below to however many setting rows happened to sit above. Today a category always follows
+       * the band and resets it anyway, which is exactly why this was worth writing down rather than
+       * leaving to luck: it is right by accident until the day the band has items directly under it. */
+      if (r.k === 'section' || r.k === 'items-band' || r.k === 'category') { n = 0; out.push(false); continue }
+      out.push(n % 2 === 1)
+      n++
+    }
+    return out
+  }, [plan])
+  const stripeFor = (idx: number): boolean => stripeIndex[idx] === true
+
+  /** The header occupies grid rows 1 and 2, so the body starts at 3. */
+  const BODY_ROW_1 = 3
 
   /* ⚠️ CLOSING THE ⋯ MENU ON ANY OUTSIDE CLICK. A menu that stays open while the operator clicks a
    * control in the next column would sit over the thing they are trying to change. */
@@ -553,8 +1011,16 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
               * state that no longer exists is worse than no legend. */}
             <p className="text-xs sm:text-[13px] text-slate-500">{EVENT_TYPES_SUBTITLE}</p>
           </div>
-          <Btn label="+ New event type" colour="ghost" disabled={!editable}
-            onClick={() => setCreating(true)} />
+          {/* ── 🔴 "+ New event type" IS A **MAX** ACTION (20261014) ─────────────────────────────
+            * A Pro truck reaches this screen for its Private type and must not be able to make
+            * custom ones. The badge says which plan; `disabled` stops the press; and
+            * app/api/event-types/route.ts refuses `create` on the server, which is the rule — the
+            * screen decides what is drawn, the route decides what is done. */}
+          <div className="flex shrink-0 items-center">
+            <Btn label="+ New event type" colour="ghost" disabled={!editable || !canTypes}
+              onClick={() => setCreating(true)} />
+            {!canTypes && canPrivate && <MaxBadge />}
+          </div>
           {/* ⚠️ NO ✕ WHEN INLINE — there is nothing to close; the pill above is how you leave. */}
           {!inline && (
             <button type="button" onClick={() => onClose?.()} aria-label="Close"
@@ -635,7 +1101,9 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                     <TypeCard
                       type={t} standard={standard} editable={editable}
                       colour={colourFor(types.findIndex(x => x.id === t.id))}
+                      pricing={pricingReady ? pricing[t.id] : undefined}
                       onPatch={v => void patch(t.id, v)}
+                      onPatchPricing={v => void patchPricing(t.id, v)}
                       onRename={() => { setRenaming(t.id); setRenameTo(t.name) }}
                       onDelete={() => setConfirmDelete(t.id)}
                     />
@@ -643,109 +1111,566 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                 })()}
               </div>
 
-              {/* ── TABLET AND UP: the fixed-width columns, scrolling sideways ────────────────── */}
-              {/* ⚠️ THE SCROLLER IS THE ROW AREA, so the modal's own width never changes. */}
+              {/* ══ TABLET AND UP: THE GRID ═══════════════════════════════════════════════════════
+                * ── 🔴 EVERY CELL IS PLACED EXPLICITLY, AND THAT IS THE WHOLE REASON THIS READS AS A
+                * TABLE. The first build let CSS grid auto-place, which works until something spans:
+                * the "Your menu prices" cell spans the van columns AND four rows, the STANDARD
+                * heading spans the van columns, and each type's header spans two rows. With
+                * auto-placement, one of those spans pushes every later cell into the wrong column and
+                * the whole grid shears — and it shears DIFFERENTLY for a one-van truck and a two-van
+                * truck, which is the kind of fault that reaches an operator before it reaches a test.
+                *
+                * So the rows are PLANNED first (`plan`, below), each gets a row NUMBER, and every cell
+                * carries `gridColumn` and `gridRow`. Spans are then arithmetic rather than hope.
+                *
+                * ── 🔴 THE COLUMN LINES RUN FROM THE HEADER TO THE BOTTOM, AND THAT IS WHY NO ROW IS A
+                * `col-span-full` CELL ANY MORE. SERVICE and USED BY used to be one full-width div
+                * each, so the vertical rules simply stopped at them and started again below — the
+                * grid read as three stacked tables. Every row now emits a label cell plus ONE CELL PER
+                * VALUE COLUMN, each carrying `border-l`, including the section and category headings
+                * (whose value cells are empty but still draw their line).
+                *
+                * ⚠️ THE SCROLLER IS THE ROW AREA, so the card's own width never changes. */}
               <div className="hidden md:block overflow-x-auto px-2 pb-2" data-types-scroller>
                 <div
                   className="min-w-max"
-                  /* 🔴 THE LABEL COLUMN IS THE WIDE ONE (230px) AND THE VALUE COLUMNS ARE 200px.
-                   * It was the other way round — 200px of label beside 230px columns — which gave
-                   * "Remind me to add a buzzer" less room than the switch it describes. The board's
-                   * template is `230px repeat(n, 200px)` and these two constants are it. */
-                  /* 🔴 VAN COLUMNS ARE THE SAME WIDTH AS TYPE COLUMNS, as instructed — one `repeat`
-                   * over every value column, so they cannot be given different widths by accident. */
+                  /* 🔴 VAN COLUMNS ARE THE SAME WIDTH AS TYPE COLUMNS — one `repeat` over every value
+                   * column, so they cannot be given different widths by accident. */
                   style={{ display: 'grid', gridTemplateColumns: `${GRID_LABEL_W}px repeat(${valueColumnCount}, ${GRID_COL_W}px)` }}
                   data-types-grid
                 >
-                  {/* heading row */}
-                  <div className="px-3.5 py-3" />
-                  {/* The header of the highlighted column carries the same highlight as its cells. */}
-                  {/* ── 🔴 THE STANDARD HEADERS ────────────────────────────────────────────────
-                    * Two or more vans ⇒ one header per van, showing the van's NAME with a small
-                    * "Standard" tag beside it, each keeping the Standard highlight. The tag is what
-                    * says these columns are the truck's usual setup rather than more event types —
-                    * without it a van column and a type column would be indistinguishable.
-                    * One van ⇒ the single "Standard" header, unchanged. */}
-                  {vanColumns.length > 1 ? vanColumns.map(v => (
-                    <div key={v.id} className={`${CELL_DIVIDER} px-2.5 py-3 flex items-center gap-1.5 min-w-0`}>
-                      <Dot colour={STANDARD_COLOUR} />
-                      <span className="text-[13px] font-bold text-slate-800 truncate" title={v.name}>{v.name}</span>
-                      <span className="text-[11px] text-slate-400 font-semibold shrink-0">Standard</span>
-                    </div>
-                  )) : (
-                    <div className={`${CELL_DIVIDER} px-2.5 py-3 flex items-center gap-1.5 min-w-0`}>
-                      <Dot colour={STANDARD_COLOUR} />
-                      <span className="text-[13px] font-bold text-slate-800 truncate">Standard</span>
-                      <span className="text-[11px] text-slate-400 font-semibold shrink-0">default</span>
-                    </div>
-                  )}
+                  {/* ── HEADER ROW 1: the shared STANDARD heading ──────────────────────────────────
+                    * 🔴 ONE HEADING OVER THE VAN COLUMNS, NOT A "Standard" TAG IN EACH. Dominic,
+                    * 5 October 2026. It was a per-column `Standard`/`default` tag beside each van
+                    * name, which said the same word two or five times and left a type column and a van
+                    * column looking like the same kind of thing. One spanning heading says it once and
+                    * makes the two sides of the grid structurally different.
+                    * ⚠️ WITH ONE VAN IT SPANS ONE COLUMN, which is the instruction and also just what
+                    * the arithmetic does — no special case. */}
+                  <div className="px-3 flex items-end" data-grid-corner
+                    style={{ gridColumn: 1, gridRow: '1 / span 2', background: WHITE_BG }} />
+                  <div data-grid-standard-heading
+                    className={`${CELL_DIVIDER} px-2.5 flex items-center justify-center ${SUBCARD_HEADING}`}
+                    style={{ gridColumn: `2 / span ${vanCount}`, gridRow: 1, height: ROW_H.category, background: WHITE_BG }}>
+                    STANDARD
+                  </div>
+                  {/* ── HEADER ROW 1-2: one cell per type, spanning both header rows ───────────────
+                    * 🔴 THE ⋯ IS `absolute` AT THE RIGHT EDGE AND THE NAME IS CENTRED IN THE WHOLE
+                    * CELL. It used to be `ml-auto` in a flex row, which makes it a sibling the name has
+                    * to share the width with — so "Street food festival" was pushed left of centre
+                    * while "Pub" sat dead centre, and the two headers did not line up with each other
+                    * or with the switches under them. Taking the button out of the flow is what lets
+                    * every title be centred on its column. */}
                   {types.map((t, i) => (
-                    <div key={t.id} className={`${CELL_DIVIDER} px-2.5 py-3 flex items-center gap-1.5 min-w-0 relative`}>
-                      <Dot colour={colourFor(i)} />
-                      <span className="text-[13px] font-bold text-slate-800 truncate">{t.name}</span>
-                      {/* 🔴 RENAME / MOVE / DELETE LIVE IN A ⋯ MENU, not as four links under every
-                        * column. Four links per column is four links × nine types of chrome competing
-                        * with the settings, which are what the screen is for. */}
+                    <div key={t.id} data-grid-type-header
+                      {...(t.kind === 'private' ? { 'data-private-column': true } : {})}
+                      className={`${CELL_DIVIDER} relative px-7 flex items-center justify-center gap-1.5 min-w-0`}
+                      style={{ gridColumn: 2 + vanCount + i, gridRow: '1 / span 2', background: WHITE_BG }}>
+                      {/* ── 🔴 THE BUILT-IN PRIVATE COLUMN READS AS BUILT-IN (20261014) ────────────
+                        * A LOCK instead of a colour dot, and purple text. The dots exist so two
+                        * CUSTOM columns can be told apart at a glance; Private is the one column that
+                        * is the same on every truck, so a dot would be claiming it is one of theirs.
+                        * ⚠️ THE LOCK IS NOT A PLAN BADGE. It means "built in, you cannot rename or
+                        * delete this" — the Max badges on the PRICES rows are a different mark in a
+                        * different place, and conflating them would tell a Pro truck that the feature
+                        * they are entitled to is locked. */}
+                      {t.kind === 'private' ? (
+                        <span aria-hidden="true" className="text-[11px] leading-none text-purple-500" title={PRIVATE_COLUMN_TITLE}>🔒</span>
+                      ) : (
+                        <Dot colour={colourFor(i)} />
+                      )}
+                      <span
+                        className={`text-[13px] font-bold truncate ${t.kind === 'private' ? 'text-purple-700' : 'text-slate-800'}`}
+                        title={t.kind === 'private' ? PRIVATE_COLUMN_TITLE : t.name}
+                      >{t.name}</span>
                       <button type="button" aria-label={`More for ${t.name}`} disabled={!editable}
                         onClick={e => { e.stopPropagation(); setMenuFor(menuFor === t.id ? null : t.id) }}
-                        className="ml-auto shrink-0 w-[30px] h-[30px] rounded-lg border border-slate-200 text-slate-500 font-bold disabled:text-slate-300">⋯</button>
+                        className="absolute right-1 top-1/2 -translate-y-1/2 w-[26px] h-[26px] rounded-lg border border-slate-200 text-slate-500 font-bold disabled:text-slate-300 leading-none">⋯</button>
                       {menuFor === t.id && (
-                        <div className="absolute right-2 top-11 z-10 w-[170px] bg-white rounded-xl shadow-xl border border-slate-100 p-1.5 text-sm"
+                        <div className="absolute right-1 top-[52px] z-10 w-[170px] bg-white rounded-xl shadow-xl border border-slate-100 p-1.5 text-sm text-left"
                           onClick={e => e.stopPropagation()}>
+                          {/* ⛔ PRIVATE OFFERS **ONLY** "Match Standard" (20261014, decision 1). Rename,
+                            * Move left/right and Delete are absent rather than disabled: a greyed
+                            * "Delete" invites the operator to wonder what would unlock it, and the
+                            * answer is nothing — it is built in. The server refuses them too (the
+                            * rename/delete/move handlers filter on the truck and the id, and
+                            * scripts/private-events.cjs asserts the kind check), because the screen
+                            * decides what is drawn and the route decides what is done. */}
+                          {t.kind !== 'private' && (
+                            <>
                           <button type="button" className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50"
                             onClick={() => { setRenaming(t.id); setRenameTo(t.name); setMenuFor(null) }}>Rename</button>
-                          <button type="button" disabled={i === 0}
+                          {/* ⚠️ DISABLED AT THE ENDS OF THE **CUSTOM** LIST, not of the grid. With
+                            * Private at grid index 0, `i === 0` would have disabled Move left on the
+                            * first custom type one column too late. */}
+                          <button type="button" disabled={customIndexOf(t.id) === 0}
                             className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50 disabled:text-slate-300"
                             onClick={() => void move(t.id, -1)}>Move left</button>
-                          <button type="button" disabled={i === types.length - 1}
+                          <button type="button" disabled={customIndexOf(t.id) === customCount - 1}
                             className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50 disabled:text-slate-300"
                             onClick={() => void move(t.id, 1)}>Move right</button>
-                          {/* 🔴 THE WAY BACK TO INHERITING, AND THE ONLY ONE. Every per-control "Same
-                            * as Standard" affordance is gone, so this is what clears a type. It sits
-                            * between Move right and Delete, as the board's note has it. */}
+                            </>
+                          )}
+                          {/* 🔴 THE WAY BACK TO INHERITING, AND THE ONLY ONE. ⚠️ IT CLEARS THE SERVICE
+                            * SETTINGS ONLY — prices are not in `SERVICE_KEYS` and `Match Standard`
+                            * sends `blankTypeValues()`, which does not name a price column. A type's
+                            * prices are turned off by its own switch, which is where an operator is
+                            * looking when they want that. Said out loud in the confirm. */}
                           <button type="button" className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50"
                             onClick={() => { setConfirmMatch(t.id); setMenuFor(null) }}>{MATCH_STANDARD_LABEL}</button>
-                          <button type="button" className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50 text-red-700"
-                            onClick={() => { setConfirmDelete(t.id); setMenuFor(null) }}>Delete</button>
+                          {t.kind !== 'private' && (
+                            <button type="button" className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50 text-red-700"
+                              onClick={() => { setConfirmDelete(t.id); setMenuFor(null) }}>Delete</button>
+                          )}
                         </div>
                       )}
                     </div>
                   ))}
-
-                  {/* ⚠️ `SUBCARD_HEADING` — THE TOKEN SETTINGS' OWN GROUP HEADINGS USE (lib/ui-tokens.ts,
-                    * "Accepting orders", "Taking payment"). It was a one-off
-                    * `text-[11px] font-bold text-slate-500 tracking-[0.06em]` here, which is a
-                    * different size, weight, colour and tracking from every heading on the page
-                    * behind it. */}
-                  <div className={`col-span-full px-3 pt-3.5 pb-1.5 ${SUBCARD_HEADING}`}
-                    style={{ gridColumn: '1 / -1' }}>SERVICE</div>
-
-                  {SERVICE_ROWS.map(row => (
-                    <SettingRow key={row.id} row={row} types={types} standard={standard}
-                      vanColumns={vanColumns}
-                      editable={editable} onPatch={patch}
-                      onStandard={(r, v) => void saveStandard(r, v)}
-                      onStandardVan={(r, vanId, v) => void saveStandardForVan(r, vanId, v)}
-                      standardBusy={standardBusy || !manageApi} />
-                  ))}
-
-                  <div className={`col-span-full px-3 pt-3.5 pb-1.5 ${SUBCARD_HEADING}`}
-                    style={{ gridColumn: '1 / -1' }}>USED BY</div>
-                  <div className="px-3 py-2.5 border-t border-slate-100 text-sm font-semibold text-slate-900 min-h-11 flex items-center">
-                    Upcoming events
-                  </div>
-                  {/* ⚠️ "Everything else" IS A FACT ABOUT THE TRUCK, NOT ABOUT A VAN — every event with
-                    * no type, whichever van runs it. So it SPANS the van columns rather than being
-                    * repeated, for the same reason a truck-level setting does. */}
-                  <div className={`${CELL_DIVIDER} px-2.5 py-2.5 border-t border-slate-100 text-sm text-slate-600 min-h-11 flex items-center justify-center`}
-                    style={vanColumns.length > 1 ? { gridColumn: `span ${vanColumns.length}` } : undefined}>
-                    Everything else
-                  </div>
-                  {types.map(t => (
-                    <div key={t.id} className={`${CELL_DIVIDER} px-2.5 py-2.5 border-t border-slate-100 text-sm text-slate-700 min-h-11 flex items-center justify-center`}>
-                      {t.upcoming} event{t.upcoming === 1 ? '' : 's'}
+                  {/* ── HEADER ROW 2: the van names, centred, with NO colour dot ──────────────────
+                    * ⛔ NO DOT ON A VAN COLUMN (5 October 2026). The dots exist so two TYPE columns
+                    * can be told apart at a glance; every van column carried the same grey
+                    * `STANDARD_COLOUR`, so the dot distinguished nothing and made a van column look
+                    * like a seventh type. */}
+                  {vanHeaders.map((v, i) => (
+                    <div key={v.key} data-grid-van-header
+                      className={`${CELL_DIVIDER} px-2.5 flex items-center justify-center min-w-0`}
+                      style={{ gridColumn: 2 + i, gridRow: 2, height: ROW_H.control, background: WHITE_BG }}>
+                      <span className="text-[13px] font-bold text-slate-800 truncate" title={v.name}>{v.name}</span>
                     </div>
                   ))}
+
+                  {/* ── THE BODY ─────────────────────────────────────────────────────────────────── */}
+                  {plan.map((r, idx) => {
+                    const row = BODY_ROW_1 + idx
+                    /* `items-band` IS A SECTION in every respect that matters to the layout — the
+                     * darker band, the heading type, the height, and the stripe restarting after it. */
+                    const isBand = r.k === 'section' || r.k === 'items-band'
+                    const bg = isBand ? SECTION_BG
+                      : r.k === 'category' ? WHITE_BG
+                      : stripeFor(idx) ? STRIPE_BG : WHITE_BG
+                    /* ══ 🔴 `h` IS A **MINIMUM** NOW, NOT A HEIGHT (5 October 2026) ═══════════════
+                     * Labels wrap instead of truncating, and a wrapping label needs the row to grow.
+                     * Dominic: don't raise ROW_H.control for every row — let a row grow to fit when
+                     * its label wraps, 36px staying the minimum. So every body cell sets `minHeight`
+                     * and none sets `height`, and the grid's rows are `auto`: the row becomes as tall
+                     * as its tallest cell, which is the label when it takes two lines.
+                     * ⛔ THE ONE-LINE ROWS ARE UNCHANGED AT 36/28/22/28. `minHeight` with content
+                     * shorter than it renders identically to `height` — only a row that needs more
+                     * takes more, which is exactly "the other rows stay dense".
+                     * ⚠️ `items-center` ON EVERY CELL IS WHAT KEEPS A TALL ROW TIDY: the controls in
+                     * the value columns centre against the two-line label rather than sitting at the
+                     * top of a 50px box. */
+                    const h = isBand ? ROW_H.section
+                      : r.k === 'category' ? ROW_H.category
+                      : r.k === 'price-item' ? ROW_H.item
+                      : ROW_H.control
+                    const base = `px-2.5 flex items-center justify-center min-w-0 border-t border-slate-100`
+
+                    // ── THE LABEL CELL ───────────────────────────────────────────────────────────
+                    const label = (() => {
+                      if (isBand) {
+                        return (
+                          <div key="l" className={`px-3 flex items-center gap-2 ${SUBCARD_HEADING} border-t border-slate-100`}
+                            style={{ gridColumn: 1, gridRow: row, minHeight: h, background: bg }}>
+                            <span className="shrink-0">{r.label}</span>
+                            {/* ── 🔴 THE MAX BADGE ON THE **PRICES** BAND (20261014) ───────────────
+                              * Per-type prices are `event_types` (Max). A Pro truck sees the band and
+                              * its rows — so that it knows what Max buys — with the badge beside the
+                              * heading and every control in the band disabled.
+                              * ⚠️ ON THE BAND, NOT ON EACH OF THE FOUR ROWS. One mark where the
+                              * section is named reads as "this section is Max"; four marks read as
+                              * four separate locks on four unrelated things. */}
+                            {r.id === 'sec-prices' && !canTypes && canPrivate && <MaxBadge />}
+                            {/* 🔴 THE PILL, IMMEDIATELY AFTER THE HEADING, INSIDE THE BAND. The grid
+                              * scrolls sideways; this is the one position visible at every scroll
+                              * offset. It names the COUNT so the operator knows what is unfolding. */}
+                            {r.k === 'items-band' && (
+                              <button type="button" data-item-prices-toggle
+                                onClick={() => setShowItems(v => !v)}
+                                className="shrink-0 rounded-full border border-slate-300 bg-white px-2 py-px text-[10px] font-bold text-slate-700 hover:bg-slate-50 normal-case tracking-normal">
+                                {/* ⚠️ NO COUNT (5 October 2026). "Show 23 items" offered a number
+                                  * nobody acts on, and "items" in a PRICES band invited the reading
+                                  * that the band was about availability. */}
+                                {showItems
+                                  ? `${ITEM_PRICES_HIDE} \u25b4`
+                                  : `${ITEM_PRICES_SHOW} \u25be`}
+                              </button>
+                            )}
+                          </div>
+                        )
+                      }
+                      if (r.k === 'category') {
+                        /* ══ 🔴 CATEGORY HEADINGS ARE MORE DOMINANT (5 October 2026) ══════════════
+                         * PIZZA, DRINKS… were 11px bold slate-500 — lighter than the item names under
+                         * them, so a long menu read as one undifferentiated run of rows. They are now
+                         * 12px, near-black, extrabold, with a DARKER line above (slate-300 against
+                         * the slate-100 every other row uses) so the break is visible before the text
+                         * is read.
+                         * ⚠️ STILL LIGHTER THAN A SECTION BAND. A band is a grey fill across the whole
+                         * width; this is dark text on white with one stronger rule. The hierarchy is
+                         * band → category → row, and inverting the last two was the fault. */
+                        /* ══ ⛔ NO RULE ABOVE A CATEGORY HEADING (5 October 2026) ══════════════
+                         * The first version gave the label cell `border-t border-slate-300` to make
+                         * the break stronger. On screen that drew a darker line **only under the
+                         * label column**, because the value cells kept `border-slate-100` — a short
+                         * stub of dark line stopping at the first divider, which Dominic reported as
+                         * looking broken. It was.
+                         * 🔴 SO THE ROW HAS NO HORIZONTAL RULE AT ALL — neither here nor on its value
+                         * cells. The heading separates the group by being a heading: near-black,
+                         * extrabold, 12px small caps. A line is not needed and a HALF line is worse
+                         * than none.
+                         * ⚠️ THE VERTICAL COLUMN DIVIDERS STILL RUN THROUGH IT, unbroken, which is
+                         * the explicit requirement — `CELL_DIVIDER` is on the value cells and is not
+                         * a `border-t`, so dropping the horizontal rule does not touch it.
+                         * ⚠️ AND `truncate` IS GONE HERE TOO — no ellipsis anywhere. */
+                        return (
+                          <div key="l" className="px-3 flex items-center text-[12px] font-extrabold text-slate-900 tracking-[0.04em] uppercase leading-tight"
+                            style={{ gridColumn: 1, gridRow: row, minHeight: h, background: bg }}>
+                            <span>{r.label}</span>
+                          </div>
+                        )
+                      }
+                      return (
+                        /* 🔴 ITEM NAMES SIT 12px IN FROM THEIR CATEGORY HEADING (5 October 2026).
+                         * The heading is at `px-3` (12px); an item is at `pl-6` (24px), so each
+                         * category reads as a group rather than as a heading followed by rows that
+                         * happen to be below it. ⚠️ `pl-7` STAYS FOR A SUB-ROW ("When offline"), which
+                         * is a different and deeper relationship — a setting under a setting, not an
+                         * item under a heading. */
+                        <div key="l" className={`flex items-center gap-2 border-t border-slate-100 ${
+                          r.indent ? 'pl-7 pr-3' : r.k === 'price-item' ? 'pl-6 pr-3' : 'px-3'}`}
+                          style={{ gridColumn: 1, gridRow: row, minHeight: h, background: bg }}>
+                          {/* ══ 🔴 REGULAR WEIGHT, AND THEY **WRAP** (5 October 2026) ══════════════
+                            * Row labels were `font-semibold`; bold now belongs ONLY to section bands
+                            * (small caps) and column titles. A screen where every label is bold has
+                            * no emphasis left to spend on the headings that organise it.
+                            * ⛔ `truncate` IS GONE — NO ELLIPSIS ANYWHERE. It hid the end of the
+                            * longest label ("Take orders by private link and QR code") behind a hover
+                            * title, which is a tooltip nobody on a tablet can reach. `leading-tight`
+                            * is what makes two lines fit the row's height.
+                            * ⚠️ SUB-ROWS ARE SLIGHTLY LIGHTER (`slate-600` vs `slate-800`), which is
+                            * the only thing left distinguishing "When offline" from its parent now
+                            * that the indent is the other one. */}
+                          <span className={`min-w-0 flex-1 leading-tight ${r.k === 'price-item'
+                            ? 'text-[13.5px] text-slate-700'
+                            : r.indent
+                              ? 'text-sm text-slate-600'
+                              : 'text-sm text-slate-800'}`}>{r.label}</span>
+                        </div>
+                      )
+                    })()
+
+                    // ── THE STANDARD SIDE ────────────────────────────────────────────────────────
+                    const standardCells = (() => {
+                      /* 🔴 THE HINT LIVES IN THE ITEM PRICES BAND, spanning the van columns — which is
+                       * where Dominic asked for it, and it replaces the footer line that used to carry
+                       * it. ⚠️ IT STILL DRAWS THE DIVIDER, so the column lines stay continuous
+                       * through the band like every other row. */
+                      if (r.k === 'items-band') {
+                        /* ⛔ THE "Press a price to type your own" HINT IS GONE (5 October 2026). It
+                         * was an instruction for something an operator discovers by pressing a price,
+                         * occupying the one row in the band that could have said something they could
+                         * not discover. Dominic: remove it completely. It survives on the dashboard
+                         * sheet, which has room and a different audience.
+                         * ⚠️ ONE EMPTY CELL PER VAN COLUMN, so the column lines stay continuous. */
+                        return vanHeaders.map((v, i) => (
+                          <div key={v.key} className={`${CELL_DIVIDER} border-t border-slate-100`}
+                            style={{ gridColumn: 2 + i, gridRow: row, minHeight: h, background: bg }} />
+                        ))
+                      }
+                      if (r.k === 'section' || r.k === 'category') {
+                        /* The heading's own value cells: empty, but they draw the column lines.
+                         * ⛔ A CATEGORY ROW TAKES **NO** `border-t` (5 October 2026). Giving the label
+                         * cell a darker rule and these the usual light one drew a short dark stub that
+                         * stopped at the first divider — the "looks broken" Dominic reported. The row
+                         * now has no horizontal rule on either side of the grid.
+                         * ⚠️ `CELL_DIVIDER` IS NOT A `border-t`, so the VERTICAL column lines still run
+                         * through these rows unbroken, which is the requirement. A SECTION band keeps
+                         * its rule: it is a grey fill and the line is what seats it. */
+                        return vanHeaders.map((v, i) => (
+                          <div key={v.key}
+                            className={`${CELL_DIVIDER} ${r.k === 'category' ? '' : 'border-t border-slate-100'}`}
+                            style={{ gridColumn: 2 + i, gridRow: row, minHeight: h, background: bg }} />
+                        ))
+                      }
+                      /* ── 🔴 PRICES ARE TRUCK-WIDE: **ONE CELL** ACROSS EVERY VAN COLUMN ────────
+                       * There is no per-van price column in the database and no per-van meaning — a
+                       * truck does not charge £9 from one trailer and £10 from another at the same
+                       * pitch. So the Standard side of every PRICES row is one spanning cell, and the
+                       * "Change prices" one spans DOWN through the rule rows as well, because "your
+                       * menu prices" is the one answer for all four of them.
+                       * ⚠️ IT STAYS WHITE. A cell covering four striped rows cannot be two colours. */
+                      if (r.k === 'price-switch') {
+                        return [(
+                          <div key="std" data-prices-standard-cell
+                            className={`${CELL_DIVIDER} px-2.5 flex items-center justify-center text-center border-t border-slate-100`}
+                            style={{
+                              gridColumn: `2 / span ${vanCount}`,
+                              gridRow: `${row} / span ${1 + ruleRowCount}`,
+                              background: WHITE_BG,
+                            }}
+                            title={PRICES_TRUCK_WIDE_TITLE}>
+                            <span className="text-[13px] text-slate-600">{PRICES_STANDARD_CELL}</span>
+                          </div>
+                        )]
+                      }
+                      /* The rule rows have no Standard cell of their own — the span above covers them. */
+                      if (r.k === 'price-rule') return []
+                      if (r.k === 'price-item') {
+                        return [(
+                          <div key="std"
+                            className={`${CELL_DIVIDER} px-2.5 flex items-center justify-center border-t border-slate-100`}
+                            style={{ gridColumn: `2 / span ${vanCount}`, gridRow: row, minHeight: h, background: bg }}
+                            title={PRICES_TRUCK_WIDE_TITLE}>
+                            <span className={r.k === 'price-item'
+                              ? 'text-[13px] text-slate-700 tabular-nums'
+                              : 'text-[13px] text-slate-600'}>
+                              {r.k === 'price-item' ? `£${r.item.price.toFixed(2)}` : PRICES_MENU_CELL}
+                            </span>
+                          </div>
+                        )]
+                      }
+                      if (r.k === 'offline-mode') {
+                        /* One cell per van, but only where that van's protection is ON. */
+                        return vanHeaders.map((v, i) => (
+                          <div key={v.key} className={`${CELL_DIVIDER} ${base}`}
+                            style={{ gridColumn: 2 + i, gridRow: row, minHeight: h, background: bg }}>
+                            {standardOfflineOn(v) && (
+                              <Select className="w-full" height={GRID_CONTROL_H} ariaLabel={`${OFFLINE_WHEN_OFFLINE_LABEL} for ${v.name}`}
+                                disabled={!canEditStandard} value={standardOfflineMode(v)}
+                                options={OFFLINE_MODE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
+                                onChange={m => onStandardOfflineMode(v, m)} />
+                            )}
+                          </div>
+                        ))
+                      }
+                      /* ── 🔴 "Same settings for all vans" — ONE SWITCH, IN THE STANDARD AREA ──────
+                       * It spans the van columns because it is a statement about ALL of them, and
+                       * because when it is ON there is only one column to put it in anyway. Blank in
+                       * every type column, as instructed: a type is not a van and has no vans to make
+                       * the same.
+                       * 🔴 OFF → ON ASKS FIRST, because it OVERWRITES: it copies Van 1's settings over
+                       * every other van's, through the same action Settings' switch calls. ON → OFF
+                       * asks nothing and copies nothing — every van keeps what it has. */
+                      /* ── 🔴 "Take orders by private link and QR code" — STANDARD SAYS WHAT IS TRUE
+                       * Standard events are open to everyone, so there is nothing to switch. The cell
+                       * is a STATEMENT across the van columns, not a switch that could only ever be
+                       * off — a disabled switch here would invite a tap and read as "we have turned
+                       * private ordering off for Standard", which means nothing.
+                       * ⚠️ IT SPANS THE VAN COLUMNS for the same reason "Same settings" does: it is
+                       * one fact about the whole Standard side, not a per-van setting. */
+                      if (r.k === 'private-link') {
+                        /* ══ ⛔ BLANK ON THE STANDARD SIDE (5 October 2026) ══════════════════════
+                         * It said "Open to everyone" across the van columns. True, and the only cell
+                         * in the grid that was a sentence rather than a value — so it read as a
+                         * setting whose value was words, and invited a search for the control that
+                         * changed it. Dominic: remove it; only Private's cell has anything.
+                         * ⚠️ ONE EMPTY CELL PER VAN COLUMN, NOT ONE SPANNING CELL. The column lines
+                         * must stay continuous through this row like every other; a single spanning
+                         * cell would draw one divider where there should be two. */
+                        return vanHeaders.map((v, i) => (
+                          <div key={v.key} data-private-link-standard
+                            className={`${CELL_DIVIDER} border-t border-slate-100`}
+                            style={{ gridColumn: 2 + i, gridRow: row, minHeight: h, background: bg }} />
+                        ))
+                      }
+                      if (r.k === 'same-settings') {
+                        return [(
+                          <div key="std" data-same-settings-cell
+                            className={`${CELL_DIVIDER} ${base}`}
+                            style={{ gridColumn: `2 / span ${vanCount}`, gridRow: row, minHeight: h, background: bg }}>
+                            <Toggle on={sameSettings} disabled={!canEditStandard} compact
+                              ariaLabel={SAME_SETTINGS_ALL_VANS_LABEL}
+                              onToggle={() => {
+                                if (sameSettings) void saveSameSettings(false)
+                                else setConfirmSameSettings(true)
+                              }} />
+                          </div>
+                        )]
+                      }
+                      /* ── A SERVICE row: ONE CELL PER VAN COLUMN, EVERY ROW ────────────────────
+                       * ⛔ THE `truckLevel` BRANCH IS GONE (5 October 2026). It existed for exactly
+                       * one row — "Do you take cash?" — which was `trucks.takes_cash`, one column for
+                       * the whole truck, so every van column's switch wrote the same value and they
+                       * moved together. That is the defect Dominic met on localhost.
+                       * `truck_vans.takes_cash` (20261012) makes cash a van setting like the other
+                       * four, so EVERY service row is now per van and there is no exception left to
+                       * branch on — and no "Applies to all your vans" title to explain one.
+                       * ⚠️ `v.van` NULL IS THE COMBINED COLUMN (one van, or "All vans" when the
+                       * same-settings switch is on), and it writes EVERY active van — which is what
+                       * that column has always meant. */
+                      const sr = r.row
+                      return vanHeaders.map((v, i) => (
+                        <div key={v.key} className={`${CELL_DIVIDER} ${base} gap-2`}
+                          style={{ gridColumn: 2 + i, gridRow: row, minHeight: h, background: bg }}>
+                          <OneStandardControl row={sr} editable={canEditStandard} dense
+                            value={v.van ? vanValue(sr, v.van) : standardValue(sr, standard)}
+                            label={`${sr.label} for ${v.name}`}
+                            onChange={value => (v.van
+                              ? void saveStandardForVan(sr, v.van.id, value)
+                              : void saveStandard(sr, value))} />
+                        </div>
+                      ))
+                    })()
+
+                    // ── THE TYPE COLUMNS ─────────────────────────────────────────────────────────
+                    const typeCells = types.map((t, i) => {
+                      const col = 2 + vanCount + i
+                      const cellStyle = { gridColumn: col, gridRow: row, minHeight: h, background: bg }
+                      if (isBand || r.k === 'category') {
+                        /* ⛔ NO `border-t` ON A CATEGORY ROW — see the Standard side's note. The
+                         * vertical divider stays. */
+                        return (
+                          <div key={t.id}
+                            className={`${CELL_DIVIDER} ${r.k === 'category' ? '' : 'border-t border-slate-100'}`}
+                            style={cellStyle} />
+                        )
+                      }
+                      const pr = pricing[t.id]
+                      const on = pr?.price_change_on === true
+                      const setup = setupOf(pr)
+                      if (r.k === 'price-switch') {
+                        return (
+                          <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
+                            <Toggle on={on} disabled={!editable} compact
+                              ariaLabel={`${PRICE_SETTING_LABELS.price_change_on} for ${t.name}`}
+                              onToggle={() => patchPricing(t.id, { price_change_on: !on })} />
+                          </div>
+                        )
+                      }
+                      if (r.k === 'price-rule') {
+                        /* 🔴 CONTROLS ONLY IN COLUMNS WHOSE SWITCH IS ON; THE REST ARE BLANK CELLS.
+                         * Not disabled controls — blank. A greyed dropdown in an off column invites
+                         * the operator to try to use it, and reads as "this type's rule is None"
+                         * rather than "this type does not change prices".
+                         *
+                         * ══ 🔴 AND "None" BLANKS THE AMOUNT AND THE ROUNDING TOO (5 October 2026) ══
+                         * `'none'` means TYPED PRICES ONLY — there is no across-the-board change, so
+                         * there is no amount to enter and nothing for a rounding to round. An empty
+                         * input and a faded select there were two controls that could not affect
+                         * anything, and the Amount box in particular invited a number that
+                         * `cleanPriceAmount` would then discard (its unit is `null` for this mode).
+                         * ⚠️ THE STORED VALUES ARE NOT CLEARED, only hidden: switching back to "+ %"
+                         * brings the operator's amount and rounding back, which is the same promise
+                         * the "Change prices" switch itself makes. */
+                        /* ⚠️ DERIVED FROM `PRICE_MODES_WITH_AMOUNT`, not from `!== 'none'`. Same
+                         * answer today; the difference is that a sixth mode cannot be added without
+                         * deciding which side of this it falls on, because the list is built from
+                         * `PRICE_MODE_CHOICES` itself. */
+                        const ruleLive = on && PRICE_MODES_WITH_AMOUNT.includes(pr!.price_mode ?? '')
+                        return (
+                          <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
+                            {on && r.which === 'mode' && (
+                              <PriceModeSelect value={pr!.price_mode} disabled={!editable} height={GRID_CONTROL_H}
+                                label={`${PRICE_SETTING_LABELS.price_mode} for ${t.name}`}
+                                /* ⚠️ THE MODE AND THE AMOUNT ARE SENT TOGETHER, so the route validates
+                                 * the stored amount against the NEW unit — "10" meant as £10 must not
+                                 * survive a switch to "+ %" as 10%. `cleanPriceAmount` re-checks it
+                                 * against the ceiling of the new unit and nulls it if it cannot hold. */
+                                onChange={m => patchPricing(t.id, { price_mode: m, price_amount: pr!.price_amount })} />
+                            )}
+                            {ruleLive && r.which === 'amount' && (
+                              <PriceAmountInput mode={pr!.price_mode} value={pr!.price_amount} disabled={!editable} height={GRID_CONTROL_H}
+                                label={`${PRICE_SETTING_LABELS.price_amount} for ${t.name}`}
+                                onCommit={v => patchPricing(t.id, { price_amount: v, price_mode: pr!.price_mode })} />
+                            )}
+                            {ruleLive && r.which === 'rounding' && (
+                              <PriceRoundingSelect value={pr!.price_rounding} disabled={!editable} height={GRID_CONTROL_H}
+                                /* ══ ⛔ THE FADE IS GONE (5 October 2026) ═══════════════════════════
+                                 * It was faded while the value was still `'none'`, on the argument
+                                 * that a crisp "None" would read as a choice the operator had made
+                                 * when it was only the column default.
+                                 * 🔴 DOMINIC: NOTHING GREYED OR FADED ANYWHERE — "None" in Rounding
+                                 * looks like any normal value. And the old argument was weak: "no
+                                 * rounding" IS the value this rule uses, whoever chose it, so showing
+                                 * it at half strength told the operator their rule was somehow not
+                                 * settled. The ONLY grey left in this grid is a menu price in a column
+                                 * that is not changing prices, which is a statement of fact rather
+                                 * than a control at reduced strength. */
+                                label={`${PRICE_SETTING_LABELS.price_rounding} for ${t.name}`}
+                                onChange={v => patchPricing(t.id, { price_rounding: v })} />
+                            )}
+                          </div>
+                        )
+                      }
+
+                      if (r.k === 'price-item') {
+                        return (
+                          <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
+                            {/* 🔴 THE PRICE SHOWN IS `priceForItem` — THE FUNCTION THE SUBMIT ROUTE
+                              * CHARGES WITH (inside <PriceCell>). An off type shows the MENU price in
+                              * grey and is not pressable: `grey` is the fact, not a disabled control. */}
+                            <PriceCell menuPrice={r.item.price} setup={setup} itemId={r.item.id}
+                              typed={on ? pr!.typed[r.item.id] ?? null : null}
+                              grey={!on} disabled={!editable} height={GRID_TYPED_H}
+                              /* 🔴 THE DIFFERENCE IS A **TYPE COLUMN** THING ONLY (5 October 2026).
+                               * Standard IS the menu price, so the brackets there would always be
+                               * absent — but passing it only here means the Standard column cannot
+                               * start showing them if a default ever changes. */
+                              showDiff
+                              label={`${r.item.name} for ${t.name}`}
+                              onType={v => setTypeItemPrice(t.id, r.item.id, v)}
+                              onClear={() => setTypeItemPrice(t.id, r.item.id, null)} />
+                          </div>
+                        )
+                      }
+                      /* ── 🔴 THE LINK/QR SWITCH LIVES IN THE **PRIVATE** COLUMN AND NOWHERE ELSE ──
+                       * ⚠️ BLANK IN EVERY CUSTOM TYPE'S COLUMN, not a disabled switch: a Festival is
+                       * not private and has no link to switch, so there is nothing here to be on or
+                       * off. Same argument as the "Same settings" cell below.
+                       * ⛔ AND IT IS A `private_events` (Pro) CONTROL, NOT A MAX ONE. A Pro truck can
+                       * use this row while the PRICES rows above it carry a Max badge — which is the
+                       * whole reason the two keys were split (lib/features.ts). */
+                      if (r.k === 'private-link') {
+                        return (
+                          <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
+                            {t.kind === 'private' && (
+                              <Toggle
+                                on={t.private_link_ordering !== false}
+                                disabled={!privateEditable}
+                                compact
+                                ariaLabel={`${PRIVATE_LINK_ROW_LABEL} for ${t.name}`}
+                                onToggle={() => void saveLinkOrdering(t.private_link_ordering === false)}
+                              />
+                            )}
+                          </div>
+                        )
+                      }
+                      /* ⚠️ BLANK IN A TYPE COLUMN, NOT A DISABLED SWITCH. A type has no vans, so
+                       * there is nothing here to be on or off — and a greyed control would invite a
+                       * tap and read as "off for this type", which would mean nothing. */
+                      if (r.k === 'same-settings') {
+                        return <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle} />
+                      }
+                      if (r.k === 'offline-mode') {
+                        return (
+                          <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
+                            {typeOfflineOn(t) && (
+                              <Select className="w-full" height={GRID_CONTROL_H} ariaLabel={`${OFFLINE_WHEN_OFFLINE_LABEL} for ${t.name}`}
+                                disabled={!editable} value={typeOfflineMode(t, standard)}
+                                /* ⛔ NO FADE (5 October 2026). A faded mode meant "this type has no
+                                 * mode of its own, so you are looking at Standard's" — the subscription
+                                 * that made Market move when Van 1 moved, in miniature. A type holds
+                                 * its own values; a pre-backfill NULL is still SHOWN at the value that
+                                 * will be used, crisp. The only fade left on this screen is the price
+                                 * Rounding, where the column is NOT NULL and there is genuinely no
+                                 * other way to say "not chosen". */
+                                options={OFFLINE_MODE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
+                                onChange={m => patch(t.id, { offline_protection: true, offline_protection_mode: m })} />
+                            )}
+                          </div>
+                        )
+                      }
+                      return (
+                        <div key={t.id} className={`${CELL_DIVIDER} ${base} gap-2`} style={cellStyle}>
+                          <TypeControl row={r.row} type={t} standard={standard} editable={editable} dense
+                            onPatch={v => patch(t.id, v)} />
+                        </div>
+                      )
+                    })
+
+                    return <Fragment key={r.id}>{label}{standardCells}{typeCells}</Fragment>
+                  })}
                 </div>
               </div>
 
@@ -796,6 +1721,28 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
         </div>
       )}
 
+      {/* ── 🔴 SAME SETTINGS FOR ALL VANS — THE OFF → ON CONFIRM ─────────────────────────────────
+        * It asks because it OVERWRITES: turning it on copies Van 1's settings over every other van's,
+        * so a truck that had configured Van 2 differently loses that. Cancel leaves everything exactly
+        * as it was — nothing is written until Copy is pressed.
+        * ⚠️ THE WORDING NAMES KITCHEN CAPACITY'S SEPARATE SWITCH, because `VAN_COPY_FIELDS` and
+        * `CAPACITY_COPY_FIELDS` are disjoint and capacity does NOT travel with this. An operator who
+        * expected it to would otherwise think the copy had half-failed. */}
+      {confirmSameSettings && (
+        <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
+          onClick={e => { if (e.target === e.currentTarget) setConfirmSameSettings(false) }}>
+          <div className="bg-white rounded-2xl w-full max-w-sm p-4 space-y-3" data-same-settings-confirm>
+            <p className="font-bold text-slate-900">{SAME_SETTINGS_ALL_VANS_LABEL}</p>
+            <p className="text-sm text-slate-600">{SAME_SETTINGS_CONFIRM}</p>
+            <div className="flex gap-2 justify-end">
+              <Btn label="Cancel" colour="slate" size="sm" onClick={() => setConfirmSameSettings(false)} />
+              <Btn label="Copy Van 1’s settings" size="sm" disabled={!editable || standardBusy}
+                onClick={() => void saveSameSettings(true)} />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── MATCH STANDARD ───────────────────────────────────────────────────────────────────── */}
       {confirmMatch && (
         <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
@@ -806,9 +1753,23 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
             </p>
             <p className="text-sm text-slate-600">{MATCH_STANDARD_CONFIRM}</p>
             {/* ⚠️ IT SAYS WHAT SURVIVES. Per-event changes are not touched by this — it writes the
-              * TYPE's columns only — and an operator about to press it should not have to guess. */}
+              * TYPE's columns only — and an operator about to press it should not have to guess.
+              * ⚠️ AND PRICES ARE NOT TOUCHED EITHER (5 October). They are not service columns and are
+              * not in `SERVICE_KEYS`; a type's prices are turned off by its own switch. */}
             <p className="text-xs text-slate-500">
-              Anything you changed on a single event’s dashboard stays as it is.
+              Anything you changed on a single event’s dashboard stays as it is, and this type’s prices
+              are not changed.
+            </p>
+            {/* 🔴 WHAT THE COPY WILL ACTUALLY BE, BEFORE IT IS PRESSED. `vanOneValues` is the SERVER'S
+              * own `vanOneServiceValues` — the same values `match_standard` will write — summarised by
+              * `summariseType`, the same function the Add event picker uses. So the sentence the
+              * operator reads here and the row that lands are one computation, not two.
+              * ⚠️ IT IS NOT DERIVED FROM `standard` ON THIS SCREEN. That aggregate is "the first van's
+              * value plus a do-they-agree flag" and is the right input for DRAWING a column; it is not
+              * the thing the route copies, and using it here would let the promise and the write
+              * disagree about a truck whose vans differ. */}
+            <p className="text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+              It will use: {summariseType(vanOneValues as unknown as TypeFor)}
             </p>
             <div className="flex gap-2 justify-end">
               <Btn label="Cancel" colour="slate" size="sm" onClick={() => setConfirmMatch(null)} />
@@ -827,12 +1788,24 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
             <p className="font-bold text-slate-900">
               Delete “{typeById.get(confirmDelete)?.name ?? 'this type'}”?
             </p>
-            {/* 🔴 IT SAYS WHAT HAPPENS TO THE EVENTS, because that is the only thing a truck needs to
-              * know before pressing it. `on delete set null` is what makes it true. */}
+            {/* ══ 🔴 THE COUNT LIVES HERE NOW (5 October 2026) ════════════════════════════════════
+              * It was a row at the bottom of the grid ("USED BY / Upcoming events"), on screen all the
+              * time for a number that matters at one moment. This is that moment.
+              * 🔴 IT SAYS WHAT HAPPENS TO THE EVENTS, because that is the only thing a truck needs to
+              * know before pressing it. `on delete set null` is what makes it true.
+              * ⚠️ THE ZERO CASE READS DIFFERENTLY, deliberately: "No upcoming events use Festival" is
+              * the reassurance that makes the button safe to press, where "0 upcoming events use
+              * Festival. They'll go back to Standard." is a sentence about nothing. */}
             <p className="text-sm text-slate-600">
-              Its {typeById.get(confirmDelete)?.upcoming ?? 0} upcoming event
-              {(typeById.get(confirmDelete)?.upcoming ?? 0) === 1 ? '' : 's'} will go back to Standard.
-              Anything you changed on a single event stays as it is.
+              {(typeById.get(confirmDelete)?.upcoming ?? 0) === 0
+                ? <>No upcoming events use “{typeById.get(confirmDelete)?.name ?? 'this type'}”.</>
+                : <>
+                    {typeById.get(confirmDelete)?.upcoming} upcoming event
+                    {(typeById.get(confirmDelete)?.upcoming ?? 0) === 1 ? '' : 's'} use
+                    {(typeById.get(confirmDelete)?.upcoming ?? 0) === 1 ? 's' : ''}{' '}
+                    “{typeById.get(confirmDelete)?.name ?? 'this type'}”. They’ll go back to Standard.
+                  </>}
+              {' '}Anything you changed on a single event stays as it is.
             </p>
             <div className="flex gap-2 justify-end">
               <Btn label="Keep" colour="slate" size="sm" onClick={() => setConfirmDelete(null)} />
@@ -860,118 +1833,25 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
 // 1a · ONE ROW OF THE GRID
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-/**
- * The label, then the STANDARD COLUMNS, then one cell per type.
+/* ── ⛔ `SettingRow` IS DELETED, AND ITS DELETION IS THE POINT ─────────────────────────────────────
+ * It rendered one row — the label, then the Standard cells, then one cell per type — as a React
+ * fragment, letting CSS grid AUTO-PLACE every cell. That worked while every row was the same shape.
+ * It cannot survive this build, for two reasons that are the same reason:
  *
- * ── 🔴 ONE COLUMN PER ACTIVE VAN, NOT ONE CELL HOLDING A STACK ───────────────────────────────────
- * Dominic, 4 October 2026, replacing the stacked design of a few hours earlier: "2+ active vans:
- * replace the Standard column with ONE COLUMN PER ACTIVE VAN, first van first."
+ *   • THE ROWS ARE NO LONGER ALL THE SAME SHAPE. "Your menu prices" spans the van columns AND four
+ *     rows; the STANDARD heading spans the van columns; each type's header spans two rows; the
+ *     category and section headings need an empty cell PER COLUMN so the vertical rules do not stop
+ *     at them. Under auto-placement one span shifts every later cell by a column, and it shifts it
+ *     differently for a one-van truck than for a three-van truck.
+ *   • THE STRIPE AND THE HEIGHT ARE PROPERTIES OF THE ROW'S POSITION IN THE WHOLE GRID, not of the
+ *     row itself. A component rendering one row cannot know whether it is the third row since the
+ *     last heading.
  *
- * The stacked version put two controls inside one 200px cell with a small "Van1"/"Van2" label beside
- * each. It worked, and it was wrong for two reasons the column version fixes:
- *   • THE CELL GREW AND THE ROW GREW WITH IT, so a two-van truck's rows were twice the height of a
- *     one-van truck's and the type columns beside them were mostly empty space.
- *   • IT ONLY APPEARED WHEN THE VANS DIFFERED, so the layout JUMPED the moment a value changed —
- *     equalise two vans and a stack of two collapsed into one control, moving every row below it.
- *
- * 🔴 SO THE COLUMNS EXIST WHETHER OR NOT THE VANS AGREE. That is the explicit instruction and it is
- * the whole point: the shape of the screen is a fact about the truck (how many vans it has), never
- * about the values currently in it. Nothing moves when a value changes.
- *
- * ── 🔴 A TRUCK-LEVEL ROW SPANS THEM ALL ──────────────────────────────────────────────────────────
- * `takes_cash` is `trucks.takes_cash` — ONE column in the database for the whole truck. Repeating it
- * per van would draw two or five switches that always move together, which is a lie about the data:
- * an operator would reasonably expect to set cash for one van and not another, and could not. So it
- * renders as ONE control spanning every van column. The report lists which rows are which.
+ * 🔴 SO THE GRID PLANS ITS ROWS (`plan`) AND DRAWS THEM WITH EXPLICIT `gridRow` / `gridColumn`. The
+ * pieces `SettingRow` used — `vanValue`, `standardValue`, `OneStandardControl`, `TypeControl` — all
+ * survive below and are called directly by the grid and by the phone cards. Leaving the component
+ * behind would leave the auto-placement design in the file for someone to reach for.
  */
-function SettingRow({ row, types, standard, vanColumns, editable, onPatch, onStandard, onStandardVan, standardBusy }: {
-  row: ServiceRow
-  types: TypeRow[]
-  standard: StandardValues
-  /* ⚠️ `vans` WAS A SECOND PROP HERE AND IS GONE. It carried the same list as `vanColumns` except
-   * when there was only one van, and nothing in this component read it — two names for one list is
-   * how a row ends up iterating the wrong one. The single-van case is `vanColumns.length <= 1`. */
-  /** The vans that have a column of their own. Empty ⇒ one combined "Standard" column. */
-  vanColumns: VanRow[]
-  editable: boolean
-  onPatch: (id: string, values: Record<string, unknown>) => void
-  onStandard: (row: ServiceRow, value: boolean | number | string) => void
-  onStandardVan: (row: ServiceRow, vanId: string, value: boolean | number | string) => void
-  standardBusy: boolean
-}) {
-  const canEdit = editable && !standardBusy
-  /* 🔴 TRUCK-LEVEL ROWS ARE IDENTIFIED BY WHERE THEY WRITE, not by a list kept beside this one.
-   * `standardWriteFor` already has to know, because it picks the action — so asking it is the one
-   * answer that cannot fall out of step with what the save actually does. */
-  const truckLevel = standardWriteFor(row, false)?.scope === 'truck'
-  /* The cell class, shared by every Standard cell so the highlight cannot be applied unevenly. */
-  /* ⛔ NO HIGHLIGHT (4 October 2026, Dominic: "remove the colour coding that standard uses, all
-   * columns should be same colour"). The Standard columns carried `bg-orange-50`. With one column per
-   * VAN the tint was colouring one or two columns out of five, which read as "these are selected"
-   * rather than "these are your usual setup" — and the small "Standard" tag in the header already
-   * says which they are, in words.
-   * 🔴 CENTRED, like every other cell. A switch pinned left under a column header looked like it
-   * belonged to the header's left edge rather than to the column.
-   * 🔴 `border-l` IS THE COLUMN DIVIDER. With the tint gone there was nothing separating five columns
-   * of switches, so a row read as a line of controls rather than one control per column. Every cell
-   * right of the labels carries a left border in `border-slate-100` — the SAME colour as the row
-   * dividers, so the grid reads as a grid rather than as two different kinds of line. */
-  const STD_CELL = `${CELL_DIVIDER} px-2.5 py-2.5 border-t border-slate-100 min-h-11 flex items-center justify-center gap-2`
-
-  return (
-    <>
-      {/* 🔴 `text-sm` — THE SAME SIZE AS THE CONTROLS BESIDE IT, and the size every settings row in
-        * Manage uses. It was `text-[13px]` while the dropdowns were 14px, so the label and its own
-        * control were different sizes. Dominic: "dropdown text, switch labels and row labels all use
-        * the same font size, weight and line height as the rest of Manage's settings rows."
-        * ⚠️ THE LABEL COLUMN WAS WIDENED TO 214px TO PAY FOR IT. At 200px and 14px, "Remind me to add
-        * a buzzer" wrapped to two lines; the render harness measures that it does not. */}
-      <div className="px-3 py-2.5 border-t border-slate-100 text-sm font-semibold text-slate-900 min-h-11 flex items-center">
-        {row.label}
-      </div>
-
-      {/* ── THE STANDARD SIDE ──────────────────────────────────────────────────────────────────── */}
-      {vanColumns.length > 1 ? (
-        /* ── 🔴 ONE CELL PER VAN COLUMN, FOR EVERY ROW — INCLUDING THE TRUCK-LEVEL ONE ────────────
-          * Dominic, 4 October 2026: "Each van column gets its own switch, like every other row. No
-          * control spanning two columns." The truck-level row used to span them, and the result was
-          * one switch sitting under the first van's header with nothing under the second's — which he
-          * read, correctly, as "van 1 has a toggle but van 2 doesn't".
-          *
-          * 🔴 A TRUCK-LEVEL ROW DRAWS THE SAME SETTING IN EVERY COLUMN. `takes_cash` is
-          * `trucks.takes_cash`: one column for the whole truck. So each cell shows the SAME value and
-          * writes the SAME `update_truck` call, and they move together — which is why each carries a
-          * title saying so. Drawing it per column is a presentational choice that keeps the grid
-          * regular; it is not a claim that cash can differ by van, and the title is what stops it
-          * being read as one.
-          * ⚠️ NO "Van1"/"Van2" LABEL INSIDE A CELL — the COLUMN HEADER carries the name. */
-        vanColumns.map(v => (
-          <div key={v.id} className={STD_CELL}>
-            <OneStandardControl row={row} editable={canEdit}
-              value={truckLevel ? standardValue(row, standard) : vanValue(row, v)}
-              label={`${row.label} for ${v.name}`}
-              title={truckLevel ? TAKES_CASH_ALL_VANS_TITLE : undefined}
-              onChange={value => (truckLevel ? onStandard(row, value) : onStandardVan(row, v.id, value))} />
-          </div>
-        ))
-      ) : (
-        /* ── ONE VAN (or none): a single "Standard" column, writing every active van. ───────────── */
-        <div className={STD_CELL}>
-          <OneStandardControl row={row} editable={canEdit} value={standardValue(row, standard)}
-            label={`${row.label} for Standard`} onChange={v => onStandard(row, v)} />
-        </div>
-      )}
-
-      {/* ── THE TYPES, AFTER THE VAN COLUMNS ───────────────────────────────────────────────────── */}
-      {types.map(t => (
-        <div key={t.id} className={`${CELL_DIVIDER} px-2.5 py-2.5 border-t border-slate-100 min-h-11 flex items-center justify-center gap-2`}>
-          <TypeControl row={row} type={t} standard={standard} editable={editable}
-            onPatch={v => onPatch(t.id, v)} />
-        </div>
-      ))}
-    </>
-  )
-}
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // 1a-ii · THE STANDARD CELL
@@ -990,15 +1870,20 @@ function SettingRow({ row, types, standard, vanColumns, editable, onPatch, onSta
 /** One van's value for a row, in the shape the control wants. */
 function vanValue(row: ServiceRow, v: VanRow): boolean | number | string {
   if (row.id === 'collection_interval_mins') return v.collection_interval_mins
-  if (row.id === 'offline_protection') return v.offline_enabled ? v.offline_mode : 'off'
+  /* ⚠️ A BOOLEAN NOW, NOT `enabled ? mode : 'off'`. The row is a switch; the mode lives in the
+   * "When offline" sub-row and is read by `standardOfflineMode`. */
+  if (row.id === 'offline_protection') return v.offline_enabled
   if (row.id === 'buzzer_prompt') return v.buzzer_prompt
+  /* 🔴 CASH IS A VAN VALUE NOW (5 October 2026). It used to fall through to `standardValue`, which
+   * returned the ONE truck value for every column — the defect. */
+  if (row.id === 'takes_cash') return v.takes_cash
   return v.order_ready
 }
 
 /** Standard's aggregate value for a row, in the shape the control wants. */
 function standardValue(row: ServiceRow, standard: StandardValues): boolean | number | string {
   if (row.id === 'collection_interval_mins') return standard.collection_interval_mins.value
-  if (row.id === 'offline_protection') return standardOfflineValue(standard)
+  if (row.id === 'offline_protection') return standard.offline_protection.enabled
   return standardSwitchValue(row, standard)
 }
 
@@ -1008,10 +1893,16 @@ function standardValue(row: ServiceRow, standard: StandardValues): boolean | num
  * ⚠️ THE SAME COMPONENT WHETHER IT WRITES ONE VAN OR ALL OF THEM. Only `value` and `onChange` differ,
  * which is what stops a van column and a single Standard column looking like two kinds of thing.
  */
-function OneStandardControl({ row, value, label, title, editable, onChange }: {
+function OneStandardControl({ row, value, label, title, editable, onChange, dense = false }: {
   row: ServiceRow
   value: boolean | number | string
   label: string
+  /**
+   * ⚠️ THE GRID IS DENSE; THE PHONE CARDS ARE NOT. This component is rendered by both, and a 28px
+   * select with a 38×22 switch is right in a 36px grid row and wrong in a phone card's tap target.
+   * `false` by default, so the phone cards are unchanged and only the grid passes it.
+   */
+  dense?: boolean
   /** Hover text. Used for the truck-level row, where the same setting appears in every van column. */
   title?: string
   editable: boolean
@@ -1019,23 +1910,18 @@ function OneStandardControl({ row, value, label, title, editable, onChange }: {
 }) {
   if (row.kind === 'interval') {
     return (
-      <Select className="flex-1" ariaLabel={label} disabled={!editable}
+      <Select className="flex-1" height={dense ? GRID_CONTROL_H : undefined} ariaLabel={label} disabled={!editable}
         value={String(value)} title={title ?? `Every ${value} min`}
         options={TYPE_INTERVAL_CHOICES.map(n => ({ value: String(n), label: `Every ${n} min` }))}
         onChange={v => onChange(Number(v))} />
     )
   }
-  if (row.kind === 'offline') {
-    return (
-      <Select className="flex-1" ariaLabel={label} disabled={!editable}
-        value={String(value)}
-        title={title ?? OFFLINE_CHOICES.find(c => c.value === value)?.label ?? ''}
-        options={OFFLINE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
-        onChange={v => onChange(v)} />
-    )
-  }
+  /* ⚠️ NO `offline` BRANCH ANY MORE — IT FALLS THROUGH TO THE SWITCH BELOW. `kind: 'offline'` still
+   * distinguishes the row (it owns three columns, and the grid emits a "When offline" sub-row after
+   * it), but its CONTROL is now the same switch every other boolean row has. See the note above
+   * `OFFLINE_MODE_CHOICES`. */
   return (
-    <Toggle on={value === true} disabled={!editable} ariaLabel={label} title={title}
+    <Toggle on={value === true} disabled={!editable} compact={dense} ariaLabel={label} title={title}
       onToggle={() => onChange(!(value === true))} />
   )
 }
@@ -1091,53 +1977,62 @@ function OneStandardControl({ row, value, label, title, editable, onChange }: {
  * and back. A known limit, and the lesser evil: the alternative is committing on focus, which turns
  * tabbing through the table into a dozen silent writes.
  */
-function TypeControl({ row, type, standard, editable, onPatch }: {
+function TypeControl({ row, type, standard, editable, onPatch, dense = false }: {
   row: ServiceRow
   type: TypeRow
   standard: StandardValues
   editable: boolean
   onPatch: (values: Record<string, unknown>) => void
+  /** ⚠️ The grid only — the phone card keeps the full-size controls. See `OneStandardControl`. */
+  dense?: boolean
 }) {
-  const own = rowIsOwn(row, type)
-  /* ── ⛔ NO "Varies by van", NO "Set per van", NO "Same as Standard". EVERY CELL IS A REAL SETTING ──
-   * Dominic, 4 October 2026: "REMOVE 'VARIES BY VAN' COMPLETELY. Every cell is a real setting: a
-   * switch that is on or off, or a dropdown showing a real value."
+  /* ══ 🔴 A TYPE HOLDS ITS OWN VALUES. NOTHING HERE "FOLLOWS STANDARD" ANY MORE ══════════════════
+   * Dominic, 5 October 2026: "Service rows no longer draw faded 'following' values. Every cell is
+   * that column's own value. Changing Standard never changes a type."
    *
-   * Three passes of this build each had a phrase here instead of a value — "Same as Standard" as a
-   * dropdown option, then "Set per van" as text with a link, then "Varies by van" as an option again.
-   * All three answered "what will happen at this event?" with a cross-reference.
+   * ⛔ WHAT THIS REPLACES, AND WHY IT HAD TO GO. A NULL column was drawn FADED at Standard's value,
+   * which meant the cell was showing **somebody else's setting**. On localhost that produced the
+   * second half of his report: turning cash on for Van 1 "showed Market changing" — Market had never
+   * had a cash value of its own; it was displaying Van 1's, and Van 1's had moved. The fade said
+   * "inherited", and no fade has ever made that reading safe at a glance on a grid of forty switches.
    *
-   * 🔴 SO AN INHERITING CELL SHOWS THE FIRST VAN'S VALUE, FADED. `standardValue` is already the first
-   * van's value — the route's `distinct()` takes `pick(vanRows[0])`, and the vans arrive oldest-first
-   * — so "the first van's value" needs no new plumbing, and where the vans AGREE it is simply the
-   * truck's value, which is what the agree case always showed.
-   * ⚠️ THE TITLE CARRIES THE NUANCE THE CELL CANNOT. Where the vans differ, this control is showing
-   * ONE van's value and the others may differ; `TYPE_FOLLOWS_VAN_TITLE` says that, without claiming a
-   * number the screen has no room for. Where they agree it is still true and still harmless.
-   * 🔴 TOUCHING IT SETS AN EXPLICIT VALUE FOR EVERY VAN at events of this type, which is what a type's
-   * column has always meant — the branch below is unchanged in that respect.
+   * 🔴 THE FIX IS AT CREATION, NOT ON THIS SCREEN: a new type is a COPY of Van 1's resolved values
+   * (`vanOneServiceValues`, server-side), so every column has a real value and there is nothing left
+   * to inherit. `Match Standard` re-copies on demand. This component therefore shows the type's own
+   * value, crisp, and a Standard edit cannot reach it.
+   *
+   * ⚠️ THE RESOLVER CHAIN IS UNCHANGED AND STILL FALLS BACK. Every type that exists TODAY has NULLs,
+   * and until 20261012's backfill is run those rows must resolve exactly as they do now. So a NULL is
+   * still DISPLAYED at the value that will actually be used — it is just not faded, because "faded"
+   * promised a subscription that no longer exists. After the backfill there are no NULLs left.
+   * ⚠️ THE FADED STYLE SURVIVES IN EXACTLY ONE PLACE: an untouched price Rounding, where
+   * `price_rounding` is NOT NULL DEFAULT 'none' and the screen genuinely has no other way to say "the
+   * operator has not chosen this". That is the pricing build's own rule and it is not affected.
    */
-  const inheritTitle = own ? undefined : TYPE_FOLLOWS_VAN_TITLE
-
   if (row.kind === 'interval') {
     const shown = type.collection_interval_mins
       ?? (standardIsPerVan(row, standard) ? TYPE_INTERVAL_CHOICES[0] : standard.collection_interval_mins.value)
     return (
-      <Select className="flex-1" ariaLabel={`${row.label} for ${type.name}`} disabled={!editable}
-        value={String(shown)} faded={!own} title={inheritTitle ?? `Every ${shown} min`}
+      <Select className="flex-1" height={dense ? GRID_CONTROL_H : undefined} ariaLabel={`${row.label} for ${type.name}`} disabled={!editable}
+        value={String(shown)} title={`Every ${shown} min`}
         options={TYPE_INTERVAL_CHOICES.map(n => ({ value: String(n), label: `Every ${n} min` }))}
         onChange={v => onPatch({ collection_interval_mins: Number(v) })} />
     )
   }
 
   if (row.kind === 'offline') {
-    const v = offlineValue(type, standard)
+    /* ── 🔴 A SWITCH, ON THIS TYPE'S OWN VALUE ─────────────────────────────────────────────────────
+     * ⚠️ TAPPING WRITES **ONLY THE SWITCH**. The mode is left exactly as stored, which is what the
+     * "When offline" sub-row then shows and edits — turning protection off and on again must not
+     * silently change what it does. */
+    const explicitOff = type.offline_protection === true || type.offline_protection === false
+    const shownOffline = explicitOff
+      ? type.offline_protection === true
+      : standard.offline_protection.enabled
     return (
-      <Select className="flex-1" ariaLabel={`${row.label} for ${type.name}`} disabled={!editable}
-        value={v} faded={!own}
-        title={inheritTitle ?? OFFLINE_CHOICES.find(c => c.value === v)?.label ?? ''}
-        options={OFFLINE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
-        onChange={v2 => onPatch(offlinePatch(v2))} />
+      <Toggle on={shownOffline} disabled={!editable} compact={dense}
+        ariaLabel={`${row.label} for ${type.name}`}
+        onToggle={() => onPatch({ offline_protection: !shownOffline })} />
     )
   }
 
@@ -1145,14 +2040,14 @@ function TypeControl({ row, type, standard, editable, onPatch }: {
   const key = row.keys[0]
   const stored = (type as unknown as Record<string, unknown>)[key] as boolean | null | undefined
   const explicit = stored === true || stored === false
-  /* While inheriting, the position shown is STANDARD'S — the value that will be used. */
+  /* ⚠️ A PRE-BACKFILL NULL IS SHOWN AT THE VALUE THAT WILL BE USED — the resolver still falls back —
+   * but it is NOT faded, because nothing subscribes any more. See the note above. */
   const shown = explicit ? stored === true : standardSwitchValue(row, standard)
 
   return (
-    <Toggle on={shown} faded={!explicit} disabled={!editable}
-      ariaLabel={`${row.label} for ${type.name}`} title={inheritTitle}
-      /* ⚠️ TAPPING A FADED SWITCH STORES THE OPPOSITE OF WHAT IT SHOWS, which is what a switch does.
-       * It is showing Standard's position; tapping it means "no, for this type, the other one". */
+    <Toggle on={shown} disabled={!editable} compact={dense}
+      ariaLabel={`${row.label} for ${type.name}`}
+      /* ⚠️ TAPPING STORES THE OPPOSITE OF WHAT IT SHOWS, which is what a switch does. */
       onToggle={() => onPatch({ [key]: !shown })} />
   )
 }
@@ -1197,24 +2092,38 @@ function StandardCard({ standard, van, editable, onStandard, onStandardVan, stan
           : 'Your usual setup — used at every event with no type.'}
       </p>
       {SERVICE_ROWS.map(row => {
-        const truckLevel = standardWriteFor(row, false)?.scope === 'truck'
-        /* A van's card shows that van's value; the combined card shows the aggregate. A truck-level
-         * row has only the one value either way. */
-        const value = van && !truckLevel ? vanValue(row, van) : standardValue(row, standard)
+        /* ⛔ NO `truckLevel` BRANCH (5 October 2026). Cash became a van setting, so every service row
+         * is per van and there is no exception left — see the grid's note. */
+        const value = van ? vanValue(row, van) : standardValue(row, standard)
         return (
-          <div key={row.id} className="flex items-center justify-between gap-3 text-sm py-1.5 border-t border-slate-100">
-            <span className="text-slate-700 min-w-0 flex-1">
-              {row.label}
-              {van && truckLevel && (
-                /* ⚠️ SAID OUT LOUD. Inside a van's card, this one row is not about that van. */
-                <span className="block text-[11px] text-slate-400">Applies to the whole truck</span>
-              )}
-            </span>
-            <span className="flex items-center gap-2 shrink-0 max-w-[55%]">
-              <OneStandardControl row={row} editable={canEdit} value={value}
-                label={`${row.label} for ${van && !truckLevel ? van.name : 'Standard'}`}
-                onChange={v => (van && !truckLevel ? onStandardVan(row, van.id, v) : onStandard(row, v))} />
-            </span>
+          <div key={row.id}>
+            <div className="flex items-center justify-between gap-3 text-sm py-1.5 border-t border-slate-100">
+              <span className="text-slate-700 min-w-0 flex-1">
+                {row.label}
+  
+              </span>
+              <span className="flex items-center gap-2 shrink-0 max-w-[55%]">
+                <OneStandardControl row={row} editable={canEdit} value={value}
+                  label={`${row.label} for ${van ? van.name : 'Standard'}`}
+                  onChange={v => (van ? onStandardVan(row, van.id, v) : onStandard(row, v))} />
+              </span>
+            </div>
+            {/* 🔴 THE "When offline" SUB-ROW ON A PHONE TOO. The switch and the mode are one setting
+              * to an operator, and a phone that offered the switch without the mode would be a phone
+              * on which protection could be armed but not configured — on the one device this is used
+              * on at the hatch. Indented, and absent when the switch is off, exactly as in the grid. */}
+            {row.id === 'offline_protection' && value === true && (
+              <div className="flex items-center justify-between gap-3 text-sm pl-4 pb-1.5">
+                <span className="text-[13px] font-semibold text-slate-700 min-w-0 flex-1">{OFFLINE_WHEN_OFFLINE_LABEL}</span>
+                <span className="shrink-0 max-w-[55%]">
+                  <Select className="w-full" ariaLabel={`${OFFLINE_WHEN_OFFLINE_LABEL} for ${van ? van.name : 'Standard'}`}
+                    disabled={!canEdit}
+                    value={van ? van.offline_mode : (standard.offline_protection.mode ?? 'pause')}
+                    options={OFFLINE_MODE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
+                    onChange={m => (van ? onStandardVan(row, van.id, m) : onStandard(row, m))} />
+                </span>
+              </div>
+            )}
           </div>
         )
       })}
@@ -1223,12 +2132,15 @@ function StandardCard({ standard, van, editable, onStandard, onStandardVan, stan
 }
 
 /** One type on a phone. The same controls, stacked. */
-function TypeCard({ type, standard, editable, colour, onPatch, onRename, onDelete }: {
+function TypeCard({ type, standard, editable, colour, pricing, onPatch, onPatchPricing, onRename, onDelete }: {
   type: TypeRow
   standard: StandardValues
   editable: boolean
   colour: string
+  /** This type's pricing, or undefined before 20261011 is applied (⇒ no price rows at all). */
+  pricing: TypePricingRow | undefined
   onPatch: (values: Record<string, unknown>) => void
+  onPatchPricing: (values: Record<string, unknown>) => void
   onRename: () => void
   onDelete: () => void
 }) {
@@ -1249,6 +2161,61 @@ function TypeCard({ type, standard, editable, colour, onPatch, onRename, onDelet
       {/* ⚠️ THE "Standard: Off" HINT BESIDE EACH LABEL IS GONE. The control itself now shows the value
         * it inherits, so the hint was the same information twice — and on a phone it was the line that
         * pushed the label into wrapping. */}
+      {/* ── 🔴 PRICES ON A PHONE: THE RULE, BUT NOT FORTY ITEM ROWS ─────────────────────────────────
+        * The switch, the mode, the amount and the rounding are four rows and fit; the per-item grid
+        * is one row per dish across every type's column, which is unreadable at 390px — it is the
+        * reason the tablet layout scrolls sideways in the first place.
+        * ⚠️ IT IS NOT LOST ON A PHONE, AND THE LINE SAYS WHERE IT IS. An operator standing at a
+        * festival who needs to price ONE dish has the dashboard's "Prices for this event" sheet,
+        * which is full-screen on a phone by design and is the per-event surface they want anyway.
+        * This card is the truck-wide, per-TYPE setup, which is a sit-down job. */}
+      {pricing && (
+        <>
+          <div className="py-1.5 border-t border-slate-100 flex items-center justify-between gap-2">
+            <span className="text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_change_on}</span>
+            <Toggle on={pricing.price_change_on} disabled={!editable}
+              ariaLabel={`${PRICE_SETTING_LABELS.price_change_on} for ${type.name}`}
+              onToggle={() => onPatchPricing({ price_change_on: !pricing.price_change_on })} />
+          </div>
+          {pricing.price_change_on && (
+            <>
+              <div className="py-1.5 flex items-center justify-between gap-2 pl-4">
+                <span className="text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_mode}</span>
+                <span className="w-[130px] shrink-0">
+                  <PriceModeSelect value={pricing.price_mode} disabled={!editable}
+                    label={`${PRICE_SETTING_LABELS.price_mode} for ${type.name}`}
+                    onChange={m => onPatchPricing({ price_mode: m, price_amount: pricing.price_amount })} />
+                </span>
+              </div>
+              <div className="py-1.5 flex items-center justify-between gap-2 pl-4">
+                <span className="text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_amount}</span>
+                <span className="w-[130px] shrink-0">
+                  <PriceAmountInput mode={pricing.price_mode} value={pricing.price_amount} disabled={!editable}
+                    label={`${PRICE_SETTING_LABELS.price_amount} for ${type.name}`}
+                    onCommit={v => onPatchPricing({ price_amount: v, price_mode: pricing.price_mode })} />
+                </span>
+              </div>
+              <div className="py-1.5 flex items-center justify-between gap-2 pl-4">
+                <span className="text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_rounding}</span>
+                <span className="w-[130px] shrink-0">
+                  {/* ⛔ NO FADE HERE EITHER (5 October 2026). The phone card carried the same faded
+                    * Rounding as the grid, for the same reason, and it goes for the same reason —
+                    * "nothing greyed or faded anywhere". A rule the grid obeys and the phone card
+                    * does not is a rule that lasts until somebody opens the phone card. */}
+                  <PriceRoundingSelect value={pricing.price_rounding} disabled={!editable}
+                    label={`${PRICE_SETTING_LABELS.price_rounding} for ${type.name}`}
+                    onChange={v => onPatchPricing({ price_rounding: v })} />
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 pl-4 pb-1">
+                {Object.keys(pricing.typed).length} typed price
+                {Object.keys(pricing.typed).length === 1 ? '' : 's'} · set them on a bigger screen, or
+                for one event on its dashboard.
+              </p>
+            </>
+          )}
+        </>
+      )}
       {SERVICE_ROWS.map(row => (
         <div key={row.id} className="py-1.5 border-t border-slate-100">
           <div className="flex items-baseline justify-between gap-2 mb-1">
@@ -1257,6 +2224,21 @@ function TypeCard({ type, standard, editable, colour, onPatch, onRename, onDelet
           <div className="flex items-center gap-2">
             <TypeControl row={row} type={type} standard={standard} editable={editable} onPatch={onPatch} />
           </div>
+          {/* The same "When offline" sub-row the grid and the Standard card have. */}
+          {row.id === 'offline_protection'
+            && (type.offline_protection ?? standard.offline_protection.enabled) === true && (
+            <div className="flex items-center justify-between gap-2 pl-4 pt-1.5">
+              <span className="text-[13px] font-semibold text-slate-700">{OFFLINE_WHEN_OFFLINE_LABEL}</span>
+              <span className="w-[160px] shrink-0">
+                <Select className="w-full" ariaLabel={`${OFFLINE_WHEN_OFFLINE_LABEL} for ${type.name}`}
+                  /* ⛔ NO FADE — see the grid's note on the same control. */
+                  disabled={!editable}
+                  value={type.offline_protection_mode ?? standard.offline_protection.mode ?? 'pause'}
+                  options={OFFLINE_MODE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
+                  onChange={m => onPatch({ offline_protection: true, offline_protection_mode: m })} />
+              </span>
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -1317,8 +2299,14 @@ function NewTypePopup({ busy, onCancel, onCreate }: {
           ))}
         </div>
 
+        {/* ⚠️ "A COPY OF", NOT "THE SAME AS" (5 October 2026). The promise is the same on the day the
+          * type is made and DIFFERENT afterwards, which is the whole change: the type now holds its
+          * own values, so changing Standard later does not change it. Saying "starts exactly like
+          * Standard" was true and became misleading the moment an operator changed Standard — which is
+          * the report this build answers. */}
         <p className="text-[13px] text-slate-500">
-          Tap a name or type your own. It starts exactly like Standard. Change anything after.
+          Tap a name or type your own. It starts as a copy of Standard, and changing Standard later
+          won’t change it. Change anything after.
         </p>
 
         <div className="flex gap-2.5 justify-end">
@@ -1344,7 +2332,9 @@ function NewTypePopup({ busy, onCancel, onCreate }: {
  * ⚠️ IT OWNS NO FORM STATE. `value` and `onChange` come from the modal, so the type is submitted by
  * the same save the rest of the form uses and there is no second write path to keep in step.
  */
-export function EventTypeSelect({ token, venueName, placeId, value, onChange, disabled }: {
+export function EventTypeSelect({
+  token, venueName, placeId, value, onChange, disabled, privateName, onPrivateName,
+}: {
   token: string
   /** The venue typed into the form — the fallback when no place is picked. */
   venueName: string | null | undefined
@@ -1359,6 +2349,15 @@ export function EventTypeSelect({ token, venueName, placeId, value, onChange, di
   value: string | null
   onChange: (typeId: string | null) => void
   disabled?: boolean
+  /**
+   * ── 🔴 THE PRIVATE EVENT'S NAME, OWNED BY THE FORM (5 October 2026) ────────────────────────────
+   * The panel that collects it belongs to this control — selecting Private is what reveals it — but
+   * the VALUE belongs to the form, which is what saves it. So it is lifted, like `value`.
+   * ⚠️ BOTH OPTIONAL: the approval card passes them and so does Add/Edit event; a caller that does
+   * not is simply a caller for whom Private is not selectable.
+   */
+  privateName?: string | null
+  onPrivateName?: (name: string) => void
 }) {
   const [types, setTypes] = useState<TypeRow[]>([])
   const [ready, setReady] = useState(false)
@@ -1408,161 +2407,122 @@ export function EventTypeSelect({ token, venueName, placeId, value, onChange, di
     onChange(usual)
   }, [usual, value, onChange])
 
-  /* 🔴 NOTHING IS DRAWN FOR A TRUCK WITH NO TYPES. A field offering one option is a field that teaches
-   * nothing and takes a row of the form — and a truck who has never made a type should not meet the
-   * feature inside the Add event modal. */
-  if (!ready || types.length === 0) return null
+  /* ══ ⛔ THE FIELD IS DRAWN EVEN FOR A TRUCK WITH NO CUSTOM TYPES (5 October 2026) ════════════════
+   * It used to return null when `types` was empty, on the argument that a field with one option
+   * teaches nothing. That was right when the only options were Standard and the truck's own types.
+   * 🔴 IT IS WRONG NOW, BECAUSE **PRIVATE** IS ALWAYS ONE OF THE CHOICES. A truck with no custom
+   * types still has Standard and Private, which is a real two-way choice with a real consequence —
+   * and hiding it was exactly the bug this section fixes from the other side: the separate "Private
+   * event" tick existed because this control could not express Private.
+   * ⚠️ IT STILL RETURNS NULL BEFORE THE TYPES HAVE LOADED, so the form does not flash a Standard-only
+   * row and then grow. */
+  if (!ready) return null
 
   const selected = types.find(t => t.id === value) ?? null
   const isUsual = !!usual && usual === (value ?? null)
+  const privateType = types.find(t => t.kind === 'private') ?? null
+  const customTypes = types.filter(t => t.kind !== 'private')
+  const privateChosen = !!privateType && value === privateType.id
+
+  /* ⛔ ONE SELECTED PILL, ALWAYS. `value === null` is Standard, which is the absence of a type — so
+   * Standard is a pill like any other and "nothing selected" is not a state this control has. */
+  const pill = (key: string, label: string, on: boolean, kind: 'standard' | 'private' | 'custom', onPress: () => void) => (
+    <button
+      key={key}
+      type="button"
+      role="radio"
+      aria-checked={on}
+      disabled={disabled}
+      onClick={() => { touched.current = true; onPress() }}
+      className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
+        on
+          ? kind === 'private'
+            ? 'border-purple-400 bg-purple-100 text-purple-900'
+            : 'border-slate-900 bg-slate-900 text-white'
+          : kind === 'private'
+            ? 'border-purple-300 bg-white text-purple-700 hover:bg-purple-50'
+            : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}
+    >
+      {kind === 'private' && <span aria-hidden="true">🔒</span>}
+      {label}
+    </button>
+  )
 
   return (
     <div data-event-type-select>
-      <label className="block text-xs font-bold text-slate-600 mb-1" htmlFor="event-type-select">Event type</label>
-      <select id="event-type-select" value={value ?? ''} disabled={disabled}
-        onChange={e => { touched.current = true; onChange(e.target.value || null) }}
-        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-        <option value="">Standard</option>
-        {types.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-      </select>
-      {/* The "(usual for this place)" hint, and a one-line summary of what the type changes. */}
-      <p className="text-xs text-slate-500 mt-0.5">
-        {isUsual && <span className="font-semibold text-slate-600">(usual for this place) </span>}
-        {summariseType(selected)}
-      </p>
-    </div>
-  )
-}
-
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-// 3 · THE DASHBOARD CONTROL — from the Dashboard board
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-
-/** Which of this event's settings are the truck's own hand changes, as /api/dashboard reports them. */
-export interface OwnSettings {
-  buzzer_prompt: boolean
-  takes_cash: boolean
-  order_ready: boolean
-  collection_interval_mins: boolean
-}
-
-/**
- * "Event type ▾" on a live event, with the confirm from decision 3.
- *
- * 🔴 A LIVE EVENT'S TYPE CAN BE SWITCHED, and the confirm is what makes that safe to offer: it lists
- * what changes, says orders already placed keep their prices, and says the truck's own changes for this
- * event stay. All three are true of the implementation — the first because the resolvers are read at
- * request time, the second because price-lock is the stored `orders.items[].unit_price`
- * (lib/order-repricing.ts:4-12) and nothing here touches the orders table, the third because a hand
- * change outranks the type in every resolver.
- */
-export function EventTypeDashboardControl({ token, eventId, currentTypeId, ownSettings, onChanged, disabled }: {
-  token: string
-  eventId: string
-  currentTypeId: string | null
-  ownSettings: OwnSettings | null
-  onChanged: () => void
-  disabled?: boolean
-}) {
-  const [types, setTypes] = useState<TypeRow[]>([])
-  const [pending, setPending] = useState<string | null | undefined>(undefined)
-  const [clearOwn, setClearOwn] = useState(false)
-  const [busy, setBusy] = useState(false)
-  const [err, setErr] = useState<string | null>(null)
-
-  useEffect(() => {
-    let live = true
-    void (async () => {
-      try {
-        const r = await api(token, { action: 'load' })
-        if (live) setTypes((r.types ?? []) as TypeRow[])
-      } catch { /* the control simply does not appear */ }
-    })()
-    return () => { live = false }
-  }, [token])
-
-  const ownCount = ownSettings
-    ? Object.values(ownSettings).filter(Boolean).length
-    : 0
-
-  if (types.length === 0) return null
-
-  const current = types.find(t => t.id === currentTypeId) ?? null
-  const target = pending === undefined ? null : types.find(t => t.id === pending) ?? null
-  const targetName = pending === undefined ? '' : (target?.name ?? 'Standard')
-
-  const commit = async () => {
-    setBusy(true); setErr(null)
-    try {
-      await api(token, { action: 'assign', eventId, typeId: pending ?? null, clearOwn })
-      setPending(undefined); setClearOwn(false)
-      onChanged()
-    } catch (e) { setErr(e instanceof Error ? e.message : 'Could not switch') }
-    finally { setBusy(false) }
-  }
-
-  return (
-    <div data-event-type-dashboard>
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-semibold text-slate-700 flex-1">Event type</span>
-        <select
-          aria-label="Event type"
-          value={currentTypeId ?? ''}
-          disabled={disabled || busy}
-          onChange={e => { setClearOwn(false); setPending(e.target.value || null) }}
-          /* 🔴 `h-10`, NOT `min-h-[40px]`, AND THE REASON IS SAFARI. WebKit does not apply `min-height`
-           * to a `<select>` — it sizes the control from its own appearance — so the same class that
-           * rendered 40px in Chromium rendered 23px in WebKit. Measured in both engines by
-           * scripts/event-types-render.cjs, which is how it was found. An operator taps this on an
-           * iPad mid-service; 23px is not a target. A fixed height is honoured by both. */
-          className="border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm font-semibold text-slate-900 bg-white h-10">
-          <option value="">Standard</option>
-          {types.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-        </select>
+      {/* ⚠️ A `radiogroup`, NOT A LIST OF BUTTONS. Exactly one is selected, which is what a radio group
+        * means — and it is what makes the control reachable with arrow keys rather than only by tap. */}
+      <p className="mb-1 block text-xs font-bold text-slate-600" id="event-type-pills-label">Event type</p>
+      <div role="radiogroup" aria-labelledby="event-type-pills-label"
+        data-event-type-pills className="flex flex-wrap gap-1.5">
+        {pill('standard', 'Standard', value === null, 'standard', () => onChange(null))}
+        {/* 🔴 PRIVATE IS SECOND, STRAIGHT AFTER STANDARD — the same position it has on the grid, so a
+          * truck finds it in the same place on both screens. */}
+        {privateType && pill(privateType.id, privateType.name, privateChosen, 'private', () => onChange(privateType.id))}
+        {customTypes.map(t => pill(t.id, t.name, value === t.id, 'custom', () => onChange(t.id)))}
       </div>
-      {ownCount > 0 && (
-        <p className="text-xs text-slate-500 mt-1">
-          {ownCount} setting{ownCount === 1 ? '' : 's'} changed for this event only.
-        </p>
-      )}
+      {/* The "(usual for this place)" hint, and a one-line summary of what the type changes. */}
+      <p className="mt-1 text-xs text-slate-500">
+        {isUsual && (
+          <span className="font-semibold text-slate-600">
+            {selected ? `${selected.name} is usual for this place. ` : 'Standard is usual for this place. '}
+          </span>
+        )}
+        {!privateChosen && summariseType(selected)}
+      </p>
 
-      {pending !== undefined && (
-        <div className="fixed inset-0 z-[70] bg-black/40 flex items-center justify-center p-4"
-          onClick={() => { if (!busy) setPending(undefined) }}>
-          <div className="bg-white rounded-2xl w-full max-w-sm p-5 space-y-3" onClick={e => e.stopPropagation()}>
-            <p className="font-bold text-slate-900 text-lg">
-              Switch this event to {targetName}?
-            </p>
-            {/* 🔴 THE THREE LINES FROM THE BOARD, AND EVERY ONE OF THEM IS TRUE OF THIS BUILD. */}
-            <div className="text-sm text-slate-700 space-y-1">
-              <p>• New orders use {targetName}’s service settings.</p>
-              {/* ⚠️ SAID EVEN THOUGH THIS BUILD CHANGES NO PRICES, because it is the question a truck
-                * asks when switching a LIVE event's type, and the answer will still be yes in stage 6.
-                * It is true now by construction: nothing here writes to the orders table. */}
-              <p>• Orders already placed keep their prices.</p>
-              <p>
-                {ownCount > 0
-                  ? `• Your ${ownCount} change${ownCount === 1 ? '' : 's'} for this event stay.`
-                  : '• You haven’t changed anything on this event.'}
-              </p>
-            </div>
-            {ownCount > 0 && (
-              <label className="flex gap-2 items-start text-sm text-slate-700">
-                <input type="checkbox" checked={clearOwn} onChange={e => setClearOwn(e.target.checked)} className="mt-0.5" />
-                <span>Clear my changes and use {targetName} exactly</span>
-              </label>
-            )}
-            {err && <p className="text-sm text-red-600">{err}</p>}
-            <div className="flex gap-2 justify-end">
-              <Btn label="Cancel" colour="slate" size="sm" disabled={busy} onClick={() => setPending(undefined)} />
-              <Btn label={`Switch to ${targetName}`} size="sm" loading={busy} onClick={() => void commit()} />
-            </div>
+      {/* ══ 🔴 THE PURPLE PANEL, DIRECTLY BELOW THE PILLS (5 October 2026) ═══════════════════════════
+        * ⛔ THIS REPLACES THE SEPARATE "Private event" TICK, AND THAT TICK WAS THE BUG. The dropdown
+        * offered "Private" while a tick existed beside it, and choosing Private in the dropdown left
+        * the tick unticked — two controls for one fact, which could disagree. One control now owns it:
+        * selecting the Private pill IS making the event private.
+        * ⚠️ IT OPENS AND CLOSES WITH THE PILL. Selecting any other type closes it, and the name field
+        * unmounts with it — so a name typed and then abandoned cannot be saved against a public event.
+        * ⚠️ THE TWO SENTENCES ARE ONE BLOCK, then the name field. Dominic moved the link/QR sentence up
+        * on 5 October: they are one answer to one question and the input used to sit between them. */}
+      {privateChosen && (
+        <div className="mt-2 rounded-xl border border-purple-200 bg-purple-50 p-3" data-private-panel>
+          <p className="text-[11px] leading-relaxed text-purple-800">{PRIVATE_TICK_HELP}</p>
+          <p className="mt-1 text-[11px] font-semibold leading-relaxed text-purple-900">{PRIVATE_LINK_PROMISE}</p>
+          <div className="mt-3 border-t border-purple-200 pt-3">
+            <label className="mb-1 block text-xs font-bold text-purple-900" htmlFor="private-name-input">
+              {PRIVATE_NAME_LABEL}
+            </label>
+            <input
+              id="private-name-input"
+              type="text"
+              maxLength={80}
+              value={privateName ?? ''}
+              disabled={disabled}
+              onChange={e => onPrivateName?.(e.target.value)}
+              placeholder={PRIVATE_NAME_PLACEHOLDER}
+              className="w-full rounded-xl border border-purple-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+            <p className="mt-1 text-[11px] text-purple-800">{PRIVATE_NAME_HELP}</p>
           </div>
         </div>
       )}
-      {current && ownCount === 0 && (
-        <p className="sr-only">This event uses {current.name} exactly.</p>
-      )}
     </div>
   )
 }
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// ⛔ 3 · THE DASHBOARD CONTROL — DELETED (5 October 2026)
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// `EventTypeDashboardControl` and its `OwnSettings` interface stood here: 130 lines of a dropdown and
+// a confirm for switching a LIVE event's type from the Dashboard board.
+//
+// 🔴 IT HAD NO CALLER. The "This event" card took that job over
+// (app/dashboard/[token]/page.tsx — see the note at the card), and the standalone control was left
+// exported, compiled into every bundle that imports this module, and reachable by nobody.
+// ⛔ DEAD CODE THAT STILL COMPILES IS WORSE THAN DEAD CODE THAT DOES NOT: it keeps answering "yes,
+// that exists" to anyone searching for how a live event's type is changed, and it would have to be
+// kept in step with the resolvers it no longer feeds.
+// ⚠️ `OwnSettings` WENT WITH IT. It was exported, and it was this component's prop type and nothing
+// else — app/dashboard/[token]/page.tsx declares the same four booleans inline, which is the shape
+// `/api/dashboard` actually returns.
+//
+// 🧪 Asserted ABSENT, across the whole file, by scripts/event-types.cjs. The behaviour it carried —
+// a live event's type can be switched, and the confirm says what changes — is the "This event" card's
+// now, and the harness checks it there.

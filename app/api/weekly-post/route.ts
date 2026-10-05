@@ -26,6 +26,9 @@ import {
   placePictureNeedsDefaultShape,
 } from '@/lib/weekly-post/backgrounds'
 import { renderEventPost } from '@/lib/weekly-post/render'
+/* 🔴 PRIVATE EVENTS (20261014): "Private event" with the date and times, and no single-event post. */
+import { readPrivateEventIds } from '@/lib/private-events/read'
+import { PRIVATE_NO_SINGLE_POST } from '@/lib/private-events/copy'
 import { entryFor } from '@/lib/weekly-post/week-data'
 import { checkUpload, readImageInfo, toDataUri } from '@/lib/weekly-post/image-info'
 import { renderWeeklyPost } from '@/lib/weekly-post/render'
@@ -60,8 +63,30 @@ async function getTruck(token: string): Promise<TruckRow | null> {
   return (data as TruckRow | null) ?? null
 }
 
-/** The gate. ⚠️ Returns the same message the UI shows, so a blocked call and a blocked screen agree. */
+/** The gate. ⚠️ Returns the same message the UI shows, so a blocked call and a blocked screen agree.
+ *
+ * ══ 🔴 TWO KEYS, AND THEY ANSWER DIFFERENT QUESTIONS (5 October 2026) ═════════════════════════════
+ *   `schedule_graphics`     — MAY THIS PLAN HAVE SOCIAL POSTS AT ALL. Pro, Max and trial. Unchanged.
+ *   `places_posts_preview`  — IS THE SURFACE FINISHED FOR THIS TRUCK. In NO plan (lib/features.ts), so
+ *                             `canAccess` can only grant it from `trucks.feature_overrides`. One truck
+ *                             holds it today: test-kitchen ("Pizza Kitchen").
+ * 🔴 BOTH MUST PASS, AND THE PREVIEW KEY IS CHECKED FIRST because it is the more specific refusal: a
+ * Max truck without it is not being asked to upgrade, it is being told the screen is not switched on,
+ * and "The weekly post is on Pro and Max" would be a lie told to someone who already has Max.
+ * ⚠️ IT GUARDS EVERY ACTION IN THIS ROUTE, which is deliberate: `gated` is called once at the top of
+ * POST, so the weekly post's render and save AND the single-event post's `event_post` / `event_render`
+ * are all behind it. There is no second entry point to this file. */
 function gated(truck: TruckRow): NextResponse | null {
+  if (!canAccess(
+    truck.plan as never,
+    'places_posts_preview' as never,
+    truck.feature_overrides ?? undefined,
+    truck.trial_expires_at ?? undefined,
+  )) {
+    // ⚠️ "not switched on", NOT "upgrade". No plan sells this yet, so an upgrade prompt would be an
+    // offer nobody could accept.
+    return NextResponse.json({ error: 'Social posts are not switched on for this truck.' }, { status: 403 })
+  }
   const ok = canAccess(
     truck.plan as never,
     'schedule_graphics' as never,
@@ -111,10 +136,31 @@ async function loadWeek(truckId: string, from: string, to: string) {
       .select('id, venue_id, name_key, name, short_name, area, merged_into_id, is_hidden')
       .eq('truck_id', truckId),
   ])
+  /* ══ 🔴 PRIVATE EVENTS GET "Private event" AND NO LOCATION ON THE POSTER (20261014) ═════════════
+   * `locationName` / `townLine` do the redacting; this attaches the flag they read.
+   * ⚠️ A SEPARATE PROBED READ, NOT A COLUMN ON `EV_COLS`. The weekly post is the operator's own
+   * poster — a missing migration must not stop them making one, and naming `is_private` in the select
+   * above would fail the whole query. On a probe failure every row is flagged private, so the poster
+   * says "Private event" for every day: wrong, obvious, and safe, rather than wrong and silent. */
+  const rows = (events ?? []) as WeekEvent[]
+  const privacy = await readPrivateEventIds(supabase, rows.map(e => e.id), 'weekly-post loadWeek')
   return {
-    events: (events ?? []) as WeekEvent[],
+    events: rows.map(e => ({ ...e, is_private: privacy.isPrivate(e.id) })) as WeekEvent[],
     places: (places ?? []) as Place[],
   }
+}
+
+/**
+ * Is a single-event post refused for this event?
+ *
+ * ⛔ FAILS CLOSED, LIKE EVERY OTHER PRIVACY READ: a probe failure refuses the poster. The cost is an
+ * operator who cannot make one until the migration is applied; the cost of the other direction is a
+ * published poster for a wedding.
+ */
+async function isSinglePostBlocked(eventId: string): Promise<boolean> {
+  if (!eventId) return false
+  const privacy = await readPrivateEventIds(supabase, [eventId], 'weekly-post single')
+  return privacy.isPrivate(eventId)
 }
 
 type DesignRow = { blank_path: string; width: number | null; height: number | null; layout: unknown } | null
@@ -668,6 +714,13 @@ export async function POST(req: NextRequest) {
         .eq('truck_id', truck.id).lt('event_date', today)
         .order('event_date', { ascending: false }).limit(200),
     ])
+    /* 🔴 THE SETUP PREVIEW DRAWS REAL EVENTS, so a private one previews as "Private event" here too —
+     * otherwise the operator would place their text boxes against a venue name the poster will not
+     * print. Same probed read, same fail-closed direction. */
+    const previewRows = [...((upcoming ?? []) as WeekEvent[]), ...((past ?? []) as WeekEvent[])]
+    const previewPrivacy = await readPrivateEventIds(
+      supabase, previewRows.map(e => e.id), 'weekly-post event_load')
+    for (const r of previewRows) r.is_private = previewPrivacy.isPrivate(r.id)
     const allPlaces = (places ?? []) as Record<string, unknown>[]
     const visible = allPlaces.filter(pl => pl.is_hidden !== true)
     /* ⚠️ FAVOURITES FIRST, then by name — the order the places list and the Add event picker use, so
@@ -873,6 +926,17 @@ export async function POST(req: NextRequest) {
   /** One event's post: which designs it can use, which is chosen, and the text. */
   if (action === 'event_post') {
     const eventId = String(body.eventId ?? '')
+    /* ⛔ NO SINGLE-EVENT POST FOR A PRIVATE EVENT (20261014, decision 4). A one-event poster exists to
+     * be published — "we're at the Five Bells on Friday" — and there is nothing publishable about a
+     * private booking: the poster would read "Private event" with a background and an Order link,
+     * which is an advert for something nobody can come to.
+     * ⚠️ REFUSED ON BOTH `event_post` AND `event_render`, not only in the UI. The screen does not
+     * offer the button for a private event; this is what makes the absence true of the ROUTE, which
+     * is the rule the event-types gate follows too ("the screen decides what is drawn, the route
+     * decides what is done"). */
+    if (await isSinglePostBlocked(eventId)) {
+      return NextResponse.json({ error: PRIVATE_NO_SINGLE_POST }, { status: 400 })
+    }
     const { design } = await loadDesign(truck.id, EVENT_KIND)
     const ctx = await eventPostContext(truck, eventId, design)
     if ('error' in ctx) return NextResponse.json({ error: ctx.error }, { status: ctx.status })
@@ -898,6 +962,9 @@ export async function POST(req: NextRequest) {
 
   if (action === 'event_render') {
     const eventId = String(body.eventId ?? '')
+    if (await isSinglePostBlocked(eventId)) {
+      return NextResponse.json({ error: PRIVATE_NO_SINGLE_POST }, { status: 400 })
+    }
     const { design } = await loadDesign(truck.id, EVENT_KIND)
     if (!design) return NextResponse.json({ error: 'No event design yet.' }, { status: 400 })
 

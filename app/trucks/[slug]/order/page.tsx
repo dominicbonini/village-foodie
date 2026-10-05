@@ -71,6 +71,13 @@ interface EventData {
   /** This event's van's CUSTOMER collection interval, from /api/events. The fallback picker's grid. */
   collection_interval_mins?: number
   opened_at?: string | null
+  /**
+   * 🔴 FROM /api/events (20261014). True ⇒ the feed has ALREADY redacted `venue_name` to
+   * "Private event" and blanked `village`, `postcode` and `notes` — this flag is how the page knows
+   * to label it rather than having to infer it from the text.
+   * ⚠️ OPTIONAL: absent on any cached response from before this build, and absent means public.
+   */
+  is_private?: boolean
 }
 
 interface BasketItem {
@@ -260,6 +267,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // the server. This is the lesson of `?paid=1` on /order/[id]/manage, which was written into a URL and
   // then correctly ignored by every reader.
   const confirmOrderKey = searchParams.get('confirm')
+  /* ── 🔴 THE PRIVATE LINK'S TOKEN (20261014) ─────────────────────────────────────────────────────
+   * Present only when this page was reached from `/p/<token>`, which forwards it. It does two things
+   * and nothing else:
+   *   1. it is sent with the order, because the submit route admits an order against a private event
+   *      ONLY against the event's current token (app/api/orders/submit/route.ts);
+   *   2. it fetches the guest header — the "PRIVATE EVENT" label and the operator's name for it —
+   *      from /api/private-event, which is the one endpoint allowed to publish `private_name`.
+   * ⚠️ READ FROM THE SAME `searchParams` OBJECT `event_id` ALREADY USES, so nothing about how this
+   * component reads the query string changes.
+   * ⛔ IT IS NEVER PUT IN A LINK, A LOG OR AN ERROR MESSAGE. The only places it goes are the submit
+   * body and the header fetch. */
+  const privateToken = searchParams.get('pt')
   // 🔴 THE REFUSAL MESSAGE, CARRIED BACK FROM /api/payments/return. The server composed it; this only
   // reads it. Present ONLY when an authorisation was taken and the order could not be placed — the
   // authorisation has already been cancelled by then, which is what the sentence tells the customer.
@@ -1008,6 +1027,28 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     setSlotHour(''); setSlotMinute('')
   }, [eventIdParam, events, isDemo])
 
+
+  /* ── 🔴 THE GUEST HEADER FOR A PRIVATE EVENT ────────────────────────────────────────────────────
+   * `/api/events` publishes `is_private` but never `private_name` — it is a public feed. So the name
+   * comes from /api/private-event, which answers only to the token.
+   * ⚠️ A FAILURE IS SILENT AND HARMLESS: `privateHeader` stays null and the page falls back to the
+   * generic "Private event" label that the feed's redaction already produced. The guest can still
+   * order; they just do not see the wedding's name at the top.
+   * ⚠️ `live` GUARDS THE SET, so a token change mid-flight cannot land the old answer. */
+  const [privateHeader, setPrivateHeader] = useState<{ name: string; named: boolean } | null>(null)
+  useEffect(() => {
+    if (!privateToken) { setPrivateHeader(null); return }
+    let live = true
+    ;(async () => {
+      try {
+        const r = await fetch(`/api/private-event?t=${encodeURIComponent(privateToken)}`, { cache: 'no-store' })
+        if (!r.ok) { if (live) setPrivateHeader(null); return }
+        const j = await r.json()
+        if (live && j?.ok) setPrivateHeader({ name: String(j.name || ''), named: !!j.named })
+      } catch { if (live) setPrivateHeader(null) }
+    })()
+    return () => { live = false }
+  }, [privateToken])
 
   // Non-destructive menu re-fetch (truck.paused/pauseReason + menu) — reused by the initial load
   // AND the pause banner's "Check again". Updates state in place; NEVER reloads, NEVER touches the
@@ -1998,6 +2039,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         body: JSON.stringify({
           truckId: slug, customerName: name, customerEmail: email, customerPhone: phone,
           slot: asapChosen ? null : (selectedSlot || null), eventDate: eventDateIso, eventId: event?.id ?? null,
+          /* 🔴 THE PRIVATE LINK'S TOKEN, OR null ON EVERY PUBLIC ORDER (20261014). The submit route
+           * only consults it when the event is actually private, so sending null is the normal case
+           * and changes nothing for any existing order. */
+          privateToken: privateToken || null,
           items: basket.map(b => ({
             name: b.menuItem.name,
             quantity: b.quantity,
@@ -2535,6 +2580,26 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             </div>
           ) : events.length > 0 ? (
             <div className="mt-3 text-left">
+              {/* ── 🔴 "PRIVATE EVENT", AND THE OPERATOR'S NAME FOR IT (20261014, decision 5) ──────
+                  Shown above the event card so a guest who scanned a table card knows immediately
+                  that they are on the right page for the right wedding.
+                  ⚠️ THE LABEL SHOWS WHENEVER THE EVENT IS PRIVATE — that fact comes from the public
+                  feed's `is_private`. The NAME needs the token, so it appears only for a guest who
+                  arrived through the link, which is the only person who should see it.
+                  ⚠️ `named` DISTINGUISHES "Sarah & Tom's wedding" FROM THE GENERIC FALLBACK, so the
+                  page does not print "Private event" twice under itself. */}
+              {event?.is_private && (
+                <div className="mb-2 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-purple-700">
+                    Private event
+                  </p>
+                  {privateHeader?.named && (
+                    <p className="mt-0.5 text-sm font-semibold text-purple-900 break-words">
+                      {privateHeader.name}
+                    </p>
+                  )}
+                </div>
+              )}
               {event ? (
                 // Scoped to ONE event (deep-linked ?event_id, or the only event). Single-event header
                 // using the SAME card as the truck profile (TruckListCard) — DRY, identical look — with

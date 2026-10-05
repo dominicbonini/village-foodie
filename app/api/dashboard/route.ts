@@ -17,6 +17,7 @@ import type { CatConfig } from '@/lib/prep-utils'
 import { isDemoIdentifier } from '@/lib/demo'
 import { resolveBuzzerPrompt, BUZZER_IN_USE_STATUS_SET } from '@/lib/buzzer'
 import { resolveOrderReadyWithType, orderReadyIsHandChange } from '@/lib/event-types/resolve'
+import { readVanTakesCash } from '@/lib/payments/van-cash'
 import { readEventType } from '@/lib/event-types/read'
 // Type-only would not work here: LEDGER_ROW_COLUMNS is a VALUE. This route is server-only, so pulling
 // the module in carries no browser-bundle cost (the concern noted at the top of lib/payments/ledger.ts).
@@ -573,6 +574,13 @@ export async function GET(req: NextRequest) {
   // the RESOLVED after-order prompt for the selected event (event override ?? van-has-buzzers).
   // Resolved SERVER-SIDE by lib/buzzer.ts so the dashboard, the KDS and Add Order cannot disagree —
   // the same rule the paid step follows.
+  /* ── 🔴 THE SELECTED EVENT'S VAN'S OWN CASH SETTING (5 October 2026) ────────────────────────────
+   * `truck_vans.takes_cash` (20261012), nullable: null ⇒ this van follows `trucks.takes_cash`, which
+   * is every van today. ⚠️ IT IS **NOT** ADDED TO THE NAMED VAN SELECT BELOW — that select's own
+   * comment records what a 42703 there costs ("capacity, cooking step and order-ready all fall back
+   * to their defaults"), and a cash migration must not be able to turn the mark-ready button off.
+   * `readVanTakesCash` is a separate probed statement whose failure is `null`, i.e. today. */
+  let vanTakesCash: boolean | null = null
   let vanBuzzerCount: number | null = null
   let effectiveBuzzerPrompt: boolean = false
   // Order-ready (master-switch model): effectiveOrderReady = the SELECTED event's order_ready_override ??
@@ -672,6 +680,10 @@ export async function GET(req: NextRequest) {
       const rb = resolveBuzzerPrompt(van as any, capacityEvent as any, eventTypeRead.type)
       vanBuzzerCount = rb.buzzerCount
       effectiveBuzzerPrompt = rb.buzzerPrompt
+      /* 🔴 ITS OWN STATEMENT, AFTER the van select and not inside it. See `vanTakesCash`'s note:
+       * a 42703 here must cost nothing, and `readVanTakesCash` answers `null` — the truck default,
+       * which is what every van resolves to today. */
+      vanTakesCash = await readVanTakesCash(supabase, capacityEvent.van_id)
     }
     const productionSlotUnits = selectedEventId
       ? await getProductionSlotUnits(supabase, truck.id, selectedEventId)
@@ -959,6 +971,10 @@ export async function GET(req: NextRequest) {
       ),
     },
     vanBuzzerCount,                                // truck_vans.buzzer_count — null ⇒ no buzzers, feature hidden
+    /* 🔴 THE SELECTED EVENT'S VAN'S OWN CASH SETTING. null ⇒ this van follows `trucks.takes_cash`,
+     * which is every van before 20261012 is applied. The client feeds it to `resolvePaidStep`, which
+     * is still the ONE place the chain lives — this is an INPUT to it, never a second answer. */
+    vanTakesCash,
     effectiveBuzzerPrompt,                         // event override ?? van-has-buzzers (opens the grid after a new order)
     vanPausedUntil: eventPausedUntil,            // event-scoped (key kept for the client)
     vanOnlinePausedUntil: eventOnlinePausedUntil, // event-scoped (key kept for the client)

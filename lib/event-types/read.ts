@@ -183,6 +183,68 @@ export async function usualTypeForPlace(
     const r = await usualTypeForVenue(supabase, truckId, venueName, normalise)
     return { ...r, by: r.typeId ? 'venue' : null }
   }
+  /* ⚠️ ONE READ, SHARED WITH THE PLACES LIST. See `readPlaceTypeHistory` — it was extracted out of
+   * the middle of this function on 5 October 2026 so that the Places tab's "Automatic (…)" label and
+   * this pre-selection cannot name different types for one place. */
+  const h = await readPlaceTypeHistory(supabase, truckId, resolvePlace)
+  if (!h.ok) return { ok: false, typeId: null, by: null }
+  /* 🔴 THE TARGET IS RESOLVED THROUGH THE SAME FUNCTION, not taken as given. The picked place may
+   * itself have been merged since; resolving it means "the pitch this id now belongs to". */
+  const target = resolvePlace({ truck_place_id: placeId }, h.places)
+  if (!target) return { ok: true, typeId: null, by: null }
+  /* ⚠️ `has`, NOT A TRUTHINESS TEST. A place whose newest event carries NO type answers "Standard,
+   * BY PLACE" — the history was found and it says Standard. `get` alone would make that
+   * indistinguishable from "no history here", and `by` is what the form reports to the operator. */
+  if (h.newestTypeByPlace.has(target.id)) {
+    return { ok: true, typeId: h.newestTypeByPlace.get(target.id) ?? null, by: 'place' }
+  }
+  /* ⚠️ NO HISTORY AT THIS PLACE IS AN ANSWER, NOT A FAILURE — and it does NOT fall through to the
+   * name rule. The operator picked a place; "nothing has happened here yet" is Standard. Falling
+   * through would let a same-named-but-different place supply a type the operator never used here. */
+  return { ok: true, typeId: null, by: null }
+}
+
+/**
+ * ── 🔴 THE AUTOMATIC RULE, FOR EVERY PLACE AT ONCE (5 October 2026) ──────────────────────────────
+ *
+ * "The newest event at this place supplies the type" (§70.3), resolved for the whole truck in one
+ * pair of reads and returned as a map.
+ *
+ * 🔴 WHY IT EXISTS: the Places tab's control has to LABEL the Automatic option with the type it
+ * actually resolves to right now — "Automatic (Private)", not a hopeful "Automatic (Standard)" — and
+ * the Add event pre-selection has to apply the same rule. Those were two code paths, and the label
+ * was a hardcoded word. One function, two callers; the label and the behaviour cannot disagree.
+ *
+ * ⚠️ IT IS THE SAME TWO READS `usualTypeForPlace` ALWAYS DID, moved out unchanged — the same columns,
+ * the same ordering, the same 200/2000 limits. The ordering is what makes "newest first" true, so the
+ * FIRST event matched for a place is the answer and later ones are skipped.
+ * ⚠️ GROUPED THROUGH `resolvePlace`, SO A MERGED PLACE'S HISTORY LANDS ON ITS TARGET. A pitch the
+ * operator merged away has no history of its own; callers look up the target's id.
+ * ⚠️ A FAILED READ IS `ok: false` WITH AN EMPTY MAP, never a throw. Both callers degrade to Standard,
+ * which is the pre-feature behaviour, and the reason is logged with its code.
+ *
+ * ⛔ A KEY THAT IS **PRESENT WITH A null VALUE** MEANS "history found, and it says Standard". An
+ * ABSENT key means "no history at this place at all". Callers must use `has`, not `get` — see the
+ * note in `usualTypeForPlace`.
+ */
+/**
+ * ── 🔴 "Standard", THE WORD, DEFINED ONCE ────────────────────────────────────────────────────────
+ *
+ * Standard is NOT a row in `event_types` — it IS the truck's own settings (§70.2), which is why the
+ * pin needs a boolean rather than an id (20261016). So the name has no database to come from and was
+ * written out as a literal in the grid, in the pill row, in the Places control and in the route that
+ * labels "Automatic (…)". Four literals is four chances for one screen to call it something else.
+ * ⚠️ IT IS NOT TRANSLATED AND IS NOT MEANT TO BE — it is the name of a concept in this product, the
+ * same way "Private" is.
+ */
+export const STANDARD_TYPE_NAME = 'Standard'
+
+export async function readPlaceTypeHistory(
+  supabase: SupabaseClient,
+  truckId: string,
+  resolvePlace: (event: PlaceEventLike, places: readonly PlaceLike[]) => { id: string } | null,
+): Promise<{ ok: boolean; places: PlaceLike[]; newestTypeByPlace: Map<string, string | null> }> {
+  const empty = { ok: false, places: [] as PlaceLike[], newestTypeByPlace: new Map<string, string | null>() }
   try {
     /* ⚠️ A NAMED SELECT, AND EVERY COLUMN IS ONE A MIGRATION CREATED. A column PostgREST cannot see
      * answers 42703 for the WHOLE statement, which here would read as "this truck has no history". */
@@ -201,25 +263,22 @@ export async function usualTypeForPlace(
     if (evErr || plErr) {
       const e = (evErr ?? plErr) as { code?: string }
       console.warn(`[event-types] usual type by place for truck ${truckId}: ${why(e.code)}; Standard`)
-      return { ok: false, typeId: null, by: null }
+      return empty
     }
     const places = (plRows ?? []) as PlaceLike[]
-    /* 🔴 THE TARGET IS RESOLVED THROUGH THE SAME FUNCTION, not taken as given. The picked place may
-     * itself have been merged since; resolving it means "the pitch this id now belongs to". */
-    const target = resolvePlace({ truck_place_id: placeId }, places)
-    if (!target) return { ok: true, typeId: null, by: null }
     const events = (evRows ?? []) as (PlaceEventLike & { event_type_id?: string | null })[]
+    const newestTypeByPlace = new Map<string, string | null>()
     for (const ev of events) {
       const place = resolvePlace(ev, places)
-      if (place && place.id === target.id) return { ok: true, typeId: ev.event_type_id ?? null, by: 'place' }
+      if (!place) continue
+      // ⚠️ FIRST WINS, because the query is ordered newest first. `has` guards the later ones.
+      if (newestTypeByPlace.has(place.id)) continue
+      newestTypeByPlace.set(place.id, ev.event_type_id ?? null)
     }
-    /* ⚠️ NO HISTORY AT THIS PLACE IS AN ANSWER, NOT A FAILURE — and it does NOT fall through to the
-     * name rule. The operator picked a place; "nothing has happened here yet" is Standard. Falling
-     * through would let a same-named-but-different place supply a type the operator never used here. */
-    return { ok: true, typeId: null, by: null }
+    return { ok: true, places, newestTypeByPlace }
   } catch (e) {
     console.warn('[event-types] usual type by place threw; Standard:', e instanceof Error ? e.message : String(e))
-    return { ok: false, typeId: null, by: null }
+    return empty
   }
 }
 

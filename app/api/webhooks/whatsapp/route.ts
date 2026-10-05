@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import { canAccess } from '@/lib/features'
 import { sendWhatsApp, logMessage } from '@/lib/twilio'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
+/* 🔴 PRIVATE EVENTS (20261014): redacted before the reply model sees them. */
+import { redactPrivateRows } from '@/lib/private-events/read'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -62,12 +64,18 @@ export async function POST(req: NextRequest) {
     const today = new Date().toISOString().split('T')[0]
     const { data: events } = await supabase
       .from('truck_events')
-      .select('event_date, start_time, end_time, venue_name, town, postcode, status')
+      /* ⚠️ `id` ADDED 20261014 — only so the privacy probe below has something to ask about. */
+      .select('id, event_date, start_time, end_time, venue_name, town, postcode, status')
       .eq('truck_id', truck.id)
       .gte('event_date', today)
       .in('status', ['confirmed', 'open', 'unconfirmed'])
       .order('event_date', { ascending: true })
       .limit(10)
+    /* ⛔ PRIVATE EVENTS ARE REDACTED BEFORE THE MODEL IS GROUNDED ON THEM (20261014). The reply is
+     * prose sent to a customer — a venue that reached this prompt would be published in a sentence
+     * nobody wrote and nobody reviewed. The row survives as "Private event", so the truck still reads
+     * as busy that day rather than free. Same helper, same fail-closed direction, as every feed. */
+    const safeEvents = await redactPrivateRows(supabase, events ?? [], 'whatsapp webhook')
 
     console.log('[WA webhook] events found:', events?.length)
 
@@ -77,7 +85,7 @@ export async function POST(req: NextRequest) {
       truckEmoji:      truck.truck_emoji ?? '',
       truckId:         truck.id,
       customerMessage: body,
-      events:          events ?? [],
+      events:          safeEvents,
       scheduleUrl:     truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : '',
       orderUrl:        truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : '',
       // DORMANT until whatsapp_logs is live in prod (then: existence check → isFollowUp). False

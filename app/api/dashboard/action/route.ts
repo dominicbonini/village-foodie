@@ -24,7 +24,13 @@ import {
   rebuildProductionSlotUsage,
 } from '@/lib/slot-bookings'
 import { nextOrderId } from '@/lib/order-utils'
-import { loadPriceBook, repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
+/* ⚠️ `loadPriceBook` IS NO LONGER IMPORTED HERE, AND THAT IS THE POINT: this route reaches it
+ * through `loadEventPriceBook` (below), which is the ONE place the event-aware wrapper is
+ * applied. An import of the raw book beside the wrapper is an invitation to call the wrong one. */
+import { repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
+/* 🔴 EVENT PRICING (§70, October 2026). The walk-up path prices NEW lines, so it prices at the
+ * event; the edit path prices only what an edit ADDS, under price-lock. */
+import { loadEventPriceBook, stampEditedLines } from '@/lib/event-pricing/read'
 // 🔴 recalcOrderPayment IS THE ONLY WRITER OF orders.payment_status / amount_paid, and the edit handler
 // is the only thing that moves the other side of `balance = total_minor - paid`. See the EDIT branch.
 import { recordCollectionPayment, reverseCollectionPayment, recalcOrderPayment, readLedger } from '@/lib/payments/ledger'
@@ -742,7 +748,18 @@ export async function POST(req: NextRequest) {
       // basket) instead of being read, subtracted and never written back.
       const effItems = items || order.items || []
       const effDeals = editedDeals !== undefined ? editedDeals : (order.deals || [])
-      const priceBook = await loadPriceBook(supabase, truck.id)
+      /* ── 🔴 THE EVENT-AWARE BOOK, FOR THE **NEW** LINES ONLY (§70) ────────────────────────────────
+       * Price-lock is unchanged and is what decides: a line already on this order keeps its STORED
+       * price, and the book is consulted ONLY for something this edit genuinely adds. So what event
+       * pricing changes here is the price of a line the operator adds to a festival order — which is
+       * the same question the walk-up path asks, and must get the same answer.
+       * ⚠️ `order.event_id` IS THE ORDER'S OWN EVENT, read off the row (selected with `*` above). It
+       * is NOT re-derived from the date: this order has already been placed and already says which
+       * event it belongs to, so there is nothing to resolve and nothing to be ambiguous about. A null
+       * event_id (an old ambiguous walk-up) resolves to menu prices, which is "do not guess".
+       * ⚠️ `loadPriceBook` IS UNCHANGED AND IS WHAT THIS CALLS. */
+      const eventBook = await loadEventPriceBook(supabase, truck.id, order.event_id ?? null)
+      const priceBook = eventBook.book
 
       // DISCOUNT resolution. Deliberately NOT filtered on is_active: the order already carries this
       // code, and an operator deactivating a code for NEW customers must not retroactively re-charge
@@ -862,12 +879,20 @@ export async function POST(req: NextRequest) {
       // CHECK THE WRITE. This update used to discard its result and the handler reported success
       // regardless — a failed write looked identical to a saved edit, and the operator only found out
       // when a later refetch showed the old order. Now a failure is a real error.
+      /* ── 🔴 THE AUDIT FIELDS, PAIRED AGAINST THE STORED LINES ─────────────────────────────────
+       * A LOCKED line keeps the `menu_price` / `price_basis` that were stored WITH its locked price;
+       * a line this edit ADDED gets today's. `stampEditedLines` replicates `repriceOrder`'s own
+       * identity-queue pairing so duplicates line up — see its header. With nothing stored and no
+       * event pricing it returns `repriced.items` itself, so an ordinary edit writes the same bytes
+       * as before this build. */
+      const itemsToStore = stampEditedLines(repriced.items, order.items, eventBook.menuPrice, eventBook.basis)
+
       const { error: updateErr } = await supabase.from('orders').update({
         // Items carry the AUTHORITATIVE unit_price (and modifier prices): the locked-in figure for a
         // line already on the order, the current menu figure for one this edit added. Writing them
         // back means the stored line prices and the stored total can never disagree — and it is what
         // keeps the price locked for the NEXT edit too, since that edit reads this row.
-        items:    repriced.items,
+        items:    itemsToStore,
         deals:    dealsToStore,
         slot:     newSlot,
         notes:    notes    !== undefined ? notes : order.notes,
@@ -1392,9 +1417,21 @@ export async function POST(req: NextRequest) {
       //                 items[].price_override  — the operator's figure, echoed. Its PRESENCE is the
       //                                           audit marker: a line carrying it was priced by a
       //                                           human, and no other line can be.
-      //                 items[].book_price      — what the menu said at that moment. Written only
-      //                                           alongside an override, so the adjustment is
-      //                                           reconstructable later without a menu archaeology dig.
+      //                 items[].book_price      — WHAT THE SYSTEM WOULD HAVE CHARGED at that moment.
+      //                                           Written only alongside an override, so the
+      //                                           adjustment is reconstructable later without a menu
+      //                                           archaeology dig.
+      //   🔴 `book_price` IS NOT "THE MENU PRICE", AND SINCE EVENT PRICING (§70) THE TWO CAN DIFFER.
+      //   It is pass 1's figure — the EVENT's price where event pricing applies, the menu price
+      //   otherwise. That is the right quantity for an override audit ("the operator knocked £2 off
+      //   what we were going to charge"), and it is why the MENU price has its own field,
+      //   `items[].menu_price`, rather than being folded into this one. The comment above used to say
+      //   "what the menu said", which was true until this build and is the kind of stale line §37 of
+      //   the manual is about. ⚠️ NOTHING IN THE PRODUCT READS `book_price` TODAY (one writer, below,
+      //   and no readers — checked across the repo), so correcting the meaning changes no behaviour.
+      //                 items[].menu_price      — menu_items_db.price, written only on a line whose
+      //                                           price EVENT PRICING moved.
+      //                 items[].price_basis     — 'event_type' | 'event', beside menu_price.
       // The customer path STRIPS price_override before it reaches the engine (see
       // app/api/orders/submit) — this field is operator-only by construction, not by convention.
       //
@@ -1410,7 +1447,14 @@ export async function POST(req: NextRequest) {
       // sold-out item still prices and still reaches its own guard. Adding an availability filter there
       // would turn every sold-out line into a needsPriceConfirm prompt at the hatch. See the header on
       // loadPriceBook in lib/order-repricing.ts and the matching note in app/api/orders/submit/route.ts.
-      const priceBook = await loadPriceBook(supabase, truck.id)
+      /* ── 🔴 THE EVENT-AWARE BOOK (§70). `orderEventId` IS ALREADY RESOLVED ABOVE, AND IT IS
+       * ALREADY NULL WHEN THE DATE IS AMBIGUOUS — this path has never guessed between two same-date
+       * events (it logs and leaves `event_id` null), so decision 7 needs NOTHING added here: a null
+       * event resolves to menu prices, which is exactly "do not guess".
+       * ⚠️ `loadPriceBook` IS UNCHANGED AND IS WHAT THIS CALLS. With no event types and no event
+       * own-prices, `eventBook.book` IS its return value by reference and `menuPrice` is empty. */
+      const eventBook = await loadEventPriceBook(supabase, truck.id, orderEventId)
+      const priceBook = eventBook.book
 
       // An override is a finite, non-negative number and nothing else. A blank editor, a null, a string
       // that does not parse, or a negative all mean NO OVERRIDE — never a silent £0 or a credit.
@@ -1430,6 +1474,11 @@ export async function POST(req: NextRequest) {
         const copy = { ...it }
         delete copy.price_override
         delete copy.book_price
+        /* ⚠️ EVENT PRICING'S TWO FIELDS GO THE SAME WAY, for the same reason: the engine passes
+         * unknown keys through, so a stale pair from a re-submitted panel payload would persist and
+         * read as the server's own. They are re-attached below from the server's figures. */
+        delete copy.menu_price
+        delete copy.price_basis
         return copy
       })
 
@@ -1475,11 +1524,29 @@ export async function POST(req: NextRequest) {
 
       // The rows as they will be stored. `unit_price` is already the effective price on an overridden
       // line (pass 2 locked it there); the two extra keys are what make it auditable.
-      const pricedItems = priced.items.map((line, i) => {
-        const ov = overrideByIndex[i]
-        if (ov === null) return line
-        return { ...line, price_override: ov, book_price: booked.items[i]?.unit_price ?? null }
-      })
+      /* ── 🔴 THE STORED ROWS, AND THE THREE PRICES A LINE CAN NOW CARRY ────────────────────────
+       * `unit_price` is the effective price (pass 2 locked an override there). Beside it:
+       *   • `price_override` + `book_price` — an OPERATOR hand-price, and what the system would
+       *     otherwise have charged. Written only on a line the operator touched.
+       *   • `menu_price` + `price_basis` — what the MENU says, and which setup moved it. Written only
+       *     on a line EVENT PRICING moved.
+       * 🔴 BOTH PAIRS CAN APPEAR ON ONE LINE, AND THAT IS THE AUDIT WORKING. A £10 pizza at a
+       * festival (+10% → £11) that the operator knocked to £9 stores unit_price 9, price_override 9,
+       * book_price 11, menu_price 10, price_basis 'event_type' — and the operator's override still
+       * wins, which is decision 6.
+       * ⚠️ WHEN NEITHER APPLIES THIS IS `priced.items`, THE SAME ARRAY, so an ordinary walk-up order
+       * on a truck not using this feature stores the same bytes as before this build. */
+      const anyEventPrice = Object.keys(eventBook.menuPrice).length > 0 && eventBook.basis !== null
+      const pricedItems = (!hasOverride && !anyEventPrice)
+        ? priced.items
+        : priced.items.map((line, i) => {
+            const ov = overrideByIndex[i]
+            const menu = anyEventPrice ? eventBook.menuPrice[String(line.name)] : undefined
+            let out = line
+            if (ov !== null) out = { ...out, price_override: ov, book_price: booked.items[i]?.unit_price ?? null }
+            if (menu !== undefined) out = { ...out, menu_price: menu, price_basis: eventBook.basis! }
+            return out
+          })
       // Deals in EXACTLY the shape the edit path persists — price is the AUTHORITATIVE bundle price.
       // `deals ? … : null` preserves the existing null-vs-[] distinction on this column.
       const pricedDeals = deals

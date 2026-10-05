@@ -81,7 +81,10 @@ export function WeeklyPostApp({ token, truckName }: { token: string; truckName: 
   const [days, setDays] = useState<WeekDayView[]>([])
   const [orderUrl, setOrderUrl] = useState<string | null>(null)
   /** Which design the setup screen is editing. Post screens are unaffected. */
-  const [designKind, setDesignKind] = useState<'week' | 'event'>('week')
+  /* 🔴 "Single event" IS THE DEFAULT (5 October 2026). It is the post a truck makes most often — one
+   * per pitch, every week — where the weekly poster is made once and then rarely touched. Opening on
+   * the rarer job made the common one a click away every time. */
+  const [designKind, setDesignKind] = useState<'week' | 'event'>('event')
 
   const load = useCallback(async (which?: 'this' | 'next') => {
     try {
@@ -128,12 +131,19 @@ export function WeeklyPostApp({ token, truckName }: { token: string; truckName: 
   if (mode === 'setup') {
     return (
       <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-black text-slate-900">
-            {designKind === 'week' ? 'Set up your weekly post' : 'Set up your event post'}
-          </h2>
+        {/* ══ 🔴 ONE HEADING PER VIEW, AND IT IS THE CARD'S (5 October 2026) ════════════════════
+          * ⛔ THE OUTER <h2> IS GONE. It rendered "Set up your weekly post" as a large bold page
+          * heading while `SetupScreen`'s card rendered the SAME WORDS below it — the weekly view said
+          * it twice. The card's heading is the one that survives, and it now uses the event card's
+          * style (`font-bold text-slate-800`), which Dominic confirmed is the right one.
+          * ⚠️ THE EDITING SCREENS CARRY NO HEADING AT ALL, as they already did — see the note above
+          * the toolbar below. Only the two "nothing uploaded yet" cards name the job. */}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {/* 🔴 "Single event" FIRST, AND SELECTED BY DEFAULT. "Week (7 days)" became "Weekly": the
+            * parenthetical explained a format nobody was confused about, and it made the two options
+            * read as different kinds of thing rather than two choices of the same kind. */}
           <div role="tablist" aria-label="Which design" className="inline-flex rounded-xl border border-slate-200 overflow-hidden">
-            {([['week', 'Week (7 days)'], ['event', 'Single event']] as const).map(([k, label]) => (
+            {([['event', 'Single event'], ['week', 'Weekly']] as const).map(([k, label]) => (
               <button key={k} type="button" role="tab" aria-selected={designKind === k}
                 onClick={() => setDesignKind(k)}
                 className={`text-xs font-bold px-3 py-1.5 ${designKind === k ? 'bg-orange-50 text-orange-700' : 'text-slate-600 hover:bg-slate-50'}`}>
@@ -297,7 +307,10 @@ function SetupScreen({ token, design, onDone, onCancel }: {
   if (!layout || !size || !blankUrl) {
     return (
       <Card className="p-6">
-        <h2 className="text-lg font-black text-slate-900">Set up your weekly post</h2>
+        {/* 🔴 THE SAME SIZE AND WEIGHT AS "Set up your event post" (EventPost.tsx) — one style for the
+          * two cards that do the same job. It was `text-lg font-black`, which is why it read as a
+          * second page heading under the outer one. */}
+        <p className="font-bold text-slate-800">Set up your weekly post</p>
         <p className="text-sm text-slate-600 mt-1 max-w-prose">
           Upload the blank version of the weekly schedule graphic you already make — the same design,
           with your own text boxes removed. HatchGrab fills in the week from your schedule.

@@ -6,6 +6,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { readVanIntervals, readEventIntervalsForTruck, applyEventIntervals, NO_VAN_INTERVALS, type VanIntervals } from '@/lib/slot-interval'
 import { readEventTypesForTruck } from '@/lib/event-types/read'
+/* 🔴 PRIVATE EVENTS: this feed SHOWS them, redacted. See the note above the mapper. */
+import { readPrivateEventIds } from '@/lib/private-events/read'
+import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 
 export const revalidate = 0
 
@@ -106,11 +109,30 @@ export async function GET(req: NextRequest) {
   /* One extra probed read for the whole list, not one per event — see readEventTypesForTruck. */
   const eventTypes = await readEventTypesForTruck(supabase, truck.id, today)
 
+  /* ══ 🔴 PRIVATE EVENTS APPEAR HERE, AND THEY APPEAR REDACTED (20261014) ═══════════════════════════
+   * This is the truck's PUBLIC SCHEDULE, and decision 4 is that a private event always shows on it —
+   * as "Private event" with the date and times only. It is not dropped: a customer looking at the
+   * schedule should see that the truck is busy that evening, which is the whole reason an operator
+   * wants it listed at all.
+   * ⛔ WHAT IS REMOVED: the venue, the town, the postcode and the notes. The name
+   * (`private_name`) is never selected by this route in the first place.
+   * ⛔ AND `is_private` IS PUBLISHED, so the order page can refuse to offer an Order button. A feed
+   * that hid the venue but gave no flag would force every consumer to guess from the label text.
+   * ⚠️ ONE PROBED READ FOR THE WHOLE PAGE, FAILING CLOSED — see lib/private-events/read.ts. On a
+   * failure every event is treated as private, which is visible and safe rather than silent and
+   * leaky. */
+  const privacy = await readPrivateEventIds(supabase, (rows || []).map(e => e.id), '/api/events')
+
   const seen = new Set<string>()
   const events = (rows || []).map(e => {
+    /* ⛔ THE DEDUP KEY IS BUILT ON THE **REAL** VENUE NAME, BEFORE ANY SUBSTITUTION — §70.2 names this
+     * explicitly and it is not a style point. Substituting first would give every private event on one
+     * date the key `date|Private event|` and the second one would be silently dropped as a duplicate:
+     * a truck with two private bookings in an evening would publish one of them. */
     const key = `${e.event_date}|${e.venue_name || ''}|${e.start_time || ''}`
     if (seen.has(key)) return null
     seen.add(key)
+    const isPrivate = privacy.isPrivate(e.id)
     return {
       id:            e.id,
       date:          toddmmyyyy(e.event_date),
@@ -119,10 +141,15 @@ export async function GET(req: NextRequest) {
       start_time:    e.start_time || '',
       end_time:      e.end_time || '',
       truck_name:    truck.name,
-      venue_name:    e.venue_name || '',
-      village:       e.town || '',
-      postcode:      e.postcode || '',
-      notes:         e.notes || '',
+      /* 🔴 THE REDACTION, FIELD BY FIELD. `publicVenueName` is not used here because this mapper
+       * renames the columns as it goes (`town` → `village`), so the substitution is spelt out
+       * alongside each one rather than applied to a row shape this object does not have. */
+      venue_name:    isPrivate ? PRIVATE_PUBLIC_LABEL : (e.venue_name || ''),
+      village:       isPrivate ? '' : (e.town || ''),
+      postcode:      isPrivate ? '' : (e.postcode || ''),
+      notes:         isPrivate ? '' : (e.notes || ''),
+      /* So the order page can show it without an Order button. */
+      is_private:    isPrivate,
       status:        e.status || 'confirmed', // 'open' = operator-started/auto-opened = LIVE
       opened_at:     e.opened_at || null,
       // The minutes the fallback picker may offer for THIS event: the event's own override when it has

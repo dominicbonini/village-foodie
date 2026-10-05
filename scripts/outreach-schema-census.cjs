@@ -363,16 +363,35 @@ function runTreeSuite() {
    * assert the drop took effect and the rename landed on the new name only. */
   t('🔴 a DROPPED column leaves the declared set — the census is not merely incomplete, it is correct',
     !r.declared.get('truck_places').has('group_post_wording')
-    /* ⚠️ 18, NOT 17 OR 14 — stage 2 of the event post added `event_bg_path`, `event_bg_width` and
-     * `event_bg_height`, and stage 2b added `event_layout` (a place's OWN text positions; NULL means
-     * "same as Standard"). The count is pinned deliberately: it is what makes the drop assertion above
-     * mean "the declared set is exactly right" rather than "it contains these four". */
-    && r.declared.get('truck_places').size === 18
+    /* ⚠️ 19, NOT 18 OR 14 — stage 2 of the event post added `event_bg_path`, `event_bg_width` and
+     * `event_bg_height`, stage 2b added `event_layout` (a place's OWN text positions; NULL means "same
+     * as Standard"), and **20261015 added `usual_event_type_id`** (the Places tab's pinned usual event
+     * type; NULL means "Automatic", the existing newest-event rule). The count is pinned deliberately:
+     * it is what makes the drop assertion above mean "the declared set is exactly right" rather than
+     * "it contains these five".
+     * ⚠️ IT MOVED ON 5 OCTOBER AND THIS HARNESS IS WHERE IT WAS NOTICED — the Places-tab build ran only
+     * the harnesses it touched, so the census arrived here one prompt later. That is the cost of that
+     * rule, and it is the right cost: a pinned count that nobody has to update is a count nobody is
+     * checking.
+     * ⚠️ AND 20 FROM 5 OCTOBER (LATER THE SAME DAY): **20261016 added `usual_type_is_standard`** —
+     * "pinned to Standard" as a real state, distinct from Automatic. Standard is the ABSENCE of a type
+     * (Standard IS the truck's own settings, §70.2), so it could not be a value in
+     * `usual_event_type_id`, whose NULL already means Automatic; a boolean is the only shape that
+     * holds both states. Counted here for the same reason every other column is. */
+    && r.declared.get('truck_places').size === 20
     && ['area', 'is_favourite', 'is_hidden', 'merged_into_id'].every(c => r.declared.get('truck_places').has(c))
+    /* 🔴 AND THE PIN'S COLUMN IS CENSUSED, for the reason the note below gives: a migration written and
+     * never read, or read and never applied, would otherwise pass unnoticed — and here the failure mode
+     * is a place whose pinned type silently never loads, so Add event quietly follows the old rule. */
+    && r.declared.get('truck_places').has('usual_event_type_id')
     /* 🔴 THE NEW COLUMN IS CENSUSED. Without this the migration could be written and never applied, or
      * applied and never read, and nothing here would notice — the failure mode is a place whose own
      * positions silently never load. */
-    && r.declared.get('truck_places').has('event_layout'))
+    && r.declared.get('truck_places').has('event_layout')
+    /* 🔴 AND 20261016'S COLUMN, for the same reason: the two routes read it with a probe that fails
+     * OPEN, so a migration written and never applied would leave the Places control's Standard option
+     * silently saving as Automatic — exactly the bug 20261016 exists to fix, returned. */
+    && r.declared.get('truck_places').has('usual_type_is_standard'))
   t('🔴 a RENAMED column is declared under its NEW name and not its old one',
     r.declared.get('outreach_prospects').size > 0
     && (() => {

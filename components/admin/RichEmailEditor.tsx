@@ -46,6 +46,10 @@ import Bold from '@tiptap/extension-bold'
 // because their px values are OURS — they mirror the captured Outlook mail — and no package knows them.
 import Italic from '@tiptap/extension-italic'
 import { BulletList, OrderedList, ListItem, ListKeymap } from '@tiptap/extension-list'
+// 🔴 UNDO, FROM `@tiptap/pm`, NOT FROM A NEW PACKAGE. `prosemirror-history` already ships inside the
+// pinned `@tiptap/pm` meta-package, so the local extension below costs no dependency and no version to
+// keep in step. There is no `@tiptap/extension-history` in this project and there does not need to be.
+import { history, undo, redo } from '@tiptap/pm/history'
 import {
   P_STYLE, SMALL_STYLE, LARGE_STYLE, paragraphsFromLines, LINK_RE,
   type EmailDoc, type DocLine,
@@ -57,6 +61,50 @@ import {
  * and `docToHtml` decides which shape of HTML that becomes (a 10pt div, or a span inside a 12pt div).
  * `parseHTML` lets a paste of already-10pt text keep its size instead of silently growing to 12pt.
  */
+/**
+ * ── 🔴 THE FIRST POSITION IN THE DOCUMENT WHERE TYPING WOULD BE **PLAIN** ─────────────────────────
+ *
+ * Used after `setContent`, which is where a template lands in the box. The old code put the caret at
+ * position 1 unconditionally — "inside the first paragraph" — and that is correct right up until the
+ * first paragraph is marked, which a template whose first line is the signature produces.
+ *
+ * 🔴 WHY A SCAN AND NOT JUST `setStoredMarks([])`. Measured in real ProseMirror: stored marks are
+ * dropped by the next transaction, after which the marks fall back to the caret's POSITION. So state
+ * alone cannot hold the promise "a fresh message types plain text" past one keystroke; the caret has
+ * to be somewhere plain. The stored marks are cleared as well, for the keystroke in between.
+ *
+ * ⚠️ IT PREFERS AN **EMPTY** TEXTBLOCK, then the start of the first UNMARKED text, and falls back to
+ * position 1 — which is what it always did, for a document that is bold from end to end. In that last
+ * case `setStoredMarks([])` is what keeps the first character plain.
+ * ⚠️ IT DOES NOT MOVE THE CARET FURTHER THAN THE FIRST PLAIN SPOT. Dropping the operator at the end of
+ * a template would be a different kind of wrong.
+ */
+function firstPlainPos(doc: { descendants: (f: (node: unknown, pos: number) => void) => void }): number {
+  /* ══ ⛔ THE EARLIEST PLAIN POSITION, BY POSITION — NOT "an empty block, else unmarked text" ═══════
+   * 🔴 THE FIRST VERSION OF THIS FUNCTION PREFERRED AN EMPTY BLOCK CATEGORICALLY, AND THAT WAS A
+   * REGRESSION I INTRODUCED (found 5 October 2026, measured). `docFromTemplateText` pushes an empty
+   * paragraph as the SPACER between blocks, so on a real template — "Hi Stephen," · blank · body ·
+   * blank · bold signature — the first empty block is position 14: the blank line after the greeting.
+   * Loading a template therefore dropped the caret in the MIDDLE of the email instead of at the top.
+   * ⚠️ Measured, not reasoned: `firstPlainPos → 14`, in "(empty line)", while the start of the
+   * document is position 1 in "Hi Stephen,".
+   *
+   * ✅ SO IT TAKES THE EARLIEST QUALIFYING POSITION, whichever kind it is. An empty block and the start
+   * of unmarked text are both "somewhere the operator can type plain text"; which comes first in the
+   * document is the only thing that should decide between them.
+   * ⚠️ IT STILL FALLS BACK TO 1 for a document that is marked from end to end, where
+   * `setStoredMarks([])` is what keeps the first character plain.
+   */
+  let best: number | null = null
+  const take = (pos: number) => { if (best === null || pos < best) best = pos }
+  doc.descendants((node: unknown, pos: number) => {
+    const n = node as { isTextblock?: boolean; content?: { size: number }; isText?: boolean; marks?: unknown[] }
+    if (n.isTextblock && n.content && n.content.size === 0) take(pos + 1)
+    if (n.isText && Array.isArray(n.marks) && n.marks.length === 0) take(pos)
+  })
+  return best ?? 1
+}
+
 const Small = Mark.create({
   name: 'small',
   parseHTML() {
@@ -132,6 +180,43 @@ const Large = Mark.create({
  * 🔴 `priority` ABOVE THE DEFAULT (100) SO IT RUNS BEFORE `ListKeymap`. TipTap composes keymaps in
  * priority order; at the default priority the two would race on array order, which is not a contract.
  */
+/**
+ * ── 🔴 UNDO, WHICH THIS EDITOR DID NOT HAVE AT ALL (5 October 2026) ──────────────────────────────
+ *
+ * 🔴 PROVEN ABSENT, NOT ASSUMED: scripts/outreach-bold-persists-render.cjs pressed Cmd+Z in Chromium
+ * AND WebKit after a bold change and the document did not move. The reason is that this editor builds
+ * its extension list BY HAND — the whole point of the schema note at the head of this file — and
+ * `StarterKit`, which is what normally brings history along, is deliberately not installed. So every
+ * Cmd+Z in the compose box has silently done nothing since the editor shipped.
+ *
+ * ⚠️ AND IT MUST COVER A MARK-ONLY CHANGE. `prosemirror-history` records STEPS, and an
+ * `AddMarkStep`/`RemoveMarkStep` is a step like any other, so bolding a selection is undoable the same
+ * way typing is. That is the behaviour the operator asked for: nothing restores an earlier version of
+ * the message EXCEPT Undo, and Undo works on formatting.
+ *
+ * ⚠️ THE `setContent` PATH IS DELIBERATELY NOT UNDOABLE-PAST. Choosing a template replaces the
+ * document; `newGroupDelay` is left at the default and no `addToHistory: false` is set, so an operator
+ * can in principle undo back across a template change. That is the same thing every editor does with a
+ * paste and is better than silently losing the keystroke before it.
+ * ⚠️ NO TOOLBAR BUTTONS. The gesture is Cmd+Z / Cmd+Shift+Z, which is what a person reaches for; two
+ * more buttons on an already-wrapping toolbar buy nothing.
+ */
+const History = Extension.create({
+  name: 'history',
+  addProseMirrorPlugins() {
+    return [history()]
+  },
+  addKeyboardShortcuts() {
+    const run = (fn: typeof undo) => () => fn(this.editor.state, this.editor.view.dispatch)
+    return {
+      'Mod-z': run(undo),
+      'Shift-Mod-z': run(redo),
+      // ⚠️ Cmd+Y IS THE WINDOWS/LINUX REDO. Harmless on a Mac and expected everywhere else.
+      'Mod-y': run(redo),
+    }
+  },
+})
+
 const NoListIndent = Extension.create({
   name: 'noListIndent',
   priority: 1000,
@@ -226,6 +311,8 @@ export default function RichEmailEditor({
     Document, Paragraph, Text, HardBreak,
     Bold, Italic, Small, Large, Link,
     BulletList, OrderedList, ListItem, ListKeymap,
+    // 🔴 UNDO — see the extension. It was missing entirely; Cmd+Z did nothing for months.
+    History,
     // 🔴 AFTER ListKeymap in the array and ABOVE it in priority — see the note on the extension.
     NoListIndent,
   ], [])
@@ -327,8 +414,13 @@ export default function RichEmailEditor({
      * subject field has focus, and this must not pull it away.
      * ⚠️ `setStoredMarks(null)` IS THE PART THAT ACTUALLY FIXES "new typing is bold". Moving the caret
      * does not clear marks ProseMirror has already stored for the next input; this does. */
-    editor.commands.setTextSelection(1)
-    editor.view.dispatch(editor.state.tr.setStoredMarks(null))
+    editor.commands.setTextSelection(firstPlainPos(editor.state.doc))
+    /* ⛔ `setStoredMarks([])`, NOT `null` — AND THAT WAS THE BUG (5 October 2026). Proven in real
+     * ProseMirror, with no browser: `null` means "I have no stored marks, use the marks AT the caret",
+     * so a caret resting in a bold run types bold. `[]` means "explicitly no marks". The old line
+     * therefore fixed nothing whenever the caret landed in bold text — which is exactly when the
+     * operator met it. See the note above `firstPlainPos`. */
+    editor.view.dispatch(editor.state.tr.setStoredMarks([]))
   }, [editor, value])
 
   /* ── 🔴 THE TOOLBAR'S ACTIVE STATES, AND THE BUG THEY WERE (1 October 2026) ──────────────────────
@@ -437,9 +529,41 @@ export default function RichEmailEditor({
   }
 
   /** Insert stored lines at the cursor, as paragraphs. The same builder the template path uses. */
+  /* ══ 🔴 INSERTING THE SIGNATURE LEFT THE CARET INSIDE BOLD TEXT — THE REPORTED BUG ═══════════════
+   * REPORTED (5 October 2026): "I started typing and the text went bold on its own. The B button looked
+   * active, and I had to press it several times before bold turned off." Template "Blank".
+   *
+   * 🔴 THE CAUSE, TRACED AND PROVEN. "Blank" renders an EMPTY template body, so the document is one
+   * plain paragraph and typing in it is plain — the bold cannot come from the template. It comes from
+   * THIS function: the signature lines carry `bold: true` (`paragraphsFromLines` adds the mark), and
+   * `insertContent` leaves the caret **at the end of what it inserted** — i.e. inside the bold
+   * signature line. From that position `isActive('bold')` is true (so B lights up) and the next
+   * character is bold (so typing goes bold), with nothing typed and no mark applied by hand.
+   *
+   * 🔴 AND THAT IS ALSO WHY IT TOOK SEVERAL PRESSES. `toggleBold` on a COLLAPSED caret only sets
+   * `storedMarks`, which is transient: measured in real ProseMirror, **any** later transaction drops it
+   * and the marks fall back to the caret's position — still bold. So each press turned bold off until
+   * the next transaction turned it back on. The button was not lying; it was reporting a position the
+   * operator never chose.
+   *
+   * ✅ THE FIX IS POSITIONAL, because the state fix alone cannot hold: after inserting, the caret goes
+   * to a **plain, empty paragraph** added after the insert, and the stored marks are cleared. The
+   * operator can carry on typing plain text under their signature, which is what they were doing.
+   * ⚠️ THE TRAILING PARAGRAPH IS ONLY ADDED WHEN THE LAST INSERTED LINE CARRIES A MARK. A plain
+   * insertion needs no escape hatch and should not grow the document by a blank line.
+   */
   const insertLines = (lines: DocLine[]) => {
     if (!lines.length) return
-    editor.chain().focus().insertContent(paragraphsFromLines(lines) as unknown as Record<string, unknown>[]).run()
+    const lastIsMarked = (() => {
+      const last = [...lines].reverse().find(l => l.text !== '')
+      return !!last && (!!last.bold || !!last.small)
+    })()
+    const blocks = paragraphsFromLines(lines) as unknown as Record<string, unknown>[]
+    if (lastIsMarked) blocks.push({ type: 'paragraph' })
+    editor.chain().focus().insertContent(blocks).run()
+    /* ⛔ AND THE MARKS FOR THE NEXT CHARACTER ARE CLEARED EXPLICITLY. `[]`, never `null` — see the
+     * note on the content effect: `null` falls back to the caret's own marks, which is the bug. */
+    editor.view.dispatch(editor.state.tr.setStoredMarks([]))
   }
 
   return (
