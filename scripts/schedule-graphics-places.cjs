@@ -47,6 +47,10 @@ const ROUTE = 'app/api/manage/route.ts'
 const MIGRATION1 = 'supabase/migrations/20261003_truck_places.sql'
 const MIGRATION2 = 'supabase/migrations/20261004_schedule_places_stage2.sql'
 const PLACES_UI = 'components/manage/SchedulePlaces.tsx'
+/* 🔴 THE SOCIAL POSTS SCREEN (6 October 2026). `WeeklyPostPane` — the `schedule_graphics` gate's old
+ * home — moved out of PLACES_UI when Social posts became two areas and six boxes, and the gate went
+ * with it. The variant that removes the gate has to mutate the file that now carries it. */
+const SOCIAL_UI = 'components/manage/SocialPosts.tsx'
 const PAGE = 'app/manage/[token]/page.tsx'
 const EVENTS_ACTION = 'app/api/events/action/route.ts'
 const PREVIEW_LIB = 'lib/schedule-graphics/event-preview.ts'
@@ -853,17 +857,21 @@ function runWiringSuite(lib) {
    * app/api/weekly-post/route.ts, which gates the SERVER. Without it the whole feature is reachable by
    * posting to that route with a dashboard token and the UI gate is decoration. The count is pinned at
    * three so a FOURTH consumer still has to be deliberate. */
-  t('🔴 …and the Feature gates the Weekly post pane AND its route, and nothing else',
-    (U.match(/feature="schedule_graphics"/g) || []).length === 1
-    && /WeeklyPostPane/.test(U)
+  /* ⚠️ THE GATE IS IN `SocialPosts.tsx` NOW, AND THERE IS STILL EXACTLY ONE OF IT — mounted once, as a
+   * helper the six boxes call, rather than six copies that could be given six different features. */
+  t('🔴 …and the Feature gates the Social posts pane AND its route, and nothing else',
+    (read(SOCIAL_UI).match(/feature="schedule_graphics"/g) || []).length === 1
+    && !/feature="schedule_graphics"/.test(U)
     && (() => {
       const files = require('child_process').execFileSync('grep',
         ['-rl', '--include=*.ts', '--include=*.tsx', 'schedule_graphics', 'app', 'lib', 'components'],
         { cwd: REPO, encoding: 'utf8' }).trim().split('\n')
       const inCode = files.filter(f => /schedule_graphics/.test(codeOnly(read(f))))
+      /* ⚠️ THE THIRD CONSUMER IS `SocialPosts.tsx` NOW, not `SchedulePlaces.tsx` — the gate moved with
+       * `WeeklyPostPane`. The COUNT is still pinned at three so a fourth consumer has to be deliberate. */
       return inCode.length === 3
         && inCode.includes('lib/features.ts')
-        && inCode.includes(PLACES_UI)
+        && inCode.includes(SOCIAL_UI)
         && inCode.includes('app/api/weekly-post/route.ts')
     })())
   t('⚠️ `resolveTruckAccess` and the staff gate are UNCHANGED — widening plans never widened roles',
@@ -895,28 +903,30 @@ function runWiringSuite(lib) {
    * as a button opening an overlay, because main's Schedule tab had no pill bar; it is the third pill.
    * ⚠️ THE ORDER IS ASSERTED, not just the membership: Events is the default and must be first, and
    * Event types is a setting rather than a day's work, so it is last. */
-  /* ══ 🔴 RE-AIMED TWICE, AND REVERSED THE SECOND TIME (5 October 2026) ═══════════════════════════
-   * This asserted THREE pills with no Places pill — correct on 3 October, when the list had just moved
-   * into the Add event modal and a second route to it would have been the defect.
-   * 🔴 THERE ARE FOUR NOW, BY INSTRUCTION: Events · Event types · Places · Social posts. Places is a
-   * full two-pane screen rather than a second route to the modal's list, and "Weekly post" became
-   * "Social posts" because that page holds the single-event post too.
-   * ⛔ THE ID STAYED `weekly` WHILE THE LABEL MOVED, and that is the part worth asserting: the id is
-   * what `?section=` carries, so renaming it would have broken every bookmark to change a word. */
-  t('🔴 the Schedule tab has FOUR pills — Events · Event types · Places · Social posts',
+  /* ══ 🔴 RE-AIMED THREE TIMES, AND THE PILL COUNT HAS BEEN 3 → 4 → 3 (6 October 2026) ═══════════════
+   * V1 asserted THREE pills with no Places pill — right on 3 October, when the list had just moved into
+   * the Add event modal. V2 asserted FOUR, when Places came back as a tab. ⛔ THE TAB WAS DELETED ON
+   * 6 OCTOBER after one day, so it is THREE again — and that is not a revert: Social posts is now one
+   * pill with TWO AREAS, `posts` and `designs`, and the place controls moved into the two screens that
+   * were already about them.
+   * 🔴 WHAT IS ASSERTED THAT WAS NOT BEFORE: the two legacy ids still RESOLVE. `places` and `weekly`
+   * are in nobody's pill bar and in plenty of bookmarks, and `canonicalScheduleSection` maps each to a
+   * live section. A validator that rejected them would send a live link to Events, which is the exact
+   * bug the Places pill's first removal shipped. */
+  t('🔴 the Schedule tab has THREE pills — Events · Event types · Social posts',
     /\{ id: 'events', label: 'Events' \}/.test(P)
     && /\{ id: 'event-types', label: 'Event types' \}/.test(P)
-    && /\{ id: 'places', label: 'Places' \}/.test(P)
-    && /\{ id: 'weekly', label: 'Social posts' \}/.test(P)
+    && /\{ id: 'posts', label: 'Social posts' \}/.test(P)
     && P.indexOf("id: 'events'") < P.indexOf("id: 'event-types'")
-    && P.indexOf("id: 'event-types'") < P.indexOf("id: 'places'")
-    && P.indexOf("id: 'places'") < P.indexOf("id: 'weekly'")
-    && /type ScheduleSection = 'events' \| 'event-types' \| 'places' \| 'weekly'/.test(P)
-    /* ⛔ "Weekly post" IS GONE AS A LABEL, and the id it used is still `weekly`. */
+    && P.indexOf("id: 'event-types'") < P.indexOf("id: 'posts'")
+    /* ⛔ NO Places PILL, AND NO `weekly` PILL. Both ids live on only as legacy URLs. */
+    && !/label: 'Places'/.test(codeOnly(P))
     && !/label: 'Weekly post'/.test(codeOnly(P))
-    /* 🔴 AND EVERY PILL IS REACHABLE — the guard is what the URL is parsed through, so a pill the
-     * guard does not know is a pill no link can reach. */
-    && /v === 'events' \|\| v === 'weekly' \|\| v === 'event-types' \|\| v === 'places'/.test(P))
+    /* 🔴 THE TYPE IS DECLARED ONCE, IN THE LINK BUILDER, and imported here — a second copy is how a
+     * section comes to exist in a pill bar and not in a link. */
+    && /type ScheduleSection = 'events' \| 'event-types' \| 'posts' \| 'designs'/.test(read('lib/manage-links.ts'))
+    && /type ScheduleSection, type LegacyScheduleSection,/.test(P)
+    && !/^type ScheduleSection =/m.test(P))
   /* ⛔ AND THE BUTTON AND THE OVERLAY ARE GONE. Two routes to one screen is what the Places pill was
    * removed for; leaving the button would have rebuilt exactly that. */
   t('⛔ the "Event types" header button and its overlay mount are gone',
@@ -946,21 +956,50 @@ function runWiringSuite(lib) {
        * (the manage scroller already does), which is the one behavioural difference between them. */
       && /inline \? '' : 'flex-1 min-h-0 overflow-y-auto'/.test(et)
   })())
-  /* ══ 🔴 REVERSED: `?section=places` NOW LANDS ON PLACES (5 October 2026) ════════════════════════
-   * It used to fall through to Events, because the pill had been removed and the validator did not
-   * recognise the value — which was the honest behaviour then. Places is a tab again, so the link
-   * means what it says, and that is the behaviour change rather than a regression.
+  /* ══ 🔴 REVERSED AGAIN, AND THIS TIME IT IS A **MAPPING** (6 October 2026) ══════════════════════
+   * `?section=places` fell through to Events (3 Oct), then landed on Places (5 Oct), and now lands on
+   * Social posts › DESIGNS — because the thing an operator went to Places to do that still exists is
+   * giving a place its own picture, and that is on Designs.
+   * ⛔ ASSERTED ON THE MAP AND ON THE CALL SITE, not on a string in the page. The map is in
+   * lib/manage-links.ts so the page and this file read ONE definition; the page must then USE it at
+   * the URL, which is the half that could quietly stop happening.
    * ⛔ AND IT STILL DOES NOT FORCE "Tidy up" OPEN. A bookmark from a different week must not put
    * somebody inside a modal they did not open — that part of the original claim survives intact. */
-  t("🔴 an old `?section=places` link lands on PLACES, and still does not force Tidy up open",
-    /v === 'places'/.test(P)
-    && /section === 'places'/.test(P)
-    && !/setModalView\('tidy'\)[\s\S]{0,40}sectionParam/.test(P))
+  t("🔴 `?section=places` lands on Designs, and still does not force Tidy up open", (() => {
+    const links = read('lib/manage-links.ts')
+    return /places: 'designs',/.test(links)
+      && /weekly: 'posts',/.test(links)
+      && /const canonical = canonicalScheduleSection\(sectionParam\)/.test(P)
+      && !/setModalView\('tidy'\)[\s\S]{0,40}sectionParam/.test(P)
+  })())
   t('⚠️ …and `?section=` still round-trips for every pill',
     /qs\.get\('section'\)/.test(P) && /url\.searchParams\.delete\('section'\)/.test(P))
-  /* 🔴 AND `?section=weekly` — THE LINK IN OPERATORS' BOOKMARKS — STILL RESOLVES, to the renamed tab. */
-  t('⛔ `?section=weekly` still works, and now opens "Social posts"',
-    /v === 'weekly'/.test(P) && /\{ id: 'weekly', label: 'Social posts' \}/.test(P))
+  /* 🔴 AND `?section=weekly` — THE LINK IN OPERATORS' BOOKMARKS — STILL RESOLVES, now to Make a post. */
+  t('⛔ `?section=weekly` still works, and opens Social posts › Make a post', (() => {
+    /* ⛔ ASSERTED ON THE SOURCE, NOT BY CALLING IT. The first version of this `new Function`'d the
+     * module to exercise the map — and threw on `type ManageTab = …`, because `lib/manage-links.ts` is
+     * TypeScript and `new Function` is a JavaScript parser. Stripping types with a regex to get at a
+     * two-line map would be a transpiler nobody asked for, so the map is read as text and every pair
+     * that matters is named. ⚠️ `scripts/places-tab.cjs` §1b asserts the builder's OUTPUT shape; between
+     * them the map and the strings are both pinned. */
+    const links = read('lib/manage-links.ts')
+    const map = links.slice(links.indexOf('const LEGACY_SCHEDULE_SECTION'),
+      links.indexOf('const LIVE_SCHEDULE_SECTIONS'))
+    return /places: 'designs',/.test(map)
+      && /weekly: 'posts',/.test(map)
+      /* ⛔ AND THE LEGACY IDS ARE **NOT** LIVE SECTIONS, or `canonicalScheduleSection` would return them
+       * unmapped and the page would switch on a section no pane renders. */
+      && /const LIVE_SCHEDULE_SECTIONS: readonly ScheduleSection\[\] = \['events', 'event-types', 'posts', 'designs'\]/.test(links)
+      /* ⚠️ `codeOnly` FIRST. The doc comment between those two anchors spells out
+       * "`'places'` ⇒ `'designs'`" — which is the prose that EXPLAINS the mapping satisfying a check
+       * that the mapped id is absent from the live list. Fourth time in this build that a comment has
+       * nearly decided a claim about the code it describes. */
+      && !/'places'/.test(codeOnly(links.slice(links.indexOf('const LIVE_SCHEDULE_SECTIONS'),
+        links.indexOf('export function canonicalScheduleSection'))))
+      /* ⛔ AND BOTH LEGACY IDS ARE IN `TAB_FOR_SECTION`, so a link that still names one carries its
+       * tab — which is the one thing lib/manage-links.ts exists to make impossible to forget. */
+      && /places: 'schedule', weekly: 'schedule',/.test(links)
+  })())
   /* ⚠️ ASSERTED ON THE RAW SOURCE, not the stripped one — see `codeOnly`'s note. The loads this checks
    * are one-liners that no comment contains, so raw is both safe and exact here. */
   t("🔴 THE EVENTS SECTION IS THE EXISTING COMPONENT, UNCHANGED — `isActive` still means \"the tab is open\"",
@@ -1273,7 +1312,22 @@ function runWiringSuite(lib) {
     const m = P.match(new RegExp(`const ${fn} = \\(v: unknown\\): v is \\w+ =>([^\\n]*(?:\\n(?!const )[^\\n]*)*)`))
     return m ? [...m[1].matchAll(/v === '([^']+)'/g)].map(x => x[1]).sort() : []
   }
-  const menuIds = guardIds('isMenuSection'), schedIds = guardIds('isScheduleSection')
+  const menuIds = guardIds('isMenuSection')
+  /* ══ ⚠️ SCHEDULE'S IDS COME FROM THE LINK BUILDER NOW (6 October 2026) ═══════════════════════════
+   * `isScheduleSection` was a chain of `v === '…'` and this check read those literals out of it. It is
+   * `canonicalScheduleSection(v) !== null` now — one map, shared with the harness — so there are no
+   * literals in the page to read, and reading them from the MAP is reading the thing that decides.
+   * 🔴 THE CLAIM IS UNCHANGED AND IS WHAT MATTERS: one `?section=` param serves two tabs, so no value
+   * may mean different things on Menu and on Schedule. ⛔ THE LEGACY IDS ARE INCLUDED — they are
+   * accepted values, and a collision with one of them would be just as wrong. */
+  const schedIds = (() => {
+    const links = read('lib/manage-links.ts')
+    const live = [...(links.match(/const LIVE_SCHEDULE_SECTIONS[^\n]*\n/) || [''])[0]
+      .matchAll(/'([^']+)'/g)].map(x => x[1])
+    const legacy = [...links.slice(links.indexOf('const LEGACY_SCHEDULE_SECTION'),
+      links.indexOf('const LIVE_SCHEDULE_SECTIONS')).matchAll(/^\s{2}(\w[\w-]*): '/gm)].map(x => x[1])
+    return [...live, ...legacy].sort()
+  })()
   const pillIds = [...(P.match(/const MENU_SECTIONS[\s\S]*?\n\]/) || [''])[0].matchAll(/id: '([^']+)'/g)].map(x => x[1])
   t('🔴 ONE `?section=` PARAM SERVES BOTH TABS, and the values cannot collide',
     menuIds.length > 0 && schedIds.length > 0
@@ -1281,6 +1335,9 @@ function runWiringSuite(lib) {
     && menuIds.length === pillIds.length
     && !menuIds.some(id => schedIds.includes(id))
     && /isMenuSection\(sectionParam\)/.test(P)
+    /* ⚠️ AND SCHEDULE'S HALF IS READ THROUGH THE MAP AT THE URL, which is what makes the ids above the
+     * ones the page actually honours rather than a list in a file nothing calls. */
+    && /const canonical = canonicalScheduleSection\(sectionParam\)/.test(P)
     && /window\.history\.replaceState/.test(P) && !/pushState/.test(P),
     `menu=[${menuIds}] schedule=[${schedIds}] pills=[${pillIds}]`)
   t('⚠️ …and a tab with no sections CLEARS the param, so one cannot follow the operator onto Reports',
@@ -1964,10 +2021,14 @@ function runWiringSuite(lib) {
 
       /* 1 · "Weekly post" BECAME "Social posts" — the label only. The id stays `weekly`, because the
        * id is what `?section=` carries and operators have it bookmarked. */
+      /* ⚠️ THIS ENTRY HAS NOW CHANGED TWICE, AND THE SECOND TIME THE TABLE CAUGHT IT. 5 October renamed
+       * the LABEL and kept the id `weekly`; 6 October changed the ID too, to `posts`, because Social
+       * posts became one pill with two areas and the id is the area it opens. ⛔ `weekly` IS NOT GONE —
+       * it is a LEGACY URL now, mapped by `canonicalScheduleSection`, which is asserted separately. */
       { was: "{ id: 'weekly', label: 'Weekly post' },",
-        reason: 'the page holds the single-event post too, so "Weekly post" had stopped being true',
+        reason: 'the pill is `posts` now — one pill, two areas; `weekly` lives on as a legacy URL',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: "{ id: 'weekly', label: 'Social posts' }," },
+        now: "{ id: 'posts', label: 'Social posts' }," },
 
       /* 2 · THE SHARED TOGGLE'S KNOB gained the `compact` travel (18px instead of 24), because the
        * Event types grid draws a 38×22 track. The 16px knob is unchanged in both arms. */
@@ -2049,17 +2110,23 @@ function runWiringSuite(lib) {
         nowIn: 'app/manage/[token]/page.tsx',
         now: "className={`w-full ${formErrors.van_id ? 'border-red-400 bg-red-50' : ''}`}" },
 
+      /* ══ ⛔ THE SECTION VOCABULARY LEFT THIS FILE ENTIRELY (6 October 2026) ═════════════════════
+       * ⚠️ RE-STATED THREE TIMES. Event types became the third pill in October; Places returned as a
+       * pill on 5 October and "Weekly post" was relabelled; on 6 October the Places pill was deleted,
+       * Social posts became one pill with two areas, and the TYPE AND THE GUARD MOVED OUT OF page.tsx.
+       * 🔴 THE TYPE IS DECLARED ONCE, IN lib/manage-links.ts, and imported here — which is the point:
+       * a second copy is how a section comes to exist in a pill bar and not in a link builder. The
+       * guard is `canonicalScheduleSection(v) !== null`, the same map the URL parser reads.
+       * ⚠️ SO BOTH `now` STRINGS NAME THE IMPORT, not a declaration — the lines did not change shape,
+       * they left. */
       { was: "type ScheduleSection = 'events' | 'weekly'",
-        /* ⚠️ RE-STATED TWICE NOW. Event types became the third pill in October; on 5 October Places
-         * returned as a pill and "Weekly post" was relabelled "Social posts" — keeping the id
-         * `weekly`, because the id is what `?section=` carries and operators have it bookmarked. */
-        reason: 'four pills now — Events · Event types · Places · Social posts (id `weekly` kept)',
+        reason: 'the type is declared in lib/manage-links.ts now and imported — one definition',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: "type ScheduleSection = 'events' | 'event-types' | 'places' | 'weekly'" },
+        now: "type ScheduleSection, type LegacyScheduleSection," },
       { was: "v === 'events' || v === 'weekly'",
-        reason: 'the URL guard has to know every id or no link can reach that pill',
+        reason: 'the guard reads the ONE map, so a pill the map does not know is a pill no link reaches',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: "v === 'events' || v === 'weekly' || v === 'event-types' || v === 'places'" },
+        now: "canonicalScheduleSection(v) !== null" },
       /* ⚠️ THIS MOUNT HAS CHANGED THREE TIMES. The capacity pointer prop went; a Schedule settings one
        * arrived; then that one went too when the move was reversed, and `notices` arrived. What is
        * claimed is the prop that is there. */
@@ -2161,6 +2228,38 @@ function runWiringSuite(lib) {
         reason: 'the van-limit modal\'s "View plans" link, likewise',
         nowIn: 'app/manage/[token]/page.tsx',
         now: "href={manageTabHref('billing')}" },
+
+      /* ══ 🔴 THE 6 OCTOBER BUILD: THE PLACES PILL DELETED, SOCIAL POSTS REBUILT ════════════════════
+       * ⚠️ EVERY ONE CARRIES ITS NEW FORM, so "I edited this on purpose" is a claim with a test. */
+      { was: 'WeeklyPostPane, TidyUpPlaces, PlaceList, usePlaces, type Place as SgPlaceRow,',
+        reason: '`WeeklyPostPane` moved to SocialPosts.tsx with the gate; the other three stay',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'TidyUpPlaces, PlaceList, usePlaces, type Place as SgPlaceRow,' },
+      /* ── THE SECTION GUARD IS NOW ONE CALL INTO THE SHARED MAP, so these three lines all became one
+       * expression. They are listed separately because `git diff` reports them separately. */
+      { was: 'const isScheduleSection = (v: unknown): v is ScheduleSection =>',
+        reason: 'the guard widened to accept the legacy ids, which the map then resolves',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'const isScheduleSection = (v: unknown): v is ScheduleSection | LegacyScheduleSection =>' },
+      { was: 'if (isScheduleSection(sectionParam)) {',
+        reason: '`?section=places` is canonicalised to `designs` AT THE URL, so nothing below sees it',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'const canonical = canonicalScheduleSection(sectionParam)' },
+      { was: 'setScheduleSection(sectionParam)',
+        reason: 'the canonical section is stored, never the raw one',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'setScheduleSection(canonical)' },
+      /* ── THE VENUE SUGGESTIONS ARE PLACES NOW. The old list was ten de-duplicated `venue_name`s from
+       * past events; it survives as a second group under "From your schedule", which is why
+       * `filteredVenueSuggestions` is still read — the CONDITION and the WRAPPER changed. */
+      { was: '{showVenueSuggestions && filteredVenueSuggestions.length > 0 && (',
+        reason: 'the dropdown opens for places, for the hidden group, or for the old list',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '{showVenueSuggestions && (placeSuggestions.live.length > 0 || hiddenShown || filteredVenueSuggestions.length > 0) && (' },
+      { was: '<div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-48 overflow-y-auto">',
+        reason: 'it gained `data-venue-suggestions` and a taller cap — three groups, not one list',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'data-venue-suggestions' },
     ]
     const unexplained = gone.filter(l => {
       if (!l) return false
@@ -2800,8 +2899,10 @@ function runVariants() {
     ['W17 🔴 Places is gated again, so a Starter truck cannot tidy its own schedule',
       changed(read(ROUTE), "  if (action === 'sg_places') {", "  if (action === 'sg_places') {\n    if (!canAccess(truck.plan, 'schedule_graphics', truck.feature_overrides ?? {}, truck.trial_expires_at)) return NextResponse.json({ error: 'x' }, { status: 403 })", 'W17'),
       s => !/action === 'sg_places'\) \{\s*\n\s*if \(!canAccess/.test(stripComments(s))],
-    ['W18 🔴 the Weekly post pane loses its gate, so it is free on every plan',
-      changed(read(PLACES_UI), 'feature="schedule_graphics"', 'feature={undefined as never}', 'W18'),
+    /* ⚠️ RE-AIMED AT `SOCIAL_UI` (6 October 2026) — the gate moved with `WeeklyPostPane`. The CLAIM is
+     * unchanged and is the one worth keeping: remove the gate and the whole feature is free. */
+    ['W18 🔴 the Social posts gate is removed, so the feature is free on every plan',
+      changed(read(SOCIAL_UI), 'feature="schedule_graphics"', 'feature={undefined as never}', 'W18'),
       s => /feature="schedule_graphics"/.test(stripComments(s))],
     ['W19 🔴 the staff gate loses the places writes',
       changed(read(ROUTE), "    'sg_places', 'sg_upsert_place', 'sg_merge_place',", "", 'W19'),
@@ -2841,16 +2942,20 @@ function runVariants() {
      * ⚠️ AND IT ANCHORS ON THE COMPONENT, NOT ON `SCHEDULE_SECTIONS` — the sections array is exactly
      * the string that keeps moving under this variant, which is how it came to report THE ANCHOR IS
      * GONE twice in three days. */
-    ['W23 🔴 the Places tab grows its own list instead of sharing Tidy up\'s',
-      /* ⚠️ RE-ANCHORED (5 October 2026). `shortDay` left this import with "Events here" — the variant
-       * anchored on the whole line including it and reported THE ANCHOR IS GONE, which is the third time
-       * this one variant has been moved by an unrelated edit. ⛔ SO IT ANCHORS ON THE TWO NAMES THAT ARE
-       * THE CLAIM and nothing else: `PlaceList, PlaceDetail`. A variant whose anchor includes names it is
-       * not about is a variant that breaks whenever anything near it changes. */
-      changed(read('components/manage/PlacesTab.tsx'),
-        "  usePlaces, PlaceList, PlaceDetail,",
-        "  usePlaces,", 'W23'),
-      src => /usePlaces, PlaceList, PlaceDetail/.test(src)],
+    /* ══ ⛔ W23 IS RETIRED FOR THE SECOND TIME, AND THIS TIME ITS SUBJECT IS GONE (6 Oct 2026) ═══════
+     * V1 proved "the Places pill does not come back". V2 proved "the Places TAB does not grow its own
+     * list". ⛔ THE TAB ITSELF WAS DELETED ON 6 OCTOBER — the five fields are edited in "Tidy up places"
+     * and nowhere else, and the post picture is edited in Social posts › Designs.
+     * 🔴 SO THE CLAIM IS REPLACED, NOT DROPPED, because the thing it guarded still matters: there must
+     * be ONE place list in this product. The new variant takes `PlaceList` away from Tidy up — now its
+     * only caller — and requires that to be detectable. ⚠️ ANCHORED ON THE TWO LINES THAT ARE THE
+     * CLAIM, which is V2's lesson: an anchor that includes names it is not about breaks on every edit
+     * near it. */
+    ['W23 \u{1F534} "Tidy up places" grows its own list instead of using the shared one',
+      changed(read(PLACES_UI),
+        '            <PlaceList\n              places={ctl.places}',
+        '            <PlaceListCopy\n              places={ctl.places}', 'W23'),
+      src => /<PlaceList\n\s+places=\{ctl\.places\}/.test(src)],
     ['W24 🔴 the sticky footer becomes part of the scrolling body again',
       changed(read(PAGE), '              <div className="shrink-0 border-t border-slate-200 bg-white px-5',
         '              <div className="border-t border-slate-200 bg-white px-5', 'W24'),

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V14.2
+HatchGrab Engineering Reference Manual · V14.3
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 14.2**
+**Version 14.3**
 
 October 2026
 
@@ -25,6 +25,75 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V14.3 — 6 October 2026 — SOCIAL POSTS BECOMES SIX BOXES, THE PLACES TAB IS DELETED, AND A PLACE'S TYPE IS SET FROM ADD EVENT. STILL NOT DEPLOYED.
+
+**Status — read this first.**
+- 🔴 **ON `main`, LOCAL, NOTHING PUSHED.** `schedule-graphics` is fast-forwarded to match.
+- 🔴 **NO SQL.** No migration was needed and none was run. No place data changed — same columns, same
+  rows, same actions. ⛔ **`public.place_pictures` is still in the database and still read by nothing.**
+- ⚠️ It supersedes **§64.9 and §64.10 of V14.2** (the Places tab, one day old) and **§71's** Social
+  posts sub-tabs. `docs/social-posts-report.md` is the full account.
+
+### What changed
+
+| | |
+|---|---|
+| ⛔ **The Places pill is DELETED, and so is `components/manage/PlacesTab.tsx`** | It existed for one day. Its four controls moved to the two screens that were already about them — see §64.11 |
+| 🔴 **Social posts is ONE pill with TWO AREAS** | **Make a post** (`?section=posts`) and **Designs** (`?section=designs`), a segmented control at the top right, both in the URL |
+| 🔴 **Make a post — three boxes** | Weekly post (a week picker and the existing make flow) · Single event post (the next six, with a colour bar saying which design each will use) · Post for a place (every place, its next PUBLIC event, one button) |
+| 🔴 **Designs — three boxes** | Weekly post design · Event post design · Designs for a place (the widest; own-design places first, with thumbnails) |
+| ⛔ **Not one new way to make or edit anything** | every box OPENS an existing flow, and the place design editor is `EventSetupScreen` focused on one place — so this product still has exactly **one** drag surface |
+| 🔴 **ONE read for the page: `social_overview`** | §64.12. It replaced a loop that would have called `event_load` — which also reads 400 events — once per place, to draw 64px thumbnails |
+| 🔴 **The place's usual type is set from ADD EVENT** | a green **"Always use `<Type>` at `<Place>`"** tick under the type pills, unticked by default, written only when ticked AND the event saved |
+| 🔴 **Hiding a place is on the venue suggestion row** | the suggestions are PLACES now, each with its usual type on the right and a `×`; hidden ones are behind "N hidden places match · Show hidden" |
+| ⚠️ **`?section=places` → Designs, `?section=weekly` → Make a post** | mapped, never dropped, by `canonicalScheduleSection` — §64.10 |
+
+### The failure classes this build found — four, and three of them were harnesses lying
+
+1. ⛔ **A TOMBSTONE SATISFIED THE CHECK THAT TESTED FOR THE STRING IT QUOTED.**
+   `scripts/places-tab.cjs` §6 tested RAW source for `href="?section=places"`. That link had been
+   changed to `manageSectionHref('places')` the day before, leaving a comment reading **⛔ WAS
+   `href="?section=places"`** — and the comment passed the check. It was green for a day on a claim
+   about a thing that no longer existed. `codeOf` first; it is in that harness's own header.
+2. ⛔ **`scripts/schedule-places-render.cjs` HAD THREE DEAD LIFTS AND HAD NOT RUN FOR DAYS.** The
+   shared `Toggle`'s geometry moved into a `compact ? … : …` ternary; the Add event picker stopped
+   being a `<select>`; the Van field became the shared `<Select>`. Each threw "the fixture cannot be
+   built" **before measuring anything**, so every assertion in the file — including ones about screens
+   with no toggle and no picker — was silently unmeasured. **Repaired, and all three re-aimed.**
+3. ⛔ **A COSMETIC SCREENSHOT WAS KILLING THE WHOLE RUN.** `eng.shot` is the last thing in a width's
+   loop, and this machine's Chromium times out inside `Page.captureScreenshot`; the throw escaped
+   `measure()` and took every measurement already made with it. **A shot is evidence, not a test** — it
+   swallows its own failure and says so.
+4. ⚠️ **ONE RECT PER LINE IS NOT TRUE OF AN `inline-flex` LABEL** (and a fallback branch mislabels).
+   Two measurement bugs of the same shape: a `Range`'s client rects are one per BOX, so a dot `<span>`
+   beside a text node reads as two lines; and a `startsWith` chain with a catch-all `else` checked a
+   box-2 button against box 3's edges. **Both failed on correct markup.**
+
+### What was run
+
+`tsc --noEmit` clean · `npx next build` ✓ compiled · **ESLint: warnings DOWN 3 (343 → 340), errors up 2
+(1,301 → 1,303)** — the +2 are `no-require-imports` in the one new `.cjs` harness, which every harness
+in this repository carries · the named harnesses green (`places-tab` **92**, `social-posts` **32** NEW,
+`places-posts-gating` **44**, `weekly-post` **207**, `schedule-graphics-places` **258**,
+`private-events` **206**, `event-types` **185**, `screenshot-truck-details` **173**) · **full sweep 94
+run · 94 passed · 0 failed** · **`scripts/social-posts-render.cjs` (NEW) and the repaired
+`scripts/schedule-places-render.cjs` both pass in Chromium AND WebKit at 1440/820/390.**
+
+⚠️ **CHROMIUM STILL CANNOT TAKE A SCREENSHOT ON THIS MACHINE.** The measurements run and pass in both
+engines; only the PNGs are skipped, with a line saying so. The committed screenshots are WebKit's.
+
+### Open items
+
+| Item | State |
+|---|---|
+| **Deploy** | `git push origin main`, then §74.6's live checks. **Not done — Dominic deploys by hand** |
+| ⚠️ **"Tidy up places" labels `name` "Name on posts", and the renderer prefers `short_name`** | a real mislabelling, named in the report. Left alone because the brief says to keep Tidy up as it is — **your call** |
+| `public.place_pictures` + its storage objects | in the database, read by nothing. ⛔ Do not drop without asking |
+| Chromium screenshots on this machine | measurements unaffected; worth a `npx puppeteer browsers install chrome` |
+| From V14.2 | the `places_posts_preview` grant SQL keyed on the slug — see docs/places-tidy-report.md |
+
+---
 
 ## V14.2 — 5 October 2026 — THE PLACES TAB TIDY-UP: THE EVENT TYPE AS A PILL ROW, HIDDEN PLACES BACK ON THE SCREEN, "Events here" AND "Your own pictures" DELETED, AND A LINK BUILDER. STILL NOT DEPLOYED.
 
@@ -27403,8 +27472,12 @@ Stage 1 built Facebook group storage per place. It was removed: Meta's Groups AP
 so nothing can post to a group, and storing group links saved trucks almost nothing. `truck_place_groups`
 was dropped. The per-truck post wording column survives as `trucks.event_post_wording` (dormant).
 
-## 64.9 The Places TAB (V13.9 — 5 October 2026)
+## 64.9 The Places TAB (V13.9 — 5 October 2026) — ⛔ **THE TAB IS DELETED**
 
+> ⛔ **THE PLACES TAB WAS DELETED ON 6 OCTOBER 2026 (V14.3), ONE DAY AFTER IT SHIPPED.** This whole
+> section and its V14.2 amendments are **history**. Nothing below describes a screen that exists.
+> **§64.11 is where each of its four controls went**; no place data changed.
+>
 > ⛔ **AMENDED BY V14.2 (5 October 2026) — READ THE AMENDMENTS BEFORE THE TEXT THEY AMEND.** Four parts
 > of this section describe controls that no longer exist: the pin's SELECT and its "Automatic" option
 > (now a pill row, below), "Extra pictures" (deleted), "Events here" (deleted), and "Show hidden"
@@ -27566,6 +27639,21 @@ is the truck's own screen, and the redaction is a property of the public feeds (
 
 ## 64.10 `lib/manage-links.ts` — the ONE builder for a link into a Manage tab or section (V14.2)
 
+> 🔴 **EXTENDED BY V14.3 (6 October 2026).** The module now also owns the SECTION VOCABULARY: the
+> `ScheduleSection` type is declared here and imported by `app/manage/[token]/page.tsx`, which used to
+> declare its own. ⛔ **Two copies is how a section comes to exist in a pill bar and not in a link.**
+>
+> **The live sections are `events` · `event-types` · `posts` · `designs`.** `posts` and `designs` are
+> the two AREAS of the one Social posts pill.
+>
+> 🔴 **AND `places` AND `weekly` ARE LEGACY IDS, MAPPED AND NEVER DROPPED** —
+> `canonicalScheduleSection()` sends `places` → `designs` and `weekly` → `posts`. They are in
+> operators' bookmarks and in links this product has already sent. The page calls it **at the URL**, so
+> nothing past the mount parser ever sees a legacy id and every switch below can be exhaustive over the
+> four live ones. ⛔ **FALLING THROUGH TO EVENTS IS WHAT MADE `?section=places` LAND ON THE WRONG
+> SCREEN** the first time the Places pill was retired (3 October), so neither falls through.
+> ⚠️ **BOTH LEGACY IDS ARE IN `TAB_FOR_SECTION` TOO**, so a link that still names one carries its tab.
+
 ⛔ **THE BUG.** Two places in the product wrote a section link by hand, as a bare relative query:
 
 ```tsx
@@ -27599,6 +27687,133 @@ the email points at. Fix 2 repairs it; the email now builds its link with `manag
 and fails on either.
 
 ---
+
+## 64.11 ⛔ THE PLACES TAB IS DELETED — where each of its four controls went (V14.3 — 6 October 2026)
+
+The tab shipped on 5 October and was deleted on 6 October. ⛔ **NO PLACE DATA CHANGED**: the same
+columns, the same rows, the same `sg_*` actions. What moved is **where they are edited**.
+
+| The tab had | It is now | Why there |
+|---|---|---|
+| **The five fields** (name, short name, address, area, postcode) | **"Tidy up places"** in Add event — and that is their ONLY home | It always had them, keyed per place, and a second editor of five columns is a second place for them to disagree |
+| **The usual event type** (a pill row) | **Add event**, as a tick under the type pills: "Always use `<Type>` at `<Place>`" | The question only makes sense at the moment an operator is choosing a type for that place |
+| **Hiding and restoring** (a greyed section) | **The venue suggestion row** — a `×` on each, and "N hidden places match · Show hidden" beneath | An operator meets a place by typing its name; that is when they discover one they do not want offered |
+| **"Picture for posts"** | **Social posts › Designs**, Box 3, and the place design editor | The picture only exists for a post, so it belongs with the design it changes |
+
+### The tick — "Always use `<Type>` at `<Place>`"
+
+| | |
+|---|---|
+| **When it appears** | a known place is picked AND the chosen type differs from the one the form pre-selected for it. Change it back and the row disappears — there is nothing left to always use |
+| **The two wordings** | `by === 'pin'` ⇒ "**Always use** …" (it REPLACES a stored choice) · otherwise "**Use** … **next time**" (it sets one that was never set) |
+| ⛔ **Unticked by default** | this is the only thing in Add event that writes to a PLACE. A pre-ticked box turns "different this once" into "for ever" without the operator choosing it |
+| ⛔ **Derived dead, not cleared by an effect** | `alwaysUseActive = alwaysUseType && showAlwaysUse`. An effect that cleared it would be a cascading render AND a frame of wrongness — between the render that stopped offering the row and the effect, a save would read `true` and write the WRONG place's type |
+| 🔴 **Written AFTER the event, only on success** | the event is what the operator came to do; the type is a convenience ticked on the way past |
+| ⛔ **A failed place write never fails the save** | its own catch, and a TOAST rather than an inline note — the modal closes on a successful save, which is exactly when the write runs, so a note rendered in the form would be drawn and destroyed in one tick |
+
+⚠️ **WITHOUT THE TICK, ADD EVENT STILL WRITES NOTHING TO A PLACE.** `sg_place_usual_type` has exactly
+one caller in `app/manage/[token]/page.tsx` and it is inside the ticked branch; `scripts/places-tab.cjs`
+§2 asserts the count.
+
+### The suggestions are PLACES
+
+They were ten de-duplicated `venue_name`s from past events. A place is the thing an operator is
+choosing, and it is the thing that carries a usual type, a town, a hidden flag and a design. ⚠️ **THE
+EVENT-DERIVED LIST SURVIVES** as a second group under "From your schedule", for a venue with no place
+row.
+
+- **Each row**: the name (truncating), the town beneath, **the place's usual type on the right** — a
+  colour dot and a name, or a purple lock and "Private" — and a `×`.
+- ⛔ **THE `×` NEEDS BOTH `preventDefault` AND `stopPropagation`.** It sits inside the row's own click
+  target; without both, hiding a place would also PICK it and close the step.
+- ⛔ **A HIDDEN PLACE IS NEVER AN ORDINARY SUGGESTION AND IS NEVER PRE-SELECTED.** That is what hiding
+  it meant. The two groups come from one filter, so they cannot overlap.
+- ⚠️ **"Show hidden" is per-open and never remembered** — somewhere to go and get one back, not a view.
+
+## 64.12 Social posts — two areas, six boxes, and ONE read (V14.3 — 6 October 2026)
+
+**Make a post** (`?section=posts`, the default) · **Designs** (`?section=designs`). A segmented control
+at the top right; both in the URL, because "send me the designs screen" has to be a link somebody can
+send.
+
+⛔ **THE "Single event | Weekly" SUB-TABS ARE GONE.** They split the page by WHICH POST before asking
+the question an operator actually arrives with: *am I making something, or setting it up?*
+
+### Every box is a door
+
+| Box | Opens |
+|---|---|
+| Weekly post | `WeeklyPostApp`'s make screen, **on the week chosen in the box** (`initialWeek`, applied to the FIRST load — loading this week and then reloading would show a week they did not ask for) |
+| Single event post · Post for a place | `EventPostModal` — **the same modal the Events list opens** |
+| Weekly post design · Event post design | `WeeklyPostApp`'s and `EventSetupScreen`'s existing setup screens, as full pages under a "‹ Designs" link |
+| Designs for a place | the place design editor, which is **`EventSetupScreen` with `onlyPlaceId`** |
+
+🔴 **SO THIS PRODUCT HAS EXACTLY ONE DRAG SURFACE.** `scripts/social-posts.cjs` §3 counts the
+`DraggableBox` definitions in the tree and requires one. The single-event editor's pointer handling
+took three fixes; a second would be a second set of those bugs.
+
+⚠️ **`onlyStandard` AND `onlyPlaceId` HIDE THAT SCREEN'S OWN DESIGNS LIST AND PICKER.** On Designs it
+would be a second copy of Box 3 — one question asked twice on one screen, free to answer differently —
+and in the place editor it would offer a way out past the page's own back link.
+
+### ⛔ A private event is never offered a post
+
+Decided on the SERVER, in three places, because three surfaces could get it wrong:
+
+- the next-six list sends `isPrivate: true` with **no venue, no town and no place** — not hidden on the
+  client, **dropped before the payload** (§73);
+- a place's `next` is its next **PUBLIC** event, because that event is what its button would post;
+- the place editor's "Preview with" list is public-only.
+
+⚠️ **IT IS STILL A ROW, GREYED, IN ITS DATE POSITION** — "Private event · no post", with no button. An
+operator who sees five events when they have six bookings will go looking for the sixth.
+
+### 🔴 `social_overview` — one read, and the loop it exists to prevent
+
+The Designs list draws a thumbnail for every place, and **the only action that signed one was
+`event_load`** — which also reads up to 200 events in each direction to build the setup screen's
+previews. One call per place would have been twenty-one copies of that read **to draw twenty-one 64px
+squares.**
+
+One action returns: the two designs and whether each is set up; the next six events; and every
+non-hidden place with **one short-lived signed URL each**, its next public event, and its upcoming
+public events for the editor's preview select.
+
+| | |
+|---|---|
+| ⛔ **Read-only** | no insert, update, upsert, delete or storage remove. Asserted over the action's own body |
+| ⚠️ **Forward-only and bounded** | `gte(today)`, `limit(400)`. Both lists are about what is coming |
+| 🔴 **The shared grouping** | `groupEventsByPlace` + `placeForEvent`, so a merged place behaves here exactly as everywhere else. A second, weaker match would give one place two different "next"s on two screens |
+| ⚠️ **Gated like every other action here** | `gated()` runs once at the top of POST, so it needed no check of its own and cannot have been left open |
+
+### The place design editor
+
+A full page: a back link, the place's name, the scope sentence, a two-field card, **the existing
+editor**, and a footer with "Make post for `<date>`" and the quiet way out.
+
+⚠️ **"Name on posts" IS BOUND TO `short_name`, AND THAT IS NOT A PREFERENCE.** `locationName()` in
+`lib/weekly-post/week-data.ts` reads `short_name` FIRST and falls back to `name`, so the short one is
+the field that decides what a poster prints. It is written with `sg_upsert_place` — the action "Tidy up
+places" already uses. **No column was added.**
+
+⛔ **AND THERE IS A MISLABELLING ON RECORD.** The "Tidy up places" card labels **`name`** "Name on
+posts", which is the field the renderer uses **second**. It was left alone because the brief says to
+keep Tidy up as it is; it is named in `docs/social-posts-report.md` as a decision for Dominic.
+
+⛔ **"Use Standard design here instead" IS THE REMOVE, CONFIRMED, AND THERE IS ONE OF IT.** The editor's
+own "Remove this place's design" panel is suppressed in the focused mode, so two controls for one
+irreversible act cannot carry two different confirms.
+
+### ⚠️ `schedule_graphics` is checked PER BOX
+
+The brief asks for the locked state inside the weekly box. ⛔ **THE OTHER TWO BOXES ARE LOCKED THE SAME
+WAY**, which the brief does not say in so many words: `/api/weekly-post` gates **every** action on
+`schedule_graphics`, so a Make post button on a truck without it would open a modal that 403s. **A
+button that cannot work is worse than a locked box that says why.** ⚠️ No truck is in that state today —
+the preview key is on Pizza Kitchen, which is on `trial`, and `TRIAL_FEATURES` spreads `MAX_FEATURES`.
+
+🔴 **ONE GATE HELPER, SIX CALLERS.** Six separate `<FeatureGate>`s could be given six different
+features; `scripts/social-posts.cjs` §4 counts one `feature="schedule_graphics"` in the file.
 
 # 65. Navigation: sub-tabs, and Settings as one list (V13.8 — 3 October 2026, branch only)
 

@@ -88,15 +88,26 @@ head('2 · the pills and panes are gated, and an old ?section= link lands on Eve
     new RegExp(`const canPlacesPosts = canAccess\\(truck\\.plan, '${KEY}'`).test(code))
   /* 🔴 FILTERED, NOT DISABLED. A pill that opens a refusal is worse than no pill: nothing on the
    * screen can say when it will work, and no plan sells it. */
-  t('🔴 the pill row is FILTERED — Places and Social posts are absent without the key',
-    /const visibleSections = canPlacesPosts\s*\n\s*\? SCHEDULE_SECTIONS\s*\n\s*: SCHEDULE_SECTIONS\.filter\(sec => sec\.id !== 'places' && sec\.id !== 'weekly'\)/.test(code)
+  /* ⚠️ RE-AIMED (6 October 2026): THERE IS ONE PILL TO FILTER NOW, not two. The Places pill is gone
+   * and Social posts is one pill with two areas (`posts` / `designs`), so the filter names `posts` —
+   * which is the pill's id — and `designs` is unreachable without it because the pill is the only way
+   * to reach either, and `shownSection` sends both to Events. Both halves are asserted. */
+  t('🔴 the pill row is FILTERED — Social posts is absent without the key',
+    /const visibleSections = canPlacesPosts\s*\n\s*\? SCHEDULE_SECTIONS\s*\n\s*: SCHEDULE_SECTIONS\.filter\(sec => sec\.id !== 'posts'\)/.test(code)
     && /\{visibleSections\.map\(sec => \(/.test(code))
   /* ══ 🔴 A STALE BOOKMARK LANDS ON EVENTS **IN THE SAME RENDER** ════════════════════════════════
    * The page reads `?section=` at mount, before the truck row arrives, so it cannot know the answer
    * there. ⛔ ASSERTED AS A DERIVATION, NOT AS A CORRECTION: a `useEffect` that set the section
    * afterwards would render the gated pane for one frame — and on a slow truck row, for longer. */
   t('🔴 `shownSection` is DERIVED, so a gated section renders Events in the same render',
-    /const shownSection: ScheduleSection =\s*\n\s*\(!canPlacesPosts && \(section === 'places' \|\| section === 'weekly'\)\) \? 'events' : section/.test(code))
+    /const shownSection: ScheduleSection =\s*\n\s*\(!canPlacesPosts && \(section === 'posts' \|\| section === 'designs'\)\) \? 'events' : section/.test(code))
+  /* ⛔ AND THE LEGACY IDS CANNOT GET ROUND IT. `?section=places` is mapped to `designs` at the URL —
+   * BEFORE this derivation — so a stale bookmark on an ungated truck meets the same gate as a pill. */
+  t('⛔ …and `?section=places` / `?section=weekly` are canonicalised BEFORE the gate', (() => {
+    const at = code.indexOf('const canonical = canonicalScheduleSection(sectionParam)')
+    const gate = code.indexOf('const shownSection: ScheduleSection =')
+    return at > 0 && gate > at
+  })())
   t('⚠️ …and the URL is tidied afterwards, through the parent\'s setter, so a refresh agrees',
     /if \(shownSection !== section\) onSectionChange\(shownSection\)/.test(code))
   /* ⛔ AND EVERY PANE SWITCHES ON THE DERIVED VALUE. One left on `section` would render a gated pane
@@ -104,12 +115,15 @@ head('2 · the pills and panes are gated, and an old ?section= link lands on Eve
   const rawSection = (code.match(/\bsection === '/g) || []).length
   t(`⛔ nothing past the derivation still switches on the RAW section (${rawSection} use(s), the derivation itself)`,
     rawSection === 2)
-  for (const id of ['events', 'places', 'event-types']) {
+  for (const id of ['events', 'event-types']) {
     t(`🔴 the \`${id}\` pane switches on \`shownSection\``,
       new RegExp(`isActive && shownSection === '${id}'`).test(code))
   }
-  t('🔴 the `weekly` pane switches on `shownSection`',
-    /isActive && shownSection === 'weekly' && <WeeklyPostPane/.test(code))
+  /* ⚠️ ONE MOUNT FOR BOTH AREAS, and it is `shownSection` that decides which — so the area an operator
+   * is in is the gated value, not a second piece of state that could survive the gate. */
+  t('🔴 the Social posts pane switches on `shownSection`, for both areas',
+    /isActive && \(shownSection === 'posts' \|\| shownSection === 'designs'\) && \(/.test(code)
+    && /<SocialPostsPane truck=\{truck\} token=\{token\} manageApi=\{api\}/.test(code))
 }
 const s2 = show({ ok, bad })
 
@@ -176,9 +190,11 @@ head('4 · the routes refuse without the key — and refuse with the right sente
       && !/Pro and Max/.test(WEEKLY_POST_COPY))
     /* ⚠️ AND IT IS THE SAME STRING ON BOTH SURFACES. Two copies is what made the error possible. */
     t('⚠️ …and the screen and the route read that ONE constant, not two literals',
-      /import \{ WEEKLY_POST_PLAN_REFUSAL \} from '@\/lib\/copy\/weeklyPost'/.test(read('components/manage/SchedulePlaces.tsx'))
+      /* ⚠️ THE SCREEN IS `SocialPosts.tsx` NOW, not `SchedulePlaces.tsx`. `WeeklyPostPane` — the gate's
+       * old home — moved there with the gate when Social posts became two areas and six boxes. */
+      /import \{ WEEKLY_POST_PLAN_REFUSAL \} from '@\/lib\/copy\/weeklyPost'/.test(read('components/manage/SocialPosts.tsx'))
       && /import \{ WEEKLY_POST_PLAN_REFUSAL \} from '@\/lib\/copy\/weeklyPost'/.test(POST_ROUTE)
-      && !/'The weekly post is on/.test(codeOf(read('components/manage/SchedulePlaces.tsx')))
+      && !/'The weekly post is on/.test(codeOf(read('components/manage/SocialPosts.tsx')))
       && !/'The weekly post is on/.test(codeOf(POST_ROUTE)))
     /* 🔴 AND THE OTHER THREE KEYS, FOR THE SAME REASON — the Gusto list in
      * docs/release-prep-report.md states each one's plan, and this is what makes that statement a

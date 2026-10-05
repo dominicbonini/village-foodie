@@ -25,9 +25,8 @@ import {
   type Align, type EventLayout, type TextBox,
 } from '@/lib/weekly-post/layout'
 import { averageSample } from '@/lib/weekly-post/contrast'
-/* 🔴 THE ONE BUILDER FOR A LINK INTO A MANAGE SECTION. A bare `?section=…` drops `?tab=`; see the
- * note at the head of lib/manage-links.ts for the two faults that cost. */
-import { manageSectionHref } from '@/lib/manage-links'
+/* ⛔ `manageSectionHref` WAS IMPORTED HERE for the "a different picture for one place?" pointer,
+ * which is deleted — see the tombstone further down. This screen links nowhere now. */
 
 type BoxKey = 'date' | 'location' | 'time' | 'note'
 
@@ -124,7 +123,25 @@ async function uploadTo(
 // THE SETUP SCREEN
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?: () => void }) {
+/**
+ * ══ 🔴 TWO OPTIONAL PROPS, SO SOCIAL POSTS CAN OPEN THIS SCREEN FOCUSED (6 October 2026) ═══════════
+ *
+ * ⛔ THE SCREEN, THE DRAG SURFACE AND EVERY SAVE PATH ARE UNCHANGED. Social posts › Designs has a box
+ * for the Standard design and a box for the places, and each opens THIS screen on the one it is about.
+ * Building a second place-design editor would have meant a second drag surface — the one whose pointer
+ * handling took three fixes — so what was added is a way to say which design, not a second way to edit.
+ *
+ * @param onlyStandard  edit Standard alone: the Designs list and the "+ Add a design for a place"
+ *                      picker are hidden, because Box 3 on Designs is now that list.
+ * @param onlyPlaceId   edit ONE place: the same, with `current` locked to that place. The page chrome
+ *                      (the back link, the name, "Make post for …") belongs to the caller.
+ */
+export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }: {
+  token: string
+  onCancel?: () => void
+  onlyStandard?: boolean
+  onlyPlaceId?: string
+}) {
   const [loading, setLoading] = useState(true)
   const [standard, setStandard] = useState<EventDesign | null>(null)
   const [designs, setDesigns] = useState<PlaceDesignRow[]>([])
@@ -132,7 +149,9 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
   /* 🔴 WHICH DESIGN IS BEING EDITED. `null` is Standard; a string is a place id. One piece of state,
    * because every other panel on the screen is a view of this one choice — the picture, the boxes, the
    * preview and the save target all follow it, and a second "which place" flag would let them disagree. */
-  const [current, setCurrent] = useState<string | null>(null)
+  /* ⚠️ SEEDED FROM `onlyPlaceId` WHEN THE CALLER NAMED ONE, so the screen opens on that place rather
+   * than on Standard and then jumping. It is still state, because the unfocused screen still switches. */
+  const [current, setCurrent] = useState<string | null>(onlyPlaceId ?? null)
   /* ⚠️ A PLACE PICKED FROM THE PICKER BUT NOT YET GIVEN ANYTHING. Nothing is written to the database
    * until the truck uploads a picture or switches the place to its own positions, so backing out of a
    * half-made design leaves nothing behind — and the saved list never names a design that does not
@@ -171,10 +190,20 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
 
   // ── THE SELECTED DESIGN, AND EVERYTHING THAT FOLLOWS FROM IT ───────────────────────────────────
   const placeDesign = current ? designs.find(d => d.placeId === current) ?? null : null
-  const pendingPlace = current ? pending.find(pl => pl.id === current) ?? null : null
+  /* ⚠️ `places` IS CONSULTED TOO, for a place opened by id with nothing saved yet — it is in the
+   * truck's place list even though it is in neither `designs` nor `pending`. Without this the heading
+   * would read "This place". */
+  const pendingPlace = current
+    ? (pending.find(pl => pl.id === current) ?? (onlyPlaceId === current ? places.find(pl => pl.id === current) ?? null : null))
+    : null
   /* ⚠️ A SELECTED PLACE THAT IS NEITHER SAVED NOR PENDING MEANS THE DESIGN WAS JUST REMOVED under us;
    * falling back to Standard is the only state that can be drawn. */
-  const onStandard = current !== null && !placeDesign && !pendingPlace
+  /* ⛔ A PLACE OPENED FROM Designs HAS NOTHING SAVED YET WHEN IT IS "Give own design". `event_load`
+   * will not list it (that list is places that HAVE something), and `pending` is seeded from the picker
+   * — which this route does not use. So a named place with no row counts as pending, which is exactly
+   * what the picker's own entry means: chosen, nothing written. */
+  const focusPending = !!onlyPlaceId && !placeDesign
+  const onStandard = current !== null && !placeDesign && !pendingPlace && !focusPending
   const mode: 'own' | 'standard' = current === null
     ? 'own'
     : (placeDesign?.mode ?? 'standard')
@@ -401,18 +430,15 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
           {busy ? 'Uploading…' : 'Upload your picture'}
         </label>
         <p className="text-xs text-slate-400 mt-2">PNG or JPG, up to 10MB, at least {MIN_UPLOAD_SHORT_SIDE}px on the short side.</p>
-        {/* 🔴 WHERE A PER-PLACE PICTURE LIVES NOW (5 October 2026). A truck reading this card is
-          * thinking about pictures, which is exactly the moment to say that one pitch can have its
-          * own — and the answer is the Places tab, not another control here.
-          * ⚠️ IT IS A LINK TO THE TAB, not an explanation of where to find it. `?section=places` is
-          * the tab's own address and it survives a refresh. */}
-        <p className="text-xs text-slate-500 mt-2">
-          A different picture for one place? Add it in{' '}
-          {/* ⛔ WAS `href="?section=places"` — a bare relative query REPLACES the whole query string,
-              so `?tab=` was dropped and the link landed on Billing for a trial truck. One builder,
-              which cannot emit a section without its tab. See lib/manage-links.ts. */}
-          <a href={manageSectionHref('places')} className="font-semibold text-orange-700 underline hover:no-underline">Places</a>.
-        </p>
+        {/* ══ ⛔ THE "a different picture for one place?" POINTER IS GONE (6 October 2026) ═══════════
+          * It pointed at the Places tab, which no longer exists — and a truck reading this card is
+          * already ON the screen that answers it: this is Social posts › Designs, and Box 3 of that
+          * screen is the list of places and their own pictures. A sentence pointing at the room you
+          * are standing in is a sentence that makes an operator look for another room.
+          * ⛔ AND IT LEFT A TOMBSTONE THAT BROKE A CHECK. The 5 October note quoted the old
+          * `href="?section=places"`, and `scripts/places-tab.cjs` §6 tested RAW source for that string
+          * — so the comment satisfied the assertion and it passed green for a day on a link that had
+          * already been changed. `codeOf` first; it is in that harness's own header. */}
         {msg && <p className={`text-sm mt-2 ${msg.bad ? 'text-red-600' : 'text-slate-600'}`}>{msg.text}</p>}
       </Card>
     )
@@ -473,6 +499,11 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
           * screen size where the picture is already the smallest. The breakpoint is the grid's own
           * `lg:` — no new one is introduced. */}
         <div className="space-y-3">
+          {/* ⛔ THE DESIGNS LIST IS HIDDEN IN BOTH FOCUSED MODES. On Social posts › Designs it would be a
+            * second copy of Box 3 — the same question asked twice on one screen, free to answer
+            * differently — and in the place editor it would offer a way out of the page the operator
+            * is standing on, past its own back link. */}
+          {!onlyStandard && !onlyPlaceId && (<>
           <div className="lg:hidden">
             <Panel title="Design">
               <select value={current ?? ''} onChange={e => setCurrent(e.target.value || null)} className={SELECT}>
@@ -504,6 +535,7 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
                 onClick={() => { setPicking(true); setSearch('') }}>+ Add a design for a place</button>
             </Panel>
           </div>
+          </>)}
 
           <Panel title="Text we add">
             <SelectBtn label="Date" active={selected === 'date'} onClick={() => setSelected('date')} />
@@ -571,7 +603,13 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
               {/* ⚠️ "ADD A PICTURE" WHERE THERE IS NONE. A design picked from the place picker has no
                 * picture of its own yet, and offering to "Replace" one it does not have reads as though
                 * something is already there — in the one flow this stage exists for. */}
-              {busy ? 'Uploading…' : current && !placeDesign?.imageUrl ? 'Add a picture' : 'Replace'}
+              {busy ? 'Uploading…'
+                : current && !placeDesign?.imageUrl
+                  /* ⚠️ THE BRIEF'S WORDS IN THE PLACE EDITOR, the screen's own elsewhere. "Upload a
+                   * picture for this place" says whose picture it is, which matters on a page that is
+                   * about one place; inside the Designs list the row above already said. */
+                  ? (onlyPlaceId ? 'Upload a picture for this place' : 'Add a picture')
+                  : (onlyPlaceId ? 'Replace picture' : 'Replace')}
             </label>
             <p className="text-[11px] text-slate-400 mt-1">
               {current && !placeDesign?.imageUrl
@@ -661,7 +699,11 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
             </Panel>
           )}
 
-          {current && !onStandard && (
+          {/* ⛔ IN THE PLACE EDITOR THE CALLER OWNS THE REMOVE. Social posts puts it at the bottom of the
+            * page as "Use Standard design here instead", which is what removing it MEANS — and two
+            * controls for one irreversible act, with two different confirms, is how one of them ends up
+            * with the wrong wording. */}
+          {current && !onStandard && !onlyPlaceId && (
             <Panel title="This place">
               {confirmRemove
                 ? <>
@@ -685,7 +727,7 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
         * ⚠️ THE SAME LIST AS ADD EVENT — favourites first, then by name, with a search — because it is
         * the same question ("which of my places?") and a truck should not have to learn it twice. The
         * order comes from the server so the two screens cannot drift apart. */}
-      {picking && (
+      {picking && !onlyStandard && !onlyPlaceId && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
           onClick={() => setPicking(false)}>
           <div className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col overflow-hidden"

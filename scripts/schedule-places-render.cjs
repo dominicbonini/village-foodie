@@ -199,17 +199,9 @@ const NAME_40 = 'The Bull & Butcher, Wickhambrook Green Xx'.slice(0, 40)
 function tidyFixture(css) {
   const shell = lift(PAGE, /^const EVENT_MODAL_SHELL = '(.+)'$/m, 'EVENT_MODAL_SHELL')
   const wide = lift(PAGE, /^const EVENT_MODAL_WIDE = '(.+)'$/m, 'EVENT_MODAL_WIDE')
-  /* 🔴 THE PICKER'S OWN CLASSES, LIFTED FROM components/manage/EventTypes.tsx — the field is mounted
-   * in this modal's form pane, below Van, so it is measured HERE rather than on its own. A restyle of
-   * the control breaks this fixture rather than leaving it measuring a field nobody is served. */
-  const etSelect = lift(ET, /<select id="event-type-select"[\s\S]*?className="([^"]+)"/, 'the event type picker')
-  /* 🔴 AND THE VAN SELECT DIRECTLY ABOVE IT, because the claim worth measuring is PARITY: the
-   * picker is mounted in this pane below Van, and must look and size like the field it sits under.
-   * ⚠️ ITS ABSOLUTE HEIGHT IS NOT THE CLAIM. A native `<select>` in WebKit ignores vertical padding,
-   * so BOTH of these render ~23px there and ~38px in Chromium — a pre-existing property of every
-   * native select in this form, not of this field. Asserting a 36px floor here would fail on code
-   * this build did not write; the finding is in the report instead. */
-  const vanSelect = lift(PAGE, /className=\{`(w-full border rounded-xl px-3 py-2 text-sm text-slate-900[^`]*?) \$\{formErrors\.van_id/, 'the Van select')
+  /* ⛔ THE PICKER AND THE VAN FIELD ARE NOT LIFTED HERE. This fixture is "Tidy up places", which draws
+   * neither — the old version lifted both anyway and carried two unused bindings for them. They are
+   * lifted in `addEventShellFixture`, which is the fixture that draws them. */
   const tidyGrid = lift(PLACES, /<div className="(flex-1 min-h-0 grid grid-cols-1 md:grid-cols-\[22rem_1fr\] gap-4)">/, 'the tidy grid')
   const listBox = lift(PLACES, /<div className="(min-h-0 border border-slate-200 rounded-2xl overflow-hidden flex flex-col max-md:max-h-72)">/, 'the tidy list box')
   /* 🔴 THE LIST'S OWN SCROLLER, LIFTED FROM `PlaceList`. The first draft of this fixture put the rows
@@ -275,17 +267,40 @@ function tidyFixture(css) {
 function addEventShellFixture(css) {
   const shell = lift(PAGE, /^const EVENT_MODAL_SHELL = '(.+)'$/m, 'EVENT_MODAL_SHELL')
   const wide = lift(PAGE, /^const EVENT_MODAL_WIDE = '(.+)'$/m, 'EVENT_MODAL_WIDE')
-  /* 🔴 THE PICKER'S OWN CLASSES, LIFTED FROM components/manage/EventTypes.tsx — the field is mounted
-   * in this modal's form pane, below Van, so it is measured HERE rather than on its own. A restyle of
-   * the control breaks this fixture rather than leaving it measuring a field nobody is served. */
-  const etSelect = lift(ET, /<select id="event-type-select"[\s\S]*?className="([^"]+)"/, 'the event type picker')
-  /* 🔴 AND THE VAN SELECT DIRECTLY ABOVE IT, because the claim worth measuring is PARITY: the
-   * picker is mounted in this pane below Van, and must look and size like the field it sits under.
-   * ⚠️ ITS ABSOLUTE HEIGHT IS NOT THE CLAIM. A native `<select>` in WebKit ignores vertical padding,
-   * so BOTH of these render ~23px there and ~38px in Chromium — a pre-existing property of every
-   * native select in this form, not of this field. Asserting a 36px floor here would fail on code
-   * this build did not write; the finding is in the report instead. */
-  const vanSelect = lift(PAGE, /className=\{`(w-full border rounded-xl px-3 py-2 text-sm text-slate-900[^`]*?) \$\{formErrors\.van_id/, 'the Van select')
+  /* ══ ⛔ THE PICKER IS A PILL ROW, NOT A `<select>` — AND THIS LIFT HAD BEEN DEAD (6 Oct 2026) ══════
+   * It lifted `<select id="event-type-select">`'s className. That control became a pill row when the
+   * separate "Private event" tick was removed and `EventTypeSelect` took privacy over — and this file
+   * has been throwing "the fixture cannot be built" ever since, which is why NOTHING in it ran.
+   * 🔴 SO IT LIFTS THE PILL ROW AND ONE PILL, and the assertions below are re-aimed: the claim is no
+   * longer "the picker is the same height as the Van select" — a pill row is not a field and never
+   * will be — but that the pills stay INSIDE the form pane, wrap rather than overflow at phone width,
+   * and are a tappable height. ⚠️ THE VAN SELECT IS STILL LIFTED, as the pane's reference field. */
+  const etRow = lift(ET, /data-event-type-pills className="([^"]+)"/, 'the event type pill row')
+  const etPill = lift(ET, /className=\{`(inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1\.5 text-xs font-semibold[^`$]*)/, 'an event type pill')
+  /* ⚠️ THE VAN SELECT'S ABSOLUTE HEIGHT IS NOT A CLAIM HERE. A native `<select>` in WebKit ignores
+   * vertical padding, so it renders ~23px there and ~38px in Chromium — a pre-existing property of
+   * every native select in this form. The finding is in the report rather than asserted as a floor. */
+  /* ══ ⛔ THE VAN FIELD IS THE SHARED `<Select>` NOW — A THIRD DEAD LIFT IN THIS FILE (6 Oct 2026) ══
+   * It lifted the native `<select>`'s long inline class string out of page.tsx. That field became the
+   * shared control on 5 October (WebKit renders a native select at 23px whatever its padding says), so
+   * page.tsx now passes only the error state and the BOX belongs to `CONTROL_BOX`.
+   * 🔴 SO THE BOX IS LIFTED FROM ITS OWN DEFINITION, which is where it is now decided — and this
+   * fixture breaks if THAT is restyled, which is the right place for it to break. */
+  const vanSelect = lift(read('lib/ui-tokens.ts'), /export const CONTROL_BOX =\n\s*'([^']+)'/, 'the Van select')
+  /* ══ 🔴 THE 6 OCTOBER ADDITIONS TO THIS FORM, ALL LIFTED FROM page.tsx ════════════════════════════
+   * The venue suggestions became PLACES — each row carrying the place's usual type and a `×` to hide
+   * it — and the type pills gained an "Always use <Type> at <Place>" tick. Both are sentences and
+   * labels inside a 380px-grid pane, which is exactly the kind of thing a class census cannot judge. */
+  const sugBox = lift(PAGE, /data-venue-suggestions\n\s*className="([^"]+)"/, 'the suggestions box')
+  const sugHead = lift(PAGE, /<p className="(px-4 pt-2 pb-1 text-\[10px\] font-bold uppercase tracking-wide text-slate-400)">Your places<\/p>/, 'a suggestions heading')
+  const sugRow = lift(PAGE, /<div key=\{pl\.id\} className="(flex items-stretch border-b border-slate-100 last:border-0)">/, 'a suggestion row')
+  const sugPick = lift(PAGE, /className="(min-w-0 flex-1 text-left px-4 py-2\.5 hover:bg-slate-50)">/, 'the suggestion pick button')
+  const sugLine = lift(PAGE, /<span className="(flex items-baseline gap-2)">\n\s*<span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">/, 'the suggestion name line')
+  const sugName = lift(PAGE, /<span className="(min-w-0 flex-1 truncate text-sm font-medium text-slate-800)">\{pl\.name\}<\/span>/, 'the suggestion name')
+  const sugHide = lift(PAGE, /className="(shrink-0 px-3 text-slate-300 hover:text-red-600)">×<\/button>/, 'the hide button')
+  const sugShow = lift(PAGE, /data-show-hidden\n\s*className="([^"]+)"/, 'the show-hidden row')
+  const tickRow = lift(PAGE, /<label data-always-use\n\s*className="([^"]+)"/, 'the always-use tick row')
+  const tickText = lift(PAGE, /<span className="(min-w-0 text-xs font-semibold text-green-900)">/, 'the always-use sentence')
   return `${HEAD(css)}
 <div class="fixed inset-0 bg-black/60 z-50 flex items-stretch sm:items-center justify-center sm:p-4" style="position:fixed;inset:0">
   <div id="modal" class="${shell} ${wide}">
@@ -303,8 +318,55 @@ function addEventShellFixture(css) {
           </div>
           <div id="etRow" data-event-type-select>
             <label class="block text-xs font-bold text-slate-600 mb-1">Event type</label>
-            <select id="etSelect" class="${etSelect}"><option>Standard</option><option>Festival</option></select>
+            <!-- SIX PILLS: the crowded case. TYPE_COLOURS has six entries, so Standard, Private and
+                 four customs is the most a truck shows before the colours wrap. -->
+            <div id="etSelect" class="${etRow}">
+              ${['Standard', '🔒 Private', 'Festival', 'Pub', 'Market', 'Private hire']
+                .map((l, i) => `<button id="etPill-${i}" type="button" class="${etPill} border-slate-300 bg-white text-slate-700">${l}</button>`).join('')}
+            </div>
             <p id="etHint" class="text-xs text-slate-500 mt-0.5"><span class="font-semibold text-slate-600">(usual for this place) </span>Collection times every 15 min</p>
+            <!-- THE "Always use <Type> at <Place>" TICK. It appears only when the chosen type differs
+                 from the one the form pre-selected for the picked place, so it is drawn here in its
+                 shown state: what can go wrong is the SENTENCE, which carries a type name and a place
+                 name and has a 380px-grid pane to fit into at 390. -->
+            <label id="alwaysUse" class="${tickRow}">
+              <input type="checkbox" class="mt-0.5 h-4 w-4 shrink-0 accent-green-600" />
+              <span id="alwaysUseText" class="${tickText}">Always use Private hire at ${NAME_40}</span>
+            </label>
+          </div>
+          <!-- THE VENUE SUGGESTIONS. Absolutely positioned under the venue box in the real form; drawn
+               here in the flow at the pane's width, because what is measured is the ROW — a long place
+               name, its type label and the × on one line in a 380px-grid pane. -->
+          <div id="suggest" class="${sugBox}" style="position:relative">
+            <p class="${sugHead}">Your places</p>
+            ${[['Standard', '#94A3B8'], ['Festival', '#E8550F'], ['Market', '#7C3AED']]
+              .map(([label, colour], i) => `
+            <div id="sugRow-${i}" class="${sugRow}">
+              <button id="sugPick-${i}" type="button" class="${sugPick}">
+                <span id="sugLine-${i}" class="${sugLine}">
+                  <span id="sugName-${i}" class="${sugName}">${NAME_40}</span>
+                  <span id="sugType-${i}" class="inline-flex shrink-0 items-center gap-1 text-[11px] text-slate-500"><span class="inline-block h-2 w-2 shrink-0 rounded-full" style="background:${colour}"></span>${label}</span>
+                </span>
+                <span class="block truncate text-xs text-slate-400">Wickhambrook</span>
+              </button>
+              <button id="sugHide-${i}" type="button" aria-label="Hide this place" class="${sugHide}">×</button>
+            </div>`).join('')}
+            <div id="sugPrivate" class="${sugRow}">
+              <button type="button" class="${sugPick}">
+                <span id="sugLine-9" class="${sugLine}">
+                  <span id="sugName-9" class="${sugName}">${NAME_40}</span>
+                  <span id="sugType-9" class="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold text-purple-700"><span>🔒</span>Private</span>
+                </span>
+                <span class="block truncate text-xs text-slate-400">Lavenham</span>
+              </button>
+              <button type="button" aria-label="Hide this place" class="${sugHide}">×</button>
+            </div>
+            <button id="sugShowHidden" type="button" class="${sugShow}">2 hidden places match · Show hidden</button>
+            <p class="${sugHead}">Hidden</p>
+            <div id="sugHidden" class="flex items-center gap-2 border-b border-slate-100 px-4 py-2 opacity-55 last:border-0">
+              <span class="min-w-0 flex-1"><span class="block truncate text-sm font-medium text-slate-800">${NAME_40}</span></span>
+              <button type="button" class="shrink-0 text-[11px] font-semibold text-orange-700 underline">Show again</button>
+            </div>
           </div>
           ${filler('Notes', 60)}
         </div>
@@ -525,8 +587,22 @@ function capacityFixture(css, vans = 1, allSame = true) {
    * this `shrink-0`, which stops the track squashing beside a long label. The lift is widened to the
    * class list rather than pinned to the old string, so it measures what is rendered; it still fails
    * if the geometry (`w-11 h-6 rounded-full`) or the green/slate pair ever changes. */
-  const togTrack = lift(PRIM, /<div className=\{`(relative w-11 h-6 rounded-full transition-colors[^`$]*) \$\{on \? 'bg-green-500' : 'bg-slate-300'\}`\}>/, 'the shared toggle track')
-  const togKnob = lift(PRIM, /<div className=\{`(absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform)/, 'the shared toggle knob')
+  /* ══ ⛔ BOTH LIFTS WERE BROKEN, AND THIS FILE HAD NOT RUN AT ALL FOR DAYS (repaired 6 Oct 2026) ════
+   * It threw "the fixture cannot be built" before measuring a single thing, at HEAD, since the Event
+   * types grid gave `Toggle` a `compact` arm: the geometry moved out of the base class and into a
+   * ternary (`compact ? 'w-[38px] h-[22px]' : 'w-11 h-6'`), and the knob's `top-1` did the same, so a
+   * lift pinned to the old single strings could not match.
+   * 🔴 THE SIZE IS LIFTED FROM THE ARM THIS SCREEN IS SERVED — the FULL one, because Menu › Kitchen
+   * capacity uses the plain `<Toggle>` — and the base class separately. It still fails if either arm
+   * is restyled.
+   * ⛔ A FIXTURE THAT CANNOT BUILD IS NOT A FAILING TEST, IT IS NO TEST. This exited 1, so the run
+   * looked loud — and every measurement in the file, including ones about screens with no toggle, had
+   * been silently unmeasured. */
+  const togBase = lift(PRIM, /<div className=\{`(relative rounded-full transition-colors shrink-0) \$\{compact/, 'the shared toggle track')
+  const togSize = lift(PRIM, /\$\{compact \? 'w-\[38px\] h-\[22px\]' : '(w-11 h-6)'\}/, 'the full toggle track size')
+  const togTrack = `${togBase} ${togSize}`
+  const togKnob = lift(PRIM, /<div className=\{`(absolute w-4 h-4 rounded-full bg-white shadow transition-transform)/, 'the shared toggle knob')
+    + ' ' + lift(PRIM, /\$\{compact \? 'top-\[3px\]' : '(top-1)'\}/, 'the full toggle knob offset')
   const hdr = 'text-[11px] font-bold uppercase tracking-wide text-slate-400'
   // Real category names — the first column is `minmax(0,1fr)` and text is what fills it.
   const CATS = ['Pizzas', 'Loaded fries & sides', 'Dips', 'Soft drinks']
@@ -1054,10 +1130,29 @@ function captionRowFixture(css, auto = true, oneVan = false) {
 }
 
 async function engines() {
+  /* ══ ⚠️ `HG_ENGINES`, A `protocolTimeout`, AND A SCREENSHOT THAT CANNOT KILL THE RUN (6 Oct 2026) ══
+   * This machine's Chromium times out inside `Page.captureScreenshot` — the same class of fault the
+   * outreach render harnesses carry a `protocolTimeout` for, and it happens at HEAD too, so it is the
+   * machine and not the build.
+   * ⛔ THE SCREENSHOT WAS KILLING THE WHOLE RUN. It is the LAST thing in a width's loop and it threw
+   * out of `measure()`, so a cosmetic PNG took every measurement already made down with it — and the
+   * file reported one line of error instead of 200 passing checks. A shot is evidence, not a test;
+   * `shot` swallows its own failure and says so.
+   * ⛔ THE DEFAULT IS STILL BOTH ENGINES. A one-engine default would make a Chromium-only bug
+   * invisible for ever, which is the opposite of why this file renders twice. */
+  const want = (process.env.HG_ENGINES || 'chromium,webkit').toLowerCase()
   const out = []
-  try {
+  const shotSafely = async (fn, file) => {
+    try { await fn(file) } catch (e) {
+      console.log(`  ⚠️ screenshot skipped (${String(e.message).split('\n')[0].slice(0, 60)})`)
+    }
+  }
+  if (!want.includes('chromium')) out.push({ name: 'Chromium', skip: 'not requested (HG_ENGINES)' })
+  else try {
     const puppeteer = require('puppeteer')
-    const b = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] })
+    /* ⚠️ Puppeteer's default is 180 SECONDS, so one hung call stalls the run for three minutes before
+     * anything is reported. 30s is long enough for a file:// page and short enough to fail usefully. */
+    const b = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'], protocolTimeout: 30000 })
     const page = await b.newPage()
     out.push({ name: 'Chromium', close: () => b.close(), page,
       setViewport: (w, h) => page.setViewport({ width: w, height: h }),
@@ -1065,15 +1160,16 @@ async function engines() {
        * overlay hangs in both engines here — the first version of this did that and the harness
        * stopped producing output at all. A viewport shot at a named width shows the same thing and
        * cannot hang. */
-      shot: async (file) => { await page.screenshot({ path: file }) } })
+      shot: async (file) => shotSafely(f => page.screenshot({ path: f }), file) })
   } catch (e) { out.push({ name: 'Chromium', skip: String(e.message).split('\n')[0].slice(0, 110) }) }
-  try {
+  if (!want.includes('webkit')) out.push({ name: 'WebKit', skip: 'not requested (HG_ENGINES)' })
+  else try {
     const { webkit } = require('playwright')
     const b = await webkit.launch()
     const page = await b.newPage()
     out.push({ name: 'WebKit', close: () => b.close(), page,
       setViewport: (w, h) => page.setViewportSize({ width: w, height: h }),
-      shot: async (file) => { await page.screenshot({ path: file }) } })
+      shot: async (file) => shotSafely(f => page.screenshot({ path: f }), file) })
   } catch (e) { out.push({ name: 'WebKit', skip: String(e.message).split('\n')[0].slice(0, 110) }) }
   return out
 }
@@ -1904,25 +2000,126 @@ async function measure() {
         return { width: Math.round(b.width), height: Math.round(b.height),
           left: Math.round(b.left), top: Math.round(b.top),
           row: r('etRow'), sel: r('etSelect'), hint: r('etHint'), van: r('vanSelect'),
+          /* ⚠️ THE PILLS' OWN BOXES, and how many LINES they took — distinct `top` values, because a
+           * wrapped row is correct at 390 and a mistake at 1440, and only the pills know which. */
+          pills: (() => {
+            const out = []
+            for (let i = 0; i < 6; i++) { const b = r('etPill-' + i); if (b) out.push(b) }
+            return out
+          })(),
+          pillRows: (() => {
+            const tops = []
+            for (let i = 0; i < 6; i++) {
+              const e = document.getElementById('etPill-' + i)
+              if (e) tops.push(Math.round(e.getBoundingClientRect().top))
+            }
+            return new Set(tops).size
+          })(),
+          /* ── 🔴 THE 6 OCTOBER ADDITIONS ─────────────────────────────────────────────────────── */
+          suggest: r('suggest'),
+          tick: r('alwaysUse'),
+          /* ⚠️ THE TICK'S SENTENCE CARRIES A TYPE NAME AND A PLACE NAME, so how many LINES it took is
+           * the question — not whether the box exists. Clustered by top edge, because the row is a
+           * flex of a checkbox and a span and a Range returns one rect per BOX, not per line. */
+          tickLines: (() => {
+            const el = document.getElementById('alwaysUseText')
+            if (!el) return 0
+            const rr = document.createRange()
+            rr.selectNodeContents(el)
+            const tops = [...rr.getClientRects()].map(b => b.top).sort((a, b) => a - b)
+            let n = 0, last = -1e9
+            for (const top of tops) { if (top - last > 6) { n++; last = top } }
+            return n
+          })(),
+          sugRows: (() => {
+            const out = []
+            for (const i of [0, 1, 2, 9]) {
+              const line = document.getElementById('sugLine-' + i)
+              const name = document.getElementById('sugName-' + i)
+              const type = document.getElementById('sugType-' + i)
+              if (!line || !name || !type) continue
+              const rr = document.createRange()
+              rr.selectNodeContents(type)
+              const tops = [...rr.getClientRects()].map(b => b.top).sort((a, b) => a - b)
+              let lines = 0, last = -1e9
+              for (const top of tops) { if (top - last > 6) { lines++; last = top } }
+              out.push({
+                name: r('sugName-' + i), type: r('sugType-' + i),
+                typeLines: lines,
+                nameTruncated: name.scrollWidth > name.clientWidth + 1,
+              })
+            }
+            return out
+          })(),
+          sugHide: r('sugHide-0'),
+          sugShowHidden: r('sugShowHidden'),
           detail: { l: Math.round(d.left), r: Math.round(d.right) },
           hintLines: hint ? (() => { const rr = document.createRange(); rr.selectNodeContents(hint); return rr.getClientRects().length })() : 0 }
       })
 
-      /* ══ 🔴 THE EVENT TYPE PICKER, IN THE ADD EVENT MODAL'S FORM PANE ════════════════════════
-       * The field is one line in page.tsx and the whole control in components/manage/EventTypes.tsx —
-       * but what can go wrong is where it LANDS: a select and a "(usual for this place)" hint inside a
-       * 380px-grid form pane at 390. Measured in the modal rather than on its own for that reason. */
-      lines.push(`  add-event picker ${w}\u00d7${h}  row ${addEv.row.w}\u00d7${addEv.row.h} · select ${addEv.sel.w}\u00d7${addEv.sel.h} (Van ${addEv.van.w}\u00d7${addEv.van.h}) · hint ${addEv.hintLines} line(s)`)
-      t(addEv.sel.l >= addEv.detail.l - 1 && addEv.sel.r <= addEv.detail.r + 1,
-        `🔴 add-event picker ${w}: the select stays inside the form pane`)
-      t(Math.abs(addEv.sel.h - addEv.van.h) <= 1,
-        `🔴 add-event picker ${w}: the picker is the SAME height as the Van select above it (${addEv.sel.h} vs ${addEv.van.h}px)`)
-      t(Math.abs(addEv.sel.w - addEv.van.w) <= 1,
-        `⚠️ add-event picker ${w}: …and the same width, so the two fields line up`)
+      /* ══ 🔴 THE EVENT TYPE PILL ROW, IN THE ADD EVENT MODAL'S FORM PANE ═══════════════════════
+       * The control is one line in page.tsx and the whole of it in components/manage/EventTypes.tsx —
+       * what can go wrong is where it LANDS: six pills and a "(usual for this place)" hint inside a
+       * 380px-grid form pane at 390. Measured in the modal rather than on its own for that reason.
+       * ⛔ THE OLD "same height as the Van select" CLAIM IS RETIRED (6 October 2026). It was true of a
+       * `<select>` and is meaningless for a pill row — a row of pills is not a field and never will be.
+       * 🔴 WHAT REPLACES IT IS WHAT CAN ACTUALLY BREAK: every pill inside the pane, the row no wider
+       * than the pane, one line at 1440 and WRAPPED at 390 rather than a sideways scroller nobody
+       * finds, and a tappable height. */
+      lines.push(`  add-event pills ${w}\u00d7${h}  row ${addEv.row.w}\u00d7${addEv.row.h} · ${addEv.pills.length} pill(s) on ${addEv.pillRows} row(s), ${addEv.pills[0]?.h ?? 0}px tall (Van ${addEv.van.w}\u00d7${addEv.van.h}) · hint ${addEv.hintLines} line(s)`)
+      t(addEv.pills.length === 6, `⚠️ add-event pills ${w}: all six pills rendered (${addEv.pills.length})`)
+      t(addEv.pills.every(p => p.l >= addEv.detail.l - 1 && p.r <= addEv.detail.r + 1),
+        `🔴 add-event pills ${w}: EVERY pill stays inside the form pane`)
+      t(addEv.sel.r <= addEv.detail.r + 1,
+        `🔴 add-event pills ${w}: …and the row does not widen the pane`)
+      t(addEv.pills.every(p => p.h >= 28 && p.h <= 40),
+        `⚠️ add-event pills ${w}: the pills are a tappable height (${addEv.pills[0]?.h ?? 0}px)`)
+      t(w >= 1440 ? addEv.pillRows === 1 : addEv.pillRows >= 1,
+        `🔴 add-event pills ${w}: ${w >= 1440 ? 'one line at desktop width' : `wrapped onto ${addEv.pillRows} row(s), not scrolled`}`)
       t(addEv.hint.r <= addEv.detail.r + 1,
-        `🔴 add-event picker ${w}: the "(usual for this place)" hint does not overflow the pane`)
+        `🔴 add-event pills ${w}: the "(usual for this place)" hint does not overflow the pane`)
       t(addEv.hintLines >= 1 && addEv.hintLines <= 3,
-        `⚠️ add-event picker ${w}: the hint wraps to at most three lines (${addEv.hintLines})`)
+        `⚠️ add-event pills ${w}: the hint wraps to at most three lines (${addEv.hintLines})`)
+
+      /* ══ 🔴 THE "Always use <Type> at <Place>" TICK (6 October 2026) ═══════════════════════════
+       * It carries a type name AND a place name, in a pane that is 380px narrower than the modal at
+       * 1440 and the whole screen at 390. A sentence that overflows its box is the one way this
+       * control can be wrong on a screen that is otherwise correct. */
+      lines.push(`  always-use ${w}  row ${addEv.tick.w}\u00d7${addEv.tick.h} · sentence ${addEv.tickLines} line(s)`)
+      t(addEv.tick.l >= addEv.detail.l - 1 && addEv.tick.r <= addEv.detail.r + 1,
+        `🔴 always-use ${w}: the tick row stays inside the form pane`)
+      t(addEv.tickLines >= 1 && addEv.tickLines <= 3,
+        `⚠️ always-use ${w}: its sentence wraps to at most three lines (${addEv.tickLines})`)
+      t(addEv.tick.h >= 28,
+        `⚠️ always-use ${w}: the row is a tappable height (${addEv.tick.h}px)`)
+
+      /* ══ 🔴 THE VENUE SUGGESTIONS ARE PLACES, AND EACH ROW CARRIES THREE THINGS (6 Oct 2026) ═════
+       * A 40-character name, the place's usual type on the right, and a `×`. The name is
+       * `min-w-0 flex-1 truncate` and the type is NOT, so the engine gives the type its natural width
+       * and truncates the name — which is the intended behaviour and the opposite of what `truncate`
+       * on both would do. ⛔ ONLY A LAYOUT ENGINE KNOWS WHICH GAVE WAY. */
+      lines.push(`  suggestions ${w}  box ${addEv.suggest.w}px · ${addEv.sugRows.length} row(s) · type ${addEv.sugRows[0]?.type.w ?? 0}px · × at ${addEv.sugHide.r}`)
+      t(addEv.sugRows.length === 4, `⚠️ suggestions ${w}: all four rows rendered (${addEv.sugRows.length})`)
+      t(addEv.sugRows.every(x => x.type.r <= addEv.suggest.r + 1 && x.type.l >= addEv.suggest.l - 1),
+        `🔴 suggestions ${w}: EVERY type label is inside the dropdown`)
+      t(addEv.sugRows.every(x => x.typeLines === 1),
+        `🔴 suggestions ${w}: …and none of them wrapped — a half-written type name is worse than a truncated venue`)
+      t(addEv.sugRows.every(x => x.name.r <= x.type.l + 1),
+        `🔴 suggestions ${w}: …and the name never runs into it`)
+      /* ⚠️ WHICH SIDE GIVES WAY IS ONLY A QUESTION WHERE THERE IS NOT ROOM FOR BOTH. At 1440 the form
+       * pane is ~592px and a 40-character name fits beside its type with room to spare — asserting a
+       * truncation there failed on correct markup, which is the check being wrong rather than the
+       * layout. Below `md` the pane is the screen and the name must be the side that goes. */
+      t(w >= 1024 ? !addEv.sugRows[0].nameTruncated : addEv.sugRows.some(x => x.nameTruncated),
+        `⚠️ suggestions ${w}: ${w >= 1024
+          ? 'there is room for the whole name beside its type'
+          : 'the NAME is the side that truncates, never the type'}`)
+      /* ⛔ THE `×` IS INSIDE THE ROW AND INSIDE THE BOX. It sits in the row's own click target, so if
+       * it fell outside the dropdown it would be both unreachable and a layout break. */
+      t(addEv.sugHide.r <= addEv.suggest.r + 1 && addEv.sugHide.w > 0,
+        `🔴 suggestions ${w}: the × is inside the row and inside the dropdown`)
+      t(addEv.sugShowHidden.r <= addEv.suggest.r + 1,
+        `⚠️ suggestions ${w}: "Show hidden" fits without overflowing`)
       if (w === 1440 || w === 390) {
         await eng.shot(path.join(shotDir, `add-event-type-picker-${w}-${eng.name.toLowerCase()}.png`))
       }

@@ -16,14 +16,10 @@
 // and race each other's reads. One hook, one owner of the list, and the star writes through it.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Btn, Card, Input, Spinner } from '@/components/manage/primitives'
-import { FeatureGate } from '@/components/FeatureGate'
-import type { Plan } from '@/lib/features'
-/* 🔴 THE PLAN SENTENCE, FROM THE ONE MODULE THAT HOLDS IT, so the refused screen and the refused call
- * say the same thing. ⛔ NOT FROM THE ROUTE — importing it from there pulled the route's server-only
- * dependencies into the client bundle and failed the build. See the note in lib/copy/weeklyPost.ts. */
-import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
+/* ⛔ `FeatureGate`, `Plan`, `WEEKLY_POST_PLAN_REFUSAL` AND `WeeklyPostApp` WERE IMPORTED HERE. All four
+ * belonged to `WeeklyPostPane`, which moved to components/manage/SocialPosts.tsx — see the tombstone
+ * below. Nothing else in this file is gated or knows about a plan. */
 import { placeWhenLine, timeRangeLabel } from '@/lib/schedule-graphics/places'
-import { WeeklyPostApp } from './WeeklyPost'
 
 export interface Place {
   id: string
@@ -565,35 +561,10 @@ export function TidyUpPlaces({ ctl, api, showToast, onBack }: {
   )
 }
 
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-// THE WEEKLY POST PANE — the only thing still gated, and still a placeholder
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-/**
- * ⚠️ THE GATE STAYS HERE AND THE SCREENS MOVED OUT. This file is the places feature; the weekly post
- * is a large screen of its own and lives in components/manage/WeeklyPost.tsx. What remains here is the
- * plan gate and the truck→token plumbing, so `page.tsx`'s import does not change.
- *
- * 🔴 THE GATE IS ALSO ENFORCED SERVER-SIDE in app/api/weekly-post/route.ts. This one decides what is
- * DRAWN; that one decides what is DONE. Without both, the whole feature is reachable by posting to the
- * route with a dashboard token, and this would be decoration.
+/* ══ ⛔ `WeeklyPostPane` WAS HERE (6 October 2026) ════════════════════════════════════════════════
+ * It was the Social posts section's whole mount: a `FeatureGate` on `schedule_graphics` around
+ * `WeeklyPostApp`. The section is `components/manage/SocialPosts.tsx` now — two areas and six boxes —
+ * and it keeps the gate, per BOX rather than around the page, because the brief asks for the locked
+ * state inside the weekly box.
+ * ⚠️ `WEEKLY_POST_PLAN_REFUSAL` IS STILL THE ONE SENTENCE. It moved with the gate, not with a copy.
  */
-export function WeeklyPostPane({ truck, token }: {
-  truck: { plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; name?: string | null } | null
-  token: string
-}) {
-  return (
-    <FeatureGate
-      feature="schedule_graphics"
-      plan={truck?.plan}
-      overrides={truck?.feature_overrides}
-      trialExpiresAt={truck?.trial_expires_at}
-      /* ⛔ "Max", NOT "Pro and Max", AND IT IS THE ROUTE'S OWN CONSTANT NOW (5 October 2026).
-       * `schedule_graphics` lives in `MAX_FEATURES`, so a Pro truck is refused — and was being told
-       * the feature came with their plan while being refused it. The string was written out here AND
-       * in the route, both wrong in the same way, which is what two copies of one claim buys. */
-      upgradeMessage={WEEKLY_POST_PLAN_REFUSAL}
-    >
-      <WeeklyPostApp token={token} truckName={truck?.name ?? 'Your truck'} />
-    </FeatureGate>
-  )
-}

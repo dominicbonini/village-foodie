@@ -19,6 +19,10 @@ import { canAccess } from '@/lib/features'
 import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
 import { scanUrl } from '@/lib/custom-domain/copy'
 import type { Place } from '@/lib/schedule-graphics/places'
+/* 🔴 THE SHARED PLACE RULES, for `social_overview`. `groupEventsByPlace` follows `merged_into_id`, so a
+ * merged pitch's events land on its target here exactly as they do on every other screen; a second,
+ * weaker match would give one place two different "next" events depending on which screen asked. */
+import { groupEventsByPlace, placeForEvent, countsAsUpcoming } from '@/lib/schedule-graphics/places'
 import { buildWeekData, busyWeekData, type WeekEvent } from '@/lib/weekly-post/week-data'
 import {
   defaultLayout, defaultEventLayout, rowsFitWarning, validateLayout, validateEventLayout,
@@ -391,6 +395,142 @@ export async function POST(req: NextRequest) {
       events: week.included.map(e => ({ id: e.id, date: e.event_date, status: e.status, venue: e.venue_name })),
       orderUrl: truck.slug ? scanUrl(truck.slug) : null,
       defaultWeek: defaultWeekChoice(),
+    })
+  }
+
+  /* ══ 🔴 `social_overview` — EVERYTHING THE SOCIAL POSTS PAGE NEEDS, IN ONE READ (6 Oct 2026) ══════
+   *
+   * ⛔ IT EXISTS TO STOP A LOOP. The Designs area lists every place with a thumbnail, and the only
+   * action that signed a place's picture was `event_load` — which also reads up to 200 events in each
+   * direction to build the setup screen's previews. One call per place would have been twenty-one
+   * copies of that read to draw twenty-one 64px squares. One call, one signed URL each.
+   *
+   * ⚠️ READ-ONLY, AND BEHIND THE SAME GATE AS EVERY OTHER ACTION HERE. `gated` runs once at the top of
+   * POST, so this needs no check of its own and cannot have been accidentally left open; it is scoped
+   * to the token's truck by the same `truck.id` every other read uses.
+   *
+   * 🔴 IT ANSWERS FOUR QUESTIONS, AND THEY ARE FOUR BECAUSE THE SCREEN ASKS FOUR:
+   *   `weekly`   — is the weekly design set up, and how many events are in each week
+   *   `standard` — is the Standard single-event design set up, with its picture
+   *   `upcoming` — the next few events, for "Single event post"
+   *   `places`   — every non-hidden place, its own picture if it has one, and its next PUBLIC event
+   *
+   * ⛔ PRIVACY IS RESOLVED ONCE, FOR EVERY EVENT IN THE ANSWER, through the one reader. A private
+   * event is returned with `isPrivate: true` and **no venue, no town and no place name** — the screen
+   * draws it greyed as "Private event · no post" — and it is never a place's `next` event, because a
+   * place's next event is the one its "Make post" button would post. §73's rule, applied here rather
+   * than trusted to the client. */
+  if (action === 'social_overview') {
+    const today = todayInWeekTz()
+    const [{ data: placeRows }, { data: evRows }] = await Promise.all([
+      supabase.from('truck_places')
+        .select('id, venue_id, name_key, name, short_name, area, merged_into_id, is_hidden, is_favourite, event_bg_path, event_bg_width, event_bg_height, event_layout')
+        .eq('truck_id', truck.id),
+      /* ⚠️ BOUNDED AND FORWARD-ONLY. Both lists are about what is COMING, so nothing before today is
+       * read at all — which is also what keeps this cheap enough to replace the per-place loop. */
+      supabase.from('truck_events')
+        .select('id, event_date, start_time, end_time, status, venue_name, venue_id, truck_place_id, town')
+        .eq('truck_id', truck.id).gte('event_date', today)
+        .order('event_date', { ascending: true }).order('start_time', { ascending: true })
+        .limit(400),
+    ])
+    const allPlaces = ((placeRows ?? []) as unknown as Place[])
+    const upcomingRaw = ((evRows ?? []) as unknown as WeekEvent[])
+      .filter(e => countsAsUpcoming((e as { status?: string | null }).status))
+    const privacy = await readPrivateEventIds(
+      supabase, upcomingRaw.map(e => e.id), 'weekly-post social_overview')
+    for (const e of upcomingRaw) e.is_private = privacy.isPrivate(e.id)
+
+    /* 🔴 THE SHARED GROUPING, so a MERGED place's events land on its target exactly as they do on
+     * every other screen. A second, weaker match here would give one place two different "next"s. */
+    const { byPlace } = groupEventsByPlace(
+      upcomingRaw as unknown as Parameters<typeof groupEventsByPlace>[0], allPlaces)
+
+    const { design: weekDesign } = await loadDesign(truck.id, KIND)
+    const { design: evDesign } = await loadDesign(truck.id, EVENT_KIND)
+
+    /* ⚠️ HOW MANY EVENTS ARE IN EACH WEEK, for the "Which week" line. Counted from the same forward
+     * read rather than by loading both weeks' day grids, which is what `load` is for. */
+    const countIn = (from: string, to: string) =>
+      upcomingRaw.filter(e => {
+        const d = String(e.event_date ?? '')
+        return d >= from && d <= to
+      }).length
+    const thisWeek = weekRange('this')
+    const nextWeek = weekRange('next')
+
+    /** One event, shaped for the screen. ⛔ A PRIVATE ONE CARRIES NO LOCATION OF ANY KIND. */
+    const shapeEvent = (e: WeekEvent) => {
+      const priv = e.is_private === true
+      const place = priv ? null : placeForEvent(e as never, allPlaces)
+      return {
+        id: String(e.id),
+        date: String(e.event_date ?? ''),
+        startTime: (e as { start_time?: string | null }).start_time ?? null,
+        endTime: (e as { end_time?: string | null }).end_time ?? null,
+        isPrivate: priv,
+        venue: priv ? null : (String(e.venue_name ?? '').trim() || null),
+        town: priv ? null : ((e as { town?: string | null }).town ?? null),
+        placeId: priv ? null : (place?.id ?? null),
+        /* 🔴 WHICH DESIGN THIS POST WILL USE, so the row's colour bar is the truth rather than a
+         * guess. `own` only when the place has a PICTURE of its own — a place with only its own text
+         * positions is still drawing Standard's picture. */
+        design: priv ? 'none' as const
+          : (place && (place as { event_bg_path?: string | null }).event_bg_path ? 'own' as const : 'standard' as const),
+      }
+    }
+
+    const visible = allPlaces.filter(p => p.is_hidden !== true && !p.merged_into_id)
+    visible.sort((a, b) => {
+      const fa = a.is_favourite === true ? 0 : 1
+      const fb = b.is_favourite === true ? 0 : 1
+      return fa !== fb ? fa - fb : String(a.name ?? '').localeCompare(String(b.name ?? ''))
+    })
+
+    return NextResponse.json({
+      ok: true,
+      weekly: {
+        ready: !!weekDesign?.blank_path,
+        previewUrl: await signed(weekDesign?.example_path ?? weekDesign?.blank_path ?? null),
+        thisWeek: { start: thisWeek.start, end: thisWeek.end, events: countIn(thisWeek.start, thisWeek.end) },
+        nextWeek: { start: nextWeek.start, end: nextWeek.end, events: countIn(nextWeek.start, nextWeek.end) },
+        defaultWeek: defaultWeekChoice(),
+      },
+      standard: {
+        ready: !!evDesign?.blank_path,
+        previewUrl: await signed(evDesign?.example_path ?? evDesign?.blank_path ?? null),
+        width: evDesign?.width ?? null,
+        height: evDesign?.height ?? null,
+      },
+      /* ⚠️ SIX, BECAUSE THE BOX SHOWS SIX. The cap is here and not on the client so the payload is the
+       * answer rather than a list to be trimmed — and a private event in the next six takes its place
+       * in the list, greyed, rather than being skipped over for a seventh. */
+      upcoming: upcomingRaw.slice(0, 6).map(shapeEvent),
+      places: await Promise.all(visible.map(async pl => {
+        const mine = (byPlace.get(pl.id) ?? []) as unknown as WeekEvent[]
+        /* ⛔ THE NEXT **PUBLIC** EVENT. A place's Make post button posts this event, and a private
+         * event has no post — so offering one would be offering a button that cannot work. */
+        const next = mine.find(e => e.is_private !== true) ?? null
+        const path = (pl as { event_bg_path?: string | null }).event_bg_path ?? null
+        return {
+          id: pl.id,
+          name: String(pl.name ?? ''),
+          shortName: String(pl.short_name ?? '').trim() || null,
+          area: pl.area ?? null,
+          isFavourite: pl.is_favourite === true,
+          hasPicture: !!path,
+          /* 🔴 ONE SIGNED URL PER PLACE, IN THIS ONE CALL. `SIGNED_URL_SECONDS` is the same short life
+           * every other thumbnail on this route gets — a private object read on the owner's behalf. */
+          imageUrl: await signed(path),
+          width: (pl as { event_bg_width?: number | null }).event_bg_width ?? null,
+          height: (pl as { event_bg_height?: number | null }).event_bg_height ?? null,
+          ownPositions: !!(pl as { event_layout?: unknown }).event_layout,
+          next: next ? shapeEvent(next) : null,
+          /* ⚠️ EVERY upcoming PUBLIC event here, for the place editor's "Preview with" select. It is a
+           * handful of rows per place out of a read that has already happened. */
+          upcoming: mine.filter(e => e.is_private !== true).slice(0, 12).map(shapeEvent),
+        }
+      })),
     })
   }
 

@@ -58,6 +58,11 @@ import { whatsAppRowView } from '@/lib/whatsapp/connection-view'
 import { FeatureGate } from '@/components/FeatureGate'
 import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory, collectionTimesHint } from '@/lib/slot-interval'
 import { EventTypesPanel, EventTypeSelect } from '@/components/manage/EventTypes'
+/* 🔴 THE GRID'S OWN COLOURS AND THE WORD "Standard", so a place's usual type is labelled the same way
+ * on a suggestion row as on the Event types grid. `colourFor` is derived from the type's index — see
+ * its note on why the colour is not a column. */
+import { colourFor, STANDARD_COLOUR } from '@/lib/event-types/types'
+import { STANDARD_TYPE_NAME } from '@/lib/event-types/read'
 import { intervalExample } from '@/lib/slot-generation'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_NO_LIMIT, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
@@ -114,7 +119,7 @@ import { isNativeApp } from '@/lib/native/device'
 // Both store badges, from one component — the order and the colour are vendor rules. See the card below.
 import { StoreBadges } from '@/components/StoreBadges'   // native-only hide: Auto-replies (see SettingsTab)
 import {
-  WeeklyPostPane, TidyUpPlaces, PlaceList, usePlaces, type Place as SgPlaceRow,
+  TidyUpPlaces, PlaceList, usePlaces, type Place as SgPlaceRow,
 } from '@/components/manage/SchedulePlaces'
 import { EventPostModal } from '@/components/manage/EventPost'
 import { fillFromPlace, timeRangeLabel, placeForEvent } from '@/lib/schedule-graphics/places'
@@ -136,11 +141,16 @@ import {
  * and the title a customer sees are the same constant rather than two copies of two words. */
 import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 import { PrivateLinkPanel, type PrivateLinkData } from '@/components/manage/PrivateLinkPanel'
-/* 🔴 SCHEDULE › PLACES (5 October 2026). Composes the SHARED list, detail and hook. */
-import { PlacesTab } from '@/components/manage/PlacesTab'
+/* ⛔ `PlacesTab` WAS IMPORTED HERE (6 October 2026). The Places pill is gone and the file with it; see
+ * the tombstone at the section mount for where each of its four controls went.
+ * 🔴 SCHEDULE › SOCIAL POSTS — two areas, six boxes, and not one new way to make or edit anything. */
+import { SocialPostsPane } from '@/components/manage/SocialPosts'
 /* 🔴 THE ONE BUILDER FOR A LINK INTO A TAB OR SECTION — see lib/manage-links.ts for the bug that made
  * it exist. The two "Upgrade →" / "View plans" anchors below use it rather than a literal `?tab=…`. */
-import { manageTabHref } from '@/lib/manage-links'
+import {
+  manageTabHref, canonicalScheduleSection,
+  type ScheduleSection, type LegacyScheduleSection,
+} from '@/lib/manage-links'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null }
@@ -275,34 +285,39 @@ const LEGACY_TAB_TO_MENU_SECTION: Record<string, MenuSection> = {
  * Back button both work — a section held only in React state is one an operator loses by reloading.
  * ⚠️ 'events' IS THE DEFAULT AND IS NOT WRITTEN TO THE URL, so the existing /manage/<token> link opens
  * exactly where it always did. */
-/* ══ 🔴 FOUR PILLS, IN THIS ORDER (5 October 2026) ═══════════════════════════════════════════════
- * Events · Event types · Places · Social posts.
+/* ══ 🔴 THREE PILLS, FOUR SECTIONS, TWO LEGACY IDS (6 October 2026) ══════════════════════════════
+ * Events · Event types · Social posts.
  *
- * 🔴 "Weekly post" BECAME "Social posts", AND THE ID DID NOT CHANGE WITH IT. The id is what appears
- * in `?section=`, and `?section=weekly` is in operators' bookmarks, in the setup wizard's links and
- * in `onSectionChange('weekly')` calls elsewhere in this file. Renaming the id would have broken
- * every one of them to change a label, so the id stays `weekly` and only the LABEL moved. The page
- * now holds both the single-event and the weekly post, which is why "Weekly post" had stopped being
- * the truth about it.
+ * ⛔ THE PLACES PILL IS GONE. It existed for one day. What an operator went there to do is split
+ * between the two screens that were already about it: the five fields are edited in "Tidy up places"
+ * inside Add event — the only home for them now — and giving a place its own picture is Social posts ›
+ * Designs, which is where the design it affects lives.
  *
- * 🔴 `places` IS A SECTION AGAIN. It was removed on 3 October when the list moved into the Add event
- * modal; it is now its own tab with a detail pane, and the modal's "Tidy up places" link stays and
- * calls the SAME actions (no second implementation).
- * ⚠️ SO AN OLD `?section=places` LINK NOW LANDS ON PLACES RATHER THAN FALLING THROUGH TO EVENTS,
- * which is what it meant when it was written. That is a behaviour change and it is the right one.
+ * 🔴 SOCIAL POSTS IS ONE PILL WITH TWO AREAS — `posts` (Make a post) and `designs`. Both are in the
+ * URL, because "send me the designs screen" has to be a link somebody can send.
+ *
+ * ⚠️ `places` AND `weekly` ARE STILL ACCEPTED AND ARE MAPPED, NEVER DROPPED. They are in operators'
+ * bookmarks and in links this product has already sent. `canonicalScheduleSection` — in
+ * lib/manage-links.ts, so the page and the harness read ONE map — sends `places` to Designs and
+ * `weekly` to Make a post. ⛔ FALLING THROUGH TO EVENTS IS WHAT MADE `?section=places` LAND ON THE
+ * WRONG SCREEN the last time it was retired, so neither falls through.
+ *
+ * ⚠️ THE TYPE IS IMPORTED, NOT DECLARED HERE. It was declared in both files; one definition is what
+ * stops a section existing in a pill and not in the link builder.
  */
-type ScheduleSection = 'events' | 'event-types' | 'places' | 'weekly'
 const SCHEDULE_SECTIONS: { id: ScheduleSection; label: string }[] = [
   { id: 'events', label: 'Events' },
   /* ⚠️ THE ID IS HYPHENATED, matching `?section=event-types`. It is not `eventTypes`: every other id
    * here is what appears in the URL, and a camelCase one would need a mapping nothing else needs. */
   { id: 'event-types', label: 'Event types' },
-  { id: 'places', label: 'Places' },
-  /* ⛔ ID `weekly`, LABEL "Social posts". See the note above — the id is the URL contract. */
-  { id: 'weekly', label: 'Social posts' },
+  /* ⛔ ONE PILL FOR BOTH AREAS, and its id is the area the pill opens. The pill is also the active one
+   * while `designs` is showing — see `shownSection` below. */
+  { id: 'posts', label: 'Social posts' },
 ]
-const isScheduleSection = (v: unknown): v is ScheduleSection =>
-  v === 'events' || v === 'weekly' || v === 'event-types' || v === 'places'
+/** ⚠️ IT ACCEPTS THE LEGACY IDS, because `canonicalScheduleSection` maps them. A parser that rejected
+ *  them would send a live bookmark to Events, which is the bug this replaced. */
+const isScheduleSection = (v: unknown): v is ScheduleSection | LegacyScheduleSection =>
+  canonicalScheduleSection(v) !== null
 type UserRole = 'owner' | 'manager' | 'staff'
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -717,8 +732,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
      * events|weekly and Menu's are items|extras|deals, so each validator recognises only its own —
      * and each implies its tab when `?tab=` was not given. */
     const sectionParam = qs.get('section')
-    if (isScheduleSection(sectionParam)) {
-      setScheduleSection(sectionParam)
+    /* 🔴 CANONICALISED HERE, SO NOTHING BELOW EVER SEES A LEGACY ID. `?section=places` becomes
+     * `designs` and `?section=weekly` becomes `posts` at the one point the URL is read — which is why
+     * every switch further down can be exhaustive over the live sections alone. */
+    const canonical = canonicalScheduleSection(sectionParam)
+    if (canonical) {
+      setScheduleSection(canonical)
       if (!tabParam) setActiveTab('schedule')
     } else if (isMenuSection(sectionParam)) {
       setMenuSection(sectionParam)
@@ -7243,14 +7262,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    *  worse than no pill, because nothing on the screen can say when it will work. */
   const visibleSections = canPlacesPosts
     ? SCHEDULE_SECTIONS
-    : SCHEDULE_SECTIONS.filter(sec => sec.id !== 'places' && sec.id !== 'weekly')
+    : SCHEDULE_SECTIONS.filter(sec => sec.id !== 'posts')
   /* 🔴 AN OLD `?section=places` OR `?section=weekly` BOOKMARK LANDS ON EVENTS, and it lands there in
    * the SAME RENDER — this is a derivation, not a correction applied afterwards. The URL is read at
    * mount, before the truck row has arrived, so the page cannot know the answer there; it is known
    * here, where the truck is. ⚠️ `shownSection` IS WHAT EVERY BODY BELOW SWITCHES ON. Using `section`
    * anywhere past this point would render a gated pane for one frame, or for good. */
   const shownSection: ScheduleSection =
-    (!canPlacesPosts && (section === 'places' || section === 'weekly')) ? 'events' : section
+    (!canPlacesPosts && (section === 'posts' || section === 'designs')) ? 'events' : section
   /* ⚠️ AND THE URL IS TIDIED AFTERWARDS, so a refresh does not keep asking for a tab that is not
    * there. It calls the parent's setter rather than writing state here, and it is a no-op in every
    * case except the stale-bookmark one. */
@@ -7384,6 +7403,20 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const [exclusionTerms, setExclusionTerms] = useState<string[]>([])
   const [exclusionList, setExclusionList] = useState<{ id: string; term: string }[]>([])
   const [showVenueSuggestions, setShowVenueSuggestions] = useState(false)
+  /* ⚠️ "Show hidden" IS PER-OPEN AND IS NEVER REMEMBERED. Hidden places are somewhere to go and get
+   * one back, not a view to work in — the same reasoning the Places list's own section carried. */
+  const [hiddenShown, setHiddenShown] = useState(false)
+  /* ══ 🔴 "Always use <Type> at <Place>" — THE PLACE'S TYPE, SET FROM THE FORM (6 October 2026) ══════
+   * ⛔ UNTICKED BY DEFAULT, AND IT IS THE ONLY THING THAT MAKES ADD EVENT WRITE TO A PLACE. Without
+   * it, choosing a different type for one event changes that event and nothing else — which is what
+   * this form has always done and what `scripts/places-tab.cjs` keeps asserting.
+   * ⚠️ IT IS RESET WHENEVER THE ROW DISAPPEARS, so a tick left over from one place cannot be applied
+   * to the next: see the effect below. */
+  const [alwaysUseType, setAlwaysUseType] = useState(false)
+  /** What `<EventTypeSelect>` pre-selected for the picked place, and where that answer came from. */
+  const [usualForPlace, setUsualForPlace] = useState<{ typeId: string | null; by: string | null }>(
+    { typeId: null, by: null })
+
   /* ⚠️ `showEventTypes` IS GONE — the panel is the third Schedule pill now, so which screen is on
    * is `section`, the state the pills already own. A second flag saying the same thing is how two
    * pieces of state come to disagree about what is showing. */
@@ -7684,6 +7717,27 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     ? placesCtl.places.find(p => p.id === editingEvent.truck_place_id) ?? null
     : null
 
+  /* ══ 🔴 WHEN THE "Always use …" TICK IS OFFERED, AND WHAT IT SAYS ════════════════════════════════
+   * A known place is picked, the types have loaded, and the chosen type is NOT the one this form
+   * pre-selected for that place. ⛔ `eventTypeId` AND `usualForPlace.typeId` ARE BOTH `null` FOR
+   * STANDARD, so the comparison is between two nullable ids and `??` is deliberate — a place pinned to
+   * Standard and a form on Standard must not offer to "always use" what is already there. */
+  const chosenType = eventTypeId ? placeTypeChoices.find(t => t.id === eventTypeId) ?? null : null
+  const chosenTypeName = chosenType?.name ?? STANDARD_TYPE_NAME
+  const showAlwaysUse = !!pickedPlace
+    && placeTypeChoices.length > 0
+    && (eventTypeId ?? null) !== (usualForPlace.typeId ?? null)
+
+  /* ══ 🔴 THE TICK IS **DERIVED DEAD** WHEN IT IS NOT OFFERED, NOT CLEARED BY AN EFFECT ════════════
+   * ⛔ THE FIRST VERSION WAS `useEffect(() => { if (!showAlwaysUse) setAlwaysUseType(false) })`, which
+   * is a synchronous setState inside an effect — a cascading render, and the one new ESLint error this
+   * build introduced. ⚠️ AND IT WAS ALSO A FRAME OF WRONGNESS: between the render that stopped
+   * offering the row and the effect that cleared it, a save would have read `true`.
+   * 🔴 SO THE SAVE AND THE CHECKBOX BOTH READ THIS, and the raw state is never consulted directly:
+   * ticking it for one place and then choosing another cannot carry the tick across, because the row
+   * is not offered for the second place and the derived value is false in the SAME render. */
+  const alwaysUseActive = alwaysUseType && showAlwaysUse
+
   /* ── 🔴 THE LIVE PREVIEW ───────────────────────────────────────────────────────────────────────
    * Built from the form on every render, so it updates as the operator types. The props go to
    * `TruckListCard` — the public schedule page's own component — so what they see is what a customer
@@ -7822,6 +7876,32 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         private_name: chosenPrivate ? (editingEvent.private_name ?? '') : '',
         ...(editingEvent.id ? {} : { event_type_id: chosenPrivate ? null : eventTypeId }),
       })
+      /* ══ 🔴 "Always use <Type> at <Place>" — WRITTEN **AFTER** THE EVENT, AND ONLY IF IT SAVED ══════
+       * ⛔ THE ORDER IS THE WHOLE RULE. The event is what the operator came to do; the place's usual
+       * type is a convenience they ticked on the way past. Writing the place first would mean a form
+       * that failed could still have changed a pitch for ever.
+       * ⛔ AND A FAILED PLACE WRITE NEVER FAILS THE SAVE. It is OUTSIDE this try's failure path — its
+       * own catch, its own one-line note — because the event is already in the database by now, and a
+       * red "Event could not be saved" over a saved event is a lie the operator will act on.
+       * ⚠️ `'standard'` IS THE LITERAL ON THE WIRE for Standard, never a uuid: Standard has no
+       * `event_types` row. The route writes both columns together. */
+      if (alwaysUseActive && pickedPlace) {
+        try {
+          await api('sg_place_usual_type', {
+            placeId: pickedPlace.id,
+            typeId: chosenPrivate ? privateTypeId : (eventTypeId ?? 'standard'),
+          })
+          placesCtl.reload()
+        } catch (e: unknown) {
+          /* ⚠️ A TOAST, NOT AN INLINE LINE — AND THAT IS NOT A STYLE CHOICE. The modal closes two lines
+           * below, so a note rendered inside the form would be drawn and destroyed in the same tick.
+           * The sentence names BOTH outcomes, in that order, because the one an operator must not
+           * doubt is that their event saved. */
+          showToast(
+            `Event saved. ${pickedPlace.name}’s usual type was not — ${
+              e instanceof Error ? e.message : 'the save did not go through'}.`, 'error')
+        }
+      }
       if (editingEventConfirmOnSave && editingEvent.id) {
         await handleConfirmEvent(editingEvent.id)
         setEditingEventConfirmOnSave(false)
@@ -8431,6 +8511,91 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const filteredVenueSuggestions = editingEvent?.venue_name
     ? venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editingEvent.venue_name.toLowerCase()))
     : venueSuggestions
+
+  /* ══ 🔴 THE PLACE SUGGESTIONS, AND THE TWO CONTROLS THAT CAME WITH THEM (6 October 2026) ══════════
+   * The Places tab is gone. Hiding a place and seeing what type it is on were two of its four jobs,
+   * and this is where an operator meets a place: typing its name into Add event.
+   * ⚠️ MATCHED ON NAME, SHORT NAME, AREA **AND POSTCODE** — the same four fields `PlaceList`'s search
+   * matches on, so the two lists answer the same typing the same way.
+   * ⛔ HIDDEN PLACES ARE A SEPARATE GROUP AND ARE NEVER IN `live`. A hidden place must not be offered
+   * as an ordinary suggestion or pre-selected — that is what hiding it meant. */
+  const placeSuggestions = useMemo(() => {
+    const q = String(editingEvent?.venue_name ?? '').trim().toLowerCase()
+    const matches = (p: SgPlaceRow) => {
+      if (!q) return true
+      return p.name.toLowerCase().includes(q)
+        || String(p.short_name ?? '').toLowerCase().includes(q)
+        || String(p.area ?? '').toLowerCase().includes(q)
+        || String(p.postcode ?? '').toLowerCase().includes(q)
+    }
+    const byName = (a: SgPlaceRow, b: SgPlaceRow) =>
+      a.name.localeCompare(b.name, 'en-GB', { sensitivity: 'base' })
+    const rows = placesCtl.places.filter(p => !p.merged_into_id && matches(p))
+    return {
+      /* ⚠️ FAVOURITES FIRST, then by name — the order `PlaceList` and the Add event picker use. Eight,
+       * because this is a dropdown under a text field and not a list to work in. */
+      live: rows.filter(p => !p.is_hidden)
+        .sort((a, b) => {
+          const fa = a.is_favourite ? 0 : 1
+          const fb = b.is_favourite ? 0 : 1
+          return fa !== fb ? fa - fb : byName(a, b)
+        }).slice(0, 8),
+      hidden: rows.filter(p => p.is_hidden).sort(byName),
+    }
+  }, [placesCtl.places, editingEvent?.venue_name])
+
+  /* 🔴 HIDE AND RESTORE, THROUGH THE EXISTING ACTION. `sg_upsert_place` with `is_hidden` is what
+   * "Tidy up places" has always called, and restoring also clears `merged_into_id` server-side.
+   * ⚠️ OPTIMISTIC, THEN RELOADED — the row must leave the list on the tap, not a round trip later. */
+  const hidePlace = useCallback(async (pl: SgPlaceRow, hide: boolean) => {
+    placesCtl.patchLocal(pl.id, { is_hidden: hide })
+    try {
+      await api('sg_upsert_place', { id: pl.id, is_hidden: hide })
+      showToast(hide ? 'Place hidden' : 'Place shown again', 'success')
+    } catch (e: unknown) {
+      placesCtl.patchLocal(pl.id, { is_hidden: !hide })
+      showToast(e instanceof Error ? e.message : 'Couldn’t save that.', 'error')
+    }
+  }, [api, placesCtl, showToast])
+
+  /* ══ 🔴 THE PLACE'S USUAL TYPE, ON ITS SUGGESTION ROW ════════════════════════════════════════════
+   * A colour dot and the type's name, or a purple lock and "Private" — the Event types grid's own
+   * colours, from the type's index in `placeTypeChoices`, so one type is never two colours.
+   * ⚠️ `usual_type_is_standard` IS READ FIRST, matching the server's resolution order
+   * (`is_standard ? Standard : (id ?? the history rule)`), so a row carrying both reads the same way
+   * here and there.
+   * ⛔ AN ID THAT IS NOT IN THE TYPE LIST RENDERS **NO LABEL**, never "Standard" — Standard is `null`,
+   * so a label there would be a lie about a place that carries an id. */
+  const placeTypeLabel = useCallback((p: SgPlaceRow): React.ReactNode => {
+    const id = p.usual_type_is_standard === true ? null
+      : p.usual_event_type_id ?? p.usual_automatic_type_id ?? null
+    if (id === null) {
+      return (
+        <span className="inline-flex shrink-0 items-center gap-1 text-[11px] text-slate-500">
+          <span aria-hidden="true" className="inline-block h-2 w-2 shrink-0 rounded-full"
+            style={{ background: STANDARD_COLOUR }} />
+          {STANDARD_TYPE_NAME}
+        </span>
+      )
+    }
+    const i = placeTypeChoices.findIndex(t => t.id === id)
+    if (i < 0) return null
+    const t = placeTypeChoices[i]
+    if (t.kind === 'private') {
+      return (
+        <span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold text-purple-700">
+          <span aria-hidden="true">🔒</span>{t.name}
+        </span>
+      )
+    }
+    return (
+      <span className="inline-flex shrink-0 items-center gap-1 text-[11px] text-slate-500">
+        <span aria-hidden="true" className="inline-block h-2 w-2 shrink-0 rounded-full"
+          style={{ background: colourFor(i) }} />
+        {t.name}
+      </span>
+    )
+  }, [placeTypeChoices])
 
   if (loadingEvents && isActive) return (
     <div className="flex items-center justify-center py-12"><Spinner /></div>
@@ -9340,7 +9505,34 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     placeId={editingEvent.truck_place_id ?? null}
                     value={eventTypeId} onChange={setEventTypeId} disabled={editSaving}
                     privateName={editingEvent.private_name ?? ''}
-                    onPrivateName={v => setEditingEvent(p => ({ ...p!, private_name: v }))} />
+                    onPrivateName={v => setEditingEvent(p => ({ ...p!, private_name: v }))}
+                    onUsual={setUsualForPlace} />
+                  {/* ══ 🔴 "Always use <Type> at <Place>" ════════════════════════════════════════
+                    * ⛔ IT APPEARS ONLY WHEN THERE IS SOMETHING TO SAY: a known place is picked AND the
+                    * chosen type differs from the one this form pre-selected for it. Changing it back
+                    * makes the row disappear, which is the honest behaviour — there is nothing left to
+                    * always use.
+                    * ⛔ UNTICKED BY DEFAULT, ALWAYS. This is the only thing in Add event that writes to
+                    * a PLACE, and a pre-ticked box would make "I am doing something different this
+                    * once" into "change this pitch for ever" without the operator choosing it.
+                    * ⚠️ TWO WORDINGS, AND THE DIFFERENCE IS REAL: `by === 'pin'` means the place HAS a
+                    * stored type, so the tick REPLACES one; otherwise it sets one that was never set. */}
+                  {showAlwaysUse && (
+                    <label data-always-use
+                      className="mt-2 flex cursor-pointer items-start gap-2 rounded-xl border border-green-200 bg-green-50 px-3 py-2">
+                      <input type="checkbox" checked={alwaysUseActive} disabled={editSaving}
+                        onChange={e => setAlwaysUseType(e.target.checked)}
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-green-600" />
+                      <span className="min-w-0 text-xs font-semibold text-green-900">
+                        {usualForPlace.by === 'pin'
+                          ? `Always use ${chosenTypeName} at ${pickedPlace?.name ?? 'this place'}`
+                          : `Use ${chosenTypeName} at ${pickedPlace?.name ?? 'this place'} next time`}
+                      </span>
+                    </label>
+                  )}
+                  {/* ⛔ A FAILED PLACE WRITE IS A TOAST, NEVER A FAILED SAVE — see the save handler. It
+                    * cannot be an inline note here: this modal closes on a successful save, which is
+                    * exactly when the place write runs. */}
                 </div>
                 {/* ── 🔴 THE ADDRESS GROUP · `md:contents` IS WHAT MAKES ONE JSX SERVE BOTH ───────
                     On md+ this wrapper and its inner div are `display: contents`, so the four fields
@@ -9375,12 +9567,84 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     placeholder="e.g. The Crown"
                     className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.venue_name ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                   />
-                  {showVenueSuggestions && filteredVenueSuggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-48 overflow-y-auto">
-                      {filteredVenueSuggestions.map((venue, i) => (
+                  {/* ══ 🔴 THE SUGGESTIONS ARE PLACES NOW, AND THEY CARRY THE TWO CONTROLS THE PLACES
+                    * TAB USED TO HOLD (6 October 2026) ═════════════════════════════════════════════
+                    * ⛔ THIS LIST WAS BUILT FROM PAST EVENTS — ten de-duplicated `venue_name`s. A place
+                    * is the thing an operator is choosing, and it is the thing that carries a usual
+                    * type, a town, a hidden flag and a design. The event-derived list is still below,
+                    * under its own heading, for a venue that has no place row.
+                    * 🔴 EACH ROW SHOWS THE PLACE'S USUAL TYPE, so the one pitch that is still on
+                    * Private from a wedding six months ago is visible before it is chosen.
+                    * 🔴 AND EACH ROW HAS A `×`. Hiding a place was a control on a tab that no longer
+                    * exists; it belongs here, at the moment an operator meets a place they do not want
+                    * offered. ⛔ `stopPropagation` AND `preventDefault` ON THE `×`, because it sits
+                    * INSIDE the row's own click target — without both, hiding a place would also pick
+                    * it and close the step. */}
+                  {showVenueSuggestions && (placeSuggestions.live.length > 0 || hiddenShown || filteredVenueSuggestions.length > 0) && (
+                    <div data-venue-suggestions
+                      className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-64 overflow-y-auto">
+                      {placeSuggestions.live.length > 0 && (
+                        <>
+                          <p className="px-4 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">Your places</p>
+                          {placeSuggestions.live.map(pl => (
+                            <div key={pl.id} className="flex items-stretch border-b border-slate-100 last:border-0">
+                              <button type="button"
+                                onMouseDown={e => e.preventDefault()}
+                                onClick={() => { pickPlace(pl); setShowVenueSuggestions(false) }}
+                                className="min-w-0 flex-1 text-left px-4 py-2.5 hover:bg-slate-50">
+                                <span className="flex items-baseline gap-2">
+                                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">{pl.name}</span>
+                                  {placeTypeLabel(pl)}
+                                </span>
+                                <span className="block truncate text-xs text-slate-400">{pl.area || pl.postcode || ''}</span>
+                              </button>
+                              <button type="button" aria-label="Hide this place"
+                                onMouseDown={e => e.preventDefault()}
+                                onClick={e => { e.preventDefault(); e.stopPropagation(); void hidePlace(pl, true) }}
+                                className="shrink-0 px-3 text-slate-300 hover:text-red-600">×</button>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      {/* ⚠️ THE HIDDEN GROUP IS OFFERED ONLY WHEN SOME MATCH WHAT WAS TYPED, and it is
+                          never open by default — a hidden place must not be pre-selected or offered as
+                          an ordinary suggestion, which is what hiding it meant. */}
+                      {placeSuggestions.hidden.length > 0 && !hiddenShown && (
+                        <button type="button" onMouseDown={e => e.preventDefault()}
+                          onClick={e => { e.preventDefault(); setHiddenShown(true) }}
+                          data-show-hidden
+                          className="w-full px-4 py-2 text-left text-[11px] font-semibold text-slate-500 underline hover:no-underline">
+                          {placeSuggestions.hidden.length} hidden place{placeSuggestions.hidden.length === 1 ? '' : 's'} match · Show hidden
+                        </button>
+                      )}
+                      {placeSuggestions.hidden.length > 0 && hiddenShown && (
+                        <>
+                          <p className="px-4 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">Hidden</p>
+                          {placeSuggestions.hidden.map(pl => (
+                            <div key={pl.id} className="flex items-center gap-2 border-b border-slate-100 px-4 py-2 opacity-55 last:border-0">
+                              <span className="min-w-0 flex-1">
+                                <span className="block truncate text-sm font-medium text-slate-800">{pl.name}</span>
+                                <span className="block truncate text-xs text-slate-400">{pl.area || pl.postcode || ''}</span>
+                              </span>
+                              <button type="button" onMouseDown={e => e.preventDefault()}
+                                onClick={e => { e.preventDefault(); e.stopPropagation(); void hidePlace(pl, false) }}
+                                className="shrink-0 text-[11px] font-semibold text-orange-700 underline hover:no-underline">
+                                Show again
+                              </button>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      {filteredVenueSuggestions.length > 0 && (
+                        <>
+                          {placeSuggestions.live.length > 0 && (
+                            <p className="px-4 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">From your schedule</p>
+                          )}
+                          {filteredVenueSuggestions.map((venue, i) => (
                         <button
                           key={i}
                           type="button"
+                          onMouseDown={e => e.preventDefault()}
                           onClick={() => {
                             setEditingEvent(p => ({ ...p!, venue_name: venue.venue_name, town: venue.town || p!.town, postcode: venue.postcode || p!.postcode, address: venue.address || p!.address, start_time: venue.start_time?.substring(0, 5) || p!.start_time, end_time: venue.end_time?.substring(0, 5) || p!.end_time }))
                             setShowVenueSuggestions(false)
@@ -9394,7 +9658,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                             {venue.start_time ? ` · ${formatTime(venue.start_time)}–${formatTime(venue.end_time || '')}` : ''}
                           </p>
                         </button>
-                      ))}
+                          ))}
+                        </>
+                      )}
                     </div>
                   )}
                   {formErrors.venue_name && <p className="text-xs text-red-500 mt-1">{formErrors.venue_name}</p>}
@@ -9620,7 +9886,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       {postEventId && (
         <EventPostModal token={token} eventId={postEventId}
           onClose={() => setPostEventId(null)}
-          onNeedsSetup={() => { setPostEventId(null); onSectionChange('weekly') }} />
+          /* ⚠️ `designs`, NOT `posts`. "No design yet" is a problem with a DESIGN, and the screen that
+             fixes it is the Designs area — sending them to Make a post would be sending them back to
+             a button that cannot work. */
+          onNeedsSetup={() => { setPostEventId(null); onSectionChange('designs') }} />
       )}
 
       {/* 🔴 THE PRIVATE LINK & QR PANEL (20261014) — one at a time, over the Events list. */}
@@ -9636,30 +9905,27 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       )}
     </div>
     )}
-    {/* ══ 🔴 PLACES IS A SECTION AGAIN (5 October 2026) ═══════════════════════════════════════════
-      * It was removed on 3 October when the list moved into the Add event modal; the note here used
-      * to say so. It is its own tab now, with a detail pane — and the modal's "Tidy up places" link
-      * stays and calls the SAME actions, so there is no second implementation of anything.
-      * ⚠️ SO THE TAB SEEDS. `usePlaces` calls `sg_places`, which seeds before it answers, and opening
-      * this tab is now a deliberate act that needs the list — the same argument the modal made for
-      * itself. The Events section still writes nothing.
-      * ⚠️ `types` IS PASSED IN THE GRID'S ORDER (Private first), so the place's event-type PILL ROW, the
-      * type label on each list row and the Event types grid name the same types, in the same order and
-      * in the same colours.
-      * ⚠️ `token` IS FOR "Picture for posts" ALONE. That pane uploads through /api/weekly-post — the
-      * existing place-design flow, shape check and storage path — and /api/weekly-post is token-auth'd,
-      * not `api`-auth'd. Nothing else on the tab needs it. */}
-    {isActive && shownSection === 'places' && (
-      <PlacesTab api={api} showToast={showToast} token={token} plan={truck.plan}
-        featureOverrides={truck.feature_overrides ?? null}
-        trialExpiresAt={truck.trial_expires_at ?? null}
-        types={placeTypeChoices} />
+    {/* ══ ⛔ THE PLACES SECTION IS DELETED (6 October 2026) ═══════════════════════════════════════
+      * It mounted `<PlacesTab>` here for one day. ⛔ WHAT IT DID IS NOT LOST, IT MOVED TO THE SCREENS
+      * THAT WERE ALREADY ABOUT IT:
+      *   • the five fields          → "Tidy up places" in Add event, which is now their only home;
+      *   • the usual event type     → Add event's own type pills, with an "Always use …" tick;
+      *   • hiding and restoring     → the × on a venue suggestion, and "Show hidden" beneath it;
+      *   • the post picture         → Social posts › Designs, where the design it affects lives.
+      * ⚠️ NO PLACE DATA CHANGED. Same columns, same actions, same rows — only where they are edited.
+      * ⚠️ `?section=places` STILL RESOLVES, to Designs, through `canonicalScheduleSection`.
+      *
+      * ══ 🔴 SOCIAL POSTS — ONE PILL, TWO AREAS ════════════════════════════════════════════════════
+      * ⛔ THE "Single event | Weekly" SUB-TABS ARE GONE WITH IT. They split the page by WHICH POST
+      * before asking the question an operator actually arrives with, which is *am I making something
+      * or setting it up?* The two areas answer that; the six boxes answer the rest.
+      * ⚠️ `area` IS IN THE URL AND IS WHAT THE PILL SHOWS AS ACTIVE for both of its values.
+      * ⚠️ `manageApi={api}` IS FOR ONE FIELD — a place's name on posts, written with the SAME
+      * `sg_upsert_place` "Tidy up places" uses. Everything else on the page is /api/weekly-post. */}
+    {isActive && (shownSection === 'posts' || shownSection === 'designs') && (
+      <SocialPostsPane truck={truck} token={token} manageApi={api}
+        area={shownSection} onArea={onSectionChange} />
     )}
-    {/* ── SOCIAL POSTS ────────────────────────────────────────────────────────────────────────────
-        ⚠️ THE SECTION ID IS STILL `weekly` — it is the URL contract, and `?section=weekly` is in
-        operators' bookmarks and in `onSectionChange('weekly')` calls elsewhere in this file. Only the
-        LABEL became "Social posts", because the page now holds the single-event post too. */}
-    {isActive && shownSection === 'weekly' && <WeeklyPostPane truck={truck} token={token} />}
     {/* ══ 🔴 EVENT TYPES, INLINE — THE SAME COMPONENT, NOT A SECOND COPY OF ITS GRID ═══════════
       * `inline` swaps the overlay's shell for a card in the page's flow and changes nothing else: the
       * same fixed column widths, the same 1000px cap, the same "+ New event type" in the header and

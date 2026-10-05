@@ -1326,9 +1326,13 @@ head('9c · THE WIRING')
     && /setPostEventId\(event\.id\)/.test(page)
     // ⚠️ inside the `!isPast` branch, so past and cancelled rows keep their existing treatment
     && page.indexOf('setPostEventId(event.id)') > page.indexOf('{!isPast && ('))
+  /* ⚠️ `'designs'`, NOT `'weekly'` (6 October 2026). "No design yet" is a problem with a DESIGN, and
+   * the screen that fixes it is Social posts › Designs — `?section=weekly` was the whole Social posts
+   * page when it had sub-tabs, and sending an operator to Make a post would send them back to the
+   * button that just refused. ⚠️ `weekly` STILL RESOLVES as a URL; it is no longer where this goes. */
   t('🔴 …and it opens the modal, which asks the SERVER whether there is a design',
     /<EventPostModal token=\{token\} eventId=\{postEventId\}/.test(page)
-    && /onNeedsSetup=\{\(\) => \{ setPostEventId\(null\); onSectionChange\('weekly'\) \}\}/.test(page))
+    && /onNeedsSetup=\{\(\) => \{ setPostEventId\(null\); onSectionChange\('designs'\) \}\}/.test(page))
 
   /* 🔴 THE §9.3 FIX. Stage 1 recorded that the weekly post's per-event "Share" did exactly what "Copy
    * text" did — two buttons doing one thing — because there was no per-event image to share. There is

@@ -2333,7 +2333,7 @@ function NewTypePopup({ busy, onCancel, onCreate }: {
  * the same save the rest of the form uses and there is no second write path to keep in step.
  */
 export function EventTypeSelect({
-  token, venueName, placeId, value, onChange, disabled, privateName, onPrivateName,
+  token, venueName, placeId, value, onChange, disabled, privateName, onPrivateName, onUsual,
 }: {
   token: string
   /** The venue typed into the form — the fallback when no place is picked. */
@@ -2358,6 +2358,18 @@ export function EventTypeSelect({
    */
   privateName?: string | null
   onPrivateName?: (name: string) => void
+  /**
+   * ── 🔴 WHAT THIS CONTROL PRE-SELECTED, REPORTED TO THE FORM (6 October 2026) ───────────────────
+   * Add event offers "Always use <Type> at <Place>" when the chosen type DIFFERS from the one this
+   * control picked for that place — so the form has to know two things it cannot work out itself: the
+   * answer, and whether it came from a STORED choice or from the history rule.
+   * ⛔ IT IS A REPORT, NOT A SECOND READ. `usual_for_venue` already answers both (`typeId` and
+   * `by: 'pin'`), and a second caller asking the same question is how two surfaces come to disagree
+   * about one place.
+   * ⚠️ `by` IS `'pin'` WHEN THE PLACE HAS A STORED TYPE, which decides the tick's WORDS: "Always use"
+   * replaces something; "Use … next time" sets something that was never set.
+   */
+  onUsual?: (u: { typeId: string | null; by: string | null }) => void
 }) {
   const [types, setTypes] = useState<TypeRow[]>([])
   const [ready, setReady] = useState(false)
@@ -2390,15 +2402,18 @@ export function EventTypeSelect({
      * blank venue would be wrong — and it is a synchronous setState in an effect, which is what the
      * rule flags. The debounced write inside the timer is asynchronous and needs no disable. */
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if ((!name && !placeId) || types.length === 0) { setUsual(null); return }
+    if ((!name && !placeId) || types.length === 0) { setUsual(null); onUsual?.({ typeId: null, by: null }); return }
     const t = setTimeout(async () => {
       try {
         const r = await api(token, { action: 'usual_for_venue', venueName: name, placeId: placeId ?? null })
         setUsual((r.typeId as string | null) ?? null)
-      } catch { setUsual(null) }
+        /* ⚠️ REPORTED FROM THE SAME RESPONSE, in the same tick, so the form's tick row and this
+         * control's selected pill can never be about different answers. */
+        onUsual?.({ typeId: (r.typeId as string | null) ?? null, by: (r.by as string | null) ?? null })
+      } catch { setUsual(null); onUsual?.({ typeId: null, by: null }) }
     }, placeId ? 0 : 350)
     return () => clearTimeout(t)
-  }, [token, venueName, placeId, types.length])
+  }, [token, venueName, placeId, types.length, onUsual])
 
   /* ⚠️ THE DEFAULT IS APPLIED IN AN EFFECT because it depends on a read that finishes later. It fires
    * only while untouched and only when it would actually change the value. */

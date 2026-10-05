@@ -29,8 +29,46 @@
 export type ManageTab =
   | 'menu' | 'reports' | 'schedule' | 'team' | 'settings' | 'payments' | 'billing'
 
-/** Schedule's sub-tabs. ⚠️ `weekly` is the id and `Social posts` is the label — the id is the URL. */
-export type ScheduleSection = 'events' | 'event-types' | 'places' | 'weekly'
+/**
+ * Schedule's sub-tabs.
+ *
+ * ══ 🔴 THREE PILLS, FOUR SECTIONS, AND TWO LEGACY IDS (6 October 2026) ════════════════════════════
+ * The PILLS are Events · Event types · Social posts. Social posts has two areas — **Make a post**
+ * (`posts`) and **Designs** (`designs`) — and both are in the URL, because an operator who sends
+ * somebody "the designs screen" means the designs screen.
+ *
+ * ⛔ `places` AND `weekly` ARE LEGACY IDS AND ARE STILL ACCEPTED. They are in operators' bookmarks and
+ * in links this product has already sent. They are NOT in `SCHEDULE_SECTIONS`, so no pill offers them,
+ * and `canonicalScheduleSection` maps each to the live section that now does its job:
+ *   • `places` → `designs`  — the Places tab is gone; what an operator went there to do that is still
+ *     a thing (give a place its own picture) is on Designs.
+ *   • `weekly` → `posts`    — Social posts opens on Make a post, which is where the weekly post is made.
+ * ⚠️ MAPPED, NEVER DROPPED. An unrecognised section falls through to Events, and falling through is
+ * what made `?section=places` land on the wrong screen the last time it was retired.
+ */
+export type ScheduleSection = 'events' | 'event-types' | 'posts' | 'designs'
+
+/** The ids that are no longer pills but must still resolve. ⛔ Never remove one of these. */
+export type LegacyScheduleSection = 'places' | 'weekly'
+
+/**
+ * 🔴 ONE MAP, READ BY THE PAGE'S URL PARSER **AND** BY THE HARNESS. A legacy id resolves to the live
+ * section that replaced it; a live id resolves to itself; anything else is `null`, which the caller
+ * reads as "not a schedule section" rather than as a default.
+ */
+const LEGACY_SCHEDULE_SECTION: Record<LegacyScheduleSection, ScheduleSection> = {
+  places: 'designs',
+  weekly: 'posts',
+}
+
+const LIVE_SCHEDULE_SECTIONS: readonly ScheduleSection[] = ['events', 'event-types', 'posts', 'designs']
+
+/** `'places'` ⇒ `'designs'`, `'weekly'` ⇒ `'posts'`, a live id ⇒ itself, anything else ⇒ `null`. */
+export function canonicalScheduleSection(v: unknown): ScheduleSection | null {
+  if (typeof v !== 'string') return null
+  if ((LIVE_SCHEDULE_SECTIONS as readonly string[]).includes(v)) return v as ScheduleSection
+  return LEGACY_SCHEDULE_SECTION[v as LegacyScheduleSection] ?? null
+}
 
 /** Menu's sub-tabs. */
 export type MenuSection = 'items' | 'capacity' | 'extras' | 'deals'
@@ -39,8 +77,12 @@ export type MenuSection = 'items' | 'capacity' | 'extras' | 'deals'
  * 🔴 WHICH TAB EACH SECTION BELONGS TO, DECLARED ONCE. This map is the whole point of the module:
  * a caller names a section and cannot get the tab wrong, because it does not supply it.
  */
-const TAB_FOR_SECTION: Record<ScheduleSection | MenuSection, ManageTab> = {
-  events: 'schedule', 'event-types': 'schedule', places: 'schedule', weekly: 'schedule',
+const TAB_FOR_SECTION: Record<ScheduleSection | LegacyScheduleSection | MenuSection, ManageTab> = {
+  events: 'schedule', 'event-types': 'schedule', posts: 'schedule', designs: 'schedule',
+  /* ⚠️ THE TWO LEGACY IDS ARE IN THIS MAP TOO, so a link that still names one carries `?tab=schedule`
+   * and the page's parser can then map it to the live section. Leaving them out would mean the one
+   * thing this module exists to prevent: a section link with no tab. */
+  places: 'schedule', weekly: 'schedule',
   items: 'menu', capacity: 'menu', extras: 'menu', deals: 'menu',
 }
 
@@ -53,7 +95,7 @@ const TAB_FOR_SECTION: Record<ScheduleSection | MenuSection, ManageTab> = {
  * the product the same shape — which is what makes a missing one visible.
  */
 export function manageSectionHref(
-  section: ScheduleSection | MenuSection,
+  section: ScheduleSection | LegacyScheduleSection | MenuSection,
   opts?: { token?: string },
 ): string {
   const tab = TAB_FOR_SECTION[section]

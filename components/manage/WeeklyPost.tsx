@@ -71,11 +71,38 @@ async function renderPng(token: string, body: Record<string, unknown>): Promise<
 // THE ENTRY POINT
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-export function WeeklyPostApp({ token, truckName }: { token: string; truckName: string }) {
+/**
+ * ══ 🔴 THREE OPTIONAL PROPS, SO SOCIAL POSTS CAN OPEN THIS SCREEN AT A PLACE (6 October 2026) ══════
+ *
+ * ⛔ THE SCREEN ITSELF IS UNCHANGED. Social posts is a set of boxes that OPEN the existing make and
+ * setup flows; it does not reimplement either. What it needed was a way to say *which* of the two, and
+ * for the week picker to open on the week the operator chose in the box — otherwise they would pick
+ * "Next week" and arrive on this week.
+ *
+ * @param initialMode     'setup' opens Edit design; 'post' (the default) opens the make screen.
+ * @param initialWeek     which week the post screen loads first.
+ * @param hideKindSwitch  hides the Weekly | Single event switch. Social posts › Designs has a box for
+ *                        each, so the switch would be a second way to answer a question already asked.
+ * @param onBack          replaces this screen's Cancel with the caller's back link.
+ */
+export function WeeklyPostApp({
+  token, truckName, initialMode, initialWeek, initialDesignKind, hideKindSwitch, onBack,
+}: {
+  token: string
+  truckName: string
+  initialMode?: 'setup' | 'post'
+  initialWeek?: 'this' | 'next'
+  initialDesignKind?: 'week' | 'event'
+  /* 🔴 HIDDEN WITH A CLASS, NOT REMOVED, DELIBERATELY. The switch is the only thing in its row;
+   * dropping the row would change the gap above the card, so the two routes into this screen would be
+   * different heights. `designKind` is still honoured. */
+  hideKindSwitch?: boolean
+  onBack?: () => void
+}) {
   const [loading, setLoading] = useState(true)
   const [missingTable, setMissingTable] = useState(false)
   const [design, setDesign] = useState<LoadedDesign | null>(null)
-  const [mode, setMode] = useState<'setup' | 'post'>('post')
+  const [mode, setMode] = useState<'setup' | 'post'>(initialMode ?? 'post')
   const [error, setError] = useState<string | null>(null)
   const [week, setWeek] = useState<'this' | 'next'>('this')
   const [days, setDays] = useState<WeekDayView[]>([])
@@ -84,7 +111,10 @@ export function WeeklyPostApp({ token, truckName }: { token: string; truckName: 
   /* 🔴 "Single event" IS THE DEFAULT (5 October 2026). It is the post a truck makes most often — one
    * per pitch, every week — where the weekly poster is made once and then rarely touched. Opening on
    * the rarer job made the common one a click away every time. */
-  const [designKind, setDesignKind] = useState<'week' | 'event'>('event')
+  /* ⚠️ THE CALLER MAY NAME IT. Social posts › Designs has a box for the weekly design and a box for the
+   * event design, so each opens this screen already on the one it is about. With no caller's choice the
+   * default is unchanged. */
+  const [designKind, setDesignKind] = useState<'week' | 'event'>(initialDesignKind ?? 'event')
 
   const load = useCallback(async (which?: 'this' | 'next') => {
     try {
@@ -96,19 +126,23 @@ export function WeeklyPostApp({ token, truckName }: { token: string; truckName: 
       setOrderUrl(r.orderUrl ?? null)
       /* 🔴 NO DESIGN ⇒ THE SETUP SCREEN, AUTOMATICALLY — the brief's "shown automatically the first
        * time". A post screen with nothing to post from would be a dead end. */
-      setMode(r.design ? 'post' : 'setup')
+      /* ⚠️ THE CALLER'S CHOICE WINS WHERE THERE IS A DESIGN. With no design there is nothing to post
+       * from, so setup is still forced — a post screen with no picture is a dead end whoever opened it. */
+      setMode(r.design ? (initialMode ?? 'post') : 'setup')
       setError(null)
     } catch (e) { setError(e instanceof Error ? e.message : 'Could not load') }
     finally { setLoading(false) }
-  }, [token])
+  }, [token, initialMode])
 
   /* ⚠️ `react-hooks/set-state-in-effect` IS DISABLED HERE, DELIBERATELY AND NARROWLY. The rule's
    * advice — "subscribe to an external system and set state in its callback" — is exactly what this
    * does: the external system is the server, the callback is the awaited response. The setState calls
    * are inside `load`, after an await, so there is no cascading render; the rule is static and cannot
    * see past the call. The same pattern and the same disable appear elsewhere in Manage. */
+  /* ⚠️ `initialWeek` IS PASSED TO THE FIRST LOAD, not set afterwards. Loading this week and then
+   * reloading next week would show the operator a week they did not ask for, briefly, every time. */
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { void load() }, [load])
+  useEffect(() => { void load(initialWeek) }, [load, initialWeek])
 
   if (loading) return <Card className="p-8 text-center"><p className="text-sm text-slate-400">Loading…</p></Card>
 
@@ -138,7 +172,7 @@ export function WeeklyPostApp({ token, truckName }: { token: string; truckName: 
           * style (`font-bold text-slate-800`), which Dominic confirmed is the right one.
           * ⚠️ THE EDITING SCREENS CARRY NO HEADING AT ALL, as they already did — see the note above
           * the toolbar below. Only the two "nothing uploaded yet" cards name the job. */}
-        <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className={`flex flex-wrap items-center justify-end gap-2${hideKindSwitch ? ' hidden' : ''}`}>
           {/* 🔴 "Single event" FIRST, AND SELECTED BY DEFAULT. "Week (7 days)" became "Weekly": the
             * parenthetical explained a format nobody was confused about, and it made the two options
             * read as different kinds of thing rather than two choices of the same kind. */}
@@ -152,9 +186,13 @@ export function WeeklyPostApp({ token, truckName }: { token: string; truckName: 
             ))}
           </div>
         </div>
+        {/* ⚠️ `onBack` REPLACES Cancel WHEN THE CALLER HAS ITS OWN WAY OUT. Social posts opens this as a
+            full page under a "‹ Designs" link, and a Cancel that dropped the operator onto the weekly
+            POST screen — a screen they did not ask for — would be two exits that disagree. */}
         {designKind === 'week'
-          ? <SetupScreen token={token} design={design} onDone={() => { void load(week) }} onCancel={design ? () => setMode('post') : undefined} />
-          : <EventSetupScreen token={token} onCancel={design ? () => setMode('post') : undefined} />}
+          ? <SetupScreen token={token} design={design} onDone={() => { void load(week) }}
+              onCancel={onBack ?? (design ? () => setMode('post') : undefined)} />
+          : <EventSetupScreen token={token} onCancel={onBack ?? (design ? () => setMode('post') : undefined)} />}
       </div>
     )
   }
