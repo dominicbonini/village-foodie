@@ -312,16 +312,70 @@ export const PRICE_TYPE_HINT = 'Press a price to type your own.'
 export const PRICES_LIVE_NOTICE =
   'This event is live. New orders use the new prices. Orders already placed keep theirs.'
 
-/** The sheet's two-way choice, its title, and its buttons. */
-export const PRICES_SHEET_TITLE = 'Prices for this event'
-export const PRICES_CHOICE_OWN = 'Own prices for this event'
-/** Used when the event has no type, or its type's switch is off — there is nothing else to follow. */
-export const PRICES_CHOICE_MENU = 'Menu prices'
-export const PRICES_SHEET_SAVE = 'Save prices'
-export const PRICES_SEARCH_PLACEHOLDER = 'Find an item'
+/* ══ ⛔ THE SHEET'S SIX STRINGS ARE DELETED (5 October 2026) ══════════════════════════════════════
+ *   PRICES_SHEET_TITLE · PRICES_CHOICE_OWN · PRICES_CHOICE_MENU · PRICES_SHEET_SAVE ·
+ *   PRICES_SEARCH_PLACEHOLDER · PRICES_ROW_LABEL
+ * They belonged to the "Prices for this event" sheet and the "This event" card's Prices row, both of
+ * which are gone. An event's prices are now set per item from the dashboard's Menu & Stock Price
+ * column, which needs no title, no two-way choice, no Save and no search — it is a column of boxes in
+ * a list the operator is already reading. */
 
-/** The dashboard card's row title. The summary beside it is `summarisePricing`. */
-export const PRICES_ROW_LABEL = 'Prices'
+/** The Menu & Stock card's own description, which the Price column changed. */
+export const EVENT_ITEMS_CARD_DESCRIPTION =
+  'Prices, item limits and availability for this event only. Changes take effect immediately.'
+
+/** The column header. ⚠️ Kept short — it sits over a 20-unit column beside Item limit. */
+export const EVENT_PRICE_COLUMN_LABEL = 'Price'
+
+/**
+ * The line under an item whose price THIS EVENT has changed: "menu £12.00 · this event", or
+ * "Festival £12.00 · this event" when the price it departs from is the TYPE's rather than the menu's.
+ *
+ * 🔴 IT NAMES THE PRICE THIS ONE DEPARTS FROM, NOT THE DIFFERENCE. "+£1" would restate what the
+ * figure above already says, and it would be wrong the moment the underlying price moved. The
+ * fallback figure is the one thing the operator cannot see while their own number is on screen.
+ * ⛔ AND IT NAMES THE **TYPE** WHERE THE TYPE IS WHAT IT DEPARTS FROM. Saying "menu £12.00" about an
+ * event price that actually departs from a Festival rule is a different and false claim — and it is
+ * the one an operator would act on when deciding whether to clear it.
+ * ⚠️ "this event", NOT "this event only" (Dominic, 5 October 2026). The card's own description
+ * already says "for this event only"; the row-level line is a reminder, not a second statement.
+ *
+ * @param fallbackPounds what this item would cost here WITHOUT the event's own price
+ * @param typeName       the event type's name when the fallback is ITS price, else null for the menu
+ */
+export const eventPriceOwnNote = (fallbackPounds: number, typeName?: string | null): string =>
+  `${typeName ?? 'menu'} £${fallbackPounds.toFixed(2)} · this event`
+
+/* ══ 🔴 THE PRICE COLUMN IS READ-ONLY UNTIL "✎ Edit prices" (5 October 2026, Dominic) ═════════════
+ * ⛔ IT WAS AN OPEN INPUT BESIDE Item limit, AND THAT WAS THE DEFECT. Prices change rarely and are
+ * the one value on this card that a customer is charged, yet they sat in the same always-editable box
+ * as a stock number an operator edits twenty times a service — so the easiest thing to change by
+ * accident was the only thing with a till consequence.
+ * 🔴 SO THE TWO MODES ARE SEPARATE ACTS: reading, and editing. Nothing is written until Save, and
+ * Cancel means no request was ever made. */
+
+/** The header button that opens edit mode. ⚠️ The pencil is in the string, so every surface agrees. */
+export const EVENT_PRICE_EDIT = '✎ Edit prices'
+export const EVENT_PRICE_CANCEL = 'Cancel'
+export const EVENT_PRICE_SAVE = 'Save prices'
+
+/**
+ * The blue note under the card header while editing.
+ *
+ * 🔴 THE SECOND SENTENCE IS A PROMISE THE SCREEN KEEPS, NOT A WARNING. Item limits and Available
+ * really are disabled in edit mode — one act at a time, so a half-finished price edit cannot be
+ * entangled with a stock change the operator did mean to keep.
+ */
+export const EVENT_PRICE_EDIT_NOTE =
+  'Editing prices for this event only. Item limits and availability are locked until you save.'
+
+/**
+ * The extra line when the event is LIVE.
+ * ⚠️ SHORTER THAN `PRICES_LIVE_NOTICE`, DELIBERATELY. That one was a one-shot toast beside an
+ * always-editable box; this sits under a header for as long as the editor is open, and the sentence
+ * that matters while deciding a number is the first one.
+ */
+export const EVENT_PRICE_LIVE_NOTE = 'Live: new orders use the new prices.'
 
 /**
  * The sub-row the offline-protection SWITCH reveals when it is on.

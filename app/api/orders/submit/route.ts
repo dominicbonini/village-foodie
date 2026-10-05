@@ -657,9 +657,14 @@ export async function POST(req: NextRequest) {
     const pricedItems = Object.keys(eventBook.menuPrice).length === 0
       ? repriced.items
       : repriced.items.map(line => {
-          const menu = eventBook.menuPrice[String(line.name)]
-          if (menu === undefined || eventBook.basis === null) return line
-          return { ...line, menu_price: menu, price_basis: eventBook.basis }
+          /* ⚠️ THE BASIS IS PER ITEM since 5 October 2026 — one event can charge its own price for
+           * one dish and its type's rule for another. The two maps share their keys, and requiring
+           * both makes "stamped together or not at all" a property of this code. */
+          const name = String(line.name)
+          const menu = eventBook.menuPrice[name]
+          const basis = eventBook.basisByName[name]
+          if (menu === undefined || basis === undefined) return line
+          return { ...line, menu_price: menu, price_basis: basis }
         })
     const pricedDeals = repriced.deals
     const serverTotalMinor = toMinor(repriced.calculation.total)

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V14.0
+HatchGrab Engineering Reference Manual · V14.1
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 14.0**
+**Version 14.1**
 
 October 2026
 
@@ -25,6 +25,73 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V14.1 — 5 October 2026 — THE DASHBOARD CLEAN-UP: THE "This event" CARD DELETED, ITS CONTROLS RESTORED, THE EVENT TYPE IN THE HEADER, AND PER-EVENT PRICES IN MENU & STOCK. STILL NOT DEPLOYED.
+
+**Status — read this first.**
+- 🔴 **ON `main`, LOCAL, NOTHING PUSHED.** `schedule-graphics` is fast-forwarded to match.
+- 🔴 **NO SQL.** This build needed no migration and ran none. `truck_events`' four price columns are
+  left in the database, **read by nothing**.
+- ⚠️ It supersedes parts of **V14.0 §5.6** (the Gusto list's dashboard section), which described the
+  card. `docs/release-prep-report.md` is amended; `docs/dashboard-cleanup-report.md` is the full account.
+
+### What changed
+
+| | |
+|---|---|
+| ⛔ **The "This event" card and the "Prices for this event" sheet are DELETED** | Never agreed, and what the card did was MOVE five controls away from where operators knew them. §70.7 lists every row and where it is now |
+| ✅ **Four controls restored byte-for-byte from `origin/main`** | Offline order protection (+ modes + auto-reject delay), "Do you take cash?" (nested under the paid step), the order-ready step, "Remind me to add a buzzer". Same position, wording and look as the live site |
+| ⛔ **The per-deal switches were a DUPLICATE** | Manage › Schedule has them and always did. The three dashboard actions the card needed are deleted; `event_deals` rows already written keep working |
+| 🔴 **The event type is in the dark event bar** | Standard shows nothing; a custom type shows its colour dot and name; `Manage event ▾` gains "Change event type…" with the existing confirms, including both privacy ones (§70.15) |
+| 🔴 **A private event's title is its NAME, not its venue** | "🔒 Sarah & Tom's wedding — Private event · 11:00–14:00". ⛔ No venue, no town, anywhere in that header. The separate lock label beside Live is gone — the title says it |
+| ⛔ **Order link / QR give the PRIVATE link on a private event** | …and **nothing at all** if the token cannot be read. It was `/o/<slug>` — the public page — which is a real leak this build closed |
+| 🔴 **Per-event prices move to a PRICE column in Menu & Stock, on EVERY plan** | Read-only text until "✎ Edit prices"; nothing saves until "Save prices"; Cancel and Escape make no request. §70.14 |
+| ⛔ **The whole-event price RULE is gone; precedence is PER ITEM** | `event's own price for that item ?? the type's (typed ?? rule) ?? menu`. An event price now overrides only its own dish |
+| ⛔ **`_pretest.cjs` deleted** | Untracked in the repo root, built a service-role client and wrote to `trucks` / `menu_items_db`, and sat outside the harness screen that exists to refuse exactly that |
+
+### The failure classes this build found — all five in the harnesses, not the product
+
+1. 🔴 **A MUTATION VARIANT WHOSE ANCHOR HAD DRIFTED REPORTED ✓.** `buildVariant` returned `null` on an
+   absent anchor and every caller scored `!V` as "detected", so two variants in
+   `scripts/event-pricing.cjs` passed while mutating nothing. **It throws now.** This is the third time
+   this class has been met; it is the first time the mechanism has been fixed rather than the variant.
+2. ⛔ **A RE-AIMED CHECK AIMED AT NOTHING.** Several assertions read the deleted card by path and threw
+   ENOENT — the honest failure. The temptation each time was to delete the assertion; the claim had a
+   new subject in every case, so each was re-aimed instead and the trail is in the file.
+3. ⚠️ **AN EXACT COUNT FIRED CORRECTLY, TWICE.** `schedule-graphics-places.cjs` pins how many
+   `truck_events` write payloads its AST reader cannot resolve. It was 3, went to 4, and is 3 again
+   because a deleted handler took one with it. A `>=` would have hidden both moves.
+4. ⚠️ **A TRUNCATED REPORT IS NOT THE LINE.** The lost-line guard prints `l.slice(0, 100)`; I anchored
+   a pattern on the printed text and matched nothing, twice — once on the truncation, once on a
+   trailing space that `trim()` had already removed.
+5. ⚠️ **A SLICE WHOSE END ANCHOR HAD BEEN RENAMED** ran to the end of the file, so a "exactly one
+   fetch" count was taken over the whole 6,000-line component. Bounded by a string that is now
+   asserted present.
+
+### What was run
+
+`tsc --noEmit` clean · `npx next build` ✓ compiled · **ESLint went DOWN by one** in `app/`+`lib/`
+(778, was 779) and is unchanged in `scripts/` · **full sweep 93 run · 93 passed · 0 failed** (five
+chunks, one at a time) · `event-types-render.cjs` **1,948 measurements** in Chromium AND WebKit at
+1440/820/390, including both price modes and four event-bar shapes.
+
+⚠️ **ONE HONEST GAP: this machine's Chromium hangs inside `Runtime.callFunctionOn`** on the two
+outreach browser harnesses — `ProtocolError`, thrown from the first `ElementHandle` call. **It fails at
+`HEAD` too**, on a tree where the same harness passed 78 assertions an hour earlier, so it is the
+machine and not this build. Their source halves pass (10 and 48), and
+`HG_ENGINES=webkit node scripts/outreach-bold-persists.cjs` passes **all 44, 34 of them in a real
+browser**. `HG_ENGINES` was added for exactly this: one sick browser must not mean no browser evidence.
+
+### Open items
+
+| Item | State |
+|---|---|
+| **Deploy** | `git push origin main`, then §74.6's live checks. **Not done — Dominic deploys by hand** |
+| Chromium hangs on the two outreach browser harnesses on this machine | WebKit covers them; `protocolTimeout` added so a dead call fails in 30s rather than 180s. Worth a `npx puppeteer browsers install chrome` before the next build |
+| `truck_events.price_own / price_mode / price_amount / price_rounding` | in the database, read by nothing. A drop migration when something else needs one |
+| From V14.0 | the four pre-`20261007` migrations are outside the stated applied range (one read-only SELECT, §74.4); the census covers 14 of 66 tables |
+
+---
 
 ## V14.0 — 5 October 2026 — THE RELEASE: EVENT PRICING, PRIVATE EVENTS, THE PLACES TAB, EVENT TYPES AS A PILL, AND A PREVIEW KEY. MERGED INTO `main` LOCALLY; **DEPLOY DATE: ________**
 
@@ -27871,12 +27938,40 @@ The delay is not offered on a type (§ decisions).
 - Shared controls: `Toggle` and `Select` in `components/manage/primitives.tsx`; `CONTROL_BOX` in
   `lib/ui-tokens.ts`. Settings' own selects remain native.
 
-## 70.7 The dashboard "This event" card
-`components/dashboard/ThisEventCard.tsx`, at the top of the dashboard's Kitchen tab. Every row is **this
-event only**: event type (when the truck has types), stock and items sold (hands over to Stock), one switch
-per deal (`set_event_deal`, `overridden: true`), the five service settings (collection times hands over to
-the existing box). Five controls moved into it from separate cards — the list Dominic approves before
-deploy. Footer: "N settings changed for this event only" + Reset.
+## 70.7 ⛔ THE DASHBOARD "This event" CARD — DELETED 5 October 2026
+
+`components/dashboard/ThisEventCard.tsx` and `components/dashboard/EventPricesSheet.tsx` are gone from
+the repository. The card held the event type, a Prices row, stock-and-items-sold, one switch per deal,
+the five service settings, and a "N settings changed · Reset to <type>" footer.
+
+🔴 **IT WAS NEVER AGREED, AND WHAT IT DID WAS MOVE CONTROLS AWAY FROM WHERE OPERATORS KNEW THEM.** Its
+own note in this manual said "five controls moved into it from separate cards — the list Dominic
+approves before deploy"; the answer at that review was no. A control an operator reaches by muscle
+memory mid-service is not a layout problem to be tidied.
+
+**Where each thing is now** — and every one is back at `origin/main`'s position, wording and look:
+
+| What the card held | Where it is |
+|---|---|
+| Offline order protection (+ two modes + auto-reject delay) | its own card on the dashboard's Settings tab |
+| Do you take cash? | nested under "Separate paid step", as a child |
+| Order-ready step | its own card |
+| Remind me to add a buzzer | its own card (only when the van has a rack) |
+| Collection times | its own box — it never moved |
+| Stock and items sold | Menu & Stock — it never moved |
+| **Prices** | a per-item **Price column in Menu & Stock**, every plan (§70.14) |
+| **Event type** | the **dark event bar**, and `Manage event ▾` → "Change event type…" (§70.15) |
+| **The private link** | `Manage event ▾` → "🔒 Private link & QR code"; and the header's Order link / QR give the PRIVATE link (§73) |
+| The per-deal switches | ⛔ a **duplicate** — Manage › Schedule has them, and always did. The three dashboard actions behind the card's copy are deleted |
+| "N settings changed" · "Reset to \<type\>" | the count is gone; the reset is the **"Clear my changes and use \<type\> exactly"** checkbox inside the Change-event-type confirm |
+
+🔴 **THE BEHAVIOUR UNDERNEATH IS UNCHANGED, AND THAT IS THE HALF WORTH KEEPING.** Each control still
+resolves *the event's own hand change ?? the event type ?? the van/truck default*, still writes a
+per-event `truck_events` column, and the writers were never touched — only the JSX moved, twice.
+
+⚠️ **`DemoLockChip` HAS A CONSUMER AGAIN.** It lost both when the offline and order-ready cards moved
+into the card; they are back, so the "newly unreachable" note in docs/event-types-stage2b-report.md no
+longer applies.
 
 ## 70.8 Remaining stages (designed on the Event types canvas)
 Items sold + stock per type; deals per type (Menu › Deals: "applies to event types"); **private events**
@@ -28267,6 +28362,52 @@ conditional, which means a changed default cannot start showing it there. The da
 pass it either, so the sheet is byte-identical.
 
 
+## 70.14 Per-event prices: a PRICE COLUMN in Menu & Stock (5 October 2026)
+
+**Every plan.** Event-type price RULES stay Max.
+
+🔴 **THE PRECEDENCE IS PER ITEM NOW:**
+```
+the event's own price FOR THAT ITEM  ??  the type's price (typed ?? rule)  ??  the menu price
+```
+⛔ **THE WHOLE-EVENT `price_own` RULE IS GONE** from every reader. It made a per-event price change an
+all-or-nothing act, and worse, it was a second rule engine in a place nobody would look: an event on
+"own prices" silently stopped following its type, so editing the Festival type changed every festival
+EXCEPT the one somebody had nudged. `truck_events.price_own / price_mode / price_amount /
+price_rounding` are still in the database and are **read by nothing** — dropping them is a migration
+this change does not need.
+
+**The column.** Before Item limit. **Read-only text** ("£13.00", right-aligned, not a box, not
+focusable) until **"✎ Edit prices"** in the card header — because prices change rarely and are the one
+value on that card a customer is charged, yet they sat in the same always-editable box as a stock
+number an operator edits twenty times a service.
+
+* A price this event has changed is **blue**, with a line under the item naming what it departs from:
+  "menu £12.00 · this event", or "**Festival** £12.00 · this event" when the type is the fallback.
+* **Edit mode**: the cells become inputs (blue box + × to clear); a blue note says *"Editing prices for
+  this event only. Item limits and availability are locked until you save."* — and they really are
+  disabled; a live event adds *"Live: new orders use the new prices."*; the header becomes Cancel +
+  Save prices.
+* ⛔ **NOTHING IS WRITTEN UNTIL SAVE.** Edits go to a client-side `pricePending` map; **Cancel and
+  Escape make no request at all**. Save sends ONE `save_event_item_prices` with only the items that
+  actually moved.
+* 🔴 **THE FIGURES ARE THE SERVER'S**, computed by `priceAtEvent` — the function the submit route
+  charges with and the menu API shows. There is **no price arithmetic on the dashboard**.
+* ⚠️ `menu_items_db.id` is emitted by the menu API **only for `?dashboard=1`**, so the customer payload
+  is byte-identical. Name would not do: two dishes may share one.
+
+## 70.15 The event type in the dark event bar
+
+* **Standard shows nothing.** A label reading "Standard" on every bar would be a word carrying no
+  information in the one strip where space is scarce.
+* **A custom type** shows its colour dot and name, from the same `colourFor` the grid and the Add event
+  pill row use.
+* **A private event** is named in the TITLE instead (§73), and shows no label beside the status — two
+  locks on one bar is the same fact twice.
+* `Manage event ▾` carries **"Change event type…"** (the list is already plan-filtered by the route:
+  Max gets Standard + Private + its own, Pro gets Standard + Private) with the three-sentence confirm,
+  the "use it exactly" checkbox, and the two **privacy** confirms when the switch crosses that line.
+
 # 71. Manage moves on `schedule-graphics` (V13.9 — 4 October 2026)
 
 ## 71.1 Menu › Kitchen capacity
@@ -28340,6 +28481,28 @@ events. So if visibility were read through the type, deleting the Private type w
 private event into a public one with its venue, town and coordinates on the map**, silently. A
 visibility rule cannot live on a nullable FK. The type is what the *operator* configures; the boolean
 is what every public surface filters on.
+
+## 73.1b The dashboard header (5 October 2026)
+
+🔴 **A PRIVATE EVENT'S TITLE IN THE DARK EVENT BAR IS ITS NAME, NEVER ITS VENUE.**
+`🔒 Sarah & Tom's wedding — Private event · 11:00–14:00`, with "Private event" in purple; with no name
+set, `🔒 Private event · 11:00–14:00`. The date line underneath is unchanged.
+
+⛔ **THE VENUE AND THE TOWN ARE NOT RENDERED AT ALL in that arm** — not greyed, not in a `title`
+attribute. That bar is on every tab of the dashboard, in a van, in public, and a private event's
+address is the one thing this feature exists to keep off a screen.
+
+⚠️ **AND THE SEPARATE "🔒 Private event" LABEL BESIDE Live / Not started IS GONE** for a private event:
+the title says it, and two locks on one bar is the same fact twice in the strip where space is
+scarcest. A CUSTOM type keeps its label there, because its title is still the venue. Live / Not started
+and `Manage event ▾` are untouched, and a 70-character name truncates rather than pushing Manage event
+off the bar — measured at 1440/820/390 in both engines.
+
+⛔ **THE HEADER'S "Order link" AND "QR code" GIVE THE PRIVATE LINK**, and **nothing at all** if the
+token cannot be read. They were reading `/o/<slug>` — the truck's PUBLIC order page, which does not
+take orders for a private event — so an operator showing the QR at a wedding was handing guests the
+wrong address. ⚠️ **IT DOES NOT FALL BACK TO THE PUBLIC LINK**: falling back is how a private event's
+guests end up on a public page.
 
 ## 73.2 The eight public surfaces
 
@@ -28686,6 +28849,12 @@ exist, and four features shipped reading four uncensused tables. Adding a table 
 rule; this release is the counter-example.
 
 ## 74.5 What an existing truck sees
+
+> ⚠️ **AMENDED BY V14.1 (5 October 2026).** The dashboard's per-event controls are back where the live
+> site has them — the "This event" card is deleted (§70.7). What a truck gains on the dashboard is the
+> event TYPE in the dark event bar (§70.15), a private event named in that bar's title instead of its
+> venue (§73), and a per-event **Price column in Menu & Stock** on every plan (§70.14).
+
 
 See `docs/release-prep-report.md` §5 for the item-by-item list. The two rules behind it:
 

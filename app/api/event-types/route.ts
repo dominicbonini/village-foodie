@@ -41,15 +41,20 @@ import { readTypesForTruck, countUpcomingByType, usualTypeForPlace } from '@/lib
 import {
   readTypePricingForTruck, readEventPricing, loadPricingItems,
 } from '@/lib/event-pricing/read'
-/* ⚠️ NO `priceForItem` AND NO `toPence` HERE, DELIBERATELY. This route validates and writes; the
- * SCREENS compute, from the inputs it sends them, with the same function the order paths use. A
- * computed price in this file would be a second answer the client could disagree with. */
+/* ⚠️ `priceAtEvent` IS NOW IMPORTED, AND THE OLD NOTE HERE IS SUPERSEDED (5 October 2026). It read
+ * "NO priceForItem HERE, DELIBERATELY — the SCREENS compute". That was right while the only screen
+ * computing prices was the Event types grid, which already holds the whole setup. It is WRONG for the
+ * dashboard's Menu & Stock Price column: that column is shown mid-service, to every plan, and it must
+ * state the price the till will take. 🔴 SO THE SERVER COMPUTES IT, with the function the submit route
+ * charges with, and the column renders a number it was given. The rule the old note was protecting —
+ * ONE answer, not two — is better served this way round. ⛔ The GRID is unchanged and still computes
+ * client-side from the setup it is handed. */
 /* ⚠️ `toPounds` IS IMPORTED RATHER THAN OPEN-CODING `/ 100`, and that is not pedantry — it is the
  * rule lib/order-repricing.ts states in capitals ("NEVER hardcode x100 or /100 at a call site: one
  * open-coded conversion is all it takes for a money value to be out by two orders of magnitude with
  * nothing to catch it"). scripts/event-pricing.cjs refuses one in this file, and it caught this. */
 import {
-  cleanPriceAmount, cleanTypedPrice, isPriceMode, isPriceRounding, summarisePricing, toPounds,
+  cleanPriceAmount, cleanTypedPrice, isPriceMode, isPriceRounding, priceAtEvent, toPounds,
   type PriceMode,
 } from '@/lib/event-pricing/price'
 /* 🔴 THE ONE DEFINITION OF "WHICH PLACE IS THIS EVENT AT", IMPORTED NOT RE-WRITTEN — the same
@@ -334,7 +339,20 @@ export async function POST(req: NextRequest) {
    * truck's saved prices KEEP RESOLVING (decision 8) and the dashboard card has to go on describing
    * them accurately — a 403 there would show "Menu prices" over an event charging +10%. Every other
    * action, including any added later, is refused by default. */
-  const READ_ACTIONS = new Set(['load', 'event_pricing_summary'])
+  const READ_ACTIONS = new Set(['load'])
+
+  /* ══ 🔴 PER-EVENT ITEM PRICES ARE ON **EVERY PLAN** (5 October 2026) ══════════════════════════════
+   * "This one dish costs more tonight" is a hatch-side decision every truck makes, and it is not the
+   * same product as an event TYPE's price rule — which stays Max, because that is the one that needs
+   * types to exist at all. So these two actions are exempt from BOTH gates above.
+   * ⛔ THEY TOUCH NO `event_types` ROW. The read returns computed prices and the write touches exactly
+   * one `event_item_prices` row keyed on `event_id` — so a Starter truck using them cannot reach any
+   * part of the Max feature, which is what makes the exemption safe rather than a hole.
+   * ⚠️ LISTED EXPLICITLY, LIKE THE OTHER TWO SETS, so an action added later is Max-gated by default.
+   * ⛔ `event_pricing_summary`, `load_event_pricing`, `save_event_pricing` AND `clear_event_pricing`
+   * ARE GONE from this route — they served the whole-event "own prices" rule and its sheet, both
+   * deleted. `READ_ACTIONS` is back to `load` alone. */
+  const ALL_PLAN_ACTIONS = new Set(['event_item_prices', 'save_event_item_prices'])
 
   /* ══ 🔴 THE PRO HALF OF THE SCREEN (20261014) ═══════════════════════════════════════════════════
    * These actions write the PRIVATE type and its link/QR switch, which is a `private_events` (Pro)
@@ -347,7 +365,7 @@ export async function POST(req: NextRequest) {
     if (!privateAllowed(truck)) {
       return NextResponse.json({ error: PRIVATE_UPGRADE_MESSAGE, upgrade: true }, { status: 403 })
     }
-  } else if (!READ_ACTIONS.has(action) && !canWrite) {
+  } else if (!ALL_PLAN_ACTIONS.has(action) && !READ_ACTIONS.has(action) && !canWrite) {
     return NextResponse.json({ error: UPGRADE_MESSAGE, upgrade: true }, { status: 403 })
   }
 
@@ -355,6 +373,121 @@ export async function POST(req: NextRequest) {
    * this it would reach a screen it is entitled to and be told to upgrade. */
   if (READ_ACTIONS.has(action) && !canWrite && !privateAllowed(truck)) {
     return NextResponse.json({ error: UPGRADE_MESSAGE, upgrade: true }, { status: 403 })
+  }
+
+  /* ══ 🔴 THE PRICE CUSTOMERS PAY AT THIS EVENT, PER ITEM — EVERY PLAN ══════════════════════════════
+   * Feeds the dashboard's Menu & Stock Price column. 🔴 THE NUMBERS ARE COMPUTED HERE, BY
+   * `priceAtEvent` — the same function the submit route charges with and the menu API shows — so the
+   * column, the customer's menu and the order cannot disagree. A client-side `menu × rule` expression
+   * is exactly how a screen comes to promise a price the till does not take.
+   * ⚠️ TWO MAPS, BOTH KEYED BY `menu_items_db.id`:
+   *     charged  — every item whose price MOVED from the menu. Absent ⇒ the menu price.
+   *     eventOwn — the subset THIS EVENT typed. Absent ⇒ it is following the type, or the menu.
+   * The column needs both: the first is what to show, the second is whether to show it as changed
+   * with an × beside it. */
+  if (action === 'event_item_prices') {
+    const eventId = String(body.eventId ?? '')
+    if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+    const { data: ev } = await supabase
+      .from('truck_events').select('id, status').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
+    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    const pricing = await readEventPricing(supabase, eventId)
+    const { items } = await loadPricingItems(supabase, truck.id)
+    const charged: Record<string, number> = {}
+    const fallback: Record<string, number> = {}
+    /* 🔴 THE PRICE THIS ITEM WOULD BE **WITHOUT** THE EVENT'S OWN, computed by the same function with
+     * the event's typed set emptied. That is what the blue line under a changed price names — "menu
+     * £12.00 · this event", or "<Type> £12.00 · this event" when the TYPE is what it is departing
+     * from — and it is the one figure the operator cannot see while their own number is on screen.
+     * ⛔ NOT `item.price`. Deriving the line from the menu price would label an event price that
+     * departs from a Festival rule as departing from the menu, which is a different claim. */
+    const withoutEvent = { ...pricing.resolved, eventTyped: {} }
+    for (const it of items) {
+      const { pence, basis } = priceAtEvent(it.pricePence, it.id, pricing.resolved)
+      if (basis !== null) charged[it.id] = toPounds(pence)
+      if (pricing.eventTyped[it.id] !== undefined) {
+        fallback[it.id] = toPounds(priceAtEvent(it.pricePence, it.id, withoutEvent).pence)
+      }
+    }
+    return NextResponse.json({
+      ok: pricing.ok,
+      /* ⚠️ "LIVE" IS THE STATUS, NOT THE CLOCK. `open` is what the dashboard puts an event into when
+       * service starts, and the live note in edit mode keys on this — so the server and the screen
+       * cannot disagree about whether orders are being taken. */
+      live: ev.status === 'open',
+      /* ⚠️ THE TYPE'S NAME IS SENT ONLY WHEN ITS PRICING IS ON. The blue line says "<Type> £12.00"
+       * exactly when the fallback IS the type's price; a type whose switch is off contributes nothing
+       * and the line must say "menu". Sending the name regardless would invite the screen to decide. */
+      typeName: pricing.resolved.typeSetup ? pricing.typeName : null,
+      charged,
+      fallback,
+      eventOwn: pricing.eventTyped,
+    })
+  }
+
+  /* ══ 🔴 THIS EVENT'S PRICES, SAVED IN ONE GO — EVERY PLAN ════════════════════════════════════════
+   *
+   * 🔴 A BATCH, NOT ONE ITEM AT A TIME (5 October 2026). The Price column is read-only until the
+   * operator presses "✎ Edit prices", and nothing is written until they press "Save prices" — so what
+   * arrives here is the complete set of CHANGES from one editing session, and Cancel means no request
+   * was ever made. A per-item write would have made Cancel impossible to implement honestly.
+   *
+   * ⛔ `null` CLEARS, AND CLEARING IS A **DELETE**, NOT A £0, for the reason `set_type_item_price`
+   * records: the only way to say "follow the type/menu again" is for the row to be ABSENT, because £0
+   * is a real and different instruction ("free tonight").
+   * ⛔ AND IT WRITES NO COLUMN ON `truck_events`. The old path set `price_own = true` and a rule
+   * alongside; that rule is gone and those columns are read by nothing. Touching them here would
+   * resurrect the thing this change removed.
+   *
+   * ⚠️ THE DELETES AND THE UPSERTS ARE TWO STATEMENTS AND IT IS NOT A TRANSACTION, because PostgREST
+   * cannot give me one. What makes that safe is that NO INTERMEDIATE STATE MISPRICES: a row that is
+   * deleted but not yet re-inserted resolves to the type or the menu, which is a legitimate price the
+   * operator has seen; and each statement is single, so no half-set of prices can exist.
+   */
+  if (action === 'save_event_item_prices') {
+    const eventId = String(body.eventId ?? '')
+    if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+    const { data: ev } = await supabase
+      .from('truck_events').select('id').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
+    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+
+    const raw = (body.prices && typeof body.prices === 'object' ? body.prices : {}) as Record<string, unknown>
+    /* ⚠️ EVERY ITEM ID IS CHECKED AGAINST THIS TRUCK'S OWN ITEMS. The map arrives from a client and
+     * `event_item_prices` is service-role only, so this handler IS the scope check. An id that is not
+     * this truck's is DROPPED, not 400'd — it can only come from a stale screen (a dish deleted while
+     * the editor was open), and refusing the whole save over one vanished dish would lose the
+     * operator's other twenty prices. */
+    const { items: ownItems } = await loadPricingItems(supabase, truck.id)
+    const ownIds = new Set(ownItems.map(i => i.id))
+    const rows: Record<string, unknown>[] = []
+    const clear: string[] = []
+    const dropped: string[] = []
+    for (const [itemId, value] of Object.entries(raw)) {
+      if (!ownIds.has(itemId)) { dropped.push(itemId); continue }
+      const price = cleanTypedPrice(value)
+      if (price === null) { clear.push(itemId); continue }
+      rows.push({
+        truck_id: truck.id, event_id: eventId, event_type_id: null, item_id: itemId,
+        price, updated_at: new Date().toISOString(),
+      })
+    }
+    if (dropped.length) {
+      console.warn(`[event-pricing] save for event ${eventId}: dropped ${dropped.length} price(s) for items that are not truck ${truck.id}'s`)
+    }
+
+    if (clear.length) {
+      const { error } = await supabase.from('event_item_prices')
+        .delete().eq('event_id', eventId).in('item_id', clear)
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+    if (rows.length) {
+      /* ⚠️ `onConflict` NAMES A **PLAIN** UNIQUE CONSTRAINT — `event_item_prices_event_item_key
+       * UNIQUE (event_id, item_id)`, added by 20261013 precisely because PostgREST cannot infer a
+       * conflict against a PARTIAL index (42P10). See the long note on `set_type_item_price`. */
+      const { error } = await supabase.from('event_item_prices').upsert(rows, { onConflict: 'event_id,item_id' })
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+    return NextResponse.json({ ok: true, saved: rows.length, cleared: clear.length })
   }
 
   /* ── 🔴 THE PRIVATE TYPE'S ONE EXTRA ROW: "Take orders by private link and QR code" ─────────────
@@ -999,162 +1132,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, price })
   }
 
-  // ── 🔴 THE CARD'S ONE-LINE SUMMARY — CHEAP, AND FROM THE READ THAT DECIDES THE CHARGE ───────
-  // The dashboard card shows "Menu prices" / "Festival's prices · +10%, nearest £1" / "Own prices ·
-  // +15%, nearest £1 · 1 typed". It is computed HERE, from `readEventPricing` — the SAME function
-  // `loadEventPriceBook` calls to price an order — so the line the operator reads and the price the
-  // next customer pays come from one read of one pair of columns. A second expression on the client
-  // is how a card comes to promise "+10%" on an event charging menu prices.
-  //
-  // ⚠️ IT IS NOT ON THE DASHBOARD POLL AND IT IS NOT `load_event_pricing`. The poll runs every ~15s
-  // and this changes only when the operator changes it; `load_event_pricing` carries the whole menu,
-  // which is the wrong weight for one line of text. One probed select, called when the event changes
-  // and after a save.
-  // 🔴 THIS IS A READ AND IS NOT PLAN-GATED BEYOND THE DEFAULT. On a downgrade saved prices keep
-  // resolving (decision 8), so the card must keep telling the truth about them — but the gate at the
-  // top of this handler refuses every non-`load` action, which would blank this line for a downgraded
-  // truck. So it is listed beside `load` as a read.
-  if (action === 'event_pricing_summary') {
-    const eventId = String(body.eventId ?? '')
-    if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
-    const { data: ev } = await supabase
-      .from('truck_events').select('id').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-    const pricing = await readEventPricing(supabase, eventId)
-    return NextResponse.json({
-      ok: pricing.ok,
-      summary: summarisePricing(pricing.resolved, pricing.typeName, Object.keys(pricing.typed).length),
-      own: pricing.event?.price_own === true,
-    })
-  }
-
-  // ── THE DASHBOARD SHEET'S READ: this event, its type, and the menu ──────────────────────────
-  if (action === 'load_event_pricing') {
-    const eventId = String(body.eventId ?? '')
-    if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
-    const { data: ev } = await supabase
-      .from('truck_events').select('id, venue_name, town, event_date, status')
-      .eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-
-    /* 🔴 `forEditing: true` FETCHES **BOTH** SETS OF TYPED PRICES. The sheet draws the type's column
-     * beside the event's, and it seeds the event's set from the type's when the operator chooses
-     * "Own prices" — so it needs the loser of the precedence too. The money path never pays for that
-     * (the default fetches only the set that wins). */
-    const pricing = await readEventPricing(supabase, eventId, { forEditing: true })
-    const menu = await loadMenuForPricing(truck.id)
-    return NextResponse.json({
-      ok: pricing.ok,
-      event: { id: ev.id, name: ev.venue_name ?? 'This event', date: ev.event_date, status: ev.status },
-      /* ⚠️ THE EVENT IS "LIVE" BY ITS STATUS, NOT BY THE CLOCK. `open` is the status the dashboard
-       * puts an event into when service starts; the amber notice in the sheet keys on this, so the
-       * server and the screen cannot disagree about whether orders are being taken. */
-      live: ev.status === 'open',
-      typeId: pricing.typeId, typeName: pricing.typeName,
-      own: pricing.event?.price_own === true,
-      eventSetup: {
-        price_mode: isPriceMode(pricing.event?.price_mode) ? pricing.event!.price_mode : 'none',
-        price_amount: pricing.event?.price_amount === null || pricing.event?.price_amount === undefined
-          ? null : Number(pricing.event.price_amount),
-        price_rounding: isPriceRounding(pricing.event?.price_rounding) ? pricing.event!.price_rounding : 'none',
-        typed: pricing.eventTyped,
-      },
-      typeSetup: pricing.type ? {
-        price_change_on: pricing.type.price_change_on === true,
-        price_mode: isPriceMode(pricing.type.price_mode) ? pricing.type.price_mode : 'none',
-        price_amount: pricing.type.price_amount === null || pricing.type.price_amount === undefined
-          ? null : Number(pricing.type.price_amount),
-        price_rounding: isPriceRounding(pricing.type.price_rounding) ? pricing.type.price_rounding : 'none',
-        typed: pricing.typeTyped,
-      } : null,
-      menu,
-    })
-  }
-
-  // ── THE SHEET'S SAVE: ONE ATOMIC WRITE ──────────────────────────────────────────────────────
-  if (action === 'save_event_pricing') {
-    const eventId = String(body.eventId ?? '')
-    if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
-    const { data: ev } = await supabase
-      .from('truck_events').select('id').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-
-    const patch = cleanPricingPatch(body)
-    patch.price_own = true
-    patch.updated_at = new Date().toISOString()
-
-    /* ── 🔴 THE TYPED ROWS REPLACE THE OLD SET **WHOLE**, AND THE ORDER OF THE THREE STEPS MATTERS ──
-     * The sheet is a FORM with a Cancel button: what it sends is the complete intended state, not a
-     * delta. So a price the operator removed has to disappear, which a per-row upsert cannot express.
-     *
-     * 1. The COLUMNS first. They are what decides whether any row is read at all (`price_own`), so if
-     *    step 2 or 3 fails the event is left with its rule and its OLD typed prices — a coherent
-     *    state the operator can see and re-save.
-     * 2. DELETE this event's rows. 3. INSERT the new set.
-     * ⚠️ IT IS NOT A DATABASE TRANSACTION, BECAUSE PostgREST CANNOT GIVE ME ONE, and that is stated
-     * rather than implied. What makes it safe is that NO INTERMEDIATE STATE MISPRICES: after step 2
-     * and before step 3 the event has its rule and no typed prices, which is a legitimate setup
-     * (mode with nothing typed) and not a mixture of two operators' intentions. A half-applied set of
-     * typed prices is the one thing that cannot happen, because the insert is a single statement.
-     * 🔴 THE ALTERNATIVE — a plpgsql function — would move this feature's write path into the
-     * database, where lib/event-pricing/price.ts cannot be read and a second copy of the rounding
-     * rule would eventually appear. That is the trade and it is deliberate.
-     */
-    const { error: colErr } = await supabase
-      .from('truck_events').update(patch).eq('id', eventId).eq('truck_id', truck.id)
-    if (colErr) return NextResponse.json({ error: colErr.message }, { status: 400 })
-
-    /* ⚠️ THE TYPED MAP IS VALIDATED **AND** SCOPED. Every item id is checked against this truck's own
-     * items before anything is written: the map arrives from a client, and the table is service-role
-     * only, so this is the scope check. An id that is not this truck's is DROPPED, not 400'd — it can
-     * only come from a stale screen (a dish deleted while the sheet was open), and refusing the whole
-     * save over one vanished dish would lose the operator's other twenty prices. */
-    const rawTyped = (body.typed && typeof body.typed === 'object' ? body.typed : {}) as Record<string, unknown>
-    const { items: ownItems } = await loadPricingItems(supabase, truck.id)
-    const ownIds = new Set(ownItems.map(i => i.id))
-    const rows: Record<string, unknown>[] = []
-    const dropped: string[] = []
-    for (const [itemId, raw] of Object.entries(rawTyped)) {
-      const price = cleanTypedPrice(raw)
-      if (price === null) continue
-      if (!ownIds.has(itemId)) { dropped.push(itemId); continue }
-      rows.push({
-        truck_id: truck.id, event_id: eventId, event_type_id: null, item_id: itemId, price,
-      })
-    }
-    if (dropped.length) {
-      console.warn(`[event-pricing] save for event ${eventId}: dropped ${dropped.length} typed price(s) for items that are not truck ${truck.id}'s`)
-    }
-
-    const { error: delErr } = await supabase.from('event_item_prices').delete().eq('event_id', eventId)
-    if (delErr) return NextResponse.json({ error: delErr.message }, { status: 400 })
-    if (rows.length) {
-      const { error: insErr } = await supabase.from('event_item_prices').insert(rows)
-      if (insErr) return NextResponse.json({ error: insErr.message }, { status: 400 })
-    }
-    return NextResponse.json({ ok: true, typed: rows.length })
-  }
-
-  // ── THE SHEET'S / THE CARD'S CLEAR: back to the type, or to the menu ────────────────────────
-  if (action === 'clear_event_pricing') {
-    const eventId = String(body.eventId ?? '')
-    if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
-    const { data: ev } = await supabase
-      .from('truck_events').select('id').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-
-    /* 🔴 THE COLUMNS **AND** THE ROWS. `price_own: false` alone would be enough to stop the prices
-     * being charged, but it would leave every typed price to reappear the moment the operator chose
-     * "Own prices" again — which they would read as the clear not having worked. Same reasoning as
-     * `clearOwn` on `assign`, and the same pair of statements. */
-    const { error } = await supabase.from('truck_events').update({
-      price_own: false, price_mode: null, price_amount: null, price_rounding: null,
-      updated_at: new Date().toISOString(),
-    }).eq('id', eventId).eq('truck_id', truck.id)
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-    await deleteEventItemPrices(eventId)
-    return NextResponse.json({ ok: true })
-  }
+  /* ══ ⛔ FOUR PRICING ACTIONS DELETED HERE (5 October 2026) ════════════════════════════════════════
+   *     event_pricing_summary · load_event_pricing · save_event_pricing · clear_event_pricing
+   *
+   * They served the WHOLE-EVENT "own prices" rule — `truck_events.price_own` plus its own mode,
+   * amount and rounding — and the "Prices for this event" sheet that edited it. Both are gone:
+   * an event now carries only PER-ITEM prices, set from the dashboard's Menu & Stock Price column
+   * through `set_event_item_price` above, and read through `event_item_prices`.
+   *
+   * 🔴 WHY THE WHOLE-EVENT RULE WENT. It was a second rule engine in a place nobody would look: an
+   * event switched to "own prices" silently stopped following its type, so editing the Festival type
+   * changed every festival EXCEPT the one somebody had nudged, with nothing on either screen to say
+   * why. And it made "£1 more on one pizza tonight" an all-or-nothing act.
+   *
+   * ⚠️ THE FOUR `truck_events` COLUMNS ARE STILL THERE AND ARE READ BY NOTHING. Dropping them is a
+   * migration this change does not need. `lib/event-pricing/price.ts` keeps the type that describes
+   * them (`EventPricingColumns`) and deliberately accepts it in no pricing function, which is what
+   * makes "unread" a property of the code rather than a promise.
+   * ⚠️ AN EVENT LEFT WITH `price_own = true` therefore stops having a rule applied; any typed rows it
+   * has keep working and now apply per item. docs/dashboard-cleanup-report.md carries the read-only
+   * query that counts them.
+   * ⛔ `assign` WITH `clearOwn` STILL CLEARS BOTH the columns and the rows, and that is unchanged —
+   * "Clear my changes and use <type> exactly" has to mean it. */
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
 }

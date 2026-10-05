@@ -9,6 +9,18 @@ export interface BasketItem {
 }
 
 export interface MenuItem {
+  /**
+   * `menu_items_db.id` — ⚠️ PRESENT ONLY ON THE OPERATOR DASHBOARD'S OWN FETCH (`?dashboard=1`).
+   *
+   * 🔴 ADDED 5 October 2026 FOR THE Menu & Stock PRICE COLUMN, which writes `event_item_prices` —
+   * keyed on the id, not the name, because two dishes may share a name and a price written against
+   * the wrong one is money. ⛔ OPTIONAL, because the customer menu does not carry it: this module's
+   * grouping helpers are shared with the customer order page, and a required field would be a type
+   * that lies about the payload every customer surface receives.
+   * ⚠️ THIS INTERFACE IS A SECOND DECLARATION OF components/dashboard/types.ts' `MenuItem`, and that
+   * was already true before this change — both are kept in step by hand. Noted, not fixed here.
+   */
+  id?: string
   name: string
   price: number
   category: string

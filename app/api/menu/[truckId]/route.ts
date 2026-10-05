@@ -19,7 +19,7 @@ import { readEventType } from '@/lib/event-types/read'
  * migration that has not been applied cannot fail the statement that fetches the MENU — it resolves
  * to "menu prices", which is what this route served before this build. See lib/event-pricing/read.ts. */
 import { readEventPricing } from '@/lib/event-pricing/read'
-import { priceForItem, toPence, toPounds } from '@/lib/event-pricing/price'
+import { priceAtEvent, pricingApplies, toPence, toPounds } from '@/lib/event-pricing/price'
 /* ⛔ THE AUTO-DETECT MUST NEVER PICK A PRIVATE EVENT. See the note at the `else` branch below. */
 import { isEventPrivate } from '@/lib/private-events/read'
 
@@ -362,15 +362,17 @@ export async function GET(
   const eventItemPrice: Record<string, number> = {}
   if (effectiveEventId) {
     const pricing = await readEventPricing(supabase, effectiveEventId)
-    const setup = pricing.resolved.setup
-    if (setup) {
+    if (pricingApplies(pricing.resolved)) {
       for (const i of (items || []) as { id: string; price: unknown }[]) {
         const menuPence = toPence(i.price)
-        const charged = priceForItem(menuPence, setup, i.id)
-        /* ⚠️ ONLY WHERE IT MOVED. An unchanged item is absent from the map and the emit below reads
-         * `i.price` exactly as it did before this build — so the response for a truck not using this
-         * feature is byte-identical, not merely equal. */
-        if (charged !== menuPence) eventItemPrice[i.id] = toPounds(charged)
+        /* 🔴 `priceAtEvent` — THE SAME FUNCTION THE SUBMIT ROUTE CHARGES WITH, and since 5 October
+         * 2026 it resolves PER ITEM: the event's own price for this dish, else the type's typed price
+         * or rule, else the menu. A customer is shown exactly what they will be charged. */
+        const { pence, basis } = priceAtEvent(menuPence, i.id, pricing.resolved)
+        /* ⚠️ ONLY WHERE IT MOVED — `basis` is null exactly then. An unchanged item is absent from the
+         * map and the emit below reads `i.price` exactly as it did before this build, so the response
+         * for a truck not using this feature is byte-identical, not merely equal. */
+        if (basis !== null) eventItemPrice[i.id] = toPounds(pence)
       }
     }
   }
@@ -677,6 +679,21 @@ export async function GET(
         && !preorderSoldOut          // ← pre-order past 'sold_out' deadline (read-time, plan-gated)
         && !preorderNotOpenYet       // ← pre-order before its OPEN moment (V8.3) — not orderable yet
       return {
+        /* ══ 🔴 THE ITEM'S ID, **ONLY** FOR THE OPERATOR DASHBOARD (5 October 2026) ══════════════════
+         * The dashboard's Menu & Stock Price column writes `event_item_prices`, which is keyed on
+         * `menu_items_db.id` — a real FK, so a RENAMED dish keeps its prices and a DELETED one takes
+         * them with it. The column therefore needs the id, and this is the only payload the dashboard
+         * reads its menu from.
+         * ⛔ `isDashboard` ONLY, AND THE CUSTOMER RESPONSE IS BYTE-IDENTICAL. A conditional spread of
+         * `{}` adds no key at all, so a customer's menu JSON does not gain a field — which matters
+         * because this is the most-requested endpoint in the product and its shape is a contract with
+         * three clients.
+         * ⚠️ IT IS NOT A SECRET. `menu_items_db.id` already reaches customers as the key of
+         * `modifierGroups`' parent lookups; the reason for the gate is payload discipline, not
+         * secrecy. ⚠️ AND NAME WOULD NOT DO: two dishes may share a name (the price module's own note
+         * records why `event_item_prices` keys on the id), and a price written against the wrong one
+         * is money. */
+        ...(isDashboard ? { id: i.id } : {}),
         name: i.name,
         description: i.description || '',
         /* 🔴 THE EVENT'S PRICE, OR THE MENU'S. ⚠️ JUST THE NUMBER — no crossed-out "was" price and no

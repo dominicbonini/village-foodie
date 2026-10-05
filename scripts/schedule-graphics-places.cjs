@@ -695,19 +695,20 @@ function runWiringSuite(lib) {
    * cannot read a payload proves nothing about it, so each is asserted on its own terms. These are
    * listed in the report as the paths that were checked.
    *
-   * ══ ⚠️ FOUR NOW, NOT THREE (5 October 2026) ════════════════════════════════════════════════════
-   * The fourth is `app/api/events/action/route.ts` `update` — `.update({ ...safe, updated_at: now })`,
-   * the approval card's edit path. It was always a spread; the reader's line numbers moved when the
-   * privacy block was added above it, which is what made the census visibly change rather than
-   * anything new becoming unreadable.
+   * ══ ⚠️ THE COUNT HAS BEEN 3, THEN 4, AND IS 3 AGAIN (5 October 2026) ═══════════════════════════
+   * It went to 4 when the approval card's `.update({ ...safe, updated_at: now })` appeared, and back
+   * to 3 when `save_event_pricing`'s `.update(patch)` was DELETED with the whole-event "own prices"
+   * rule (see the tombstone in app/api/event-types/route.ts). An event no longer carries a price rule
+   * of its own, so nothing writes those four columns and the unreadable payload went with the handler.
    * ⛔ THE CENSUS IS KEPT AS AN EXACT COUNT ON PURPOSE. A `>=` would let a genuinely new unreadable
    * payload slip in beside the known ones, and the whole point of this section is that no `update`
    * anywhere can move an event's PLACE — which is asserted directly above, for every write, read or
-   * unread. The count is the tripwire that makes somebody look at a new one. */
+   * unread. The count is the tripwire that makes somebody look at a new one, and it has now fired
+   * twice and been right both times. */
   const unread = ev.unreadWrites.filter(w => w.method !== 'insert')
   t(`⚠️ exactly ${unread.length} truck_events write payloads are not literal, and each is checked below`,
-    unread.length === 4)
-  /* ⛔ AND NONE OF THE FOUR NAMES `truck_place_id`, which is the claim the count exists to protect.
+    unread.length === 3)
+  /* ⛔ AND NONE OF THE THREE NAMES `truck_place_id`, which is the claim the count exists to protect.
    * Asserted on the payload TEXT the reader did capture, so an unreadable payload is still not an
    * unchecked one. */
   t('⛔ …and not one of them mentions `truck_place_id`',

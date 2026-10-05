@@ -98,7 +98,15 @@ async function engines() {
   const { webkit } = require(path.join(REPO, 'node_modules/playwright'))
   return [
     ['Chromium', async () => {
-      const b = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] })
+      /* ⚠️ `protocolTimeout`, BECAUSE THE DEFAULT IS 180s AND THIS MACHINE'S CHROMIUM HANGS (5 October
+       * 2026). `Runtime.callFunctionOn timed out` was thrown from the FIRST `evaluate` of the browser
+       * section, on a run whose source half had just passed and whose component had not been touched
+       * — the same local `chromium_headless_shell` flakiness scripts/event-types-render.cjs already
+       * carries this option for. ⛔ IT IS NOT A FIX FOR A SLOW PAGE: every wait in this file is its
+       * own `waitForFunction` with its own timeout, so a genuinely stuck page still fails with a
+       * sentence that names what it was waiting for. This only stops a dead CDP call from burning
+       * three minutes before it says so. */
+      const b = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'], protocolTimeout: 30000 })
       return { b, np: async (w, h) => { const p = await b.newPage(); await p.setViewport({ width: w, height: h }); return p } }
     }],
     ['WebKit', async () => {

@@ -22,8 +22,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { lineIdentity, loadPriceBook, type PriceBook } from '@/lib/order-repricing'
 import {
-  priceForItem, pricingDiffersFromMenu, resolvePricing, toPence, toPounds, MENU_PRICES,
-  type EventPricing, type PriceBasis, type ResolvedPricing, type TypePricing,
+  priceAtEvent, pricingApplies, pricingDiffersFromMenu, resolveEventPricing, toPence, toPounds,
+  MENU_PRICES,
+  type EventItemPricing, type EventPricingColumns, type PriceBasis, type TypePricing,
 } from './price'
 
 /** The codes that mean "the migration has not been applied". Anything else is a real failure. */
@@ -41,23 +42,25 @@ const why = (code: string | undefined): string =>
 export interface EventPricingRead {
   /** false when a read failed. The answer is still safe to use — it is "menu prices". */
   ok: boolean
-  resolved: ResolvedPricing
+  /** What applies here, PER ITEM: the event's own typed prices, then the type's setup. */
+  resolved: EventItemPricing
   /** The event's type id and name, for the summaries. Null when the event has no type. */
   typeId: string | null
   typeName: string | null
-  /** The raw rows, for the screens that edit them. */
-  event: EventPricing | null
+  /**
+   * The event's four price columns, raw.
+   * ⛔ FOR REPORTING ONLY — nothing prices against them any more. See `EventPricingColumns`.
+   */
+  eventColumns: EventPricingColumns | null
   type: TypePricing | null
-  /** POUNDS by `menu_items_db.id` — whichever of the two sets `resolved` chose. */
-  typed: Readonly<Record<string, number>>
-  /** Both sets, for the sheet (which shows the type's column beside the event's). */
+  /** Both typed sets. POUNDS by `menu_items_db.id`. */
   eventTyped: Readonly<Record<string, number>>
   typeTyped: Readonly<Record<string, number>>
 }
 
 export const NO_EVENT_PRICING: EventPricingRead = {
   ok: true, resolved: MENU_PRICES, typeId: null, typeName: null,
-  event: null, type: null, typed: {}, eventTyped: {}, typeTyped: {},
+  eventColumns: null, type: null, eventTyped: {}, typeTyped: {},
 }
 
 /** `event_item_prices` rows for one owner, as POUNDS by item id. A failure reads as "none". */
@@ -147,29 +150,35 @@ export async function readEventPricing(
     | undefined
   const type = (Array.isArray(embedded) ? embedded[0] : embedded) ?? null
 
-  const event: EventPricing = {
+  const eventColumns: EventPricingColumns = {
     price_own: row.price_own ?? null,
     price_mode: row.price_mode ?? null,
     price_amount: row.price_amount ?? null,
     price_rounding: row.price_rounding ?? null,
   }
 
-  const wantEvent = event.price_own === true || opts?.forEditing === true
+  /* ══ 🔴 THE EVENT'S TYPED ROWS ARE **ALWAYS** READ NOW (5 October 2026) ═══════════════════════════
+   * They used to be fetched only when `price_own` was true or the sheet asked for them, because an
+   * event's typed prices were meaningless unless its whole-event switch was on. Under the per-item
+   * rule each one stands on its own, so skipping the read would mean an event price the operator set
+   * silently not being charged — on the money path.
+   * ⚠️ IT IS ONE EXTRA SELECT ON A TABLE THAT IS EMPTY FOR EVERY TRUCK TODAY, in parallel with the
+   * type's. It degrades to "none" on any failure, exactly as before.
+   * ⚠️ THE TYPE'S ROWS ARE STILL ONLY FETCHED WHEN ITS SWITCH IS ON (or the sheet asks), because a
+   * type with pricing off contributes nothing at all. */
   const wantType = type?.price_change_on === true || opts?.forEditing === true
   const [ev, ty] = await Promise.all([
-    wantEvent ? readTypedPrices(supabase, 'event_id', eventId) : Promise.resolve({ ok: true, typed: {} }),
+    readTypedPrices(supabase, 'event_id', eventId),
     wantType ? readTypedPrices(supabase, 'event_type_id', type?.id ?? null) : Promise.resolve({ ok: true, typed: {} }),
   ])
 
-  const resolved = resolvePricing(event, ev.typed, type, ty.typed)
   return {
     ok: ev.ok && ty.ok,
-    resolved,
+    resolved: resolveEventPricing(ev.typed, type, ty.typed),
     typeId: type?.id ?? row.event_type_id ?? null,
     typeName: type?.name ?? null,
-    event,
+    eventColumns,
     type,
-    typed: resolved.setup?.typed ?? {},
     eventTyped: ev.typed,
     typeTyped: ty.typed,
   }
@@ -297,8 +306,16 @@ export interface EventPriceBook {
    * bytes as before this build.
    */
   menuPrice: Readonly<Record<string, number>>
-  /** Where the prices came from. Null ⇒ the menu, and `menuPrice` is empty. */
-  basis: PriceBasis | null
+  /**
+   * Where each moved item's price came from, by the SAME item NAME as `menuPrice`.
+   *
+   * ══ 🔴 PER ITEM, NOT ONE VALUE FOR THE BOOK (5 October 2026) ══════════════════════════════════
+   * This was `basis: PriceBasis | null` — one answer for the whole order — because the old rule
+   * resolved ONE setup per event. Under the per-item rule an event can charge its own price for one
+   * dish and the type's rule for another, so a single basis would label one of them wrongly on a
+   * stored order line. The two maps have exactly the same keys: an item is in both, or in neither.
+   */
+  basisByName: Readonly<Record<string, PriceBasis>>
   /** The pricing read, so a caller can report or summarise without reading again. */
   pricing: EventPricingRead
 }
@@ -332,30 +349,33 @@ export async function loadEventPriceBook(
     readEventPricing(supabase, eventId),
   ])
 
-  const setup = pricing.resolved.setup
-  /* 🔴 THE EARLY RETURN IS THE IDENTITY PROOF. Same object, empty map, null basis. */
-  if (!setup) return { book, menuPrice: {}, basis: null, pricing }
+  /* 🔴 THE EARLY RETURN IS THE IDENTITY PROOF. Same object, empty maps. */
+  if (!pricingApplies(pricing.resolved)) return { book, menuPrice: {}, basisByName: {}, pricing }
 
   const { items } = await loadPricingItems(supabase, truckId)
   const itemPrice: Record<string, number> = { ...book.itemPrice }
   const menuPrice: Record<string, number> = {}
+  const basisByName: Record<string, PriceBasis> = {}
   for (const it of items) {
-    const chargedPence = priceForItem(it.pricePence, setup, it.id)
-    if (chargedPence === it.pricePence) continue
-    itemPrice[it.name] = toPounds(chargedPence)
+    /* 🔴 THE SAME FUNCTION THE MENU API AND THE DASHBOARD'S PRICE COLUMN CALL. The price an operator
+     * reads, the price a customer is shown and the price an order is charged come from one place. */
+    const { pence, basis } = priceAtEvent(it.pricePence, it.id, pricing.resolved)
+    if (basis === null) continue
+    itemPrice[it.name] = toPounds(pence)
     menuPrice[it.name] = toPounds(it.pricePence)
+    basisByName[it.name] = basis
   }
 
   /* ⚠️ NOTHING MOVED ⇒ THE ORIGINAL BOOK AGAIN. A type whose switch is on with mode 'none' and no
    * typed prices changes no price, so an order under it must store no `price_basis` either — the
    * field means "this line was priced by event pricing", and stamping it on a line that was not
    * would make the audit field a lie. */
-  if (Object.keys(menuPrice).length === 0) return { book, menuPrice: {}, basis: null, pricing }
+  if (Object.keys(menuPrice).length === 0) return { book, menuPrice: {}, basisByName: {}, pricing }
 
   return {
     book: { ...book, itemPrice },
     menuPrice,
-    basis: pricing.resolved.basis,
+    basisByName,
     pricing,
   }
 }
@@ -420,13 +440,14 @@ export async function candidatesChangePrices(
  * @param submitted   the lines as `repriceOrder` returned them (prices already resolved)
  * @param storedItems `order.items` as the row holds it — the authority for a locked line
  * @param menuPrice   `EventPriceBook.menuPrice` — the items event pricing moved, by NAME
- * @param basis       `EventPriceBook.basis`
+ * @param basisByName `EventPriceBook.basisByName` — ⚠️ PER ITEM since 5 October 2026, because one
+ *                    event can charge its own price for one dish and its type's rule for another
  */
 export function stampEditedLines<T extends { name?: unknown; modifiers?: unknown }>(
   submitted: readonly T[],
   storedItems: unknown,
   menuPrice: Readonly<Record<string, number>>,
-  basis: PriceBasis | null,
+  basisByName: Readonly<Record<string, PriceBasis>>,
 ): T[] {
   type Audit = { menu_price?: number; price_basis?: PriceBasis }
   const asArray = (v: unknown): Record<string, unknown>[] => (Array.isArray(v) ? v : [])
@@ -447,7 +468,7 @@ export function stampEditedLines<T extends { name?: unknown; modifiers?: unknown
     else queues.set(key, [audit])
   }
 
-  const anyEventPrice = Object.keys(menuPrice).length > 0 && basis !== null
+  const anyEventPrice = Object.keys(menuPrice).length > 0
   /* ⚠️ NOTHING TO DO ⇒ THE SAME ARRAY, NOT A MAPPED COPY. An order with no stored audit fields on a
    * truck not using this feature comes back untouched, which is the byte-identity promise. */
   const anyStored = [...queues.values()].some(q => q.some(a => a.price_basis !== undefined))
@@ -467,10 +488,13 @@ export function stampEditedLines<T extends { name?: unknown; modifiers?: unknown
       if (locked.price_basis !== undefined) copy.price_basis = locked.price_basis
       return copy
     }
-    /* NEW: today's event pricing, if it moved this item. */
+    /* NEW: today's event pricing, if it moved this item. ⚠️ BOTH FIELDS OR NEITHER — the two maps
+     * have the same keys by construction, and the `&&` makes that a property of this code too. */
     if (anyEventPrice) {
-      const menu = menuPrice[String(line?.name ?? '')]
-      if (menu !== undefined) { copy.menu_price = menu; copy.price_basis = basis! }
+      const name = String(line?.name ?? '')
+      const menu = menuPrice[name]
+      const b = basisByName[name]
+      if (menu !== undefined && b !== undefined) { copy.menu_price = menu; copy.price_basis = b }
     }
     return copy
   })

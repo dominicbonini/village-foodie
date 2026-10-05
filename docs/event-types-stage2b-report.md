@@ -1,5 +1,14 @@
 # Event types — stage 2b: the modal, offline protection, and the "This event" card
 
+
+> ⛔ **SUPERSEDED IN PART, 5 October 2026.** The "This event" card this report describes is **deleted**
+> — it was never approved, and what it did was move five controls away from where operators knew them.
+> Every one is back at `origin/main`'s position; see `docs/dashboard-cleanup-report.md` and the manual's
+> §70.7. ⚠️ **Two screenshots this report links are gone with it**
+> (`docs/screenshots/event-types/this-event-card-{before,after}.png`), because the harness that
+> generated them no longer builds that fixture. The reasoning below is kept as the record of what was
+> built and why it was reversed.
+
 **Branch:** `event-types` (confirmed with `git branch --show-current` before every commit).
 `main` and `schedule-graphics` untouched. **Nothing deployed.**
 **No SQL was run.** One migration is written and reproduced below for you to run by hand.

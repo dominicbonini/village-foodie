@@ -717,68 +717,126 @@ function pickerFixture(css) {
  *                   which is what the operator saw before this build. Rendered so the report can show
  *                   both and so the measurement can prove the card is not taller than what it replaced.
  */
-function cardFixture(css, withTypes = true, old = false) {
-  const CARD = read('components/dashboard/ThisEventCard.tsx')
-  const card = lift(CARD, /className="(bg-white rounded-2xl shadow-sm border border-slate-200 p-4)">/, 'the card')
-  const row = lift(CARD, /<div className="(flex items-center gap-2\.5 py-2\.5 border-t border-slate-100 min-h-\[44px\])">/, 'a card row')
-  /* ⚠️ LIFTED, so the `max-w-[58%]` fix cannot be reverted without this file noticing. */
-  /* ⚠️ THE CARD'S SELECT IS BUILT FROM `CONTROL_BOX` NOW (v3 addition), so it is a template string
-   * rather than a literal — the card stopped carrying its own border and radius. Rebuilt here the
-   * same way the card builds it, from the same token. */
-  const cardBox = lift(TOKENS, /export const CONTROL_BOX =\n\s*'(.+?)'/, 'the control box')
-  const cardSuffix = lift(CARD, /const SELECT = `\$\{CONTROL_BOX\} (.+?)`/, 'the card select suffix')
-  const sel = `${cardBox} ${cardSuffix}`
-  const heading = lift(CARD, /<p className="(text-\[11px\] font-bold tracking-\[0\.06em\] text-slate-500 pt-3 pb-0\.5)">/, 'a section heading')
+/* ══ ⛔ `cardFixture` IS DELETED (5 October 2026) ═══════════════════════════════════════════════════
+ * It built the "This event" card, which is gone from the repository — so the function read a file that
+ * no longer exists and this harness threw ENOENT before a single measurement ran. The two fixtures
+ * below replace it, and they measure what the card's contents BECAME:
+ *   `itemsFixture`    — Menu & Stock's "Items — this event", in BOTH price modes.
+ *   `eventBarFixture` — the dark event bar, for Standard, a custom type, and a private event.
+ * ⚠️ BOTH LIFT THEIR CLASS STRINGS OUT OF THE PAGE, like every other fixture here, so a class that
+ * changes in the component changes here too rather than being re-typed. */
 
-  const tag = '<span class="text-[10px] font-bold text-blue-700 bg-blue-100 rounded px-1.5 py-px shrink-0">THIS EVENT</span>'
-  const sw = (on, label) => `<button type="button" role="switch" aria-checked="${on}" aria-label="${label}" class="relative w-[42px] h-6 rounded-full shrink-0 ${on ? 'bg-orange-600' : 'bg-slate-300'}"><span class="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white"></span></button>`
-  const link = t => `<button type="button" class="text-sm font-semibold text-orange-700 shrink-0">${t}</button>`
-  const r = (label, hint, right, own) => `<div class="${row}"><div class="min-w-0 flex-1"><p class="text-[15px] font-semibold text-slate-800">${label}</p>${hint ? `<p class="text-[13px] text-slate-500 font-normal">${hint}</p>` : ''}</div>${own ? tag : ''}${right}</div>`
+/**
+ * ── 🔴 MENU & STOCK: "Items — this event", IN BOTH PRICE MODES ────────────────────────────────────
+ *
+ * @param editing false ⇒ the normal state: the price is PLAIN RIGHT-ALIGNED TEXT, not a box.
+ *                true  ⇒ edit mode: inputs, the blue note, and the limit/availability controls locked.
+ *
+ * 🔴 THE TWO MODES ARE THE POINT OF THE MEASUREMENT. The brief's rule is that a price cannot be
+ * changed by accident, which is a LAYOUT claim as much as a behavioural one: in the normal state there
+ * must be no input in the price column at all, and in edit mode the locked controls must look locked.
+ */
+function itemsFixture(css, editing = false, longName = false) {
+  const PAGE = read('app/dashboard/[token]/page.tsx')
+  /* ⚠️ LIFTED FROM THE PAGE: the column header's class, the read-only price's class, the input's
+   * class, and the blue note's. A re-typed copy here would keep measuring the old shape. */
+  const headCls = lift(PAGE, /<span className="(w-20 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400)">\{EVENT_PRICE_COLUMN_LABEL\}/, 'the Price column header')
+  const plainCls = lift(PAGE, /<p data-event-price className=\{`(w-20 text-right text-sm font-bold tabular-nums) /, 'the read-only price')
+  const noteCls = lift(PAGE, /<div className="(mb-4 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2)" data-price-edit-note>/, 'the edit note')
+  const editBtnCls = lift(PAGE, /data-price-edit-open\s*\n\s*className="(w-full sm:w-auto bg-slate-100 text-slate-700 font-bold px-3 py-1\.5 rounded-lg hover:bg-slate-200 text-xs disabled:opacity-40)"/, 'the Edit prices button')
+  const COPY = read('lib/copy/serviceSettings.ts')
+  const editLabel = lift(COPY, /export const EVENT_PRICE_EDIT = '(.+?)'/, 'the Edit prices label')
+  const saveLabel = lift(COPY, /export const EVENT_PRICE_SAVE = '(.+?)'/, 'the Save prices label')
+  const editNote = lift(COPY, /export const EVENT_PRICE_EDIT_NOTE =\n\s*'(.+?)'/, 'the edit note copy')
+  const liveNote = lift(COPY, /export const EVENT_PRICE_LIVE_NOTE = '(.+?)'/, 'the live note copy')
+  const cardDesc = lift(COPY, /export const EVENT_ITEMS_CARD_DESCRIPTION =\n\s*'(.+?)'/, 'the card description')
 
-  if (old) {
-    /* ── THE "BEFORE": five separate cards, as the Kitchen tab had them ───────────────────────── */
-    const oldCard = 'flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200'
-    const oldOne = (title, body, right) =>
-      `<div class="${oldCard}" style="margin-bottom:12px"><div class="flex-1 min-w-0"><p class="text-sm font-semibold text-slate-800">${title}</p><p class="text-xs text-slate-500 mt-0.5">${body}</p></div>${right}</div>`
-    return `${HEAD(css)}
-<div id="scope" style="background:#f8fafc;padding:16px">
-  <div id="before">
-    ${oldOne('Offline Order Protection', "If your device loses its connection, this stops orders arriving while you can't see them.", sw(true, 'Offline'))}
-    ${oldOne('Remind me to add a buzzer', 'Opens the buzzer grid as soon as you place an order.', sw(true, 'Buzzers'))}
-    ${oldOne('Order-ready step', 'Show a “Mark ready” button on the orders screen.', sw(false, 'Mark ready'))}
-    ${oldOne('Do you take cash?', 'Splits the payment button into "Cash" and "Card".', sw(false, 'Take cash'))}
-    ${oldOne('Customer Collection Times', 'How often a collection slot is offered.', `<select class="${sel}"><option>Every 15 min</option></select>`)}
-  </div>
-</div></body></html>`
-  }
+  const sw = (on, locked) => `<button type="button" role="switch" aria-checked="${on}" aria-label="Available" ${locked ? 'disabled' : ''} class="relative w-11 h-6 rounded-full shrink-0 ${locked ? 'opacity-50' : ''} ${on ? 'bg-green-500' : 'bg-slate-300'}"><span class="absolute top-1 w-4 h-4 rounded-full bg-white"></span></button>`
+  const limit = (locked) => `<input type="number" placeholder="–" ${locked ? 'disabled' : ''} value="8" class="w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold text-slate-900 border-slate-200 bg-slate-50 disabled:opacity-50"/>`
+  /* A price cell in whichever mode. `own` = this event has set it, so blue (+ × in edit mode). */
+  const price = (pounds, own) => editing
+    ? `<div class="relative w-20"><input type="text" aria-label="Price at this event" value="${pounds.toFixed(2)}" class="w-20 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-right font-bold focus:outline-none ${own ? 'border-blue-300 bg-blue-50 text-blue-700 pr-5' : 'border-slate-200 bg-white text-slate-900'}"/>${own ? '<button type="button" aria-label="Clear" class="absolute right-0.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-100 text-blue-600 text-[10px] font-bold flex items-center justify-center">&times;</button>' : ''}</div>`
+    : `<p data-event-price class="${plainCls} ${own ? 'text-blue-700' : 'text-slate-800'}">£${pounds.toFixed(2)}</p>`
+
+  const NAME = longName
+    ? 'Nduja, honey and smoked scamorza on a 48-hour fermented sourdough base'
+    : 'Margherita'
+  const item = (name, pounds, own) => `
+    <div class="flex items-center gap-2 p-2 rounded-xl border bg-slate-50 border-slate-100">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap"><p class="font-bold text-sm text-slate-800">${name}</p></div>
+        ${own ? `<p data-own-note class="text-[11px] text-blue-500 mt-0.5">Festival £12.00 · this event</p>` : ''}
+      </div>
+      <div class="flex flex-col items-end gap-0.5 w-20 shrink-0">${price(pounds, own)}</div>
+      <div class="flex flex-col items-center gap-0.5 w-16 shrink-0">${limit(editing)}</div>
+      <span class="w-12 shrink-0 flex justify-center">${sw(true, editing)}</span>
+    </div>`
 
   return `${HEAD(css)}
 <div id="scope" style="background:#f8fafc;padding:16px">
-  <div id="card" data-this-event-card class="${card}">
-    <div class="flex items-center gap-3 pb-1">
-      <p class="font-bold text-slate-900 text-base flex-1">This event</p>
-      <p class="text-[13px] text-slate-500">Changes here are for this event only</p>
+  <div id="card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+    <div id="cardhead" class="flex flex-wrap items-start justify-between gap-2 mb-1">
+      <p class="text-sm font-semibold text-slate-800 tracking-wide">Items — this event</p>
+      ${editing
+        ? `<div id="editactions" class="flex items-center gap-2 w-full sm:w-auto"><button type="button" class="flex-1 sm:flex-none bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs">Cancel</button><button type="button" class="flex-1 sm:flex-none bg-orange-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs">${saveLabel}</button></div>`
+        : `<button type="button" id="editbtn" class="${editBtnCls}">${editLabel}</button>`}
     </div>
-    ${withTypes ? r('Event type', null, `<select id="etsel" aria-label="Event type" class="${sel}"><option>Festival</option></select>`, false) : ''}
-    <p class="${heading}">MENU</p>
-    ${r('Stock and items sold', 'Pizza 120 · Margherita 60 · Nduja not sold', link('Change'), false)}
-    <p class="${heading}">DEALS</p>
-    ${r('Festival meal deal', null, sw(true, 'Festival meal deal'), false)}
-    ${r('Kids eat for £5', null, sw(false, 'Kids eat for £5'), true)}
-    <p class="${heading}">SERVICE</p>
-    ${r('Buzzers', null, sw(true, 'Buzzers'), false)}
-    ${r('Take cash', null, sw(false, 'Take cash'), true)}
-    ${r('“Mark ready” step', null, sw(true, 'Mark ready step'), false)}
-    ${r('Collection times', 'Every 10 min', link('Change'), false)}
-    ${r('Offline protection', null, `<select id="offsel" aria-label="Offline protection" class="${sel}"><option>Keep taking orders, confirm them yourself</option></select>`, true)}
-    <p id="warn" class="text-[13px] text-amber-600 -mt-1 pb-1.5">⚠️ <strong>You must keep your dashboard or kitchen screen on and online during service.</strong> If the screen goes off, the device loses internet, or you switch to another website, offline protection takes over — either pausing ordering or turning auto-accept off, whichever you chose.</p>
-    <div class="flex items-center justify-between gap-3 pl-4 pb-2">
-      <p class="text-[13px] font-semibold text-slate-700">Reject orders waiting longer than</p>
-      <select id="delaysel" aria-label="Reject orders waiting longer than" class="border border-slate-300 rounded-lg px-2 h-9 text-sm bg-white"><option>15 mins</option></select>
+    <p class="text-slate-500 text-xs mb-4">${cardDesc}</p>
+    ${editing ? `<div id="editnote" class="${noteCls}"><p class="text-xs text-blue-800">${editNote}</p><p class="text-xs font-semibold text-blue-900 mt-0.5">${liveNote}</p></div>` : ''}
+    <div class="flex items-center gap-2 pr-2 mb-2">
+      <span class="flex-1"></span>
+      <span id="pricehead" class="${headCls}">Price</span>
+      <span class="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Item limit</span>
+      <span class="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Available</span>
     </div>
-    <div id="cardfooter" class="flex items-center gap-3 py-2.5 border-t border-slate-100">
-      <p class="text-[13px] text-slate-500 flex-1">3 settings changed for this event only.</p>
-      ${link('Reset to Festival')}
+    <div class="space-y-1.5">
+      ${item(NAME, 13, true)}
+      ${item('Pepperoni', 11, false)}
+    </div>
+  </div>
+</div></body></html>`
+}
+
+/**
+ * ── 🔴 THE DARK EVENT BAR: STANDARD, A CUSTOM TYPE, AND A PRIVATE EVENT ───────────────────────────
+ *
+ * @param kind 'standard' | 'custom' | 'private'
+ * @param longName a private event with a name long enough to test the truncation rule
+ *
+ * 🔴 WHAT THIS MEASURES IS THE BRIEF'S OWN REQUIREMENT: a long private name must wrap or truncate
+ * cleanly WITHOUT pushing `Manage event ▾` off the bar. That is a flex-shrink question and it is
+ * exactly the class of thing only a browser answers.
+ */
+function eventBarFixture(css, kind = 'standard', longName = false) {
+  const PAGE = read('app/dashboard/[token]/page.tsx')
+  const bar = lift(PAGE, /<div id="dashboard-event-bar" className="(bg-slate-800 border-b border-slate-700 shrink-0 z-30 relative)">/, 'the event bar')
+  const inner = lift(PAGE, /<div className=\{"(w-full min-\[1400px\]:max-w-5xl min-\[1400px\]:mx-auto px-4 py-2 flex items-center gap-2)"\}>/, 'the bar inner row')
+  const title = lift(PAGE, /<span className="(block text-white text-sm font-medium truncate)">/, 'the title line')
+  const manage = lift(PAGE, /aria-label="Manage event"\s*\n\s*className="(flex-shrink-0 text-xs font-semibold text-white bg-slate-700 border border-slate-500 hover:bg-slate-600 rounded px-2\.5 py-1 transition-colors)">/, 'the Manage event button')
+
+  const NAME = longName
+    ? 'Sarah and Thomas’s wedding reception at the old manor house barn'
+    : 'Test Private Event'
+  const titleInner = kind === 'private'
+    ? `<span aria-hidden>🔒</span> ${NAME} — <span class="text-purple-300 font-bold">Private event</span> · 11:00–14:00`
+    : `📍 Community Centre — Stanstead Village · 11:00–14:00`
+  /* ⚠️ THE TYPE LABEL IS RENDERED ONLY FOR A CUSTOM TYPE. Standard shows nothing; a private event
+   * shows nothing HERE because its title already says it. */
+  const label = kind === 'custom'
+    ? `<span id="typelabel" class="flex-shrink-0 flex items-center gap-1.5 text-xs font-medium text-slate-300"><span aria-hidden class="w-2 h-2 rounded-full" style="background:#E8550F"></span>Festival</span>`
+    : ''
+
+  return `${HEAD(css)}
+<div id="scope" style="background:#0f172a">
+  <div id="bar" class="${bar}">
+    <div class="${inner}">
+      <div id="titlecol" class="flex-1 min-w-0">
+        <span id="title" class="${title}">${titleInner}</span>
+        <span class="hidden sm:block text-xs font-medium text-slate-400 truncate mt-0.5">📅 Saturday 11 October</span>
+      </div>
+      <span id="status" class="text-xs font-medium text-green-400 flex-shrink-0">Live</span>
+      ${label}
+      <button id="manage" aria-label="Manage event" class="${manage}">Manage event ▾</button>
     </div>
   </div>
 </div></body></html>`
@@ -1148,6 +1206,26 @@ const probe = () => {
     popup: box('popup'), chips: box('chips'), note: box('note'), actions: box('actions'),
     offsel: box('offsel'), delaysel: box('delaysel'), warn: box('warn'), cardfooter: box('cardfooter'),
     noteTruncated: truncated('note'), warnTruncated: truncated('warn'),
+    /* ══ 🔴 THE 5 OCTOBER SURFACES (Menu & Stock's Price column, and the dark event bar) ═══════════ */
+    cardhead: box('cardhead'), editbtn: box('editbtn'), editactions: box('editactions'),
+    editnote: box('editnote'), pricehead: box('pricehead'),
+    bar: box('bar'), titlecol: box('titlecol'), title: box('title'),
+    /* ⚠️ THE TITLE'S TEXT, SEPARATELY — `box` returns geometry only, and the private-event claim is
+     * about WORDS: no venue and no town may appear in it. */
+    titleText: (document.getElementById('title')?.textContent || '').trim(),
+    status: box('status'), typelabel: box('typelabel'), manage: box('manage'),
+    /* 🔴 EVERY PRICE CELL, MEASURED — and whether it is an INPUT at all, which is the whole claim of
+     * the read-only mode: not "a disabled box" but "no box". */
+    prices: [...document.querySelectorAll('[data-event-price]')].map(e => {
+      const b = e.getBoundingClientRect()
+      return { tag: e.tagName, right: Math.round(b.right), width: Math.round(b.width), text: (e.textContent || '').trim() }
+    }),
+    priceInputs: document.querySelectorAll('#card input[aria-label="Price at this event"]').length,
+    /* ⛔ ARE THE LIMIT AND AVAILABILITY CONTROLS LOCKED? Counted, so "all four" is a number. */
+    limitsEnabled: [...document.querySelectorAll('#card input[type=number]')].filter(e => !e.disabled).length,
+    availEnabled: [...document.querySelectorAll('#card [role=switch]')].filter(e => !e.disabled).length,
+    ownNotes: [...document.querySelectorAll('[data-own-note]')].map(e => (e.textContent || '').trim()),
+    titleTruncated: truncated('title'),
     gridScrolls: scrolls('scroller'),
     hintTruncated: truncated('ethint'),
     ownTruncated: truncated('ownline'),
@@ -1644,28 +1722,88 @@ async function main() {
       t(n.noteTruncated === false, `🔴 newtype ${w}: "It starts exactly like Standard" is not cut off`)
       t(n.actions.bottom <= n.popup.bottom + 1, `⚠️ newtype ${w}: Cancel / Create sit inside the popup`)
 
-      // ── 3 · THE DASHBOARD CARD ────────────────────────────────────────────────────────────────
-      await eng.page.goto(write(`card-${w}-${eng.name}.html`, cardFixture(css, true)))
-      const d = await eng.page.evaluate(probe)
-      lines.push(`  card ${w}×${h}  ${d.card.width}×${d.card.height} · select ${d.etsel.height}px · warning clipped: ${d.warnTruncated}`)
-      t(!d.pageScrollsSideways, `🔴 card ${w}: NO HORIZONTAL PAGE SCROLL`)
-      t(d.etsel.right <= d.card.right + 1 && d.offsel.right <= d.card.right + 1,
-        `🔴 card ${w}: both selects are inside the card`)
-      /* 🔴 40px MINIMUM ON EVERY SELECT. WebKit ignores `min-height` on a `<select>`, which is why the
-       * component uses a fixed height — found by this harness at stage 1 and still asserted. */
-      t(d.etsel.height >= 40 && d.offsel.height >= 40,
-        `🔴 card ${w}: the selects are at least 40px tall (${d.etsel.height}px, ${d.offsel.height}px)`)
-      t(d.delaysel.right <= d.card.right + 1, `⚠️ card ${w}: the auto-reject delay is inside the card`)
-      /* 🔴 THE SAFETY-CRITICAL ⚠️ INSTRUCTION MUST BE READABLE IN FULL — it is the one piece of copy in
-       * this card that costs an operator a service if it is clipped. */
-      t(d.warnTruncated === false, `🔴 card ${w}: the ⚠️ offline instruction is not cut off`)
-      t(d.cardfooter.right <= d.card.right + 1, `⚠️ card ${w}: "Reset to Festival" is not clipped`)
+      /* ══ 3 · MENU & STOCK'S PRICE COLUMN — BOTH MODES (5 October 2026) ═════════════════════════
+       * ⛔ THE OLD §3 MEASURED THE "This event" CARD, WHICH IS DELETED. These measure what its
+       * contents became. The claim that needs a browser is the brief's own: a price cannot be changed
+       * by accident, which in layout terms means there is NO INPUT in the price column until the
+       * operator opens edit mode — not a disabled one, none. */
+      await eng.page.goto(write(`items-ro-${w}-${eng.name}.html`, itemsFixture(css, false)))
+      const ro = await eng.page.evaluate(probe)
+      lines.push(`  items ${w}×${h} READ-ONLY  card ${ro.card.width}×${ro.card.height} · ${ro.prices.length} price cell(s), ${ro.priceInputs} input(s) · limits live ${ro.limitsEnabled}, switches live ${ro.availEnabled}`)
+      t(!ro.pageScrollsSideways, `🔴 items ${w} read-only: NO HORIZONTAL PAGE SCROLL`)
+      /* 🔴 THE PRICE IS A `<p>`, NOT AN INPUT. This is the whole of "not editable by accident". */
+      t(ro.priceInputs === 0 && ro.prices.length === 2 && ro.prices.every(x => x.tag === 'P'),
+        `🔴 items ${w} read-only: the price is plain text, with NO input in the column (${ro.priceInputs} input(s))`)
+      t(ro.prices.every(x => /^£\d+\.\d\d$/.test(x.text)),
+        `🔴 items ${w} read-only: every price reads "£n.nn" (${JSON.stringify(ro.prices.map(x => x.text))})`)
+      /* 🔴 RIGHT-ALIGNED, MEASURED: every cell's text ends at the same x, which is what makes a column
+       * of money readable. Asserted on the RENDERED right edge rather than on a class name. */
+      t(new Set(ro.prices.map(x => x.right)).size === 1,
+        `🔴 items ${w} read-only: the prices are right-aligned to one edge (${JSON.stringify(ro.prices.map(x => x.right))})`)
+      t(ro.prices.every(x => x.right <= ro.card.right + 1), `⚠️ items ${w} read-only: the column is inside the card`)
+      /* ⚠️ AND NOTHING IS LOCKED IN THE NORMAL STATE — limits and availability are live. */
+      t(ro.limitsEnabled === 2 && ro.availEnabled === 2,
+        `🔴 items ${w} read-only: limits and availability are LIVE (${ro.limitsEnabled}, ${ro.availEnabled})`)
+      t(!!ro.editbtn && !ro.editactions && !ro.editnote,
+        `🔴 items ${w} read-only: one "✎ Edit prices" button, no Cancel/Save, no blue note`)
+      /* 🔴 THE PHONE RULE: below `sm` the button is its own full-width row under the title; from `sm`
+       * up it sits at the top right of the header. Measured, not asserted from a class. */
+      if (w === 390) {
+        t(ro.editbtn.top >= ro.cardhead.top + 10 && ro.editbtn.width >= ro.cardhead.width - 2,
+          `🔴 items 390: the Edit prices button is full width UNDER the title (${ro.editbtn.width}px of ${ro.cardhead.width}px)`)
+      } else {
+        t(ro.editbtn.right <= ro.cardhead.right + 1 && ro.editbtn.width < ro.cardhead.width / 2,
+          `🔴 items ${w}: the Edit prices button is at the top RIGHT (${ro.editbtn.width}px of ${ro.cardhead.width}px)`)
+      }
+      /* ⚠️ THE BLUE LINE UNDER A CHANGED ITEM NAMES THE TYPE, not always "menu". */
+      t(ro.ownNotes.length === 1 && /^Festival £\d+\.\d\d · this event$/.test(ro.ownNotes[0]),
+        `⚠️ items ${w}: the changed item's line names the TYPE it departs from (${JSON.stringify(ro.ownNotes)})`)
 
-      // ── 3b · THE CARD FOR A TRUCK WITH NO TYPES — it must still show ──────────────────────────
-      await eng.page.goto(write(`card-notypes-${w}-${eng.name}.html`, cardFixture(css, false)))
-      const nt = await eng.page.evaluate(probe)
-      t(nt.card.height > 0 && !nt.etsel,
-        `🔴 card ${w}: a truck with NO event types still gets the card, without the Event type row`)
+      // ── 3b · EDIT MODE ────────────────────────────────────────────────────────────────────────
+      await eng.page.goto(write(`items-edit-${w}-${eng.name}.html`, itemsFixture(css, true)))
+      const ed = await eng.page.evaluate(probe)
+      lines.push(`  items ${w}×${h} EDITING    card ${ed.card.width}×${ed.card.height} · ${ed.priceInputs} input(s) · limits live ${ed.limitsEnabled}, switches live ${ed.availEnabled}`)
+      t(!ed.pageScrollsSideways, `🔴 items ${w} editing: NO HORIZONTAL PAGE SCROLL`)
+      t(ed.priceInputs === 2 && ed.prices.length === 0,
+        `🔴 items ${w} editing: the price cells ARE inputs (${ed.priceInputs}), and no plain text is left`)
+      /* ⛔ AND THE PROMISE THE BLUE NOTE MAKES IS KEPT: all four limit/availability controls locked. */
+      t(ed.limitsEnabled === 0 && ed.availEnabled === 0,
+        `⛔ items ${w} editing: limits and availability are LOCKED (${ed.limitsEnabled} live, ${ed.availEnabled} live)`)
+      t(!!ed.editnote && !!ed.editactions && !ed.editbtn,
+        `🔴 items ${w} editing: the blue note shows, and the header is Cancel + Save prices`)
+      t(ed.editnote.right <= ed.card.right + 1 && ed.editnote.bottom < ed.pricehead.top,
+        `⚠️ items ${w} editing: the note sits under the header and above the columns`)
+      if (w === 390) {
+        t(ed.editactions.width >= ed.cardhead.width - 2,
+          `🔴 items 390 editing: Cancel and Save fill the row under the title (${ed.editactions.width}px)`)
+      }
+
+      // ── 3c · A VERY LONG ITEM NAME MUST NOT PUSH THE COLUMNS OUT ──────────────────────────────
+      await eng.page.goto(write(`items-long-${w}-${eng.name}.html`, itemsFixture(css, false, true)))
+      const lg = await eng.page.evaluate(probe)
+      t(!lg.pageScrollsSideways && lg.prices.every(x => x.right <= lg.card.right + 1) && lg.prices.every(x => x.width >= 70),
+        `🔴 items ${w}: a 70-character item name does not squeeze the Price column (${lg.prices.map(x => x.width).join('/')}px)`)
+
+      /* ══ 3d · THE DARK EVENT BAR — STANDARD, A CUSTOM TYPE, AND A PRIVATE EVENT ════════════════ */
+      for (const [kind, long] of [['standard', false], ['custom', false], ['private', false], ['private', true]]) {
+        const tag = `${kind}${long ? '-long' : ''}`
+        await eng.page.goto(write(`bar-${tag}-${w}-${eng.name}.html`, eventBarFixture(css, kind, long)))
+        const b = await eng.page.evaluate(probe)
+        lines.push(`  bar ${w}×${h} ${tag.padEnd(13)} title ${b.title.width}px (truncated ${b.titleTruncated}) · manage ${b.manage.width}px at ${b.manage.right}`)
+        t(!b.pageScrollsSideways, `🔴 bar ${w} ${tag}: NO HORIZONTAL PAGE SCROLL`)
+        /* 🔴 THE BRIEF'S OWN REQUIREMENT: `Manage event ▾` stays on the bar whatever the title says. */
+        t(b.manage.right <= b.bar.right - 10 && b.manage.width >= 90,
+          `🔴 bar ${w} ${tag}: "Manage event ▾" is fully on the bar (${b.manage.width}px, right ${b.manage.right} of ${b.bar.right})`)
+        t(b.status.right <= b.manage.left, `⚠️ bar ${w} ${tag}: the status sits left of Manage event`)
+        /* ⛔ THE TYPE LABEL BESIDE THE STATUS IS PRESENT **ONLY** FOR A CUSTOM TYPE. */
+        t((kind === 'custom') === !!b.typelabel,
+          `⛔ bar ${w} ${tag}: the type label beside Live is ${kind === 'custom' ? 'present' : 'absent'}`)
+        /* ⛔ AND A PRIVATE EVENT'S TITLE CARRIES NO VENUE AND NO TOWN. */
+        if (kind === 'private') {
+          t(!/Community Centre|Stanstead/.test(b.titleText) && /Private event/.test(b.titleText),
+            `⛔ bar ${w} private: the title carries NO venue and NO town`)
+        }
+      }
 
       /* ══ 📸 SCREENSHOTS ═══════════════════════════════════════════════════════════════════════
        * The brief asks for 1440 AND 390, in BOTH engines, with one van / two matching / two
@@ -1687,15 +1825,22 @@ async function main() {
       }
       // ── THE SINGLE-SURFACE SHOTS, at 1440 in Chromium (the width the report shows) ─────────────
       if (w === 1440 && eng.name === 'Chromium') {
-        await eng.page.goto(write(`shot-after-${eng.name}.html`, cardFixture(css, true)))
-        await eng.shot(path.join(shotDir, 'this-event-card-after.png'), 'scope')
-        await eng.page.goto(write(`shot-before-${eng.name}.html`, cardFixture(css, true, true)))
-        await eng.shot(path.join(shotDir, 'this-event-card-before.png'), 'scope')
+        /* ⛔ THE TWO "This event" CARD SHOTS ARE GONE WITH THE CARD. What replaced them is the pair
+         * the report actually needs now: Menu & Stock's Price column in BOTH modes, and the dark
+         * event bar for a private event. */
+        await eng.page.goto(write(`shot-items-ro-${eng.name}.html`, itemsFixture(css, false)))
+        await eng.shot(path.join(shotDir, 'items-prices-readonly.png'), 'scope')
+        await eng.page.goto(write(`shot-items-edit-${eng.name}.html`, itemsFixture(css, true)))
+        await eng.shot(path.join(shotDir, 'items-prices-editing.png'), 'scope')
+        await eng.page.goto(write(`shot-bar-private-${eng.name}.html`, eventBarFixture(css, 'private')))
+        await eng.shot(path.join(shotDir, 'event-bar-private.png'), 'scope')
+        await eng.page.goto(write(`shot-bar-custom-${eng.name}.html`, eventBarFixture(css, 'custom')))
+        await eng.shot(path.join(shotDir, 'event-bar-custom-type.png'), 'scope')
         await eng.page.goto(write(`shot-modal-${eng.name}.html`, panelFixture(css, 6)))
         await eng.shot(path.join(shotDir, 'event-types-modal.png'), 'modal')
         await eng.page.goto(write(`shot-newtype-${eng.name}.html`, newTypeFixture(css)))
         await eng.shot(path.join(shotDir, 'new-event-type.png'), 'popup')
-        lines.push(`  📸 four single-surface screenshots written to docs/screenshots/event-types/`)
+        lines.push(`  📸 six single-surface screenshots written to docs/screenshots/event-types/`)
       }
     }
 

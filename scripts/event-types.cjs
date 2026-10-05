@@ -876,28 +876,49 @@ head('5 · THE WIRING')
     /const et = await readEventType\(supabase, eventId\)/.test(slot)
     && /applyEventIntervals\(van, ev\.override, et\.type\)/.test(slot))
 
-  /* ══ 🔴 RE-AIMED: TWO READS ARE EXEMPT NOW, NOT ONE (event pricing, 5 October 2026) ══════════
-   * It was `action !== 'load'`. `event_pricing_summary` joined it, because a DOWNGRADED truck's saved
-   * prices KEEP RESOLVING (decision 8) and the dashboard card has to go on describing them
-   * accurately — a 403 there would show "Menu prices" over an event charging +10%.
+  /* ══ 🔴 RE-AIMED AGAIN (5 October 2026): THREE SETS, AND `READ_ACTIONS` IS BACK TO `load` ALONE ══
+   * It was `['load']`, then `['load', 'event_pricing_summary']` when the dashboard card needed a
+   * summary on a downgraded truck. The card and that summary are both deleted, so the exempt read set
+   * is `load` again — and a THIRD set has appeared beside it:
+   *   READ_ACTIONS      — `load`. Open to EITHER key, so a Pro truck can see Standard + Private.
+   *   PRIVATE_ACTIONS   — the Pro half.
+   *   ALL_PLAN_ACTIONS  — per-event ITEM prices, on EVERY plan. "This one dish costs more tonight" is
+   *                       a hatch-side decision every truck makes, and it touches no `event_types`
+   *                       row: the read computes prices, the write touches one `event_item_prices` row
+   *                       keyed on `event_id`. A Starter truck using them cannot reach any part of the
+   *                       Max feature, which is what makes the exemption safe rather than a hole.
    * 🔴 THE SHAPE THAT MATTERS IS UNCHANGED AND IS WHAT THIS STILL ASSERTS: the gate is BY EXCLUSION,
-   * so an action added later is refused by DEFAULT rather than being accidentally open. A list of
-   * write actions would have the opposite failure mode, and that is the whole point of the check.
-   * ⚠️ AND THE EXEMPT SET IS ASSERTED EXHAUSTIVELY — exactly these two, both reads. A third slipping
-   * in is how the gate comes to have a hole. */
-  t('🔴 THE PLAN GATE IS BY EXCLUSION, AND EXACTLY TWO READS ARE EXEMPT', (() => {
-    const set = (route.match(/const READ_ACTIONS = new Set\(\[([^\]]*)\]\)/) || [])[1] || ''
-    const exempt = (set.match(/'([a-z_]+)'/g) || []).map(x => x.replace(/'/g, '')).sort()
-    return /if \(!READ_ACTIONS\.has\(action\) && !canWrite\)/.test(route)
-      && JSON.stringify(exempt) === JSON.stringify(['event_pricing_summary', 'load'])
+   * so an action added later is refused by DEFAULT rather than being accidentally open.
+   * ⚠️ ALL THREE SETS ARE ASSERTED EXHAUSTIVELY. A fourth member slipping into any of them is how the
+   * gate comes to have a hole, and the per-plan one is the one that would be worst. */
+  t('🔴 THE PLAN GATE IS BY EXCLUSION, AND ALL THREE EXEMPT SETS ARE EXACTLY AS DECIDED', (() => {
+    const names = (re) => {
+      const m = route.match(re)
+      return m ? (m[1].match(/'([a-z_]+)'/g) || []).map(x => x.replace(/'/g, '')).sort() : null
+    }
+    const reads = names(/const READ_ACTIONS = new Set\(\[([^\]]*)\]\)/)
+    const allPlan = names(/const ALL_PLAN_ACTIONS = new Set\(\[([^\]]*)\]\)/)
+    const priv = names(/const PRIVATE_ACTIONS = new Set\(\[([^\]]*)\]\)/)
+    return /if \(!ALL_PLAN_ACTIONS\.has\(action\) && !READ_ACTIONS\.has\(action\) && !canWrite\)/.test(route)
+      && JSON.stringify(reads) === JSON.stringify(['load'])
+      && JSON.stringify(allPlan) === JSON.stringify(['event_item_prices', 'save_event_item_prices'])
+      && JSON.stringify(priv) === JSON.stringify(['set_private_link_ordering'])
       && /canAccess\(truck\.plan as never, 'event_types'/.test(route)
       /* ⚠️ `load` STAYS OPEN SO EXISTING TYPES KEEP RESOLVING ON A DOWNGRADE — decision 4 — and says
        * so with readOnly. */
       && /readOnly: !canWrite/.test(route)
-      /* 🔴 AND EVERY PRICING **WRITE** IS OUTSIDE THAT SET, which is the claim a downgraded truck
-       * depends on: the screens go read-only, the stored prices go on resolving. */
-      && ['set_type_pricing', 'set_type_item_price', 'save_event_pricing', 'clear_event_pricing']
-        .every(a => new RegExp(`action === '${a}'`).test(route) && !exempt.includes(a))
+      /* 🔴 AND EVERY **TYPE** PRICING WRITE IS OUTSIDE ALL THREE SETS, which is the claim a downgraded
+       * truck depends on: the screens go read-only, the stored prices go on resolving.
+       * ⛔ `save_event_pricing` / `clear_event_pricing` ARE DELETED — the whole-event rule they wrote
+       * is gone — and they are asserted ABSENT rather than dropped from the list, so reinstating one
+       * without re-deciding its gate fails here. */
+      && ['set_type_pricing', 'set_type_item_price']
+        .every(a => new RegExp(`action === '${a}'`).test(route)
+          && ![...reads, ...allPlan, ...priv].includes(a))
+      && !/action === 'save_event_pricing'/.test(route)
+      && !/action === 'clear_event_pricing'/.test(route)
+      && !/action === 'load_event_pricing'/.test(route)
+      && !/action === 'event_pricing_summary'/.test(route)
   })())
   t('⛔ nothing spreads the request body into a write', (() => {
     const writes = route.match(/\.(insert|update)\(([^)]*)\)/g) || []
@@ -954,13 +975,15 @@ head('5 · THE WIRING')
     /event_type_id: chosenPrivate \? null : eventTypeId/.test(page)
     && /const chosenPrivate = !!privateTypeId && eventTypeId === privateTypeId/.test(page))
   t('⚠️ the picker is cleared every time the modal opens', /setEventTypeId\(null\)/.test(page))
-  /* ⚠️ THE MOUNT CHANGED (stage 2b): the standalone type control became the "This event" CARD, which
-   * is where five per-event controls now live. Still one mount and one import. */
-  t('🔴 the dashboard mounts the "This event" CARD in one line',
-    /<ThisEventCard/.test(dashPage)
-    && /import \{ ThisEventCard, useEventDeals \} from '@\/components\/dashboard\/ThisEventCard'/.test(dashPage)
-    // ⛔ and the control it replaced is gone from this screen
-    && !/<EventTypeDashboardControl/.test(dashPage))
+  /* ══ 🔴 RE-AIMED TWICE, AND BOTH MOVES ARE THE POINT (5 October 2026) ════════════════════════════
+   * It asserted a standalone `EventTypeDashboardControl` mount; then the "This event" CARD's. Both
+   * are deleted. The event's TYPE is now in the dark event bar, and `Manage event ▾` carries the
+   * switch — which is where what-this-event-IS belongs, beside its status and its venue.
+   * ⛔ BOTH DELETED NAMES ARE ASSERTED ABSENT, so reinstating either without re-deciding fails here. */
+  t('🔴 the dashboard shows the type in the HEADER, and neither deleted control is back',
+    /\{headerEventType\}/.test(dashPage)
+    && !/<EventTypeDashboardControl/.test(dashPage)
+    && !/<ThisEventCard/.test(dashPage))
 
   // ── THE SCREENS SHOW ONLY WHAT WORKS ─────────────────────────────────────────────────────────
   /* ══ 🔴 RE-AIMED: PRICES HAS ARRIVED; ITEMS, STOCK, DEALS AND PRIVATE HAVE NOT ════════════════
@@ -1064,20 +1087,21 @@ head('5 · THE WIRING')
       && /<Toggle on=\{sameSettings\}/.test(grid)
       && /if \(r\.k === 'same-settings'\) \{\s*\n\s*return <div key=\{t\.id\}/.test(grid)
   })())
-  /* ══ 🔴 RE-AIMED AT THE CARD, BECAUSE THE CONTROL MOVED AND IS NOW DELETED (5 October 2026) ══════
-   * These four sentences lived in `EventTypeDashboardControl` in components/manage/EventTypes.tsx.
-   * That component had no caller — the "This event" card took the job over — and it is now deleted
-   * (see the tombstone where it stood). The CLAIM is unchanged and still worth making: a live switch
-   * has to say what changes, that placed orders keep their prices, and that hand changes for this
-   * event survive, and it has to offer the "use it exactly" escape.
-   * ⛔ IT IS AIMED AT THE FILE THAT RENDERS IT NOW. Leaving it aimed at the old file would have made
-   * the deletion look like a regression, and re-aiming it at nothing would have made it vacuous. */
-  t('🔴 the "This event" card\'s confirm says all three things a live switch has to say', (() => {
-    const cardSrc = fs.readFileSync(path.join(REPO, 'components/dashboard/ThisEventCard.tsx'), 'utf8')
-    return /New orders use \{targetName\}’s service settings\./.test(cardSrc)
-      && /Orders already placed keep their prices\./.test(cardSrc)
-      && /for this event stay\./.test(cardSrc)
-      && /Clear my changes and use \{targetName\} exactly/.test(cardSrc)
+  /* ══ 🔴 RE-AIMED **TWICE**, AND THE TRAIL IS THE POINT (5 October 2026) ══════════════════════════
+   * These four sentences lived in `EventTypeDashboardControl` (components/manage/EventTypes.tsx),
+   * then in the "This event" card. Both are deleted. They are now in the type picker behind
+   * `Manage event ▾` on the dashboard page, which is the third file to render them.
+   * 🔴 THE CLAIM HAS NEVER CHANGED and is still worth making: a live switch has to say what changes,
+   * that placed orders keep their prices, and that hand changes for this event survive — and it has
+   * to offer the "use it exactly" escape, which is the only remaining home of "Reset to <type>".
+   * ⛔ RE-AIMING IT AT NOTHING WOULD HAVE MADE IT VACUOUS, which is exactly what happened to two
+   * variants in scripts/event-pricing.cjs this build and is why `buildVariant` now throws. */
+  t('🔴 the type-switch confirm says all three things a live switch has to say', (() => {
+    const src = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+    return /New orders use \{targetName\}&rsquo;s service settings\./.test(src)
+      && /Orders already placed keep their prices\./.test(src)
+      && /for this event stay\./.test(src)
+      && /Clear my changes and use \{targetName\} exactly/.test(src)
   })())
   /* ⚠️ THIS CHECK HAS BEEN REVERSED TWICE, AND THE TRAIL IS THE POINT. Stage 2b: "Standard is first
    * and READ-ONLY". v3 first pass: editable, but saying "Set per van" where the vans disagree. v3
@@ -1117,7 +1141,8 @@ head('5 · THE WIRING')
 head('5b · THE MODAL AND THE CARD')
 {
   const ui = fs.readFileSync(path.join(REPO, 'components/manage/EventTypes.tsx'), 'utf8')
-  const card = fs.readFileSync(path.join(REPO, 'components/dashboard/ThisEventCard.tsx'), 'utf8')
+  /* ⛔ THE `card` LOCAL IS GONE — `components/dashboard/ThisEventCard.tsx` is deleted. Everything
+   * §4 below asserts is now about the dashboard page and the shared event-actions modal. */
   const dashAction = fs.readFileSync(path.join(REPO, 'app/api/dashboard/action/route.ts'), 'utf8')
   const dashPage = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
   const monitor = fs.readFileSync(path.join(REPO, 'supabase/functions/heartbeat-monitor/index.ts'), 'utf8')
@@ -2013,131 +2038,314 @@ head('5b · THE MODAL AND THE CARD')
       && /const effectiveAutoRejectMins:number\|null=resolvedOffline\.autoRejectMins/.test(dashPage)
   })())
 
-  /* ── 🔴 §4 · THE CARD ───────────────────────────────────────────────────────────────────────── */
-  t('🔴 THE CARD SHOWS FOR EVERY TRUCK; only the Event type ROW is conditional', (() => {
-    /* The mount is gated on an EVENT, never on having types; the row inside is gated on types. */
-    return /\{activeEvent && \(\s*\n\s*<div className="mb-3">\s*\n\s*<ThisEventCard/.test(dashPage)
-      && /\{types\.length > 0 && \(\s*\n\s*<Row label="Event type">/.test(card)
-  })())
-  t('🔴 every row writes a PER-EVENT path, and the card names them all', (() => {
-    /* The header's table is the contract. If a row is added that writes a truck column, this check is
-     * where it should become uncomfortable to write. */
-    return /EVERY CONTROL IN THIS CARD IS FOR THIS EVENT ONLY/.test(card)
-      /* ⚠️ THE CODE, NOT THE HEADER. That header lists the tables this card must never write, which
-       * is exactly the comment worth keeping. */
-      && !/from\('trucks'\)/.test(codeOf(card)) && !/truck_vans/.test(codeOf(card))
-  })())
-  t('🔴 the MENU row opens the EXISTING per-event stock screen', /setActiveTab\('stock'\)/.test(dashPage))
-  t('🔴 DEAL TOGGLES WRITE event_deals WITH overridden = true', (() => {
-    const fn = dashAction.slice(dashAction.indexOf("if (action === 'set_event_deal')"),
-      dashAction.indexOf("if (action === 'get_event_deals')"))
-    return /\.upsert\(\{ event_id: eventId, bundle_id: bundleId, active: active !== false, overridden: true \}/.test(fn)
-      && /onConflict: 'event_id,bundle_id'/.test(fn)
-      // 🔴 BOTH IDS PROVED AGAINST THIS TRUCK — event_deals carries no truck_id of its own
-      /* 🔴 AT LEAST TWO SCOPE CHECKS — the event and the bundle. `event_deals` carries no truck_id of
-       * its own, so both parents must be proved to belong to this truck. */
-      && (codeOf(fn).match(/\.eq\('truck_id', truck\.id\)/g) || []).length >= 2
-  })())
-  t('⚠️ a deal with NO row reports the bundle’s own default, not false', (() => {
-    const fn = dashAction.slice(dashAction.indexOf("if (action === 'get_event_deals')"))
-    return /active: row \? row\.active : b\.apply_to_new_events/.test(fn)
-  })())
-  t('🔴 "Reset to <type>" clears only what the card controls, and the deal overrides', (() => {
-    return /action:'assign',eventId:activeEvent\.id,typeId:eventType\?\.id\?\?null,clearOwn:true/.test(dashPage)
-      && /action:'reset_event_deals'/.test(dashPage)
-      // ⛔ and the reset DELETES the overridden rows rather than writing a snapshot
-      && /\.delete\(\)\.eq\('event_id', eventId\)\.eq\('overridden', true\)/.test(dashAction)
-  })())
-  t('🔴 each hand-changed row shows the THIS EVENT tag', (() => {
-    return /THIS EVENT<\/span>/.test(card)
-      && /own=\{buzzerPromptOwn\}/.test(card) && /own=\{takesCashOwn\}/.test(card)
-      && /own=\{orderReadyOwn\}/.test(card) && /own=\{collectionOwn\}/.test(card)
-      && /own=\{offlineOwn\}/.test(card) && /own=\{d\.own\}/.test(card)
-  })())
-  /* ══ 🔴 THE FOOTER COUNTS EXACTLY WHAT RESET CLEARS — NOW INCLUDING PRICES ════════════════════
-   * The rule is the point, not the list: a count that included something the button could not clear
-   * would promise a reset that leaves a THIS EVENT tag behind, and a count that LEFT SOMETHING OUT
-   * would under-report while the button over-delivered. `pricesOwn` joined the list in the same build
-   * that made `assign` with `clearOwn: true` clear the event's price columns AND its typed rows.
-   * 🔴 ASSERTED BOTH WAYS: the flag is in the count, and the route really does clear it. */
-  t('🔴 the footer counts exactly what Reset clears, prices included', (() => {
-    const fn = card.slice(card.indexOf('const ownFlags ='), card.indexOf('const commitType'))
-    return /const ownFlags = \[buzzerPromptOwn, takesCashOwn, orderReadyOwn, collectionOwn, offlineOwn, pricesOwn\]/.test(fn)
-      && /deals\.filter\(d => d\.own\)\.length/.test(fn)
-      /* and the clear really reaches the prices — the columns AND the rows.
-       * ⚠️ READ LOCALLY: the `route` local belongs to an earlier section and is not in scope here. */
-      && (() => {
-        const r = fs.readFileSync(path.join(REPO, 'app/api/event-types/route.ts'), 'utf8')
-        return /patch\.price_own = false/.test(r) && /await deleteEventItemPrices\(eventId\)/.test(r)
-      })()
-  })())
-  /* ══ ✅ RE-AIMED: THERE **IS** A PRICES ROW NOW, AND IT IS FIRST UNDER MENU ════════════════════
-   * This asserted the opposite — "THERE IS NO PRICES ROW YET, and the card says why" — and it was
-   * right until this build: there was no per-event price mechanism in the database at all. There is
-   * one now (`truck_events.price_own` + `event_item_prices`, 20261011), so the row exists and opens
-   * the sheet that writes them.
-   * 🔴 FIRST UNDER MENU, DELIBERATELY: an operator sets prices once before service and checks stock
-   * repeatedly during it, but a wrong price is CHARGED TO A CUSTOMER while a wrong stock figure only
-   * pauses a dish.
-   * ⚠️ AND THE OLD "no per-event price mechanism" PROSE MUST BE GONE, not left adjacent — §37's rule.
-   * It named `event_price_overrides` as non-existent, which is false (it exists, empty, unused). */
-  t('✅ THE PRICES ROW IS FIRST UNDER MENU, and opens the sheet', (() => {
-    const code = codeOf(card)
-    const menu = code.slice(code.indexOf('<SectionHeading>MENU</SectionHeading>'))
-    return /<Row label=\{PRICES_ROW_LABEL\}/.test(menu)
-      /* FIRST: the Prices row precedes the stock row */
-      && menu.indexOf('PRICES_ROW_LABEL') < menu.indexOf('Stock and items sold')
-      && /data-open-prices/.test(menu)
-      && /hint=\{pricesSummary\} own=\{pricesOwn\}/.test(menu)
-      /* ⛔ THE STALE CLAIMS ARE REPLACED, NOT ANNOTATED — §37's rule, and the two sentences that
-       * were actually false are the ones named. ⚠️ NOT a ban on the phrase "NO PRICES ROW": the
-       * comment that RECORDS the change quotes the old banner in order to explain it, and a check
-       * that forbade that would forbid writing down what was corrected. */
-      && !/Per-event prices are a LATER/.test(card)
-      && !/`event_price_overrides` does not exist/.test(card)
-      /* and the correction is on record in this file */
-      && /0\s*\n?\s*rows, read by no code path, unused legacy|rows, read by no code path, unused legacy/.test(card)
-  })())
-  t('🔴 the safety-critical ⚠️ offline instruction travelled with the control', (() => {
-    return /OFFLINE_PROTECTION_EXPLAINER_LEAD/.test(card) && /OFFLINE_PROTECTION_EXPLAINER_BODY/.test(card)
-      && /OFFLINE_AUTO_REJECT_LABEL/.test(card)
-      // ⛔ and the Kitchen tab no longer carries a second copy of the control
-      && !/role="radiogroup" aria-label=\{OFFLINE_PROTECTION_SWITCH_LABEL\}/.test(dashPage)
-  })())
+  /* ══ 🔴 §4 · THE CARD IS DELETED, AND EVERY CONTROL IS BACK WHERE `origin/main` HAS IT ═══════════
+   *                                                                          (5 October 2026)
+   * This section asserted the opposite for three builds: that the "This event" card existed, that it
+   * held five controls, that each had left the Kitchen tab, and that none was duplicated. The card is
+   * gone — it was never agreed, and what it did was MOVE controls away from where operators knew them.
+   *
+   * 🔴 SO THE CLAIM IS INVERTED, NOT DELETED, and it is the proof the brief asks for: every per-event
+   * setting that exists on `origin/main` is reachable on the dashboard again, in the same card, with
+   * the same wording — and no control is in two places.
+   * ⚠️ `origin/main` IS THE BASELINE BECAUSE IT IS WHAT IS LIVE. Comparing against this branch's own
+   * previous tip would only prove the card was removed, not that what replaced it is what operators
+   * already use. */
+  const LIVE_REF = 'origin/main'
+  const liveDash = execFileSync('git', ['show', `${LIVE_REF}:app/dashboard/[token]/page.tsx`],
+    { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
 
-  /* ── 🔴 MOVED, NOT DUPLICATED ─────────────────────────────────────────────────────────────────
-   * Five controls left the Kitchen tab for the card. Each must now exist in EXACTLY ONE place. */
-  t('🔴 FIVE CONTROLS MOVED AND NONE IS DUPLICATED', (() => {
+  t('⛔ THE CARD AND THE SHEET ARE GONE FROM THE REPOSITORY, not merely unmounted',
+    !fs.existsSync(path.join(REPO, 'components/dashboard/ThisEventCard.tsx'))
+    && !fs.existsSync(path.join(REPO, 'components/dashboard/EventPricesSheet.tsx'))
+    /* ⚠️ `codeOf`, BECAUSE THE TOMBSTONES NAME THEM. Both deletions are explained in comments on the
+     * dashboard page — that is the record of what was removed and why — and a raw search found the
+     * explanation and reported the components as still mounted. */
+    && !/ThisEventCard|EventPricesSheet|useEventDeals/.test(codeOf(dashPage)))
+
+  /* ══ 🔴 THE RESTORATION, CONTROL BY CONTROL, AGAINST THE LIVE FILE ════════════════════════════════
+   * Each entry is a line that EXISTS ON `origin/main` and must exist here. ⛔ IT IS AN EXACT-STRING
+   * COMPARISON AGAINST THE LIVE FILE, not a regex of my own writing: the brief asks for "same
+   * position, wording and look as live today", and the only way to assert "same wording" without
+   * re-typing it is to take it from the file that has it. A paraphrase would pass a rewrite. */
+  const RESTORED = [
+    ['Do you take cash?', '<p className="text-sm font-semibold text-slate-800">Do you take cash?</p>'],
+    ['…and its one-line description', '<p className="text-slate-500 text-xs mt-0.5">Splits the payment button into'],
+    ['…and its toggle, with the saving pulse', 'onToggle={()=>saveTakesCashOverride(!effectiveTakesCash)}'],
+    ['Order-ready step', '<p className="text-sm font-semibold text-slate-800">Order-ready step{demoLockChip}</p>'],
+    ['…and its toggle, demo-locked', 'onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}}'],
+    ['Remind me to add a buzzer', '<p className="text-sm font-semibold text-slate-800">Remind me to add a buzzer</p>'],
+    ['…and it renders only for a van with a rack', '{activeEvent&&vanBuzzerCount!=null&&('],
+    ['Offline order protection, with its purpose line', '<p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_PURPOSE}</p>'],
+    ['…and the safety-critical ⚠️ instruction', '{!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>}'],
+    ['…and its two MODE radios, from the shared array', 'role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL}'],
+    ['…and the auto-reject delay, nested under its own mode', "{m.value==='no_auto_accept'&&effectiveOfflineMode==='no_auto_accept'&&("],
+    ['…and the delay picker reads the shared options', '{OFFLINE_AUTO_REJECT_OPTIONS.map(n=><option key={n} value={n}>{offlineAutoRejectLabel(n)}</option>)}'],
+    ['Collection times, untouched', '<p className="text-sm font-semibold text-slate-800">Collection times</p>'],
+    ['…and its route back', 'Use my usual setting'],
+  ]
+  for (const [what, line] of RESTORED) {
+    /* 🔴 BOTH SIDES. A line that is NOT on `origin/main` would make this check about my own text
+     * rather than about the restoration, so the live file is asserted to carry it too. */
+    t(`✅ RESTORED · ${what}`, liveDash.includes(line) && dashPage.includes(line))
+  }
+
+  /* ══ ⛔ AND NOT IN TWO PLACES. Each control appears exactly ONCE in the dashboard's own JSX. ═══════
+   * ⚠️ COUNTED ON `codeOf`, so the tombstone comments that EXPLAIN the restoration — which quote the
+   * control names — cannot satisfy or break it. This repository's recurring failure, in both
+   * directions. */
+  {
     const page = codeOf(dashPage)
-    const once = (re, src) => (src.match(re) || []).length === 1
-    return once(/saveBuzzerPromptOverride/g, page.replace(/const saveBuzzerPromptOverride[\s\S]*?\n  \}/, ''))
-      && once(/onToggle=\{\(\) => onBuzzerPrompt/g, card) === false || true
-  })())
-  t('🔴 …asserted precisely: each moved control appears in the CARD and not in the page’s JSX', (() => {
+    const ONCE = [
+      'Do you take cash?', 'Remind me to add a buzzer',
+      'Order-ready step{demoLockChip}', '{OFFLINE_PROTECTION_PURPOSE}',
+      '<p className="text-sm font-semibold text-slate-800">Collection times</p>',
+    ]
+    for (const needle of ONCE) {
+      const n = page.split(needle).length - 1
+      t(`⛔ exactly ONE copy of "${needle.slice(0, 34)}" on the dashboard (${n})`, n === 1)
+    }
+  }
+
+  /* ⛔ AND THE PER-DEAL SWITCHES WERE A DUPLICATE, SO THEY ARE GONE FROM THE DASHBOARD ENTIRELY.
+   * `origin/main` — the live site — has them in Manage › Schedule on the event itself, through
+   * `update_event_deal`. That is still their only home. The three dashboard actions the card needed
+   * are deleted, and this asserts BOTH halves: gone from the dashboard, present in Manage. */
+  t('⛔ the per-deal switches are gone from the dashboard — they were a duplicate of Manage’s',
+    !/set_event_deal|get_event_deals|reset_event_deals/.test(codeOf(dashAction))
+    && !/set_event_deal|reset_event_deals/.test(codeOf(dashPage))
+    && !/event_deals/.test(codeOf(dashPage)))
+  t('✅ …and Manage › Schedule still owns them, as it does on the live site',
+    /action === 'update_event_deal'/.test(fs.readFileSync(path.join(REPO, 'app/api/manage/route.ts'), 'utf8'))
+    && /action === 'update_event_deal'/.test(execFileSync('git', ['show', `${LIVE_REF}:app/api/manage/route.ts`],
+      { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })))
+
+  /* 🔴 THE WRITERS ARE UNTOUCHED, WHICH IS WHY THE BEHAVIOUR UNDERNEATH IS UNCHANGED. Each control
+   * still writes a per-event `truck_events` column and still resolves
+   * `event hand change ?? event type ?? van/truck default`. The card only ever moved the JSX. */
+  t('🔴 every per-event writer is still here, and still writes truck_events only', (() => {
     const page = codeOf(dashPage)
-    /* The page keeps the WRITERS (they are called by the card's callbacks) and loses the JSX. */
-    const jsxGone = !/Remind me to add a buzzer/.test(page)
-      && !/Do you take cash\?/.test(page)
-      && !/Order-ready step\{demoLockChip\}/.test(page)
-      && !/\{OFFLINE_PROTECTION_PURPOSE\}/.test(page)
-    /* ⚠️ THE CARD'S LABELS ARE CONSTANTS NOW (v3), not literals. They were five retyped short names —
-     * 'Buzzers', 'Take cash', '“Mark ready” step', 'Offline protection', 'Collection times' — so the
-     * same five settings read one way here, another in the modal and a third in Settings. */
-    const inCard = ['collection_interval_mins', 'order_ready', 'takes_cash', 'offline_protection', 'buzzer_prompt']
-      .every(id => card.includes(`label={SERVICE_SETTING_LABELS.${id}}`))
-    const writersKept = /const saveBuzzerPromptOverride=/.test(page)
+    return /const saveBuzzerPromptOverride=/.test(page)
       && /const saveTakesCashOverride=/.test(page)
       && /const setOrderReadyOverride=/.test(page)
       && /const toggleOfflineProtection=/.test(page)
       && /const saveCollectionIntervals=/.test(page)
-    return jsxGone && inCard && writersKept
+      /* ⛔ AND THE TYPE RESOLUTION IS STILL IN THE CHAIN — the half of the card worth keeping. */
+      && /resolveOfflineWithType\(/.test(page)
+      && /resolvePaidStep\(truck,activeEvent,eventType,vanTakesCash\)/.test(page)
   })())
-  /* ⚠️ COLLECTION TIMES IS THE ONE THAT HANDS OVER rather than editing in place, because the existing
-   * box owns the PAIR and the only route back. Asserted so the difference is on record. */
-  t('⚠️ Collection times hands over to the existing box, which keeps the pair and the revert',
-    /onOpenCollection/.test(card)
-    && /id="collection-times-box"/.test(dashPage)
-    && /Use my usual setting/.test(dashPage))
+
+  /* ══ 🔴 WHAT MOVED TO THE HEADER: THE EVENT TYPE, AND THE PRIVATE LINK ════════════════════════════
+   * Standard shows NOTHING — a label reading "Standard" on every bar would be a word carrying no
+   * information in the one strip where space is scarce. */
+  /* ══ 🔴 RE-AIMED THE SAME DAY (Dominic, 5 October 2026) ══════════════════════════════════════════
+   * The label beside Live / Not started first carried THREE cases: nothing for Standard, a purple lock
+   * for a private event, a colour dot and name for a custom type. The private case moved INTO THE
+   * TITLE — "🔒 <name> — Private event · 11:00–14:00" — so the label beside the status returns `null`
+   * for a private event too: two locks on one bar is the same fact twice in the strip where space is
+   * scarcest.
+   * ⛔ SO IT NOW RENDERS SOMETHING FOR EXACTLY ONE CASE: a custom type. Asserted as all three arms. */
+  t('🔴 the label beside Live is drawn for a CUSTOM TYPE ONLY — nothing for Standard or private', (() => {
+    const page = codeOf(dashPage)
+    const fn = page.slice(page.indexOf('const headerEventType=(()=>{'), page.indexOf('const[typePicker,'))
+    return /\{headerEventType\}/.test(page) && fn.length > 100
+      /* Standard ⇒ null, by both arms: no event, or no type row. */
+      && /if\(!activeEvent\)return null/.test(fn)
+      && /if\(!eventType\)return null/.test(fn)
+      /* private ⇒ null HERE, because the title says it */
+      && /if\(eventIsPrivate\)return null/.test(fn)
+      /* a custom type ⇒ its colour dot, from the SAME derivation the grid uses */
+      && /colourFor\(idx\)/.test(fn) && /STANDARD_COLOUR/.test(fn)
+  })())
+  /* 🔴 AND THE TITLE IS WHERE A PRIVATE EVENT'S IDENTITY LIVES NOW — with NO venue in that arm. */
+  t('🔴 a private event\'s TITLE is 🔒 + name + "Private event", and carries no venue', (() => {
+    const page = codeOf(dashPage)
+    const a = page.indexOf('{eventIsPrivate?(<>')
+    if (a < 0) return false
+    const arm = page.slice(a, page.indexOf('):(<>', a))
+    return arm.length > 80
+      && /\{PRIVATE_PUBLIC_NAME\}/.test(arm) && /\{privateName/.test(arm) && /text-purple-300/.test(arm)
+      && !/venue_name|fmtVenue|\btown\b/.test(arm)
+  })())
+  t('🔴 `Manage event ▾` gains Change event type… and, for a private event, the link', (() => {
+    const page = codeOf(dashPage)
+    const modal = fs.readFileSync(path.join(REPO, 'components/shared/EventActionsModal.tsx'), 'utf8')
+    return /onChangeEventType=\{eventTypeList\.length>0\?/.test(page)
+      && /onPrivateLink=\{eventIsPrivate\?/.test(page)
+      && /Change event type…/.test(modal)
+      && /Private link &amp; QR code/.test(modal)
+      /* ⚠️ BOTH ROWS ARE OPTIONAL PROPS, so the KDS — the modal's other caller — renders unchanged. */
+      && /onChangeEventType\?: \(\) => void/.test(modal)
+      && /onPrivateLink\?: \(\) => void/.test(modal)
+  })())
+  /* ⛔ AND THE TWO PRIVACY CONFIRMS ARE ON THE SWITCH, from the one copy module that owns them. */
+  t('⛔ switching into or out of Private confirms, with the shared sentences', (() => {
+    const page = codeOf(dashPage)
+    return /CONFIRM_TO_PRIVATE/.test(page) && /CONFIRM_FROM_PRIVATE/.test(page)
+      && /const toPrivate=typePending!==undefined&&targetIsPrivate&&!eventIsPrivate/.test(page)
+      && /const fromPrivate=typePending!==undefined&&!targetIsPrivate&&eventIsPrivate/.test(page)
+  })())
+  /* 🔴 THE SERVICE CONFIRM'S THREE SENTENCES AND THE "use it exactly" ESCAPE SURVIVED THE CARD. They
+   * are the only remaining home of what the card called "Reset to <type>". */
+  t('🔴 the type-switch confirm still says all three things, and offers the clear', (() => {
+    return /New orders use \{targetName\}&rsquo;s service settings\./.test(dashPage)
+      && /Orders already placed keep their prices\./.test(dashPage)
+      && /Your changes for this event stay\./.test(dashPage)
+      && /Clear my changes and use \{targetName\} exactly/.test(dashPage)
+      && /action:'assign',eventId:activeEvent\.id,typeId,clearOwn/.test(codeOf(dashPage))
+  })())
+  /* ⛔ AND THE HEADER'S ORDER LINK / QR GIVE THE **PRIVATE** LINK ON A PRIVATE EVENT, NEVER THE
+   * PUBLIC ONE — and nothing at all if the token cannot be read. Falling back to `/o/<slug>` is how a
+   * private event's guests end up on a public page. */
+  t('⛔ Order link and QR use the PRIVATE link on a private event, and never fall back', (() => {
+    const page = codeOf(dashPage)
+    return /const customerOrderUrl = eventIsPrivate \? privateOrderUrl : publicOrderUrl/.test(page)
+      /* both handlers read the ONE value */
+      && (page.match(/const orderUrl=customerOrderUrl/g) || []).length === 2
+      /* ⛔ no `?? publicOrderUrl` anywhere near it */
+      && !/privateOrderUrl *\?\? *publicOrderUrl/.test(page)
+      && /action:'private_link',id:activeEvent\.id/.test(page)
+  })())
+
+  /* ══ 🔴 WHAT MOVED TO MENU & STOCK: A PER-EVENT PRICE COLUMN, ON EVERY PLAN ═══════════════════════ */
+  t('🔴 the Price column is before Item limit, and its figures come from the SERVER', (() => {
+    const page = codeOf(dashPage)
+    const head = page.slice(page.indexOf('{EVENT_PRICE_COLUMN_LABEL}'), page.indexOf('>Available<'))
+    return /\{EVENT_PRICE_COLUMN_LABEL\}/.test(page)
+      && head.length > 0 && head.includes('Item limit')
+      /* the value is the route's `charged` map, never computed here */
+      /* ⚠️ RE-AIMED WITH THE EDIT MODE (5 October 2026): the shown figure is now the operator's
+       * UNSAVED intent first, then the server's charged figure, then the menu. All three come from
+       * state the server filled or the operator typed — none is computed from a rule here. */
+      && /const serverCharged=\(itemId\?eventCharged\[itemId\]:undefined\)\?\?item\.price/.test(page)
+      && /const shownPrice=pending===undefined\?serverCharged:\(pending===null\?fallbackPrice:pending\)/.test(page)
+      && /action:'event_item_prices'/.test(page)
+      /* ⛔ AND NO PRICE ARITHMETIC ON THIS SCREEN. `applyPriceRule`/`priceForItem`/`priceAtEvent` are
+       * the server's; the page imports only the shared VALIDATOR. */
+      && !/applyPriceRule|priceForItem|priceAtEvent/.test(page)
+      && /import \{ cleanTypedPrice \} from '@\/lib\/event-pricing\/price'/.test(dashPage)
+  })())
+  /* ══ 🔴 THE COLUMN IS READ-ONLY UNTIL "✎ Edit prices" (Dominic, 5 October 2026) ═══════════════════
+   * ⛔ IT WAS AN ALWAYS-OPEN INPUT, and that was the defect: prices change rarely and are the one
+   * value on this card a customer is charged, yet they sat in the same editable box as a stock number
+   * an operator edits twenty times a service.
+   * 🔴 ASSERTED AS BOTH STATES AND THE BOUNDARY BETWEEN THEM, because "read-only" is only true if
+   * there is nothing to focus: the normal state is a `<p>`, not a disabled input. */
+  t('🔴 NORMAL STATE: the price is plain right-aligned text with £, not a box and not focusable', (() => {
+    const page = codeOf(dashPage)
+    return /<p data-event-price className=\{`w-20 text-right text-sm font-bold tabular-nums/.test(page)
+      && /£\{shownPrice\.toFixed\(2\)\}/.test(page)
+      /* ⛔ THE INPUT EXISTS ONLY INSIDE THE EDIT ARM, and the claim is STRUCTURAL: within the price
+       * column's own wrapper, the input comes first and the `<p>` is the else arm.
+       * ⚠️ SLICED FROM THE WRAPPER, NOT FROM THE FIRST `{priceEditing?(` IN THE FILE — that one is the
+       * card HEADER's button pair, 14,000 characters earlier, and anchoring on it made the window a
+       * number to be tuned rather than a boundary. */
+      && (() => {
+        const a = page.indexOf('className="flex flex-col items-end gap-0.5 w-20 shrink-0"')
+        if (a < 0) return false
+        const col = page.slice(a, page.indexOf('<div className="flex flex-col items-center gap-0.5 w-16 shrink-0">', a))
+        return col.length > 400
+          && col.indexOf('{priceEditing?(') >= 0
+          && col.indexOf('aria-label={`Price for ${item.name} at this event`}') > col.indexOf('{priceEditing?(')
+          && col.indexOf('<p data-event-price') > col.indexOf('):(')
+      })()
+  })())
+  t('🔴 ONE BUTTON OPENS EDIT MODE, and in edit mode it becomes Cancel + Save prices', (() => {
+    const page = codeOf(dashPage)
+    return /data-price-edit-open/.test(page) && /\{EVENT_PRICE_EDIT\}/.test(page)
+      && /data-price-edit-actions/.test(page)
+      && /\{EVENT_PRICE_CANCEL\}/.test(page) && /EVENT_PRICE_SAVE/.test(page)
+      /* ⚠️ THE PHONE RULE: full width under the title below `sm`, top-right from `sm` up. */
+      && /className="w-full sm:w-auto bg-slate-100/.test(page)
+      /* ⚠️ AND IT IS DISABLED UNTIL 20261011 IS APPLIED — an editor whose save would 400. */
+      && /disabled=\{!priceReady\|\|!activeEvent\}/.test(page)
+  })())
+  t('🔴 the blue edit note is shown, with the live line only for an `open` event', (() => {
+    const page = codeOf(dashPage)
+    return /data-price-edit-note/.test(page)
+      && /\{EVENT_PRICE_EDIT_NOTE\}/.test(page)
+      && /\{eventPriceLive&&<p[^>]*>\{EVENT_PRICE_LIVE_NOTE\}<\/p>\}/.test(page)
+  })())
+  /* ⛔ THE NOTE'S SECOND SENTENCE IS A PROMISE THIS CHECK KEEPS. Four controls must be disabled in
+   * edit mode: both limit boxes and both Available switches. */
+  t('⛔ item limits and availability are LOCKED in edit mode — all four controls', (() => {
+    const page = codeOf(dashPage)
+    return /const stockLocked=catClosed\|\|priceEditing/.test(page)
+      && /placeholder="–" disabled=\{stockLocked\}/.test(page)
+      && /<Toggle on=\{isAvailable\} disabled=\{stockLocked\}/.test(page)
+      && /placeholder="∞" disabled=\{priceEditing\}/.test(page)
+      && /<Toggle on=\{catStock\?\.available\?\?true\} disabled=\{priceEditing\}/.test(page)
+  })())
+  t('🔴 a changed price is a blue box with an ×, and × CLEARS it (a delete, not a £0)', (() => {
+    const page = codeOf(dashPage)
+    return /border-blue-300 bg-blue-50 text-blue-700/.test(page)
+      && /setPricePending\(p=>\(\{\.\.\.p,\[itemId\]:null\}\)\)/.test(page)
+      /* 🔴 THE LINE UNDER THE NAME NAMES THE **FALLBACK** AND THE TYPE, not the menu price always:
+       * an event price that departs from a Festival rule departs from the FESTIVAL price. */
+      && /\{eventPriceOwnNote\(fallbackPrice,eventTypeName\)\}/.test(page)
+      && /const fallbackPrice=\(itemId\?eventFallback\[itemId\]:undefined\)\?\?item\.price/.test(page)
+  })())
+  /* ══ 🔴 NOTHING SAVES UNTIL SAVE, AND CANCEL MAKES NO REQUEST ════════════════════════════════════
+   * This is the property the whole two-mode design exists for, and it is asserted three ways: the
+   * edit writes to `pricePending` (never the network), Cancel throws it away, and Escape is Cancel. */
+  t('🔴 editing writes to `pricePending` only — no request until Save', (() => {
+    const page = codeOf(dashPage)
+    const editArm = page.slice(page.indexOf('{priceEditing?('), page.indexOf('<p data-event-price'))
+    return editArm.length > 400
+      && /setPricePending\(p=>\(\{\.\.\.p,\[itemId\]:next\}\)\)/.test(editArm)
+      /* ⛔ NO fetch ANYWHERE IN THE EDIT ARM. */
+      && !/fetch\(/.test(editArm)
+  })())
+  t('🔴 Cancel discards everything, and Escape is Cancel', (() => {
+    const page = codeOf(dashPage)
+    return /const cancelPriceEdit=useCallback\(\(\)=>\{\s*setPriceEditing\(false\);setPricePending\(\{\}\);setPriceDrafts\(\{\}\)/.test(page)
+      && /else if\(e\.key==='Escape'\)\{skipPriceBlurRef\.current=true;e\.currentTarget\.blur\(\);cancelPriceEdit\(\)\}/.test(page)
+      && /onClick=\{cancelPriceEdit\}/.test(page)
+  })())
+  t('🔴 Save sends ONE request, with only the items that actually moved', (() => {
+    const page = codeOf(dashPage)
+    /* ⚠️ THE END ANCHOR IS THE NEXT DECLARATION, AND IT HAS TO EXIST. `headerIsPrivate` was the first
+     * attempt and it had already been renamed `eventIsPrivate` — `indexOf` returned −1, the slice ran
+     * to the end of the file, and the "one fetch" count was over the whole component. The slice is now
+     * bounded by a string that is asserted present. */
+    const end = page.indexOf('const headerEventType=')
+    if (end < 0) return false
+    const fn = page.slice(page.indexOf('const savePriceEdit=useCallback'), end)
+    return /action:'save_event_item_prices',eventId:activeEventId,prices/.test(page)
+      /* ⚠️ PRESS-AND-LEAVE, OR THE SAME PRICE, IS DROPPED BEFORE THE REQUEST — so "saves nothing"
+       * is true of the network, not merely of the database. */
+      && /if\(shown!==undefined&&Math\.abs\(value-shown\)<0\.005\)continue/.test(page)
+      && /if\(value===null\)\{ if\(own!==undefined\)prices\[itemId\]=null; continue \}/.test(page)
+      && /if\(Object\.keys\(prices\)\.length===0\)\{cancelPriceEdit\(\);return\}/.test(page)
+      && (fn.match(/fetch\(/g) || []).length <= 1
+  })())
+  /* ⛔ AND THE PER-ITEM INSTANT WRITE IS GONE FROM THE ROUTE, replaced by the batch — so there is no
+   * second path that could save without Save. */
+  t('⛔ `set_event_item_price` is gone; the batch `save_event_item_prices` replaces it', (() => {
+    const r = fs.readFileSync(path.join(REPO, 'app/api/event-types/route.ts'), 'utf8')
+    return /action === 'save_event_item_prices'/.test(r)
+      && !/action === 'set_event_item_price'/.test(r)
+      && /const ALL_PLAN_ACTIONS = new Set\(\['event_item_prices', 'save_event_item_prices'\]\)/.test(r)
+  })())
+  t('🔴 …and the card now says prices in its description', (() => {
+    const copy = fs.readFileSync(path.join(REPO, 'lib/copy/serviceSettings.ts'), 'utf8')
+    return /Prices, item limits and availability for this event only\. Changes take effect immediately\./.test(copy)
+      && /\{EVENT_ITEMS_CARD_DESCRIPTION\}/.test(dashPage)
+  })())
+  /* ⛔ EVERY PLAN. The two actions are exempt from the Max gate, and the column carries no plan test
+   * of its own — which is what makes "all plans" true rather than claimed. */
+  t('⛔ the Price column has no plan gate on the screen, and its actions are plan-exempt', (() => {
+    const page = codeOf(dashPage)
+    const col = page.slice(page.indexOf('{EVENT_PRICE_COLUMN_LABEL}'), page.indexOf('>Available<'))
+    const r = fs.readFileSync(path.join(REPO, 'app/api/event-types/route.ts'), 'utf8')
+    return !/canAccess|hasFeature|plan/.test(col)
+      && /const ALL_PLAN_ACTIONS = new Set\(\['event_item_prices', 'save_event_item_prices'\]\)/.test(r)
+  })())
+  /* ⚠️ THE ITEM'S ID REACHES THE DASHBOARD AND **ONLY** THE DASHBOARD. The customer payload must not
+   * gain a field — it is the most-requested endpoint in the product. */
+  t('⚠️ the item id is emitted for ?dashboard=1 only, so the customer payload is byte-identical', (() => {
+    const menu = fs.readFileSync(path.join(REPO, 'app/api/menu/[truckId]/route.ts'), 'utf8')
+    return /\.\.\.\(isDashboard \? \{ id: i\.id \} : \{\}\),/.test(menu)
+  })())
 
   /* ── 🔴 THE LINE-LEVEL MULTISET DIFF ON THE DASHBOARD PAGE ────────────────────────────────────
    * 🔴 THIS BUILD DELIBERATELY REMOVES LINES from that file — five controls moved out of it. So the
@@ -2199,6 +2407,29 @@ head('5b · THE MODAL AND THE CARD')
        * a single very long line. The line left and a longer one arrived; both halves are asserted
        * below — the prop must be passed at both mounts. */
       /^<div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">\{(pending|confirmed)Orders\.map/,
+      /* ══ 🔴 TWO MORE ACCOUNTED EDITS (5 October 2026) ═══════════════════════════════════════════
+       * ① THE ORDER-LINK CONSTANT SPLIT IN TWO. It was one expression returning `/o/<slug>`; a
+       * PRIVATE event's Order link and QR must give `/p/<token>` and must NOT fall back to the public
+       * page, so it is now `publicOrderUrl` plus a private-aware `customerOrderUrl`. The companion
+       * check below asserts both halves AND the no-fallback property — this is the one lost line in
+       * this build whose replacement, if it were wrong, would publish an address. */
+      /^const customerOrderUrl = truck\?\.slug \? scanUrl\(truck\.slug, customerUrlBase\) : null$/,
+      /* ② THE MENU PRICE BESIDE AN ITEM'S NAME IS GONE (Dominic, 5 October). Menu & Stock gained a
+       * Price column showing what customers pay AT THIS EVENT; the figure beside the name was the
+       * MENU price, so the row carried two numbers and the more prominent one was not the one being
+       * charged. The name line survives without the span. */
+      /* ⚠️ IT IS **ONE** LINE, NOT TWO. The reporter prints `l.slice(0, 100)`, which truncated it at
+       * `…{item.name}<span ` — so the first attempt anchored on a line ending there and matched
+       * nothing. A truncated report is not the line. */
+      /^<p className=\{`font-bold text-sm \$\{!isAvailable\?'text-red-500':'text-slate-800'\}`\}>\{item\.name\}<span className="text-slate-600 font-normal ml-1\.5">£\{item\.price\.toFixed\(2\)\}<\/span><\/p>$/,
+      /* ③ FOUR CONTROLS GAINED A `disabled` (Dominic, 5 October 2026). Item limits and Available are
+       * LOCKED while prices are being edited — the blue note under the header promises it, and the
+       * "⛔ item limits and availability are LOCKED in edit mode" assertion above is the companion
+       * that proves all four really carry it. ⚠️ ONLY THE `disabled` CHANGED on each line. */
+      /^<input type="number" inputMode="numeric" min="0" placeholder="–" disabled=\{catClosed\}$/,
+      /^<span className="w-12 shrink-0 flex justify-center"><Toggle on=\{isAvailable\} disabled=\{catClosed\} onToggle=\{\(\)=>updateStock\(item\.name,!isAvailable,stock\?\.stock_count\?\?null,cat,!!stock\?\.no_item_cap\)\}\/><\/span>$/,
+      /^<input type="number" inputMode="numeric" min="0" placeholder="∞"$/,
+      /^<span className="w-12 shrink-0 flex justify-center"><Toggle on=\{catStock\?\.available\?\?true\} onToggle=\{\(\)=>updateCategoryAvailable\(cat,!\(catStock\?\.available\?\?true\)\)\}\/><\/span>$/,
     ]
     /* 🔴 THE COMPANION CHECK FOR THE ONE ACCOUNTED EDIT. An entry on that list excuses a lost line
      * only while its replacement exists; without this, deleting the call outright would read as
@@ -2214,6 +2445,16 @@ head('5b · THE MODAL AND THE CARD')
         && (flat.match(/vanTakesCash=\{vanTakesCash\}/g) || []).length >= 3
         /* and the panel does too */
         && /<AddOrderPanel/.test(nowPage)
+        /* ① THE SPLIT ORDER LINK, BOTH HALVES AND THE NO-FALLBACK PROPERTY. ⛔ The last clause is the
+         * load-bearing one: `privateOrderUrl ?? publicOrderUrl` would hand a wedding's guests the
+         * truck's public page, which is the leak this edit exists to close. */
+        && /const publicOrderUrl = truck\?\.slug \? scanUrl\(truck\.slug, customerUrlBase\) : null/.test(nowPage)
+        && /const customerOrderUrl = eventIsPrivate \? privateOrderUrl : publicOrderUrl/.test(nowPage)
+        && !/privateOrderUrl *\?\? *publicOrderUrl/.test(nowPage)
+        /* ② THE NAME LINE SURVIVES WITHOUT THE PRICE, and the Price column is what carries it now. */
+        && /<p className=\{`font-bold text-sm \$\{!isAvailable\?'text-red-500':'text-slate-800'\}`\}>\{item\.name\}<\/p>/.test(nowPage)
+        && !/\{item\.name\}<span className="text-slate-600 font-normal ml-1\.5">/.test(nowPage)
+        && /\{EVENT_PRICE_COLUMN_LABEL\}/.test(nowPage)
     })())
     const unexplained = gone.filter(l => !ALLOWED.some(re => re.test(l)))
     if (unexplained.length) {
@@ -2542,14 +2783,24 @@ function variants() {
     must('V17 🔴 a control goes back into the label column, where it belongs to no type',
       inLabel !== uiSrc && labelPredicate(uiSrc) && !labelPredicate(inLabel))
 
-    // V18 — the deal write drops `overridden: true`
-    const dealSrc = fs.readFileSync(path.join(REPO, 'app/api/dashboard/action/route.ts'), 'utf8')
+    /* ══ V18 — RE-AIMED AT MANAGE, WHICH IS WHERE THE WRITE LIVES (5 October 2026) ════════════════
+     * ⛔ AND THIS VARIANT CAUGHT ITS OWN STALENESS, WHICH IS WHY IT IS WORTH READING. It mutated
+     * `set_event_deal` in app/api/dashboard/action/route.ts — the deleted "This event" card's deal
+     * write, which duplicated Manage's. With that handler gone the `slice` returned an empty string,
+     * the predicate was false for BOTH source and mutant, and the variant reported MUST FAIL BUT
+     * PASSED. The tally said so; nothing else would have.
+     * 🔴 THE PROPERTY IS UNCHANGED AND STILL LOAD-BEARING: a per-event deal row must carry
+     * `overridden = true`, or a later change to the bundle's `apply_to_new_events` default silently
+     * reaches an event the operator has already decided about. `update_event_deal` in
+     * app/api/manage/route.ts is the one remaining writer, and that is what this now mutates. */
+    const dealSrc = fs.readFileSync(path.join(REPO, 'app/api/manage/route.ts'), 'utf8')
     const dealPredicate = (src) => {
-      const fn = src.slice(src.indexOf("if (action === 'set_event_deal')"),
-        src.indexOf("if (action === 'get_event_deals')"))
+      const at = src.indexOf("action === 'update_event_deal'")
+      if (at < 0) return false
+      const fn = src.slice(at, at + 2500)
       return /overridden: true/.test(fn)
     }
-    const noOverride = dealSrc.replace('active: active !== false, overridden: true }', 'active: active !== false }')
+    const noOverride = dealSrc.replace('overridden: true', 'overridden: false')
     must('V18 🔴 a per-event deal is written without `overridden`, so a later default change overwrites it',
       noOverride !== dealSrc && dealPredicate(dealSrc) && !dealPredicate(noOverride))
 
@@ -2874,15 +3125,23 @@ function variants() {
       'function Toggle() { return null }\nconst FOOD_EMOJI_CATEGORIES = [')
     must('V29b 🔴 page.tsx defines its own switch again, so Settings and the modal can diverge',
       forked !== pageSrc2 && sharedPredicate(pageSrc2, primSrc2) && !sharedPredicate(forked, primSrc2))
-    /* V29c — the dashboard card goes back to its own switch, the odd one out on its own screen. */
-    const cardSrc = fs.readFileSync(path.join(REPO, 'components/dashboard/ThisEventCard.tsx'), 'utf8')
-    const cardPredicate = (src) =>
-      /import \{ Toggle \} from '@\/components\/dashboard\/OrderCard'/.test(src)
-      && !/w-\[42px\]/.test(codeOf(src)) && !/bg-orange-600/.test(codeOf(src))
-    const cardForked = cardSrc.replace('  return <Toggle on={on} onToggle={onToggle} disabled={disabled} ariaLabel={label} />',
-      '  return <button className="relative w-[42px] h-6 rounded-full bg-orange-600" />')
-    must('V29c 🔴 the dashboard card re-styles its switch, orange where the whole screen is green',
-      cardForked !== cardSrc && cardPredicate(cardSrc) && !cardPredicate(cardForked))
+    /* ══ V29c — RE-AIMED AT THE DASHBOARD PAGE (5 October 2026) ═══════════════════════════════════
+     * It mutated the deleted "This event" card's `Toggle` wrapper. The card is gone and its four
+     * controls are back as their own cards on the dashboard's Settings tab, each using that screen's
+     * OWN `Toggle` — so the property worth guarding has moved with them: the restored controls must
+     * use the shared switch and must not re-style it.
+     * ⛔ THE OLD FORM WOULD HAVE THROWN ENOENT, which is the honest failure; it is re-aimed rather
+     * than deleted because the claim still has a subject. */
+    const dashSrc = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
+    const dashPredicate = (src) =>
+      /<Toggle on=\{effectiveTakesCash\}/.test(src)
+      && /<Toggle on=\{isDemo\?false:effectiveOrderReady\}/.test(src)
+      && /<Toggle on=\{effectiveBuzzerPrompt\}/.test(src)
+      && /<Toggle on=\{isDemo\?false:effectiveOfflineProtection\}/.test(src)
+    const dashForked = dashSrc.replace('<Toggle on={effectiveTakesCash} onToggle={()=>saveTakesCashOverride(!effectiveTakesCash)} disabled={isOffline||!activeEvent}/>',
+      '<button className="relative w-[42px] h-6 rounded-full bg-orange-600" />')
+    must('V29c 🔴 a restored dashboard control re-styles its switch instead of using the shared one',
+      dashForked !== dashSrc && dashPredicate(dashSrc) && !dashPredicate(dashForked))
   }
 
   console.log(`\n  ${vpass + vfail} variants · ${vpass} failed as required · ${vfail} wrongly passed`)

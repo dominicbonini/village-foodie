@@ -274,33 +274,66 @@ head('1b · TYPED PRICES BEAT THE RULE, AND ARE NEVER ROUNDED')
     P.cleanTypedPrice('') === null && P.cleanTypedPrice(null) === null
     && P.cleanTypedPrice(0) === 0 && P.cleanTypedPrice('-1') === null)
 
-  /* ── PRECEDENCE: event ?? type ?? menu ────────────────────────────────────────────────────────── */
+  /* ══ 🔴 PRECEDENCE, RE-AIMED: IT IS **PER ITEM** NOW (5 October 2026) ═══════════════════════════
+   *     the event's own price FOR THAT ITEM  ??  the type's price (typed ?? rule)  ??  the menu
+   *
+   * ⛔ THE WHOLE-EVENT `price_own` RULE IS GONE, and so is `resolvePricing`, which took the event's
+   * four columns. The old assertions here proved decision 4 — "own prices REPLACE the type's whole" —
+   * and that decision is reversed: an event price now overrides ONLY its own item and every other item
+   * keeps following the type. So these checks are rewritten rather than adjusted, and the one that
+   * mattered most is the NEW one: a type's typed price for a DIFFERENT item still comes through.
+   * ⚠️ `resolveEventPricing` TAKES NO EVENT ROW AT ALL, which is what makes "the event's rule columns
+   * are unread" a property of the signature rather than a promise in a comment. */
   const typePricing = { price_change_on: true, price_mode: 'add_pct', price_amount: 10, price_rounding: 'none' }
-  const eventPricing = { price_own: true, price_mode: 'add_pct', price_amount: 20, price_rounding: 'none' }
+  const ev = (eventTyped, type, typeTyped) => P.resolveEventPricing(eventTyped, type, typeTyped)
   t('🔴 THE SWITCH OFF MEANS MENU PRICES EXACTLY — the saved rule is kept and ignored',
-    P.resolvePricing(null, {}, { ...typePricing, price_change_on: false }, {}).setup === null)
+    ev({}, { ...typePricing, price_change_on: false }, {}).typeSetup === null
+    && P.priceAtEvent(1000, ITEM.margherita, ev({}, { ...typePricing, price_change_on: false }, {})).pence === 1000)
   t('🔴 the switch ON applies the type’s rule',
-    P.priceForItem(1000, P.resolvePricing(null, {}, typePricing, {}).setup, ITEM.margherita) === 1100)
-  t('🔴 THE EVENT’S OWN PRICES BEAT THE TYPE’S (+20%, not +10%)',
-    P.priceForItem(1000, P.resolvePricing(eventPricing, {}, typePricing, {}).setup, ITEM.margherita) === 1200)
-  /* 🔴 DECISION 4: own prices REPLACE the type's WHOLE. Not merged — so a typed price the TYPE has and
-   * the EVENT does not must NOT come through. The copy happens once, in the UI, at the moment of
-   * choosing; merging here would mean an operator who REMOVED a price silently got the type's back. */
-  t('🔴 …AND REPLACE THEM WHOLE: the type’s typed prices do NOT leak into an event with its own',
-    P.priceForItem(1000, P.resolvePricing(eventPricing, {}, typePricing, { [ITEM.margherita]: 3 }).setup, ITEM.margherita) === 1200)
-  t('⚠️ …and the basis says which, so an order line can be audited',
-    P.resolvePricing(eventPricing, {}, typePricing, {}).basis === 'event'
-    && P.resolvePricing(null, {}, typePricing, {}).basis === 'event_type'
-    && P.resolvePricing(null, {}, null, {}).basis === null)
+    P.priceAtEvent(1000, ITEM.margherita, ev({}, typePricing, {})).pence === 1100)
+  t('🔴 THE EVENT’S OWN PRICE FOR AN ITEM BEATS THE TYPE’S RULE (£12, not £11)',
+    P.priceAtEvent(1000, ITEM.margherita, ev({ [ITEM.margherita]: 12 }, typePricing, {})).pence === 1200)
+  /* 🔴 THE REVERSAL OF DECISION 4, ASSERTED FROM BOTH SIDES. An event price is a statement about ONE
+   * dish; everything else must go on following the type. The old rule's whole point was the opposite,
+   * so this is the check that would catch a revert. */
+  t('🔴 …AND ONLY THAT ITEM: every other item still takes the type’s rule',
+    P.priceAtEvent(1000, ITEM.pepperoni, ev({ [ITEM.margherita]: 12 }, typePricing, {})).pence === 1100)
+  t('🔴 …and the type’s TYPED price for another item still comes through, unmerged-no-longer',
+    P.priceAtEvent(1000, ITEM.pepperoni, ev({ [ITEM.margherita]: 12 }, typePricing, { [ITEM.pepperoni]: 3 })).pence === 300)
+  t('🔴 an event price is never ruled and never rounded (£7.45 under "+50%, always round up")',
+    P.priceAtEvent(1000, ITEM.margherita,
+      ev({ [ITEM.margherita]: 7.45 }, { price_change_on: true, price_mode: 'add_pct', price_amount: 50, price_rounding: 'up_1' }, {})).pence === 745)
+  t('🔴 an event price of £0 is honoured — `??`, never `||`',
+    P.priceAtEvent(1000, ITEM.margherita, ev({ [ITEM.margherita]: 0 }, typePricing, {})).pence === 0)
+  /* ⚠️ THE BASIS IS COMPUTED FROM THE **NUMBER**, NOT FROM WHICH BRANCH WON — which is the byte-identity
+   * promise: an event price that happens to equal the menu price has not MOVED, so no line is stamped
+   * and the audit field is never a claim about nothing. */
+  t('⚠️ the basis says which, so an order line can be audited',
+    P.priceAtEvent(1000, ITEM.margherita, ev({ [ITEM.margherita]: 12 }, typePricing, {})).basis === 'event'
+    && P.priceAtEvent(1000, ITEM.margherita, ev({}, typePricing, {})).basis === 'event_type'
+    && P.priceAtEvent(1000, ITEM.margherita, ev({}, null, {})).basis === null)
+  t('🔴 …and an event price EQUAL to the menu price stamps NOTHING',
+    P.priceAtEvent(1000, ITEM.margherita, ev({ [ITEM.margherita]: 10 }, null, {})).basis === null
+    && P.priceAtEvent(1000, ITEM.margherita, ev({ [ITEM.margherita]: 10 }, null, {})).pence === 1000)
+  /* ⛔ AND THE EVENT'S FOUR RULE COLUMNS CANNOT REACH THE ARITHMETIC. `resolveEventPricing` has no
+   * parameter for them, so passing `price_own: true` with a rule has no effect anywhere — asserted
+   * because this is the removal, and a reinstated event rule is what would break it. */
+  t('⛔ `price_own` + an event rule are UNREAD: the arithmetic has no parameter for them',
+    P.resolveEventPricing.length === 3
+    && typeof P.resolvePricing === 'undefined'
+    && P.priceAtEvent(1000, ITEM.margherita, ev({}, null, {})).pence === 1000)
   /* ⚠️ A SETUP THAT CHANGES NOTHING IS NOT "MENU PRICES" FOR THE PURPOSE OF THE SUMMARY — the switch
    * IS on — but it DOES change no price, which is what the ambiguity guard asks about. */
   t('🔴 a setup with mode "none" and nothing typed changes NO price (the ambiguity guard’s question)',
     P.pricingDiffersFromMenu(
-      P.resolvePricing(null, {}, { price_change_on: true, price_mode: 'none', price_amount: null, price_rounding: 'none' }, {}),
+      ev({}, { price_change_on: true, price_mode: 'none', price_amount: null, price_rounding: 'none' }, {}),
       [{ id: ITEM.margherita, pricePence: 1000 }]) === false)
   t('🔴 …and one typed price is enough to make it differ',
     P.pricingDiffersFromMenu(
-      P.resolvePricing(null, {}, { price_change_on: true, price_mode: 'none', price_amount: null, price_rounding: 'none' }, { [ITEM.margherita]: 9 }),
+      ev({}, { price_change_on: true, price_mode: 'none', price_amount: null, price_rounding: 'none' }, { [ITEM.margherita]: 9 }),
+      [{ id: ITEM.margherita, pricePence: 1000 }]) === true)
+  t('🔴 …and so is one EVENT price, with no type at all',
+    P.pricingDiffersFromMenu(ev({ [ITEM.margherita]: 9 }, null, {}),
       [{ id: ITEM.margherita, pricePence: 1000 }]) === true)
 }
 
@@ -320,7 +353,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     const same = await (async () => {
       const c = stub(baseFixture())
       const b = await R.loadEventPriceBook(c, TRUCK, EVENT_A)
-      return b.menuPrice && Object.keys(b.menuPrice).length === 0 && b.basis === null
+      return b.menuPrice && Object.keys(b.menuPrice).length === 0 && Object.keys(b.basisByName).length === 0
     })()
     t('🔴 …and it stamps NOTHING: menuPrice is empty and basis is null', same)
     t('🔴 options, bundles and menuItems are untouched — extras and deals keep MENU prices by rule',
@@ -343,15 +376,22 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
       || J(on.menuPrice) === J({ Margherita: 10, Pepperoni: 11.5, 'Garlic bread': 2 }))
     t('⚠️ a £0 MENU ITEM IS ABSENT FROM THE AUDIT MAP, because its price did not move',
       on.menuPrice['Garlic dip'] === undefined && on.book.itemPrice['Garlic dip'] === 0)
-    t('🔴 the basis is stamped once, for the whole book',
-      on.basis === 'event_type')
+    /* ══ 🔴 THE BASIS IS **PER ITEM** NOW (5 October 2026) ═══════════════════════════════════════
+     * It was one value for the whole book, because the old rule resolved ONE setup per event. Under
+     * the per-item rule an event can charge its own price for one dish and its type's rule for
+     * another, so a single basis would label one of them wrongly on a stored order line.
+     * ⚠️ ASSERTED AS "THE TWO MAPS SHARE THEIR KEYS", which is the invariant every stamping site
+     * now relies on: a line is stamped with BOTH fields or with neither. */
+    t('🔴 the basis is per ITEM, and `menuPrice`/`basisByName` have exactly the same keys',
+      on.basisByName['Margherita'] === 'event_type'
+      && JSON.stringify(Object.keys(on.menuPrice).sort()) === JSON.stringify(Object.keys(on.basisByName).sort()))
 
     /* 🔴 A SETUP THAT CHANGES NOTHING RETURNS THE ORIGINAL BOOK AGAIN. `price_basis` means "this line
      * was priced by event pricing"; stamping it on a line that was not would make the audit a lie. */
     const inertFix = withType({ price_change_on: true, price_mode: 'none', price_amount: null, price_rounding: 'none' })
     const inert = await R.loadEventPriceBook(stub(inertFix), TRUCK, EVENT_A)
     t('🔴 a switch that is ON but changes nothing stamps nothing — basis null, map empty',
-      inert.basis === null && Object.keys(inert.menuPrice).length === 0
+      Object.keys(inert.basisByName).length === 0 && Object.keys(inert.menuPrice).length === 0
       && J(inert.book) === J(plain))
   }
 
@@ -367,7 +407,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     const noCols = await R.loadEventPriceBook(stub(f, { fail: ['truck_events', 'event_item_prices'] }), TRUCK, EVENT_A)
     const plain = await NOW.repricing.loadPriceBook(stub(baseFixture()), TRUCK)
     t('🔴 42703 ON truck_events ⇒ MENU PRICES, and the book is loadPriceBook’s again',
-      J(noCols.book) === J(plain) && noCols.basis === null && Object.keys(noCols.menuPrice).length === 0)
+      J(noCols.book) === J(plain) && Object.keys(noCols.basisByName).length === 0 && Object.keys(noCols.menuPrice).length === 0)
     const noTable = await R.loadEventPriceBook(stub(f, { fail: ['event_item_prices'] }), TRUCK, EVENT_A)
     t('⚠️ 42703 on event_item_prices alone still prices — the RULE survives, the typed rows do not',
       noTable.book.itemPrice['Margherita'] === 15)
@@ -445,8 +485,12 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
      * apart — which is a property of the server's query, not of a fixture's row order.
      * ⚠️ THE STUB SERVES BOTH ROWS AND `maybeSingle` TAKES THE FIRST, so asking about EVENT_B
      * specifically needs its own fixture — which is exactly the ambiguity being modelled. */
+    /* ⚠️ RE-AIMED 5 October 2026. The candidate used to be made "interesting" by an event RULE
+     * (`price_own` + −50%); there is no event rule any more, so what makes a candidate interesting is
+     * an event PRICE for one item — which is also the shape every truck using this feature will have. */
     const bOnly = baseFixture()
-    bOnly.truck_events = [{ id: EVENT_B, price_own: true, price_mode: 'sub_pct', price_amount: 50, price_rounding: 'none', event_type_id: null, event_types: null }]
+    bOnly.truck_events = [{ id: EVENT_B, price_own: false, price_mode: null, price_amount: null, price_rounding: null, event_type_id: null, event_types: null }]
+    bOnly.event_item_prices = [{ id: 'row-b', truck_id: TRUCK, event_id: EVENT_B, event_type_id: null, item_id: ITEM.margherita, price: 5 }]
     t('🔴 A CANDIDATE THAT WOULD CHARGE SOMETHING ELSE MAKES THE DATE AMBIGUOUS ⇒ refuse',
       (await R.candidatesChangePrices(stub(bOnly), TRUCK, [EVENT_B])) === true)
     const bInert = baseFixture()
@@ -494,7 +538,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
       repriced.items[0].unit_price === 9.9)
     t('🔴 A NEW LINE TAKES TODAY’S EVENT PRICE — £2.00 +10% = £2.20',
       repriced.items[2].unit_price === 2.2)
-    const out = R.stampEditedLines(repriced.items, stored.items, evb.menuPrice, evb.basis)
+    const out = R.stampEditedLines(repriced.items, stored.items, evb.menuPrice, evb.basisByName)
     t('🔴 …and the LOCKED line keeps the audit fields it was STORED with (menu £9), not today’s £10',
       out[0].menu_price === 9 && out[0].price_basis === 'event_type')
     t('🔴 …the untouched line that never had them still has none',
@@ -518,7 +562,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
       { name: 'Margherita', quantity: 1, unit_price: 0 },
     ]
     const dupPriced = NOW.repricing.repriceOrder(dupSubmitted, null, evb.book, dupStored, null)
-    const dupOut = R.stampEditedLines(dupPriced.items, dupStored.items, evb.menuPrice, evb.basis)
+    const dupOut = R.stampEditedLines(dupPriced.items, dupStored.items, evb.menuPrice, evb.basisByName)
     t('🔴 TWO LINES SHARING A NAME PAIR IN ORDER — prices 9 and 12, menu_prices 8 and 11',
       dupPriced.items[0].unit_price === 9 && dupPriced.items[1].unit_price === 12
       && dupOut[0].menu_price === 8 && dupOut[1].menu_price === 11)
@@ -529,7 +573,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     /* ── 🔴 A FORGED AUDIT FIELD ON THE WIRE IS DISCARDED ───────────────────────────────────────── */
     const forgedAudit = R.stampEditedLines(
       [{ name: 'Garlic bread', quantity: 1, unit_price: 2.2, menu_price: 999, price_basis: 'event' }],
-      {}, evb.menuPrice, evb.basis)
+      {}, evb.menuPrice, evb.basisByName)
     t('🔴 A CLIENT-SUPPLIED menu_price IS STRIPPED AND REPLACED by the server’s figure',
       forgedAudit[0].menu_price === 2 && forgedAudit[0].price_basis === 'event_type')
     /* ⛔ AND THE SAME, STRUCTURALLY, ON BOTH ORDER ROUTES. */
@@ -545,7 +589,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     const plainPriced = NOW.repricing.repriceOrder(
       [{ name: 'Margherita', quantity: 1, unit_price: 0 }], null, plainBook.book, {}, null)
     t('🔴 NOTHING TO STAMP ⇒ THE SAME ARRAY, so an untouched order’s jsonb is byte-identical',
-      R.stampEditedLines(plainPriced.items, {}, plainBook.menuPrice, plainBook.basis) === plainPriced.items)
+      R.stampEditedLines(plainPriced.items, {}, plainBook.menuPrice, plainBook.basisByName) === plainPriced.items)
     t('🔴 …and the stored row is byte-identical to the pre-build tree’s, serialised',
       J(plainPriced.items) === J([{ name: 'Margherita', quantity: 1, unit_price: 10 }]))
   }
@@ -556,14 +600,17 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
   head('5 · ONE IMPLEMENTATION — no second copy anywhere')
   {
     const PRICE_SRC = 'lib/event-pricing/price.ts'
-    /* 🔴 EVERY FILE THAT SHOWS OR CHARGES A PRICE MUST IMPORT IT, and none may compute one. Five
-     * surfaces have to agree to the penny: the menu API (what the customer is shown), the submit route
-     * (what they are charged), the walk-up panel (what the hatch charges), the grid (what the operator
-     * is PROMISED) and the dashboard sheet (where they set it). */
+    /* 🔴 EVERY FILE THAT SHOWS OR CHARGES A PRICE MUST IMPORT IT, and none may compute one. The
+     * surfaces that have to agree to the penny: the menu API (what the customer is shown), the submit
+     * route (what they are charged), the walk-up panel (what the hatch charges), the grid (what the
+     * operator is PROMISED) and the event-types route (which computes the dashboard's Price column).
+     * ⛔ `components/dashboard/EventPricesSheet.tsx` IS GONE (5 October 2026) — the whole-event "own
+     * prices" sheet is deleted; an event's prices are set per item from Menu & Stock, whose figures
+     * are computed SERVER-SIDE by `priceAtEvent` in the route below. */
     const CONSUMERS = [
       'app/api/menu/[truckId]/route.ts',
       'components/shared/PriceControls.tsx',
-      'components/dashboard/EventPricesSheet.tsx',
+      'app/api/event-types/route.ts',
       'lib/event-pricing/read.ts',
     ]
     for (const f of CONSUMERS) {
@@ -579,15 +626,19 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     const SUSPECTS = [
       'app/api/menu/[truckId]/route.ts', 'app/api/orders/submit/route.ts',
       'app/api/dashboard/action/route.ts', 'app/api/event-types/route.ts',
-      'components/manage/EventTypes.tsx', 'components/dashboard/EventPricesSheet.tsx',
+      'components/manage/EventTypes.tsx', 'app/dashboard/[token]/page.tsx',
       'components/shared/PriceControls.tsx',
     ]
     const offenders = []
     for (const f of SUSPECTS) {
       const code = codeOf(fs.readFileSync(path.join(REPO, f), 'utf8'))
-      /* ⚠️ THE THREE PATTERNS ARE NARROW ON PURPOSE. `toMinor`/`fromMinor` in order-repricing are the
-       * SANCTIONED pair and are not matched; a naked `* 100` next to a price name is. */
-      if (/(price|amount)[A-Za-z]*\s*[*/]\s*100\b/.test(code)) offenders.push(`${f}: open-coded x100`)
+      /* ⚠️ THE PATTERNS ARE NARROW ON PURPOSE. `toMinor`/`fromMinor` in order-repricing are the
+       * SANCTIONED pair and are not matched; a naked `* 100` next to a price name is.
+       * ⚠️ AND A NAME ENDING `Minor` IS EXEMPT TOO (5 October 2026). Adding the dashboard page to the
+       * list below caught `amountMinor/100` — a REFUND amount that is already in minor units and is
+       * named as such, which is the same sanctioned convention `toMinor` is. The check is about an
+       * UNDECLARED conversion; a value whose name states its unit is a declared one. */
+      if (/(price|amount)[A-Za-z]*\s*[*/]\s*100\b/.test(code.replace(/[A-Za-z]*Minor\s*[*/]\s*100\b/g, ''))) offenders.push(`${f}: open-coded x100`)
       if (/Math\.(ceil|floor)\(\s*[A-Za-z.]*(price|amount)/i.test(code)) offenders.push(`${f}: hand rounding`)
     }
     t('⛔ NOBODY OPEN-CODES THE POUNDS⇄PENCE CONVERSION OR THE ROUNDING', offenders.length === 0)
@@ -641,14 +692,21 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     /* 🔴 THE MAP IS EMPTY UNLESS AN ITEM'S PRICE ACTUALLY MOVED, which is what makes the response
      * byte-identical for a truck not using this. Asserted on the code, because the route cannot be
      * run here (it needs a database). */
+    /* ⚠️ RE-AIMED 5 October 2026. It was `if (charged !== menuPence)` — a comparison the route made
+     * itself. `priceAtEvent` returns the basis, which is null EXACTLY when nothing moved, so the route
+     * now asks the one function instead of re-deriving the test. Same property, one fewer copy. */
     t('🔴 …and the map is populated ONLY where the price moved',
-      /if \(charged !== menuPence\) eventItemPrice\[i\.id\] = toPounds\(charged\)/.test(now))
+      /const \{ pence, basis \} = priceAtEvent\(menuPence, i\.id, pricing\.resolved\)/.test(now)
+      && /if \(basis !== null\) eventItemPrice\[i\.id\] = toPounds\(pence\)/.test(now))
     t('🔴 …and nothing is read at all when no event resolved',
       /const eventItemPrice: Record<string, number> = \{\}\s*\n\s*if \(effectiveEventId\) \{/.test(now))
     /* ⛔ AND NO "WAS" PRICE REACHES THE CUSTOMER — decision 9: just the number. */
     t('⛔ THE CUSTOMER PAYLOAD CARRIES NO menu_price AND NO price_basis — just the number',
       (() => {
-        const emit = now.slice(now.indexOf('      return {\n        name: i.name,'), now.indexOf('    bundles: filteredBundles.map'))
+        /* ⚠️ THE ANCHOR MOVED (5 October 2026): the emit now opens with a conditional spread of the
+         * item's `id` for the dashboard, so `return {\n        name:` is no longer its first two
+         * lines. Anchored on the `return {` that precedes `name: i.name` instead. */
+        const emit = now.slice(now.lastIndexOf('      return {', now.indexOf('        name: i.name,')), now.indexOf('    bundles: filteredBundles.map'))
         return emit.length > 200 && !/menu_price|price_basis|was_price|original_price/.test(emit)
       })())
     /* ⚠️ AND THE PRICING READ IS SEPARATE FROM EVERY NAMED SELECT ON THIS ROUTE, which is the whole
@@ -946,7 +1004,16 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     /** Build a variant tree with one file replaced, in memory-ish (a temp worktree copy). */
     const buildVariant = (file, from, to, tag) => {
       const src = fs.readFileSync(path.join(REPO, file), 'utf8')
-      if (!src.includes(from)) return null
+      /* ══ ⛔ AN ABSENT ANCHOR IS A **FAILURE**, NOT A SILENT NULL (5 October 2026) ══════════════════
+       * It returned `null`, and every caller scores `!V` as "detected" — so a variant whose anchor had
+       * drifted out of the file reported ✓ FAILED AS REQUIRED while mutating nothing. That is the
+       * failure mode this repository has now met three times, and it bit here: removing the
+       * whole-event `price_own` rule took V8's and V9's anchors with it and both kept passing.
+       * 🔴 THROWING IS THE ONLY SAFE ANSWER. A variant that cannot produce the symptom it names is not
+       * a variant, and the harness must say so rather than count it. */
+      if (!src.includes(from)) {
+        throw new Error(`variant ${tag}: the anchor has drifted out of ${file} — re-aim it or delete it:\n    ${from.slice(0, 120)}`)
+      }
       const root = path.join(patchDir, tag)
       /* ⚠️ A COPY OF THE REPO'S lib ONLY — enough for these four modules and their imports. */
       for (const f of LIB) {
@@ -1037,31 +1104,49 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
         || V.price.priceForItem(1000, setup({ mode: 'add_pct', amount: 10, typed: { x: 0 } }), 'x') !== 0
       must('V7 🔴 a typed price of £0 is read as unset, so a free item is charged the rule', detected)
     }
-    // V8 — an event with its own prices MERGES the type's typed prices instead of replacing them
+    /* V8 — RE-AIMED 5 October 2026, AND THE OLD ONE IS WHY `buildVariant` NOW THROWS. It mutated
+     * `if (event?.price_own === true) …` inside `resolvePricing`, which this build deleted — so the
+     * anchor vanished, `buildVariant` returned null, and the variant reported ✓ while mutating
+     * nothing. It now puts back the defect the NEW rule can have: an event price bleeding onto every
+     * OTHER item instead of only its own. */
     {
       const V = buildVariant('lib/event-pricing/price.ts',
-        "if (event?.price_own === true) return { setup: setupFrom(event, eventTyped), basis: 'event' }",
-        "if (event?.price_own === true) return { setup: setupFrom(event, { ...typeTyped, ...eventTyped }), basis: 'event' }", 'v8')
+        "    const own = p.eventTyped[itemId]",
+        "    const own = p.eventTyped[itemId] ?? Object.values(p.eventTyped)[0]", 'v8')
       const detected = !V || !V.price
-        || V.price.priceForItem(1000,
-          V.price.resolvePricing({ price_own: true, price_mode: 'add_pct', price_amount: 20, price_rounding: 'none' }, {},
-            { price_change_on: true, price_mode: 'add_pct', price_amount: 10, price_rounding: 'none' }, { x: 3 }).setup, 'x') !== 1200
-      must('V8 🔴 the type’s typed prices leak into an event with its OWN prices', detected)
+        || V.price.priceAtEvent(1000, 'other',
+          V.price.resolveEventPricing({ x: 3 },
+            { price_change_on: true, price_mode: 'add_pct', price_amount: 10, price_rounding: 'none' }, {})).pence !== 1100
+      must('V8 🔴 one item’s event price bleeds onto every other item', detected)
     }
     // V9 — the switch is ignored, so a type with its switch OFF still prices
     {
       const V = buildVariant('lib/event-pricing/price.ts',
-        "if (type?.price_change_on === true) return { setup: setupFrom(type, typeTyped), basis: 'event_type' }",
-        "if (type) return { setup: setupFrom(type, typeTyped), basis: 'event_type' }", 'v9')
+        "typeSetup: type?.price_change_on === true ? setupFrom(type, typeTyped) : null,",
+        "typeSetup: type ? setupFrom(type, typeTyped) : null,", 'v9')
       const detected = !V || !V.price
-        || V.price.resolvePricing(null, {},
-          { price_change_on: false, price_mode: 'add_pct', price_amount: 10, price_rounding: 'none' }, {}).setup !== null
+        || V.price.resolveEventPricing({},
+          { price_change_on: false, price_mode: 'add_pct', price_amount: 10, price_rounding: 'none' }, {}).typeSetup !== null
       must('V9 🔴 "Change prices" OFF still charges the saved rule', detected)
+    }
+    /* V15 — NEW (5 October 2026). The basis is taken from WHICH BRANCH WON rather than from whether
+     * the number MOVED, so an event price equal to the menu price stamps an order line — which is the
+     * byte-identity promise broken. */
+    {
+      const V = buildVariant('lib/event-pricing/price.ts',
+        "      return { pence, basis: pence === menuPence ? null : 'event' }",
+        "      return { pence, basis: 'event' }", 'v15')
+      const detected = !V || !V.price
+        || V.price.priceAtEvent(1000, 'x', V.price.resolveEventPricing({ x: 10 }, null, {})).basis !== null
+      must('V15 🔴 an event price EQUAL to the menu price still stamps the order line', detected)
     }
     // V10 — the event-aware book stamps every line, not only the moved ones
     {
+      /* ⚠️ THE ANCHOR MOVED (5 October 2026). The loop used to compare `chargedPence` with the menu
+       * price itself; it now asks `priceAtEvent` for the basis, which is null exactly when nothing
+       * moved. Same property, one fewer copy of the test — and the mutation is the same defect. */
       const V = buildVariant('lib/event-pricing/read.ts',
-        'if (chargedPence === it.pricePence) continue',
+        'if (basis === null) continue',
         'if (false) continue', 'v10')
       /* ⚠️ THE FIXTURE HAS TO REACH THE LOOP. With no pricing at all the function returns EARLY —
        * that early return IS the identity proof — so the mutated line was never executed and this
@@ -1071,7 +1156,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
         if (!V || !V.read) return true
         const inertFix = withType({ price_change_on: true, price_mode: 'none', price_amount: null, price_rounding: 'none' })
         const b = await V.read.loadEventPriceBook(stub(inertFix), TRUCK, EVENT_A)
-        return Object.keys(b.menuPrice).length !== 0 || b.basis !== null
+        return Object.keys(b.menuPrice).length !== 0 || Object.keys(b.basisByName).length !== 0
       })()
       must('V10 🔴 an order under an inert rule gains menu_price / price_basis on every line', detected)
     }
@@ -1113,7 +1198,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
         const priced = NOW.repricing.repriceOrder(
           [{ name: 'Margherita', quantity: 1, unit_price: 0 }, { name: 'Margherita', quantity: 1, unit_price: 0 }],
           null, evb.book, storedDup, null)
-        const out = V.read.stampEditedLines(priced.items, storedDup.items, evb.menuPrice, evb.basis)
+        const out = V.read.stampEditedLines(priced.items, storedDup.items, evb.menuPrice, evb.basisByName)
         return !(out[0].menu_price === 8 && out[1].menu_price === 11)
       })()
       must('V12 🔴 two lines sharing a name get the SAME menu_price, so one order line is mislabelled', detected)

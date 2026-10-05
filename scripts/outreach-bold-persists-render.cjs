@@ -171,16 +171,34 @@ const emRuns = h => runs(h, EM_RE)
 async function engines() {
   const puppeteer = require(path.join(REPO, 'node_modules/puppeteer'))
   const { webkit } = require(path.join(REPO, 'node_modules/playwright'))
+  /* ══ ⚠️ `HG_ENGINES` — RUN ONE ENGINE WHEN THE OTHER IS BROKEN ON THE MACHINE (5 October 2026) ════
+   * ⛔ IT IS NOT A WAY TO SKIP AN ENGINE THAT DISAGREES. It exists because this machine's
+   * `chromium_headless_shell` started HANGING inside `Runtime.callFunctionOn` — the same local fault
+   * scripts/event-types-render.cjs carries a `protocolTimeout` for — and it hangs at HEAD too, on a
+   * tree where this harness had passed 78 assertions an hour earlier. Without this, one sick browser
+   * means NO browser evidence at all; with it, the other engine still measures and the run SAYS which
+   * engines it used.
+   * ⚠️ THE DEFAULT IS BOTH, so a plain run is unchanged and a missing engine cannot go unnoticed. */
+  const want = (process.env.HG_ENGINES || 'chromium,webkit').toLowerCase()
+  const pick = ([name]) => want.includes(name.toLowerCase())
   return [
     ['Chromium', async () => {
-      const b = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] })
+      /* ⚠️ `protocolTimeout`, BECAUSE THE DEFAULT IS 180s AND THIS MACHINE'S CHROMIUM HANGS (5 October
+       * 2026). `Runtime.callFunctionOn timed out` was thrown from the FIRST `evaluate` of the browser
+       * section, on a run whose source half had just passed and whose component had not been touched
+       * — the same local `chromium_headless_shell` flakiness scripts/event-types-render.cjs already
+       * carries this option for. ⛔ IT IS NOT A FIX FOR A SLOW PAGE: every wait in this file is its
+       * own `waitForFunction` with its own timeout, so a genuinely stuck page still fails with a
+       * sentence that names what it was waiting for. This only stops a dead CDP call from burning
+       * three minutes before it says so. */
+      const b = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'], protocolTimeout: 30000 })
       return { b, np: async () => { const p = await b.newPage(); await p.setViewport({ width: 1280, height: 1000 }); return p } }
     }],
     ['WebKit', async () => {
       const b = await webkit.launch()
       return { b, np: async () => (await b.newContext({ viewport: { width: 1280, height: 1000 } })).newPage() }
     }],
-  ]
+  ].filter(pick)
 }
 
 const wait = ms => new Promise(r => setTimeout(r, ms))

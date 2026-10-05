@@ -842,8 +842,12 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       'Take orders by private link and QR code', 'Open to everyone', 'Make a new link',
       'Scan to order', 'Private event',
     ]
+    /* ⚠️ `components/dashboard/ThisEventCard.tsx` IS GONE (5 October 2026) and the DASHBOARD PAGE has
+     * taken its place in this list — the private title in the dark event bar, the `Manage event ▾`
+     * link row and the two privacy confirms are all rendered there now. The claim is unchanged: no
+     * screen re-types a word the copy module owns. */
     const screens = ['components/manage/EventTypes.tsx', 'components/manage/PrivateLinkPanel.tsx',
-      'app/manage/[token]/page.tsx', 'components/dashboard/ThisEventCard.tsx', 'app/p/[token]/page.tsx']
+      'app/manage/[token]/page.tsx', 'app/dashboard/[token]/page.tsx', 'app/p/[token]/page.tsx']
     for (const str of COPY_STRINGS) {
       const typed = screens.filter(f => {
         const c = codeOf(read(f))
@@ -945,7 +949,10 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
   {
     const ui = read('components/manage/EventTypes.tsx')
     const page = read('app/manage/[token]/page.tsx')
-    const card = read('components/dashboard/ThisEventCard.tsx')
+    /* ⛔ `components/dashboard/ThisEventCard.tsx` IS DELETED. Everything this section asserted about
+     * the card's private rows is now about the DASHBOARD PAGE: the title in the dark event bar, the
+     * `Manage event ▾` link row, and the type picker's two privacy confirms. */
+    const dash = read('app/dashboard/[token]/page.tsx')
 
     /* ══ ⛔ THE BUG THIS SECTION EXISTS FOR ═══════════════════════════════════════════════════════
      * Add event had TWO controls for one fact: an "Event type" dropdown offering "Private" AND a
@@ -1031,20 +1038,58 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
     t('⛔ …and shows the missing-times prompt when Private is selected with no times',
       /PRIVATE_NEEDS_TIMES/.test(page))
 
-    /* 🔴 THE DASHBOARD'S TWO CONFIRMS, both directions, with words about what the PUBLIC sees. */
+    /* 🔴 THE DASHBOARD'S TWO CONFIRMS, both directions, with words about what the PUBLIC sees.
+     * ⚠️ RE-AIMED AT THE PAGE (5 October 2026) — they are in the type picker behind `Manage event ▾`
+     * now. The sentences and the rule that decides when each shows are unchanged. */
     t('🔴 switching TO private confirms, and the sentence is about the map and the link',
-      /CONFIRM_TO_PRIVATE/.test(card)
+      /CONFIRM_TO_PRIVATE/.test(dash)
       && /This hides the address and the event from the map/.test(read('lib/private-events/copy.ts')))
     t('🔴 switching FROM private confirms, and names the link stopping',
-      /CONFIRM_FROM_PRIVATE/.test(card)
+      /CONFIRM_FROM_PRIVATE/.test(dash)
       && /the private link will stop working/.test(read('lib/private-events/copy.ts')))
     t('⛔ …and neither shows on a switch that does not cross the privacy line',
-      /const toPrivate = pending !== undefined && targetIsPrivate && !isPrivate/.test(card)
-      && /const fromPrivate = pending !== undefined && !targetIsPrivate && !!isPrivate/.test(card))
+      /const toPrivate=typePending!==undefined&&targetIsPrivate&&!eventIsPrivate/.test(dash)
+      && /const fromPrivate=typePending!==undefined&&!targetIsPrivate&&eventIsPrivate/.test(dash))
     t('⛔ …and the crossing is decided from `is_private`, never from the current type\'s kind',
-      /&& !isPrivate/.test(card) && /&& !!isPrivate/.test(card))
+      /const eventIsPrivate=\(activeEvent as \{is_private\?:boolean\|null\}\|null\)\?\.is_private===true/.test(dash)
+      /* ⛔ ONE DERIVATION, READ BY EVERY PRIVATE SURFACE ON THE PAGE. A second expression for this was
+       * in the file for an hour during this build and is exactly the kind that drifts. */
+      && (codeOf(dash).match(/\?\.is_private===true/g) || []).length === 1)
     t('🔴 and the Link & QR row shows ONLY for a private event',
-      /\{isPrivate && \(/.test(card) && /data-open-private-link/.test(card))
+      /onPrivateLink=\{eventIsPrivate\?/.test(dash)
+      && /Private link &amp; QR code/.test(read('components/shared/EventActionsModal.tsx')))
+
+    /* ══ 🔴 THE DARK EVENT BAR'S TITLE IS THE EVENT'S **NAME**, NEVER ITS VENUE (Dominic, 5 Oct) ════
+     * ⛔ THE VENUE IS NOT RENDERED AT ALL in the private arm — not greyed, not in a title attribute.
+     * That bar is on every tab of the dashboard, in a van, in public, and a private event's address is
+     * the one thing this whole feature exists to keep off a screen.
+     * 🔴 AND THE SEPARATE LOCK LABEL BESIDE Live / Not started IS GONE for a private event, because
+     * the title says it. A custom type keeps its label there; its title is still the venue. */
+    t('🔴 a private event\'s title is 🔒 + its name + "Private event", with NO venue', (() => {
+      const code = codeOf(dash)
+      const a = code.indexOf('{eventIsPrivate?(<>')
+      if (a < 0) return false
+      const arm = code.slice(a, code.indexOf('):(<>', a))
+      return arm.length > 80
+        && /\{PRIVATE_PUBLIC_NAME\}/.test(arm)
+        && /\{privateName/.test(arm)
+        && /text-purple-300/.test(arm)
+        /* ⛔ NO VENUE, NO TOWN, NO `fmtVenue` IN THE PRIVATE ARM. */
+        && !/venue_name|fmtVenue|\btown\b/.test(arm)
+    })())
+    t('⛔ …and the type label beside Live returns null for a private event', (() => {
+      const code = codeOf(dash)
+      const fn = code.slice(code.indexOf('const headerEventType=(()=>{'), code.indexOf('const[typePicker,'))
+      return fn.length > 100 && /if\(eventIsPrivate\)return null/.test(fn)
+    })())
+    t('⚠️ …and the name comes from `privateDisplayName`, the ONE formatter',
+      /import \{ privateDisplayName \} from '@\/lib\/private-events\/resolve'/.test(dash)
+      && /privateDisplayName\(\(activeEvent as \{private_name\?:string\|null\}\|null\)\?\.private_name\)/.test(dash))
+    /* ⛔ AND "Order link" / "QR code" GIVE THE PRIVATE LINK, NEVER THE PUBLIC ONE — and nothing at all
+     * if the token cannot be read. Falling back is how a private event's guests reach a public page. */
+    t('⛔ the header\'s Order link and QR use the PRIVATE link, with no fallback',
+      /const customerOrderUrl = eventIsPrivate \? privateOrderUrl : publicOrderUrl/.test(dash)
+      && !/privateOrderUrl *\?\? *publicOrderUrl/.test(dash))
 
     /* ⚠️ A PRO TRUCK SEES STANDARD AND PRIVATE ONLY — the pill row is filtered by the route's own
      * `canTypes`/`canPrivate`, which is why the LIST it receives is already correct. */

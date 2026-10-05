@@ -885,7 +885,7 @@ export async function POST(req: NextRequest) {
        * identity-queue pairing so duplicates line up — see its header. With nothing stored and no
        * event pricing it returns `repriced.items` itself, so an ordinary edit writes the same bytes
        * as before this build. */
-      const itemsToStore = stampEditedLines(repriced.items, order.items, eventBook.menuPrice, eventBook.basis)
+      const itemsToStore = stampEditedLines(repriced.items, order.items, eventBook.menuPrice, eventBook.basisByName)
 
       const { error: updateErr } = await supabase.from('orders').update({
         // Items carry the AUTHORITATIVE unit_price (and modifier prices): the locked-in figure for a
@@ -1536,15 +1536,20 @@ export async function POST(req: NextRequest) {
        * wins, which is decision 6.
        * ⚠️ WHEN NEITHER APPLIES THIS IS `priced.items`, THE SAME ARRAY, so an ordinary walk-up order
        * on a truck not using this feature stores the same bytes as before this build. */
-      const anyEventPrice = Object.keys(eventBook.menuPrice).length > 0 && eventBook.basis !== null
+      /* ⚠️ THE BASIS IS PER ITEM since 5 October 2026. The two maps share their keys, and requiring
+       * both below makes "stamped together or not at all" a property of this code rather than of the
+       * loader that filled them. */
+      const anyEventPrice = Object.keys(eventBook.menuPrice).length > 0
       const pricedItems = (!hasOverride && !anyEventPrice)
         ? priced.items
         : priced.items.map((line, i) => {
             const ov = overrideByIndex[i]
-            const menu = anyEventPrice ? eventBook.menuPrice[String(line.name)] : undefined
+            const name = String(line.name)
+            const menu = anyEventPrice ? eventBook.menuPrice[name] : undefined
+            const basis = anyEventPrice ? eventBook.basisByName[name] : undefined
             let out = line
             if (ov !== null) out = { ...out, price_override: ov, book_price: booked.items[i]?.unit_price ?? null }
-            if (menu !== undefined) out = { ...out, menu_price: menu, price_basis: eventBook.basis! }
+            if (menu !== undefined && basis !== undefined) out = { ...out, menu_price: menu, price_basis: basis }
             return out
           })
       // Deals in EXACTLY the shape the edit path persists — price is the AUTHORITATIVE bundle price.
@@ -2639,92 +2644,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
-    // ── set_event_deal ── EVENT-scoped event_deals.active, with overridden = true ─────────────────
-    //
-    // ── 🔴 WHY THIS EXISTS RATHER THAN CALLING THE MANAGE ACTION ──────────────────────────────────
-    // `update_event_deal` in app/api/manage/route.ts is the existing per-event deal write and this
-    // performs THE SAME UPSERT, column for column, including `overridden: true`. It is not reused by
-    // calling it, because it cannot be: /api/manage runs `resolveTruckAccess`, and its own note records
-    // that "token-only access no longer resolves to 'owner'; resolveTruckAccess refuses it outright".
-    // The dashboard authenticates with token + PIN against THIS route and has no session user, so a
-    // call to that handler would be refused. The WRITE is shared; the handler cannot be.
-    //
-    // 🔴 `overridden: true` IS THE POINT OF THE ROW. A deal row written here is a statement about THIS
-    // event, so a later change to the bundle's `apply_to_new_events` default must not reach it — which
-    // is exactly what that column means (app/api/manage/route.ts:~890 seeds `overridden: false` at
-    // event creation and sets it true on a per-event change).
-    if (action === 'set_event_deal') {
-      const { eventId, bundleId, active } = body
-      if (!eventId || !bundleId) return NextResponse.json({ error: 'eventId and bundleId required' }, { status: 400 })
-      /* ⚠️ BOTH IDS ARE CHECKED AGAINST THIS TRUCK. They arrive from a client, and `event_deals` has no
-       * truck_id of its own — its scope comes from the event and the bundle, so both must be proved
-       * here or a caller could write a row joining another truck's event to another truck's deal. */
-      const { data: ev } = await supabase.from('truck_events')
-        .select('id').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-      if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-      const { data: bundle } = await supabase.from('bundles_db')
-        .select('id').eq('id', bundleId).eq('truck_id', truck.id).maybeSingle()
-      if (!bundle) return NextResponse.json({ error: 'Deal not found' }, { status: 404 })
-
-      const { error } = await supabase.from('event_deals')
-        .upsert({ event_id: eventId, bundle_id: bundleId, active: active !== false, overridden: true },
-          { onConflict: 'event_id,bundle_id' })
-      if (error) {
-        console.error('[set_event_deal] upsert failed:', error.message)
-        return NextResponse.json({ error: error.message }, { status: 500 })
-      }
-      return NextResponse.json({ success: true })
-    }
-
-    // ── reset_event_deals ── drop THIS event's deal overrides, so its deals follow the defaults ───
-    // 🔴 DELETE, NOT "SET BACK TO THE DEFAULT". A row with `overridden = false` and a copied value is
-    // a snapshot that stops tracking the bundle's own `apply_to_new_events`; no row at all is what the
-    // customer menu reads as "use the default" (app/api/menu/[truckId]/route.ts:210). Deleting is the
-    // only shape that genuinely un-overrides.
-    // ⚠️ SCOPED BY THE EVENT, AND THE EVENT IS PROVED TO BE THIS TRUCK'S FIRST. `event_deals` has no
-    // truck_id of its own.
-    if (action === 'reset_event_deals') {
-      const { eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
-      const { data: ev } = await supabase.from('truck_events')
-        .select('id').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-      if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-      const { error } = await supabase.from('event_deals')
-        .delete().eq('event_id', eventId).eq('overridden', true)
-      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-      return NextResponse.json({ success: true })
-    }
-
-    // ── get_event_deals ── which deals this event has, for the "This event" card ──────────────────
-    // ⚠️ A SEPARATE ACTION RATHER THAN A FIELD ON THE POLL. The dashboard polls /api/dashboard every
-    // ~15s; the deal list changes only when the operator touches it, so putting it on the poll would
-    // be a join on every tick for data that almost never moves.
-    if (action === 'get_event_deals') {
-      const { eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
-      const [{ data: bundles }, { data: rows }] = await Promise.all([
-        supabase.from('bundles_db').select('id, name, apply_to_new_events')
-          .eq('truck_id', truck.id).eq('is_available', true).order('name'),
-        supabase.from('event_deals').select('bundle_id, active, overridden').eq('event_id', eventId),
-      ])
-      const byId = new Map(((rows ?? []) as { bundle_id: string; active: boolean; overridden: boolean }[])
-        .map(r => [r.bundle_id, r]))
-      return NextResponse.json({
-        success: true,
-        deals: ((bundles ?? []) as { id: string; name: string; apply_to_new_events: boolean }[]).map(b => {
-          const row = byId.get(b.id)
-          return {
-            id: b.id,
-            name: b.name,
-            /* 🔴 NO ROW ⇒ THE BUNDLE'S OWN DEFAULT, which is the fallback the customer menu applies
-             * when an event has no rows at all (app/api/menu/[truckId]/route.ts:210). Reporting
-             * `false` for a missing row would show a deal as off that customers can actually use. */
-            active: row ? row.active : b.apply_to_new_events,
-            own: row?.overridden === true,
-          }
-        }),
-      })
-    }
+    /* ══ ⛔ THREE DEAL ACTIONS DELETED HERE (5 October 2026) ═════════════════════════════════════════
+     *     set_event_deal · reset_event_deals · get_event_deals
+     *
+     * They existed only for the deleted "This event" card's DEALS section, and that section was a
+     * DUPLICATE: `origin/main` — the live site — lets an operator switch a deal on or off for one
+     * event in **Manage › Schedule, on the event itself**, through `update_event_deal` in
+     * app/api/manage/route.ts. That is still its only home and it is untouched.
+     *
+     * 🔴 SO THIS IS A DUPLICATE BEING REMOVED, NOT A CONTROL BEING TAKEN AWAY. The card's own comment
+     * above `set_event_deal` admitted the write was "THE SAME UPSERT, column for column" as the Manage
+     * one and only existed because /api/manage refuses token+PIN auth. With the card gone there is
+     * nothing on the dashboard to serve.
+     *
+     * ⚠️ `event_deals` ROWS ALREADY WRITTEN BY THE CARD ARE LEFT EXACTLY AS THEY ARE, and they keep
+     * working: the customer menu reads them, and Manage can still change or clear them. Nothing is
+     * deleted and no migration is needed.
+     * ⚠️ `reset_event_deals` WAS ALSO CALLED BY "Reset to <type>", which went with the card. The
+     * remaining reset — "Clear my changes and use <type> exactly" inside the Change-event-type
+     * confirm — clears the SERVICE columns and the event's typed prices, and deliberately does not
+     * touch deals: a deal switched off for one event is a statement about what is on sale, not a
+     * service setting the type has an opinion about. */
 
     // ── set_offline_protection ── EVENT-scoped offline_protection_override (truck_events) ──────────
     // SERVICE-ROLE write (the dashboard toggle used to write via the browser anon client, which RLS

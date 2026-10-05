@@ -234,8 +234,15 @@ export interface TypePricing {
   price_rounding?: string | null
 }
 
-/** An event's pricing, as `truck_events` holds it. */
-export interface EventPricing {
+/**
+ * An event's four price columns, as `truck_events` still holds them.
+ *
+ * ⛔ READ BY NOTHING THAT PRICES AN ORDER (5 October 2026). The whole-event rule is gone — see
+ * `resolveEventPricing` — and this type survives for ONE purpose: so a report or a migration can
+ * still describe the columns that are left in the database. ⚠️ IT IS DELIBERATELY NOT A PARAMETER OF
+ * ANY PRICING FUNCTION, which is what makes "unread" a property of the code rather than a promise.
+ */
+export interface EventPricingColumns {
   price_own?: boolean | null
   price_mode?: string | null
   price_amount?: number | string | null
@@ -243,7 +250,7 @@ export interface EventPricing {
 }
 
 const setupFrom = (
-  row: TypePricing | EventPricing | null | undefined,
+  row: TypePricing | null | undefined,
   typed: Readonly<Record<string, number>>,
 ): PriceSetup => ({
   mode: isPriceMode(row?.price_mode) ? row!.price_mode as PriceMode : 'none',
@@ -252,63 +259,127 @@ const setupFrom = (
   typed,
 })
 
-/** What `resolvePricing` decided: the setup to use, and where it came from. */
-export interface ResolvedPricing {
-  /** Null ⇒ menu prices exactly. Nothing is computed and nothing is stamped on an order line. */
-  setup: PriceSetup | null
-  /** Null when `setup` is null. */
-  basis: PriceBasis | null
+/**
+ * ══ 🔴 WHAT APPLIES TO ONE EVENT — AND IT IS RESOLVED **PER ITEM** (5 October 2026) ═══════════════
+ *
+ *   the event's own price FOR THAT ITEM  ??  the type's price (typed ?? rule)  ??  the menu price
+ *
+ * ⛔ THIS REPLACES THE WHOLE-EVENT `price_own` PATH, WHICH IS GONE FROM EVERY READER. The old rule
+ * was "the event's own prices REPLACE the type's whole" — one switch on the event, with its own rule
+ * and its own typed set, and the type not consulted at all once it was on. Two things were wrong
+ * with it, and the second is the one that mattered:
+ *   1. it made a per-event price change an all-or-nothing act. An operator who wanted £1 more on one
+ *      pizza had to adopt a whole second rule for the event and then keep it in step by hand;
+ *   2. 🔴 IT WAS A SECOND RULE ENGINE IN A PLACE NOBODY WOULD LOOK. An event on "own prices" silently
+ *      stopped following its type, so editing the Festival type changed every festival EXCEPT the one
+ *      somebody had nudged — with nothing on either screen to say why.
+ *
+ * ✅ SO AN EVENT NOW CARRIES **ONLY TYPED PRICES, PER ITEM**, and each one overrides exactly its own
+ * item. Every other item keeps following the type, or the menu. That is the whole vocabulary, and it
+ * is the one an operator standing at the hatch actually wants: "tonight this one dish costs more".
+ *
+ * ⚠️ `truck_events.price_own / price_mode / price_amount / price_rounding` ARE STILL IN THE DATABASE
+ * AND ARE READ BY NOTHING. Left in place deliberately — dropping columns is a migration, and this
+ * change needs none. An event that was left with `price_own = true` therefore stops having its own
+ * rule applied; its typed rows, if it has any, keep working and now apply per item. See
+ * docs/dashboard-cleanup-report.md for the read-only query that counts them.
+ *
+ * ⚠️ A TYPE WITH ITS SWITCH OFF KEEPS ITS SAVED RULE AND ITS TYPED PRICES, UNUSED (decision 1).
+ * `typeSetup` is null for such a type, so switching back on restores exactly what was there.
+ */
+export interface EventItemPricing {
+  /**
+   * The EVENT's own typed prices, POUNDS by `menu_items_db.id`. Each entry overrides ONLY its item.
+   * ⚠️ NEVER RULED AND NEVER ROUNDED — it is the number the operator typed, to the penny.
+   */
+  eventTyped: Readonly<Record<string, number>>
+  /** The TYPE's setup (its rule plus its own typed prices), or null when no type pricing applies. */
+  typeSetup: PriceSetup | null
 }
 
 /** Menu prices exactly — the answer for every truck that has not touched this feature. */
-export const MENU_PRICES: ResolvedPricing = { setup: null, basis: null }
+export const MENU_PRICES: EventItemPricing = { eventTyped: {}, typeSetup: null }
+
+/** Does anything at all apply here? False ⇒ the menu, and no line may be stamped. */
+export const pricingApplies = (p: EventItemPricing): boolean =>
+  !!p.typeSetup || Object.keys(p.eventTyped).length > 0
 
 /**
- * ── 🔴 WHICH SETUP APPLIES TO THIS EVENT ──────────────────────────────────────────────────────────
- *
- *   the event's own prices (when `price_own`)  ??  the type's prices (when `price_change_on`)  ??  menu
- *
- * ⚠️ "OWN PRICES FOR THIS EVENT" REPLACES THE TYPE'S WHOLE, AND THAT IS DECISION 4. When `price_own`
- * is true the type is not consulted AT ALL — not for the rule, not for a typed price the event has no
- * opinion about. The copy that makes that bearable happens ONCE, in the UI, at the moment the
- * operator chooses "Own prices": the event starts as a COPY of the type's current setup. After that
- * the two are independent, and a later edit to the type does not reach this event. Merging them here
- * instead would mean an operator who removed a typed price from their event silently got the type's
- * back, with nothing on screen to explain it.
- *
- * ⚠️ A TYPE WITH ITS SWITCH OFF KEEPS ITS SAVED RULE AND ITS TYPED PRICES, UNUSED (decision 1). This
- * function reads only the switch, so switching back on restores exactly what was there — no column
- * is cleared and no row is deleted when the switch goes off.
+ * Build the per-event pricing from the two rows.
+ * ⚠️ THE EVENT'S RULE COLUMNS ARE NOT A PARAMETER. They cannot be read by accident.
  */
-export function resolvePricing(
-  event: EventPricing | null | undefined,
+export function resolveEventPricing(
   eventTyped: Readonly<Record<string, number>>,
   type: TypePricing | null | undefined,
   typeTyped: Readonly<Record<string, number>>,
-): ResolvedPricing {
-  if (event?.price_own === true) return { setup: setupFrom(event, eventTyped), basis: 'event' }
-  if (type?.price_change_on === true) return { setup: setupFrom(type, typeTyped), basis: 'event_type' }
-  return MENU_PRICES
+): EventItemPricing {
+  return {
+    eventTyped,
+    typeSetup: type?.price_change_on === true ? setupFrom(type, typeTyped) : null,
+  }
+}
+
+/** One item's price at one event, and where it came from. */
+export interface PricedItem {
+  pence: number
+  /**
+   * Null ⇒ the price did not move from the menu, so NOTHING is stamped on the order line.
+   * 🔴 THAT IS THE BYTE-IDENTITY PROMISE, and it is why the basis is computed from the NUMBER rather
+   * than from which branch won: an event typed price that happens to equal the menu price has not
+   * moved, and stamping `price_basis` on it would make the audit field a claim about nothing.
+   */
+  basis: PriceBasis | null
 }
 
 /**
- * Does this setup change ANY of these menu prices?
+ * ── 🔴 THE ONE FUNCTION THAT DECIDES WHAT AN ITEM COSTS AT AN EVENT ───────────────────────────────
+ * The menu API, the submit route, the walk-up Add order, an edit's new lines and the dashboard's
+ * Price column all go through here, so no two of them can charge differently.
+ *
+ * @param itemId `menu_items_db.id`. A caller with only a name passes null, which means "no typed
+ *               price on either side" — the type's rule still applies, because a rule is per item
+ *               only in the sense that it is applied to each item's own menu price.
+ */
+export function priceAtEvent(
+  menuPence: number,
+  itemId: string | null | undefined,
+  p: EventItemPricing,
+): PricedItem {
+  /* 1 · THE EVENT'S OWN PRICE FOR THIS ITEM. Clamped to >= 0, never ruled, never rounded. */
+  if (itemId) {
+    const own = p.eventTyped[itemId]
+    if (own !== null && own !== undefined) {
+      const pence = Math.max(0, toPence(own))
+      return { pence, basis: pence === menuPence ? null : 'event' }
+    }
+  }
+  /* 2 · THE TYPE'S PRICE — its own typed price for this item, else its rule. */
+  if (p.typeSetup) {
+    const pence = priceForItem(menuPence, p.typeSetup, itemId)
+    return { pence, basis: pence === menuPence ? null : 'event_type' }
+  }
+  /* 3 · THE MENU. */
+  return { pence: menuPence, basis: null }
+}
+
+/**
+ * Does this event charge ANY of these items something other than the menu?
  *
  * 🔴 THE AMBIGUOUS-EVENT GUARD IS WHAT THIS IS FOR (decision 7). When an order arrives with no event
  * id and the date has two events, the server must not GUESS which one to price against — but it must
  * also not refuse an order for a truck that has never used this feature, which is every truck today.
  * So the question is not "does this event have a setup" but "would it charge anything different":
- * a type whose switch is on with mode 'none' and no typed prices is a setup that changes nothing, and
- * an order under it is not ambiguous in any way that matters.
+ * a type whose switch is on with mode 'none' and no typed prices changes nothing, and an order under
+ * it is not ambiguous in any way that matters.
  * ⚠️ IT COMPARES COMPUTED PRICES, NOT COLUMNS. Comparing columns would call `+0%` a change.
  */
 export function pricingDiffersFromMenu(
-  resolved: ResolvedPricing,
+  p: EventItemPricing,
   items: readonly { id: string; pricePence: number }[],
 ): boolean {
-  if (!resolved.setup) return false
+  if (!pricingApplies(p)) return false
   for (const it of items) {
-    if (priceForItem(it.pricePence, resolved.setup, it.id) !== it.pricePence) return true
+    if (priceAtEvent(it.pricePence, it.id, p).pence !== it.pricePence) return true
   }
   return false
 }
@@ -361,19 +432,35 @@ export function describeRule(setup: PriceSetup | null | undefined): string | nul
  * broken. The prices happen to equal the menu, which is what "Festival's prices" then means.
  */
 export function summarisePricing(
-  resolved: ResolvedPricing,
+  p: EventItemPricing,
   typeName: string | null | undefined,
-  typedCount: number,
+  /** How many items THIS EVENT has typed a price for. */
+  eventTypedCount: number,
 ): string {
-  if (!resolved.setup) return 'Menu prices'
-  const head = resolved.basis === 'event'
-    ? 'Own prices'
-    : `${typeName ?? 'Event type'}’s prices`
+  /* ══ 🔴 RE-WORDED FOR THE PER-ITEM RULE (5 October 2026) ══════════════════════════════════════
+   * The third shape used to be "Own prices · +15%, nearest £1 · 1 typed", which described a
+   * whole-event rule that no longer exists. An event now only ever has typed prices, so the honest
+   * sentence names how many items it has changed and leaves the type's rule where it belongs:
+   *   "Menu prices"
+   *   "Festival's prices · +10%, nearest £1"
+   *   "Festival's prices · +10% · 2 items changed for this event"
+   *   "2 items changed for this event"            ← no type, or its pricing is off
+   * ⚠️ A ROUNDING OF 'none' IS NOT MENTIONED. "+£1, no rounding" is a phrase about a thing that did
+   * not happen; the absence of the clause says it.
+   * ⚠️ A TYPE WHOSE SWITCH IS ON BUT CHANGES NOTHING STILL SAYS WHOSE PRICES THEY ARE. Reporting
+   * "Menu prices" would make the switch look broken; the prices happen to equal the menu. */
+  const own = eventTypedCount > 0
+    ? `${eventTypedCount} item${eventTypedCount === 1 ? '' : 's'} changed for this event`
+    : null
+  if (!p.typeSetup) return own ?? 'Menu prices'
   const parts: string[] = []
-  const rule = describeRule(resolved.setup)
-  const rounding = isPriceRounding(resolved.setup.rounding) ? resolved.setup.rounding : 'none'
+  const rule = describeRule(p.typeSetup)
+  const rounding = isPriceRounding(p.typeSetup.rounding) ? p.typeSetup.rounding : 'none'
   if (rule) parts.push(rounding === 'none' ? rule : `${rule}, ${ROUNDING_PHRASE[rounding]}`)
-  if (typedCount > 0) parts.push(`${typedCount} typed`)
+  const typeTypedCount = Object.keys(p.typeSetup.typed).length
+  if (typeTypedCount > 0) parts.push(`${typeTypedCount} typed`)
+  if (own) parts.push(own)
+  const head = `${typeName ?? 'Event type'}’s prices`
   return parts.length ? `${head} · ${parts.join(' · ')}` : head
 }
 

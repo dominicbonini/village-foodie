@@ -6,11 +6,10 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { hasFeature, canAccess } from '@/lib/features'
 import { scanUrl } from '@/lib/custom-domain/copy'   // the one builder for the address a QR encodes
-/* ⚠️ TRIMMED (October 2026). The mode labels, the ⚠️ explainer, the auto-reject picker's copy and
- * the purpose line all moved with the offline-protection control into
- * components/dashboard/ThisEventCard.tsx, so this file imports only the two window.confirm
- * bodies its own toggle still shows, and the mode TYPE for the resolved value. */
-import { OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, type OfflineProtectionMode } from '@/lib/copy/offlineProtection'
+/* ✅ RESTORED IN FULL (5 October 2026). It had been trimmed to two strings when the offline-protection
+ * control moved into the deleted "This event" card; the card is gone and the card's copy came back
+ * with it, so this file imports the same set `origin/main` does. */
+import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, type OfflineProtectionMode, OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_AUTO_REJECT_LABEL, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS, offlineAutoRejectLabel, OFFLINE_PROTECTION_PURPOSE } from '@/lib/copy/offlineProtection'
 import AppHeader from '@/components/shared/AppHeader'
 import { playNewOrder, playOrderDue, installAudioUnlock, primeAudio } from '@/lib/audio'
 
@@ -35,8 +34,30 @@ import { ToastStack } from '@/components/ToastStack'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
-import { ThisEventCard, useEventDeals } from '@/components/dashboard/ThisEventCard'
-import { EventPricesSheet } from '@/components/dashboard/EventPricesSheet'
+/* ⛔ `ThisEventCard` AND `EventPricesSheet` ARE DELETED (5 October 2026) — see the tombstone where the
+ * card was mounted, on the Settings tab. `DemoLockChip` is imported again because the two cards that
+ * used it (offline protection, order-ready step) are back. */
+import { DemoLockChip } from '@/components/dashboard/DemoLockChip'
+/* 🔴 THE MENU & STOCK PRICE COLUMN'S WORDS AND ITS VALIDATOR (5 October 2026). `cleanTypedPrice` is
+ * the SERVER's own validator, imported rather than re-implemented, so the box refuses exactly what
+ * `set_event_item_price` refuses. ⛔ NO PRICE ARITHMETIC IS IMPORTED OR WRITTEN ON THIS SCREEN — the
+ * figures come from the route, computed by `priceAtEvent`. */
+import { cleanTypedPrice } from '@/lib/event-pricing/price'
+/* 🔴 THE HEADER'S TYPE LABEL AND THE PICKER'S WORDS. `colourFor`/`STANDARD_COLOUR` are the SAME
+ * derivation the Event types grid and the Add event pill row use, so one type is one colour on every
+ * screen; the two privacy confirms are the one copy module that owns those sentences (§73). */
+import { colourFor, STANDARD_COLOUR } from '@/lib/event-types/types'
+import {
+  PRIVATE_PUBLIC_NAME, CONFIRM_TO_PRIVATE, CONFIRM_FROM_PRIVATE,
+} from '@/lib/private-events/copy'
+/* 🔴 THE ONE FORMATTER FOR "what is this private event called" — shared with the Events list, so a
+ * blank name degrades to the generic label in one place rather than in three. */
+import { privateDisplayName } from '@/lib/private-events/resolve'
+import {
+  EVENT_ITEMS_CARD_DESCRIPTION, EVENT_PRICE_COLUMN_LABEL, eventPriceOwnNote,
+  EVENT_PRICE_EDIT, EVENT_PRICE_CANCEL, EVENT_PRICE_SAVE,
+  EVENT_PRICE_EDIT_NOTE, EVENT_PRICE_LIVE_NOTE,
+} from '@/lib/copy/serviceSettings'
 import { resolveOfflineWithType, offlineIsHandChange } from '@/lib/event-types/resolve'
 import { readSoundConfig, writeSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
 
@@ -289,6 +310,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[optStockDrafts,setOptStockDrafts]=useState<Record<string,string>>({})
   // Set by Escape so the blur it triggers reverts the draft instead of committing it.
   const skipStockBlurRef=useRef(false)
+  /* ── 🔴 THE PRICE COLUMN'S DRAFTS (5 October 2026), KEYED BY `menu_items_db.id` ────────────────
+   * ⚠️ BY ID, NOT BY NAME, unlike `stockDrafts` beside it. `event_item_prices` is keyed on the id
+   * (two dishes may share a name, and a price written against the wrong one is money), so the draft
+   * has to be too or two same-named dishes would share one draft box.
+   * ⚠️ ITS OWN ESCAPE REF. Sharing `skipStockBlurRef` would let Escape in a price box swallow the
+   * commit of a stock box blurring in the same tick. */
+  const[priceDrafts,setPriceDrafts]=useState<Record<string,string>>({})
+  const skipPriceBlurRef=useRef(false)
   // ── SHARED optimistic-write guard (ONE mechanism for every dual-source field) ─────────────────────────
   // A field the operator edits optimistically registers its key here; any background refetch (poll /
   // realtime / reseed) applies the DESIRED value over server state until the server ECHOES it (then the
@@ -1811,7 +1840,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // truck must keep the CURRENT ORIGIN (customerUrlBase, :185-192) or a localhost tester is sent to
   // production where their truck does not exist. Calling `scanUrl(slug)` bare would have silently
   // dropped that split — the path shape is shared, the host decision is not.
-  const customerOrderUrl = truck?.slug ? scanUrl(truck.slug, customerUrlBase) : null
+  const publicOrderUrl = truck?.slug ? scanUrl(truck.slug, customerUrlBase) : null
+
+  /* ⚠️ `customerOrderUrl` IS DECLARED FURTHER DOWN, below `activeEvent` — it depends on whether the
+   * ACTIVE EVENT is private, and `activeEvent` is resolved after this point. The two handlers below
+   * read it at CLICK time, which is always after render, so the later `const` is legal and the
+   * alternative (moving `activeEvent` up) would reorder half this component. */
 
   const handleCopyOrderLink=async()=>{
     const orderUrl=customerOrderUrl
@@ -3038,39 +3072,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch{/* the row simply does not appear */}})()
     return()=>{live=false}},[token])
 
-  /* The card's deals row. `post` is this page's own authenticated POST, so the hook needs no token. */
-  const dashPost=useCallback(async(body:Record<string,unknown>)=>{
-    try{
-      const r=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,...body})})
-      return await r.json().catch(()=>null)
-    }catch{return null}
-  },[token,pin])
-  const{deals:eventDeals,setDeal:setEventDeal,reloadDeals}=useEventDeals(dashPost,activeEvent?.id??null)
+  /* ⛔ THE DEALS HOOK AND THE PRICE SUMMARY ARE GONE (5 October 2026), with the "This event" card.
+   *   • `useEventDeals` / `dashPost` served the card's DEALS section, which duplicated Manage ›
+   *     Schedule's per-event deal switches. The three dashboard actions behind it are deleted too.
+   *   • `event_pricing_summary` / `pricesSummary` / `pricesOwn` / `pricesReady` / `pricesSheet`
+   *     described the whole-event "own prices" rule, which no longer exists.
+   *   • `resetThisEvent` was the card's "Reset to <type>". The reset is now the "Clear my changes and
+   *     use <type> exactly" checkbox inside the Change-event-type confirm.
+   *   • `cardCustomerInterval` / `cardIntervalOwn` were the card's Collection times row; that box owns
+   *     the pair on this tab and always did. */
 
-  /* ── 🔴 THIS EVENT'S PRICES — THE CARD'S LINE AND THE SHEET (§70) ───────────────────────────────
-   * One light read (`event_pricing_summary`) when the event changes and after a save. It is NOT on
-   * the live poll: prices change only when the operator changes them, and that route's own comment
-   * explains why the summary is computed server-side rather than from flags here.
-   *
-   * ── 🔴 AN EFFECT WITH A TICK, NOT A `useCallback` THE SHEET CALLS BACK INTO ────────────────────
-   * Two reasons, and the second is a bug the first version had:
-   *   1. A `useCallback` here made the React Compiler report "Existing memoization could not be
-   *      preserved" and SKIP COMPILING this 6,000-line component. Measured both ways. The read has
-   *      one trigger (the event changed, or a save happened), which is what an effect's dependency
-   *      list is for.
-   *   2. 🔴 A STALE RESPONSE COULD OVERWRITE A NEWER ONE. Switch event A → B while A's request is in
-   *      flight and A's answer lands last, so the card shows A's prices under B's name — on the one
-   *      row where being wrong means quoting a price. `live` is the guard, and only an effect has the
-   *      cleanup to hang it on.
-   *
-   * ⚠️ `pricesReady` false MEANS 20261011 IS NOT APPLIED. The row still shows and still says "Menu
-   * prices", which is TRUE in that state — every order is charged the menu price — so there is
-   * nothing to hide. What it withholds is the SHEET, whose save would 400.
-   */
-  const[pricesSummary,setPricesSummary]=useState('Menu prices')
-  const[pricesOwn,setPricesOwn]=useState(false)
-  const[pricesReady,setPricesReady]=useState(false)
-  const[pricesSheet,setPricesSheet]=useState(false)
   /* 🔴 THE PRIVATE LINK & QR PANEL (20261014). The event id it is open for, or null.
    * ⚠️ THE TOKEN IS FETCHED ON DEMAND, not held in page state: it is a working credential, and the
    * dashboard polls — there is no reason for it to be in memory for a whole service. */
@@ -3094,65 +3105,224 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     })()
     return()=>{live=false}
   },[privateLinkFor,token])
-  /** Bumped after a save, to re-read. The sheet never writes this page's price state directly. */
-  const[pricesTick,setPricesTick]=useState(0)
   const activeEventId=activeEvent?.id??null
+
+  /* ══ 🔴 A PRIVATE EVENT'S "Order link" AND "QR code" ARE THE **PRIVATE** ONES (5 October 2026) ═════
+   *
+   * ⛔ THIS WAS A REAL LEAK AND IT IS THE REASON THIS BLOCK EXISTS. Both header buttons read
+   * `customerOrderUrl`, which is `/o/<slug>` — the truck's PUBLIC order page. On a private event that
+   * page does not take orders for it (the event is redacted and dropped from every public feed), so an
+   * operator copying the link or showing the QR at a wedding was handing guests an address that cannot
+   * order — and handing them the truck's public page instead of the one-event link the whole feature
+   * exists to produce.
+   *
+   * 🔴 SO FOR A PRIVATE EVENT THE ANSWER IS `/p/<token>`, AND IF THE TOKEN CANNOT BE READ THE ANSWER
+   * IS **NOTHING**. It does NOT fall back to the public link: falling back is how a private event's
+   * guests end up on a public page, and both handlers already say "Order URL not available" for a
+   * truck with no slug, so the failure has a sentence already.
+   * ⚠️ ONE READ, WHEN THE EVENT CHANGES AND ONLY FOR A PRIVATE EVENT. It is the same `private_link`
+   * action the panel uses, so there is one definition of "this event's link".
+   * ⚠️ `live` GUARDS THE SET so switching events while a request is in flight cannot land event A's
+   * token under event B's name — on the one value where being wrong means publishing an address.
+   */
+  /* 🔴 ONE DERIVATION OF "IS THIS EVENT PRIVATE", READ BY EVERY SURFACE ON THIS PAGE: the header's
+   * purple lock, the Order link / QR address, the `Manage event ▾` private row, and the type picker's
+   * two privacy confirms. ⚠️ FROM `truck_events.is_private`, THE EVENT'S OWN COLUMN — never from the
+   * type row, because an event can be private while its type is still being read and `is_private` is
+   * the visibility source of truth (§73.1). A second expression for this was in the file for an hour
+   * and is exactly the kind that drifts. */
+  const eventIsPrivate=(activeEvent as {is_private?:boolean|null}|null)?.is_private===true
+  const[privateOrderUrl,setPrivateOrderUrl]=useState<string|null>(null)
   useEffect(()=>{
     let live=true
-    const menu=()=>{if(live){setPricesSummary('Menu prices');setPricesOwn(false);setPricesReady(false)}}
-    if(!activeEventId){menu();return}
+    if(!activeEvent?.id||!eventIsPrivate){ if(live)setPrivateOrderUrl(null); return }
+    void(async()=>{
+      try{
+        const r=await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({token,action:'private_link',id:activeEvent.id})})
+        const j=await r.json().catch(()=>({}))
+        if(!live)return
+        setPrivateOrderUrl(r.ok&&j?.ok&&typeof j.url==='string'?j.url:null)
+      }catch{ if(live)setPrivateOrderUrl(null) }
+    })()
+    return()=>{live=false}
+  },[activeEvent?.id,eventIsPrivate,token])
+
+  /** 🔴 THE ONE ADDRESS EVERY HEADER CONTROL READS. Private ⇒ the private link or nothing. */
+  const customerOrderUrl = eventIsPrivate ? privateOrderUrl : publicOrderUrl
+
+
+  /* ══ 🔴 THIS EVENT'S PRICES, PER ITEM — FOR THE Menu & Stock PRICE COLUMN (5 October 2026) ════════
+   * `charged` is every item whose price MOVED from the menu, in pounds by `menu_items_db.id`;
+   * `eventOwn` is the subset THIS EVENT typed. Both are computed SERVER-SIDE by `priceAtEvent`, the
+   * function the submit route charges with — so the column cannot promise a price the till will not
+   * take. ⛔ NO CLIENT-SIDE `menu × rule` ARITHMETIC ANYWHERE ON THIS SCREEN.
+   *
+   * ── 🔴 AN EFFECT WITH A TICK, NOT A `useCallback` THE COLUMN CALLS BACK INTO ────────────────────
+   * Both reasons the deleted summary read carried still apply and are worth keeping:
+   *   1. a `useCallback` here made the React Compiler report "Existing memoization could not be
+   *      preserved" and SKIP COMPILING this 6,000-line component. Measured both ways.
+   *   2. 🔴 A STALE RESPONSE COULD OVERWRITE A NEWER ONE. Switch event A → B while A's request is in
+   *      flight and A's answer lands last, so the column shows A's prices under B's name — on the one
+   *      surface where being wrong means quoting a price. `live` is the guard, and only an effect has
+   *      the cleanup to hang it on.
+   * ⚠️ NOT ON THE LIVE POLL. Prices change only when the operator changes them; `priceTick` is bumped
+   * after a save.
+   * ⚠️ `priceReady` false MEANS 20261011 IS NOT APPLIED (the route answers 200 with ok:false — the
+   * fail-open state). The column then shows the MENU price, which is exactly what is charged in that
+   * state, and is not editable: a box whose save would 400 is worse than no box. */
+  const[priceTick,setPriceTick]=useState(0)
+  const[eventCharged,setEventCharged]=useState<Record<string,number>>({})
+  const[eventOwnPrice,setEventOwnPrice]=useState<Record<string,number>>({})
+  /* 🔴 WHAT EACH CHANGED ITEM WOULD COST **WITHOUT** THE EVENT'S OWN PRICE, from the server. It is
+   * what the blue line under the name names, and `eventTypeName` decides whether that line says
+   * "menu" or the type's name. ⛔ NOT DERIVED FROM `item.price` HERE: an event price that departs from
+   * a Festival rule departs from the FESTIVAL price, and saying "menu" about it is a false claim. */
+  const[eventFallback,setEventFallback]=useState<Record<string,number>>({})
+  const[eventTypeName,setEventTypeName]=useState<string|null>(null)
+  const[priceReady,setPriceReady]=useState(false)
+  const[eventPriceLive,setEventPriceLive]=useState(false)
+  useEffect(()=>{
+    let live=true
+    const none=()=>{if(live){setEventCharged({});setEventOwnPrice({});setEventFallback({});setEventTypeName(null);setPriceReady(false);setEventPriceLive(false)}}
+    if(!activeEventId){none();return}
     void(async()=>{
       try{
         const r=await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({token,action:'event_pricing_summary',eventId:activeEventId})})
+          body:JSON.stringify({token,action:'event_item_prices',eventId:activeEventId})})
         const j=await r.json().catch(()=>({}))
         if(!live)return
-        if(!r.ok){menu();return}
-        setPricesSummary(typeof j.summary==='string'?j.summary:'Menu prices')
-        setPricesOwn(j.own===true)
-        /* 🔴 `ok` IS THE PROBE'S VERDICT, not "did the HTTP call work". `readEventPricing` answers 200
-         * with ok:false when the pricing columns are absent — the fail-open state — and that is
-         * exactly the case where the sheet must not be offered. */
-        setPricesReady(j.ok===true)
-      }catch{menu()}
+        if(!r.ok){none();return}
+        setEventCharged(j.charged&&typeof j.charged==='object'?j.charged as Record<string,number>:{})
+        setEventOwnPrice(j.eventOwn&&typeof j.eventOwn==='object'?j.eventOwn as Record<string,number>:{})
+        setEventFallback(j.fallback&&typeof j.fallback==='object'?j.fallback as Record<string,number>:{})
+        setEventTypeName(typeof j.typeName==='string'?j.typeName:null)
+        setPriceReady(j.ok===true)
+        setEventPriceLive(j.live===true)
+      }catch{none()}
     })()
     return()=>{live=false}
-  },[activeEventId,token,pricesTick])
+  },[activeEventId,token,priceTick])
 
-  /* ── 🔴 "RESET TO <TYPE>" — IT CLEARS ONLY WHAT THIS CARD CONTROLS ─────────────────────────────
-   * Two writes, and both are existing per-event paths:
-   *   1. `assign` with `clearOwn: true` nulls exactly the columns in CLEARABLE_EVENT_COLUMNS, which
-   *      is derived from SERVICE_ROWS — the five service rows and nothing else. The pause, the extra
-   *      wait, the paid step, the completion presses and the offline MARKERS are untouched.
-   *   2. the per-event DEAL rows this event overrode are deleted, so those deals go back to the
-   *      bundle's own default. A deal row IS a hand change on this event, so a reset that left them
-   *      would leave a THIS EVENT tag behind and contradict its own count.
-   * ⚠️ IT DOES NOT CHANGE THE EVENT'S TYPE. "Reset to Festival" means "use Festival exactly", not
-   * "stop being a Festival".
-   */
-  const resetThisEvent=useCallback(async()=>{
-    if(!activeEvent)return
+  /* ══ 🔴 EDIT MODE — THE PRICE COLUMN IS READ-ONLY UNTIL IT IS OPENED (5 October 2026) ═════════════
+   * ⛔ IT WAS AN OPEN INPUT, AND THAT WAS THE DEFECT: prices change rarely and are the one value on
+   * this card a customer is charged, yet they sat in the same always-editable box as a stock number
+   * an operator edits twenty times a service. The easiest thing to change by accident was the only
+   * thing with a till consequence.
+   *
+   * 🔴 `pricePending` IS THE WHOLE OF "NOTHING SAVES UNTIL SAVE". It holds only the items the operator
+   * has TOUCHED, as `number | null` (null = clear back to the type/menu), and it is thrown away by
+   * Cancel without a request ever being made. The shown figure in edit mode is
+   * `pending ?? the server's own`, so an untouched row looks identical in both modes.
+   * ⚠️ IT IS KEYED BY `menu_items_db.id`, like the drafts beside it, because two dishes may share a
+   * name and a price written against the wrong one is money. */
+  const[priceEditing,setPriceEditing]=useState(false)
+  const[pricePending,setPricePending]=useState<Record<string,number|null>>({})
+  const[priceSaving,setPriceSaving]=useState(false)
+
+  /** Leave edit mode, discarding everything. ⚠️ ESCAPE AND Cancel ARE THE SAME ACT. */
+  const cancelPriceEdit=useCallback(()=>{
+    setPriceEditing(false);setPricePending({});setPriceDrafts({})
+  },[])
+
+  /* ── 🔴 SAVE: ONE REQUEST, AND ONLY THE ITEMS THAT ACTUALLY MOVED ───────────────────────────────
+   * ⚠️ A PENDING VALUE EQUAL TO WHAT IS ALREADY CHARGED IS DROPPED HERE, not sent and ignored by the
+   * server. "Typing the same price saves nothing" has to be true of the REQUEST, or a reader of the
+   * network tab would see a write the screen says did not happen.
+   * ⚠️ AND `null` FOR AN ITEM THAT HAD NO OWN PRICE IS DROPPED TOO — clearing something that was
+   * never set is not a change.
+   * ⛔ THE RE-READ IS WHAT UPDATES THE SCREEN, not the optimistic map: the server's answer may not be
+   * what was typed (a cleared price falls back to the type's), and the column must show what the till
+   * will take. */
+  const savePriceEdit=useCallback(async()=>{
+    if(!activeEventId){cancelPriceEdit();return}
+    const prices:Record<string,number|null>={}
+    for(const[itemId,value]of Object.entries(pricePending)){
+      const own=eventOwnPrice[itemId]
+      if(value===null){ if(own!==undefined)prices[itemId]=null; continue }
+      const shown=eventCharged[itemId]
+      if(shown!==undefined&&Math.abs(value-shown)<0.005)continue
+      if(shown===undefined){
+        /* No event or type price today ⇒ compare against the MENU price, which is what is charged. */
+        const menu=(truckMenu?.items??[]).find(i=>i.id===itemId)?.price
+        if(menu!==undefined&&Math.abs(value-menu)<0.005)continue
+      }
+      prices[itemId]=value
+    }
+    if(Object.keys(prices).length===0){cancelPriceEdit();return}
+    setPriceSaving(true)
     try{
       await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,action:'assign',eventId:activeEvent.id,typeId:eventType?.id??null,clearOwn:true})})
-      await dashPost({action:'reset_event_deals',eventId:activeEvent.id})
-      await reloadDeals()
-      await fetchAll(pin,true)
-    }catch{/* the values stay as they are and the next poll shows the truth */}
-  },[activeEvent,token,eventType?.id,dashPost,reloadDeals,fetchAll,pin])
+        body:JSON.stringify({token,action:'save_event_item_prices',eventId:activeEventId,prices})})
+      showToast('Prices saved for this event')
+    }catch{showToast('Couldn’t save the prices','error')}
+    finally{
+      setPriceSaving(false);setPriceEditing(false);setPricePending({});setPriceDrafts({})
+      setPriceTick(t=>t+1)
+    }
+  },[activeEventId,pricePending,eventOwnPrice,eventCharged,truckMenu,token,showToast,cancelPriceEdit])
 
-  /* ── THE CARD'S COLLECTION-TIMES VALUES ────────────────────────────────────────────────────────
-   * 🔴 THE SAME THREE EXPRESSIONS THE Kitchen TAB'S CONTROL USED, lifted out of its JSX so the card
-   * and that control cannot resolve the pair differently. `hasEventOv` is slot-interval's own test for
-   * "this event carries its own grid". */
-  const cardEvIntervals=activeEvent?eventIntervals[activeEvent.id]:undefined
-  const cardIntervalOwn=cardEvIntervals?.collection_interval_mins_override!==null&&cardEvIntervals?.collection_interval_mins_override!==undefined
-  const cardCustomerInterval=cardIntervalOwn
-    ?normaliseInterval(cardEvIntervals?.collection_interval_mins_override)
-    :normaliseInterval(vanIntervalPair.customer)
-  /* ⛔ NO `cardOperatorInterval`. An earlier draft of the card EDITED the collection pair and needed
-   * the operator value to write it back; the row hands over to the existing box instead (see the
-   * prop's note in ThisEventCard), so this file no longer resolves a value it does not write. */
+  /* ══ 🔴 THE EVENT TYPE IN THE DARK HEADER, AND THE PICKER BEHIND `Manage event ▾` ════════════════
+   * Both replace rows the deleted "This event" card held. The type belongs in the header because it
+   * is what the event IS — the same place its status and its venue are — not a setting among settings.
+   *
+   * 🔴 STANDARD RENDERS `null`. See the note at the render site: "Standard" on every bar would be a
+   * word carrying no information, in the one strip where space is scarce.
+   * ⚠️ PRIVATE IS `is_private`, THE EVENT'S OWN COLUMN, never the type row — `is_private` is the
+   * visibility source of truth and can be true while the type is still being read (§73.1).
+   * ⚠️ `?? false` BECAUSE THE COLUMN MAY BE ABSENT on a payload served before 20261014 is applied;
+   * absent means not private, which is every event today. */
+  /** The operator's own name for a private event, or null. ⚠️ `privateDisplayName` is the ONE
+   *  formatter — a blank name degrades to the generic label in one place, not three. */
+  const privateName=eventIsPrivate
+    ?(()=>{const n=privateDisplayName((activeEvent as {private_name?:string|null}|null)?.private_name)
+      return n===PRIVATE_PUBLIC_NAME?null:n})()
+    :null
+
+  const headerEventType=(()=>{
+    if(!activeEvent)return null
+    /* ⛔ NOTHING FOR A PRIVATE EVENT (5 October 2026, Dominic). The TITLE says "🔒 <name> — Private
+     * event" now, so a second lock beside Live / Not started would be the same fact twice in the
+     * strip where space is scarcest. A CUSTOM type still gets its label here, because its title is
+     * still the venue. */
+    if(eventIsPrivate)return null
+    if(!eventType)return null
+    /* ⚠️ THE DOT'S COLOUR IS `colourFor(index in the truck's list)` — the SAME derivation the grid and
+     * the Add event pill row use, so one type is one colour everywhere. A type that has left the list
+     * (deleted while this page was open) falls back to Standard's grey rather than throwing. */
+    const idx=eventTypeList.findIndex(t=>t.id===eventType.id)
+    return(
+      <span className="flex-shrink-0 flex items-center gap-1.5 text-xs font-medium text-slate-300">
+        <span aria-hidden className="w-2 h-2 rounded-full" style={{background:idx>=0?colourFor(idx):STANDARD_COLOUR}}/>
+        {eventType.name}
+      </span>
+    )
+  })()
+
+  /* The type picker, opened from `Manage event ▾`. `null` = Standard. */
+  const[typePicker,setTypePicker]=useState(false)
+  const[typePending,setTypePending]=useState<string|null|undefined>(undefined)
+  const[typeClearOwn,setTypeClearOwn]=useState(false)
+  const[typeBusy,setTypeBusy]=useState(false)
+
+  /* ── 🔴 THE ONE WRITE, AND IT IS THE EXISTING `assign` ACTION ───────────────────────────────────
+   * Identical to what the deleted card sent, including `clearOwn` — "Clear my changes and use <type>
+   * exactly", which is the ONLY remaining home of the card's "Reset to <type>".
+   * ⚠️ A FULL RE-SEED, NOT A LIVE REFETCH. The type is CONFIG and the live poll deliberately never
+   * re-seeds config, so a switch would not show until the next forced seed. `fetchAll(pin, true)` is
+   * the seeding call. ⚠️ AND THE PRICE COLUMN RE-READS TOO: a different type means different prices,
+   * and the column's own read is not on the poll either. */
+  const assignEventType=useCallback(async(typeId:string|null,clearOwn:boolean)=>{
+    if(!activeEvent)return
+    setTypeBusy(true)
+    try{
+      await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,action:'assign',eventId:activeEvent.id,typeId,clearOwn})})
+      await fetchAll(pin,true)
+      setPriceTick(t=>t+1)
+      setTypePicker(false);setTypePending(undefined);setTypeClearOwn(false)
+    }finally{setTypeBusy(false)}
+  },[activeEvent,token,fetchAll,pin])
 
   // ── DEMO — IS THERE A LIVE BOARD? ────────────────────────────────────────────────────────────────
   // 🔴 DEFINED HERE, ABOVE THE EARLY RETURNS, BECAUSE A HOOK READS IT (the auto-restart effect below).
@@ -3679,14 +3849,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   //      was doing double duty as both "click this" and "you can't use this" — precisely the wrong signal
   //      on a conversion surface, where the only orange on screen should be the way forward.
   // Renders nothing outside demo, so call sites need no conditional of their own.
-  /* ⛔ `demoLockChip` IS GONE, AND SO IS THE IMPORT. Its only two consumers were the
-   * offline-protection and order-ready cards, both of which moved into the "This event" card — which
-   * carries the demo rule as a DISABLED control rather than as a chip beside a heading it no longer
-   * has. That left `DemoLockChip` with no consumer ON THIS SCREEN, so the import went too.
-   * ⚠️ THE COMPONENT FILE IS LEFT IN PLACE AND NOW HAS NO CONSUMER AT ALL
-   * (components/dashboard/DemoLockChip.tsx). It is not deleted here because that is a decision about
-   * the demo's visual language, not about this move — and a demo chip is exactly the kind of thing the
-   * next demo screen wants. Listed as newly-unreachable in docs/event-types-stage2b-report.md. */
+  /* ✅ `demoLockChip` IS BACK (5 October 2026), with its two consumers: the offline-protection and
+   * order-ready cards. It had gone when both moved into the deleted "This event" card, which carried
+   * the demo rule as a disabled control instead. `DemoLockChip` therefore has a consumer again, and
+   * the "newly unreachable" note in docs/event-types-stage2b-report.md no longer applies. */
+  const demoLockChip = isDemo ? <DemoLockChip className="ml-2" /> : null
 
   // ── EXTRA WAIT — ONE WRITE, TWO CONTROLS ─────────────────────────────────────────────────────
   // 🔴 THE FETCH, THE OPTIMISTIC `markPending` PAIR AND THE `startedAt` STAMP ARE THE ORIGINALS, LIFTED
@@ -3952,8 +4119,33 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {activeEvent?(
               <>
                 <div className="flex-1 min-w-0">
+                  {/* ══ 🔴 A PRIVATE EVENT'S TITLE IS ITS **NAME**, NEVER ITS VENUE (5 October 2026) ═══
+                      ⛔ THE VENUE IS NOT RENDERED AT ALL for a private event — not greyed, not in a
+                      title attribute. "🔒 Sarah & Tom's wedding — Private event · 11:00–14:00", or
+                      "🔒 Private event · 11:00–14:00" where no name is set. The address of a private
+                      event is the one thing this whole feature exists to keep off a screen, and the
+                      dark bar is on every tab of the dashboard, in a van, in public.
+                      🔴 AND THE SEPARATE "🔒 Private event" LABEL BESIDE Live / Not started IS GONE for
+                      a private event: the title says it now, and two locks on one bar is the same fact
+                      twice in the strip where space is scarcest. A CUSTOM type keeps its label there,
+                      because its title is still the venue.
+                      ⚠️ `truncate` ON THE TITLE AND `min-w-0` ON ITS PARENT — the flexible column —
+                      with `flex-shrink-0` on the status and on Manage event. A long private name
+                      therefore truncates and cannot push Manage event off the bar; measured at
+                      1440/820/390 in both engines.
+                      ⚠️ THE NAME COMES FROM `privateDisplayName`, the ONE formatter the Events list and
+                      the deleted card both used, so a blank name degrades to the generic label in one
+                      place rather than three. */}
                   <span className="block text-white text-sm font-medium truncate">
-                    📍 {fmtVenue(activeEvent.venue_name,activeEvent.town)} · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
+                    {eventIsPrivate?(<>
+                      <span aria-hidden>🔒</span>{' '}
+                      {privateName
+                        ?<>{privateName} — <span className="text-purple-300 font-bold">{PRIVATE_PUBLIC_NAME}</span></>
+                        :<span className="text-purple-300 font-bold">{PRIVATE_PUBLIC_NAME}</span>}
+                      {' · '}{formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
+                    </>):(<>
+                      📍 {fmtVenue(activeEvent.venue_name,activeEvent.town)} · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
+                    </>)}
                   </span>
                   {/* FIX 8 — DEMO hides the date. The demo event is always "today" by construction, so the
                       line carries no information and just dates the screenshot. */}
@@ -3968,6 +4160,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 {(()=>{const st=eventStatusDisplay(activeEvent.status,paused);return(
                   <span className={`text-xs font-medium ${EVENT_STATUS_TEXT_ON_DARK[st.tone]} flex-shrink-0`}>{st.label}</span>
                 )})()}
+                {/* ══ 🔴 THE EVENT'S TYPE, RIGHT AFTER THE STATUS (5 October 2026) ══════════════════
+                    🔴 STANDARD SHOWS **NOTHING**, and that is the whole design. Standard is what every
+                    event is until somebody says otherwise, so a label reading "Standard" on every bar
+                    on every screen would be a word that carries no information and takes space from a
+                    venue name that does.
+                    ⚠️ PRIVATE IS DECIDED FROM `is_private`, THE EVENT'S OWN COLUMN — never from the
+                    type row, because an event can be private while its type is still being read, and
+                    `is_private` is the visibility source of truth (§73.1).
+                    ⚠️ A CUSTOM TYPE SHOWS ITS COLOUR DOT AND ITS NAME, the same dot `colourFor` gives
+                    it in the Event types grid and the Add event pill row — so the three screens agree
+                    at a glance about which type is which.
+                    ⚠️ `flex-shrink-0` AND NO TRUNCATION: the venue line beside it is the flexible one
+                    and already truncates. A type name is at most 40 characters by `MAX_TYPE_NAME`. */}
+                {headerEventType}
                 {/* Labeled, obviously-tappable trigger for the event-level actions (pause / +30 / finish /
                     cancel / note) — names the menu so those actions are discoverable, not hidden behind ⋯. */}
                 {/* DEMO: SHOW, don't hide (§3 Stage 3 — "a prospect can't want what they can't see"). Event
@@ -4744,18 +4950,89 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 additionally blocked in toggleOfflineProtection so a click can never write set_offline_
                 protection — the disabled state is enforced, not just styled. The ⚠️ operator explainer is
                 swapped for a calm one-liner; there is nothing here for a visitor to act on. */}
-            {/* ⛔ MOVED INTO THE "This event" CARD at the top of this tab (October 2026), as one row with
-                a dropdown — Off, or either of the two modes — plus the ⚠️ instruction and the
-                auto-reject delay beneath it when that mode is chosen.
-                🔴 IT WAS ALREADY PER-EVENT: it writes `truck_events.offline_protection_override`,
-                `offline_protection_mode_override` and `offline_auto_reject_mins_override` for the
-                active event and never the van's columns, which is exactly what the card is for. NOT
-                DUPLICATED — this is the only copy and it is up there.
-                🔴 THE SAFETY-CRITICAL ⚠️ INSTRUCTION TRAVELLED WITH IT, verbatim from
-                lib/copy/offlineProtection.ts, and shows whenever protection resolves on. The two
-                modes are still the same `OFFLINE_PROTECTION_MODES` constants, so this surface and
-                Settings › Kitchen cannot word them differently.
-                ⚠️ THE DEMO RULE TRAVELLED TOO: a demo truck sees the control and cannot arm it. */}
+            {/* ✅ RESTORED 5 October 2026, byte-for-byte from `origin/main`. It had been moved into the
+                "This event" card as one row with a dropdown; it is its own card again, with the two
+                mode radios and the auto-reject delay nested under the mode that owns it.
+                🔴 IT WAS ALWAYS PER-EVENT and still is: `truck_events.offline_protection_override`,
+                `offline_protection_mode_override`, `offline_auto_reject_mins_override` for the active
+                event, never the van's columns. The resolution through the event TYPE is unchanged. */}
+            {activeEvent&&(
+              <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">{OFFLINE_PROTECTION_SWITCH_LABEL}{demoLockChip}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_PURPOSE}</p>
+                  {!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>}
+                </div>
+                <Toggle on={isDemo?false:effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)} disabled={isOffline||isDemo}/>
+                </div>
+                {/* ── 🔴 THE TWO MODES — SHOWN ONLY WHEN THE SWITCH IS ON ────────────────────────────
+                    WITH THE SWITCH OFF THIS BLOCK DOES NOT RENDER AT ALL: there is nothing to choose
+                    between, and a visible mode picker under an off switch reads as a setting that is
+                    doing something. The card is then exactly what it was before this change.
+                    ⚠️ SAME SHAPE AS MANAGE'S — one radio row per mode, label then help, from the SAME
+                    `OFFLINE_PROTECTION_MODES` array, so the two surfaces cannot drift.
+                    ⚠️ `role="radio"` + `aria-checked` in a `radiogroup`: these are one choice with two
+                    states, not two toggles. */}
+                {!isDemo&&effectiveOfflineProtection&&(
+                  <div role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL} className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
+                    {/* MOVED DOWN FROM THE HEADING. It describes the CHOICE below it, so it reads as the
+                        options' lead-in rather than as a summary of the whole box. */}
+                    <p className="text-xs text-slate-500">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
+                    {OFFLINE_PROTECTION_MODES.map(m=>(
+                      <div key={m.value} className="flex flex-col gap-2">
+                      <button type="button" role="radio" aria-checked={effectiveOfflineMode===m.value}
+                        onClick={()=>{if(effectiveOfflineMode!==m.value){void setOfflineMode(m.value)
+                          // 🔴 THE DEFAULT IS WRITTEN HERE, AND ONLY HERE. Choosing this mode IS the
+                          // operator interaction, so a van with no stored delay gets one at that moment
+                          // rather than on render — a van nobody touches keeps NULL and nothing
+                          // auto-rejects for it. Skipped when a delay is already stored, so an existing
+                          // choice is never overwritten by re-selecting the mode.
+                          if(m.value==='no_auto_accept'&&effectiveAutoRejectMins==null)void setAutoRejectMins(OFFLINE_AUTO_REJECT_DEFAULT_MINS)}}}
+                        disabled={isOffline}
+                        className="flex items-start gap-2.5 w-full text-left disabled:opacity-50">
+                        <span className={`w-4 h-4 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${effectiveOfflineMode===m.value?'border-orange-500':'border-slate-300'}`}>
+                          {effectiveOfflineMode===m.value&&<span className="w-2 h-2 rounded-full bg-orange-500"/>}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-semibold text-slate-800">{m.label}</span>
+                          <span className="block text-xs text-slate-500">{m.help}</span>
+                        </span>
+                      </button>
+                      {/* ── 🔴 THE DELAY BELONGS TO THIS OPTION, SO IT SITS INSIDE IT. ────────────────
+                          Indented under the option's own description and with NO divider above it: a
+                          rule would have made it read as a separate setting, which is what it looked
+                          like before. `pl-6` clears the 16px radio plus its 10px gap so the control
+                          lines up with the label text — the same "indent a dependent control under its
+                          parent" idiom the buzzer count row uses with `pl-4`.
+                          It renders only when this mode is the selected one, and only for this option.
+                          🔴 THERE IS NO "OFF". An operator choosing this mode must choose a delay —
+                          without one an order can sit indefinitely while the customer is never told it
+                          was not accepted, which is what the feature exists to prevent.
+                          ⚠️ AND NOTHING IS WRITTEN ON RENDER. A van storing NULL shows the placeholder
+                          and stays NULL until the operator picks; the mode itself has already saved. */}
+                      {m.value==='no_auto_accept'&&effectiveOfflineMode==='no_auto_accept'&&(
+                        <div className="pl-6">
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="text-xs font-semibold text-slate-800">{OFFLINE_AUTO_REJECT_LABEL}</span>
+                            <select
+                              value={effectiveAutoRejectMins ?? OFFLINE_AUTO_REJECT_DEFAULT_MINS}
+                              aria-label={OFFLINE_AUTO_REJECT_LABEL}
+                              disabled={isOffline}
+                              onChange={e=>void setAutoRejectMins(parseInt(e.target.value))}
+                              className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                            >
+                              {OFFLINE_AUTO_REJECT_OPTIONS.map(n=><option key={n} value={n}>{offlineAutoRejectLabel(n)}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             {/* Auto-accept + its dependent "review notes" sub-option read as ONE group (divide-y rows, same
                 treatment as the Sounds card). Notes-review only applies when auto-accept is on (conditional).
                 FIX 9 — DEMO: fully AVAILABLE and interactive, defaulted ON (set at provision). It genuinely
@@ -4857,110 +5134,40 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 label was tried and removed: it is only needed in MANAGE, where three groups share one
                 Order settings card, and here the nesting already carries what it was saying. Do not
                 reinstate it — and note SUBCARD_HEADING is a MANAGE token; this file no longer imports it. */}
-            {/* ── 🔴 EVENT TYPE — ONE MOUNT, ABOVE THE PER-EVENT SETTINGS IT EXPLAINS ─────────────
-                🔴 IT SITS HERE, NOT IN A CARD OF ITS OWN, because the type is what the rows below
-                resolve FROM: a truck reading "Buzzers: On" needs to see that Festival is why. The
-                control renders nothing for a truck with no types, so this card is unchanged for
-                every truck today.
-                ⚠️ IT DOES NOT CARRY PER-EVENT SCOPE WORDING, per the rule stated immediately below:
-                scope is a property of this screen, not of each row. Its own confirm says what changes.
-                ⚠️ THE "THIS EVENT" FLAGS COME FROM THE SERVER (`eventOwnSettings`), from the same
-                functions that resolved the values — not re-derived here, or the badge and the value
-                could describe different things. */}
-            {/* ── 🔴 "THIS EVENT" — ONE CARD, ONE MOUNT (October 2026, Dashboard2 board) ──────────
-                It replaces the standalone `EventTypeDashboardControl` that stood here, and it is now
-                where FIVE per-event controls live: the buzzer prompt, take cash, the "mark ready"
-                step, collection times and offline protection. Each of those was its own card lower
-                down this tab; none is duplicated — every one was MOVED, and the list is in
-                docs/event-types-stage2b-report.md for approval before this deploys.
-                🔴 IT MOUNTS AT THE TOP OF THIS TAB, which is the screen every one of those controls
-                already lived on — so no control changed screens, only its position within one. The
-                alternative (the orders screen, as the board sketches) would put a tall settings card
-                above the orders an operator is working through.
-                ⚠️ IT SHOWS FOR EVERY TRUCK, including trucks with no event types; the Event type row
-                inside it is what is conditional. */}
-            {activeEvent && (
-              <div className="mb-3">
-                <ThisEventCard
-                  eventId={activeEvent.id}
-                  /* ── 🔴 PRIVATE EVENTS (20261014) ────────────────────────────────────────────
-                   * Straight off the event row — `truck_events.is_private`, the visibility source of
-                   * truth — never derived from the type.
-                   * ⚠️ `?? false` BECAUSE THE COLUMN MAY BE ABSENT on a dashboard payload served
-                   * before 20261014 is applied; absent means not private, which is every event
-                   * today, so the row is simply not drawn. */
-                  isPrivate={(activeEvent as { is_private?: boolean | null }).is_private ?? false}
-                  privateName={(activeEvent as { private_name?: string | null }).private_name ?? null}
-                  onOpenPrivateLink={() => setPrivateLinkFor(activeEvent.id)}
-                  types={eventTypeList}
-                  currentTypeId={eventType?.id ?? null}
-                  onAssignType={async (typeId, clearOwn) => {
-                    await fetch('/api/event-types', {
-                      method: 'POST', headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ token, action: 'assign', eventId: activeEvent.id, typeId, clearOwn }),
-                    })
-                    /* ⚠️ A FULL RE-SEED, NOT A LIVE REFETCH. The type is CONFIG, and `fetchAllRef` is
-                     * the live poll that deliberately never re-seeds config — so a switch would not
-                     * show until the next forced seed. `fetchAll(pin, true)` is the seeding call. */
-                    await fetchAll(pin, true)
-                  }}
-                  buzzerCount={vanBuzzerCount}
-                  buzzerPrompt={effectiveBuzzerPrompt}
-                  onBuzzerPrompt={v => void saveBuzzerPromptOverride(v)}
-                  buzzerPromptOwn={eventOwnSettings?.buzzer_prompt === true}
-                  takesCash={effectiveTakesCash}
-                  onTakesCash={v => void saveTakesCashOverride(v)}
-                  takesCashOwn={eventOwnSettings?.takes_cash === true}
-                  orderReady={effectiveOrderReady}
-                  onOrderReady={v => void setOrderReadyOverride(v)}
-                  orderReadyOwn={eventOwnSettings?.order_ready === true}
-                  collectionMins={cardCustomerInterval}
-                  /* ⚠️ IT HANDS OVER TO THE EXISTING BOX rather than editing the pair itself — see the
-                   * prop's own note. `collection-times-box` is that box's anchor on this tab. */
-                  onOpenCollection={()=>{document.getElementById('collection-times-box')?.scrollIntoView({behavior:'smooth',block:'center'})}}
-                  collectionOwn={cardIntervalOwn}
-                  offlineEnabled={effectiveOfflineProtection}
-                  offlineMode={effectiveOfflineMode}
-                  offlineAutoRejectMins={effectiveAutoRejectMins}
-                  onOffline={v => {
-                    if (v.enabled !== undefined) void toggleOfflineProtection(v.enabled)
-                    if (v.mode !== undefined) void setOfflineMode(v.mode)
-                    if (v.autoRejectMins !== undefined) void setAutoRejectMins(v.autoRejectMins)
-                  }}
-                  offlineOwn={offlineIsHandChange({
-                    offline_protection_override: eventOfflineOverride,
-                    offline_protection_mode_override: eventOfflineModeOverride,
-                    offline_auto_reject_mins_override: eventAutoRejectOverride,
-                  })}
-                  stockSummary={null}
-                  onOpenStock={() => setActiveTab('stock')}
-                  pricesSummary={pricesSummary}
-                  pricesOwn={pricesOwn}
-                  /* ⚠️ THE BUTTON IS VISIBLY DISABLED UNTIL 20261011 IS APPLIED — see the card's own
-                   * `pricesReady` note. The row still reads "Menu prices", which is true in that
-                   * state; a live-looking Change that does nothing is not. */
-                  onOpenPrices={() => setPricesSheet(true)}
-                  pricesReady={pricesReady}
-                  deals={eventDeals}
-                  onDeal={(bundleId, active) => void setEventDeal(bundleId, active)}
-                  onResetToType={() => void resetThisEvent()}
-                  disabled={isOffline}
-                  saving={savingBuzzerPrompt||savingTakesCashOverride||savingIntervals}
-                  isDemo={isDemo}
-                />
-              </div>
-            )}
-            {/* ── 🔴 THE SHEET, MOUNTED FROM ONE LINE ─────────────────────────────────────────────
-              * It is `fixed` itself, so it is correct wherever it is mounted; keeping it beside the
-              * card means this file gains one element and the panel owns everything else.
-              * ⚠️ AFTER A SAVE: the summary re-reads AND a full re-seed runs. The summary is what the
-              * card shows; `fetchAll(pin, true)` is what the page's own config state needs, and the
-              * live poll deliberately never re-seeds config. */}
-            {pricesSheet && activeEvent && (
-              <EventPricesSheet token={token} eventId={activeEvent.id}
-                onClose={() => setPricesSheet(false)}
-                onSaved={async () => { setPricesTick(t => t + 1); await fetchAll(pin, true) }} />
-            )}
+            {/* ══ ⛔ THE "This event" CARD IS DELETED, AND SO IS THE "Prices for this event" SHEET ════
+              *                                                                  (5 October 2026)
+              * `components/dashboard/ThisEventCard.tsx` and `components/dashboard/EventPricesSheet.tsx`
+              * are gone from the repository.
+              *
+              * 🔴 WHY. The card was never agreed, and what it did was MOVE five controls away from
+              * where operators already knew them. Every one of them was a card of its own further
+              * down this tab on the live site, and the card's own comment argued that "no control
+              * changed screens, only its position within one" — which is exactly the change nobody
+              * asked for. A control an operator reaches by muscle memory mid-service is not a layout
+              * problem to be tidied.
+              *
+              * ✅ EACH ONE IS BACK WHERE `origin/main` HAS IT, byte-for-byte in wording and look:
+              *     Offline order protection (+ its two modes + the auto-reject delay) — its own card
+              *     Do you take cash?            — nested in the "Separate paid step" card
+              *     Order-ready step             — its own card
+              *     Remind me to add a buzzer    — its own card
+              * 🔴 AND THE BEHAVIOUR UNDERNEATH IS UNCHANGED FROM THE CARD, which is the half worth
+              * keeping: each still resolves `event hand change ?? event type ?? van/truck default`,
+              * and a change here is still a per-event hand change written to `truck_events`.
+              *
+              * ⚠️ WHAT WENT ELSEWHERE, AND WHERE:
+              *   • Collection times — already its own box on this tab. Untouched.
+              *   • Stock and items sold — already on Menu & Stock. Untouched.
+              *   • PRICES — now a per-item **Price column in Menu & Stock**, on every plan. The
+              *     whole-event "own prices" rule and its sheet are deleted; see the tombstone in
+              *     app/api/event-types/route.ts.
+              *   • EVENT TYPE and the PRIVATE LINK — the dark event bar and `Manage event ▾`.
+              *   • The per-deal switches — they were a DUPLICATE. `origin/main` has them in
+              *     Manage › Schedule on the event itself, which is still their only home.
+              *   • "N settings changed for this event only" and "Reset to <type>" — the count has no
+              *     home and is gone; the reset is the "Clear my changes and use <type> exactly"
+              *     checkbox inside the Change-event-type confirm, which is where it was already
+              *     offered and where it now lives alone. */}
             {/* 🔴 THE PRIVATE LINK & QR PANEL — the SAME component the Events list opens. */}
             {privateLinkData && (
               <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 sm:items-center"
@@ -5090,16 +5297,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                      started asserting a wrong one. The disabled state plus the note carry it instead.
                   Both changes match app/manage/[token]/page.tsx exactly; full reasoning is recorded
                   there. Resolution is untouched — effectiveTakesCash still comes from the one resolver. */}
-              {/* ⛔ "Do you take cash?" MOVED INTO THE "This event" CARD at the top of this tab
-                  (October 2026). It writes `truck_events.takes_cash_override` for the active event, so
-                  it is a per-event control and belongs with the others. NOT DUPLICATED.
-                  🔴 THE PAID STEP ITSELF STAYS HERE, and that is the point of splitting them: a type
-                  does not set the paid step, and its own migration
-                  (20260730_truck_events_show_paid_step_override.sql) is explicit that it must not be
-                  seeded or bulk-written. So this card keeps the setting it is titled after and loses
-                  only the child that moved.
-                  ⚠️ THE V9.6 "nested beneath it as a child" NOTE ABOVE NOW DESCRIBES HISTORY. Its
-                  reasoning about why there is no group heading is still correct and is why it stands. */}
+              {/* ✅ RESTORED 5 October 2026, byte-for-byte from `origin/main` — nested beneath the paid
+                  step as a child, exactly as the V9.6 note above describes. It writes
+                  `truck_events.takes_cash_override` for the active event; resolution through the event
+                  TYPE (lib/payments/paid-step.ts) is unchanged. */}
+              <div className="pt-3 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
+                  <p className="text-slate-500 text-xs mt-0.5">Splits the payment button into &quot;Cash&quot; and &quot;Card&quot;.</p>
+                  {/* 🔴 THE GATE IS GONE — 10 August 2026, matching Manage. The Add Order confirm bar now
+                      ALWAYS offers a payment button (the single one when "Take orders without payment" is
+                      off, the primary one when it is on), so the cash split has a live parent in every
+                      configuration and a disabled toggle here would contradict a button already on
+                      screen. Full reasoning at the Manage copy of this row. */}
+                </div>
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  {savingTakesCashOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  <Toggle on={effectiveTakesCash} onToggle={()=>saveTakesCashOverride(!effectiveTakesCash)} disabled={isOffline||!activeEvent}/>
+                </div>
+              </div>
             </div>
             {/* Order-ready step — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
                 order_ready_override, seeded from the Settings default at creation + bulk-set when the Settings
@@ -5109,9 +5325,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 FIX 7 — DEMO: SHOWN but locked. Customers being emailed the moment their food is ready is a
                 headline feature worth seeing; but it emails real addresses and the seeded orders carry NULL
                 emails, so it stays non-interactive. */}
-            {/* ⛔ MOVED INTO THE "This event" CARD (October 2026). It writes
-                `truck_events.order_ready_override` for the active event and nothing else, so it is a
-                per-event control and now sits with the others. NOT DUPLICATED. */}
+            {/* ✅ RESTORED 5 October 2026, byte-for-byte from `origin/main`. Writes
+                `truck_events.order_ready_override` for the active event; resolution through the event
+                TYPE is unchanged. */}
+            {activeEvent&&(
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Order-ready step{demoLockChip}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen. Kitchen screens are set separately. Customers are emailed whenever an order is marked ready.</p>
+                </div>
+                <Toggle on={isDemo?false:effectiveOrderReady} onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}} disabled={isOffline||isDemo}/>
+              </div>
+            )}
             {/* ── BUZZER PROMPT — PER-EVENT ONLY ──────────────────────────────────────────────────
                 Writes truck_events.buzzer_prompt for the ACTIVE EVENT and NEVER truck_vans.buzzer_count
                 — the van default (does this vehicle carry buzzers) belongs to Manage → Settings, and
@@ -5123,13 +5348,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 operator cannot reach from this screen.
                 ⚠️ NO PER-EVENT SCOPE WORDING in the copy — scope is a property of THIS SCREEN, not of
                 each row. See the 🔴 note above the paid-step card. */}
-            {/* ⛔ THE BUZZER PROMPT CARD MOVED INTO THE "This event" CARD at the top of this tab
-                (October 2026). It was always a per-event control — it writes `truck_events.buzzer_prompt`
-                — so it belongs with the other per-event controls rather than as its own card four rows
-                below them. NOT DUPLICATED: this is the only copy, and it is up there.
-                ⚠️ ITS RULES TRAVELLED WITH IT: the row renders only when the van has a rack
-                (`buzzerCount !== null`), because a van with no buzzers has nothing to prompt for —
-                resolveBuzzerPrompt (lib/buzzer.ts) returns early on exactly that. */}
+            {/* ✅ RESTORED 5 October 2026, byte-for-byte from `origin/main`. ⚠️ ITS RULE IS UNCHANGED:
+                the card renders only when the van has a rack (`vanBuzzerCount != null`), because a van
+                with no buzzers has nothing to prompt for — `resolveBuzzerPrompt` (lib/buzzer.ts)
+                returns early on exactly that. Resolution through the event TYPE is unchanged. */}
+            {activeEvent&&vanBuzzerCount!=null&&(
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Remind me to add a buzzer</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Opens the buzzer grid as soon as you place an order, so the number goes on the board while the customer is still in front of you. With it off you can still add a buzzer any time by tapping the order, but nothing will prompt you. Useful where you hand buzzers out, easy to switch off where you don&rsquo;t.</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {savingBuzzerPrompt&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  <Toggle on={effectiveBuzzerPrompt} onToggle={()=>saveBuzzerPromptOverride(!effectiveBuzzerPrompt)} disabled={isOffline||!activeEvent}/>
+                </div>
+              </div>
+            )}
               </div>
             </div>
 
@@ -5252,9 +5486,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 the same box sits directly above the same card. Moved here 17 September 2026; nothing
                 but its position changed. */}
             {activeEvent&&(
-              /* ⚠️ `id` IS THE ANCHOR THE "This event" CARD'S Collection times ROW SCROLLS TO. That row
-                 shows the value and hands over here, because this box owns the PAIR and the only route
-                 back ("Use my usual setting"). Removing the id orphans that link. */
+              /* ⚠️ THE `id` STAYS, AND IT NOW HAS NO IN-APP CONSUMER (5 October 2026). It was the anchor
+                 the deleted "This event" card's Collection times row scrolled to. It is kept because
+                 it is a stable hook for the render harnesses that measure this box, and because an
+                 `id` on a card costs nothing — but nothing links to it any more. */
               <div id="collection-times-box" className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <p className="text-sm font-semibold text-slate-800">Collection times</p>
                 <p className="text-xs text-slate-500 mt-0.5 mb-3">How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.</p>
@@ -5485,8 +5720,52 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 reconnect" — which OfflineBanner now says persistently, with a COUNT, on every tab. It
                 added nothing this tab did not already have on screen above it. */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Items — this event</p>
-              <p className="text-slate-500 text-xs mb-4">Category totals, item limits and availability for the selected event — these reset each event. Changes take effect immediately.</p>
+              {/* ══ 🔴 THE HEADER, WITH THE PRICE EDITOR'S ONE BUTTON (5 October 2026) ═══════════════
+                  ⚠️ `flex-wrap` + `w-full sm:w-auto` IS THE PHONE RULE, and it is the brief's: at 390px
+                  the button drops to its own full-width row under the title; from `sm` up it sits at
+                  the top right. Measured in both engines by scripts/event-types-render.cjs.
+                  ⛔ IN EDIT MODE THE ONE BUTTON BECOMES TWO, and Save is the only orange thing on this
+                  card — the card's other controls write immediately, so an orange button here would be
+                  the only one that means "commit". */}
+              <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
+                <p className="text-sm font-semibold text-slate-800 tracking-wide">Items — this event</p>
+                {priceEditing?(
+                  <div className="flex items-center gap-2 w-full sm:w-auto" data-price-edit-actions>
+                    <button type="button" onClick={cancelPriceEdit} disabled={priceSaving}
+                      className="flex-1 sm:flex-none bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-lg hover:bg-slate-200 text-xs disabled:opacity-50">
+                      {EVENT_PRICE_CANCEL}
+                    </button>
+                    <button type="button" onClick={()=>void savePriceEdit()} disabled={priceSaving}
+                      className="flex-1 sm:flex-none bg-orange-600 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-orange-700 text-xs disabled:opacity-50">
+                      {priceSaving?'Saving…':EVENT_PRICE_SAVE}
+                    </button>
+                  </div>
+                ):(
+                  /* ⚠️ DISABLED UNTIL 20261011 IS APPLIED (`priceReady`) and with no event selected.
+                     An editor whose save would 400 is worse than none. */
+                  <button type="button" onClick={()=>setPriceEditing(true)} disabled={!priceReady||!activeEvent}
+                    data-price-edit-open
+                    className="w-full sm:w-auto bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-lg hover:bg-slate-200 text-xs disabled:opacity-40">
+                    {EVENT_PRICE_EDIT}
+                  </button>
+                )}
+              </div>
+              {/* ⚠️ THE DESCRIPTION NAMES PRICES NOW, because the card took a Price column (5 October
+                  2026). It no longer says "these reset each event" — an item LIMIT does reset, but a
+                  PRICE does not: it is a row in `event_item_prices` for this event and it stays until
+                  the operator clears it. One sentence cannot claim both, and the false half would be
+                  the one about money. */}
+              <p className="text-slate-500 text-xs mb-4">{EVENT_ITEMS_CARD_DESCRIPTION}</p>
+              {/* 🔴 THE EDIT-MODE NOTE, BLUE, UNDER THE HEADER. Its second sentence is a promise the
+                  screen keeps: the limit steppers and the Available switches really are disabled
+                  below. The live line is added only for an `open` event, from the server's own
+                  `live` flag, so the screen and the route cannot disagree about that. */}
+              {priceEditing&&(
+                <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2" data-price-edit-note>
+                  <p className="text-xs text-blue-800">{EVENT_PRICE_EDIT_NOTE}</p>
+                  {eventPriceLive&&<p className="text-xs font-semibold text-blue-900 mt-0.5">{EVENT_PRICE_LIVE_NOTE}</p>}
+                </div>
+              )}
               {truckMenu&&stockLoading?(
                 // This event's stock hasn't resolved yet (never-viewed) — skeleton, NOT empty/stale rows.
                 <div className="space-y-2 animate-pulse">
@@ -5498,6 +5777,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     row below; pr-2 matches the item rows' p-2 right inset so each label sits over its column. */}
                 <div className="flex items-center gap-2 pr-2 mb-2">
                   <span className="flex-1" />
+                  {/* 🔴 PRICE FIRST, THEN LIMIT, THEN AVAILABLE — the order the brief asks for, and the
+                      order of consequence: what it costs, how many there are, whether it is on at all.
+                      ⚠️ `w-20` NOT `w-16`: a four-character money box ("£12.50") does not fit the limit
+                      column's width, and measured at 390px a narrower box clipped the decimals. */}
+                  <span className="w-20 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{EVENT_PRICE_COLUMN_LABEL}</span>
                   <span className="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Item limit</span>
                   <span className="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Available</span>
                 </div>
@@ -5522,8 +5806,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}{catOrdered>0&&<span className="ml-1.5 text-sm font-medium normal-case tracking-normal text-slate-500">({catOrdered} sold)</span>}{catRem!==null&&<span className={`ml-1.5 text-xs font-bold normal-case tracking-normal ${catRem<=5?'text-orange-500':'text-slate-500'}`}>{catRem} left</span>}{catStock?.available===false&&<span className="ml-1.5 text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full normal-case tracking-normal">CLOSED</span>}</p>
                             {/* Prep & batch moved to the "Total capacity" section (V7.8 §42) — this card is per-event STOCK only. */}
                             <div className="flex items-center gap-2">
+                              {/* ⚠️ A SPACER UNDER THE PRICE COLUMN. A CATEGORY has no price — only an
+                                  item does — so this cell is deliberately empty rather than carrying a
+                                  control nothing could write. Without it the category's limit box sits
+                                  under the Price header and every column below reads as shifted. */}
+                              <span className="w-20 shrink-0" aria-hidden />
                               <div className="flex flex-col items-center gap-0.5 w-16 shrink-0">
-                                <input type="number" inputMode="numeric" min="0" placeholder="∞"
+                                <input type="number" inputMode="numeric" min="0" placeholder="∞" disabled={priceEditing}
                                   value={catStockDrafts[cat] ?? (catCount??'').toString()}
                                   onFocus={()=>setCatStockDrafts(d=>({...d,[cat]:(catCount??'').toString()}))}
                                   onChange={e=>setCatStockDrafts(d=>({...d,[cat]:e.target.value}))}
@@ -5542,7 +5831,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                               </div>
                               {/* AVAILABLE column — per-event category enable/disable (GATE). Off = closed for this
                                   event: hidden from customers (tab vanishes) + blocked at submit; auto-reverts next event. */}
-                              <span className="w-12 shrink-0 flex justify-center"><Toggle on={catStock?.available??true} onToggle={()=>updateCategoryAvailable(cat,!(catStock?.available??true))}/></span>
+                              {/* ⛔ LOCKED IN PRICE-EDIT MODE, like every other limit and availability
+                                  control on this card. A category switched off mid-price-edit would
+                                  change which items can be ordered at all while prices are unsaved. */}
+                              <span className="w-12 shrink-0 flex justify-center"><Toggle on={catStock?.available??true} disabled={priceEditing} onToggle={()=>updateCategoryAvailable(cat,!(catStock?.available??true))}/></span>
                             </div>
                           </div>
                         </div>
@@ -5567,11 +5859,49 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             // label + "reset to default" link were removed — reset is still reachable
                             // by typing the default number back in).
                             const isDefault=!followsCategory&&stock?.stock_count==null&&item.default_stock!=null
+                            /* ── 🔴 THIS EVENT'S PRICE FOR THIS ITEM (5 October 2026) ─────────────────
+                             * `priceOwn` present ⇒ THIS EVENT typed it, so the box is blue with an ×.
+                             * `shownPrice` is what a customer pays: the server's `charged` figure where
+                             * event pricing moved it, else the menu price. ⛔ NO ARITHMETIC HERE — a
+                             * `menu × rule` expression on this screen is how a column comes to promise
+                             * a price the till does not take. */
+                            /* ⚠️ `item.id` IS OPTIONAL ON THE TYPE because the CUSTOMER menu does not
+                             * carry it; this screen always fetches with `?dashboard=1`, which does. A
+                             * missing id means the price column shows the menu figure and is not
+                             * editable — degrading rather than keying every item off `undefined`. */
+                            const itemId=item.id
+                            /* `pending` is the operator's unsaved intent for this item, if any:
+                             * a number, or null meaning "clear back to the type/menu". */
+                            const pending=itemId&&itemId in pricePending?pricePending[itemId]:undefined
+                            /* 🔴 WHOSE PRICE IS SHOWN, IN ORDER: the unsaved intent, then the server's
+                             * own charged figure, then the menu. A cleared-but-unsaved item shows the
+                             * FALLBACK, which is what saving would make it. */
+                            const serverCharged=(itemId?eventCharged[itemId]:undefined)??item.price
+                            const fallbackPrice=(itemId?eventFallback[itemId]:undefined)??item.price
+                            const shownPrice=pending===undefined?serverCharged:(pending===null?fallbackPrice:pending)
+                            /* 🔴 IS THIS PRICE THIS EVENT'S OWN? The unsaved intent wins, so the blue
+                             * treatment follows the operator's edit before it is saved. */
+                            const priceOwn=pending===undefined
+                              ?(itemId?eventOwnPrice[itemId]:undefined)!==undefined
+                              :pending!==null
+                            const priceEditable=priceEditing&&!!itemId&&priceReady&&!catClosed
+                            /* ⛔ LIMITS AND AVAILABILITY ARE LOCKED WHILE PRICES ARE BEING EDITED. One
+                             * act at a time: a half-finished price edit must not be entangled with a
+                             * stock change the operator did mean to keep — and the blue note above
+                             * promises exactly this. */
+                            const stockLocked=catClosed||priceEditing
                             return(
                               <div key={item.name} className={`flex items-center gap-2 p-2 rounded-xl border ${catClosed?'bg-slate-50 border-slate-100 opacity-50':!isAvailable?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <p className={`font-bold text-sm ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}<span className="text-slate-600 font-normal ml-1.5">£{item.price.toFixed(2)}</span></p>
+                                    {/* ⛔ THE PRICE IS NOT BESIDE THE NAME ANY MORE (5 October 2026,
+                                        Dominic). It lived here when this card had no price column; now
+                                        that it has one, two figures for one dish on one row is a reader
+                                        asking which is which — and the one beside the name was the MENU
+                                        price, i.e. not what a customer at this event pays. The column
+                                        shows what they pay, and the note under the name shows the menu
+                                        figure only where this event has changed it. */}
+                                    <p className={`font-bold text-sm ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}</p>
                                     {!isAvailable&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">SOLD OUT</span>}
                                     {/* Show "X left" ONLY for an item with its OWN cap (itemRem !== null) — never echo
                                         the category number onto every item (the category header row shows {catRem} left).
@@ -5580,9 +5910,87 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     {isAvailable&&itemRem!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${itemRem<=3?'text-red-600 bg-red-100':itemRem<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{itemRem} left</span>}
                                   </div>
                                   {itemOrdered>0&&<p className="text-xs text-slate-600 mt-0.5">{itemOrdered} sold</p>}
+                                  {/* ── 🔴 "menu £12.00 · this event only" — ONLY WHEN THIS EVENT SET IT ─
+                                      It names the MENU price, not the difference: "+£1" would restate
+                                      what the box already shows and would be wrong the moment the menu
+                                      price moved underneath it. ⛔ NOT SHOWN for a price the TYPE moved
+                                      — that is not "this event only", and labelling it so would tell
+                                      the operator a festival-wide price was a one-off. */}
+                                  {priceOwn&&(
+                                    <p className="text-[11px] text-blue-500 mt-0.5">{eventPriceOwnNote(fallbackPrice,eventTypeName)}</p>
+                                  )}
+                                </div>
+                                {/* ══ 🔴 THE PRICE COLUMN — WHAT CUSTOMERS PAY AT THIS EVENT ════════════
+                                    The value is the SERVER's (`priceAtEvent`, the function the submit
+                                    route charges with), never computed here. Pressing it types a price
+                                    for THIS EVENT ONLY.
+                                    🔴 A CHANGED PRICE IS A BLUE OUTLINED BOX WITH AN ×, which is the
+                                    same treatment the Event types grid gives a typed price — so the two
+                                    screens say "someone set this by hand" the same way.
+                                    ⚠️ PRESS-AND-LEAVE, OR TYPING THE SAME NUMBER, SAVES NOTHING. The
+                                    blur compares against the price currently SHOWN, which is the rule
+                                    the limit box beside it already follows and the rule the grid
+                                    follows. Without it every stray tap would write a row.
+                                    ⚠️ DISABLED UNTIL 20261011 IS APPLIED (`priceReady`) and while the
+                                    category is closed — a box whose save would 400 is worse than none,
+                                    and a closed category's items cannot be ordered at any price. */}
+                                <div className="flex flex-col items-end gap-0.5 w-20 shrink-0">
+                                  {priceEditing?(
+                                    /* ── EDIT MODE: an input, blue and with an × when it is this
+                                       event's own. ⚠️ `pricePending` IS WHAT IT WRITES, never the
+                                       network — nothing leaves the page until Save. */
+                                    <div className="relative w-20">
+                                      <input type="text" inputMode="decimal" disabled={!priceEditable}
+                                        aria-label={`Price for ${item.name} at this event`}
+                                        value={(itemId?priceDrafts[itemId]:undefined) ?? shownPrice.toFixed(2)}
+                                        onFocus={()=>{ if(itemId)setPriceDrafts(d=>({...d,[itemId]:shownPrice.toFixed(2)})) }}
+                                        onChange={e=>{if(itemId)setPriceDrafts(d=>({...d,[itemId]:e.target.value}))}}
+                                        onKeyDown={e=>{
+                                          if(e.key==='Enter')e.currentTarget.blur()
+                                          /* ⛔ ESCAPE IS **CANCEL**, FOR THE WHOLE EDITOR, not just this
+                                           * box — the brief's rule. Reverting one field while leaving
+                                           * the others pending would be a third state nobody asked for. */
+                                          else if(e.key==='Escape'){skipPriceBlurRef.current=true;e.currentTarget.blur();cancelPriceEdit()}
+                                        }}
+                                        onBlur={()=>{
+                                          if(!itemId)return
+                                          const raw=priceDrafts[itemId]; const skip=skipPriceBlurRef.current; skipPriceBlurRef.current=false
+                                          setPriceDrafts(d=>{const n={...d};delete n[itemId];return n})
+                                          if(skip||raw===undefined)return
+                                          const trimmed=raw.trim()
+                                          /* ⚠️ EMPTY CLEARS IT, which is the keyboard route to the same
+                                           * place the × goes. `cleanTypedPrice` is the SERVER's own
+                                           * validator, so the box refuses exactly what the route
+                                           * refuses rather than refusing a bit less. */
+                                          const next=trimmed===''?null:cleanTypedPrice(trimmed)
+                                          /* ⚠️ PRESS-AND-LEAVE, OR THE SAME NUMBER, RECORDS NOTHING. */
+                                          if(next!==null&&Math.abs(next-shownPrice)<0.005)return
+                                          if(next===null&&!priceOwn)return
+                                          setPricePending(p=>({...p,[itemId]:next}))
+                                        }}
+                                        className={`w-20 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-right font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 ${priceOwn?'border-blue-300 bg-blue-50 text-blue-700 pr-5':'border-slate-200 bg-white text-slate-900'}`}
+                                        title={priceOwn?'This event\u2019s own price — press \u00d7 to go back to the type or menu price':'What customers pay at this event'}/>
+                                      {priceOwn&&priceEditable&&itemId&&priceDrafts[itemId]===undefined&&(
+                                        <button type="button" aria-label={`Clear this event\u2019s price for ${item.name}`}
+                                          onClick={()=>setPricePending(p=>({...p,[itemId]:null}))}
+                                          className="absolute right-0.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 text-[10px] font-bold flex items-center justify-center">
+                                          &times;
+                                        </button>
+                                      )}
+                                    </div>
+                                  ):(
+                                    /* ── 🔴 NORMAL STATE: PLAIN TEXT. Not a box, not clickable, not
+                                       focusable — right-aligned so a column of prices reads as money.
+                                       Blue where this event has its own. ⛔ IT IS A `<p>`, SO THERE IS
+                                       NOTHING TO TAB INTO AND NOTHING TO CHANGE BY ACCIDENT, which is
+                                       the whole point of the two modes. */
+                                    <p data-event-price className={`w-20 text-right text-sm font-bold tabular-nums ${priceOwn?'text-blue-700':'text-slate-800'}`}>
+                                      £{shownPrice.toFixed(2)}
+                                    </p>
+                                  )}
                                 </div>
                                 <div className="flex flex-col items-center gap-0.5 w-16 shrink-0">
-                                  <input type="number" inputMode="numeric" min="0" placeholder="–" disabled={catClosed}
+                                  <input type="number" inputMode="numeric" min="0" placeholder="–" disabled={stockLocked}
                                     value={stockDrafts[item.name] ?? (itemCount??'').toString()}
                                     onFocus={()=>setStockDrafts(d=>({...d,[item.name]:(itemCount??'').toString()}))}
                                     onChange={e=>setStockDrafts(d=>({...d,[item.name]:e.target.value}))}
@@ -5604,7 +6012,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     }}
                                     className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white disabled:cursor-not-allowed disabled:bg-slate-100 ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={catClosed?'Category closed for this event':isDefault?'Default stock — save to override':followsCategory?'Following category total — type a number to cap':'Item stock'}/>
                                 </div>
-                                <span className="w-12 shrink-0 flex justify-center"><Toggle on={isAvailable} disabled={catClosed} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>
+                                {/* ⛔ LOCKED WHILE PRICES ARE BEING EDITED — `stockLocked`, which the
+                                    blue note above promises. One act at a time. */}
+                                <span className="w-12 shrink-0 flex justify-center"><Toggle on={isAvailable} disabled={stockLocked} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>
                               </div>
                             )
                           })}
@@ -6268,6 +6678,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           onSaveNote={()=>saveEventNote(activeEvent.id)}
           onStartEvent={()=>{openEvent(activeEvent.id);setShowEventMenu(false)}}
           onChangeEvent={()=>{setShowEventMenu(false);setActiveTab('add');setPendingOpenEventPicker(true)}}
+          /* 🔴 "Change event type…" — ONLY WHERE THERE IS SOMETHING TO CHOOSE. `eventTypeList` is the
+           * route's own list in the grid's order, already filtered by plan: Max gets Standard +
+           * Private + its own types, Pro gets Standard + Private, and a truck with neither key gets
+           * an empty list and therefore no row. One expression, no plan test on this screen. */
+          onChangeEventType={eventTypeList.length>0?()=>{setShowEventMenu(false);setTypePicker(true)}:undefined}
+          /* 🔴 THE PRIVATE LINK — passed only for an event that IS private. `eventIsPrivate` is the
+           * one derivation; see its note. */
+          onPrivateLink={eventIsPrivate?()=>{setShowEventMenu(false);setPrivateLinkFor(activeEvent.id)}:undefined}
           paused={paused}
           onPause={isDemo?undefined:()=>{setShowEventMenu(false);setShowPauseModal(true)}}
           onResume={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
@@ -6278,6 +6696,85 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           onClose={()=>setShowEventMenu(false)}
         />
       )}
+
+      {/* ══ 🔴 "Change event type…" — THE PICKER AND ITS CONFIRM (5 October 2026) ════════════════════
+          It replaces the deleted "This event" card's Event type row, and it sends the SAME `assign`
+          action with the SAME `clearOwn` flag.
+          🔴 THE THREE SENTENCES OF THE SERVICE CONFIRM ARE UNCHANGED AND STILL LOAD-BEARING: new
+          orders use the target's settings, orders already placed keep their prices (price-lock is the
+          stored `orders.items[].unit_price` and nothing here touches the orders table), and the
+          truck's own changes for this event stay unless they tick the box.
+          ⛔ AND SWITCHING INTO OR OUT OF PRIVATE ADDS ITS OWN SENTENCE, ABOVE THE SERVICE BULLETS.
+          Both directions are visible to customers on the NEXT REQUEST — into Private drops the event
+          off the map, out of it publishes the address and kills the link — and neither has a draft
+          state to undo in, which is why neither can be a toast.
+          ⚠️ PRIVACY IS DECIDED FROM `is_private` AND THE **TARGET'S** KIND, never from the current
+          type's kind: an event can be private while its type row is being read, and `is_private` is
+          the source of truth either way (§73.1). */}
+      {typePicker&&activeEvent&&(()=>{
+        const targetName=typePending===undefined?'':(eventTypeList.find(t=>t.id===typePending)?.name??'Standard')
+        const targetIsPrivate=typePending!==undefined&&!!typePending
+          &&eventTypeList.find(t=>t.id===typePending)?.kind==='private'
+        const toPrivate=typePending!==undefined&&targetIsPrivate&&!eventIsPrivate
+        const fromPrivate=typePending!==undefined&&!targetIsPrivate&&eventIsPrivate
+        return(
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4"
+          onClick={e=>e.target===e.currentTarget&&setTypePicker(false)}>
+          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
+            <h3 className="font-black text-slate-900 mb-1">Event type</h3>
+            <p className="text-xs text-slate-500 mb-3">This event only. Your usual settings stay as they are.</p>
+            {typePending===undefined?(
+              <div className="space-y-2" role="radiogroup" aria-label="Event type">
+                {/* 🔴 STANDARD FIRST, THEN THE ROUTE'S OWN ORDER — Private, then the truck's types.
+                    The same sequence the Event types grid and the Add event pill row use. */}
+                {([{id:null as string|null,name:'Standard',kind:undefined as 'custom'|'private'|undefined},
+                   ...eventTypeList.map(t=>({id:t.id as string|null,name:t.name,kind:t.kind}))]).map((t,i)=>{
+                  const on=(t.id??null)===(eventType?.id??null)
+                  const dot=t.id===null?STANDARD_COLOUR:colourFor(Math.max(0,i-1))
+                  return(
+                    <button key={t.id??'standard'} type="button" role="radio" aria-checked={on}
+                      onClick={()=>{if(!on){setTypeClearOwn(false);setTypePending(t.id)}}}
+                      disabled={on||typeBusy}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold text-left ${on?'bg-slate-100 text-slate-400 cursor-default':'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50'}`}>
+                      {t.kind==='private'
+                        ?<span aria-hidden>🔒</span>
+                        :<span aria-hidden className="w-2.5 h-2.5 rounded-full shrink-0" style={{background:dot}}/>}
+                      <span className="flex-1 min-w-0">{t.name}</span>
+                      {on&&<span className="text-xs font-medium text-slate-400">Current</span>}
+                    </button>
+                  )
+                })}
+                <button type="button" onClick={()=>setTypePicker(false)}
+                  className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm mt-2">Close</button>
+              </div>
+            ):(
+              <div className="space-y-3">
+                {/* ⛔ THE PRIVACY SENTENCE SITS ABOVE THE SERVICE BULLETS, because it is about who can
+                    reach the event at all — which comes before what the kitchen does when they do. */}
+                {toPrivate&&<p className="text-sm font-semibold text-purple-700 bg-purple-50 border border-purple-200 rounded-xl p-3">{CONFIRM_TO_PRIVATE}</p>}
+                {fromPrivate&&<p className="text-sm font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl p-3">{CONFIRM_FROM_PRIVATE}</p>}
+                <div className="text-sm text-slate-700 space-y-1">
+                  <p>• New orders use {targetName}&rsquo;s service settings.</p>
+                  <p>• Orders already placed keep their prices.</p>
+                  <p>• Your changes for this event stay.</p>
+                </div>
+                <label className="flex items-start gap-2 text-sm text-slate-700">
+                  <input type="checkbox" checked={typeClearOwn} onChange={e=>setTypeClearOwn(e.target.checked)} className="mt-0.5"/>
+                  <span>Clear my changes and use {targetName} exactly</span>
+                </label>
+                <div className="flex gap-2">
+                  <button type="button" disabled={typeBusy} onClick={()=>{setTypePending(undefined);setTypeClearOwn(false)}}
+                    className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm disabled:opacity-50">Back</button>
+                  <button type="button" disabled={typeBusy} onClick={()=>void assignEventType(typePending??null,typeClearOwn)}
+                    className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-50">
+                    {typeBusy?'Switching…':`Switch to ${targetName}`}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        )})()}
 
       {/* The extra-wait picker — opened from the event menu's "Add extra wait" row, which closes as it
           opens (the same hand-off pause and change-finish-time already make). It writes through

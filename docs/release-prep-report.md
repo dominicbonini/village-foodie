@@ -423,12 +423,20 @@ from comments.
 
 ### 5.6 The dashboard
 
+> 🔴 **AMENDED 5 OCTOBER 2026 — THE "This event" CARD IS DELETED.** It was never agreed, and what it
+> did was move five controls away from where operators already knew them. Every one is back where
+> `origin/main` has it. See `docs/dashboard-cleanup-report.md`.
+
 | | |
 |---|---|
-| **VISIBLE** | A **"This event" card** gathering every per-event setting in one place, **for this event only**: the buzzer reminder, "Do you take cash?", the order-ready step, collection times (which hands over to its existing box) and offline order protection — five controls that used to be spread across the Kitchen tab |
-| **VISIBLE** | The card also carries the **event type** with a confirm, and on a private event the **private link** row |
-| **BEHAVIOUR-ONLY** | Switching a **live** event's type is allowed, and the confirm says what changes: new orders use the type's settings, **orders already placed keep their prices**, and their own changes for this event stay |
-| **BEHAVIOUR-ONLY** | Every value the card shows is the same resolver the ordering engine reads. A faded value means "from the type"; a solid one means "this event's own" |
+| **BEHAVIOUR-ONLY** | 🔴 **The per-event controls are exactly where they are on the live site today**: offline order protection (with its two modes and the auto-reject delay) in its own card; "Do you take cash?" nested under "Separate paid step"; the order-ready step and "Remind me to add a buzzer" each in their own card; collection times in its own box. Same position, same wording, same look |
+| **BEHAVIOUR-ONLY** | What changed underneath is the resolution, not the screen: each still resolves *the event's own hand change ?? the event type ?? the van/truck default*, and a change on the dashboard is still a per-event hand change |
+| **VISIBLE** | **The dark event bar names the event's TYPE**, right after Live / Not started: a colour dot and the name for a custom type (e.g. "● Festival"). **Standard shows nothing at all** |
+| **VISIBLE** | **A private event's title is its NAME, not its venue** — "🔒 Sarah & Tom's wedding — Private event · 11:00–14:00", with "Private event" in purple. ⛔ **No venue and no town appear in the header for a private event.** With no name set it reads "🔒 Private event · 11:00–14:00" |
+| **VISIBLE** | **`Manage event ▾` gains "Change event type…"** — Max sees Standard, Private and their own types; Pro sees Standard and Private — and, for a private event, **"🔒 Private link & QR code"** |
+| **BEHAVIOUR-ONLY** | Switching a **live** event's type is allowed, and the confirm says what changes: new orders use the type's settings, **orders already placed keep their prices**, and their own changes for this event stay. Switching into or out of **Private** adds its own sentence, because both directions are visible to customers on the next request |
+| **VISIBLE** | ⛔ On a private event the header's **"Order link" and "QR code" give the PRIVATE link**, never the truck's public order page — and nothing at all if the token cannot be read |
+| **VISIBLE** | **Menu & Stock gains a per-event PRICE column**, before Item limit, on **every plan**. It is **read-only text** ("£13.00", right-aligned) until the operator presses **"✎ Edit prices"**; a price this event has changed shows in blue with a line under the item naming what it departs from ("Festival £12.00 · this event"). In edit mode the cells become boxes, item limits and availability are **locked**, and nothing is written until **"Save prices"** — Cancel and Escape discard everything |
 
 ### 5.7 "Do you take cash?" moves to each van
 
@@ -519,7 +527,8 @@ The handful that prove the merge lost nothing. `npm run dev`, then Pizza Kitchen
    it to today's event (dashboard → "This event"). Open `/trucks/pizza-kitchen/order`: the prices are the
    raised ones, shown as **one figure** — no rule, nothing struck through.
 5. **Cash per van.** Settings → a van → **"Do you take cash?"**. With two vans, turn **"Same as Van 1"**
-   on for the second and confirm it follows. The dashboard "This event" card shows the resolved value.
+   on for the second and confirm it follows. ⚠️ The dashboard's own "Do you take cash?" row — under
+   "Separate paid step" on the Settings tab, where it is on the live site — shows the resolved value.
 6. **Places and Social posts, visible only here.** Both pills are present on Pizza Kitchen and both open.
    Then open **Village Spice**'s Manage page: Schedule shows **two** pills, no "Make post" on any row, and
    `?tab=schedule&section=places` **lands on Events** with the parameter cleared.

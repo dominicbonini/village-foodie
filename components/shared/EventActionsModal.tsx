@@ -36,6 +36,8 @@ export function EventActionsModal({
   onSaveNote,
   onStartEvent,
   onChangeEvent,
+  onChangeEventType,
+  onPrivateLink,
   paused = false,
   onPause,
   onResume,
@@ -65,6 +67,21 @@ export function EventActionsModal({
   onStartEvent?: () => void
   /** Switch to a different event. Omit to hide — the KDS hides it when there is only one. */
   onChangeEvent?: () => void
+  /**
+   * ── 🔴 "Change event type…" (5 October 2026) ────────────────────────────────────────────────────
+   * Opens the caller's own type picker and confirm. Omit to hide — the KDS has no type picker, and a
+   * truck with no types has nothing to choose.
+   * ⚠️ THE CONFIRMS ARE THE CALLER'S, not this modal's. Switching into or out of Private is visible
+   * to customers on the next request (the event drops off the map, or its address is published and
+   * its link dies), and the words for that live in lib/private-events/copy.ts. A modal whose job is
+   * to list actions must not own the sentence that justifies one.
+   */
+  onChangeEventType?: () => void
+  /**
+   * "Private link & QR code" — the same panel the Events list opens. Omit to hide; it is passed only
+   * for an event that IS private, because a public event has no link for it to show.
+   */
+  onPrivateLink?: () => void
   paused?: boolean
   /** Omit BOTH to hide the pause row. Only rendered for a LIVE (`open`) event. */
   onPause?: () => void
@@ -125,6 +142,25 @@ export function EventActionsModal({
           <button onClick={onChangeEvent}
             className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm mb-4">
             Change event
+          </button>
+        )}
+
+        {/* ── 🔴 THE EVENT'S OWN IDENTITY, ABOVE THE NOTE AND THE SERVICE ACTIONS ──────────────────
+            What this event IS comes before what to do with it tonight: its type, and — if it is
+            private — the link guests order through. Both are the same filled style as every other
+            button here, so the menu stays one set of controls.
+            ⚠️ THE PRIVATE ROW IS PURPLE, matching the Private chip on the Events list and the purple
+            lock in the dark header. One colour for "this event is private" across every surface. */}
+        {onChangeEventType && (
+          <button onClick={onChangeEventType}
+            className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm mb-2">
+            Change event type…
+          </button>
+        )}
+        {onPrivateLink && (
+          <button onClick={onPrivateLink}
+            className="w-full bg-purple-50 text-purple-700 font-bold py-2.5 rounded-xl hover:bg-purple-100 border border-purple-200 text-sm mb-4">
+            <span aria-hidden>🔒</span> Private link &amp; QR code
           </button>
         )}
 

@@ -185,6 +185,15 @@ export interface TruckData {
 }
 
 export interface MenuItem {
+  /**
+   * `menu_items_db.id` — ⚠️ PRESENT ONLY ON THE OPERATOR DASHBOARD'S OWN FETCH (`?dashboard=1`).
+   *
+   * 🔴 THE Menu & Stock PRICE COLUMN NEEDS IT (5 October 2026): `event_item_prices` is keyed on the
+   * id, not the name, because two dishes may share a name and a price written against the wrong one
+   * is money. ⛔ IT IS OPTIONAL IN THE TYPE because the customer menu does not carry it — making it
+   * required would be a type that lies about the payload every customer surface receives.
+   */
+  id?: string
   name: string
   description?: string
   price: number
