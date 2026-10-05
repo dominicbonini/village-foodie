@@ -225,7 +225,7 @@ row, say so and it is one line.
 
 Recorded as asked. **The rule stands as built: if a van has buzzers, the reminder is on.** The proposed
 per-van "Remind me to add a buzzer" default is not wanted, so the migration it would have needed is not
-written. The open item in `docs/reference-manual.md` is struck through and marked **CLOSED 5 Oct — NO
+written. The open item in `docs/reference-manual.md` is struck through and marked **CLOSED 4 Oct — NO
 CHANGE, by Dominic's decision**. ⚠️ §39's three layers are untouched: `truck_vans.buzzer_count` is
 capability, `truck_events.buzzer_prompt` is behaviour, `orders.buzzer_number` is the fact. The decision
 is about the default only, not about collapsing them.
