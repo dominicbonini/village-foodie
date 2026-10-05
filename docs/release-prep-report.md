@@ -136,10 +136,12 @@ rule** — because the whole-repo number moves for a reason that is not a regres
 | Area | Errors | Warnings |
 |---|---|---|
 | **`app/` + `lib/` + `components/`** | 772 → **779** (+7, and **+5** once `_pretest.cjs` is set aside — see below) | 225 → 273 |
-| **`scripts/`** | 439 → **517** (+78) | 54 → 67 |
+| **`scripts/`** | 439 → **518** (+79) | 54 → 67 |
 | **`supabase/`** | 0 → 0 | 0 → 0 |
 
-**The `scripts/` +78 is entirely `@typescript-eslint/no-require-imports`** — seven new `.cjs` harnesses,
+**The `scripts/` +79 is entirely `@typescript-eslint/no-require-imports`** (+78 from the seven new
+harnesses, and one more from the `require` this build added to `places-posts-gating.cjs` so it can
+compile `lib/features.ts` and call `canAccess`). — seven new `.cjs` harnesses,
 and `require()` is the idiom every one of the 93 harnesses uses (the rule already had 434 hits at the
 base). Not a quality change.
 

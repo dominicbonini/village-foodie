@@ -139,7 +139,7 @@ events on Pro, "Do you take cash?" per van, the new Add event, and the landing/B
 | `_pretest.cjs`, untracked in the repository root, builds a service-role client and writes to production | ⛔ Outside `scripts/`, so the harness screen never sees it. Move it into `scripts/` (where the screen would refuse it) or delete it |
 | The four pre-`20261007` migrations are outside the applied range Dominic stated | one read-only SELECT before deploy — §74.4 |
 | `add-order-refresh-inputs.cjs` takes ~210s, the longest in the sweep | noted, not a failure |
-| ESLint: **+5 errors in `app/` and `lib/`** against the base, in rules this repository already carries in bulk (`no-explicit-any` +6, `preserve-manual-memoization` +2, `set-state-in-effect` +1, `no-unescaped-entities` −4) — and **+78 in `scripts/`, every one `no-require-imports`** from the seven new `.cjs` harnesses | no new rule class; recorded rather than suppressed |
+| ESLint: **+5 errors in `app/` and `lib/`** against the base, in rules this repository already carries in bulk (`no-explicit-any` +6, `preserve-manual-memoization` +2, `set-state-in-effect` +1, `no-unescaped-entities` −4) — and **+79 in `scripts/`, every one `no-require-imports`** from the seven new `.cjs` harnesses and the one `require` added so the gating harness can call `canAccess` | no new rule class; recorded rather than suppressed |
 | From V13.9, still open | `claim_order_for_auto_reject` cannot read event types; `offline_auto_reject_mins` has no DDL in the repo; `DemoLockChip.tsx` has no consumer; the stale-stage SQL |
 
 ---
