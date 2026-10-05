@@ -46,60 +46,61 @@ export interface Place {
   last_start_time: string | null
   last_end_time: string | null
   traded_last_year: number
-  /* ══ 🔴 THE PLACES TAB'S OWN FIELDS (20261015) ═══════════════════════════════════════════════════
-   * All four come from `sg_places`. ⚠️ EVERY ONE IS OPTIONAL, and absent is the honest pre-migration
-   * answer: no pin (so "Automatic", which is what every place is today), no post picture, no count.
-   * The Add event picker and Tidy up both read this same type and neither uses them, so nothing else
-   * had to change. */
-  /** The PIN. null/absent ⇒ "Automatic" — the existing newest-event-at-this-place rule (§70.3).
+  /* ══ 🔴 THE PLACES TAB'S OWN FIELDS (20261015, re-read 5 October 2026) ═══════════════════════════
+   * All of them come from `sg_places`. ⚠️ EVERY ONE IS OPTIONAL, and absent is the honest
+   * pre-migration answer: nothing stored, no post picture, no count. The Add event picker and Tidy up
+   * read this same type and neither uses them, so nothing else had to change.
+   *
+   * ══ ⛔ "Automatic" WAS A CONTROL, AND IT IS GONE (5 October 2026) ═════════════════════════════════
+   * It was the dropdown's first option — three states where an operator only ever wants one answer. The
+   * Places tab is a PILL ROW now: a place is on exactly one type, and a place nobody has set shows the
+   * one the history rule gives, as an ordinary selected pill.
+   * 🔴 THE STORAGE DID NOT CHANGE, AND THAT MATTERS WHEN READING THESE THREE FIELDS. "Neither column
+   * set" is still a real row state — it is what every place is until somebody presses a pill — and it
+   * still means "the rule decides". What went is any way for the screen to SAY that, or to write it. */
+  /** The STORED type for this place. null/absent ⇒ nothing stored, so the rule decides (§70.3).
    *  ⚠️ READ **AFTER** `usual_type_is_standard`, which outranks it. See that field. */
   usual_event_type_id?: string | null
-  /* ══ 🔴 "PINNED TO STANDARD", AND WHAT "Automatic" RESOLVES TO (20261016) ════════════════════════
-   * ⛔ THE FIRST TWO STATES LOOKED IDENTICAL ON THE WIRE and that was the bug: Standard is the
+  /* ══ 🔴 "STORED AS STANDARD" IS ITS OWN STATE (20261016) ═════════════════════════════════════════
+   * ⛔ IT AND "NOTHING STORED" LOOKED IDENTICAL ON THE WIRE, and that was the bug: Standard is the
    * ABSENCE of a type (Standard IS the truck's own settings, §70.2), so there was no id to send and
-   * choosing it wrote the same `null` that already meant Automatic. Three states, two of which
-   * collided. 20261016 adds the boolean. */
-  /** TRUE ⇒ "always plain Standard here", a FIXED answer. Distinct from Automatic, whose answer
+   * choosing it wrote the same `null` that already meant "nothing stored". Two states, one encoding.
+   * 20261016 adds the boolean. */
+  /** TRUE ⇒ "always plain Standard here", a FIXED answer — as opposed to an unset row, whose answer
    *  changes as the truck trades. ⚠️ IT OUTRANKS `usual_event_type_id` — the same order the routes
    *  apply, so a row carrying both reads the same way on the screen and on the server. */
   usual_type_is_standard?: boolean
-  /** What Automatic resolves to for THIS place right now, from the server's own rule.
-   *  ⚠️ null ⇒ the history could not be read (or the migration is absent) and the control says plain
-   *  "Automatic" rather than guessing a type. */
+  /** 🔴 WHAT THE HISTORY RULE GIVES THIS PLACE RIGHT NOW, from the server's own rule — the SAME
+   *  function Add event's pre-selection uses. It is what the pill row selects when nothing is stored,
+   *  which is what makes the pill and Add event's choice the same answer.
+   *  ⚠️ null ⇒ the history could not be read (or the migration is absent), and the pill row falls back
+   *  to Standard — which is what the rule itself returns with no history, so the fallback is the rule's
+   *  own answer rather than a guess. */
   usual_automatic_type_id?: string | null
+  /** ⚠️ THE NAME IS NO LONGER RENDERED ANYWHERE. It existed to fill in "Automatic (Market)"; the pill
+   *  row names the type from the truck's own types list instead, which is also where its colour comes
+   *  from. Still returned, because `sg_places` reads it for free alongside the id. */
   usual_automatic_type_name?: string | null
-  /** The place's POST picture (`truck_places.event_bg_path`) — the one the single-event poster draws.
-   *  ⛔ NOT one of the extra pictures: those are `place_pictures` and never reach a poster. */
+  /** The place's POST picture (`truck_places.event_bg_path`) — the one the single-event poster draws,
+   *  and the one "Picture for posts" in the Places tab uploads.
+   *  ⛔ THERE IS NO LONGER ANY OTHER KIND. `place_pictures` — the per-place reference library — was
+   *  deleted on 5 October 2026; the table is still in the database and is read by nothing. */
   event_bg_path?: string | null
   event_bg_width?: number | null
   event_bg_height?: number | null
-  /** Lifetime traded events here. The list line shows the LAST YEAR's count; this is "used N times". */
+  /** Lifetime traded events here — the "used N times" in the detail pane's heading.
+   *  ⚠️ `traded_last_year` ABOVE IS NOW RENDERED NOWHERE. It was the "· N times in the last year"
+   *  clause in the deleted "Events here" card. Still on the payload; nothing reads it. */
   used_count?: number
 }
 
-/** One of the truck's own extra pictures for a place. ⛔ Never used by a poster. */
-export interface PlacePicture {
-  id: string
-  path: string
-  file_name: string
-  bytes: number
-  width: number | null
-  height: number | null
-  created_at: string
-  /** A signed URL — the bucket is private, so a thumbnail is a short-lived read of their own file. */
-  url: string | null
-}
-
-/** One row of "Events here". ⚠️ Private events ARE included: this is the truck's own screen. */
-export interface PlaceEventRow {
-  id: string
-  date: string
-  startTime: string
-  endTime: string
-  kind: 'upcoming' | 'past'
-  isPrivate: boolean
-  orders: number | null
-}
+/* ⛔ `PlacePicture` AND `PlaceEventRow` WERE DECLARED HERE (5 October 2026). They shaped the rows of
+ * "Your own pictures" and of "Events here" — both panes, and the five `/api/manage` actions behind them,
+ * are deleted. See the tombstone in app/api/manage/route.ts for why.
+ * ⚠️ `Place.event_bg_path` IS A DIFFERENT THING AND STAYS. It is the ONE picture that reaches a poster,
+ * it lives on `truck_places`, and "Picture for posts" in the Places tab uploads it through
+ * /api/weekly-post. `place_pictures`, the table the deleted pane wrote to, is untouched in the database
+ * and is now read by nothing. */
 
 interface PlacesResponse { places?: Place[] }
 export type Api = (action: string, extra?: Record<string, unknown>) => Promise<unknown>
@@ -242,7 +243,7 @@ export function usePlaces(api: Api, enabled: boolean) {
  */
 export function PlaceList({
   places, selectedId, onSelect, onFavourite, search, onSearch,
-  showHidden = false, starError, footer, emptyHint,
+  showHidden = false, starError, footer, emptyHint, typeLabelFor, hiddenSection = false,
 }: {
   places: Place[]
   selectedId?: string | null
@@ -250,12 +251,35 @@ export function PlaceList({
   onFavourite: (p: Place, next: boolean) => void
   search: string
   onSearch: (v: string) => void
+  /**
+   * ⚠️ `showHidden` IS NOW ONLY FOR "Tidy up places" (5 October 2026). The PLACES TAB passes
+   * `hiddenSection` instead and never hides a place from view — see that prop. Tidy up keeps the old
+   * behaviour, byte for byte, because its list is a picker and a hidden place is not a target.
+   */
   showHidden?: boolean
   starError?: string | null
   footer?: React.ReactNode
   emptyHint?: string
+  /**
+   * ── 🔴 THE PLACE'S EVENT TYPE, ON THE RIGHT OF ITS ROW (5 October 2026) ─────────────────────────
+   * Returns the label to draw, or null for none. ⚠️ A FUNCTION, NOT A FIELD ON `Place`: the label
+   * needs the truck's TYPE LIST to turn a stored id into a name and a colour, and this component is
+   * shared with Tidy up — which has no type list and passes nothing, so its rows are unchanged.
+   */
+  typeLabelFor?: (p: Place) => React.ReactNode
+  /**
+   * ── 🔴 HIDDEN PLACES ARE NOT REMOVED FROM VIEW (5 October 2026, Dominic) ────────────────────────
+   * True ⇒ hidden and merged places appear at the BOTTOM, under a "HIDDEN PLACES" heading, greyed,
+   * with one line saying what that means and how to get one back.
+   * ⛔ IT REPLACES THE "N hidden places · Show" FOOTER, which was a control an operator had to find
+   * before they could discover that anything was there at all. A place an operator hid is still a
+   * place they own; a list that silently omits it reads as "it is gone".
+   * ⚠️ SEARCH COVERS THEM TOO, in their own section — so looking for a place finds it whether it is
+   * hidden or not, which is the only behaviour that makes the section useful.
+   */
+  hiddenSection?: boolean
 }) {
-  const { favourites, others } = useMemo(() => {
+  const { favourites, others, hidden } = useMemo(() => {
     const q = search.trim().toLowerCase()
     const matches = (p: Place) => !q
       || p.name.toLowerCase().includes(q)
@@ -263,15 +287,19 @@ export function PlaceList({
       || String(p.area ?? '').toLowerCase().includes(q)
       || String(p.postcode ?? '').toLowerCase().includes(q)
     const byName = (a: Place, b: Place) => a.name.localeCompare(b.name, 'en-GB', { sensitivity: 'base' })
-    const visible = places.filter(p => (showHidden || !isRetired(p)) && matches(p))
+    /* ⚠️ `hiddenSection` MAKES RETIRED PLACES THEIR OWN GROUP rather than mixing them in: with it on,
+     * the live groups exclude them and `hidden` collects them. `showHidden` (Tidy up's) still mixes
+     * them into `others`, which is what that screen has always done. */
+    const live = places.filter(p => ((hiddenSection ? !isRetired(p) : (showHidden || !isRetired(p)))) && matches(p))
     return {
-      favourites: visible.filter(p => p.is_favourite).sort(byName),
-      others: visible.filter(p => !p.is_favourite).sort(byName),
+      favourites: live.filter(p => p.is_favourite).sort(byName),
+      others: live.filter(p => !p.is_favourite).sort(byName),
+      hidden: hiddenSection ? places.filter(p => isRetired(p) && matches(p)).sort(byName) : [],
     }
-  }, [places, search, showHidden])
+  }, [places, search, showHidden, hiddenSection])
 
-  const row = (p: Place) => (
-    <li key={p.id} className="flex items-stretch gap-1">
+  const row = (p: Place, greyed = false) => (
+    <li key={p.id} className={`flex items-stretch gap-1 ${greyed ? 'opacity-55' : ''}`}>
       {/* ⚠️ THE STAR IS ITS OWN BUTTON, not nested inside the row button — tapping it must toggle the
           favourite, not select the place. Nested buttons are invalid HTML, so they are siblings. */}
       <button
@@ -286,18 +314,28 @@ export function PlaceList({
       <button type="button" onClick={() => onSelect(p)} aria-current={p.id === selectedId}
         className={`flex-1 min-w-0 text-left px-2 py-2 rounded-lg transition-colors ${
           p.id === selectedId ? 'bg-orange-50 ring-1 ring-orange-300' : 'hover:bg-slate-50'}`}>
-        <span className="block text-sm font-bold text-slate-900 truncate">
-          {p.name}
-          {isRetired(p) && (
-            <span className="ml-1.5 text-xs font-bold text-slate-400">{p.merged_into_id ? '· merged' : '· hidden'}</span>
-          )}
+        {/* 🔴 THE NAME AND THE TYPE ON ONE LINE, with the name flexible and the type fixed. The name
+            truncates; the type does not, because a half-written type name is worse than a truncated
+            venue — the venue has its own sub-line underneath and the type has nothing else. */}
+        <span className="flex items-baseline gap-2">
+          <span className="min-w-0 flex-1 truncate text-sm font-bold text-slate-900">
+            {p.name}
+            {isRetired(p) && (
+              <span className="ml-1.5 text-xs font-bold text-slate-400">{p.merged_into_id ? '· merged' : '· hidden'}</span>
+            )}
+          </span>
+          {typeLabelFor?.(p)}
         </span>
         <span className="block text-xs text-slate-400 truncate">{placeSubLine(p)}</span>
       </button>
     </li>
   )
 
-  const nothingAtAll = places.filter(p => showHidden || !isRetired(p)).length === 0
+  /* ⚠️ WITH `hiddenSection` ON, A TRUCK WHOSE ONLY PLACES ARE HIDDEN HAS SOMETHING TO SHOW — so
+   * "nothing at all" must count them, or the hidden section would be suppressed by the empty hint. */
+  const nothingAtAll = hiddenSection
+    ? places.length === 0
+    : places.filter(p => showHidden || !isRetired(p)).length === 0
 
   return (
     <div className="flex flex-col min-h-0 h-full">
@@ -313,7 +351,7 @@ export function PlaceList({
           <p className="text-xs text-slate-400 py-3">
             {emptyHint ?? 'No places yet. They appear here from your schedule.'}
           </p>
-        ) : favourites.length === 0 && others.length === 0 ? (
+        ) : favourites.length === 0 && others.length === 0 && hidden.length === 0 ? (
           // ⚠️ ONLY REACHABLE WITH A SEARCH TYPED — `nothingAtAll` covers the no-places case above, so
           // this can never be the thing an operator sees on opening the modal (bug 2).
           <p className="text-xs text-slate-400 py-3">Nothing matches “{search.trim()}”.</p>
@@ -322,13 +360,24 @@ export function PlaceList({
             {favourites.length > 0 && (
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide px-1 pt-1 pb-0.5">Favourites</p>
-                <ul className="divide-y divide-slate-100">{favourites.map(row)}</ul>
+                <ul className="divide-y divide-slate-100">{favourites.map(p => row(p))}</ul>
               </div>
             )}
             {others.length > 0 && (
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide px-1 pt-3 pb-0.5">All places</p>
-                <ul className="divide-y divide-slate-100">{others.map(row)}</ul>
+                <ul className="divide-y divide-slate-100">{others.map(p => row(p))}</ul>
+              </div>
+            )}
+            {/* ── 🔴 HIDDEN PLACES, AT THE BOTTOM, GREYED (5 October 2026) ─────────────────────────
+              * ⚠️ THE SENTENCE IS TWO FACTS AND NOTHING ELSE: what hiding does (keeps them out of Add
+              * event) and how to undo it (open one). The old footer said how MANY there were, which is
+              * the one thing the section itself already shows. */}
+            {hidden.length > 0 && (
+              <div data-hidden-places>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide px-1 pt-3 pb-0.5">Hidden places</p>
+                <p className="px-1 pb-1 text-[11px] leading-relaxed text-slate-400">{HIDDEN_PLACES_NOTE}</p>
+                <ul className="divide-y divide-slate-100">{hidden.map(p => row(p, true))}</ul>
               </div>
             )}
           </>
@@ -339,6 +388,14 @@ export function PlaceList({
     </div>
   )
 }
+
+/**
+ * ── 🔴 WHAT "HIDDEN" MEANS, IN TWO FACTS ─────────────────────────────────────────────────────────
+ * ⛔ IT DOES NOT SAY HOW MANY THERE ARE. The old footer did — "3 hidden places · Show" — and the count
+ * is the one thing the section itself already shows. What an operator cannot see is the CONSEQUENCE
+ * (they are out of Add event) and the WAY BACK (open one), which is what this says.
+ */
+const HIDDEN_PLACES_NOTE = 'Hidden places stay out of Add event. Open one to restore it.'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE DETAIL — reused by Tidy up, logic unchanged
@@ -386,12 +443,9 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
    * only way back for a truck who needs a merge undone by hand.
    */
 
-  const nextLine = place.next_event_date
-    ? `Next: ${shortDay(place.next_event_date)}${timeRange(place.next_start_time, place.next_end_time) ? ` · ${timeRange(place.next_start_time, place.next_end_time)}` : ''}`
-    : 'Next: nothing booked'
-  const lastLine = place.last_event_date
-    ? `Last: ${shortDay(place.last_event_date)}${timeRange(place.last_start_time, place.last_end_time) ? ` · ${timeRange(place.last_start_time, place.last_end_time)}` : ''} · ${place.traded_last_year} time${place.traded_last_year === 1 ? '' : 's'} in the last year`
-    : 'Last: never'
+  /* ⛔ `nextLine` / `lastLine` WENT WITH THE "Events here" CARD (5 October 2026). They were two string
+   * expressions over fields `sg_places` already returns — no read of their own — and the LIST still
+   * shows the same facts through `placeSubLine`, which is where an operator looks for them. */
 
   return (
     <div className="space-y-4 min-w-0">
@@ -420,19 +474,22 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
           autoCapitalize="characters" autoCorrect="off" spellCheck={false} />
       </Card>
 
-      <Card className="p-4 space-y-1">
-        <p className="text-sm font-black text-slate-900 mb-1">Events here</p>
-        <p className="text-sm text-slate-700">{nextLine}</p>
-        <p className="text-sm text-slate-500">{lastLine}</p>
-      </Card>
-
+      {/* ══ ⛔ THE "Events here" CARD AND THE "Favourite" BUTTON ARE DELETED (5 October 2026) ═══════
+        * • **Events here** — "Next: …" and "Last: … · N times in the last year" — went because the
+        *   Places tab had TWO of them: this card, and a second one at the bottom of the page listing
+        *   the actual rows. Two boxes under one heading, on one screen, is the kind of duplication
+        *   that makes a reader doubt both. `sg_place_events`, which only the other one used, is
+        *   deleted with it; these three lines needed no read at all — they are fields on the row.
+        *   ⚠️ `next_event_date` / `last_event_date` / `traded_last_year` ARE STILL RETURNED by
+        *   `sg_places` and are still read by `placeSubLine` in the LIST, which is where an operator
+        *   actually looks for "when was I last here".
+        * • **Favourite** — the star in the list already does it, on every row, without opening a
+        *   place. Two controls for one boolean, and the star is the one an operator finds.
+        *   ⚠️ `onFavourite` / `setFavourite` / the star are untouched.
+        * ⛔ BOTH REMOVALS REACH "Tidy up places", WHICH SHARES THIS COMPONENT, and that is correct:
+        *   Tidy up's list carries the same star, and its job is naming and merging places rather than
+        *   reading their diary. */}
       <div className="flex flex-wrap gap-2">
-        <Btn
-          label={place.is_favourite ? '★ Favourite' : '☆ Favourite'}
-          colour={place.is_favourite ? 'orange' : 'ghost'}
-          size="sm" loading={busy}
-          onClick={() => setFlag({ is_favourite: !place.is_favourite }, place.is_favourite ? 'Removed from favourites' : 'Added to favourites')}
-        />
         {isRetired(place) ? (
           // ⚠️ ONE CONTROL, ONE OUTCOME: restoring a merged place also un-merges it, or it would come
           // back into the list showing none of its own events (they all resolve to the target).

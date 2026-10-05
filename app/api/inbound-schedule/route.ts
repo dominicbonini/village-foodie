@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { manageTabHref } from '@/lib/manage-links'
 import { createClient } from '@supabase/supabase-js'
 import { sendConfirmationEmail } from '@/lib/email'
 import { normalizeVenue, venuesFuzzyMatch } from '@/lib/venue-signature'
@@ -267,7 +268,12 @@ export async function POST(req: NextRequest) {
           .limit(20)
 
         const n = (newEvents || []).length
-        const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/manage/${truck.dashboard_token}?tab=schedule`
+        /* 🔴 THE LINK THIS EMAIL SENDS, BUILT BY THE ONE BUILDER (5 October 2026). It is also the link
+         * that was BROKEN for every trial truck: `?tab=schedule` was read at mount and then overridden
+         * by the trial-defaults-to-Billing effect, so an operator asked to review found events landed on
+         * a price list. The fix is in app/manage/[token]/page.tsx (`urlAskedForTab`); this call keeps the
+         * URL itself out of a template literal. */
+        const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}${manageTabHref('schedule', { token: truck.dashboard_token })}`
 
         const fmtDate = (iso: string) => {
           const d = new Date(iso + 'T00:00:00')

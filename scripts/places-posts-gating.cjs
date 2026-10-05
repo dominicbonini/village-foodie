@@ -200,10 +200,19 @@ head('4 · the routes refuse without the key — and refuse with the right sente
    *   GATED — what exists only inside the Places TAB.
    *   UNGATED — `sg_places` and `sg_upsert_place`, which the Add event picker and Tidy up places both
    *     call. Every truck on this branch has those; gating either would switch off a shipped control. */
-  const GATED = ['sg_place_pictures', 'sg_place_picture_url', 'sg_place_picture_save',
-    'sg_place_picture_remove', 'sg_place_events', 'sg_place_usual_type']
+  /* ⛔ RE-AIMED (5 October 2026): FIVE OF THE SIX GATED ACTIONS NO LONGER EXIST. The pictures pane and
+   * "Events here" were deleted, and `sg_place_pictures`, `sg_place_picture_url`,
+   * `sg_place_picture_save`, `sg_place_picture_remove` and `sg_place_events` went with them.
+   * 🔴 SO THE CLAIM IS NOW TWO CLAIMS, and the second is the one that keeps this honest: what remains
+   * is gated, AND the five are gone from the ROUTE ENTIRELY — not merely absent from the list, which is
+   * what an action that had been quietly un-gated would also look like. */
+  const GATED = ['sg_place_usual_type']
   const list = m.slice(m.indexOf('const PLACES_TAB_ONLY = ['), m.indexOf('if (action === \'sg_places\')'))
   for (const a of GATED) t(`🔴 \`${a}\` is behind the key`, list.includes(`'${a}'`))
+  for (const a of ['sg_place_pictures', 'sg_place_picture_url', 'sg_place_picture_save',
+    'sg_place_picture_remove', 'sg_place_events']) {
+    t(`⛔ \`${a}\` is GONE from the route — not un-gated, deleted`, !new RegExp(`action === '${a}'`).test(m))
+  }
   t('🔴 …and the gate is one check, before the actions, with the key named',
     new RegExp(`PLACES_TAB_ONLY\\.includes\\(action\\)[\\s\\S]{0,160}'${KEY}'`).test(m))
   /* ⛔ THE UNGATED HALF. Asserted as "NOT in the list", by name, so adding one later is a visible

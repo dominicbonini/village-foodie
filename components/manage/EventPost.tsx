@@ -25,6 +25,9 @@ import {
   type Align, type EventLayout, type TextBox,
 } from '@/lib/weekly-post/layout'
 import { averageSample } from '@/lib/weekly-post/contrast'
+/* 🔴 THE ONE BUILDER FOR A LINK INTO A MANAGE SECTION. A bare `?section=…` drops `?tab=`; see the
+ * note at the head of lib/manage-links.ts for the two faults that cost. */
+import { manageSectionHref } from '@/lib/manage-links'
 
 type BoxKey = 'date' | 'location' | 'time' | 'note'
 
@@ -405,7 +408,10 @@ export function EventSetupScreen({ token, onCancel }: { token: string; onCancel?
           * the tab's own address and it survives a refresh. */}
         <p className="text-xs text-slate-500 mt-2">
           A different picture for one place? Add it in{' '}
-          <a href="?section=places" className="font-semibold text-orange-700 underline hover:no-underline">Places</a>.
+          {/* ⛔ WAS `href="?section=places"` — a bare relative query REPLACES the whole query string,
+              so `?tab=` was dropped and the link landed on Billing for a trial truck. One builder,
+              which cannot emit a section without its tab. See lib/manage-links.ts. */}
+          <a href={manageSectionHref('places')} className="font-semibold text-orange-700 underline hover:no-underline">Places</a>.
         </p>
         {msg && <p className={`text-sm mt-2 ${msg.bad ? 'text-red-600' : 'text-slate-600'}`}>{msg.text}</p>}
       </Card>

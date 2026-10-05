@@ -21,29 +21,40 @@
 // rules §4 established, so the two Schedule screens read as one product.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Btn, Card, Input, Select, Spinner } from '@/components/manage/primitives'
+import { Btn, Card, Input, Spinner } from '@/components/manage/primitives'
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
+/* ⛔ `Select`, `shortDay`, `PlacePicture`, `PlaceEventRow` AND `PRIVATE_CHIP` WERE ALL IMPORTED HERE
+ * (5 October 2026). `Select` was the "Usual event type" dropdown, now a pill row; the other four served
+ * "Events here" and "Your own pictures", which are deleted. The two types went with their routes. */
 import {
-  usePlaces, PlaceList, PlaceDetail, shortDay,
-  type Api, type Place, type PlacePicture, type PlaceEventRow,
+  usePlaces, PlaceList, PlaceDetail,
+  type Api, type Place,
 } from './SchedulePlaces'
-import { PRIVATE_CHIP } from '@/lib/private-events/copy'
+/* 🔴 "Standard", THE WORD, FROM THE ONE PLACE THAT DEFINES IT — Standard is not an `event_types` row,
+ * so the name has no database to come from and was a literal in four files before this constant. */
+import { STANDARD_TYPE_NAME } from '@/lib/event-types/read'
+/* 🔴 THE GRID'S OWN COLOURS, so a type's dot is the same colour on the list as on the grid. Derived
+ * from the type's index in the truck's list — see `colourFor`'s note on why it is not a column. */
+import { colourFor, STANDARD_COLOUR } from '@/lib/event-types/types'
+import { PLACE_TYPE_HELPER, POST_PICTURE_STANDARD_NOTE } from '@/lib/copy/serviceSettings'
+/* 🔴 THE ONE BUILDER FOR A LINK INTO A MANAGE SECTION. The old "Add a picture for this place" link
+ * was a bare `?section=weekly`, which dropped `?tab=` and landed on Billing. See that file's header. */
+import { manageSectionHref } from '@/lib/manage-links'
 import type { Plan } from '@/lib/features'
 import { canAccess } from '@/lib/features'
 
-/** 10MB, matching `place_pictures_bytes_sane` in 20261015 and the route's own check. */
-const MAX_PLACE_PICTURE_BYTES = 10 * 1024 * 1024
+/** 10MB, matching `MAX_UPLOAD_BYTES` in components/manage/EventPost.tsx and the route's own check.
+ *  ⚠️ A COURTESY LIMIT: it refuses a doomed upload before the bytes move. The GUARD is the route's. */
+const MAX_POST_PICTURE_BYTES = 10 * 1024 * 1024
 
 const msgOf = (e: unknown, fallback: string): string => {
   const m = e instanceof Error ? e.message : typeof e === 'string' ? e : ''
   return m || fallback
 }
 
-/** "1.4 MB" / "860 KB". ⚠️ Decimal, because that is what an operator's file manager shows them. */
-function sizeLabel(bytes: number): string {
-  if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(1)} MB`
-  return `${Math.max(1, Math.round(bytes / 1000))} KB`
-}
+/* ⛔ `sizeLabel` WENT WITH "Your own pictures" (5 October 2026). It formatted a file size for that
+ * list's rows; the post picture reports its DIMENSIONS, which is the figure that matters for a
+ * picture a design is drawn on. */
 
 /** A type the pin may point at, in the grid's order. */
 export interface TypeChoice { id: string; name: string; kind?: 'custom' | 'private' }
@@ -53,28 +64,55 @@ export interface TypeChoice { id: string; name: string; kind?: 'custom' | 'priva
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
 /**
- * ── 🔴 "Automatic (<type> — last used here)" IS THE FIRST OPTION, AND IT IS TODAY'S RULE ──────────
+ * ══ 🔴 THE PLACE'S EVENT TYPE — A PILL ROW, AND NO "Automatic" (5 October 2026, Dominic) ═══════════
  *
- * NULL means Automatic, and Automatic is the EXISTING behaviour: the newest event at this place
- * supplies the type (§70.3). So the first option is not a special mode — it is what every place does
- * now, named so an operator can choose to stop doing it.
+ * ⛔ THE DROPDOWN AND EVERY "Automatic (…)" OPTION ARE GONE. It offered three states where an
+ * operator only ever wants one answer: *what type comes up when I pick this place?* "Automatic
+ * (Market — last used here)" was an honest label for a mechanism, and a mechanism is not what the
+ * question is about — so the row now shows the ANSWER, as an ordinary selected pill, and pressing a
+ * different pill stores it.
  *
- * 🔴 THE OPTION NAMES WHAT AUTOMATIC CURRENTLY RESOLVES TO. "Automatic" alone tells the operator
- * nothing about what will come up when they add an event here; "Automatic (Market — last used here)"
- * tells them, and makes pinning an informed choice rather than a guess.
- * ⚠️ AND IT SAYS "Standard" WHEN THERE IS NO HISTORY, because that is what the rule returns — not a
- * blank, which would read as "we don't know".
+ * 🔴 A PLACE THAT HAS NEVER BEEN SET STILL SHOWS A SELECTED PILL, with no special label: the one the
+ * existing history rule gives (Standard where there is no history). The server resolves that — it is
+ * `usual_automatic_type_id` on the row, from the SAME function the Add event pre-selection uses — so
+ * the pill an operator sees IS what Add event will pick, with or without a stored choice.
+ * ⚠️ STORAGE IS UNCHANGED: `usual_type_is_standard` / `usual_event_type_id`, written by
+ * `sg_place_usual_type`. What changed is that there is no longer a way to write "neither".
  *
- * ⛔ PRIVATE IS IN THE LIST, AND THAT IS DELIBERATE (confirmed 5 October 2026). A wedding venue that
- * only ever has private bookings should come up as Private. It is not a silent consequence: Add event
- * opens the purple panel with the full explanation, so the operator sees it before saving — and the
- * automatic rule already behaves this way, because a place whose last event was private pre-selects
- * Private anyway. The pin only makes that deliberate.
+ * ⛔ PRIVATE IS ONE OF THE PILLS, AND THAT IS DELIBERATE (confirmed 5 October 2026). A wedding venue
+ * that only ever has private bookings should come up as Private. It is not a silent consequence: Add
+ * event opens the purple panel with the full explanation, so the operator sees it before saving.
  *
  * ⚠️ A PRO TRUCK SEES STANDARD AND PRIVATE ONLY. Custom types are `event_types` (Max); the Private
  * type is `private_events` (Pro). The filter is on the key, not on the plan name.
+ * ⚠️ THE PILL STYLING IS THE ADD EVENT ROW'S, deliberately duplicated rather than imported: that
+ * control is `EventTypeSelect`, which owns the privacy panel, the "usual for this place" hint and a
+ * `touched` ref for the form it lives in — none of which belongs on this screen. What is shared is the
+ * SHAPE, and §4's density rules are what keep the two reading as one product.
  */
-function UsualTypeSelect({
+/**
+ * ══ 🔴 WHICH TYPE A PLACE IS ON — ONE DERIVATION, READ BY THE PILLS **AND** THE LIST ═══════════════
+ *
+ * `null` ⇒ Standard. A uuid ⇒ that type.
+ *
+ * ⚠️ `usual_type_is_standard` IS READ FIRST, matching the server's own order
+ * (`is_standard ? Standard : (id ?? rule)`), so a row that somehow carries both reads the same way on
+ * both sides of the wire.
+ * ⚠️ `usual_automatic_type_id` IS THE HISTORY RULE'S ANSWER, resolved by the route from the SAME
+ * function Add event's pre-selection uses — which is what makes the pill, the list label and what Add
+ * event will actually pick the same answer on a place nobody has set.
+ * ⚠️ ABSENT (an old payload, or a failed history read) FALLS BACK TO STANDARD — which is what the rule
+ * itself returns with no history, so the fallback is the rule's own answer rather than a guess.
+ * ⛔ IT IS A FUNCTION, NOT TWO COPIES OF `?? ??`. The list label and the selected pill disagreeing
+ * about one place would be the exact defect the dropdown had: a control showing one type while another
+ * was stored behind it.
+ */
+export function placeTypeId(place: Place): string | null {
+  return place.usual_type_is_standard === true ? null
+    : place.usual_event_type_id ?? place.usual_automatic_type_id ?? null
+}
+
+function PlaceTypePills({
   place, types, canTypes, canPrivate, disabled, onSave,
 }: {
   place: Place
@@ -82,343 +120,288 @@ function UsualTypeSelect({
   canTypes: boolean
   canPrivate: boolean
   disabled?: boolean
-  /** `null` ⇒ Automatic · `'standard'` ⇒ pinned to Standard · a uuid ⇒ pinned to that type. */
-  onSave: (typeId: string | null) => void
+  /** `'standard'` ⇒ Standard · a uuid ⇒ that type. ⛔ There is no "clear" any more. */
+  onSave: (typeId: string) => void
 }) {
-  /* ══ 🔴 "Automatic (…)" NAMES WHAT IT ACTUALLY RESOLVES TO (5 October 2026) ═════════════════════
-   * It used to read "Automatic (Standard — last used here)" for EVERY place, always: the component
-   * took an `automaticName` prop whose only caller returned the literal 'Standard', because
-   * `sg_places` did not return the last event's type. For a wedding venue whose last three bookings
-   * were Private that parenthetical was simply false — on the screen whose job is to say what will
-   * happen.
-   * 🔴 THE ROUTE RESOLVES IT NOW, with the SAME function the Add event pre-selection uses
-   * (`readPlaceTypeHistory`), and sends `usual_automatic_type_name` per place. One rule, one answer.
-   * ⚠️ A null NAME MEANS THE HISTORY READ FAILED (or the migration is absent), and the option then
-   * says plain "Automatic" rather than guessing "Standard" — a wrong parenthetical is worse than
-   * none, because it is the thing the operator is deciding against. */
-  const autoName = place.usual_automatic_type_name
-  const options = useMemo(() => {
-    const out = [{
-      value: '',
-      label: autoName ? `Automatic (${autoName} — last used here)` : 'Automatic (what you used last time)',
-    }]
-    out.push({ value: 'standard', label: 'Standard' })
-    for (const t of types) {
-      if (t.kind === 'private' ? !canPrivate : !canTypes) continue
-      out.push({ value: t.id, label: t.name })
-    }
-    return out
-  }, [types, autoName, canTypes, canPrivate])
+  /* 🔴 THE SAME DERIVATION THE LIST LABEL USES — see `placeTypeId`. */
+  const selectedId = placeTypeId(place)
 
-  /* ══ 🔴 "Pinned to Standard" IS A REAL, STORED STATE NOW (20261016) ═════════════════════════════
-   * ⛔ IT WAS NOT. Standard is the ABSENCE of a type — Standard IS the truck's own settings (§70.2) —
-   * so there was no id to store, and choosing Standard wrote `null`, which `usual_event_type_id`
-   * already uses for Automatic. The operator picked Standard and watched the control come back saying
-   * Automatic, with nothing on screen to explain it.
-   * 🔴 `truck_places.usual_type_is_standard` (20261016) is that second column. The two states are
-   * genuinely different: Automatic's answer CHANGES as the truck trades; Standard's is FIXED.
-   * ⚠️ THE BOOLEAN IS READ FIRST, matching the server's resolution order
-   * (`is_standard ? Standard : (id ?? the rule)`), so a row that somehow carries both reads as
-   * Standard on the screen and on the server rather than differently on each. */
-  const value = place.usual_type_is_standard === true
-    ? 'standard'
-    : (place.usual_event_type_id ?? '')
+  const privateType = types.find(t => t.kind === 'private') ?? null
+  const customTypes = types.filter(t => t.kind !== 'private')
 
-  /** The sentence under the control — one per state, and each says what Add event will do. */
-  const note = place.usual_type_is_standard === true
-    ? 'Add event will pre-select Standard here, whatever you used last time.'
-    : place.usual_event_type_id
-      ? 'Add event will pre-select this type here.'
-      : autoName
-        ? `Add event follows what you used last time — ${autoName} today.`
-        : 'Add event follows what you used last time here.'
+  const pill = (key: string, label: string, on: boolean, kind: 'standard' | 'private' | 'custom', value: string) => (
+    <button
+      key={key}
+      type="button"
+      role="radio"
+      aria-checked={on}
+      disabled={disabled}
+      onClick={() => { if (!on) onSave(value) }}
+      className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
+        on
+          ? kind === 'private'
+            ? 'border-purple-400 bg-purple-100 text-purple-900'
+            : 'border-slate-900 bg-slate-900 text-white'
+          : kind === 'private'
+            ? 'border-purple-300 bg-white text-purple-700 hover:bg-purple-50'
+            : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}
+    >
+      {kind === 'private' && <span aria-hidden="true">🔒</span>}
+      {label}
+    </button>
+  )
 
   return (
-    <div className="min-w-0">
-      <label className="block text-xs font-bold text-slate-600 mb-1">Usual event type</label>
-      <Select
-        className="w-full"
-        ariaLabel={`Usual event type for ${place.name}`}
-        value={value}
-        disabled={disabled}
-        options={options}
-        /* ⚠️ `''` IS AUTOMATIC AND BECOMES null; `'standard'` TRAVELS AS ITSELF. It used to be mapped
-         * to null here, which is what made the two states indistinguishable on the wire. */
-        onChange={v => onSave(v === '' ? null : v)}
-      />
-      <p className="mt-1 text-[11px] text-slate-500">{note}</p>
+    <div data-place-type-pills-wrap className="min-w-0">
+      <p className="mb-1 block text-xs font-bold text-slate-600">Event type</p>
+      {/* ⚠️ A `radiogroup`, NOT A LIST OF BUTTONS — exactly one is selected, which is what a radio
+          group means to a screen reader and to a keyboard. */}
+      <div role="radiogroup" aria-label={`Event type for ${place.name}`}
+        data-place-type-pills className="flex flex-wrap gap-1.5">
+        {/* 🔴 STANDARD FIRST, THEN PRIVATE, THEN THE CUSTOM TYPES — the same order the Event types
+            grid and the Add event pill row use, so a truck finds a type in the same place on all three. */}
+        {pill('standard', STANDARD_TYPE_NAME, selectedId === null, 'standard', 'standard')}
+        {privateType && canPrivate
+          && pill(privateType.id, privateType.name, selectedId === privateType.id, 'private', privateType.id)}
+        {canTypes && customTypes.map(t =>
+          pill(t.id, t.name, selectedId === t.id, 'custom', t.id))}
+      </div>
+      {/* ⛔ ONE SENTENCE, AND IT IS ABOUT THE CONSEQUENCE, NOT THE MECHANISM. The old helper line
+          explained what "Automatic" meant; there is no Automatic, so what is left to say is what this
+          row DOES. */}
+      <p className="mt-1.5 text-[11px] text-slate-500">{PLACE_TYPE_HELPER}</p>
     </div>
   )
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-// PICTURES FOR THIS PLACE
+// PICTURE FOR POSTS
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
 /**
- * ── ⛔ TWO KINDS OF PICTURE, AND THE DIFFERENCE IS THE WHOLE PANE ─────────────────────────────────
+ * ══ 🔴 "Picture for posts" — ONE PICTURE, UPLOADED IN PLACE (5 October 2026, Dominic) ═════════════
  *
- *  1. THE POST PICTURE — `truck_places.event_bg_path`, ONE per place, with text positions placed on
- *     it (`event_layout`). This is what a single-event poster for this place draws. Replace and Text
- *     positions are the EXISTING flows, in Social posts › Single event; this pane links to them
- *     rather than re-implementing them, because the text-position editor is a drag surface whose
- *     pointer handling took three fixes to get right (its own file says so).
+ * ⛔ "Your own pictures" IS DELETED ENTIRELY — the whole second half of this pane, and the four
+ * `sg_place_picture_*` routes behind it. It was a reference library (a photo of the pitch, where to
+ * park, the venue's artwork) that nothing read: it fed no post, no screen and no export, and its own
+ * copy had to say so in capitals every time it was drawn. A feature whose description is mostly a
+ * warning about what it is not is a feature nobody asked for.
+ * ⚠️ `public.place_pictures` IS LEFT IN THE DATABASE, UNTOUCHED. Dropping a table is a migration this
+ * change does not need, and any rows an operator uploaded are theirs. Nothing reads it now.
  *
- *  2. THE EXTRA PICTURES — `place_pictures`, as many as they like, for the truck's OWN use: a photo
- *     of the pitch, a copy of the venue's artwork, a map of where to park. ⛔ THEY NEVER REACH A
- *     POSTER, and `scripts/places-tab.cjs` proves it by searching the poster code for the table.
+ * ── 🔴 AND THE POST PICTURE IS UPLOADED **HERE**, NOT BEHIND A LINK ───────────────────────────────
+ * It used to be a sentence and a link into Social posts › Single event, on the grounds that a second
+ * drag surface would be a second set of the three pointer bugs that one had. That reasoning holds for
+ * the TEXT POSITIONS and not for the UPLOAD: choosing a file is not a drag surface. So the upload is
+ * in place and "Text positions" is still the link.
  *
- * 🔴 THE PANE SAYS WHICH IS WHICH, IN WORDS. Two galleries of thumbnails with no explanation is how
- * an operator uploads a parking map and then wonders why it is behind Friday's dates.
+ * ⚠️ IT IS THE EXISTING FLOW, NOT A SECOND ONE: `upload_url` → PUT → `confirm_upload` with
+ * `which: 'place'` and this place's id, on /api/weekly-post — the same three calls
+ * `components/manage/EventPost.tsx` makes, so the shape check against the standard design, the 10MB
+ * cap, the PNG/JPG rule and the storage path are all the server's existing ones.
+ * ⛔ THE SHAPE CHECK IS THE SERVER'S AND ONLY THE SERVER'S. A picture whose aspect ratio differs from
+ * the standard design is refused with a sentence that names both shapes, and the only honest source
+ * for that is the real pixels of the stored object. The size and type checks here are a courtesy that
+ * saves a doomed upload.
+ *
+ * ⚠️ THE ROUTE IS /api/weekly-post, WHICH IS GATED ON `schedule_graphics` (Max) AS WELL AS ON THE
+ * PREVIEW KEY. A Pro truck holding the preview key therefore sees this section and is refused on
+ * upload, with the route's own sentence — which is correct and is shown rather than hidden: posts are
+ * a Max feature and this picture only exists for a post.
  */
-function PicturesPane({
-  place, api, showToast, disabled,
+function PostPicturePane({
+  place, token, showToast, disabled, onChanged,
 }: {
   place: Place
-  api: Api
+  /** 🔴 THE DASHBOARD TOKEN, because this pane talks to /api/weekly-post — NOT to /api/manage, which
+   *  is what the `api` prop everywhere else in this file posts to. Two routes, two callers. */
+  token: string
   showToast: (msg: string, kind?: 'success' | 'error') => void
   disabled?: boolean
+  /** Re-read the places list, so the thumbnail and the size follow the upload. */
+  onChanged: () => void
 }) {
-  const [pics, setPics] = useState<PlacePicture[] | null>(null)
-  const [available, setAvailable] = useState(true)
   const [busy, setBusy] = useState(false)
   const fileRef = useRef<HTMLInputElement | null>(null)
 
-  /* ⚠️ `reloadKey` RATHER THAN CALLING A `useCallback` FROM THE EFFECT. A `void load()` in the effect
-   * body is a synchronous setState during commit, which `react-hooks/set-state-in-effect` refuses and
-   * which causes a second render on every mount. The effect owns the fetch and a counter re-runs it;
-   * the same shape `usePlaces` already uses for its own reload. */
-  const [reloadKey, setReloadKey] = useState(0)
-  const reload = useCallback(() => setReloadKey(k => k + 1), [])
+  const post = useCallback(async (body: Record<string, unknown>): Promise<Record<string, unknown>> => {
+    const r = await fetch('/api/weekly-post', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, ...body }),
+    })
+    const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+    /* 🔴 THE SERVER'S OWN SENTENCE, SHOWN AS IT CAME BACK. The refusals here are specific — the wrong
+     * shape names both shapes, a Pro truck is told posts are on Max — and replacing any of them with
+     * "something went wrong" would strip the only part an operator can act on. */
+    if (!r.ok) throw new Error(String(j.error ?? 'That did not work.'))
+    return j
+  }, [token])
 
-  useEffect(() => {
-    let live = true
-    ;(async () => {
-      try {
-        const r = await api('sg_place_pictures', { placeId: place.id }) as
-          { pictures?: PlacePicture[]; available?: boolean }
-        if (!live) return
-        setPics(r.pictures ?? [])
-        setAvailable(r.available !== false)
-      } catch {
-        /* ⚠️ AN EMPTY PANE, NOT AN ERROR CARD. The rest of the Places tab works without this. */
-        if (live) setPics([])
-      }
-    })()
-    return () => { live = false }
-  }, [api, place.id, reloadKey])
-
-  /* ── 🔴 THE UPLOAD IS THREE STEPS, AND THE ORDER IS THE SAFE ONE ────────────────────────────────
-   * 1. ask the server for a signed URL — the PATH is built server-side and starts with the truck id,
-   *    because a signed upload URL is authority over exactly the path it names;
-   * 2. PUT the bytes straight to storage, so a 10MB file never passes through a route handler;
-   * 3. tell the server to record it — and the server re-reads the REAL bytes from storage rather than
-   *    trusting the size the browser reported.
-   * ⚠️ THE CLIENT-SIDE SIZE CHECK IS A COURTESY, not the guard: it saves a doomed 30MB upload. The
-   * guard is in the route and in the table's CHECK. */
   const upload = async (file: File) => {
-    if (file.size > MAX_PLACE_PICTURE_BYTES) {
-      showToast('Pictures must be under 10MB.', 'error'); return
+    /* ⚠️ A COURTESY, NOT THE GUARD. It saves a doomed 30MB upload; the guard is the route's. */
+    if (file.size > MAX_POST_PICTURE_BYTES) {
+      showToast(`That image is ${(file.size / 1024 / 1024).toFixed(1)}MB. The limit is 10MB.`, 'error'); return
     }
-    const ext = /\.jpe?g$/i.test(file.name) ? 'jpg' : 'png'
+    if (!/^image\/(png|jpe?g)$/.test(file.type)) {
+      showToast('Please choose a PNG or JPG.', 'error'); return
+    }
     setBusy(true)
     try {
-      const u = await api('sg_place_picture_url', { placeId: place.id, ext }) as { uploadUrl: string; path: string }
-      const put = await fetch(u.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type || 'image/png' } })
-      if (!put.ok) throw new Error('The upload failed.')
-      await api('sg_place_picture_save', { placeId: place.id, path: u.path, fileName: file.name })
-      reload()
-      showToast('Picture added', 'success')
+      const ext = file.type.includes('png') ? 'png' : 'jpg'
+      const slot = await post({ action: 'upload_url', which: 'place', ext })
+      const put = await fetch(String(slot.uploadUrl), {
+        method: 'PUT', body: file, headers: { 'Content-Type': file.type },
+      })
+      if (!put.ok) throw new Error('The upload did not complete.')
+      const done = await post({ action: 'confirm_upload', path: slot.path, which: 'place', placeId: place.id })
+      /* ⚠️ THE SERVER MAY HAVE RESET THIS PLACE'S TEXT BOXES — a different shape makes the old
+       * coordinates meaningless, and it returns the layout it stored. Said out loud rather than
+       * letting the boxes appear to have moved on their own. */
+      showToast(done.layout ? 'Picture saved — the text positions were reset to the standard ones.' : 'Picture saved', 'success')
+      onChanged()
     } catch (e: unknown) {
-      showToast(msgOf(e, 'Couldn’t add that picture.'), 'error')
+      showToast(msgOf(e, 'Couldn’t save that picture.'), 'error')
     } finally {
       setBusy(false)
       if (fileRef.current) fileRef.current.value = ''
     }
   }
 
-  const remove = async (pic: PlacePicture) => {
-    /* ⚠️ CONFIRMED, BECAUSE IT DELETES A FILE. The operator may have no other copy of it. */
-    if (!window.confirm(`Remove “${pic.file_name}”? This deletes the picture.`)) return
+  const remove = async () => {
+    /* ⚠️ CONFIRMED, BECAUSE IT DELETES A FILE and sends this place's posts back to the standard
+     * design. The operator may have no other copy of the picture. */
+    if (!window.confirm(`Remove the picture for “${place.name}”? Event posts here will use your standard design again.`)) return
     setBusy(true)
     try {
-      await api('sg_place_picture_remove', { id: pic.id })
-      reload()
+      await post({ action: 'event_remove_place_design', placeId: place.id })
+      showToast('Picture removed', 'success')
+      onChanged()
     } catch (e: unknown) {
       showToast(msgOf(e, 'Couldn’t remove that picture.'), 'error')
     } finally { setBusy(false) }
   }
 
-  return (
-    <Card className="p-4 space-y-3">
-      <p className={SUBCARD_HEADING}>Pictures for this place</p>
+  const has = !!place.event_bg_path
+  const dims = place.event_bg_width && place.event_bg_height
+    ? `${place.event_bg_width}×${place.event_bg_height}`
+    : null
 
-      {/* ── 1 · THE POST PICTURE ───────────────────────────────────────────────────────────────── */}
-      <div className="rounded-xl border border-slate-200 p-3">
-        <p className="text-sm text-slate-800">Event post picture</p>
-        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500">
-          The picture a single-event post for this place is drawn on. HatchGrab puts the date, place
-          and time on top of it.
-        </p>
-        <div className="mt-2 flex items-center gap-3">
-          {/* ⚠️ A GREY PLACEHOLDER RATHER THAN NOTHING, so the row has the same shape either way. */}
-          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100" />
-          <div className="min-w-0 flex-1">
-            <p className="text-xs text-slate-600">
-              {place.event_bg_path
-                ? `Set${place.event_bg_width && place.event_bg_height ? ` · ${place.event_bg_width}×${place.event_bg_height}` : ''}`
-                : 'Using the standard design'}
-            </p>
-            {/* 🔴 LINKS TO THE EXISTING FLOW, NOT A SECOND ONE. Replace and Text positions live in
-              * Social posts › Single event, where the drag surface and its three pointer fixes already
-              * are. A second editor here would be a second set of those bugs. */}
-            <a href="?section=weekly"
-              className="mt-1 inline-block text-xs font-semibold text-orange-700 underline hover:no-underline">
-              {place.event_bg_path ? 'Replace or move the text' : 'Add a picture for this place'}
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* ── 2 · THE EXTRA PICTURES ─────────────────────────────────────────────────────────────── */}
-      <div>
-        <p className="text-sm text-slate-800">Your own pictures</p>
-        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500">
-          {/* ⛔ SAID IN WORDS, EVERY TIME. This is the sentence that stops a parking map ending up
-            * behind Friday's dates. */}
-          For your reference only — a photo of the pitch, where to park, the venue’s own artwork.
-          These are never used on a post.
-        </p>
-
-        {!available ? (
-          <p className="mt-2 text-[11px] text-slate-400">
-            Your own pictures aren’t switched on yet.
-          </p>
-        ) : pics === null ? (
-          <div className="mt-2"><Spinner /></div>
-        ) : (
-          <ul className="mt-2 space-y-1.5">
-            {pics.map(pic => (
-              <li key={pic.id} className="flex items-center gap-2.5 rounded-lg border border-slate-200 p-2">
-                {/* ⚠️ A SHORT-LIVED SIGNED URL FROM A PRIVATE BUCKET. `next/image` would proxy it
-                    through a loader that cannot see the bucket, so this stays a plain <img>. */}
-                {pic.url
-                  // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src={pic.url} alt="" className="h-12 w-12 shrink-0 rounded object-cover" />
-                  : <div className="h-12 w-12 shrink-0 rounded bg-slate-100" />}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs text-slate-800">{pic.file_name}</p>
-                  <p className="text-[11px] text-slate-400">
-                    {sizeLabel(pic.bytes)}{pic.width && pic.height ? ` · ${pic.width}×${pic.height}` : ''}
-                  </p>
-                </div>
-                {pic.url && (
-                  <a href={pic.url} download={pic.file_name}
-                    className="shrink-0 rounded-lg border border-slate-300 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-50">
-                    Download
-                  </a>
-                )}
-                <button type="button" disabled={disabled || busy} onClick={() => void remove(pic)}
-                  className="shrink-0 rounded-lg border border-red-300 px-2 py-1 text-[11px] font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50">
-                  Remove
-                </button>
-              </li>
-            ))}
-
-            {/* ── THE ADD TILE ─────────────────────────────────────────────────────────────────── */}
-            <li>
-              <label className={`flex cursor-pointer items-center justify-center rounded-lg border border-dashed border-slate-300 p-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 ${
-                disabled || busy ? 'pointer-events-none opacity-50' : ''}`}>
-                <input ref={fileRef} type="file" accept="image/png,image/jpeg" className="hidden"
-                  onChange={e => { const f = e.target.files?.[0]; if (f) void upload(f) }} />
-                {busy ? 'Working…' : '+ Add a picture'}
-              </label>
-              <p className="mt-1 text-[11px] text-slate-400">PNG or JPG, up to 10MB.</p>
-            </li>
-          </ul>
-        )}
-      </div>
-    </Card>
-  )
-}
-
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-// EVENTS HERE
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-
-/**
- * The next upcoming and the recent past at this place.
- * ⚠️ PRIVATE EVENTS ARE SHOWN, WITH A CHIP. This is the truck's own screen; the redaction is a
- * property of the PUBLIC feeds (§73), not of the data. Hiding them here would leave an operator
- * unable to see their own week.
- */
-function EventsHere({ place, api }: { place: Place; api: Api }) {
-  const [rows, setRows] = useState<PlaceEventRow[] | null>(null)
-  const [total, setTotal] = useState(0)
-  const [showAll, setShowAll] = useState(false)
-
+  /* ══ 🔴 THE THUMBNAIL NEEDS A SIGNED URL, AND `sg_places` CANNOT GIVE ONE ═════════════════════
+   * `/api/manage` returns `event_bg_path` — a storage path, not something an `<img>` can load. The
+   * bucket is private, so a URL has to be signed, and the ONE action that already signs a place's
+   * post picture is `event_load` on /api/weekly-post.
+   * ⚠️ SO THAT IS WHAT IS CALLED, RATHER THAN A NEW ROUTE ACTION FOR ONE URL. It is not cheap (it
+   * also reads up to 200 events each way for the setup screen's previews), which is why it runs ONCE,
+   * only when this place HAS a picture, and is re-run only after an upload — never on a place that has
+   * nothing to show.
+   * ⚠️ A HIDDEN PLACE IS NOT IN `designs` (that list is the visible places), so a hidden place with a
+   * picture gets no URL. That is why the failure is a LABELLED TILE and not a broken image: the pane
+   * still says, in words, that there is a picture and what shape it is. */
+  /* 🔴 THE PATH IS STORED **WITH** THE URL, and the URL shown is DERIVED by comparing the two. That is
+   * not bookkeeping — it is what makes the clearing case correct without a second `setState`. Removing
+   * the picture sets `event_bg_path` to null on the next reload, the paths stop matching, and the
+   * thumbnail goes on that render. Holding a bare URL would have needed an effect to clear it, which is
+   * a cascading render and is one frame of the OLD picture under the words "Standard design". */
+  const [signedFor, setSignedFor] = useState<{ path: string; url: string | null } | null>(null)
   useEffect(() => {
+    const path = place.event_bg_path
+    if (!path) return
     let live = true
-    ;(async () => {
+    void (async () => {
       try {
-        const r = await api('sg_place_events', { placeId: place.id }) as
-          { events?: PlaceEventRow[]; total?: number }
-        if (live) { setRows(r.events ?? []); setTotal(r.total ?? 0) }
-      } catch { if (live) setRows([]) }
+        const j = await post({ action: 'event_load' }) as {
+          designs?: { placeId?: string; imageUrl?: string | null }[]
+        }
+        const mine = (j.designs ?? []).find(d => d.placeId === place.id)
+        if (live) setSignedFor({ path, url: mine?.imageUrl ?? null })
+      } catch {
+        /* ⚠️ SILENT, AND DELIBERATELY SO. A missing thumbnail is cosmetic; the pane's words are not
+         * wrong without it, and a red toast for a picture that failed to PREVIEW would read as if the
+         * picture itself had gone. The upload and remove paths do show their errors. */
+        if (live) setSignedFor({ path, url: null })
+      }
     })()
     return () => { live = false }
-  }, [api, place.id])
-
-  const shown = showAll ? (rows ?? []) : (rows ?? []).slice(0, 5)
+    /* ⚠️ `place.event_bg_path` IS A DEPENDENCY, NOT JUST THE ID — replacing a picture keeps the place
+     * the same and must still re-sign, or the thumbnail would stay on the old image. */
+  }, [place.id, place.event_bg_path, post])
+  const url = signedFor && signedFor.path === place.event_bg_path ? signedFor.url : null
 
   return (
-    <Card className="p-4">
-      <p className={SUBCARD_HEADING}>Events here</p>
-      {rows === null ? <div className="mt-2"><Spinner /></div>
-        : rows.length === 0 ? <p className="mt-2 text-sm text-slate-500">Nothing booked, and nothing traded yet.</p>
-          : (
-            <>
-              <ul className="mt-2 divide-y divide-slate-100">
-                {shown.map(e => (
-                  <li key={e.id} className="flex items-center gap-2 py-1.5">
-                    <span className="w-24 shrink-0 text-xs font-semibold text-slate-800">{shortDay(e.date)}</span>
-                    <span className="min-w-0 flex-1 text-xs text-slate-500">
-                      {e.startTime && e.endTime ? `${e.startTime.slice(0, 5)}–${e.endTime.slice(0, 5)}` : '—'}
-                    </span>
-                    {e.isPrivate && (
-                      <span className="shrink-0 rounded-full border border-purple-300 bg-purple-50 px-1.5 py-px text-[10px] font-bold text-purple-700">
-                        🔒{PRIVATE_CHIP}
-                      </span>
-                    )}
-                    <span className="shrink-0 text-xs text-slate-600">
-                      {e.kind === 'upcoming'
-                        ? 'Upcoming'
-                        : `${e.orders ?? 0} order${(e.orders ?? 0) === 1 ? '' : 's'}`}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              {!showAll && total > shown.length && (
-                <button type="button" onClick={() => setShowAll(true)}
-                  className="mt-2 text-xs font-semibold text-orange-700 underline hover:no-underline">
-                  See all {total}
-                </button>
-              )}
-            </>
+    <Card className="p-4 space-y-3" data-post-picture>
+      <p className={SUBCARD_HEADING}>Picture for posts</p>
+
+      <div className="flex items-start gap-3">
+        {/* ⚠️ A LABELLED PLACEHOLDER, NOT AN EMPTY GREY SQUARE. "Standard design" says what this place
+            is using; a blank tile says only that something is missing. */}
+        {has ? (
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-100 text-center text-[9px] font-semibold leading-tight text-slate-500">
+            {url
+              /* eslint-disable-next-line @next/next/no-img-element -- a signed, expiring Supabase URL;
+                 next/image would need the host in `remotePatterns` and would proxy a private object. */
+              ? <img src={url} alt="" className="h-full w-full object-cover" />
+              : 'Your picture'}
+          </div>
+        ) : (
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-1 text-center text-[9px] font-semibold leading-tight text-slate-500">
+            Standard design
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          {has ? (
+            <p className="text-xs text-slate-600">Set{dims ? ` · ${dims}` : ''}</p>
+          ) : (
+            <p className="text-[11px] leading-relaxed text-slate-500">{POST_PICTURE_STANDARD_NOTE}</p>
           )}
+
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {/* 🔴 THE UPLOAD IS A LABEL WRAPPING A HIDDEN INPUT, which is the only way to style a file
+                picker — and it is the same idiom the Add event import control uses.
+                ⛔ NOT A `<label>` AROUND ANYTHING ELSE. A label forwards a click anywhere inside it to
+                its first labelable descendant, which is how the outreach composer's B button came to
+                fire on every click in the message body (§65). It wraps the input and the text, and
+                nothing else — no buttons inside it. */}
+            <label className={`inline-flex cursor-pointer items-center rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 ${
+              disabled || busy ? 'pointer-events-none opacity-50' : ''}`}>
+              <input ref={fileRef} type="file" accept="image/png,image/jpeg" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) void upload(f) }} />
+              {busy ? 'Working…' : has ? 'Replace' : 'Upload a picture for this place'}
+            </label>
+
+            {has && (
+              <>
+                {/* 🔴 "Text positions" IS STILL A LINK, and that is the part of the old reasoning that
+                    survives: the drag surface lives in Social posts › Single event with its three
+                    pointer fixes, and a second one here would be a second set of those bugs.
+                    ⛔ IT GOES THROUGH `manageSectionHref`, SO IT CARRIES ITS TAB. The old link was a
+                    bare `?section=weekly`, which dropped `?tab=` and landed on Billing — see the note
+                    at the head of lib/manage-links.ts. */}
+                <a href={manageSectionHref('weekly')}
+                  className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                  Text positions
+                </a>
+                <button type="button" disabled={disabled || busy} onClick={() => void remove()}
+                  className="inline-flex items-center rounded-lg border border-red-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50">
+                  Remove
+                </button>
+              </>
+            )}
+          </div>
+          <p className="mt-1 text-[11px] text-slate-400">PNG or JPG, up to 10MB, the same shape as your standard design.</p>
+        </div>
+      </div>
     </Card>
   )
 }
 
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-// THE TAB
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-
 export function PlacesTab({
-  api, showToast, plan, featureOverrides, trialExpiresAt, types, editable = true,
+  api, showToast, token, plan, featureOverrides, trialExpiresAt, types, editable = true,
 }: {
   api: Api
   showToast: (msg: string, kind?: 'success' | 'error') => void
+  /** 🔴 THE DASHBOARD TOKEN — for "Picture for posts" ONLY, which talks to /api/weekly-post rather
+   *  than to /api/manage. Everything else on this tab goes through `api`. */
+  token: string
   plan: Plan
   featureOverrides: Record<string, boolean> | null
   trialExpiresAt: string | null
@@ -429,7 +412,9 @@ export function PlacesTab({
   const ctl = usePlaces(api, true)
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [showHidden, setShowHidden] = useState(false)
+  /* ⛔ `showHidden` IS GONE (5 October 2026). It was a filter: hidden places were OFF the screen until
+   * an operator found a footer row and pressed it. The list has a HIDDEN PLACES section now, always
+   * drawn, so there is no state to be in — see `hiddenSection` on `PlaceList`. */
   const [adding, setAdding] = useState(false)
   const [newName, setNewName] = useState('')
 
@@ -440,7 +425,9 @@ export function PlacesTab({
     () => ctl.places.filter(p => !p.is_hidden && !p.merged_into_id),
     [ctl.places],
   )
-  const hiddenCount = ctl.places.length - visible.length
+  /* ⛔ `hiddenCount` WENT WITH THE FOOTER. The count was the footer's whole content ("3 hidden places ·
+   * Show"); the section replaces it with the two things an operator needs — that hidden places stay out
+   * of Add event, and that opening one restores it. See `HIDDEN_PLACES_NOTE`. */
 
   /* 🔴 THE SELECTION DEFAULTS TO THE FIRST PLACE, so the right pane is never an empty frame on a
    * truck that has places. ⚠️ ONLY WHEN NOTHING IS SELECTED — it must not fight the operator. */
@@ -448,6 +435,50 @@ export function PlacesTab({
     () => ctl.places.find(p => p.id === selectedId) ?? visible[0] ?? null,
     [ctl.places, selectedId, visible],
   )
+
+  /* ══ 🔴 THE TYPE ON EACH LIST ROW (5 October 2026, Dominic) ════════════════════════════════════
+   * A colour dot and the type's name, or a purple lock and "Private" — the same two marks the Event
+   * types grid puts beside a column heading, so a type is recognisable by sight on both screens.
+   *
+   * 🔴 THE COLOUR IS `colourFor(index in `types`)`, WHICH IS THE GRID'S OWN INDEX. `types` here is
+   * `placeTypeChoices`, built straight from `/api/event-types` `load` — the same array, in the same
+   * order, that the grid runs `colourFor` over. Any other index would give one type two colours.
+   * ⚠️ NO LABEL AT ALL FOR AN ID THAT IS NOT IN `types` — a type deleted since the pin was written, or
+   * a types read that failed. A dot with no name says nothing; "Standard" would be a LIE, because
+   * Standard is `null` and this place has an id. The pill row degrades the same way, to Standard alone.
+   * ⚠️ STANDARD IS LABELLED, not left blank. "This place is on Standard" is an answer; an empty cell
+   * reads as "nobody has set this", which stopped being a state when Automatic went.
+   * ⚠️ IT IS `useCallback` BECAUSE `PlaceList` TAKES IT AS A PROP and re-renders on every keystroke in
+   * the search box; an inline arrow would be a new function on each of those. */
+  const typeLabelFor = useCallback((p: Place): React.ReactNode => {
+    const id = placeTypeId(p)
+    if (id === null) {
+      return (
+        <span className="inline-flex items-center gap-1 text-[11px] text-slate-500">
+          <span aria-hidden="true" className="inline-block h-2 w-2 shrink-0 rounded-full"
+            style={{ background: STANDARD_COLOUR }} />
+          {STANDARD_TYPE_NAME}
+        </span>
+      )
+    }
+    const i = types.findIndex(t => t.id === id)
+    if (i < 0) return null
+    const t = types[i]
+    if (t.kind === 'private') {
+      return (
+        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-700">
+          <span aria-hidden="true">🔒</span>{t.name}
+        </span>
+      )
+    }
+    return (
+      <span className="inline-flex items-center gap-1 text-[11px] text-slate-500">
+        <span aria-hidden="true" className="inline-block h-2 w-2 shrink-0 rounded-full"
+          style={{ background: colourFor(i) }} />
+        {t.name}
+      </span>
+    )
+  }, [types])
 
   /* ⛔ `automaticNameFor` IS GONE (5 October 2026). It returned the literal 'Standard' for every
    * place, because `sg_places` did not report what Automatic resolves to — so the control's
@@ -469,12 +500,15 @@ export function PlacesTab({
   }
 
   /**
-   * Save the pin. `null` ⇒ Automatic · `'standard'` ⇒ Standard · a uuid ⇒ that type.
+   * Save the place's type. `'standard'` ⇒ Standard · a uuid ⇒ that type.
+   * ⛔ THERE IS NO `null` ANY MORE. `null` meant "Automatic", and Automatic is gone — a pill row has
+   * no way to say "neither", which is the point of it. The ROUTE still accepts null (it is what
+   * `clearOwn` and any older caller send) and the storage is unchanged.
    * 🔴 BOTH FIELDS ARE PATCHED LOCALLY, TOGETHER, exactly as the route writes both columns together.
    * Patching only one would reproduce the bug this fixes: pick Standard over a pinned Private and the
    * control would show Standard while the stale id was still in the list behind it.
    */
-  const savePin = async (typeId: string | null) => {
+  const savePin = async (typeId: string) => {
     if (!selected) return
     const isStd = typeId === 'standard'
     const next = { usual_event_type_id: isStd ? null : typeId, usual_type_is_standard: isStd }
@@ -553,8 +587,15 @@ export function PlacesTab({
             </div>
           )}
 
-          {/* 🔴 THE SHARED LIST. `showHidden` is what the "N hidden places · Show" row below toggles —
-            * the same prop Tidy up passes, so hidden places behave identically on both screens. */}
+          {/* ══ 🔴 THE SHARED LIST, WITH TWO THINGS THIS TAB ADDS (5 October 2026) ═══════════════
+            * `typeLabelFor` puts the place's event type on the right of its row, and `hiddenSection`
+            * keeps hidden places ON THE SCREEN, in their own group at the bottom.
+            * ⛔ `showHidden` IS NOT PASSED ANY MORE, and there is no footer. Those were one mechanism:
+            * a count you had to press to reveal a list. A place an operator hid is still one of their
+            * places — the question they open this screen with is "where did The Crown go?", and a
+            * screen that answers it only after a hunt is a screen that has hidden the answer too.
+            * ⚠️ "Tidy up places" IN ADD EVENT KEEPS `showHidden`. It is a different job — a short
+            * working pass where a long greyed tail is noise — and the prop is still there for it. */}
           <PlaceList
             places={ctl.places}
             selectedId={selected?.id ?? null}
@@ -562,17 +603,9 @@ export function PlacesTab({
             onFavourite={ctl.setFavourite}
             search={search}
             onSearch={setSearch}
-            showHidden={showHidden}
+            hiddenSection
+            typeLabelFor={typeLabelFor}
             starError={ctl.starError}
-            footer={hiddenCount > 0 ? (
-              /* ⚠️ A ROW, NOT A FILTER CONTROL. Hidden places are not a view an operator works in —
-               * they are somewhere to go and get one back, which is why this says how many there are
-               * and nothing else. "Restore" is in the detail pane, exactly as Tidy up has it. */
-              <button type="button" onClick={() => setShowHidden(v => !v)}
-                className="text-xs font-semibold text-slate-600 underline hover:no-underline">
-                {hiddenCount} hidden place{hiddenCount === 1 ? '' : 's'} · {showHidden ? 'Hide' : 'Show'}
-              </button>
-            ) : null}
           />
         </Card>
 
@@ -605,7 +638,7 @@ export function PlacesTab({
                 </div>
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="sm:col-span-2">
-                    <UsualTypeSelect
+                    <PlaceTypePills
                       place={selected}
                       types={types}
                       canTypes={canTypes}
@@ -619,12 +652,26 @@ export function PlacesTab({
 
               {/* 🔴 THE SHARED DETAIL — the five fields, Events here (next/last), Favourite and
                 * Hide/Restore. Unchanged, and still the only writer of those fields. */}
-              <PlaceDetail place={selected} api={api} showToast={showToast}
+              {/* ══ 🔴 `key` IS NOT DECORATION HERE — IT WAS A DATA BUG (found 5 October 2026) ════════
+                * `PlaceDetail` keeps the five fields as LOCAL DRAFT STATE and saves them ON BLUR, which
+                * only works because the caller remounts it per place. This mount had no `key`, so
+                * selecting a second place reused the component: the pane showed the FIRST place's name,
+                * short name, address, area and postcode, and blurring any of them would have written
+                * them onto the second place. "Tidy up places" always had the key (see its mount in
+                * SchedulePlaces.tsx) — this tab simply never got it.
+                * ⛔ SO DO NOT REMOVE IT, and do not add a sixth field to that component on the
+                * assumption that its state follows its props. It does not; the remount is the mechanism. */}
+              <PlaceDetail key={selected.id} place={selected} api={api} showToast={showToast}
                 onChanged={() => ctl.reload()} />
 
-              <PicturesPane place={selected} api={api} showToast={showToast} disabled={!editable} />
-
-              <EventsHere place={selected} api={api} />
+              {/* ⛔ "Events here" IS GONE — BOTH BOXES (5 October 2026). One sat under the fields and
+                * one at the bottom of the page, and between them they printed the next event, the last
+                * event and a count of a place's events on the screen whose job is the place's SETTINGS.
+                * The schedule is one tab away and is the real answer to all three. Its route,
+                * `sg_place_events`, went with it.
+                * ⛔ "Your own pictures" IS GONE TOO. See the note on `PostPicturePane`. */}
+              <PostPicturePane place={selected} token={token} showToast={showToast}
+                disabled={!editable} onChanged={() => ctl.reload()} />
             </div>
           )}
         </div>

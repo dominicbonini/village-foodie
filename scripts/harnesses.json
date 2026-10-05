@@ -151,7 +151,7 @@
       ]
     },
     "needs_a_browser": {
-      "$why": "🔴 NOT A PROOF THE SWEEP CAN RUN. It needs `.next/static/css` from a completed build and a local Chromium, and a sweep that silently skips when either is missing would be a sweep that reports green for a layout nobody measured. Most are a MODULE (`outreach-workspace-v3-fixes.cjs` requires one behind HG_RENDER=1) and a standalone command; run them by hand after a build. ⚠️ `add-order-stale-browser.cjs` is the stricter case and its own header says so: it needs the DEV SERVER, the Supabase project and an operator session, so it can never be swept — it is run by hand against test-truck with the token in the environment.",
+      "$why": "🔴 NOT A PROOF THE SWEEP CAN RUN. It needs `.next/static/css` from a completed build and a local Chromium, and a sweep that silently skips when either is missing would be a sweep that reports green for a layout nobody measured. Most are a MODULE (`outreach-workspace-v3-fixes.cjs` requires one behind HG_RENDER=1) and a standalone command; run them by hand after a build. ⚠️ `add-order-stale-browser.cjs` is the stricter case and its own header says so: it needs the DEV SERVER, the Supabase project and an operator session, so it can never be swept — it is run by hand against test-truck with the token in the environment. ⚠️ `places-tab-render.cjs` (5 October 2026) is listed here for the same reason as `schedule-places-render.cjs`: it needs `.next/static` and a local Chromium AND a local WebKit. It is the Places TAB; the other file is the Add event MODAL, and that one does not currently run at all — see docs/places-tidy-report.md.",
       "files": [
         "add-order-stale-browser.cjs",
         "outreach-bold-persists-render.cjs",
@@ -159,7 +159,8 @@
         "outreach-templates-render.cjs",
         "outreach-workspace-render.cjs",
         "schedule-places-render.cjs",
-        "screenshot-truck-details-render.cjs"
+        "screenshot-truck-details-render.cjs",
+        "places-tab-render.cjs"
       ]
     }
   }

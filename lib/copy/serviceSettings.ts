@@ -320,6 +320,26 @@ export const PRICES_LIVE_NOTICE =
  * column, which needs no title, no two-way choice, no Save and no search — it is a column of boxes in
  * a list the operator is already reading. */
 
+/**
+ * ── 🔴 THE PLACES TAB'S EVENT-TYPE HELPER LINE (5 October 2026, Dominic) ──────────────────────────
+ *
+ * ⛔ IT REPLACES AN EXPLANATION OF "Automatic". The old control's helper described a mechanism —
+ * which type the history rule would resolve to and why — and the question an operator is asking is
+ * not about the mechanism. This says what the row DOES, which is the only thing a pill row needs.
+ * ⚠️ "whenever you choose this place" IS THE SCOPE, AND IT IS THE HONEST ONE: the pre-selection fires
+ * in Add event each time this place is picked, and choosing a different type there for ONE event does
+ * not change what is stored here.
+ */
+export const PLACE_TYPE_HELPER = 'Add event picks this type whenever you choose this place.'
+
+/**
+ * The line under "Picture for posts" when a place has none.
+ * ⚠️ IT NAMES WHAT IS HAPPENING, NOT WHAT IS MISSING. "No picture yet" tells an operator nothing
+ * about their posts; this says their standard design is being used, which is both true and reassuring
+ * — most places should never need their own.
+ */
+export const POST_PICTURE_STANDARD_NOTE = 'Event posts here use your standard design.'
+
 /** The Menu & Stock card's own description, which the Price column changed. */
 export const EVENT_ITEMS_CARD_DESCRIPTION =
   'Prices, item limits and availability for this event only. Changes take effect immediately.'

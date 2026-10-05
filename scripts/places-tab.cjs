@@ -29,7 +29,10 @@ let pass = 0, fail = 0
 const t = (label, ok) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label) } }
 const head = (s) => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 92 - s.length)))
 const read = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
-const exists = (p) => fs.existsSync(path.join(REPO, p))
+/* ⛔ `exists` WENT WITH §3's REWRITE (5 October 2026). It guarded a hand-listed set of poster files
+ * — `[...walk('lib/weekly-post'), 'app/api/weekly-post/route.ts', …].filter(exists)` — against reading
+ * `place_pictures`. The replacement sweeps app/, lib/ AND components/ for the table's name, so there is
+ * no list of file paths to check the existence of; every path comes from `walk`. */
 /** 🔴 COMMENTS STRIPPED BEFORE ANY SOURCE-TEXT COUNT — a rule written in prose about a table must
  *  never be mistaken for a read of it, which is how "nothing reads this" claims become false. */
 const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
@@ -103,9 +106,94 @@ head('1 · four pills, in order — and every old ?section= link still works')
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
+// 1b · A SECTION LINK CARRIES ITS TAB — AND A DEFAULT CANNOT OVERRIDE THE URL
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('1b · a section link carries its tab, and a trial default cannot override the URL')
+
+{
+  /* ══ ⛔ THE BUG: "Add a picture for this place" LANDED ON BILLING (5 October 2026, Dominic) ════════
+   * Two links in the product were written as a bare relative query:
+   *     <a href="?section=weekly">   (the Places tab)      <a href="?section=places">   (the post)
+   * A bare `?section=…` REPLACES the whole query string, so `?tab=` was dropped. The mount parser does
+   * imply the tab from the section — but it is not the only thing that sets the tab, and on a truck
+   * whose plan is 'trial' the defaults-to-Billing effect ran AFTERWARDS and won.
+   *
+   * 🔴 TWO FAULTS, TWO FIXES, AND BOTH ARE ASSERTED HERE, because either one alone leaves the other
+   * reachable by a path nobody is looking at:
+   *   1. the URL builder, so a section link cannot be written without its tab;
+   *   2. `urlAskedForTab`, so a DEFAULT may never override a URL that asked for a tab.
+   * ⚠️ FIX 2 ALSO REPAIRS `?tab=schedule` — the link app/api/inbound-schedule/route.ts EMAILS operators
+   * to review found events, which opened a price list for every trial truck. That is the version of this
+   * bug that was costing something, and no screen could have shown it. */
+  const LINKS = read('lib/manage-links.ts')
+  t('🔴 there is ONE builder, and it is a pure string function',
+    /export function manageSectionHref\(/.test(LINKS)
+    && !/useState|window\.|useRouter/.test(codeOf(LINKS)))
+  t('⛔ …and a caller names a SECTION and cannot supply the tab',
+    /const TAB_FOR_SECTION: Record<ScheduleSection \| MenuSection, ManageTab>/.test(LINKS)
+    && !/manageSectionHref\(\s*section[^)]*tab:/.test(LINKS))
+  t('🔴 …and every section it knows maps to a tab', (() => {
+    const map = LINKS.slice(LINKS.indexOf('const TAB_FOR_SECTION'), LINKS.indexOf('export function manageSectionHref'))
+    return ['events', "'event-types'", 'places', 'weekly', 'items', 'capacity', 'extras', 'deals']
+      .every(k => map.includes(k.replace(/'/g, '')))
+      && /places: 'schedule'/.test(map) && /weekly: 'schedule'/.test(map) && /deals: 'menu'/.test(map)
+  })())
+  t('🔴 …and it emits BOTH params, every time',
+    /const qs = `\?tab=\$\{tab\}&section=\$\{section\}`/.test(LINKS))
+  /* 🔴 THE TWO LINKS THAT WERE BROKEN, BY NAME. Asserted as "calls the builder", not as "contains the
+   * right string" — the string is the builder's business and this is about who assembles it. */
+  t('🔴 the Places tab\'s "Text positions" link calls the builder',
+    /manageSectionHref\('weekly'\)/.test(TAB))
+  t('🔴 …and the single-event post\'s Places pointer calls it too',
+    /manageSectionHref\('places'\)/.test(read('components/manage/EventPost.tsx')))
+  /* ⛔ AND NO TAB LINK IS HAND-WRITTEN EITHER. `?tab=billing` was literal in three places; the string is
+   * identical, and that is exactly why it had to move — a literal that happens to be right is the thing
+   * a later edit gets wrong. */
+  t('⛔ no `href="?tab=…"` literal is left in app/ or components/', (() => {
+    const hits = []
+    for (const f of walk('app').concat(walk('components'))) {
+      if (/href="\?tab=/.test(codeOf(read(f)))) hits.push(f)
+    }
+    return hits.length === 0
+  })())
+  t('🔴 …and the scraper\'s email builds its link with the builder too',
+    /manageTabHref\('schedule', \{ token: truck\.dashboard_token \}\)/
+      .test(read('app/api/inbound-schedule/route.ts')))
+
+  /* ══ 🔴 FIX 2: A DEFAULT MAY NOT OVERRIDE A URL THAT ASKED FOR A TAB ═════════════════════════════
+   * ⛔ ASSERTED AS THE GUARD, NOT AS THE EFFECT'S EXISTENCE. The effect is allowed to stay — a trial
+   * truck with no deep link still opens on Billing, which is deliberate. What is not allowed is for it
+   * to run when the URL named a tab.
+   * ⚠️ AND THE REF IS SET IN ALL FOUR BRANCHES OF THE MOUNT PARSER — `?tab=`, the two retired keys, and
+   * a bare `?section=`. Setting it in three would leave one link still broken. */
+  {
+    const code = codeOf(MANAGE)
+    t('🔴 the mount parser records that the URL asked for a tab',
+      /const urlAskedForTab = useRef\(false\)/.test(code))
+    t('⛔ …and the trial default returns early when it did',
+      /if \(urlAskedForTab\.current\) return/.test(code))
+    const eff = code.slice(code.indexOf('if (urlAskedForTab.current) return'))
+    t('🔴 …before it reads the plan at all', (() => {
+      const guard = eff.indexOf('if (urlAskedForTab.current) return')
+      const plan = eff.indexOf("plan === 'trial'")
+      return guard === 0 && plan > 0
+    })())
+  /* ⛔ AND A BARE `?section=` COUNTS AS ASKING FOR A TAB. That is the exact path "Add a picture for
+   * this place" took: no `?tab=` at all, the section implying Schedule. A fix that only covered
+   * `?tab=` would have left the reported bug exactly as it was.
+   * 🔴 ASSERTED ON THE ONE EXPRESSION, NOT ON FOUR ASSIGNMENTS. The ref is written once, after all
+   * four branches, from the same predicates the branches used — so it cannot be true for a `?tab=`
+   * the page does not recognise, and it cannot be missed on one branch out of four. */
+    t('⛔ …and a bare `?section=` counts as asking for a tab',
+      /urlAskedForTab\.current =\s*\n\s*!!\(tabParam && \(allTabIds\.includes\(tabParam as Tab\) \|\| LEGACY_TAB_TO_MENU_SECTION\[tabParam\]\)\)\s*\n\s*\|\| isScheduleSection\(sectionParam\) \|\| isMenuSection\(sectionParam\)/
+        .test(code))
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
 // 2 · THE PIN
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-head('2 · the pin overrides the automatic rule, and Automatic clears it')
+head('2 · the place\'s event type is a PILL ROW — one selected, and no "Automatic"')
 
 {
   t('🔴 the column is added, nullable, with ON DELETE SET NULL',
@@ -126,22 +214,52 @@ head('2 · the pin overrides the automatic rule, and Automatic clears it')
   t('🔴 …and the write is scoped to this truck',
     /\.from\('truck_places'\)[\s\S]{0,300}\.eq\('id', placeId\)\.eq\('truck_id', truck\.id\)/.test(codeOf(ROUTE)))
 
-  /* ══ 🔴 RE-AIMED: THE LABEL IS NOW THE SERVER'S ANSWER, NOT A LITERAL (5 October 2026) ══════════
-   * This asserted `Automatic (${automaticName} — last used here)`, and `automaticName`'s only caller
-   * was `const automaticNameFor = () => 'Standard'` — a hardcoded word. The assertion passed while
-   * the screen told a wedding venue that Automatic meant Standard. ⛔ SO THE CLAIM IS NOW THE ONE
-   * WORTH MAKING: the name comes from the ROW, the route puts it there with the SAME function the
-   * pre-selection uses, and a missing name degrades to a label that promises nothing. */
-  t('🔴 "Automatic" is the first option and names what the SERVER says it resolves to',
-    /const autoName = place\.usual_automatic_type_name/.test(TAB)
-    && /Automatic \(\$\{autoName\} — last used here\)/.test(TAB)
-    && /'Automatic \(what you used last time\)'/.test(TAB))
-  t('🔴 …and `sg_places` resolves that name with the same rule Add event uses',
+  /* ══ ⛔ RE-AIMED TWICE, AND THE SECOND TIME THE OPTION ITSELF WENT (5 October 2026, Dominic) ══════
+   * V1 asserted the literal `Automatic (${automaticName} — last used here)` while `automaticName`'s
+   * only caller was `() => 'Standard'` — a hardcoded word. It passed while the screen told a wedding
+   * venue that Automatic meant Standard.
+   * V2 asserted that the label came from the SERVER's resolution, which was true and was still an
+   * assertion about a mechanism nobody asked to see.
+   * 🔴 V3 — THIS — ASSERTS THAT THE OPTION IS GONE. The control is a pill row; a place is on exactly
+   * one type; the type a never-set place shows is the history rule's answer, drawn as an ordinary
+   * selected pill with no special label. "Automatic" is not a state the operator can be in, so the word
+   * must not appear in the file's CODE at all — `codeOf` strips the prose that explains why.
+   * ⚠️ `usual_automatic_type_id` IS NOT A HIT: it is lower-case, and it is the server's answer for the
+   * rule, which is exactly what the pill now shows. */
+  t('⛔ the word "Automatic" appears nowhere in the tab\'s code', !/Automatic/.test(codeOf(TAB)))
+  t('🔴 …nor in the shared list or detail', !/Automatic/.test(codeOf(SHARED)))
+  t('🔴 the pills are a radiogroup with `aria-checked`, so exactly ONE is selected',
+    /role="radiogroup"/.test(TAB) && /role="radio"/.test(TAB) && /aria-checked=\{on\}/.test(TAB)
+    && /data-place-type-pills/.test(TAB))
+  t('🔴 …Standard first, then Private, then the custom types — the grid\'s order', (() => {
+    const row = TAB.slice(TAB.indexOf('role="radiogroup"'), TAB.indexOf('PLACE_TYPE_HELPER}'))
+    const std = row.indexOf("pill('standard'")
+    const priv = row.indexOf('privateType.id, privateType.name')
+    const cust = row.indexOf('customTypes.map')
+    return std > 0 && priv > std && cust > priv
+  })())
+  /* 🔴 ONE HELPER LINE, AND IT IS ABOUT THE CONSEQUENCE. The old one explained the mechanism. */
+  t('🔴 …under one sentence about what the row DOES, from the copy module',
+    /PLACE_TYPE_HELPER/.test(TAB)
+    && /Add event picks this type whenever you choose this place\./
+      .test(read('lib/copy/serviceSettings.ts')))
+  /* ⛔ AND THERE IS NO LONGER A WAY TO WRITE "NEITHER". `savePin` takes a STRING; the route still
+   * accepts null, because `clearOwn` and older callers send it and the STORAGE is unchanged. */
+  t('⛔ `savePin` takes a string — the control cannot send null any more',
+    /const savePin = async \(typeId: string\) =>/.test(TAB) && !/onSave\(null\)/.test(codeOf(TAB)))
+  t('🔴 …and it still patches BOTH columns together, as the route writes them',
+    /usual_event_type_id: isStd \? null : typeId, usual_type_is_standard: isStd/.test(TAB))
+  t('🔴 …and `sg_places` still resolves the rule\'s answer with the same function Add event uses',
     /readPlaceTypeHistory\(supabase, truck\.id, placeForEvent\)/.test(codeOf(ROUTE))
-    && /usual_automatic_type_name:/.test(codeOf(ROUTE)))
-  t('⛔ …and choosing Automatic sends null, which is what clears BOTH columns',
-    /onSave\(v === '' \? null : v\)/.test(TAB)
-    && /usual_event_type_id: isStd \? null : typeId, usual_type_is_standard: isStd/.test(TAB))
+    && /usual_automatic_type_id: autoOk/.test(codeOf(ROUTE)))
+
+  /* ══ 🔴 ONE DERIVATION OF "WHICH TYPE IS THIS PLACE ON", READ BY BOTH SURFACES ═══════════════════
+   * The selected pill and the type label on the LIST row are the same answer about the same place. Two
+   * copies of `is_standard ? null : (id ?? rule)` is how a list comes to disagree with the detail pane
+   * it opens — which is the dropdown's original bug in a new place. */
+  t('🔴 `placeTypeId` is the one derivation, and both surfaces call it',
+    /export function placeTypeId\(place: Place\): string \| null/.test(TAB)
+    && (codeOf(TAB).match(/placeTypeId\(/g) || []).length >= 3)
 
   /* ══ 🔴 "PINNED TO STANDARD" IS A REAL STATE (20261016) ══════════════════════════════════════════
    * ⛔ IT WAS NOT, AND THE OLD COMMENT IN PlacesTab SAID SO OUT LOUD: "Standard is not storable as a
@@ -172,7 +290,7 @@ head('2 · the pin overrides the automatic rule, and Automatic clears it')
     t('🔴 …and Standard resolves to typeId null with `by: pin`, so the form shows it as CHOSEN',
       /return NextResponse\.json\(\{ ok: true, typeId: null, by: 'pin' \}\)/.test(fn2))
     t('🔴 the control reads the boolean FIRST, matching the server',
-      /place\.usual_type_is_standard === true\s*\n\s*\? 'standard'\s*\n\s*: \(place\.usual_event_type_id \?\? ''\)/.test(TAB))
+      /place\.usual_type_is_standard === true \? null\s*\n\s*: place\.usual_event_type_id \?\? place\.usual_automatic_type_id \?\? null/.test(TAB))
   }
 
   /* ══ 🔴 THE PIN OVERRIDES THE AUTOMATIC RULE **SERVER-SIDE** ════════════════════════════════════
@@ -198,76 +316,94 @@ head('2 · the pin overrides the automatic rule, and Automatic clears it')
       /\.from\('event_types'\)\.select\('id'\)\.eq\('id', pin\)\.eq\('truck_id', truck\.id\)/.test(fn))
   }
 
-  /* ⚠️ A PRO TRUCK SEES STANDARD AND PRIVATE ONLY — custom types are Max. */
-  t('⚠️ the options are filtered by the two plan keys, not by the plan name',
-    /t\.kind === 'private' \? !canPrivate : !canTypes/.test(TAB))
+  /* ⚠️ A PRO TRUCK SEES STANDARD AND PRIVATE ONLY — custom types are Max. ⛔ FILTERED, NOT DISABLED:
+   * a pill that refuses when pressed is worse than no pill, because nothing on screen can say when it
+   * will work. The pills are now two guarded expressions rather than one filter callback. */
+  t('⚠️ the pills are filtered by the two plan keys, not by the plan name',
+    /privateType && canPrivate/.test(TAB) && /canTypes && customTypes\.map/.test(TAB))
   t('🔴 …and both keys come from `canAccess`, not from a plan string',
     /canAccess\(plan, 'event_types'/.test(TAB) && /canAccess\(plan, 'private_events'/.test(TAB))
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-// 3 · AN EXTRA PICTURE NEVER REACHES A POST
+// 3 · "Your own pictures" IS GONE — AND "Picture for posts" UPLOADS IN PLACE
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-head('3 · extra pictures are the truck\'s own — they never reach a poster')
+head('3 · "Your own pictures" is gone, and the post picture uploads in place')
 
 {
-  t('🔴 the table exists, service-role only',
-    /create table if not exists public\.place_pictures/.test(SQL)
-    && /alter table public\.place_pictures enable row level security/.test(SQL)
-    && /revoke all on public\.place_pictures from anon, authenticated/.test(SQL))
-  t('⛔ …with both parents ON DELETE CASCADE — the pictures belong to the place',
-    /place_id uuid not null references public\.truck_places\(id\) on delete cascade/.test(SQL)
-    && /truck_id text not null references public\.trucks\(id\) on delete cascade/.test(SQL))
-  t('🔴 …and `truck_id` is TEXT, because trucks.id is a slug',
-    /truck_id text not null references public\.trucks\(id\)/.test(SQL))
-  t('⛔ …and the 10MB cap is in the TABLE as well as the handler',
-    /bytes > 0 and bytes <= 10485760/.test(SQL) && /10 \* 1024 \* 1024/.test(ROUTE))
-
-  /* ══ ⛔ THE ONE THAT MATTERS: NO POSTER CODE READS `place_pictures` ══════════════════════════════
-   * The poster's picture is `truck_places.event_bg_path` with its own width, height and
-   * `event_layout`. If the rendering path ever read the extra-pictures table, a reference photo of a
-   * pitch would print behind the dates — and nothing would fail, because it is a valid image.
-   * 🔴 SEARCHED ACROSS THE WHOLE POSTER SURFACE, comment-stripped so this file's own prose about the
-   * table cannot satisfy it. */
-  {
-    const posterFiles = [
-      ...walk('lib/weekly-post'),
-      'app/api/weekly-post/route.ts',
-      'components/manage/WeeklyPost.tsx',
-      'components/manage/EventPost.tsx',
-    ].filter(f => exists(f))
-    const offenders = posterFiles.filter(f => /place_pictures/.test(codeOf(read(f))))
-    t(`⛔ NOTHING in lib/weekly-post, the weekly-post route or either post component reads place_pictures (${offenders.join(', ') || 'none'})`,
-      offenders.length === 0)
-    t('🔴 …and the poster still reads its OWN column, so the two are genuinely separate',
-      posterFiles.some(f => /event_bg_path/.test(codeOf(read(f)))))
-  }
-
-  /* ⛔ AND THE PANE SAYS SO IN WORDS. This is the sentence that stops the mistake being made in the
-   * first place; the proof above only catches it after somebody has made it in code. */
-  t('⛔ the pictures pane tells the operator these are never used on a post',
-    /never used on a post/.test(TAB))
-
-  /* 🔴 THE UPLOAD PATH IS BUILT SERVER-SIDE AND STARTS WITH THE TRUCK ID. A signed upload URL is
-   * authority over exactly the path it names, so a client-supplied path would let one truck write
-   * into another's folder. */
-  t('🔴 the upload path is built server-side, truck first, then the place',
-    /const path = `\$\{truck\.id\}\/places\/\$\{placeId\}\/pic-\$\{Date\.now\(\)\}\.\$\{ext\}`/.test(ROUTE))
-  t('⛔ …and the save RE-CHECKS the path belongs to this truck and this place',
-    /!path\.startsWith\(`\$\{truck\.id\}\/places\/\$\{placeId\}\/`\)/.test(ROUTE))
-  /* 🔴 THE REAL BYTES ARE READ FROM STORAGE, never trusted from the client. */
-  t('🔴 …and the size is read from the real object, not from the browser',
-    /\.download\(path\)/.test(ROUTE) && /const bytes = blob\.size/.test(ROUTE))
-  /* ⚠️ THE OBJECT GOES BEFORE THE ROW on remove: the other order leaves a row pointing at nothing,
-   * which shows a broken thumbnail the operator cannot remove. */
-  t('⚠️ remove deletes the storage object BEFORE the row', (() => {
-    const fn = codeOf(ROUTE).slice(codeOf(ROUTE).indexOf("action === 'sg_place_picture_remove'"))
-    const obj = fn.indexOf('.remove([String(row.path)])')
-    const row = fn.indexOf(".from('place_pictures').delete()")
-    return obj > 0 && row > 0 && obj < row
+  /* ══ ⛔ THIS SECTION USED TO PROVE THE EXTRA-PICTURES PANE WAS SAFE (5 October 2026) ══════════════
+   * Eleven checks: the table's RLS, its cascades, its 10MB CHECK, the server-built upload path, the
+   * re-check of that path, the real bytes read from storage, the object deleted before the row.
+   * 🔴 THEY ALL PASSED, AND THE FEATURE WAS STILL DELETED. `place_pictures` was a per-place reference
+   * library that nothing read — no post, no feed, no export, no other screen — and its own pane had to
+   * say so in capitals every time it was drawn. Proving a thing is safe is not the same as proving it is
+   * wanted, and this is the clearest example of that distinction in the repository.
+   *
+   * 🔴 SO WHAT IS ASSERTED NOW IS THE DELETION, IN BOTH DIRECTIONS:
+   *   • the UI is gone and the five routes are gone, and
+   *   • the TABLE IS STILL THERE, UNREAD. That second half is not pedantry: somebody's photographs are
+   *     in it, and the next reader who finds an unreferenced table is the person this check is for. */
+  t('⛔ the table is still in the database — the migration is NOT reverted',
+    /create table if not exists public\.place_pictures/.test(SQL))
+  t('⛔ …and NOTHING in app/ or lib/ reads it any more', (() => {
+    const hits = []
+    for (const f of walk('lib').concat(walk('app')).concat(walk('components'))) {
+      if (/place_pictures/.test(codeOf(read(f)))) hits.push(f)
+    }
+    return hits.length === 0
   })())
-  t('🔴 …and both are scoped to this truck',
-    /\.from\('place_pictures'\)\.select\('id, path'\)\.eq\('id', id\)\.eq\('truck_id', truck\.id\)/.test(codeOf(ROUTE)))
+  t('⛔ …and the five routes that did are gone from the manage route',
+    ['sg_place_pictures', 'sg_place_picture_url', 'sg_place_picture_save',
+      'sg_place_picture_remove', 'sg_place_events']
+      .every(a => !new RegExp(`action === '${a}'`).test(codeOf(ROUTE))))
+  t('⛔ …and the tab has no pictures pane and no "never used on a post" sentence',
+    !/PicturesPane/.test(TAB) && !/never used on a post/.test(codeOf(TAB)))
+  /* 🔴 AND THE TOMBSTONE SAYS NOT TO DROP THE TABLE. A deletion with no note is an invitation to
+   * finish the job on somebody else's files. */
+  t('🔴 …and the route\'s tombstone warns against dropping it',
+    /DO NOT "TIDY UP" THE TABLE WITHOUT ASKING/.test(ROUTE))
+
+  /* ══ 🔴 "Picture for posts": THE UPLOAD IS HERE, AND IT IS THE EXISTING FLOW ═════════════════════
+   * ⛔ NOT A SECOND UPLOAD PATH. It is `upload_url` → PUT → `confirm_upload` with `which: 'place'` on
+   * /api/weekly-post — the same three calls EventPost.tsx makes — so the shape check against the
+   * standard design, the 10MB cap, the PNG/JPG rule and the storage path are the server's existing ones.
+   * A second implementation would be a second set of rules about what a poster's picture may be. */
+  t('🔴 the section is called "Picture for posts"', /Picture for posts/.test(TAB))
+  t('🔴 …and the upload is the EXISTING three-call flow on /api/weekly-post',
+    /fetch\('\/api\/weekly-post'/.test(TAB)
+    && /action: 'upload_url', which: 'place'/.test(TAB)
+    && /action: 'confirm_upload', path: slot\.path, which: 'place', placeId: place\.id/.test(TAB))
+  t('⛔ …and it adds NO new action to that route — only ones that were already there',
+    ['upload_url', 'confirm_upload', 'event_remove_place_design', 'event_load']
+      .every(a => new RegExp(`action === '${a}'`).test(codeOf(read('app/api/weekly-post/route.ts')))))
+  /* ⛔ THE SHAPE CHECK IS THE SERVER'S AND ONLY THE SERVER'S — the only honest source for an aspect
+   * ratio is the real pixels of the stored object. The client's size and type tests are a courtesy. */
+  t('⛔ the shape check is the SERVER\'s, against the standard design',
+    /checkAspect\(check\.info\.width, check\.info\.height, row\.event_bg_width, row\.event_bg_height\)/
+      .test(codeOf(read('app/api/weekly-post/route.ts'))))
+  t('⚠️ …and the client\'s 10MB/PNG-JPG tests are named as a courtesy, not the guard',
+    /A COURTESY, NOT THE GUARD/.test(TAB) && /MAX_POST_PICTURE_BYTES/.test(TAB))
+  /* 🔴 NO PICTURE ⇒ THE PLACEHOLDER SAYS WHAT IS BEING USED, not what is missing. */
+  t('🔴 with no picture it says "Standard design" and names what posts use',
+    /Standard design/.test(TAB) && /POST_PICTURE_STANDARD_NOTE/.test(TAB)
+    && /Event posts here use your standard design\./.test(read('lib/copy/serviceSettings.ts')))
+  t('🔴 …and the button is "Upload a picture for this place"',
+    /Upload a picture for this place/.test(TAB))
+  t('⛔ …and REMOVE is confirmed, because it deletes a file',
+    /window\.confirm\(/.test(TAB) && /action: 'event_remove_place_design'/.test(TAB))
+  /* 🔴 "Text positions" IS STILL A LINK — the drag surface lives in Social posts with its three
+   * pointer fixes, and a second one here would be a second set of those bugs. */
+  t('🔴 "Text positions" is still a link, and it goes through the ONE builder',
+    /Text positions/.test(TAB) && /manageSectionHref\('weekly'\)/.test(TAB))
+  /* ⛔ AND THE OLD BUG IS GONE: no bare relative `?section=` anywhere in the product. §1b proves the
+   * builder; this proves nobody is still writing one by hand. */
+  t('⛔ no file writes a bare `href="?section=…"` any more', (() => {
+    const hits = []
+    for (const f of walk('app').concat(walk('components'))) {
+      if (/href=["'{`]\s*["'`]?\?section=/.test(codeOf(read(f)))) hits.push(f)
+    }
+    return hits.length === 0
+  })())
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -296,21 +432,95 @@ head('4 · hide/restore, and the tab shares Tidy up\'s pieces rather than copyin
     const fn = codeOf(ROUTE).slice(codeOf(ROUTE).indexOf("action === 'sg_upsert_place'"))
     return /merged_into_id = null|merged_into_id: null/.test(fn)
   })())
-  /* 🔴 THE HIDDEN ROW IS A COUNT AND A TOGGLE, not a filter control — hidden places are somewhere to
-   * go and get one back, not a view to work in. */
-  t('🔴 the list has an "N hidden places · Show" row, driving the shared `showHidden`',
-    /hidden place/.test(TAB) && /showHidden=\{showHidden\}/.test(TAB)
-    && /setShowHidden\(v => !v\)/.test(TAB))
+  /* ══ ⛔ THE "N hidden places · Show" FOOTER IS GONE (5 October 2026, Dominic) ════════════════════
+   * It was a count you had to press to reveal a list, and until you pressed it a place an operator had
+   * hidden was simply absent from the screen that owns places. The question they arrive with is "where
+   * did The Crown go?", and a screen that answers it only after a hunt has hidden the answer too.
+   * 🔴 SO HIDDEN PLACES ARE A SECTION AT THE BOTTOM, ALWAYS DRAWN, GREYED, with a two-fact line: they
+   * stay out of Add event, and opening one restores it.
+   * ⚠️ "Tidy up places" IN ADD EVENT KEEPS `showHidden` — a different job, a short working pass, where
+   * a long greyed tail is noise. Asserted here BY NAME so the two cannot be conflated again. */
+  t('⛔ the Places tab has no hidden-places footer and no `showHidden` state',
+    !/showHidden/.test(codeOf(TAB)) && !/hidden place/.test(codeOf(TAB))
+    && !/footer=/.test(codeOf(TAB)))
+  t('🔴 …it passes `hiddenSection` instead, so hidden places stay ON the screen',
+    /hiddenSection\n/.test(TAB) || /hiddenSection /.test(TAB))
+  t('🔴 …and the shared list draws them last, greyed, under a heading',
+    /data-hidden-places/.test(SHARED) && /Hidden places<\/p>/.test(SHARED)
+    && /hidden\.map\(p => row\(p, true\)\)/.test(SHARED))
+  t('🔴 …under the two facts an operator needs: the consequence and the way back',
+    /Hidden places stay out of Add event\. Open one to restore it\./.test(SHARED))
+  t('⛔ …and SEARCH still covers them — a hidden place is findable by name', (() => {
+    /* 🔴 ASSERTED ON THE FILTER ITSELF: the hidden group is `isRetired(p) && matches(p)`, so the search
+     * term is applied to it exactly as it is to the live groups. A hidden section that ignored the
+     * search box would be a list that stopped matching what the operator typed. */
+    const fn = SHARED.slice(SHARED.indexOf('const live = places.filter'), SHARED.indexOf('}, [places, search'))
+    return /hidden: hiddenSection \? places\.filter\(p => isRetired\(p\) && matches\(p\)\)/.test(fn)
+  })())
+  t('⛔ …and Tidy up — a different job — still has `showHidden` and its footer',
+    /showHidden=\{showHidden\}/.test(SHARED) && /Show hidden places/.test(SHARED))
+  /* 🔴 AND THE TYPE IS ON EACH ROW. The list is where an operator scans for the odd one out — the pitch
+   * that is still on Private from a wedding six months ago — and that is only possible if it is shown. */
+  t('🔴 each row shows the place\'s type: a colour dot and a name, or a purple lock',
+    /typeLabelFor=\{typeLabelFor\}/.test(TAB)
+    && /typeLabelFor\?\.\(p\)/.test(SHARED)
+    && /🔒/.test(TAB) && /text-purple-700/.test(TAB))
+  t('⛔ …and the dot is the GRID\'s colour, from the grid\'s own index',
+    /colourFor\(i\)/.test(TAB) && /STANDARD_COLOUR/.test(TAB)
+    && /from '@\/lib\/event-types\/types'/.test(TAB))
+  /* ⚠️ AN ID THAT IS NOT IN `types` GETS NO LABEL — never "Standard", which would be a lie: Standard is
+   * `null` and this place carries an id. */
+  t('⚠️ …and an unknown type id renders NO label rather than a wrong one',
+    /const i = types\.findIndex\(t => t\.id === id\)\n\s*if \(i < 0\) return null/.test(TAB))
   /* ⚠️ MERGED PLACES ARE NOT LISTED SEPARATELY — the brief says so, and `isRetired` is what lumps
    * them with hidden ones in the shared list. */
   t('⚠️ merged places are not a separate list — they count as retired',
     /merged_into_id/.test(SHARED) && !/MERGED PLACES</.test(TAB))
 
-  /* 🔴 "Events here" SHOWS PRIVATE EVENTS, because this is the truck's own screen (§73). */
-  t('🔴 "Events here" shows private events, with a chip — this is the operator\'s own screen',
-    /action === 'sg_place_events'/.test(ROUTE) && /isPrivate/.test(TAB) && /PRIVATE_CHIP/.test(TAB))
-  t('⛔ …and it groups through `placeForEvent`, so a MERGED place\'s events land on its target',
-    /groupEventsByPlace\(events, places\)/.test(codeOf(ROUTE).slice(codeOf(ROUTE).indexOf("action === 'sg_place_events'"))))
+  /* ══ ⛔ BOTH "Events here" BOXES ARE GONE (5 October 2026, Dominic) ══════════════════════════════
+   * One sat under the fields and one at the bottom of the page. Between them they printed the next
+   * event, the last few events and a lifetime count on the screen whose job is a place's SETTINGS — and
+   * the Events section, one pill away, is the real schedule and the only one that can be filtered,
+   * edited and posted from.
+   * ⛔ THE OLD CHECKS PASSED. They proved the boxes showed private events honestly and grouped merged
+   * places correctly, which they did. A correct rendering of something that should not be on the screen
+   * is still something that should not be on the screen.
+   * 🔴 WHAT MUST SURVIVE IS NEXT AND LAST ON THE LIST ROWS, which `sg_places` computes with the same
+   * grouping the deleted action used — so nothing about merged places was lost with it. */
+  t('⛔ neither "Events here" box is left, and nothing imports PRIVATE_CHIP for one',
+    !/EventsHere/.test(codeOf(TAB)) && !/PRIVATE_CHIP/.test(codeOf(TAB))
+    && !/Events here/.test(codeOf(TAB)) && !/Events here/.test(codeOf(SHARED)))
+  t('⛔ …and the route\'s `sg_place_events` is deleted, with a tombstone saying why',
+    !/action === 'sg_place_events'/.test(codeOf(ROUTE))
+    && /THE SCHEDULE IS THE ANSWER TO "WHAT HAPPENS HERE"/.test(ROUTE))
+  t('🔴 …but Next and Last still reach the list rows, through the SAME grouping',
+    /groupEventsByPlace\(events, places\)/.test(codeOf(ROUTE).slice(codeOf(ROUTE).indexOf("action === 'sg_places'")))
+    && /next_event_date: next\?\.event_date \?\? null/.test(codeOf(ROUTE)))
+
+  /* ══ 🔴 THE DETAIL PANE IS REMOUNTED PER PLACE, AND THAT WAS A REAL BUG (found 5 October 2026) ═════
+   * `PlaceDetail` holds the five fields as LOCAL DRAFT STATE and saves them ON BLUR. The Places tab
+   * mounted it with no `key`, so selecting a second place reused the component: the pane showed the
+   * FIRST place's name, short name, address, area and postcode, and blurring any field would have
+   * written them onto the second place. Tidy up always had the key. ⛔ ASSERTED ON BOTH MOUNTS. */
+  t('🔴 both mounts of `PlaceDetail` are keyed on the place id',
+    /<PlaceDetail key=\{selected\.id\}/.test(TAB) && /<PlaceDetail key=\{selected\.id\}/.test(SHARED))
+  /* ⛔ AND THE FAVOURITE BUTTON IS GONE FROM THE DETAIL — the list star is the one control for it. */
+  t('⛔ the detail has no Favourite button; the list star still works', (() => {
+    /* 🔴 `codeOf` FIRST, AND THE SLICE SECOND. The tombstone where the button was names it four times —
+     * which is the point of a tombstone — and reading the raw text would let that prose fail a check
+     * about code. This is the third time in this build that a comment nearly satisfied or broke an
+     * assertion about the thing it describes. */
+    const code = codeOf(SHARED)
+    const from = code.indexOf('export function PlaceDetail')
+    /* ⛔ AND THE SLICE IS BOUNDED. `TidyUpPlaces` is declared AFTER `PlaceDetail` and mounts the list
+     * with `onFavourite` — so a slice that ran to EOF read the star's own wiring as a Favourite button
+     * in the detail pane and failed. A slice with no end anchor is not a slice of what you named; this
+     * is the second time in this build that exact mistake has been made. */
+    const to = code.indexOf('export function TidyUpPlaces')
+    const detail = from > 0 && to > from ? code.slice(from, to) : ''
+    return !!detail && !/Favourite/.test(detail)
+      && /onFavourite/.test(code) && /setFavourite/.test(code)
+  })())
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -326,15 +536,16 @@ head('5 · nothing added here upserts onto a partial index')
     /create unique index if not exists place_pictures_path_uidx\s*\n\s*on public\.place_pictures \(path\);/.test(SQL))
   t('⛔ …and the pin\'s index IS partial, which is safe because nothing upserts onto an index',
     /create index if not exists truck_places_usual_event_type_idx[\s\S]{0,120}where usual_event_type_id is not null/.test(SQL))
-  t('⛔ …and nothing upserts `place_pictures` at all — it inserts and handles 23505', (() => {
+  /* ⛔ AND NOW IT IS VACUOUSLY TRUE, WHICH IS WORTH SAYING OUT LOUD: nothing touches `place_pictures`
+   * at all any more (§3 asserts that directly), so nothing can upsert it. The index checks above stay
+   * because the TABLE and its indexes are still in the database — a later feature that reaches for them
+   * meets the same 42P10 trap 20261013 taught. */
+  t('⛔ …and nothing upserts `place_pictures` — nothing touches it at all', (() => {
     const hits = []
-    for (const f of walk('lib').concat(walk('app'))) {
-      const c = codeOf(read(f))
-      const re = /\.from\('place_pictures'\)([\s\S]{0,600}?)(?=\.from\('|$)/g
-      let m
-      while ((m = re.exec(c))) if (/\.upsert\(/.test(m[1])) hits.push(f)
+    for (const f of walk('lib').concat(walk('app')).concat(walk('components'))) {
+      if (/place_pictures/.test(codeOf(read(f)))) hits.push(f)
     }
-    return hits.length === 0 && /error\.code === '23505'/.test(ROUTE)
+    return hits.length === 0
   })())
   t('🔴 …and the repository-wide §7b guard still exists',
     /ON CONFLICT targets are real, non-partial uniques/.test(read('scripts/event-pricing.cjs')))

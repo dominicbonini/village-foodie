@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V14.1
+HatchGrab Engineering Reference Manual · V14.2
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 14.1**
+**Version 14.2**
 
 October 2026
 
@@ -25,6 +25,80 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V14.2 — 5 October 2026 — THE PLACES TAB TIDY-UP: THE EVENT TYPE AS A PILL ROW, HIDDEN PLACES BACK ON THE SCREEN, "Events here" AND "Your own pictures" DELETED, AND A LINK BUILDER. STILL NOT DEPLOYED.
+
+**Status — read this first.**
+- 🔴 **ON `main`, LOCAL, NOTHING PUSHED.** `schedule-graphics` is fast-forwarded to match.
+- 🔴 **NO SQL.** No migration was needed and none was run. ⛔ **`public.place_pictures` IS LEFT IN THE
+  DATABASE, WITH ITS ROWS AND ITS STORAGE OBJECTS, READ BY NOTHING.** Dropping it is a migration this
+  build did not need, and the files an operator uploaded are theirs.
+- ⚠️ It supersedes most of **§64.9** — the pin's select, both picture panes and "Events here".
+  `docs/places-tidy-report.md` is the full account.
+
+### What changed
+
+| | |
+|---|---|
+| ⛔ **"Automatic" IS GONE — the place's type is a PILL ROW** | Standard · 🔒 Private · the truck's custom types, exactly one selected. A place nobody has set shows what the history rule gives, as an ORDINARY selected pill with no special label. Storage unchanged (`usual_type_is_standard` / `usual_event_type_id`) |
+| 🔴 **Each list row shows its place's type** | A colour dot and the name, or a purple lock and "Private" — `colourFor(index in the truck's types)`, the Event types grid's own colour |
+| 🔴 **Hidden places are BACK ON THE SCREEN** | A "HIDDEN PLACES" section at the bottom, greyed, with "Hidden places stay out of Add event. Open one to restore it." ⛔ The "N hidden places · Show" footer is deleted. Search covers them |
+| ⛔ **BOTH "Events here" boxes are DELETED**, with `sg_place_events` | They printed the schedule on the screen whose job is a place's settings. Next and Last still reach the LIST rows, from `sg_places` |
+| ⛔ **"Your own pictures" is DELETED ENTIRELY** — the pane and four routes | A reference library nothing read. `place_pictures` stays in the database |
+| 🔴 **"Picture for posts" uploads IN PLACE** | Placeholder "Standard design"; "Upload a picture for this place" through the EXISTING `upload_url` → PUT → `confirm_upload` flow on /api/weekly-post. "Text positions" is still a link — the drag surface is not re-implemented |
+| ⛔ **The Favourite button left the detail pane** | The list star does it on every row without opening anything |
+| 🔴 **`lib/manage-links.ts` — ONE builder for a link into a Manage tab or section** | §64.10. A bare `?section=weekly` dropped `?tab=` and landed on **Billing** |
+| 🔴 **A default may no longer override a URL that asked for a tab** | `urlAskedForTab` in `app/manage/[token]/page.tsx`. ⚠️ This also fixes `?tab=schedule` — **the link the scraper EMAILS operators** to review found events, which opened a price list for every trial truck |
+
+### The bugs found while tidying — three in the product, three in the harnesses
+
+1. 🔴 **`<PlaceDetail>` HAD NO `key` ON THE PLACES TAB.** It keeps the five fields as local draft state
+   and saves them ON BLUR, which only works because the caller remounts it per place. Selecting a
+   second place reused the component: the pane showed the FIRST place's name, short name, address, area
+   and postcode, and **blurring any field would have written them onto the second place.** Tidy up
+   always had the key. Both mounts are now asserted.
+2. ⛔ **THE TRIAL DEFAULT BEAT THE URL.** Three links and one EMAILED link all opened Billing on a
+   trial truck. Two faults, two fixes — the builder and `urlAskedForTab` — because either alone leaves
+   the other reachable.
+3. ⚠️ **A PREVIOUSLY SUPPLIED GRANT SQL USED THE SLUG AS THE ID.** `where id = 'test-kitchen'` matches
+   **0 rows**: Pizza Kitchen's id is `test-truck` and `test-kitchen` is its SLUG. The corrected
+   statement is in `docs/places-tidy-report.md`. `scripts/private-events.cjs` had the same confusion in
+   its fixture and is fixed.
+4. ⛔ **A FIXTURE THAT CANNOT BUILD IS NOT A FAILING TEST, IT IS NO TEST.**
+   `scripts/schedule-places-render.cjs` has thrown "the fixture cannot be built" before measuring
+   anything — at HEAD, for days — because `Toggle`'s geometry moved into a `compact ? … : …` ternary and
+   the Add event type picker stopped being a `<select>`. **Every measurement in that file, including
+   ones about screens nothing to do with either, was silently unmeasured.** Reported, not half-fixed.
+5. ⚠️ **ONE RECT PER LINE IS NOT TRUE OF AN `inline-flex` LABEL.** The new render harness's "the type
+   label never wrapped" failed at all three widths on correct markup: a `Range`'s client rects are one
+   per BOX, and a dot `<span>` beside a text node is two boxes on one line. Clustered by top edge now.
+6. ⚠️ **A SLICE WITH NO END ANCHOR IS NOT A SLICE OF WHAT YOU NAMED.** "The detail pane has no
+   Favourite button" sliced from `export function PlaceDetail` to EOF and read `TidyUpPlaces`' own star
+   wiring. Second time this exact mistake has been made in this build.
+
+### What was run
+
+`tsc --noEmit` clean · `npx next build` ✓ compiled · **ESLint identical to the baseline** — 1,296
+errors and 342 warnings before and after, with three newly-dead imports removed · the six named
+harnesses green (`places-tab` **93**, `places-posts-gating` **44**, `weekly-post` **207**,
+`schedule-graphics-places` **258**, `private-events` **206**, `event-types` **185**) · **full sweep 93
+run · 93 passed · 0 failed** · **`scripts/places-tab-render.cjs` (NEW) passes in Chromium AND WebKit at
+1440/820/390 — 94 assertions per engine**, both reporting identical geometry.
+
+⚠️ **CHROMIUM DID NOT HANG THIS TIME.** The V14.1 fault is still in the machine, but this harness makes
+two `evaluate` calls per page and takes no element screenshots, and it completes in both engines.
+
+### Open items
+
+| Item | State |
+|---|---|
+| **Deploy** | `git push origin main`, then §74.6's live checks. **Not done — Dominic deploys by hand** |
+| `scripts/schedule-places-render.cjs` does not run | Two stale lifts, both named above. It measures the Add event MODAL, which this build did not touch; repairing it means re-aiming assertions about that screen |
+| `public.place_pictures` + its storage objects | in the database, read by nothing. ⛔ **Do not drop it without asking — it holds somebody's photographs** |
+| `truck_places.traded_last_year` on the `sg_places` payload | rendered nowhere now; it was the deleted card's "· N times in the last year" |
+| From V14.1 | the four unread `truck_events` price columns; Chromium's hang on the two outreach browser harnesses |
+
+---
 
 ## V14.1 — 5 October 2026 — THE DASHBOARD CLEAN-UP: THE "This event" CARD DELETED, ITS CONTROLS RESTORED, THE EVENT TYPE IN THE HEADER, AND PER-EVENT PRICES IN MENU & STOCK. STILL NOT DEPLOYED.
 
@@ -27331,6 +27405,12 @@ was dropped. The per-truck post wording column survives as `trucks.event_post_wo
 
 ## 64.9 The Places TAB (V13.9 — 5 October 2026)
 
+> ⛔ **AMENDED BY V14.2 (5 October 2026) — READ THE AMENDMENTS BEFORE THE TEXT THEY AMEND.** Four parts
+> of this section describe controls that no longer exist: the pin's SELECT and its "Automatic" option
+> (now a pill row, below), "Extra pictures" (deleted), "Events here" (deleted), and "Show hidden"
+> (now a section). The STORAGE and the READ ORDER are unchanged and the text about them still stands.
+> `docs/places-tidy-report.md` is the full account.
+
 > 🔴 **PLACES IS A SCHEDULE PILL AGAIN.** §64 above describes the state from 3 October, when the list
 > moved into the Add event window and the pill was removed. It is a tab again, with a detail pane —
 > and "Tidy up places" inside Add event **stays**, calling the same components and the same actions.
@@ -27376,7 +27456,51 @@ second column. Named here rather than faked; it is a schema decision, not one to
 ⚠️ **A PRO TRUCK SEES STANDARD AND PRIVATE ONLY** — custom types are `event_types` (Max), the Private
 type is `private_events` (Pro). Filtered on the keys, never on the plan name.
 
+### ⛔ V14.2 — THE SELECT IS A PILL ROW, AND "Automatic" IS NOT A CHOICE ANY MORE
+
+> This supersedes the select, its first option and the paragraph above about Standard clearing the pin.
+> **20261016 had already made "stored as Standard" a real state** (`usual_type_is_standard`), so the
+> schema decision that paragraph defers is settled; what V14.2 removes is the THIRD state from the UI.
+
+| | |
+|---|---|
+| **The control** | A pill row at the top of the place detail: **Standard · 🔒 Private · the truck's custom types**, exactly one selected, `role="radiogroup"` |
+| **One helper line** | "Add event picks this type whenever you choose this place." — the CONSEQUENCE, not the mechanism |
+| **A never-set place** | Shows the type the history rule gives (Standard with no history) as an **ordinary selected pill, with no special label**. The server resolves it into `usual_automatic_type_id` using the SAME function Add event's pre-selection uses, so the pill an operator sees IS what Add event will pick |
+| **Storage** | Unchanged. `usual_type_is_standard ? Standard : (usual_event_type_id ?? the rule)`, read in that order on both sides of the wire |
+| **The wire** | `sg_place_usual_type` still ACCEPTS `null` (nothing stored) — `clearOwn` and older callers send it. The SCREEN cannot: `savePin` takes a string |
+
+⛔ **WHY THE OPTION WENT.** It offered three states where an operator only ever wants one answer: *what
+type comes up when I pick this place?* "Automatic (Market — last used here)" was an honest label for a
+mechanism, and a mechanism is not what the question is about. 🔴 **AND THE LABEL HAD BEEN A LIE FOR A
+DAY BEFORE THAT**: `automaticNameFor` was `() => 'Standard'`, a hardcoded word, so a wedding venue whose
+last three bookings were Private was told Automatic meant Standard — on the screen whose job is to say
+what will happen. `scripts/places-tab.cjs` §2 has been re-aimed three times over this one control, and
+the third version asserts the WORD "Automatic" appears nowhere in the tab's code.
+
+⚠️ **CHOOSING A DIFFERENT TYPE IN ADD EVENT FOR ONE EVENT DOES NOT CHANGE THE PLACE.** `PlacesTab` is
+the only caller of `sg_place_usual_type` in the repository; Add event's pill row calls `onChange` and
+sets a `touched` ref, and writes nothing.
+
+### ⛔ V14.2 — THE LIST SHOWS EACH PLACE'S TYPE, AND HIDDEN PLACES ARE ON THE SCREEN
+
+| | |
+|---|---|
+| **On each row** | a colour dot and the type's name, or a **purple lock and "Private"** — right-aligned on the name's line. The name is `min-w-0 flex-1 truncate` and the label is not, so a long name truncates and the type never does: a half-written type name is worse than a truncated venue, which has its own sub-line underneath |
+| **The colour** | `colourFor(index in the truck's types)` — the Event types grid's own index, so one type is never two colours. ⚠️ An id that is not in the types list renders **NO label**, never "Standard": Standard is `null`, so a label there would be a lie |
+| **Hidden places** | a **"HIDDEN PLACES"** section at the bottom of the list, always drawn, greyed, under "Hidden places stay out of Add event. Open one to restore it." Opening one shows the detail with "Restore this place" |
+| ⛔ **The footer is gone** | "N hidden places · Show" was a count you had to press to reveal a list. The question an operator arrives with is "where did The Crown go?", and a screen that answers it only after a hunt has hidden the answer too |
+| ⚠️ **Tidy up keeps `showHidden`** | A different job — a short working pass where a long greyed tail is noise. `PlaceList` takes both props; the TAB passes `hiddenSection`, Tidy up passes `showHidden` |
+
+⚠️ **SEARCH COVERS HIDDEN PLACES**, in their own section: the hidden group is `isRetired(p) && matches(p)`,
+so the search term applies to it exactly as to the live groups.
+
 ### Pictures for this place — two kinds, and the difference is the pane
+
+> ⛔ **AMENDED BY V14.2: THERE IS ONLY ONE KIND NOW.** "Extra pictures" and its four routes are deleted;
+> everything below about `place_pictures`, its CHECK, its upload order and its "never used on a post"
+> sentence is **history**. The V14.2 block at the end of this sub-section is the live account. The
+> table and its objects are still in the database and are read by nothing.
 | | |
 |---|---|
 | **The post picture** | `truck_places.event_bg_path` + `event_bg_width/height` + `event_layout`. ONE per place, with text positions on it. What a single-event poster draws. Replace and Text positions **link to the existing flow** in Social posts › Single event — the drag surface whose pointer handling took three fixes is not re-implemented here. |
@@ -27397,10 +27521,82 @@ real bytes** rather than trusting the browser's number. 10MB is capped in the ha
 table's CHECK. ⚠️ **Remove deletes the storage object BEFORE the row** — the other order leaves a row
 pointing at nothing, which is a broken thumbnail the operator cannot remove.
 
+### ⛔ V14.2 — "Your own pictures" IS DELETED; "Picture for posts" UPLOADS IN PLACE
+
+⛔ **A FEATURE WHOSE DESCRIPTION IS MOSTLY A WARNING ABOUT WHAT IT IS NOT IS A FEATURE NOBODY ASKED
+FOR.** `place_pictures` was a per-place reference library — a photo of the pitch, where to park, the
+venue's artwork — and nothing read it: no post, no feed, no export, no other screen. Its own pane had to
+say so in capitals every time it was drawn. 🔴 **EVERY ONE OF THE ELEVEN CHECKS ABOVE PASSED, AND THE
+FEATURE WENT ANYWAY.** Proving a thing is safe is not the same as proving it is wanted; this is the
+clearest example of that distinction in the repository.
+
+| | |
+|---|---|
+| **Deleted** | the pane, and `sg_place_pictures` · `sg_place_picture_url` · `sg_place_picture_save` · `sg_place_picture_remove` on /api/manage |
+| **KEPT, UNTOUCHED** | `public.place_pictures`, its rows, its indexes and its storage objects. ⛔ **Do not drop it without asking.** `scripts/places-tab.cjs` §3 now asserts the table is still created by the migration AND that nothing in `app/`, `lib/` or `components/` reads it |
+| **`PLACES_TAB_ONLY`** | one entry long now: `sg_place_usual_type`. ⚠️ Still an array, because the name is what says what the rule is |
+
+**And the post picture is uploaded HERE, not behind a link.** It used to be a sentence and a link into
+Social posts › Single event, on the grounds that a second drag surface would be a second set of the three
+pointer bugs that one had. 🔴 **THAT REASONING HOLDS FOR THE TEXT POSITIONS AND NOT FOR THE UPLOAD:
+choosing a file is not a drag surface.**
+
+| | |
+|---|---|
+| **No picture** | a placeholder tile reading **"Standard design"**, the line "Event posts here use your standard design.", and **"Upload a picture for this place"** |
+| **With one** | a thumbnail, the dimensions, **Replace**, **Text positions** (the existing per-place editor, through `manageSectionHref('weekly')`) and **Remove** (confirmed — it deletes a file) |
+| **The flow** | the EXISTING one: `upload_url` → direct PUT → `confirm_upload` with `which: 'place'`, on /api/weekly-post. Same three calls `EventPost.tsx` makes, so the shape check against the standard design, the 10MB cap, the PNG/JPG rule and the storage path are all the server's existing ones |
+| ⛔ **The shape check is the SERVER's** | the only honest source for an aspect ratio is the real pixels of the stored object. The client's size and type tests are a courtesy that saves a doomed upload |
+| ⚠️ **The thumbnail needs a SIGNED url** | `sg_places` returns `event_bg_path`, a path — the bucket is private. The one action that already signs it is `event_load`, so that is what is called: once, only when the place HAS a picture, and again after an upload. The url is stored WITH its path and the shown url is derived by comparing the two, so removing the picture clears the thumbnail with no second `setState` |
+| ⚠️ **The route is gated on `schedule_graphics` (Max)** | a Pro truck holding the preview key sees this section and is refused on upload, with the route's own sentence — shown rather than hidden, because posts are a Max feature and this picture only exists for a post |
+
 ### Events here
+
+> ⛔ **DELETED BY V14.2, BOTH BOXES.** One sat under the fields and one at the bottom of the page. Between
+> them they printed the next event, the last few events and a lifetime count on the screen whose job is a
+> place's SETTINGS — and the Events section, one pill away, is the real schedule and the only one that can
+> be filtered, edited and posted from. `sg_place_events` went with them.
+> 🔴 **NEXT AND LAST STILL REACH THE LIST ROWS**, computed in `sg_places` with the same
+> `groupEventsByPlace` + `placeForEvent` grouping, so nothing about merged places was lost.
+> ⚠️ **`traded_last_year` IS NOW RENDERED NOWHERE** — it was the "· N times in the last year" clause.
+
 The next upcoming and the recent past, with each past one's order count, grouped through `placeForEvent`
 so a **merged** place's events land on its target. ⚠️ **Private events are shown, with a chip** — this
 is the truck's own screen, and the redaction is a property of the public feeds (§73).
+
+## 64.10 `lib/manage-links.ts` — the ONE builder for a link into a Manage tab or section (V14.2)
+
+⛔ **THE BUG.** Two places in the product wrote a section link by hand, as a bare relative query:
+
+```tsx
+<a href="?section=weekly">Add a picture for this place</a>   // the Places tab
+<a href="?section=places">Places</a>                          // the single-event post
+```
+
+A bare `?section=…` **REPLACES the whole query string**, so `?tab=` is dropped. The manage page's
+mount-time parser does imply the tab from the section — but **it is not the only thing that sets the
+tab**, and on a truck whose plan is `'trial'` the defaults-to-Billing effect ran afterwards and won.
+Both links landed on **Billing**.
+
+🔴 **TWO FAULTS, TWO FIXES, AND EITHER ONE ALONE LEAVES THE OTHER REACHABLE.**
+
+| | |
+|---|---|
+| **1 · the builder** | `manageSectionHref(section, { token? })` → `?tab=<tab>&section=<section>`, with `TAB_FOR_SECTION` declared once. ⛔ **IT DOES NOT TAKE A `tab` FOR A SECTION** — the tab a section belongs to is a property of the section, not a choice at the call site, which is precisely what the two broken links got wrong. `manageTabHref(tab, { token? })` is the tab-only form |
+| **2 · `urlAskedForTab`** | a ref set after **all four branches** of the mount parser — `?tab=`, the two retired tab keys, and a bare `?section=` that implies its tab. The trial default returns early when it is true, before it reads the plan |
+| ⚠️ **It emits BOTH params, always** | `?tab=schedule` alone would do for `events`; emitting `&section=events` costs nothing and keeps every link in the product the same shape, which is what makes a missing one visible |
+| ⚠️ **It is a pure string builder** | no React, no `window`, no router — so the SERVER calls it too (the scraper's email) and `scripts/places-tab.cjs` §1b can test it with no DOM |
+
+🔴 **THE VERSION OF THIS BUG THAT WAS COSTING SOMETHING.** `app/api/inbound-schedule/route.ts` **emails**
+an operator `/manage/<token>?tab=schedule` when the scraper finds events for them to review. On a trial
+truck that link opened a price list — and no screen could have shown it, because the fault was in a page
+the email points at. Fix 2 repairs it; the email now builds its link with `manageTabHref` as well.
+
+⛔ **AND NO MANAGE LINK IS HAND-WRITTEN ANYWHERE NOW.** Three `href="?tab=billing"` literals (two in
+`page.tsx`, one in `FeatureGate.tsx`) went through the builder too. The string it returns is identical —
+**that is the point**: a literal that happens to be right is the one a later edit gets wrong.
+`scripts/places-tab.cjs` §1b sweeps `app/` and `components/` for both `href="?tab=` and `href="?section=`
+and fails on either.
 
 ---
 

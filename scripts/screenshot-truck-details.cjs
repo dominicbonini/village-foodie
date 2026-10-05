@@ -435,6 +435,28 @@ function fakeDb(opts = {}) {
       // private events 20261014: "private" in the found text, through the one privacy writer.
       "...scrapedPrivacyFields(row.venue_name, row.event_notes),",
       "import { scrapedPrivacyFields } from '@/lib/private-events/write'",
+      /* ══ 🔴 THE THIRD BUILD: THE LINK IN THIS EMAIL IS BUILT BY THE ONE LINK BUILDER (5 Oct 2026) ══
+       * This route EMAILS an operator `/manage/<token>?tab=schedule` to review found events — and on a
+       * truck whose plan is 'trial' that link opened BILLING, every time, because the mount parser read
+       * `?tab=` and a later default-to-Billing effect overrode it. The fix is in
+       * app/manage/[token]/page.tsx (`urlAskedForTab`); what changed HERE is only that the URL is no
+       * longer assembled from a literal in a template string.
+       * ⛔ THE BRIDGE ITSELF IS UNTOUCHED — no column, no filter, no admission rule, which is what this
+       * guard exists to protect. The changed line is the one that builds a link in an email body. */
+      "import { manageTabHref } from '@/lib/manage-links'",
+      "const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}${manageTabHref('schedule', { token: truck.dashboard_token })}`",
+    ]
+    /* ══ ⛔ AND A LINE THAT WAS **REPLACED** NEEDS ITS OLD FORM TOLERATING TOO ════════════════════
+     * `git diff` reports a replacement as a `-` AND a `+`, and this check reads both — so the first
+     * attempt at the entry above failed on the line it was written for: the OLD `manageUrl` was still
+     * an unexplained change.
+     * 🔴 THE TWO LISTS CANNOT BE ONE, because the expiry check below means opposite things for them: a
+     * line that ARRIVED must still be in the file, and a line that WENT must not. Merging them would
+     * make the expiry check contradict itself — it would demand the presence of the exact line this
+     * build deleted. The two previous entries are pure ADDITIONS, which is why one list sufficed until
+     * now. */
+    const TOLERATED_REMOVED = [
+      "const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/manage/${truck.dashboard_token}?tab=schedule`",
     ]
     if (gitClean(f)) return true
     let diff = ''
@@ -446,7 +468,7 @@ function fakeDb(opts = {}) {
       .filter(Boolean)
       /* comment lines are not behaviour */
       .filter(l => !/^(\/\*|\*|\/\/)/.test(l))
-    const unexplained = changed.filter(l => !TOLERATED.includes(l))
+    const unexplained = changed.filter(l => !TOLERATED.includes(l) && !TOLERATED_REMOVED.includes(l))
     if (unexplained.length) {
       console.log('      LINES CHANGED AND NOT ALLOWED: ' + unexplained.length)
       for (const l of unexplained.slice(0, 10)) console.log('        • ' + l.slice(0, 140))
@@ -458,6 +480,13 @@ function fakeDb(opts = {}) {
     const missing = TOLERATED.filter(l => !now.includes(l))
     if (missing.length) {
       console.log('      ⛔ TOLERATED LINE CLAIMED BUT NOT PRESENT: ' + missing.join(' | ').slice(0, 160))
+      return false
+    }
+    /* ⛔ AND THE OTHER DIRECTION. A line claimed as REMOVED that is still in the file is not a removal;
+     * it is an entry that excuses a change nobody made, and it would go on excusing the real one. */
+    const resurrected = TOLERATED_REMOVED.filter(l => now.includes(l))
+    if (resurrected.length) {
+      console.log('      ⛔ LINE CLAIMED AS REMOVED BUT STILL PRESENT: ' + resurrected.join(' | ').slice(0, 160))
       return false
     }
     return true

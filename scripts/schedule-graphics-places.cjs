@@ -1082,8 +1082,19 @@ function runWiringSuite(lib) {
     /Hide this place/.test(U) && /Restore this place/.test(U)
     && !/Merge into another place/.test(U)
     && ['Name on posts', 'Short name', 'Address', 'Area', 'Postcode'].every(f => U.includes(`label="${f}"`)))
-  t('⚠️ Card 2 names both lines and the count',
-    /Events here/.test(U) && /Next: \$\{shortDay/.test(U) && /time\$\{place\.traded_last_year === 1 \? '' : 's'\} in the last year/.test(U))
+  /* ══ ⛔ CARD 2 — "Events here" — IS DELETED, AND SO IS THIS CHECK'S CLAIM (5 October 2026) ════════
+   * It asserted that the card named Next, Last and "N times in the last year". It passed, and the card
+   * went anyway: it printed the schedule on the screen whose job is a place's SETTINGS, and the Events
+   * section one pill away is the real schedule — the one that can be filtered, edited and posted from.
+   * ⛔ REVERSED RATHER THAN REMOVED. "The card is gone" is a claim worth keeping, because the three
+   * fields it rendered are still on the payload and nothing stops somebody drawing them again.
+   * 🔴 AND THE LINE THAT MATTERS SURVIVES: the LIST row still shows Next-or-Last, from the shared
+   * `placeWhenLine`. That is the one place an operator needs it while scanning places. */
+  t('⛔ Card 2 — "Events here" — is gone from the detail pane',
+    !/Events here/.test(codeOnly(U)) && !/traded_last_year === 1/.test(codeOnly(U)))
+  t('🔴 …and the list row still shows Next-or-Last, from the shared builder',
+    /placeSubLine\(p\)/.test(U)
+    && /export const placeSubLine = \(p: Place\): string => placeWhenLine\(p, shortDay\)/.test(U))
   /* 🔴 THE BREAKPOINT IS `md` (768px) NOW, NOT `lg`. Measured: at 820px (iPad portrait) the 380px
    * list sits beside the form with no horizontal scroll, so an iPad gets the two-pane layout the
    * mockup asks for. See scripts/schedule-places-render.cjs and the report. */
@@ -2132,6 +2143,24 @@ function runWiringSuite(lib) {
         reason: 'the private card needs `PREVIEW_PLACEHOLDERS.date` for an unfilled date',
         nowIn: 'app/manage/[token]/page.tsx',
         now: "import { previewEventFromForm, previewLine, vanForPlace, PREVIEW_PLACEHOLDERS } from '@/lib/schedule-graphics/event-preview'" },
+
+      /* ══ 🔴 THE TWO `?tab=billing` LITERALS WENT THROUGH THE ONE LINK BUILDER (5 October 2026) ═════
+       * ⛔ WHY A STRING THAT WAS ALREADY CORRECT HAD TO MOVE. `manageTabHref('billing')` returns the
+       * exact same `?tab=billing`. The point is not the string: it is that the product no longer
+       * assembles a Manage link by hand anywhere, because the bug this build fixed was a hand-written
+       * `?section=weekly` that dropped its `?tab=` and landed an operator on Billing. A literal that
+       * happens to be right is the one a later edit gets wrong.
+       * ⚠️ TWO ENTRIES BECAUSE THE TWO ANCHORS ARE FORMATTED DIFFERENTLY — one has the href and the
+       * className on one line, the other has the href alone. Both are in page.tsx; the third was in
+       * components/FeatureGate.tsx, which this guard does not cover. */
+      { was: '<a href="?tab=billing" className="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap">',
+        reason: 'no Manage link is hand-written any more — see lib/manage-links.ts',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "<a href={manageTabHref('billing')} className=\"text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap\">" },
+      { was: 'href="?tab=billing"',
+        reason: 'the van-limit modal\'s "View plans" link, likewise',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "href={manageTabHref('billing')}" },
     ]
     const unexplained = gone.filter(l => {
       if (!l) return false
@@ -2813,9 +2842,14 @@ function runVariants() {
      * the string that keeps moving under this variant, which is how it came to report THE ANCHOR IS
      * GONE twice in three days. */
     ['W23 🔴 the Places tab grows its own list instead of sharing Tidy up\'s',
+      /* ⚠️ RE-ANCHORED (5 October 2026). `shortDay` left this import with "Events here" — the variant
+       * anchored on the whole line including it and reported THE ANCHOR IS GONE, which is the third time
+       * this one variant has been moved by an unrelated edit. ⛔ SO IT ANCHORS ON THE TWO NAMES THAT ARE
+       * THE CLAIM and nothing else: `PlaceList, PlaceDetail`. A variant whose anchor includes names it is
+       * not about is a variant that breaks whenever anything near it changes. */
       changed(read('components/manage/PlacesTab.tsx'),
-        "import {\n  usePlaces, PlaceList, PlaceDetail, shortDay,",
-        "import {\n  usePlaces, shortDay,", 'W23'),
+        "  usePlaces, PlaceList, PlaceDetail,",
+        "  usePlaces,", 'W23'),
       src => /usePlaces, PlaceList, PlaceDetail/.test(src)],
     ['W24 🔴 the sticky footer becomes part of the scrolling body again',
       changed(read(PAGE), '              <div className="shrink-0 border-t border-slate-200 bg-white px-5',

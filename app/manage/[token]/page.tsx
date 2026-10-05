@@ -138,6 +138,9 @@ import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 import { PrivateLinkPanel, type PrivateLinkData } from '@/components/manage/PrivateLinkPanel'
 /* 🔴 SCHEDULE › PLACES (5 October 2026). Composes the SHARED list, detail and hook. */
 import { PlacesTab } from '@/components/manage/PlacesTab'
+/* 🔴 THE ONE BUILDER FOR A LINK INTO A TAB OR SECTION — see lib/manage-links.ts for the bug that made
+ * it exist. The two "Upgrade →" / "View plans" anchors below use it rather than a literal `?tab=…`. */
+import { manageTabHref } from '@/lib/manage-links'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null }
@@ -683,6 +686,17 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     return () => { cancelled = true }
   }, [token])
 
+  /* ══ 🔴 DID THE URL ASK FOR A TAB? (5 October 2026) ══════════════════════════════════════════════
+   * ⛔ THIS EXISTS BECAUSE A DEEP LINK INTO A TAB DID NOT WORK ON A TRIAL TRUCK, AT ALL. The
+   * trial-defaults-to-billing effect below runs on `[truck?.id]` — i.e. AFTER the truck loads, which
+   * is after this parser — and set `activeTab = 'billing'` unconditionally. So `?tab=schedule`,
+   * `?section=places` and `?section=weekly` all landed on **Billing** for any truck on plan 'trial'.
+   * 🔴 THAT INCLUDED THE LINK THE SCRAPER EMAILS OPERATORS: app/api/inbound-schedule/route.ts sends
+   * `/manage/<token>?tab=schedule` to review found events, and on a trial truck it opened Billing.
+   * The reported symptom — "Add a picture for this place" landing on Billing — was one instance.
+   * ⚠️ A REF, NOT STATE: it is read by an effect in the same mount and must not cause a render. */
+  const urlAskedForTab = useRef(false)
+
   // Read ?tab= query param on mount and activate that tab
   useEffect(() => {
     const qs = new URLSearchParams(window.location.search)
@@ -710,6 +724,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setMenuSection(sectionParam)
       if (!tabParam) setActiveTab('menu')
     }
+    /* 🔴 RECORDED AFTER ALL FOUR BRANCHES, so it is true whenever the URL named a tab OR a section
+     * that implies one — which is exactly the set of cases where the trial default must stand aside.
+     * ⚠️ A `?tab=` THIS PAGE DOES NOT RECOGNISE DOES NOT COUNT: it selected no tab, so there is
+     * nothing for the default to override. */
+    urlAskedForTab.current =
+      !!(tabParam && (allTabIds.includes(tabParam as Tab) || LEGACY_TAB_TO_MENU_SECTION[tabParam]))
+      || isScheduleSection(sectionParam) || isMenuSection(sectionParam)
   }, [])
 
   /* ── 🔴 THE SECTION, WRITTEN BACK INTO THE URL ───────────────────────────────────────────────────
@@ -770,7 +791,21 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // strongest purchase steer in the product. The tab stays REACHABLE on iOS (its matrix is permitted
   // information); it simply is not opened for them. Web and Android are byte-identical to before.
   // ⚠️ Dependency array deliberately unchanged — see the backlog; it is a separate known issue.
+  /* ══ ⛔ A DEFAULT, AND A DEFAULT MUST NOT OVERRIDE AN EXPLICIT REQUEST (5 October 2026) ═══════════
+   * 🔴 THIS WAS THE ROOT CAUSE OF "the link landed on Billing", and it was wider than the link that
+   * reported it. The effect runs on `[truck?.id]` — after the truck loads, therefore after the
+   * mount-time URL parser — and it set the tab unconditionally. On a truck whose plan is 'trial'
+   * (which is Pizza Kitchen, and every self-serve signup) that meant:
+   *   • `?tab=schedule`, the link app/api/inbound-schedule/route.ts EMAILS operators to review found
+   *     events, opened Billing;
+   *   • `?section=places` and `?section=weekly` opened Billing;
+   *   • every in-app link into a Schedule section opened Billing.
+   * ⚠️ IT IS STILL A DEFAULT FOR AN ORDINARY LOAD. A trial operator who opens `/manage/<token>` with
+   * no query still lands on Billing, which is the behaviour this effect exists for and is unchanged.
+   * ⛔ WHAT IT MAY NO LONGER DO IS BEAT A URL. Asking for a tab is not a preference to be weighed
+   * against a default; it is an instruction. */
   useEffect(() => {
+    if (urlAskedForTab.current) return
     if (truck?.plan === 'trial' && purchaseCtaAllowed()) setActiveTab('billing')
   }, [truck?.id])
 
@@ -9608,10 +9643,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       * ⚠️ SO THE TAB SEEDS. `usePlaces` calls `sg_places`, which seeds before it answers, and opening
       * this tab is now a deliberate act that needs the list — the same argument the modal made for
       * itself. The Events section still writes nothing.
-      * ⚠️ `types` IS PASSED IN THE GRID'S ORDER (Private first), so the "Usual event type" select and
-      * the Event types grid name the same columns in the same order. */}
+      * ⚠️ `types` IS PASSED IN THE GRID'S ORDER (Private first), so the place's event-type PILL ROW, the
+      * type label on each list row and the Event types grid name the same types, in the same order and
+      * in the same colours.
+      * ⚠️ `token` IS FOR "Picture for posts" ALONE. That pane uploads through /api/weekly-post — the
+      * existing place-design flow, shape check and storage path — and /api/weekly-post is token-auth'd,
+      * not `api`-auth'd. Nothing else on the tab needs it. */}
     {isActive && shownSection === 'places' && (
-      <PlacesTab api={api} showToast={showToast} plan={truck.plan}
+      <PlacesTab api={api} showToast={showToast} token={token} plan={truck.plan}
         featureOverrides={truck.feature_overrides ?? null}
         trialExpiresAt={truck.trial_expires_at ?? null}
         types={placeTypeChoices} />
@@ -13507,7 +13546,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   <p className="text-xs text-slate-500 mt-1">WhatsApp auto-replies are included on Pro and Max.</p>
                   {purchaseCtaAllowed() && (
                     <p className="mt-1">
-                      <a href="?tab=billing" className="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap">
+                      <a href={manageTabHref('billing')} className="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap">
                         Upgrade &rarr;
                       </a>
                     </p>
@@ -13713,7 +13752,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               </button>
               {purchaseCtaAllowed() && (
                 <a
-                  href="?tab=billing"
+                  href={manageTabHref('billing')}
                   className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm text-center hover:bg-orange-700"
                 >
                   View plans

@@ -1,5 +1,6 @@
 'use client'
 import { canAccess, requiredPlan, PLAN_META, type Plan, type Feature } from '@/lib/features'
+import { manageTabHref } from '@/lib/manage-links'
 import { usePriceMask } from '@/components/PricingPolicy'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 
@@ -57,7 +58,10 @@ export function FeatureGate({
           full plan matrix, which is what this link always meant to reach. */}
       {purchaseCtaAllowed() && (
         <a
-          href="?tab=billing"
+          /* ⚠️ THROUGH THE ONE BUILDER (5 October 2026). The string it returns is the one that was
+             hand-written here — the point is that there is now nowhere in the product where a link
+             into a Manage tab is assembled from a literal. See lib/manage-links.ts. */
+          href={manageTabHref('billing')}
           className="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap"
         >
           Upgrade →

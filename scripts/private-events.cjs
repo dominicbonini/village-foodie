@@ -164,7 +164,14 @@ function stub(fixture, opts = {}) {
 }
 
 // ── THE FIXTURE ──────────────────────────────────────────────────────────────────────────────────
-const TRUCK = 'test-kitchen'
+/* ⛔ `'test-truck'`, NOT `'test-kitchen'` — CORRECTED 5 October 2026. `test-kitchen` is Pizza
+ * Kitchen's **slug**; its `trucks.id` is `test-truck`, and `truck_id` columns carry the ID. The
+ * fixture read as an id throughout, so every `.eq('truck_id', TRUCK)` in these stubs was matching on
+ * a value no row would ever hold in production.
+ * ⚠️ IT CHANGED NOTHING ABOUT WHAT THIS HARNESS PROVED — the stub answers from the same fixture
+ * whatever the string is — which is exactly why it went unnoticed, and exactly why it is worth
+ * correcting: a fixture that models an impossible row teaches the next reader the wrong shape. */
+const TRUCK = 'test-truck'
 const TYPE_PRIVATE = 'bbbbbbbb-0000-0000-0000-0000000000p1'.replace('p1', '01')
 const TYPE_MARKET = 'bbbbbbbb-0000-0000-0000-000000000002'
 const EV_PRIVATE = 'cccccccc-0000-0000-0000-00000000000a'
