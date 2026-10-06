@@ -290,6 +290,18 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Automated stock countdown',                    detail: 'Set a stock count and it counts down as orders come in, then sells out automatically.', starter: false, pro: true,           max: true           },
       { name: 'Auto-accept online orders',                    detail: 'Online orders are accepted automatically — no need to confirm each one.', starter: false, pro: true,           max: true           },
       { name: 'Branded QR code',                              detail: 'Add your logo to your QR code.', starter: false, pro: true,  max: true  },
+      /* ══ 🔴 MOVED HERE FROM THE 'Max tier' SECTION, 6 OCTOBER 2026, ON THE OPERATOR'S INSTRUCTION ═══
+       * ⛔ IT CROSSED A SECTION BOUNDARY, AND THAT WAS CHECKED BEFORE IT MOVED. The instruction was
+       * "directly after Branded QR code", and the two were in different sections — so the move changes
+       * which HEADING this row appears under, not just its position. Confirmed by Dominic.
+       * 🟢 AND IT READS BETTER HERE: its cells are `pro: true, max: true` — byte for byte the row above
+       * it — so it was the one Pro-tier row listed under a heading that says "Max tier". It was only
+       * ever there because it was split out of 'Event & festival pricing' (see the note left behind),
+       * whose other half IS Max-only and stayed.
+       * ⚠️ ORDER ONLY. The name, the detail, the cells and its ROW_FEATURE_MAP entry
+       * (`private_events`) are untouched; `findPlanParityViolations()` still checks the same `true`
+       * cells against the same `canAccess` keys, because nothing about the row changed. */
+      { name: 'Private events', detail: 'Add private events that don’t show on the map, with their own private ordering link and QR code.', starter: false, pro: true, max: true },
       // Auto-replies stay SPLIT across two rows. They USED to be split because WhatsApp was live and the
       // other two were not; as of 1 September 2026 ALL THREE are coming soon, so the split now carries a
       // different fact: WhatsApp is the one being built first. Do not re-merge them into one row — a
@@ -415,6 +427,10 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // the wording. It is NOT a description of an embed today; if the product ever gains one, this line
       // needs re-reading rather than extending.
       { name: 'Schedule page on your own website', detail: 'Show your upcoming dates on your own website. Each one links straight through to its order page.', starter: false, pro: false, max: true },
+      /* ── 🟢 MOVED HERE 6 OCTOBER 2026, ON THE OPERATOR'S INSTRUCTION: directly after the schedule
+         page, from the bottom of this section. ⚠️ ORDER ONLY — the name, the detail, the cells
+         (Max only) and its ROW_FEATURE_MAP entry (`event_types`) are all untouched. */
+      { name: 'Custom event types & pricing', detail: 'Create your own event types, with custom prices and settings for events and festivals.', starter: false, pro: false, max: true },
       // ── 🔴 MOVED INTO THE MAX TIER SECTION, 3 SEPTEMBER 2026, ON THE OPERATOR'S INSTRUCTION. ──────
       // It was added on 3 September in 'Online sales & automation' (between 'Auto-accept online orders'
       // and 'Branded QR code') as a Pro feature. When the cells went Pro -> Max-only it became the ONLY
@@ -481,8 +497,11 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * fails when `canAccess` disagrees. A 'coming_soon' cell is explicitly exempt from that guard
        * (:231), so turning these to `true` ADDS two checks rather than removing them. They pass
        * because the ROW_FEATURE_MAP entries below point at the two real keys. */
-      { name: 'Private events', detail: 'Add private events that don’t show on the map, with their own private ordering link and QR code.', starter: false, pro: true, max: true },
-      { name: 'Custom event types & pricing', detail: 'Create your own event types, with custom prices and settings for events and festivals.', starter: false, pro: false, max: true },
+      /* ⛔ `Private events` LEFT THIS SECTION ON 6 OCTOBER 2026 (Dominic) — see the note beside it in
+       * 'Online sales & automation'. It sat here only because it was split out of the row described
+       * above, and the WORDS "Max tier" over a `pro: true` row said the wrong thing about it.
+       * ⚠️ `Custom event types & pricing` STAYS IN THIS SECTION; it moved up, to directly after
+       * 'Schedule page on your own website'. Its cells are untouched (Max only). */
       // LOYALTY STAMP CARDS — Max only, coming soon
       // Schema: loyalty_cards(id, truck_id, customer_email, customer_phone, stamps_earned, stamps_redeemed, created_at, last_stamp_at)
       // Stamp rule V1: 1 per order (not per item — avoids redemption complexity)
