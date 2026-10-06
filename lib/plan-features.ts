@@ -356,6 +356,32 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // hatch (and its detail names the operator's OWN terminal, which this would replace); this one is
       // taking the CARD in person, on the phone itself. 'Online payments' is the customer paying upfront
       // through Stripe before they arrive. Three different moments, three rows.
+      /* ══ 🔴 ADDED 6 OCTOBER 2026, ON THE OPERATOR'S INSTRUCTION ═══════════════════════════════════
+       * 🔴 A PRO FEATURE, SO IT IS IN THIS SECTION — 'Online sales & automation' is where the Pro-tier
+       * rows live. (Putting it last in the TABLE would have placed it under the 'Max tier' heading,
+       * which is what was corrected the day before when 'Private events' was moved out of there.)
+       * 🟢 PLACED DIRECTLY ABOVE 'Take payment on your phone', by instruction.
+       *
+       * ⛔ `'coming_soon'` CELLS, NOT TICKS WITH A BADGE. The first attempt gave it `pro: true,
+       * max: true` and a new "Coming soon" badge beside the name; Dominic corrected it, and the
+       * correction is right for three reasons worth keeping:
+       *   • CONSISTENCY — every other unbuilt row in this table says "Coming soon" IN THE CELLS, and a
+       *     row saying it a second way would be the table describing one state in two languages;
+       *   • DRY — `'coming_soon'` is already understood by all four renderers (the landing table,
+       *     Billing, Admin and the plans PDF), so every surface agrees with NO render-site change at
+       *     all. A badge meant four new call sites in three styling idioms for one fact;
+       *   • AND IT AVOIDS A REAL HAZARD — a hard `true` cell on a row with no `ROW_FEATURE_MAP` entry
+       *     is SKIPPED by `findPlanParityViolations()` (the guard `continue`s past an unmapped row
+       *     rather than failing), so ticks here would have been unchecked against `canAccess`. A
+       *     'coming_soon' cell is explicitly exempt from that guard (:231) because it promises nothing.
+       *
+       * ⚠️ TRIAL FOLLOWS MAX WITH NO ENTRY OF ITS OWN: `trialFeatureValue()` returns `row.max` for
+       * every row but two, so the Trial column reads "Coming soon" here as well.
+       * ⚠️ NO FEATURE KEY, NO GATING. This file is presentation (see its header at :229); the real gate
+       * is `canAccess` in lib/features.ts, which this change does not touch. ⛔ THE DAY IT SHIPS it
+       * needs a `Feature` key, a `ROW_FEATURE_MAP` entry AND `true` cells — all three, or the row goes
+       * from honestly unbuilt to an unchecked promise. */
+      { name: 'Social media posts', detail: 'Ready-made posts for your week and each event, made from your schedule in your own design.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Take payment on your phone', footnote: '1', detail: 'Take card payments on a supported phone, so you don\u2019t need a separate card machine.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Advanced reporting', detail: 'Break sales down by date range, item and event to see what’s really selling.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'SMS order alerts', detail: "Text customers automatically when their order's ready. Will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },

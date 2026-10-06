@@ -128,7 +128,9 @@ head('2 · order only — the same rows, the same cells, the same keys')
        * WhatsApp has its own row above the Messenger/Instagram one; with it off there is a single
        * merged row and the Messenger one is hidden by `visibleRows` on the landing. */
       ...(WHATSAPP_LIVE ? ['WhatsApp auto-replies'] : []),
-      'Messenger & Instagram auto-replies', 'Take payment on your phone', 'Advanced reporting',
+      'Messenger & Instagram auto-replies',
+      'Social media posts',             // ← added 6 October 2026, directly above Take payment
+      'Take payment on your phone', 'Advanced reporting',
       'SMS order alerts',
     ]],
     ['Max tier', [
@@ -162,8 +164,47 @@ head('2 · order only — the same rows, the same cells, the same keys')
   t('⚠️ …and both still map to their feature keys',
     /'Private events': 'private_events',/.test(PLAN_FEATURES_SRC)
     && /'Custom event types & pricing': 'event_types',/.test(PLAN_FEATURES_SRC))
+  /* ══ 🔴 'Social media posts' SAYS "COMING SOON" THE WAY EVERY OTHER UNBUILT ROW DOES ═════════════
+   * ⛔ `'coming_soon'` CELLS, NOT `true` CELLS WITH A BADGE. The first attempt at this row ticked Pro
+   * and Max and put a new badge beside the name; it was corrected on the grounds that matter here:
+   *   • one table should not describe one state in two languages, and
+   *   • a hard `true` on a row with no `ROW_FEATURE_MAP` entry is SKIPPED by
+   *     `findPlanParityViolations()` — the guard `continue`s past an unmapped row rather than failing —
+   *     so the ticks would have been checked by nothing.
+   * 🔴 THIS IS THE CHECK THAT WOULD CATCH IT COMING BACK. If somebody "promotes" this row to `true`
+   * without also giving it a feature key, that is an unchecked promise and this fails. */
+  t("🔴 'Social media posts' is Coming soon on Pro and Max, and absent from Starter", (() => {
+    const r = row('Social media posts')
+    return !!r && r.starter === false && r.pro === 'coming_soon' && r.max === 'coming_soon'
+  })())
+  t('⚠️ …so the Trial column says Coming soon too, with no entry of its own', (() => {
+    /* ⚠️ `trialFeatureValue()` RETURNS `row.max` for every row but two, and this is not one of them —
+     * so Trial follows Max here. Asserted by naming the two exceptions rather than trusting the rule. */
+    const src = fs.readFileSync(path.join(REPO, 'lib/landing-table.ts'), 'utf8')
+    return /return row\.max/.test(src)
+      && /row\.name === 'Online ordering — Pay at Hatch'/.test(src)
+      && /row\.name === 'SMS order alerts'/.test(src)
+  })())
+  t('⛔ …and it has no feature key, because it is not built', (() => {
+    /* ⚠️ ASSERTED AS AN ABSENCE ON PURPOSE. A key here would make the row's cells enforceable — and the
+     * cells say "coming soon", which is not something `canAccess` can grant. The day it ships, the key
+     * and the `true` cells arrive together or not at all. */
+    /* ⛔ ANCHORED ON THE DECLARATION, NOT ON THE NAME. `ROW_FEATURE_MAP` is first MENTIONED in a
+     * comment at the top of the file, so slicing from `indexOf('ROW_FEATURE_MAP')` covered almost the
+     * whole file — including the row itself — and the absence test failed on correct code. Fifth time
+     * this project has met a slice whose anchor was not where it looked. */
+    const at = PLAN_FEATURES_SRC.indexOf('const ROW_FEATURE_MAP: Record<string, Feature> = {')
+    const map = at < 0 ? '' : PLAN_FEATURES_SRC.slice(at)
+    return at > 0 && !/'Social media posts'/.test(map)
+  })())
+  /* ⛔ AND NO ROW CARRIES A SECOND, NAME-SIDE "coming soon" TREATMENT. `'coming_soon'` in a cell is the
+   * ONE way this table says it — which is what makes all four renderers agree with no render-site code
+   * at all. A `comingSoon` flag on a row would be a second mechanism to keep in step. */
+  t('⛔ there is exactly ONE coming-soon mechanism — the cell value',
+    !/comingSoon/.test(PLAN_FEATURES_SRC))
+
   /* 🔴 NO ROW WAS LOST OR GAINED, and the count follows the flag for the reason above. */
-  const EXPECTED_ROWS = WHATSAPP_LIVE ? 32 : 31
+  const EXPECTED_ROWS = WHATSAPP_LIVE ? 33 : 32
   t(`🔴 the list is still ${EXPECTED_ROWS} rows, with no duplicate name`,
     flat.length === EXPECTED_ROWS && new Set(names).size === names.length)
 }
@@ -175,6 +216,19 @@ head('3 · one source, and nobody re-sorts it on the way to a screen')
 
 {
   const read = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
+  /* ══ 🔴 ALL FOUR TABLES AGREE BECAUSE NONE OF THEM WAS TOUCHED (DRY) ═════════════════════════════
+   * Adding this row changed ONE file. Every renderer already understood `'coming_soon'`, so the landing
+   * table, Billing, Admin and the PDF all print it without a line of render-site code — which is the
+   * whole argument for using the existing cell value instead of a new badge. ⚠️ ASSERTED AS "each one
+   * can draw a coming-soon cell", so a renderer that quietly stopped handling it would fail here. */
+  t('🔴 every renderer already knows how to draw a `coming_soon` cell', (() => {
+    const landing = /if \(value === 'coming_soon'\) return 'Coming soon'/.test(read('lib/landing-table.ts'))
+    const billing = /val === 'coming_soon' && \(/.test(read('app/manage/[token]/page.tsx'))
+    const admin = /val === 'coming_soon' && <span/.test(read('app/admin/page.tsx'))
+    const pdf = /label === 'Coming soon' \? 'soon'/.test(read('lib/plans-pdf.ts'))
+    return landing && billing && admin && pdf
+  })())
+
   /* 🔴 THE FOUR RENDERERS, BY NAME. ⛔ A fifth that built its own array would be the thing this
    * section exists to catch — "shown on Billing and on the landing page" is only true while both are
    * reading the same export. */
