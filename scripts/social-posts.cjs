@@ -39,10 +39,10 @@ const read = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
 const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 
 const SOCIAL = read('components/manage/SocialPosts.tsx')
+const COPY = read('lib/copy/socialPosts.ts')
 const ROUTE = read('app/api/weekly-post/route.ts')
 const MANAGE = read('app/manage/[token]/page.tsx')
 const LINKS = read('lib/manage-links.ts')
-const COPY = read('lib/copy/socialPosts.ts')
 
 /** The body of one action in the weekly-post route, bounded by the next `if (action === …)`. */
 function actionBody(name) {
@@ -161,8 +161,11 @@ head('3 · every box opens an existing flow — one modal, one drag surface')
       .test(read('components/manage/WeeklyPost.tsx')))
   /* ⛔ "Give own design" AND "Edit" OPEN THE SAME PAGE. A place only counts as "Own design" once a
    * picture is saved, which is the server's `hasPicture`, not a client flag. */
-  t('⛔ "Give own design" and "Edit" open the same page, and the tag follows the SERVER',
-    /\{pl\.hasPicture \? 'Edit' : 'Give own design'\}/.test(SOCIAL)
+  /* ⚠️ "Give own design" BECAME "Design" (6 October 2026). Three words for the commonest state in the
+   * list is what pushed a one-line row onto two in a 200px column. The CLAIM is unchanged: both labels
+   * open the same page, and which one is shown follows the SERVER's `hasPicture`, not a client flag. */
+  t('⛔ "Design" and "Edit" open the same page, and the tag follows the SERVER',
+    /\{pl\.hasPicture \? 'Edit' : 'Design'\}/.test(SOCIAL)
     && /<DesignTag own=\{pl\.hasPicture\} \/>/.test(SOCIAL)
     && /hasPicture: !!path/.test(actionBody('social_overview')))
   /* 🔴 "Name on posts" IS BOUND TO `short_name`, WHICH IS WHAT THE RENDERER PRINTS. */
@@ -228,33 +231,62 @@ head('3b · one readiness predicate, and every reader calls it')
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-// 3c · WHEN A DESIGN IS NOT SET UP
+// 3c · ONE EMPTY STATE, THE SAME IN EVERY BOX THAT CANNOT WORK YET
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-head('3c · a button that cannot work says so instead')
+head('3c · one empty state, identical in all three boxes')
 
 {
-  /* ⛔ THE WEEKLY BUTTON USED TO PROMISE A POST AND OPEN THE SETUP SCREEN. The existing flow DOES
-   * handle a missing design — `WeeklyPostApp` falls back to setup — but it handles it by doing
-   * something other than what the button said, which is the worst kind of handled. */
-  t('🔴 with no weekly design the button reads "Set up weekly design" and goes to Designs',
-    /\{data\.weekly\.ready \? \(/.test(SOCIAL)
-    && /Set up weekly design/.test(SOCIAL)
-    && /onArea\('designs'\); setView\(\{ kind: 'weekly-design' \}\)/.test(SOCIAL))
-  /* ⛔ AND THE EVENT CASE EXPLAINS NOTHING ON ITS OWN. `EventPostModal` asks the server, gets
-   * `hasDesign: false` and calls `onNeedsSetup()` — the modal flashes and the operator lands somewhere
-   * else with no sentence anywhere. One grey line above boxes 2 AND 3, and the buttons go disabled. */
-  t('🔴 with no event design, boxes 2 and 3 carry one grey line with a link',
-    /const eventSetupNote = data && !data\.standard\.ready \? \(/.test(codeOf(SOCIAL))
-    && (codeOf(SOCIAL).match(/\{eventSetupNote\}/g) || []).length === 2
-    && /EVENT_DESIGN_FIRST/.test(SOCIAL) && /EVENT_DESIGN_FIRST_LINK/.test(SOCIAL))
-  t('⚠️ …and every Make post button is DISABLED, not hidden',
-    (codeOf(SOCIAL).match(/disabled=\{!data\.standard\.ready\}/g) || []).length === 2)
-  /* ⚠️ A PRIVATE ROW STILL HAS NO BUTTON AT ALL — disabled is for "not yet", absent is for "never". */
+  /* ══ ⛔ THERE WERE THREE ANSWERS TO ONE SITUATION, AND THAT WAS THE FAULT (6 October 2026) ════════
+   * With no design the weekly box relabelled its orange button to "Set up weekly design", boxes 2 and
+   * 3 showed a grey "Set up your event design first" line and greyed their Make post buttons, and the
+   * lists underneath went on listing events nobody could post.
+   * ⛔ A DISABLED CONTROL IS A PROMISE that it will work under some condition the screen does not name,
+   * and a button that relabels itself from the data is one an operator learns not to trust.
+   * 🔴 ONE PANEL NOW, IDENTICAL IN ALL THREE: what is missing, what to do, one button that does it. */
+  t('⛔ the three old treatments are gone', (() => {
+    const code = codeOf(SOCIAL)
+    /* ⚠️ "Set up weekly design" STILL EXISTS — as the DESIGNS box's button label, which is where it
+     * belongs. What went is the MAKE A POST box relabelling ITSELF to it, so the absence is asserted
+     * over that box alone. A whole-file absence test would have failed on the correct new label. */
+    const makeBox = code.slice(code.indexOf('data-make-boxes'), code.indexOf('data-design-boxes'))
+    return !/EVENT_DESIGN_FIRST/.test(SOCIAL)
+      && !/eventSetupNote/.test(SOCIAL)
+      && !/Set up weekly design/.test(makeBox)
+      /* ⛔ AND NO `disabled` TIED TO READINESS ANYWHERE. The lists are only drawn when the design is
+       * ready, so there is nothing left to disable — which is the point. */
+      && !/disabled=\{!data\.standard\.ready\}/.test(code)
+  })())
+  /* 🔴 ONE COMPONENT, THREE CALL SITES, AND IT IS THE SAME COMPONENT IN ALL THREE. Three copies of a
+   * panel is three panels the moment one is edited. */
+  t('🔴 `EmptyBox` is one component, used in all three boxes',
+    /function EmptyBox\(\{ title, onGo \}/.test(SOCIAL)
+    && (codeOf(SOCIAL).match(/<EmptyBox title=/g) || []).length === 3)
+  t('🔴 …keyed on `designIsReady`\'s answer, per box',
+    /\{gate\(!data\.weekly\.ready \? \(/.test(SOCIAL)
+    && (codeOf(SOCIAL).match(/\{gate\(!data\.standard\.ready \? \(/g) || []).length === 2)
+  t('⚠️ …with the weekly box naming the weekly design and the other two the event design',
+    /<EmptyBox title=\{EMPTY_WEEKLY_TITLE\}/.test(SOCIAL)
+    && (codeOf(SOCIAL).match(/<EmptyBox title=\{EMPTY_EVENT_TITLE\}/g) || []).length === 2)
+  /* ⚠️ THE HEADING AND THE DESCRIPTION STAY. That is what makes an empty box read as "not yet" rather
+   * than "not available": the box still says what it is FOR. */
+  t('⚠️ …and it replaces the box BODY, not the box',
+    /<Box title="Weekly post" blurb=\{WEEKLY_BOX_BLURB\}>\s*\n\s*\{gate\(!data\.weekly\.ready/.test(SOCIAL))
+  t('🔴 …and its button goes to Designs through the one section setter',
+    /const goToDesigns = \(\) => onArea\('designs'\)/.test(codeOf(SOCIAL))
+    && /onGo=\{goToDesigns\}/.test(SOCIAL)
+    && /\{EMPTY_BUTTON\}/.test(SOCIAL))
+  /* ⛔ NO ORANGE IN AN EMPTY BOX. Orange means "make something", and making something is the one thing
+   * an empty box cannot do. ⚠️ ASSERTED ON THE COMPONENT HERE AND ON THE COMPUTED BACKGROUND by the
+   * render harness, which renders a fixture with nothing set up. */
+  t('⛔ the empty panel\'s button is OUTLINED, never primary', (() => {
+    const fn = SOCIAL.slice(SOCIAL.indexOf('function EmptyBox'), SOCIAL.indexOf('function UsedFor'))
+    return /\$\{BTN_OUTLINE\}/.test(fn) && !/BTN_PRIMARY/.test(fn) && !/data-primary/.test(fn)
+  })())
+  /* ⚠️ A PRIVATE ROW STILL HAS NO BUTTON AT ALL — absent is for "never", and that is unchanged. */
   t('⛔ …while a private row still has NO button at all',
     /\{!ev\.isPrivate && \(/.test(SOCIAL))
 }
 
-// ════════════════════════════════════════════════════════════════════════════════════════════════
 // 4 · THE GATE
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 head('4 · a truck without the preview key sees no change at all')
@@ -314,10 +346,24 @@ head('4b · headings, buttons and tiles match the agreed design')
    * (the same button when there is no design) and "Make post for <date>". Everything else — the
    * per-row Make post, all three Edit buttons, "Give own design" — is `BTN_OUTLINE`.
    * ⚠️ THE RENDER HARNESS CHECKS THE COMPUTED BACKGROUND, which is the half this cannot see. */
-  t('🔴 exactly three buttons may be primary, and they are the make/set-up ones',
-    (SOCIAL.match(/data-primary/g) || []).length === 3)
+  /* ⚠️ FOUR NOW, NOT THREE (6 October 2026, Dominic). Designs' two buttons became ORANGE — on that
+   * area, setting a design up IS the thing to do — so the set is: "Make this week's post" (Make a
+   * post), the two design-box buttons (Designs), and "Make post for <date>" (the place editor).
+   * ⛔ AND THE EMPTY PANEL'S BUTTON IS NOT ONE OF THEM, which §3c asserts on the component itself. */
+  t('🔴 exactly four buttons may be primary, and they are named',
+    (SOCIAL.match(/data-primary/g) || []).length === 4)
   t('⛔ …and no other button uses the primary class',
-    (codeOf(SOCIAL).match(/BTN_PRIMARY/g) || []).length === 4)
+    (codeOf(SOCIAL).match(/BTN_PRIMARY/g) || []).length === 5)
+  /* 🔴 ONE PER AREA, AND IT IS THE AREA THAT DECIDES. Make a post has exactly one orange button and
+   * Designs has exactly two — asserted by slicing each area's own markup, so an orange button added to
+   * the wrong area fails here rather than passing a whole-file count. */
+  t('🔴 …one orange on Make a post, two on Designs', (() => {
+    const code = codeOf(SOCIAL)
+    const make = code.slice(code.indexOf('data-make-boxes'), code.indexOf('data-design-boxes'))
+    const designs = code.slice(code.indexOf('data-design-boxes'), code.indexOf('<EventPostModal'))
+    return (make.match(/data-primary/g) || []).length === 1
+      && (designs.match(/data-primary/g) || []).length === 2
+  })())
   t('⛔ …and `Btn` is not imported at all, so its orange default cannot leak in',
     !/import \{[^}]*\bBtn\b[^}]*\} from '@\/components\/manage\/primitives'/.test(SOCIAL))
 
@@ -327,9 +373,21 @@ head('4b · headings, buttons and tiles match the agreed design')
    * the designs. ⚠️ A FIXED HEIGHT AND A DERIVED WIDTH, because three boxes in a row are three widths
    * and a width-driven aspect ratio would give three different heights. */
   t('🔴 the design tile is one component, sized the same with or without a picture',
-    /style=\{\{ height: H, width: Math\.round\(H \* ratio\) \}\}/.test(SOCIAL)
+    /style=\{\{ height, width, maxWidth: '100%' \}\}/.test(SOCIAL)
     && /const ratio = w && h \? w \/ h : 4 \/ 5/.test(SOCIAL)
     && /: 'No design yet'/.test(SOCIAL))
+  /* ══ ⛔ AND ITS WIDTH IS CAPPED — A LANDSCAPE DESIGN BURST OUT OF ITS BOX (6 October 2026) ════════
+   * REPORTED LIVE: the event post design stretched past the edge of its card. With a fixed 220px
+   * height and no cap, a 1920×1080 design is 391px wide and the column it sits in is 200–320px.
+   * ⛔ EVERY DESIGN THE FIXTURES HAD EVER DRAWN WAS PORTRAIT, so no measurement could produce one —
+   * which is why the render harness now renders a landscape tile and checks it against the box.
+   * 🔴 THE HEIGHT IS THE TARGET, NOT THE RULE: 220 unless that would exceed `MAX_W`, in which case the
+   * width caps and the height follows the ratio down. ⚠️ `maxWidth: '100%'` is the belt to that. */
+  t('🔴 …and its width is capped, so a landscape design cannot overflow its box',
+    /const MAX_W = 176/.test(SOCIAL)
+    && /const width = Math\.min\(Math\.round\(H \* ratio\), MAX_W\)/.test(SOCIAL)
+    && /const height = Math\.round\(width \/ ratio\)/.test(SOCIAL)
+    && /maxWidth: '100%'/.test(SOCIAL))
   t('⚠️ …and it is drawn in the DESIGN\'s own shape, which the server now sends',
     /width: weekDesign\?\.width \?\? null/.test(codeOf(ROUTE))
     && /<DesignTile url=\{data\.weekly\.previewUrl\} w=\{data\.weekly\.width\} h=\{data\.weekly\.height\} \/>/.test(SOCIAL))
@@ -340,9 +398,16 @@ head('4b · headings, buttons and tiles match the agreed design')
   t('🔴 the place tile is 28×35 and holds a picture or nothing',
     /className="flex h-\[35px\] w-\[28px\] shrink-0/.test(SOCIAL)
     && /: null\}/.test(SOCIAL.slice(SOCIAL.indexOf('function PlaceTile'), SOCIAL.indexOf('function DesignTag'))))
-  t('⛔ …and the tag is its own element, to the right of the name and before the button',
-    /function DesignTag/.test(SOCIAL)
-    && /<DesignTag own=\{pl\.hasPicture\} \/>\s*\n\s*<button/.test(SOCIAL))
+  t('⛔ …and the tag is its own element, to the right of the name and before the button', (() => {
+    /* ⚠️ `codeOf` FIRST, THEN ORDER. A comment now sits between the tag and the button explaining why
+     * the label is one word, and an adjacency regex on raw source fails on that comment — which is the
+     * prose-breaks-a-code-check class this build has met four times. */
+    const row = codeOf(SOCIAL).slice(codeOf(SOCIAL).indexOf('data-place-design-list'))
+    const tag = row.indexOf('<DesignTag own={pl.hasPicture} />')
+    const btn = row.indexOf('<button type="button"', tag)
+    const name = row.indexOf('{pl.name}')
+    return /function DesignTag/.test(SOCIAL) && name > 0 && tag > name && btn > tag
+  })())
 
   /* 🔴 THE COLOUR BAR IS FULL ROW HEIGHT AND DARK NAVY FOR STANDARD. It was `h-8 w-1` — a stub beside
    * a taller row, which read as a bullet — and grey-300 at 4px is invisible at arm's length. */
@@ -366,6 +431,130 @@ head('4b · headings, buttons and tiles match the agreed design')
     && !/lg:grid-cols-/.test(SOCIAL))
   t('⚠️ …and the Designs row gives the two design boxes a comfortable, shrinkable width',
     /min-\[900px\]:grid-cols-\[minmax\(200px,320px\)_minmax\(200px,320px\)_minmax\(0,1fr\)\]/.test(SOCIAL))
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 4c · THE WORDING, AND WHERE EVERY SENTENCE LIVES
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('4c · the agreed wording, from the one copy module')
+
+{
+  /* 🔴 EVERY SENTENCE ON THIS SCREEN IS IN `lib/copy/socialPosts.ts`, AND THE COMPONENT HAS NONE OF
+   * ITS OWN. A sentence written out twice is two sentences the moment one is edited — which this
+   * product has already shipped once ("the weekly post is on Pro and Max", in a route and a component,
+   * both wrong, one corrected). */
+  const say = (name, text) => t(`⚠️ ${name}`, COPY.includes(text))
+
+  say('the intro names Designs, then Make a post, and the order they go in',
+    "' is where you upload your background pictures, once. '")
+  say('…and Make a post is what puts the words on them',
+    "' puts your dates, places and times on them for you.'")
+  say('Make a post › Weekly post', 'One picture showing everywhere you’ll be this week.')
+  say('Make a post › Single event post', 'One picture for one event: its date, place and times.')
+  say('Make a post › Post for a place', 'Pick a place and post the next event you have there.')
+  say('Designs › Weekly post design', 'Your background picture for the weekly schedule post.')
+  say('…and what we write on it', 'Each week we write your days, places and ')
+  say('Designs › Event post design', 'Your background picture for a single event post.')
+  say('Designs › the two "Used for" lines', "'the weekly post only.'")
+  say('…and the event design names its exception',
+    'every event post, at every place — unless that place has its own design.')
+  say('Designs › Designs for a place', 'Want a different picture at one venue — a pub’s logo, a festival’s poster?')
+  say('…and it says what a place design REPLACES', "' your event post design.'")
+  say('the empty state names the weekly design', 'You haven’t designed a weekly post yet')
+  say('…and the event design', 'You haven’t designed an event post yet')
+  say('…and says the job is small', 'Upload your picture in Designs first. It only takes a minute.')
+  say('…with one button out', "export const EMPTY_BUTTON = 'Go to Designs'")
+
+  /* ⛔ CURLY APOSTROPHES, AS THE REST OF THE FILE USES. A straight one in a sentence beside twelve
+   * curly ones is the kind of thing nobody sees until it is printed on a poster. */
+  t('⛔ no straight apostrophe in any exported string', (() => {
+    const strings = [...COPY.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map(m => m[1])
+    /* ⚠️ THE SOURCE'S OWN QUOTES ARE THE DELIMITERS, so a straight apostrophe INSIDE a string would
+     * have had to be escaped — `\'` — and that is what this looks for. */
+    return !strings.some(x => /\\'/.test(x))
+  })())
+
+  /* 🔴 AND THE COMPONENT QUOTES NONE OF THEM. Asserted as an absence of the sentences themselves. */
+  t('🔴 …and not one of those sentences is written out in the component', (() => {
+    const code = codeOf(SOCIAL)
+    return ['One picture showing everywhere', 'Your background picture for', 'It only takes a minute',
+      'Want a different picture at one venue', 'the weekly post only']
+      .every(x => !code.includes(x))
+  })())
+
+  /* 🔴 THE TWO SENTENCES WITH BOLD IN THEM ARE SPLIT, NOT MARKED UP. A string with `**` in it would
+   * need either a parser or a second copy in the JSX; the parts are exported and the component bolds
+   * the middle one. ⚠️ AND THE FLATTENED WHOLE IS EXPORTED TOO, so nothing has to re-join them. */
+  t('🔴 the two bold sentences are parts plus a flattened whole',
+    /export const PAGE_INTRO =\n\s*`\$\{INTRO_DESIGNS_WORD\}\$\{INTRO_AFTER_DESIGNS\}\$\{INTRO_MAKE_WORD\}\$\{INTRO_AFTER_MAKE\}`/.test(COPY)
+    && /export const PLACE_DESIGN_BLURB =\n\s*`\$\{PLACE_DESIGN_BLURB_BEFORE\}\$\{PLACE_DESIGN_BLURB_BOLD\}\$\{PLACE_DESIGN_BLURB_AFTER\}`/.test(COPY))
+  t('⚠️ …and the component bolds exactly the two words that are the area names',
+    /<span className="font-bold text-slate-700">\{INTRO_DESIGNS_WORD\}<\/span>/.test(SOCIAL)
+    && /<span className="font-bold text-slate-700">\{INTRO_MAKE_WORD\}<\/span>/.test(SOCIAL)
+    && /<span className="font-bold text-slate-700">\{PLACE_DESIGN_BLURB_BOLD\}<\/span>/.test(SOCIAL))
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 4d · THE DESIGNS BOXES AND THE PLACE ROWS
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+head('4d · centred tiles, "Used for", and one-line place rows')
+
+{
+  /* 🔴 THE TILE AND ITS BADGE SHARE ONE CENTRING WRAPPER. ⛔ `mx-auto` ON THE TILE ALONE would leave
+   * the badge against the left edge the moment the tile is portrait — which it always is. */
+  t('🔴 the picture and its badge are centred together, in both design boxes',
+    (codeOf(SOCIAL).match(/<div className="flex flex-col items-center">\s*\n\s*<DesignTile/g) || []).length === 2)
+  t('⚠️ …at a fixed 220px height, so two differently-shaped designs still line up',
+    /const H = 220/.test(SOCIAL))
+  /* 🔴 "Used for:" IS ONE COMPONENT, so the two panels cannot drift to "Used on:" and "Used for:". */
+  t('🔴 both design boxes carry a "Used for" panel, from one component',
+    /function UsedFor\(\{ text \}/.test(SOCIAL)
+    && /<UsedFor text=\{WEEKLY_DESIGN_USED_FOR\} \/>/.test(SOCIAL)
+    && /<UsedFor text=\{EVENT_DESIGN_USED_FOR\} \/>/.test(SOCIAL)
+    && /\{USED_FOR_LABEL\}/.test(SOCIAL))
+  /* 🔴 THE BUTTON SAYS WHICH JOB IT IS, from `designIsReady`'s answer — Edit an existing design, or
+   * Set up one that does not exist. ⚠️ Both open the SAME screen; only the word changes. */
+  t('🔴 the design buttons say Edit or Set up, from the readiness answer',
+    /\{data\.weekly\.ready \? 'Edit weekly design' : 'Set up weekly design'\}/.test(SOCIAL)
+    && /\{data\.standard\.ready \? 'Edit event design' : 'Set up event design'\}/.test(SOCIAL))
+
+  /* ══ 🔴 A PLACE ROW IS ONE LINE AT EVERY WIDTH ══════════════════════════════════════════════════
+   * ⛔ `flex-wrap` IS GONE FROM IT. In a list — where every row is the same shape — one row silently
+   * becoming two is what makes the list hard to scan.
+   * 🔴 THE NAME IS THE ONLY THING THAT GIVES WAY: `min-w-0` + `truncate` on the text block, `shrink-0`
+   * on the tile, the tag and the button. ⚠️ `min-w-0` IS REQUIRED — a flex child's default
+   * `min-width: auto` refuses to shrink below its content, which is exactly how a "truncating" name
+   * pushes a button out of its box instead. */
+  t('🔴 a place row cannot wrap, and the name is what truncates', (() => {
+    const list = SOCIAL.slice(SOCIAL.indexOf('data-place-design-list'))
+    const row = list.slice(list.indexOf('{designList.map'), list.indexOf('</ul>'))
+    return /<li key=\{pl\.id\} className="flex items-center gap-2 py-2">/.test(row)
+      && !/flex-wrap/.test(row)
+      && /<span className="min-w-0 flex-1">/.test(row)
+      && /truncate text-sm font-bold text-slate-900">\{pl\.name\}/.test(row)
+  })())
+  t('⛔ …and the tile, the tag and the button all `shrink-0`', (() => {
+    const tile = SOCIAL.slice(SOCIAL.indexOf('function PlaceTile'), SOCIAL.indexOf('function DesignTag'))
+    const tag = SOCIAL.slice(SOCIAL.indexOf('function DesignTag'), SOCIAL.indexOf('function ReadyBadge'))
+    /* ⚠️ ONE TAG NOW, NOT TWO — see the "Standard" tag's removal below. */
+    return /shrink-0/.test(tile) && (tag.match(/shrink-0/g) || []).length === 1
+      && /const BTN_OUTLINE =\n\s*'inline-flex shrink-0/.test(SOCIAL)
+  })())
+  /* ══ ⛔ THE "Standard" TAG IS GONE (6 October 2026, Dominic) ═══════════════════════════════════════
+   * REPORTED AS "remove the event type from Designs for a place", and that is how it read: **Standard
+   * is the name of an EVENT TYPE** in this product — the first pill on the Event types grid and on
+   * every Add event form — so a grey "Standard" on a place row looked like that type attached to the
+   * place. ⛔ AND IT CARRIED NOTHING: every untagged place is on the event design, so a tag on all of
+   * them says only "this row is a row". The exception is what is worth marking.
+   * ⚠️ THE DEFAULT IS STILL VISIBLE TWICE OVER — a blank tile, and a button reading "Design". */
+  t('⛔ only a place with its OWN design is tagged',
+    /if \(!own\) return null/.test(SOCIAL)
+    && /<span data-design-tag className="shrink-0 rounded-full bg-orange-50[^"]*">Own design<\/span>/.test(SOCIAL)
+    && !/>Standard<\/span>/.test(SOCIAL))
+  /* ⚠️ "its own" / "their own" — ONE PLACE IS NOT "THEY"; and the second half names the design the way
+   * Box 2 names it, so the footer and the box above it agree. */
+  t('⚠️ the footer is singular for one place and names the event post design',
+    /\{withOwn\} with \{withOwn === 1 \? 'its' : 'their'\} own design · \{places\.length - withOwn\} using your event post design/.test(SOCIAL))
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════

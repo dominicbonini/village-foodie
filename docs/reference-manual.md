@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V14.4
+HatchGrab Engineering Reference Manual · V14.5
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 14.4**
+**Version 14.5**
 
 October 2026
 
@@ -25,6 +25,67 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V14.5 — 6 October 2026 — ONE EMPTY STATE, THE DESIGNS BOXES, AND WORDING THAT SAYS WHAT EACH PICTURE IS FOR. STILL NOT DEPLOYED.
+
+**Status — read this first.**
+- 🔴 **ON `main`, LOCAL, NOTHING PUSHED.** `schedule-graphics` is fast-forwarded to match.
+- 🔴 **NO SQL. No saved design or place data touched.** Everything stays behind `places_posts_preview`.
+- ⚠️ It amends **§64.14**. `docs/social-posts-polish-report.md` is the full account.
+- ✅ **CONFIRMED BY DOMINIC: Pizza Kitchen has no rows in `truck_post_designs`** — "Not set up" was
+  true, and `designIsReady()` (§64.13) is the only test of "set up" anywhere on this screen.
+
+### What changed
+
+| | |
+|---|---|
+| ⛔ **Three answers to one situation became ONE** | with no design the weekly box relabelled its orange button, boxes 2 and 3 greyed theirs under a note, and the lists went on listing events nobody could post. **One panel now, identical in all three**: what is missing, what to do, and "Go to Designs" |
+| ⛔ **No disabled Make post buttons anywhere** | a disabled control is a promise it will work under some condition the screen does not name |
+| 🔴 **The Designs boxes: centred picture, badge under it, "Used for" panel, orange button pinned to the bottom** | and the two boxes are equal height whatever their state |
+| 🔴 **Orange moved to Designs** | on that area, setting a design up IS the thing to do. Four primaries in all: one on Make a post, two on Designs, one in the place editor |
+| ⛔ **A landscape design burst out of its box** | **reported live.** 220px tall with no cap makes a 1920×1080 design **391px wide** in a 200–320px column. The width caps at 176 and the height follows the ratio down |
+| ⛔ **The "Standard" tag is gone from place rows** | **reported as "remove the event type"** — and that is how it read: Standard is the name of an **event type** in this product. Only the exception ("Own design") is tagged now |
+| 🔴 **A place row is ONE line at every width from 390 up** | `flex-wrap` removed; `min-w-0` + `truncate` make the NAME the only thing that gives way |
+| 🔴 **"Design" replaces "Give own design"** | three words for the commonest state in a list was what pushed a one-line row onto two |
+| 🔴 **Every sentence rewritten to say what the picture is FOR** | the intro names the two areas and the order they go in; the two design boxes carry "Used for:" lines; "instead of" is bold because the whole sentence turns on it |
+
+### The failure classes — one in the product, four in the measurements
+
+1. ⛔ **EVERY FIXTURE HAD DRAWN A PORTRAIT DESIGN.** The landscape overflow was a shape no measurement
+   could produce, so it was found by Dominic looking at the real screen. **A fixture that only ever
+   renders the shape you expect is a fixture that can only confirm you.** A 1920×1080 tile is rendered
+   at every width now, in both design boxes, against the box's own edges.
+2. ⚠️ **THE FIXTURE BLAMED THE WRONG DESIGN.** It used one empty-state title for all three boxes, so
+   the weekly box read "You haven't designed an **event** post yet". The component was always right;
+   the screenshot is what showed it. Both titles are lifted now and the harness asserts box 1 differs.
+3. ⚠️ **AN EQUAL-HEIGHT CLAIM IS A CLAIM ABOUT A ROW.** Asserted at 390 too, where the boxes stack and
+   each is as tall as its own content, it failed on correct markup.
+4. ⚠️ **`divide-y` PUTS A BORDER ON EVERY ROW BUT THE LAST**, so "every row the same height" failed by
+   1px at six widths. Within 1px now; a wrapped row is twice the height, nowhere near the tolerance.
+5. ⚠️ **AN ABSENCE TEST OVER A WHOLE FILE CATCHES THE CORRECT NEW USE TOO.** "Set up weekly design is
+   gone" failed once the DESIGNS box legitimately used that exact label; it is scoped to the Make a
+   post markup now.
+
+### What was run
+
+`tsc --noEmit` clean · `npx next build` ✓ compiled · **ESLint identical to baseline — 1,304 errors and
+340 warnings both ways** · named harnesses green (`social-posts` **87**, `places-tab` **95**,
+`places-posts-gating` **44**, `weekly-post` **207**, `schedule-graphics-places` **258**,
+`private-events` **206**, `event-types` **185**) · **full sweep 94 run · 94 passed** ·
+**`social-posts-render.cjs` 752 assertions per engine**, at seven widths, in **both** states, in
+Chromium AND WebKit.
+
+✅ **AND CHROMIUM TOOK ITS SCREENSHOTS THIS TIME** — zero skipped, where the last two builds skipped
+every one. The fault is intermittent on this machine, not fixed.
+
+### Open items
+
+| Item | State |
+|---|---|
+| **Deploy** | **not done — Dominic deploys by hand** |
+| From V14.4 | `public.place_pictures` unread in the database; Chromium's intermittent screenshot timeout |
+
+---
 
 ## V14.4 — 6 October 2026 — SOCIAL POSTS MATCHES THE AGREED LAYOUT: SIDE BY SIDE FROM 900px, AND ONE READINESS PREDICATE. STILL NOT DEPLOYED.
 
@@ -27961,11 +28022,34 @@ nobody has checked.** Seven widths now: **1000, 1100, 1280, 1440, 1728** above i
 | **Orange** | means "make something" **and nothing else**. Exactly three buttons may carry `data-primary`: "Make this week's post", "Set up weekly design" (the same button with no design), and "Make post for `<date>`". Everything else is `BTN_OUTLINE`. ⚠️ Counted on the **computed background** over every button on the screen — a class-name count cannot see a colour arriving from elsewhere |
 | **The segmented control** | a light grey track with the selected option as a **white segment with a soft shadow**. It was orange-on-pale-orange, which is the primary colour — and a view switch is not an action |
 | **Design previews** | a **fixed-height tile with a derived width**, in the design's own shape (`width`/`height` from the row). ⛔ Not `aspect-ratio` on a full-width box: three boxes in a row are three widths, so a width-driven ratio gives three different heights. With no picture the **same-sized** tile shows "No design yet" centred — it used to collapse to a thin bar |
-| **Place tiles** | 28×35 portrait; a thumbnail, or a plain grey tile with **no text**. It said "Standard" in 9px inside a 40px box — unreadable, and the tag beside it says the same word legibly |
-| **The design tag** | "Own design" (pale orange) / "Standard" (pale grey), to the right of the name and **before** the button. It used to be a coloured word inside the sub-line, where a row with no town read "Own design" as the address |
+| **Place tiles** | 28×35 portrait; a thumbnail, or a plain grey tile with **no text** |
+| **The design tag** | ⛔ **V14.5: "Own design" ONLY.** The grey "Standard" tag is gone — **Standard is the name of an event type** in this product (the first pill on the Event types grid and on every Add event form), so a grey "Standard" on a place row read as that type attached to the place. It also carried nothing: every untagged place is on the event design, so a tag on all of them says only "this row is a row". The default is still visible twice over — a blank tile, and a button reading "Design" |
+| **Place rows** | ⛔ **V14.5: ONE LINE at every width from 390 up.** `flex-wrap` removed; `min-w-0` + `truncate` on the text block and `shrink-0` on the tile, tag and button make the NAME the only thing that gives way. In a list, where every row is the same shape, one row silently becoming two is what makes it hard to scan |
+| **The two design boxes** | ⛔ **V14.5:** centred picture with the badge under it (one `items-center` wrapper — `mx-auto` on the tile alone leaves the badge adrift), a **"Used for:"** panel, and a full-width **orange** button pinned to the bottom reading Edit or Set up. Equal height in every state |
+| **The design tile's width** | ⛔ **V14.5, REPORTED LIVE:** capped at 176px. At a fixed 220px height with no cap, a 1920×1080 design is **391px wide** in a 200–320px column and burst out of the card. The height is the target, not the rule: 220 unless that exceeds the cap, in which case the width caps and the height follows the ratio down. **Every fixture had drawn a portrait design**, so no measurement could produce the shape that fails |
 | **The colour bar** | **4px, full row height**, orange for a place's own design and **dark navy** for Standard. It was `h-8 w-1` — a stub beside a taller row, reading as a bullet — in grey-300, which is invisible at 4px at arm's length |
 | **Times** | `formatTimeRange`, the product's one formatter. This file had its own (`17:00–20:00`, no spaces); that formatter's own note says to use it everywhere "so no surface re-introduces seconds" |
 
+### ⛔ When a design is not set up — ONE empty state (V14.5, 6 October 2026)
+
+> 🔴 **THIS REPLACES THE THREE TREATMENTS DESCRIBED BELOW.** Everything in the next sub-section is
+> history: the relabelled weekly button, the grey "Set up your event design first" line, and the
+> disabled Make post buttons were three answers to one situation, and that was the fault.
+
+| | |
+|---|---|
+| **When** | the weekly box when the weekly design is not ready; boxes 2 and 3 when the Standard event design is not ready. `designIsReady()` is the only test (§64.13) |
+| **What** | the box keeps its heading and description; the BODY becomes a centred dashed panel — a bold line naming the design that is missing, a grey line ("Upload your picture in Designs first. It only takes a minute."), and an **outlined** "Go to Designs" |
+| ⛔ **No orange in an empty box** | orange means "make something", and making something is the one thing an empty box cannot do |
+| ⛔ **No disabled buttons, anywhere** | a disabled control is a promise that it will work under some condition the screen does not name. The lists are not drawn at all |
+| ⚠️ **The heading and description stay** | which is what makes it read as "not yet" rather than "not available" |
+| ⚠️ **It fills the box** | so three empty boxes are still three equal boxes, and an empty one does not read as a broken one |
+
+🔴 **"Go to Designs" SWITCHES THE AREA AND NOTHING MORE.** It does not open a particular editor — the
+operator may need the weekly one or the event one, and Designs is where both are. It goes through
+`onSectionChange`, so the URL becomes `?section=designs` and a reload stays put.
+
+### ⛔ The three treatments it replaced (history)
 ### When a design is not set up
 
 ⛔ **THE EXISTING FLOWS DO NOT EXPLAIN IT.**
