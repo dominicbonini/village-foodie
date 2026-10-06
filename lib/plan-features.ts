@@ -381,7 +381,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * is `canAccess` in lib/features.ts, which this change does not touch. ⛔ THE DAY IT SHIPS it
        * needs a `Feature` key, a `ROW_FEATURE_MAP` entry AND `true` cells — all three, or the row goes
        * from honestly unbuilt to an unchecked promise. */
-      { name: 'Social media posts', detail: 'Ready-made posts for your week and each event, made from your schedule in your own design.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { name: 'Social media posts', detail: 'Upload your designs — we add your dates, places and times for each week and event automatically.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Take payment on your phone', footnote: '1', detail: 'Take card payments on a supported phone, so you don\u2019t need a separate card machine.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Advanced reporting', detail: 'Break sales down by date range, item and event to see what’s really selling.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'SMS order alerts', detail: "Text customers automatically when their order's ready. Will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },

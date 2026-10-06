@@ -13,9 +13,15 @@ One row, in the one shared list — `lib/plan-features.ts`, `FEATURE_SECTIONS`:
 
 ```ts
 { name: 'Social media posts',
-  detail: 'Ready-made posts for your week and each event, made from your schedule in your own design.',
+  detail: 'Upload your designs — we add your dates, places and times for each week and event automatically.',
   starter: false, pro: 'coming_soon', max: 'coming_soon' },
 ```
+
+⚠️ **The description was reworded on 6 October**, after the row landed, to
+*"Upload your designs — we add your dates, places and times for each week and event automatically."*
+It says what the operator does and what we do, in that order, which the first wording did not.
+⚠️ **One character was added to your text: the full stop.** All 32 details in this list end with one,
+and a single row without would be visible. Say if you want it bare.
 
 | | |
 |---|---|
@@ -138,7 +144,7 @@ PID), `curl -H "Host: hatchgrab.com"`, and the row read out of the returned HTML
 <div class="cmp2-row">
   <div class="cmp2-label">
     <span class="f-name">Social media posts</span>
-    <span class="f-desc">Ready-made posts for your week and each event, made from your schedule in your own design.</span>
+    <span class="f-desc">Upload your designs — we add your dates, places and times for each week and event automatically.</span>
   </div>
   <div class="cmp2-cell"><span class="soon">Coming soon</span></div>   <!-- Trial   -->
   <div class="cmp2-cell"><span class="no">—</span></div>               <!-- Starter -->
