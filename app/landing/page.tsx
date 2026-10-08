@@ -26,21 +26,30 @@ import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/Demo
 import { LandingNav } from '@/components/landing/LandingNav'
 import { HeroCtaWatcher } from '@/components/landing/HeroCtaWatcher'   // client: drives the header CTA's mobile reveal
 import { LandingFooter } from '@/components/landing/LandingFooter'
+// ══ 🔴 THIS IMPORT IS SMALLER THAN IT WAS, AND IT MUST NOT BECOME EMPTY (6 October 2026) ══════════
+// FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS and `type FeatureValue` went to
+// components/landing/FeatureComparison.tsx with the comparison table, and the whole
+// `@/lib/landing-table` import went with them — this page no longer renders a table row.
+// ⛔ WHAT IS LEFT IS STILL LOAD-BEARING BEYOND THE FOUR NAMES. `lib/plan-features.ts` runs
+// `findPlanParityViolations()` at module load, so importing it is what fires the presentation↔gate
+// guard on this route. The four below are all genuinely used by the pricing cards — but if a later
+// change removes the last of them, THE GUARD STOPS RUNNING HERE AND NOTHING WILL SAY SO.
 import {
-  FEATURE_SECTIONS, PLAN_PRICES, PLAN_DESCRIPTIONS, PLAN_ALLOWANCES, FOOTNOTES,
-  CARD_FEE_ONLINE_LABEL, TRANSACTION_ROWS,
-  type FeatureValue,
+  PLAN_PRICES, PLAN_DESCRIPTIONS, PLAN_ALLOWANCES, CARD_FEE_ONLINE_LABEL,
 } from '@/lib/plan-features'
 import { PLAN_META } from '@/lib/features'
-// 🔴 THE TABLE'S RENDER RULES NOW LIVE IN ONE PLACE — lib/landing-table.ts. They were private
-// constants in this file until the printable/PDF view was added; a second copy there would have drifted
-// the first time a row changed. Nothing about what this page renders changed in the move.
-import {
-  TABLE_PLANS, type TablePlan, PLAN_SUB, PLAN_PRICE_LABEL, trialFeatureValue,
-  DETAIL_OVERRIDES, visibleRows, rowName, rowDetail, cellLabel,
-} from '@/lib/landing-table'
 // 🔴 THE SINGLE WHATSAPP SWITCH — one value governs every surface. See lib/whatsapp-live.ts.
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+// ══ 🔴 THE ONLY ICON LIBRARY IN THIS REPOSITORY, ADDED 6 October 2026 ════════════════════════════
+// There was none before — checked across package.json and every import in app/, components/ and lib/.
+// ⛔ SIX NAMED IMPORTS, NOT `import * as icons`. lucide-react ships ~1,500 components; a namespace
+// import or a dynamic `icons[name]` lookup defeats tree-shaking and pulls the lot into the landing
+// bundle. Each one here is referenced exactly once, by `TileIcon` below.
+// ⚠️ `Image` IS DELIBERATELY ALIASED. `next/image` is already imported into this file under that name,
+// and the two would collide silently in a way TypeScript reports at the wrong place.
+import {
+  Clock, Gauge, MonitorSmartphone, Image as ImageIcon, MessageCircle, WifiOff,
+} from 'lucide-react'
 import './landing.css'
 
 // Self-hosted, non-render-blocking (no Google Fonts <link>). Exposed as CSS vars the stylesheet maps
@@ -137,20 +146,10 @@ export const metadata: Metadata = {
 // reads the same constant instead of a two-row one with no trial column.
 // Footnotes still reuse the shared FOOTNOTES: 1 = walk-up terminal fees, 2 = Stripe/online-payment fees.
 
-// RENDER-ONLY footnote text overrides for the landing table. The shared FOOTNOTES (lib/plan-features.ts) are
-// NOT modified — Billing/Admin keep the original wording; only the landing table shows this text.
-const FOOTNOTE_TEXT_OVERRIDES: Record<string, string> = {
-  '2': `Standard card processing fees apply to all online orders (currently ${CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance.`,
-}
-
-// One shared cell renderer. 🔴 THE GLYPHS THEMSELVES ARE IN lib/landing-table.ts so the PDF prints
-// exactly what the page prints — including the protected em-dash '—' for a not-included cell.
-function Cell({ value }: { value: FeatureValue }) {
-  const label = cellLabel(value)
-  if (label === '✓') return <span className="yes">{label}</span>
-  if (label === 'Coming soon') return <span className="soon">{label}</span>
-  return <span className="no">{label}</span>
-}
+// ⛔ `FOOTNOTE_TEXT_OVERRIDES` AND `Cell` MOVED WITH THE TABLE — both are in
+// components/landing/FeatureComparison.tsx now. Each had exactly one reader, which was the comparison
+// table; leaving either behind would have left this page holding a renderer for markup it no longer
+// has, and lint would have called them unused rather than wrong.
 
 const Check = () => (
   <span className="tick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5 L4.6 9 L10 3" /></svg></span>
@@ -163,6 +162,29 @@ function PlanPrice({ plan }: { plan: 'starter' | 'pro' | 'max' }) {
   const perTruck = raw.endsWith('/mo')
   const amount = perTruck ? raw.slice(0, -3) : raw
   return <div className="plan-price">{amount}{perTruck && <span>per truck / month</span>}</div>
+}
+
+/**
+ * One tile icon: a lucide glyph, orange, on the heading's own line.
+ *
+ * ══ ⛔ THE PALE TINTED SQUARE IS GONE — 6 October 2026, SAME DAY IT WAS ADDED ══════════════════════
+ * It was a 2.6rem rounded box in `--orange-wash` ABOVE the heading. Dominic asked for the box removed
+ * entirely and the glyph moved onto the heading line, in the brand orange. Both the box and its CSS
+ * are deleted rather than overridden.
+ *
+ * 🔴 ONE COMPONENT SO ALL SIX ARE ONE SET. Size, colour and alignment are decided once — here and in
+ * `.does-ico` — because six separate inline wrappers is how a set drifts: one gets a different size,
+ * another a different colour, and nothing fails.
+ * ⛔ IT RENDERS INSIDE THE `<h3>`, AS THE FIRST OF TWO FLEX CHILDREN, and the heading's text is wrapped
+ * in the second. That is what puts a wrapped second line under the TEXT rather than under the icon —
+ * an inline icon with the text loose in the h3 would indent every line to the icon's left edge.
+ * ⚠️ `aria-hidden` ON THE WRAPPER. They are decorative: every tile states its point in the heading the
+ * icon sits next to, so announcing "clock" interrupts that heading to add nothing.
+ * ⚠️ NO `size` OR `color` PROP ON THE GLYPH — both are CSS, so the six cannot drift apart. lucide's
+ * default `stroke="currentColor"` is what lets `.does-ico` set the orange in one place.
+ */
+function TileIcon({ icon: Icon }: { icon: typeof Clock }) {
+  return <span className="does-ico" aria-hidden="true"><Icon /></span>
 }
 
 export default function LandingPage() {
@@ -235,10 +257,16 @@ export default function LandingPage() {
                   it. HeroCtaWatcher below watches this exact button to decide when the HEADER CTA
                   appears on mobile. */}
               <DemoCta id="hero-cta" className="btn btn-primary btn-lg">Upload my menu →</DemoCta>
-              <div className="hero-cta-text">
-                <b>Upload a photo of your menu. See it working in under 60 seconds.</b>
-                <span>No signup, no account — just a working demo with your truck’s food in it.</span>
-              </div>
+              {/* ══ 🔴 BESIDE THE BUTTON, IN TWO LINES — 7 October 2026 ════════════════════════════
+                  It replaced `.hero-cta-text` (a bold 1.12rem line plus a grey one) and sat UNDER the
+                  button for a day; it is to its RIGHT now, which is where the block it replaced was.
+                  ⚠️ IT IS BACK INSIDE `.hero-cta-row`, AND THAT IS THE WHOLE MECHANISM. That row is
+                  `flex-direction: row` from 940px and `column` below it — so one element gives "right
+                  of the button" on a laptop and "under the button" on a phone with no second rule and
+                  no duplicate markup.
+                  🔴 THE BREAK IS THE COPY, NOT A WRAP. Two deliberate lines, as specified; `<br />`
+                  rather than two blocks so the pair stays one paragraph to a screen reader. */}
+              <p className="hero-cta-note">No signup, no card.<br />See it working in under 60 seconds.</p>
             </div>
             {/* Renders nothing. Mounts the IntersectionObserver that reveals the header CTA on mobile. */}
             <HeroCtaWatcher targetId="hero-cta" />
@@ -251,11 +279,22 @@ export default function LandingPage() {
               space — giving it the 2x numbers would reserve a box twice the size and shift the layout.
               ⚠️ The CSS `aspect-ratio` on each .shot-* is what really sizes the frame; these attributes
               must AGREE with it or next/image and the CSS will disagree about the shape.
-              🔴 `priority` ON ALL THREE: this fan is the hero, above the fold on every viewport. Without
-              it next/image lazy-loads and the frames paint empty on first view — the exact failure the
-              placeholder never had. `sizes` matches the CSS caps so the generated srcset is not oversized.
-              ⚠️ alt TEXT IS DESCRIPTIVE, NOT DECORATIVE. These carry the product claim the hero makes, so
-              they are not alt="" — unlike the Gusto logo below, which sits beside its own attribution. */}
+              🔴 `priority` IS ON THE DASHBOARD ALONE — it is the largest, front-most image and the LCP
+              candidate. The phone is `loading="eager"` without it (see below). `sizes` matches the CSS
+              caps so the generated srcset is not oversized.
+              ══ ⚠️ THE `sizes` CAPS HAVE MOVED FIVE TIMES IN ONE DAY, AND THEY ARE NOT SELF-CHECKING ══
+              320/400/140 → 430/375/172 → 320/408/182 → 252/420/86 → 332/332/96 → **432/124 for two
+              screens**. They mirror the `--fan-*` constants in landing.css. ⛔ NOTHING LINKS THEM, and
+              the failure is silent in both directions: a `sizes` too small is a blurry hero, one too
+              large is bytes nobody sees. **Change a constant there, change the attribute here.** */}
+          {/* ══ ⛔ RESTORED TO THE LIVE FAN — 7 October 2026 ════════════════════════════════════════
+              The two-screen hero is rejected, and so were the four arrangements before it. The markup
+              below is **what is live on www.hatchgrab.com**, restored from git HEAD.
+              🔴 CONFIRMED AGAINST THE SERVED PAGE, NOT ASSUMED: live carries `class="shot shot-kds"`,
+              `shot-dash` and `shot-phone`, the three `sizes` values below byte-for-byte, and `priority`
+              on all three. ⛔ THE `.fan-group` WRAPPER IS GONE with the shared tilt it existed for —
+              each screen carries its own `rotate()` again, in landing.css.
+              ⚠️ `kitchen.png` IS BACK IN THE HERO and is no longer an unreferenced asset. */}
           <div className="fan">
             <div className="shot shot-kds">
               <Image src="/screenshots/kitchen.png" alt="The HatchGrab kitchen screen, showing order tickets in cook order" width={320} height={240} sizes="(max-width: 939px) 58vw, 320px" priority />
@@ -296,10 +335,34 @@ export default function LandingPage() {
           <h2>Built for food trucks, not restaurants.</h2>
           <p className="lede">Most ordering systems assume a fixed address, reliable wifi and the same hours every week. You’re somewhere new every week, at different times, on patchy or no mobile coverage. HatchGrab was built for that.</p>
           <div className="does">
-            <div className="does-item"><h3>Kill the queue</h3><p>Customers order ahead and pick a collection time. No shouting over the fryer.</p></div>
-            <div className="does-item"><h3>Never promise a time you can’t hit</h3><p>Set your kitchen’s capacity. That’s how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
-            <div className="does-item"><h3>Works on any device</h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
-            <div className="does-item"><h3>Never type your schedule twice</h3><p>We read your schedule straight from your website. Or send us the photo you already post to Facebook. You just review and confirm.</p></div>
+            {/* ⚠️ BOTH HEADINGS NAME THE **FEATURE**, NOT THE FEELING (10 October 2026, Dominic).
+                "Kill the queue" and "Never promise a time you can't hit" were a slogan and a warning —
+                a truck owner scanning the page could not tell from either which control they were being
+                sold. The two sentences underneath are unchanged, because they were already the plain
+                version of the same two facts. */}
+            <div className="does-item"><h3><TileIcon icon={Clock} /><span>Customers choose collection times</span></h3><p>Customers order ahead and pick a collection time. No shouting over the fryer.</p></div>
+            <div className="does-item"><h3><TileIcon icon={Gauge} /><span>Set your kitchen capacity</span></h3><p>Set your kitchen’s capacity. That’s how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
+            <div className="does-item"><h3><TileIcon icon={MonitorSmartphone} /><span>Works on any device</span></h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
+            {/* ══ 🔴 REPLACED "Never type your schedule twice" — 6 October 2026, ON REQUEST ═══════════
+                Same position in the grid, same `does-item` markup and styling as the other five, which
+                are untouched. The schedule-import claim it carried is still made on this page, in the
+                "Getting going" steps ("Got it on your website? We'll read it from there").
+                ══ ⚠️ THE COPY WAS SETTLED IN FIVE STEPS — THIS IS THE LAST (7 October 2026) ═════════
+                The original brief offered two bodies and made the choice a question about the CODE:
+                version A (which said "and write the caption") only if Social posts actually generates
+                one. 🟢 IT DOES — `weekCaption()` (lib/weekly-post/caption.ts:134) builds the week's
+                caption and `eventPostText()` (:89) the per-event text, the route serves both through
+                its `captions` action, and WeeklyPost.tsx renders the result in an editable "Caption for
+                your page" panel. A was the honest choice of the two and shipped first.
+                ⛔ EVERY LINE SINCE HAS BEEN DOMINIC'S OWN, and none of them makes a caption claim — so
+                the A/B question is moot and this tile now UNDER-claims rather than over-claims. **The
+                caption generator is real and this copy does not sell it.** That is a choice, not a gap,
+                and it is written here so nobody "corrects" the tile back to version A later.
+                ⚠️ "postS" AND "done for you": the feature makes a post for a single event as well as
+                for the week, so the singular and the narrower "weekly post" were both wrong — and the
+                body now says so outright ("every week or every day"), which is why the heading no
+                longer has to carry it. */}
+            <div className="does-item"><h3><TileIcon icon={ImageIcon} /><span>Automate your Facebook &amp; Instagram posts</span></h3><p>Upload the design you already post on Facebook or Instagram. We’ll fill in your dates, places and times, ready to share — every week or every day.</p></div>
             {/* ── MOVED TO 5th IN THE GRID, 4 September 2026, ON THE OPERATOR'S INSTRUCTION — it sat 3rd
                 for part of the same day, also on their instruction. Position here is an editorial call,
                 not a structural one: nothing reads the tile order, so it is theirs to set. Below "Never
@@ -342,13 +405,13 @@ export default function LandingPage() {
                 after "No signal? Keep serving." — which is where it sat in production at 08ac368, and
                 where a not-yet-shipped capability belongs. See the OFF branch below this row. */}
             {WHATSAPP_LIVE && (
-              <div className="does-item"><h3>WhatsApp auto-replies</h3><p>“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to the pitch or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.</p></div>
+              <div className="does-item"><h3><TileIcon icon={MessageCircle} /><span>WhatsApp auto-replies</span></h3><p>“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to the pitch or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.</p></div>
             )}
             {/* 🟢 "Android coming soon." REMOVED 5 September 2026 — the Android app is live on Google Play, so
                 the sentence is present tense like every other claim on this page. The three platforms are
                 COMBINED into the existing sentence rather than given a line of their own: they are one app
                 on three devices, and a separate line would read as a separate product. */}
-            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p></div>
+            <div className="does-item"><h3><TileIcon icon={WifiOff} /><span>No signal? Keep serving.</span></h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p></div>
             {/* 🔴 THE NOT-LIVE TILE, AND IT IS LAST ON PURPOSE. Production at 08ac368 carried it here,
                 after "No signal? Keep serving." — a capability that has not shipped does not sit among
                 five that have. Flipping WHATSAPP_LIVE moves it up to fifth (above) in the same edit.
@@ -360,15 +423,31 @@ export default function LandingPage() {
                 🔴 §44's rule is met twice over: the badge says it, and the body still reads "Soon your
                 WhatsApp WILL get answered". The badge is what disappears when WHATSAPP_LIVE flips. */}
             {!WHATSAPP_LIVE && (
-              <div className="does-item"><h3>WhatsApp auto-replies <span className="soon-inline">Coming soon</span></h3><p>“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.</p></div>
+              <div className="does-item"><h3><TileIcon icon={MessageCircle} /><span>WhatsApp auto-replies <span className="soon-inline">Coming soon</span></span></h3><p>“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.</p></div>
             )}
           </div>
         </div>
       </section>
 
-      {/* ============ HOW IT WORKS ============ (tinted band. Order is what-it-does(white) → this(wash) →
-          testimonial(white) → orders(wash) … so the page alternates white/wash cleanly and the white
-          testimonial sits between two wash bands without being tinted itself.) */}
+      {/* ============ HOW IT WORKS ============ (tinted band)
+          ══ 🔴 THE WHITE/WASH ALTERNATION, WRITTEN OUT — IT BROKE ONCE AND WILL AGAIN ════════════════
+          The page alternates, top to bottom, and every band below depends on the one above it:
+
+            trust strip  wash  (.trust-strip)
+            what it does white (bare <section>)
+            how it works WASH  (this one, .band)
+            testimonial  white (.quote-sec — deliberately untinted, between two wash bands)
+            pricing      WASH  (#pricing .band)
+            final CTA    white (#try)
+            footer       slate (LandingFooter)
+
+          ⛔ IT IS A SEQUENCE, NOT A PROPERTY OF ANY ONE SECTION. Deleting or moving a section
+          re-colours every section after it, and nothing errors — this comment used to read
+          "… testimonial(white) → orders(wash) …" and that order section was deleted on 6 October,
+          which left testimonial, pricing and the final CTA as three white blocks in a row with no
+          seam between them. Reported by Dominic the same day.
+          🔴 SO: IF YOU ADD, REMOVE OR REORDER A SECTION, RE-READ THIS LIST AND FIX THE `band` CLASSES.
+          The table above is the whole specification. */}
       <section className="band">
         <div className="wrap">
           <p className="eyebrow">Getting going</p>
@@ -398,7 +477,24 @@ export default function LandingPage() {
           <blockquote>{"HatchGrab has made ordering so much easier. Everything's organised, we can track stock and know exactly how many pizzas we have left to sell — and the time slots are fantastic for busy villages."}</blockquote>
           <div className="quote-by">
             {/* 🔴 alt="" IS DELIBERATE, NOT AN OVERSIGHT: "Pizzeria Gusto" is in the role line directly below, so an alt would announce the business name TWICE — and a MISSING alt would make some screen readers read the filename instead. */}
-            <Image className="quote-logo" src="/gusto-logo.png" alt="" width={320} height={233} />
+            {/* ══ 🔴 `sizes` ADDED 6 October 2026 — A LOAD FIX WITH NO VISUAL CHANGE ════════════════
+                MEASURED: this logo RENDERS at 77px and was requesting `/_next/image?w=384` (11.2 KB) at
+                DPR 1 and `w=640` at DPR 2. With no `sizes`, next/image builds the srcset from the
+                `width` PROP — 320 — and picks the smallest device size at or above it, which is 384.
+                The prop is the intrinsic file width, not the painted width, so it was never going to
+                pick anything sensible on its own.
+                ⚠️ 96px IS DERIVED FROM THE STYLESHEET, NOT PICKED. `.quote-logo` is
+                `height: 56px; width: auto` (landing.css), and the file is 320×233, so the painted width
+                is 56 × 320/233 ≈ 77px. 96 is the smallest step in next/image's own `imageSizes` ladder
+                above 77, so it is the smallest honest value: below it the logo would be upscaled, above
+                it we pay for pixels nothing draws.
+                ⚠️ IT IS A FIXED PIXEL `sizes` BECAUSE THE BOX IS A FIXED HEIGHT at every width — there
+                is no viewport-relative rule on this element, so a `vw` value would be a guess.
+                🟢 NOTHING ABOUT THE LAYOUT CHANGES: width/height are untouched, so the reserved box and
+                the aspect ratio are identical and there is no shift. ⚠️ It is ALREADY lazy — next/image
+                defaults to `loading="lazy"` without `priority`, and this has never had `priority`;
+                verified in the browser (`loading=lazy`) rather than assumed from the absence of a prop. */}
+            <Image className="quote-logo" src="/gusto-logo.png" alt="" width={320} height={233} sizes="96px" />
             <span className="quote-who">
               {/* ── THE ATTRIBUTION READS: names -> role -> award (29 August 2026). ───────────────
                   🔴 THE TRUCK NAME IS NOT REPEATED. This line held "Pizzeria Gusto" on its own; it now
@@ -430,35 +526,34 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ============ ORDERS / TICKET ============ */}
-      <section className="band">
-        <div className="wrap split">
-          <div>
-            <p className="eyebrow">Orders</p>
-            <h2>Everything you need, nothing you don’t.</h2>
-            <p className="lede">Name, time, what they want, and anything they’ve asked for. All on your kitchen screen before they arrive. No note gets missed. Print it as well if you’d rather have paper in your hand.</p>
-          </div>
-          <div className="ticket-stage">
-            <div className="ticket" role="img" aria-label="Example order ticket: order 17 for Sarah, two Margheritas with no basil, one Pepperoni and two Cokes, collect at 6.20pm, total £37.00.">
-              <div className="t-head"><div><div className="t-no">#17</div><div className="t-name">Sarah</div></div><div className="t-time">Collect <b>18:20</b></div></div>
-              <div className="t-line"><span>2 × Margherita</span><span>£20.00</span></div>
-              <div className="t-note">no basil please</div>
-              <div className="t-line"><span>1 × Pepperoni</span><span>£12.00</span></div>
-              <div className="t-line"><span>2 × Coke</span><span>£5.00</span></div>
-              <hr className="t-rule" />
-              <div className="t-total"><span>Total</span><span>£37.00</span></div>
-              <div className="t-foot">Ordered ahead · Pay at the hatch</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ══ ⛔ "Everything you need, nothing you don't" WAS DELETED — 6 October 2026 ════════════════
+          The "Orders" eyebrow, its lede and the #17 Sarah ticket mock-up. Removed on request as part
+          of shortening this page; the kitchen screen it illustrated is the first hero screenshot and
+          is claimed twice over in "Built for food trucks" above.
+          ⚠️ IT WAS NEVER A COMPONENT — the ticket was inline JSX in this file — so there was nothing
+          to delete alongside it. Its `.ticket-stage` / `.ticket` / `.t-*` rules in landing.css are now
+          UNUSED (the other two consumers of that stylesheet, /compare and /features, never rendered a
+          ticket) and are LEFT IN PLACE deliberately: deleting CSS was not part of this task and a
+          stylesheet sweep is its own job. Flagged here rather than done quietly. */}
 
-      {/* ============ PRICING CARDS ============ (who / price / fee from source; bullet teasers are editorial) */}
-      <section id="pricing">
+      {/* ============ PRICING CARDS ============ (who / price / fee from source; bullet teasers are editorial)
+          🔴 `band` ADDED 6 October 2026 — IT IS THE SEAM, NOT DECORATION. It took the wash slot the
+          deleted "Orders" section used to hold, which is what puts a tinted block back between the
+          white testimonial above and the white final CTA below. See the sequence table on the "how it
+          works" section above before changing it.
+          🟢 THE CARDS GAIN FROM IT: `.plan` is `background: var(--paper)`, so three white cards now sit
+          ON the tint instead of white-on-white, and the grid reads as three objects rather than one
+          field. ⚠️ `.switch-block` HAD TO MOVE WITH IT — it was `background: var(--wash)`, the band's
+          own colour, so it would have dissolved into it. See landing.css. */}
+      <section id="pricing" className="band">
         <div className="wrap">
           <div className="price-head">
             <p className="eyebrow">Pricing</p>
-            <h2>Start free. Stay free, if that’s all you need.</h2>
+            {/* ⚠️ "Start free. Stay free, if that's all you need." UNTIL 6 October 2026. The old line
+                sold staying on the free tier; this one names the move the page is actually asking for.
+                ⛔ NOTHING ELSE IN THIS SECTION CHANGED — the fee paragraph, the orange trial banner, the
+                three cards, the button, the switching block and the small print are all untouched. */}
+            <h2>Start free. Upgrade when you need to.</h2>
             {/* 🔴 THE LEDE STATES THE HEADLINE AND STOPS. The walk-up detail — the in-person rate, the
                 UK/EEA limit, the tap surcharge, "coming soon" — lives ONCE, in footnote 1, which renders
                 further down this same page. Restating any of it here is what made this section read three
@@ -498,7 +593,18 @@ export default function LandingPage() {
                     🔴 DO NOT "RESTORE FOR CONSISTENCY" BY READING THE MATRIX. These bullets are
                     HAND-WRITTEN (see the note below) and are a shorter, chosen selection — not a
                     rendering of every starter:true row. A bullet missing here is not drift. */}
-                <li>QR code &amp; discovery map listing</li>
+                {/* ══ 🔴 SPLIT INTO TWO BULLETS — 6 October 2026, on request ═══════════════════════
+                    It was one welded line, "QR code & discovery map listing", for two features that
+                    are separate rows in the matrix (`qr_menu` and `discovery_map`) and are separate
+                    things an operator gets. 🟢 EACH HALF IS NOW BYTE-IDENTICAL TO ITS ROW's `name` in
+                    lib/plan-features.ts — 'QR code' and 'Discovery map listing' — which is the rule
+                    the Max card's bullets already follow, so the card and the /features table say the
+                    same words for the same thing.
+                    ⚠️ THESE BULLETS ARE HAND-WRITTEN AND NOTHING CHECKS THEM AGAINST THE MATRIX. The
+                    match above is deliberate, not automatic; if a row is ever renamed, this is one of
+                    the places that will not follow on its own. */}
+                <li>QR code</li>
+                <li>Discovery map listing</li>
                 {/* ⚠️ HAND-WRITTEN, NOT RENDERED FROM FEATURE_SECTIONS. This bullet is a literal twin of the
                     matrix row in lib/plan-features.ts and nothing checks the two against each other, so it
                     must be changed in the SAME commit or the same page shows two different claims. */}
@@ -523,37 +629,81 @@ export default function LandingPage() {
                 <li>Offline order protection</li>
                 <li>Take payment online</li>
                 <li>Pre-orders &amp; collection times</li>
-                <li>Smart slot management</li>
-                <li>Auto-accept orders</li>
+                {/* ⚠️ "Kitchen capacity management", NOT "Smart slot management" (10 October 2026).
+                    "Smart" is a claim and "slot" is our word; the thing a truck sets is their kitchen's
+                    capacity. ⛔ IT MATCHES THE MATRIX ROW'S OWN `name` in lib/plan-features.ts, which
+                    was renamed in the same edit — the card and the matrix naming one feature two ways
+                    is the gap this product has closed twice before.
+                    ⛔ "Auto-accept orders" IS OFF THE CARD, on instruction. It is STILL A PRO FEATURE
+                    and still in the matrix ('Auto-accept online orders', pro: true) — this card is the
+                    short list, not the full one. */}
+                <li>Kitchen capacity management</li>
+                {/* 🔴 PRIVATE EVENTS IS A **PRO** FEATURE (5 October 2026), the other half of the row
+                    that was "Event & festival pricing · Coming soon" on the Max card. Built, so no
+                    badge — and it twins the `pro: true` cell in lib/plan-features.ts.
+                    ⚠️ SHORTENED TO "Private events" ON 6 OCTOBER 2026. It read "Private events with
+                    their own ordering link" — the longest bullet in the list, for a detail the matrix
+                    row's own `detail` already carries. 🟢 IT IS NOW BYTE-IDENTICAL TO THE ROW'S `name`
+                    in lib/plan-features.ts, which already said "Private events": the card was the one
+                    out of step, so this closes a gap rather than opening one. */}
+                <li>Private events</li>
                 {/* ⚠️ SPLIT 4 September 2026 — was one welded bullet: "WhatsApp, Messenger & Instagram
                     auto-replies — Coming soon". WhatsApp now ships and carries NO badge; the other two
                     keep theirs. Third surface of the same fact as the does-item block above and the
-                    matrix row in lib/plan-features.ts. */}
-                {/* ⚠️ THE ⁴ IS A HAND-WRITTEN TWIN OF THE MATRIX ROW'S `footnote: '4'`
-                    (lib/plan-features.ts) — these pricing-card bullets are literals, not rendered from
-                    FEATURE_SECTIONS, and nothing checks the two against each other. 🔴 IF FOOTNOTE 4 IS
-                    EVER RENUMBERED OR RETIRED, THIS MARKER MUST MOVE WITH IT; it will not error, it will
-                    just point at the wrong note. Same `.f-note` class the comparison table uses for row
-                    footnotes, so it resolves to the numbered list under that table on this same page.
-                    🔴 CHANGED 6 → 4 ON 16 September 2026, exactly the move this warning was written for.
-                    The WhatsApp-only footnote 6 was retired and its billing text folded into the shared
-                    footnote 4; a marker left on 6 would have pointed at a note that no longer exists.
-                    ⚠️ IT IS NO LONGER FLAG-DEPENDENT. Footnote 4 exists in both states, so this literal
-                    is correct whichever way WHATSAPP_LIVE is set — which is why it can sit outside the
-                    ternary below without a second branch. */}
-                {/* 🔴 BEHIND THE SINGLE SWITCH. OFF is the production bullet at 08ac368, verbatim: ONE
-                    welded line for all three channels carrying the badge. ON splits it in two, WhatsApp
-                    without a badge and with the ⁶ marker that only exists while the flag is on. */}
-                {WHATSAPP_LIVE ? (<>
-                <li>WhatsApp auto-replies<sup className="f-note">4</sup></li>
-                <li>Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>
-                </>) : (
+                    matrix row in lib/plan-features.ts.
+                    ══ ⛔ THE ⁴ FOOTNOTE MARKER WAS REMOVED — 6 October 2026 ════════════════════════
+                    🔴 BECAUSE THE NOTE IT POINTED AT IS NO LONGER ON THIS PAGE. `.f-note` resolved to
+                    the numbered list under the comparison table, and that table is /features now — so
+                    the superscript became a reference to nothing, on the one surface where a reader
+                    cannot tell a dangling marker from a missing footnote. The footnotes themselves are
+                    untouched and footnote 4 still renders beneath the table on /features, where the
+                    matrix row still carries its marker.
+                    ⚠️ THE OLD WARNING HERE IS KEPT BELOW BECAUSE IT IS STILL THE RULE for the row:
+                    "if footnote 4 is ever renumbered or retired, the marker must move with it; it will
+                    not error, it will just point at the wrong note." That is exactly what happened to
+                    this one — the note did not move, the PAGE did. */}
+                {/* 🔴 SOCIAL MEDIA POSTS — a normal live bullet, no badge (6 October 2026, on request).
+                    ⚠️ IT TWINS THE MATRIX ROW (`pro: true, max: true`).
+                    🟢 **AND THE GATE NOW BACKS IT — 10 October 2026.** This bullet and that row used to
+                    be claims nothing enforced: the gate was a Feature in NO plan, held only through
+                    `trucks.feature_overrides` and granted to one truck, so a public, indexed page
+                    promised something no plan sold. The plan key is in PRO_FEATURES now — Pro, Max and
+                    trial — and the row is mapped in ROW_FEATURE_MAP, which makes
+                    findPlanParityViolations() compare this promise against the gate on every module
+                    load. ⛔ THE RECORDED EXCEPTION IS CLOSED; there is nothing left to read before
+                    changing this bullet except lib/features.ts itself.
+                    ⚠️ THE KEY IS DELIBERATELY NOT NAMED IN THIS COMMENT. `scripts/schedule-graphics-places.cjs`
+                    pins an EXACT list of the files that name it, over code lines only — and this file's
+                    JSX comments have no leading `*`, so its line-based stripper cannot tell this prose
+                    from a gate. Naming it here would have added a seventh "consumer" that gates
+                    nothing. See lib/features.ts for the key and its tiers. */}
+                <li>Social media posts</li>
+                {/* ══ 🔴 ONE BULLET FOR ALL THREE CHANNELS AGAIN — 6 October 2026 ════════════════════
+                    ⛔ THE SEPARATE "Messenger & Instagram auto-replies" BULLET IS GONE. It carried the
+                    COMING SOON badge, which put a badge on the card for a channel nobody buys the plan
+                    for, directly under the one that is live — so the card read as half-finished.
+                    🔴 AND THE PARENTHETICAL IS **NOT** A BADGE, WHICH IS THE POINT: WhatsApp itself
+                    ships, so `soon-inline` here would have said "coming soon" about the live half of
+                    the sentence.
+                    ⚠️ NOR IS IT SMALLER OR MUTED — Dominic, 6 October 2026: *"'(Messenger & Instagram
+                    coming soon)' needs to be same size and format as 'WhatsApp auto-replies'."* It was
+                    briefly a `.li-note` span at .68rem in `--ink-faint`; it is now PLAIN BULLET TEXT in
+                    the same run as the rest of the line, so there is no span and no second style to
+                    keep in step. ⛔ THE `.li-note` RULE WAS DELETED FROM landing.css IN THE SAME EDIT
+                    rather than left behind styling nothing.
+                    ⚠️ THE FLAG STILL DECIDES. With WHATSAPP_LIVE off there is nothing live to separate,
+                    so the OFF branch keeps the welded badge line it has always had, verbatim. */}
+                {WHATSAPP_LIVE ? (
+                <li>WhatsApp auto-replies (Messenger &amp; Instagram coming soon)</li>
+                ) : (
                 <li>WhatsApp, Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>
                 )}
-                {/* 🔴 PRIVATE EVENTS IS A **PRO** FEATURE (5 October 2026), the other half of the row
-                    that was "Event & festival pricing · Coming soon" on the Max card. Built, so no
-                    badge — and it twins the `pro: true` cell in lib/plan-features.ts. */}
-                <li>Private events with their own ordering link</li>
+                {/* ══ 🔴 "Coming soon" SITS AT THE BOTTOM, GROUPED — 6 October 2026 ═══════════════════
+                    ⛔ THIS BULLET DID NOT MOVE; THE TWO ABOVE IT DID NOT EITHER. What moved is
+                    "Private events", which was BETWEEN the badged Messenger/Instagram line and this
+                    one — so the card read built, coming-soon, built, coming-soon. A reader scanning for
+                    what they get today had to read every line to know which half it was in.
+                    ⚠️ THE RULE IS APPLIED TO ALL THREE CARDS, and Max already satisfied it. */}
                 <li>Take payment on your phone <span className="soon-inline">Coming soon</span></li>
               </ul>
               <DemoCta className="btn btn-primary">Try Free</DemoCta>
@@ -605,6 +755,32 @@ export default function LandingPage() {
             </div>
           </div>
 
+          {/* ══ 🔴 THE LINK THAT REPLACED THE TABLE — 6 October 2026 ════════════════════════════════
+              The full comparison used to be the next section down this page. It is /features now, and
+              this is how a reader gets to it: directly under the cards, while they are still choosing.
+              ⚠️ BEFORE THE SWITCHING BLOCK, DELIBERATELY. "Switching from another platform?" filters
+              itself out for most readers (see its own note below), so a link placed after it would sit
+              behind a heading that tells half the audience the paragraph is not for them.
+              🔴 A PLAIN <a>, LIKE EVERY OTHER LINK ON THIS PAGE. next/link is not imported here, and
+              /features is a different route under a different `.hg-landing` wrapper with its own font
+              instances, so a client-side transition would buy nothing.
+
+              ══ 🔴 A LEAD-IN AND A **NAVY** BUTTON — 7 October 2026 ═══════════════════════════════════
+              It has been a text link, then an outlined `btn-ghost`, and it was still being missed.
+              ⛔ THE REASON IT WAS OUTLINED NO LONGER APPLIES THE WAY IT DID. The old note said a filled
+              button "must not compete with the three sitting in the cards immediately above it" — and
+              that is still true of an ORANGE one, because every orange control on this page opens the
+              demo modal. It is NOT true of a navy one: navy is the heading colour, it is not a CTA
+              colour anywhere on this page, and a reader cannot mistake it for the same action.
+              🔴 THE LEAD-IN IS WHAT MAKES THE BUTTON WORTH PRESSING. "Compare all features →" on its
+              own is a label; "Not sure which plan?" is the question a reader standing in front of three
+              cards is actually holding, and the line answers it before the button asks for a click.
+              ⚠️ TWO ELEMENTS, TWO RULES. `.feat-cta` carries the lead-in and the centring; `.feat-btn`
+              carries the button. One wrapper with both inside would have made the 10–12px gap between
+              them a margin on a `<p>` inside a `<p>`, which is not legal markup. */}
+          <p className="feat-cta feat-lead">Not sure which plan? See exactly what each one includes.</p>
+          <p className="feat-btn"><a href="/features" className="btn btn-navy">Compare all features →</a></p>
+
           {/* ── 🔴 THE SWITCHING BLOCK — A SIDE DOOR, AND IT SELF-SELECTS ON ITS FIRST WORD ──────────
               Added 3 September 2026. Copy supplied and approved; it is not editorial and must not be
               "tightened".
@@ -642,72 +818,21 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ============ FULL COMPARISON ============ (FLEX, renders from source; sticky header mirrors Billing) */}
-      <section className="band">
-        <div className="wrap">
-          <p className="eyebrow">Compare</p>
-          <h2>Every feature, side by side.</h2>
-          <p className="lede">Your free month includes everything — try the lot before you pick.</p>
-
-          <div className="cmp2">
-            {/* Sticky priced header — pins below the nav (top: --nav-h), opaque bg hides rows scrolling under.
-                Same technique as Manage → Billing. */}
-            <div className="cmp2-head">
-              <div className="cmp2-feat" />
-              {TABLE_PLANS.map(p => (
-                <div key={p} className="cmp2-col">
-                  <span className="th-plan">{PLAN_META[p].name}</span>
-                  <span className="th-price">{PLAN_PRICE_LABEL[p]}</span>
-                  {PLAN_SUB[p] && <span className="th-sub">{PLAN_SUB[p]}</span>}
-                </div>
-              ))}
-            </div>
-
-            {/* Fees group — TRANSACTION_ROWS from lib/plan-features.ts, one fact per cell. THE SAME
-                CONSTANT Manage → Billing renders, so the two cannot state different fees again. */}
-            <div className="cmp2-grp">Fees</div>
-            {TRANSACTION_ROWS.map(row => (
-              <div key={row.name} className="cmp2-row">
-                <div className="cmp2-label">
-                  <span className="f-name">{row.name}{row.footnote && <sup className="f-note">{row.footnote}</sup>}</span>
-                </div>
-                {TABLE_PLANS.map(p => (
-                  <div key={p} className="cmp2-cell"><span className="val">{row.cells[p]}</span></div>
-                ))}
-              </div>
-            ))}
-
-            {/* Feature sections — from FEATURE_SECTIONS (name + detail + per-tier value; Trial = Max + pay-at-hatch) */}
-            {FEATURE_SECTIONS.map(section => (
-              <div key={section.title}>
-                <div className="cmp2-grp">{section.title}</div>
-                {visibleRows(section).map(row => (
-                  <div key={row.name} className="cmp2-row">
-                    <div className="cmp2-label">
-                      {/* NAME_OVERRIDES and DETAIL_OVERRIDES are landing-only, exactly as the detail
-                          override already was. `row.footnote` is deliberately NOT overridden: both
-                          merged rows carried footnote 4, so it is already the right one. */}
-                      <span className="f-name">{rowName(row)}{row.footnote && <sup className="f-note">{row.footnote}</sup>}</span>
-                      {rowDetail(row) && <span className="f-desc">{rowDetail(row)}</span>}
-                    </div>
-                    {TABLE_PLANS.map(p => (
-                      <div key={p} className="cmp2-cell">
-                        <Cell value={p === 'trial' ? trialFeatureValue(row) : row[p as 'starter' | 'pro' | 'max']} />
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          <div className="fn">
-            {FOOTNOTES.map(f => (
-              <p key={f.number}><sup>{f.number}</sup> {FOOTNOTE_TEXT_OVERRIDES[f.number] ?? f.text}</p>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ══ ⛔ THE FULL COMPARISON TABLE LEFT THIS PAGE — 6 October 2026 ═══════════════════════════
+          It was 31 rows across four columns plus five footnotes, below the plan cards most visitors
+          came for, and it was the single longest thing on a page that was too long.
+          🔴 MOVED, NOT DELETED, AND NOT REWRITTEN: components/landing/FeatureComparison.tsx holds the
+          same markup verbatim and app/features/page.tsx renders it inside this same chrome. Same rows,
+          same order, same wording, same source (lib/plan-features.ts). The link to it is under the
+          plan cards above, before the switching block.
+          ⚠️ THE SECTION HAD NO `id`, SO THERE IS NO ANCHOR TO PRESERVE. Checked in git HEAD and
+          checked the other way round, by sweeping every `#fragment` in the repository: the only
+          landing anchors that have ever existed are `#pricing` and `#try`, and nothing in the codebase
+          — no email, no template, no document — ever linked to where this table was.
+          🔴 `lib/plan-features.ts` IS STILL IMPORTED BY THIS FILE (PLAN_PRICES, PLAN_DESCRIPTIONS,
+          PLAN_ALLOWANCES, CARD_FEE_ONLINE_LABEL), WHICH IS LOAD-BEARING: that module runs
+          `findPlanParityViolations()` at module load, so the guard still fires when this route renders.
+          If those imports ever go too, the guard goes with them silently. */}
 
       {/* ============ FINAL CTA ============ */}
       <section id="try">

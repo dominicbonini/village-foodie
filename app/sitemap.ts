@@ -8,7 +8,16 @@ import { headers } from 'next/headers'
 //     (app/landing/page.tsx). A sitemap entry for it would be a 404, which is worse than no entry.
 //   • `/landing` and `/` are THE SAME PAGE on a hatchgrab host: proxy.ts rewrites '/' to '/landing'.
 //     Listing both would contradict the canonical this page now declares (the apex-less www root).
-// So the HatchGrab sitemap carries exactly one URL, and that is honest rather than thin.
+// So the HatchGrab sitemap carried exactly one URL, and that was honest rather than thin.
+//
+// ── 🟢 /features IS THE SECOND URL, ADDED 6 October 2026 ───────────────────────────────────────────
+// It is a REAL ROUTE (app/features/page.tsx), unlike the `/pricing` non-route above, and it is
+// `robots: { index: true, follow: true }` with its own canonical — so a sitemap entry agrees with the
+// page's own declarations instead of contradicting them, which is the test the three exclusions below
+// each fail. It carries the comparison table that used to be a section of the landing page; indexing
+// it is what stops a move from a public page making that content unfindable.
+// ⚠️ `priority` 0.8 AND `changeFrequency: 'monthly'` — below the root, because it is a reference page
+// rather than the entry point, and the table only changes when a plan does.
 //
 // 🔴 EXCLUDED ON PURPOSE:
 //   • /compare — still robots:{index:false}, a separate launch decision that is not mine to reverse.
@@ -23,7 +32,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const host = (await headers()).get('host') ?? 'www.hatchgrab.com'
   const isHG = host.includes('hatchgrab')
   if (isHG) {
-    return [{ url: 'https://www.hatchgrab.com/', lastModified: new Date(), changeFrequency: 'weekly', priority: 1 }]
+    return [
+      { url: 'https://www.hatchgrab.com/', lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
+      { url: 'https://www.hatchgrab.com/features', lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    ]
   }
   // Village Foodie: the discovery root only. /venues/[slug] is deliberately not enumerated here yet.
   return [{ url: 'https://www.villagefoodie.co.uk/', lastModified: new Date(), changeFrequency: 'daily', priority: 1 }]

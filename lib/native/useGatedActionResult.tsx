@@ -12,7 +12,7 @@
 // it reads exactly as oddly as it did on Pizzeria Gusto's live money path yesterday.
 //
 // 🔴 SURFACE-SPECIFIC EFFECTS ARE OPTIONAL CALLBACKS, AND AN OMITTED ONE OMITS THAT EFFECT — the
-// EventActionsModal pattern (`onStartEvent?: () => void  /* Omit to hide. */`). The dashboard has prep
+// EventActionsModal pattern (an optional `onStartEvent` handler, omitted to hide the control). The dashboard has prep
 // pills and the KDS does not; the KDS has a queued-op counter and the dashboard does not. Neither is a
 // gap to be filled — they are features one surface has — so each is a callback the other simply does not
 // pass. That is what keeps this ONE implementation rather than a sixth block written to look shared.

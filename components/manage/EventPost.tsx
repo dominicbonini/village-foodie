@@ -17,18 +17,26 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Btn, Card } from './primitives'
-import { DraggableBox, Panel, Field, Check, SELECT, OptionalColour } from './WeeklyPost'
-import { FONT_CHOICES } from '@/lib/weekly-post/font-list'
+import { Panel } from './WeeklyPost'
+import { PostShareBar } from './PostShareBar'
+import { DesignEditor, type AnyLayout } from './DesignEditor'
 import {
-  defaultEventNoteBox, scaleEventLayout, toggleIsAllowed, LAST_TOGGLE_MESSAGE,
-  MAX_UPLOAD_BYTES, MIN_UPLOAD_SHORT_SIDE,
-  type Align, type EventLayout, type TextBox,
+  scaleEventLayout, MAX_UPLOAD_BYTES, MIN_UPLOAD_SHORT_SIDE,
+  type EventLayout,
 } from '@/lib/weekly-post/layout'
-import { averageSample } from '@/lib/weekly-post/contrast'
+import { DEFAULT_COUNTRY, type CountryCode } from '@/lib/weekly-post/locale'
+/* ⚠️ §2 · THE ONE EVENT THE LIVE STAGE DRAWS. It is the renderer's own type, and `event_preview_entry`
+ * sends exactly it — built by the same `eventPostContext` the PNG is rendered from. */
+import type { DayEntry } from '@/lib/weekly-post/week-data'
+/* ⚠️ §6's TWO STRINGS. They live in lib/copy/socialPosts.ts beside the rest of this feature's wording
+ * rather than inline, because the Locations screen says the same thing about the same slot and the two
+ * must not drift. */
+import { imageChoiceAlsoSave, IMAGE_CHOICE_ONE_OFF, NEW_SHAPE_RESET } from '@/lib/copy/socialPosts'
 /* ⛔ `manageSectionHref` WAS IMPORTED HERE for the "a different picture for one place?" pointer,
  * which is deleted — see the tombstone further down. This screen links nowhere now. */
 
-type BoxKey = 'date' | 'location' | 'time' | 'note'
+/* ⛔ `BoxKey` LIVED HERE AND IS NOW THE EDITOR'S `ItemKey` — which is a plain string, because the
+ * list of items can grow ("Your own text" number 3) and a four-member union could not. */
 
 /** What the preview is allowed to show for one design, decided server-side. */
 interface PreviewPick {
@@ -84,7 +92,9 @@ const api = async (token: string, body: Record<string, unknown>) => {
   return j
 }
 
-/** ⚠️ Separate from `api` because the response is a PNG and carries its warnings in a header. */
+/** ⚠️ Separate from `api` because the response is a PNG and carries its warnings in a header.
+ *  ⚠️ IT RETURNS THE `blob` TOO (6 October 2026) — `PostShareBar` needs a `File` ready before the tap,
+ *  and the blob is already here, so the `fetch(png)` that used to run inside the tap is gone. */
 async function renderPng(token: string, body: Record<string, unknown>) {
   const r = await fetch('/api/weekly-post', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -97,7 +107,7 @@ async function renderPng(token: string, body: Record<string, unknown>) {
   const blob = await r.blob()
   let warnings: { where: string; message: string }[] = []
   try { warnings = JSON.parse(decodeURIComponent(r.headers.get('X-Render-Warnings') || '[]')) } catch { /* a header we can live without */ }
-  return { url: URL.createObjectURL(blob), warnings, source: r.headers.get('X-Background-Source') || '' }
+  return { url: URL.createObjectURL(blob), blob, warnings, source: r.headers.get('X-Background-Source') || '' }
 }
 
 /**
@@ -136,11 +146,19 @@ async function uploadTo(
  * @param onlyPlaceId   edit ONE place: the same, with `current` locked to that place. The page chrome
  *                      (the back link, the name, "Make post for …") belongs to the caller.
  */
-export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }: {
+export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, onDirtyChange, onSaver }: {
   token: string
   onCancel?: () => void
   onlyStandard?: boolean
   onlyPlaceId?: string
+  /* 🔴 REPORTED SO A **SUB-TAB PILL** CAN ASK BEFORE IT NAVIGATES (9 October 2026). The pills live in
+   * the page's bar, outside this screen; without this they would switch tab out from under an unsaved
+   * design with no warning at all. ⚠️ Threaded straight through to `DesignEditor`, which owns the
+   * comparison — this screen only passes it on. */
+  onDirtyChange?: (dirty: boolean) => void
+  /* 🔴 §B10 · THE EDITOR'S SAVE, HANDED UP so the leave dialog can offer "Save and leave". ⚠️ Threaded
+   * straight through to `DesignEditor`, exactly as `onDirtyChange` is. */
+  onSaver?: (save: (() => void | Promise<void>) | null) => void
 }) {
   const [loading, setLoading] = useState(true)
   const [standard, setStandard] = useState<EventDesign | null>(null)
@@ -160,16 +178,37 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }:
   const [picking, setPicking] = useState(false)
   const [search, setSearch] = useState('')
   const [layout, setLayout] = useState<EventLayout | null>(null)
-  const [selected, setSelected] = useState<BoxKey>('date')
-  const [preview, setPreview] = useState<string | null>(null)
-  const [warnings, setWarnings] = useState<{ where: string; message: string }[]>([])
   const [msg, setMsg] = useState<{ text: string; bad: boolean } | null>(null)
+  /* ══ 🔴 §B8 · A MESSAGE THAT FADES — the same pattern as the weekly screen's ════════════════════
+   * ⚠️ SEPARATE FROM `msg`, which is permanent ("Design saved.", a refusal) and must not vanish on a
+   * timer. ⛔ THE TIMER IS CLEARED on a second flash and on unmount. */
+  const [flash, setFlashText] = useState<string | null>(null)
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const setFlash = useCallback((text: string) => {
+    if (flashTimer.current) clearTimeout(flashTimer.current)
+    setFlashText(text)
+    flashTimer.current = setTimeout(() => { setFlashText(null); flashTimer.current = null }, 5000)
+  }, [])
+  useEffect(() => () => { if (flashTimer.current) clearTimeout(flashTimer.current) }, [])
   const [busy, setBusy] = useState(false)
   const [saving, setSaving] = useState(false)
   const [confirmRemove, setConfirmRemove] = useState(false)
-
-  const stageRef = useRef<HTMLDivElement | null>(null)
-  const [stageW, setStageW] = useState(0)
+  /* ══ 🔴 "Preview with": THE EVENTS THIS DESIGN CAN BE JUDGED AGAINST ══════════════════════════
+   * ⛔ IT USED TO BE ONE EVENT THE SERVER CHOSE, with a line of explanation when it was not the
+   * obvious one. That was the whole feature: an operator who wanted to see their design against the
+   * festival next month could not. The server still CHOOSES the default — a place design previews on
+   * an event at that place — and now also returns the next few, so the choice exists. */
+  const [previewEvents, setPreviewEvents] = useState<{ id: string; label: string }[]>([])
+  const [previewWith, setPreviewWith] = useState('')
+  /* 🔴 THE COUNTRY COMES OUT OF `event_load`, FROM `countryForTruck()`. ⛔ IT IS NOT A PROP: this
+   * screen is opened from three places (the Weekly | Single event switch, Social posts › Designs box 2,
+   * and a place's own page) and threading it through all three would be three chances to pass the
+   * wrong one, for a value every one of them would have to get from the same request this already
+   * makes. A component must never default it itself — that is why it starts at the table's own
+   * default and is overwritten by the first response. */
+  const [country, setCountry] = useState<CountryCode>(DEFAULT_COUNTRY)
+  /** 🔴 Part 3 · see the same pair in `WeeklyPost.tsx` — facts about the truck, from this same read. */
+  const [hasLogo, setHasLogo] = useState(false)
 
   const load = useCallback(async () => {
     try {
@@ -181,6 +220,9 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }:
        * the list twice — once as itself and once as the saved row. */
       setPending(prev => prev.filter(pl =>
         !((r.designs ?? []) as PlaceDesignRow[]).some(d => d.placeId === pl.id)))
+      setPreviewEvents((r.previewEvents ?? []) as { id: string; label: string }[])
+      setCountry((r.country as CountryCode) ?? DEFAULT_COUNTRY)
+      setHasLogo(r.hasLogo === true)
     } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'Could not load', bad: true }) }
     finally { setLoading(false) }
   }, [token])
@@ -222,7 +264,6 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }:
    * that says "Sudbury", or throw the drag away on save. Neither is honest, so they are shown and not
    * moved, with a line saying why and how to change it. */
   const editable = current === null || mode === 'own'
-  const scale = canvasW && stageW ? stageW / canvasW : 1
 
   /* The layout for whichever design is selected. A place on Standard's positions shows Standard's
    * boxes, scaled to its own picture — the same scaling the server would apply if it switched to own. */
@@ -246,94 +287,70 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }:
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLayout(layoutFor(current))
-    setSelected('date')
     setConfirmRemove(false)
   }, [current, layoutFor])
 
+  /* 🔴 THE DEFAULT PREVIEW EVENT IS THE SERVER'S CHOICE, RE-SEEDED PER DESIGN. A place's design should
+   * open on an event AT that place — which is a decision about the truck's schedule, and so is made
+   * once on the server and not re-derived here. The operator can then pick any of the others.
+   * ⚠️ IT IS STILL STATE, so their choice survives a drag; the effect only re-seeds it when the design
+   * being edited changes. */
   useEffect(() => {
-    const el = stageRef.current
-    if (!el) return
-    const ro = new ResizeObserver(() => setStageW(el.clientWidth))
-    ro.observe(el)
-    setStageW(el.clientWidth)
-    return () => ro.disconnect()
-  }, [bgUrl])
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPreviewWith(previewPick?.eventId ?? '')
+  }, [previewPick?.eventId])
 
-  /* 🔴 THE PREVIEW IS THE RENDERER'S PNG, debounced, exactly as the week setup — the outlines move at
-   * once and the picture catches up. `designPlaceId` tells the server which design this is, so a place
-   * design previews on its own picture, at its own size, with its own name in the location box. */
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  /* 🔴 THE PREVIEW IS THE RENDERER'S PNG. `designPlaceId` tells the server which design this is, so a
+   * place design previews on its own picture, at its own size, with its own name in the location box.
+   * ⚠️ THE DEBOUNCE LIVES IN THE EDITOR NOW, not here — one 400ms timer for all three screens. */
+  /* ══ 🔴 §2 · THE EVENT THE LIVE TEXT SAYS — FETCHED ONCE PER "Preview with" ══════════════════════
+   * ⚠️ `designPlaceId` TRAVELS WITH IT, so a place's design previews with that place's own name in the
+   * venue box — exactly as its PNG does, through the same substitution on the server.
+   * ⛔ A FAILURE IS SILENT AND LEAVES IT `null`, which the editor reads as "fall back to the PNG": a
+   * private booking is refused for a single post, and that refusal must not empty the stage. */
+  /* 🔴 **IT CARRIES THE ID AND THE DESIGN IT IS FOR, AND THAT IS NOT BOOKKEEPING.** Switching from one
+   * preview event to another leaves the old answer in state until the new one lands — so without the
+   * key the stage would draw LAST event's words for a moment, which is the exact bug §2 exists to
+   * remove, reintroduced one layer up. ⚠️ IT ALSO MEANS NOTHING HAS TO BE **CLEARED**: a mismatch reads
+   * as "not loaded", so there is no synchronous `setState` in this effect at all. */
+  const [liveEvent, setLiveEvent] = useState<
+    { id: string; forPlace: string | null; entry: DayEntry; date: string } | null
+  >(null)
   useEffect(() => {
-    const eventId = previewPick?.eventId
-    if (!layout || !eventId) return
-    if (timer.current) clearTimeout(timer.current)
-    timer.current = setTimeout(async () => {
+    let alive = true
+    void (async () => {
+      if (!previewWith) return
       try {
-        const r = await renderPng(token, {
-          action: 'event_render', eventId, layout,
+        const r = await api(token, {
+          action: 'event_preview_entry',
+          eventId: previewWith,
           designPlaceId: current ?? undefined,
         })
-        setPreview(prev => { if (prev) URL.revokeObjectURL(prev); return r.url })
-        setWarnings(r.warnings)
-      } catch { /* the outlines still work; the picture is one request behind */ }
-    }, 400)
-  }, [layout, previewPick?.eventId, current, token])
+        if (alive && r.entry) {
+          setLiveEvent({
+            id: previewWith, forPlace: current ?? null,
+            entry: r.entry as DayEntry, date: String(r.date),
+          })
+        }
+      } catch { /* the stage falls back to the PNG, which is what it drew before §2 */ }
+    })()
+    return () => { alive = false }
+  }, [token, previewWith, current])
 
-  // ── the readability sampler (browser-side; see lib/weekly-post/contrast.ts) ─────────────────────
-  const bgImg = useRef<HTMLImageElement | null>(null)
-  useEffect(() => {
-    if (!bgUrl) { bgImg.current = null; return }
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.onload = () => { bgImg.current = img }
-    img.onerror = () => { bgImg.current = null }
-    img.src = bgUrl
-  }, [bgUrl])
-
-  const sampleUnder = useCallback((b: TextBox) => {
-    const img = bgImg.current
-    if (!img || !img.naturalWidth) return null
-    try {
-      const c = document.createElement('canvas')
-      const w = Math.max(1, Math.min(64, Math.round(b.w / 8)))
-      const h = Math.max(1, Math.min(64, Math.round(b.h / 8)))
-      c.width = w; c.height = h
-      const ctx = c.getContext('2d', { willReadFrequently: true })
-      if (!ctx) return null
-      ctx.drawImage(img, b.x, b.y, Math.max(1, b.w), Math.max(1, b.h), 0, 0, w, h)
-      return averageSample(ctx.getImageData(0, 0, w, h).data)
-    } catch { return null }
-  }, [])
-
-  const patchBox = useCallback((key: BoxKey, patch: Partial<TextBox>, resample = false) => {
-    setLayout(prev => {
-      if (!prev) return prev
-      const current0 = key === 'note' ? prev.note : (prev[key] as TextBox)
-      if (!current0) return prev
-      const next = { ...current0, ...patch } as TextBox
-      if (resample) next.bgSample = sampleUnder(next)
-      return { ...prev, [key]: next } as EventLayout
+  const renderPreview = useCallback(async (l: AnyLayout, eventId: string) => {
+    if (!eventId) return null
+    const r = await renderPng(token, {
+      action: 'event_render', eventId, layout: l,
+      designPlaceId: current ?? undefined,
     })
-  }, [sampleUnder])
+    return { url: r.url, warnings: r.warnings }
+  }, [token, current])
 
-  /**
-   * Switch one of the three boxes on or off.
-   *
-   * 🔴 THE LAST ONE OF LOCATION AND TIME IS BLOCKED, with the reason said out loud. A cancelled event
-   * says so in those two boxes — the place name struck through, and the word CANCELLED where the time
-   * goes — so with both off a cancelled event would render as an ordinary poster telling customers to
-   * come to something that is not happening. `toggleIsAllowed` is the same rule the validator enforces
-   * on the server; this is here so the truck is told rather than refused after a save.
-   */
-  const toggleBox = (key: 'date' | 'location' | 'time', on: boolean) => {
-    setLayout(prev => {
-      if (!prev) return prev
-      const next = { ...prev, [key]: { ...prev[key], enabled: on } } as EventLayout
-      if (!toggleIsAllowed(next)) { setMsg({ text: LAST_TOGGLE_MESSAGE, bad: true }); return prev }
-      setMsg(null)
-      return next
-    })
-  }
+  /* ⛔ `toggleBox` LIVED HERE AND IS NOW THE EDITOR'S. The last-toggle rule (keep either Place or Time
+   * on, or a cancelled event reads as an ordinary poster) applies to all three design screens, so it
+   * belongs in the one component they share — and `validateLayout` enforces it for the weekly post as
+   * well as `validateEventLayout` does for this one. Keeping a copy here would have been a second
+   * answer to one rule on one of the two screens that uses it. */
 
   // ── PICTURES ───────────────────────────────────────────────────────────────────────────────────
   const uploadStandard = async (file: File) => {
@@ -345,13 +362,24 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }:
        * re-exporting a Standard picture is not a request to throw away per-place artwork.
        * ⚠️ ONLY PLACES ON STANDARD'S POSITIONS CAN BE STRANDED THIS WAY; a place with its own positions
        * is measured against its own picture, so a new Standard shape cannot invalidate it. */
-      if (done.resetLayout) {
+      /* ══ 🔴 §B8 · ONLY WHEN THE SHAPE REALLY CHANGED ════════════════════════════════════════════
+       * ⛔ `resetLayout` IS TRUE FOR ANY NEW PICTURE OF A DIFFERENT **SIZE**, including a re-export of
+       * the same artwork at a higher resolution — where `scaleEventLayout` carries every box across and
+       * nothing has moved at all. Saying "the boxes have been reset" then is a claim the operator can
+       * check and find false. ⚠️ THE STRANDED-PLACES SENTENCE IS A DIFFERENT MESSAGE AND KEEPS ITS OWN
+       * SLOT: it names artwork that will not be used, which is not a transient notice. */
+      /* ⚠️ `Number(...)` BECAUSE `uploadTo` IS TYPED AS A BAG OF JSON. The server sends numbers; the
+       * cast says so at the one place that does arithmetic on them. */
+      const newW = Number(done.width), newH = Number(done.height)
+      const shapeChanged = Number.isFinite(newW) && Number.isFinite(newH) && newW > 0 && newH > 0 && !!standard
+        && Math.abs((standard.width / Math.max(1, standard.height)) - (newW / Math.max(1, newH))) > 0.01
+      if (stranded.length) {
         setMsg({
           bad: false,
-          text: stranded.length
-            ? `New picture size — the boxes have been reset. These place pictures use the standard positions and are a different shape, so they won't be used until you replace them: ${stranded.map(s => s.name).join(', ')}.`
-            : 'New picture size — the boxes have been reset to a starting position.',
+          text: `These place pictures use the standard positions and are a different shape, so they won’t be used until you replace them: ${stranded.map(s => s.name).join(', ')}.`,
         })
+      } else if (done.resetLayout && shapeChanged) {
+        setFlash(NEW_SHAPE_RESET)
       }
       setCurrent(null)
       await load()
@@ -399,10 +427,10 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }:
     finally { setBusy(false); setConfirmRemove(false) }
   }
 
-  const save = async () => {
-    if (!layout) return
+  const save = async (next: AnyLayout) => {
     setSaving(true); setMsg(null)
     try {
+      const layout = next
       if (current === null) await api(token, { action: 'event_save_design', layout })
       else await api(token, { action: 'event_place_save_layout', placeId: current, layout })
       setMsg({ text: 'Design saved.', bad: false })
@@ -417,7 +445,8 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }:
   if (!standard) {
     return (
       <Card className="p-6">
-        <p className="font-bold text-slate-800">Set up your event post</p>
+        {/* ⚠️ "single event post", MATCHING THE BOX ON Designs THAT OPENS THIS CARD. */}
+        <p className="font-bold text-slate-800">Set up your single event post</p>
         {/* ⚠️ "those three" BECAME "those" (5 October 2026). The sentence already lists the three
           * things, so counting them again made the reader go back and check. */}
         <p className="text-sm text-slate-600 mt-1 max-w-prose">
@@ -444,7 +473,6 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }:
     )
   }
 
-  const sel: TextBox | null = !layout ? null : selected === 'note' ? layout.note : (layout[selected] as TextBox)
   const currentName = current
     ? (placeDesign?.name ?? pendingPlace?.name ?? 'This place')
     : 'Standard'
@@ -465,263 +493,124 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }:
         || String(pl.area ?? '').toLowerCase().includes(q)
     })
 
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-slate-500">
-          {previewPick?.label ?? 'The preview uses your next event.'}
-        </p>
-        <div className="flex items-center gap-2">
-          {onCancel && <Btn label="Cancel" colour="slate" onClick={onCancel} />}
-          <Btn label={saving ? 'Saving…' : 'Save design'} loading={saving}
-            disabled={!editable} onClick={() => void save()} />
-        </div>
-      </div>
+  /* ⚠️ THE EDITOR IS REMOUNTED PER DESIGN **AND** PER CANVAS SIZE. It holds the undo history and the
+   * boxes; carrying either across a switch from Standard to a place with a differently shaped picture
+   * would let ⌘Z put a box outside the picture it is now over. The key is the one that changes. */
+  const editorKey = `${current ?? 'standard'}:${canvasW}x${canvasH}:${mode}`
 
-      <p className="md:hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+  return (
+    <div className="space-y-3">
+      {/* ⚠️ A PHONE IS TOLD, NOT BLOCKED. Dragging a box on a 390px screen is unpleasant but it works,
+          and refusing to show the screen would strand an operator who only has a phone. */}
+      <p className="min-[900px]:hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
         Best on a computer or iPad — the boxes are small to drag on a phone.
       </p>
-      {msg && (
-        <p className={`text-sm rounded-xl px-3 py-2 border ${msg.bad
-          ? 'text-red-700 bg-red-50 border-red-200'
-          : 'text-slate-600 bg-slate-50 border-slate-200'}`}>{msg.text}</p>
+
+      {/* ══ 🔴 THE DESIGNS LIST IS A PILL ROW ABOVE THE EDITOR NOW ═══════════════════════════════
+        * ⛔ IT USED TO BE THE LEFT-HAND COLUMN — and the left-hand column is the TEXT list in the
+        * shared editor, which is the thing an operator touches on every edit. A list of designs is
+        * touched once, when they arrive; a row of pills across the top is the right weight for it and
+        * is the same pattern the Places screen already uses for a short list of things to pick between.
+        * ⚠️ HIDDEN IN BOTH FOCUSED MODES. On Social posts › Designs it would be a second copy of Box 3
+        * — the same question asked twice on one screen, free to answer differently — and in the place
+        * editor it would offer a way out of the page the operator is standing on, past its back link. */}
+      {!onlyStandard && !onlyPlaceId && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-3">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">Designs</p>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {rows.map(r => (
+              <button key={r.id ?? 'standard'} type="button" onClick={() => setCurrent(r.id)}
+                title={r.status}
+                className={`h-8 px-3 inline-flex items-center rounded-lg border text-sm font-bold ${r.id === current
+                  ? 'border-orange-500 text-orange-700 bg-orange-50'
+                  : 'border-slate-200 text-slate-600 bg-white hover:bg-slate-50'}`}>
+                {r.id === null ? 'Standard' : r.name}
+              </button>
+            ))}
+            <button type="button" className="h-8 px-3 text-xs text-orange-700 font-bold"
+              onClick={() => { setPicking(true); setSearch('') }}>+ Add a design for a place</button>
+          </div>
+          {/* ⚠️ ONE LINE OF STATUS, FROM THE SERVER, so the row and the editor cannot describe the
+            * same design differently. */}
+          <p className="text-[11px] text-slate-400 mt-2">{rows.find(r => r.id === current)?.status}</p>
+        </div>
       )}
-      {warnings.length > 0 && (
-        <div className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-          {warnings.map((w, i) => <p key={i}>{w.message}</p>)}
-        </div>
+
+      {flash && (
+        <p data-flash className="mb-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+          {flash}
+        </p>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_280px] gap-4">
-        {/* ── LEFT · THE DESIGNS ───────────────────────────────────────────────────────────────── */}
-        {/* 🔴 ON A PHONE THE LIST BECOMES A DROPDOWN ABOVE THE PREVIEW. A truck with fifteen places
-          * would otherwise scroll past fifteen rows to reach the picture they are editing, on the one
-          * screen size where the picture is already the smallest. The breakpoint is the grid's own
-          * `lg:` — no new one is introduced. */}
-        <div className="space-y-3">
-          {/* ⛔ THE DESIGNS LIST IS HIDDEN IN BOTH FOCUSED MODES. On Social posts › Designs it would be a
-            * second copy of Box 3 — the same question asked twice on one screen, free to answer
-            * differently — and in the place editor it would offer a way out of the page the operator
-            * is standing on, past its own back link. */}
-          {!onlyStandard && !onlyPlaceId && (<>
-          <div className="lg:hidden">
-            <Panel title="Design">
-              <select value={current ?? ''} onChange={e => setCurrent(e.target.value || null)} className={SELECT}>
-                {rows.map(r => <option key={r.id ?? 'standard'} value={r.id ?? ''}>{r.name}</option>)}
-              </select>
-              <p className="text-[11px] text-slate-400 mt-1">
-                {rows.find(r => r.id === current)?.status}
-              </p>
-              <button type="button" className="text-xs text-orange-700 font-bold mt-2"
-                onClick={() => { setPicking(true); setSearch('') }}>+ Add a design for a place</button>
-            </Panel>
-          </div>
+      {layout && canvasW > 0 && canvasH > 0 && (
+        <DesignEditor
+          onDirtyChange={onDirtyChange}
+          onSaver={onSaver}
+          key={editorKey}
+          token={token}
+          designName={current ? `${currentName} · event post design` : 'Single event post design'}
+          backLabel={onCancel ? '‹ Designs' : '‹ Back'}
+          onBack={onCancel ?? (() => setCurrent(null))}
+          initialLayout={layout}
+          country={country}
+          hasLogo={hasLogo}
+          background={{ url: bgUrl, width: canvasW, height: canvasH }}
+          onReplacePicture={f => { if (current) void uploadPlace(current, f); else void uploadStandard(f) }}
+          replacing={busy}
+          pictureNote="Your picture without any date or place on it. We add those."
+          previewOptions={previewEvents}
+          previewWith={previewWith}
+          onPreviewWith={setPreviewWith}
+          renderPreview={renderPreview}
+          /* 🔴 §2 · WHAT THE LIVE TEXT SAYS. ⚠️ NO NOTE: a note is typed per POST in the modal, so the
+           * design preview has none — exactly as the PNG this replaced had none. */
+          liveData={liveEvent && liveEvent.id === previewWith && liveEvent.forPlace === (current ?? null)
+            ? { kind: 'event', entry: liveEvent.entry, date: liveEvent.date, note: null }
+            : null}
+          onSave={l => void save(l)}
+          saving={saving}
+          onCancel={onCancel ?? (() => setCurrent(null))}
+          readOnly={!editable}
+          /* ⚠️ `onSave` TAKES THE EDITOR'S OWN LAYOUT, not this component's `layout` state. The editor
+           * owns the undo history and therefore the live boxes; reading the stale copy here would save
+           * whatever the design looked like when the editor was mounted. */
+          message={msg}
+          scope={current ? {
+            mode,
+            onMode: m => void setMode(m),
+            busy,
+            placeName: currentName,
+          } : undefined}
+          footer={
+            /* ⛔ IN THE PLACE EDITOR THE CALLER OWNS THE REMOVE. Social posts puts it at the bottom of
+             * the page as "Use Standard design here instead", which is what removing it MEANS — and two
+             * controls for one irreversible act, with two different confirms, is how one of them ends
+             * up with the wrong wording. */
+            current && !onStandard && !onlyPlaceId ? (
+              <div className="rounded-2xl border border-slate-200 bg-white p-3">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">This place</p>
+                {confirmRemove
+                  ? <>
+                      <p className="text-[11px] text-slate-600 mb-2">
+                        Remove {currentName}&rsquo;s picture and text positions? Events there will use your
+                        Standard design.
+                      </p>
+                      <div className="flex gap-2">
+                        <Btn label="Remove" colour="red" size="sm" onClick={() => void removeDesign()} />
+                        <Btn label="Keep" colour="slate" size="sm" onClick={() => setConfirmRemove(false)} />
+                      </div>
+                    </>
+                  : <button type="button" className="text-xs text-red-600 font-semibold"
+                      onClick={() => setConfirmRemove(true)}>Remove this place&rsquo;s design</button>}
+              </div>
+            ) : null
+          }
+        />
+      )}
 
-          <div className="hidden lg:block">
-            <Panel title="Designs">
-              {rows.map(r => (
-                <button key={r.id ?? 'standard'} type="button" onClick={() => setCurrent(r.id)}
-                  className={`block w-full text-left px-2 py-1.5 rounded-lg ${r.id === current
-                    ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50'}`}>
-                  <span className={`block text-sm truncate ${r.id === current ? 'font-bold' : 'text-slate-700 font-semibold'}`}>
-                    {r.id === null ? 'Standard' : r.name}
-                  </span>
-                  {/* ⚠️ ONE LINE OF STATUS PER DESIGN, from the server, so the list and the right-hand
-                    * column cannot describe the same design differently. */}
-                  <span className="block text-[11px] text-slate-400 leading-snug">{r.status}</span>
-                </button>
-              ))}
-              <button type="button" className="text-xs text-orange-700 font-bold mt-2 px-2"
-                onClick={() => { setPicking(true); setSearch('') }}>+ Add a design for a place</button>
-            </Panel>
-          </div>
-          </>)}
-
-          <Panel title="Text we add">
-            <SelectBtn label="Date" active={selected === 'date'} onClick={() => setSelected('date')} />
-            <SelectBtn label="Location" active={selected === 'location'} onClick={() => setSelected('location')} />
-            <SelectBtn label="Time" active={selected === 'time'} onClick={() => setSelected('time')} />
-            {layout?.note
-              ? <>
-                  <SelectBtn label="Note box" active={selected === 'note'} onClick={() => setSelected('note')} />
-                  <button type="button" disabled={!editable} className="text-xs text-red-600 font-semibold mt-1 disabled:text-slate-300"
-                    onClick={() => { setLayout(l => l ? { ...l, note: null } : l); setSelected('date') }}>Remove note box</button>
-                </>
-              : <button type="button" disabled={!editable} className="text-xs text-orange-700 font-bold mt-1 disabled:text-slate-300"
-                  onClick={() => setLayout(l => l ? { ...l, note: defaultEventNoteBox(l) } : l)}>+ Add a note box</button>}
-          </Panel>
-        </div>
-
-        {/* ── CENTRE · THE PICTURE ─────────────────────────────────────────────────────────────── */}
-        <div>
-          <div ref={stageRef} className="relative w-full select-none touch-none bg-slate-100 rounded-xl overflow-hidden"
-            style={{ aspectRatio: `${canvasW || 1} / ${canvasH || 1}` }}>
-            <img src={preview ?? bgUrl} alt="" className="absolute inset-0 w-full h-full object-contain" />
-            {layout && (['date', 'location', 'time', 'note'] as BoxKey[]).map(key => {
-              const b = key === 'note' ? layout.note : (layout[key] as TextBox)
-              if (!b) return null
-              /* 🔴 A SWITCHED-OFF BOX IS NOT SHOWN, because nothing is drawn for it. An outline over
-               * empty artwork would have the truck arranging text that will never appear. */
-              if (key !== 'note' && (layout[key] as { enabled?: boolean }).enabled === false) return null
-              if (!editable) {
-                /* A read-only outline: the positions come from Standard and are shown, not moved. */
-                return (
-                  <div key={key} className="absolute border border-dashed border-slate-400/70 rounded pointer-events-none"
-                    style={{ left: b.x * scale, top: b.y * scale, width: b.w * scale, height: b.h * scale }} />
-                )
-              }
-              return (
-                <DraggableBox key={key} label={key} box={b} scale={scale} active={selected === key}
-                  bounds={{ w: canvasW, h: canvasH }}
-                  onSelect={() => setSelected(key)}
-                  onChange={(patch, done) => patchBox(key, patch, done)} />
-              )
-            })}
-          </div>
-          {!previewPick?.eventId && (
-            <p className="text-xs text-amber-700 mt-2">No events yet — add one and the preview will use it.</p>
-          )}
-          {!editable && (
-            <p className="text-xs text-slate-500 mt-2">
-              These positions come from your Standard design. Choose “Own for this place” to move them
-              just for {currentName}.
-            </p>
-          )}
-        </div>
-
-        {/* ── RIGHT · THIS DESIGN ──────────────────────────────────────────────────────────────── */}
-        <div className="space-y-3">
-          <Panel title="Picture">
-            <label className={`block text-xs font-bold cursor-pointer ${busy ? 'text-slate-400' : 'text-orange-700'}`}>
-              <input type="file" accept="image/png,image/jpeg" className="hidden"
-                onChange={e => {
-                  const f = e.target.files?.[0]
-                  if (!f) return
-                  if (current) void uploadPlace(current, f)
-                  else void uploadStandard(f)
-                }} />
-              {/* ⚠️ "ADD A PICTURE" WHERE THERE IS NONE. A design picked from the place picker has no
-                * picture of its own yet, and offering to "Replace" one it does not have reads as though
-                * something is already there — in the one flow this stage exists for. */}
-              {busy ? 'Uploading…'
-                : current && !placeDesign?.imageUrl
-                  /* ⚠️ THE BRIEF'S WORDS IN THE PLACE EDITOR, the screen's own elsewhere. "Upload a
-                   * picture for this place" says whose picture it is, which matters on a page that is
-                   * about one place; inside the Designs list the row above already said. */
-                  ? (onlyPlaceId ? 'Upload a picture for this place' : 'Add a picture')
-                  : (onlyPlaceId ? 'Replace picture' : 'Replace')}
-            </label>
-            <p className="text-[11px] text-slate-400 mt-1">
-              {current && !placeDesign?.imageUrl
-                ? `Using your Standard picture (${standard.width}×${standard.height})`
-                : `${canvasW}×${canvasH}`}
-            </p>
-            {current && mode === 'standard' && (
-              <p className="text-[11px] text-slate-400 mt-1">Must be the same shape as your Standard picture.</p>
-            )}
-          </Panel>
-
-          {current && (
-            <Panel title="Text positions">
-              {/* 🔴 THE TWO MODES, AND THE WHOLE POINT OF THIS STAGE. "Own for this place" lets a
-                * differently laid-out picture — a venue's own artwork with its name already printed on
-                * it — carry its own box positions instead of borrowing Standard's. */}
-              <select value={mode} disabled={busy}
-                onChange={e => void setMode(e.target.value as 'own' | 'standard')} className={SELECT}>
-                <option value="standard">Same as Standard</option>
-                <option value="own">Own for this place</option>
-              </select>
-            </Panel>
-          )}
-
-          <Panel title="Text we add">
-            {/* 🔴 EACH BOX CAN BE SWITCHED OFF, ON EVERY DESIGN INCLUDING STANDARD. A picture that
-              * already has the venue name on it needs the Location box gone, not moved off the edge. */}
-            <Check label="Date" checked={layout?.date.enabled !== false}
-              onChange={v => toggleBox('date', v)} />
-            <Check label="Location" checked={layout?.location.enabled !== false}
-              onChange={v => toggleBox('location', v)} />
-            {layout?.location.enabled === false && (
-              /* ⚠️ SAID OUT LOUD UNDER THE TOGGLE. Switching Location off is only correct when the place
-               * name is already in the picture; a truck who switched it off by mistake would otherwise
-               * post artwork that never says where they are. */
-              <p className="text-[11px] text-slate-500 -mt-1 mb-1">
-                The place name is in your picture — HatchGrab won’t add it.
-              </p>
-            )}
-            <Check label="Time" checked={layout?.time.enabled !== false}
-              onChange={v => toggleBox('time', v)} />
-            {layout && !layout.note && (
-              <button type="button" disabled={!editable} className="text-xs text-orange-700 font-bold mt-1 disabled:text-slate-300"
-                onClick={() => setLayout(l => l ? { ...l, note: defaultEventNoteBox(l) } : l)}>+ Add a note box</button>
-            )}
-          </Panel>
-
-          <Panel title="Time shows as">
-            <select value={layout?.timeDisplay ?? 'from'} disabled={!editable}
-              onChange={e => setLayout(l => l ? { ...l, timeDisplay: e.target.value as 'from' | 'range' } : l)}
-              className={SELECT}>
-              <option value="from">From 5pm</option>
-              <option value="range">5pm – 9pm</option>
-            </select>
-          </Panel>
-
-          {sel && editable && (
-            <Panel title={selected === 'note' ? 'Note box' : `${selected[0].toUpperCase()}${selected.slice(1)} box`}>
-              <Field label="Font">
-                <select value={sel.fontId} onChange={e => patchBox(selected, { fontId: e.target.value })} className={SELECT}>
-                  {FONT_CHOICES.map(f => <option key={f.id} value={f.id}>{f.family}</option>)}
-                </select>
-              </Field>
-              <Field label="Size">
-                <input type="number" min={6} max={canvasH} value={sel.fontSize}
-                  onChange={e => patchBox(selected, { fontSize: Number(e.target.value) || sel.fontSize })} className={SELECT} />
-              </Field>
-              <Field label="Text colour">
-                <input type="color" value={sel.color} onChange={e => patchBox(selected, { color: e.target.value })}
-                  className="w-full h-8 rounded border border-slate-200" />
-              </Field>
-              <Field label="Alignment">
-                <select value={sel.align} onChange={e => patchBox(selected, { align: e.target.value as Align })} className={SELECT}>
-                  <option value="left">Left</option><option value="center">Centre</option><option value="right">Right</option>
-                </select>
-              </Field>
-              <Check label="Capitals" checked={sel.caps} onChange={v => patchBox(selected, { caps: v })} />
-              <Check label="Raised ordinals (16ᵗʰ)" checked={sel.raisedOrdinals} onChange={v => patchBox(selected, { raisedOrdinals: v })} />
-              {selected === 'date' && layout && (
-                <>
-                  <Check label="Two lines" checked={layout.date.twoLines}
-                    onChange={v => setLayout(l => l ? { ...l, date: { ...l.date, twoLines: v } } : l)} />
-                  <OptionalColour label="Background behind the date" value={layout.date.bgTrading}
-                    onChange={v => setLayout(l => l ? { ...l, date: { ...l.date, bgTrading: v } } : l)} />
-                </>
-              )}
-            </Panel>
-          )}
-
-          {/* ⛔ IN THE PLACE EDITOR THE CALLER OWNS THE REMOVE. Social posts puts it at the bottom of the
-            * page as "Use Standard design here instead", which is what removing it MEANS — and two
-            * controls for one irreversible act, with two different confirms, is how one of them ends up
-            * with the wrong wording. */}
-          {current && !onStandard && !onlyPlaceId && (
-            <Panel title="This place">
-              {confirmRemove
-                ? <>
-                    <p className="text-[11px] text-slate-600 mb-2">
-                      Remove {currentName}’s picture and text positions? Events there will use your
-                      Standard design.
-                    </p>
-                    <div className="flex gap-2">
-                      <Btn label="Remove" colour="red" size="sm" onClick={() => void removeDesign()} />
-                      <Btn label="Keep" colour="slate" size="sm" onClick={() => setConfirmRemove(false)} />
-                    </div>
-                  </>
-                : <button type="button" className="text-xs text-red-600 font-semibold"
-                    onClick={() => setConfirmRemove(true)}>Remove this place’s design</button>}
-            </Panel>
-          )}
-        </div>
-      </div>
+      {!previewPick?.eventId && (
+        <p className="text-xs text-amber-700">No events yet — add one and the preview will use it.</p>
+      )}
 
       {/* ── THE PLACE PICKER ─────────────────────────────────────────────────────────────────────
         * ⚠️ THE SAME LIST AS ADD EVENT — favourites first, then by name, with a search — because it is
@@ -768,24 +657,32 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId }:
   )
 }
 
-function SelectBtn({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick}
-      className={`block w-full text-left text-sm px-2 py-1.5 rounded-lg ${active ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-600 hover:bg-slate-50'}`}>
-      {label}
-    </button>
-  )
-}
+
+/* ⛔ `SelectBtn` IS GONE WITH THE LEFT-HAND COLUMN IT BELONGED TO. The shared editor's item list
+ * draws its own rows — with a switch and a live sample, which this had neither of. */
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE MODAL — "Post for this event"
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-export function EventPostModal({ token, eventId, onClose, onNeedsSetup }: {
+export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionOverride }: {
   token: string
   eventId: string
   onClose: () => void
   onNeedsSetup: () => void
+  /**
+   * ══ 🔴 THE CAPTION THE OPERATOR TYPED ON THE Create a post CARD (9 October 2026) ════════════════
+   *
+   * ⛔ WITHOUT THIS THE EDITABLE CAPTION BOX WOULD BE A LIE. It sits on the card above the button, it
+   * is prefilled from the template, and the brief says typing in it changes the caption for THIS post
+   * — so if the modal went on using its own `info.text`, the operator's words would be visible right
+   * up to the moment they pressed Share and then silently discarded.
+   * ⚠️ `undefined` MEANS "USE THE SERVER'S", which is what every other door into this modal passes:
+   * Schedule › Events' own "Make post" has no caption box in front of it. ⛔ AND AN EMPTY STRING IS
+   * NOT undefined — a truck who deliberately cleared the box gets an empty caption, not the template
+   * back. The two states are different and `??` would collapse them.
+   */
+  captionOverride?: string
 }) {
   const [loading, setLoading] = useState(true)
   const [info, setInfo] = useState<{
@@ -797,9 +694,21 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup }: {
     layoutSource: 'standard' | 'place'
     placeName: string
     text: string
+    /** 🔴 The location this post is about, or null for a private booking. §6's tick box names it. */
+    placeId?: string | null
   } | null>(null)
   const [choice, setChoice] = useState<string>('')
+  /* ══ 🔴 §6 · "Also save it for <location>" ═════════════════════════════════════════════════════
+   * ⛔ IT IS READ AT **UPLOAD** TIME, NOT AT RENDER TIME, so it has to be ticked before the file is
+   * chosen — which is why it sits directly above the upload link rather than beside the radio. The
+   * server writes a `place_pictures` row for the SAME object and points the location's event slot at
+   * it; the one-off row is still written too, so this post keeps its own image either way.
+   * ⚠️ IT IS NOT A SETTING AND IS NOT REMEMBERED. Each upload asks again, because "save this one" is a
+   * statement about one file. */
+  const [alsoSave, setAlsoSave] = useState(false)
   const [png, setPng] = useState<string | null>(null)
+  /** The same picture as `png`, as the blob it came from — the share bar builds its `File` from this. */
+  const [pngBlob, setPngBlob] = useState<Blob | null>(null)
   const [note, setNote] = useState('')
   const [msg, setMsg] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -822,9 +731,14 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup }: {
     let alive = true
     ;(async () => {
       try {
+        /* ⛔ `placePictureId` IS NO LONGER SENT — the picture chooser went with the library model. A
+         * location has one event image, and `background: choice` already says whether this post uses
+         * it, the standard design, or a one-off. The server no longer reads the parameter either. */
         const r = await renderPng(token, { action: 'event_render', eventId, background: choice, note })
         if (!alive) return
         setPng(prev => { if (prev) URL.revokeObjectURL(prev); return r.url })
+        /* ⚠️ FROM THE SAME RESPONSE as the URL, so Share and Download cannot disagree. */
+        setPngBlob(r.blob)
       } catch (e) { if (alive) setMsg(e instanceof Error ? e.message : 'Could not build the picture') }
     })()
     return () => { alive = false }
@@ -832,51 +746,37 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup }: {
 
   const uploadOneOff = async (file: File) => {
     setBusy(true); setMsg(null)
+    /* ⚠️ THE TICK IS CLEARED AFTER THE UPLOAD, below, whether it succeeded or not — see the `finally`.
+     * A box that stayed ticked would quietly re-save the NEXT upload against the location too. */
     try {
-      await uploadTo(token, file, 'one-off', { eventId })
+      await uploadTo(token, file, 'one-off', { eventId, alsoSaveForPlace: alsoSave, fileName: file.name })
       await load()
       /* 🔴 A ONE-OFF IS SELECTED AS SOON AS IT IS UPLOADED — the brief's rule, and the obvious reading
        * of the act: nobody uploads a picture for this event and then wants the default. */
       setChoice('event')
     } catch (e) { setMsg(e instanceof Error ? e.message : 'The upload failed') }
-    finally { setBusy(false) }
+    finally { setBusy(false); setAlsoSave(false) }
   }
 
-  const copy = async (text: string) => {
-    try { await navigator.clipboard.writeText(text); setMsg('Text copied.') }
-    catch { setMsg('Could not copy — select the text and copy it by hand.') }
-  }
+  /* ⛔ `copy()` IS GONE TOO. Its one caller was the "Copy text" button in the row below, which is now
+   * the share bar's "Copy caption" — and that bar does the copy itself, without an `await` before it,
+   * for the same activation reason the share does. */
 
-  const download = () => {
-    if (!png || !info) return
-    const a = document.createElement('a')
-    a.href = png
-    a.download = `event-post-${info.event.date}.png`
-    a.click()
-  }
+  /* ⛔ `share()` AND `download()` ARE GONE FROM THIS FILE. The `share()` that was here downloaded the
+   * picture on a Mac instead of opening the share sheet, and the weekly post had the SAME function
+   * with the SAME bug — which is how one report would have become two fixes. Both now call
+   * components/manage/PostShareBar.tsx, the only caller of `navigator.share` on either screen. */
 
   /**
-   * 🔴 TEXT TO THE CLIPBOARD FIRST, THEN THE SHEET. Instagram and Facebook take the image from a share
-   * sheet and leave the caption to be pasted, so copying first makes the whole post one gesture — and
-   * doing it afterwards is too late, because the sheet takes the page out of focus and the clipboard
-   * write is refused.
+   * 🔴 **THE ONE POST TEXT.** The operator's, if they typed one on the Create a post card; the
+   * server's otherwise.
+   * ⛔ `!== undefined`, NOT `||` AND NOT `??`. A truck who deliberately emptied the caption box gets
+   * an empty caption; `||` would hand them the template back and `??` would too if the prop were ever
+   * null. The three states — not offered, offered and empty, offered and typed — are different.
+   * ⚠️ READ IN TWO PLACES (the preview and the share bar) FROM ONE `const`, so what is shown and what
+   * is copied cannot differ.
    */
-  const share = async () => {
-    if (!png || !info) return
-    try { await navigator.clipboard.writeText(info.text) } catch { /* the sheet still opens */ }
-    try {
-      const blob = await (await fetch(png)).blob()
-      const file = new File([blob], `event-post-${info.event.date}.png`, { type: 'image/png' })
-      const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean }
-      if (nav.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file] })
-        setMsg('Text copied — paste it into your post.')
-        return
-      }
-    } catch { /* fall through to the download */ }
-    download()
-    setMsg('Text copied, and the picture has been downloaded.')
-  }
+  const postText = captionOverride !== undefined ? captionOverride : (info?.text ?? '')
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -907,11 +807,16 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup }: {
               </div>
 
               <div className="space-y-3">
-                {/* 🔴 "DESIGN", NOT "BACKGROUND", because the choice now moves the text as well as the
-                  * picture. A place with its own text positions brings both; choosing Standard at such
-                  * a place takes Standard's picture AND Standard's positions, which is said below so
-                  * the truck is not surprised by text that moved. */}
-                <Panel title="Design">
+                {/* ══ 🔴 "Image" — 7 October 2026, §6 ═════════════════════════════════════════════
+                  * ⛔ IT WAS "Design", and before that "Background". "Design" was right while a
+                  * location could have one, because choosing Standard moved the TEXT as well as the
+                  * picture. A location has no design now — it has at most two IMAGES — so the heading
+                  * names what is being chosen and the one case where the text moves too is still said
+                  * in words directly below, where it is true.
+                  * ⚠️ THE OPTIONS' OWN LABELS COME FROM THE SERVER and say "<Location>'s photo" or
+                  * "<Location>'s poster" depending on whether the design has a photo space. The client
+                  * does not decide which word, so the label and the render cannot disagree. */}
+                <Panel title="Image">
                   {info.options.map(o => (
                     <label key={o.source} className="flex items-center gap-2 text-sm text-slate-700 py-1">
                       <input type="radio" name="bg" checked={choice === o.source} onChange={() => setChoice(o.source)} />
@@ -925,17 +830,38 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup }: {
                       Standard’s picture and Standard’s text positions — not {info.placeName}’s.
                     </p>
                   )}
+                  {/* ══ 🔴 "Also save it for <location>" — AND IT IS **ABOVE** THE UPLOAD LINK ══════
+                    * ⛔ NOT BESIDE THE RADIO, AND THAT IS NOT A LAYOUT PREFERENCE. The flag is read at
+                    * upload time, so it has to be ticked BEFORE the file is chosen; under the link it
+                    * would be a box an operator ticks after the thing it affects has already happened.
+                    * ⚠️ ONLY WHERE THERE IS A LOCATION TO SAVE AGAINST. A private booking sends no
+                    * `placeId` — the privacy rule holds without a second test here. */}
+                  {info.placeId && (
+                    <label className="mt-2 flex items-start gap-2 text-xs text-slate-600">
+                      <input type="checkbox" checked={alsoSave} disabled={busy}
+                        onChange={e => setAlsoSave(e.target.checked)} data-also-save
+                        className="mt-0.5" />
+                      <span>{imageChoiceAlsoSave(info.placeName)}</span>
+                    </label>
+                  )}
                   <label className="block text-xs text-orange-700 font-bold cursor-pointer mt-1">
                     <input type="file" accept="image/png,image/jpeg" className="hidden"
                       onChange={e => { const f = e.target.files?.[0]; if (f) void uploadOneOff(f) }} />
                     {/* ⚠️ "REPLACE IT" ONCE ONE EXISTS. The radio above already reads "Upload one for
-                      * this event only"; the same words twice would read as two different controls for
+                      * this post only"; the same words twice would read as two different controls for
                       * the same thing. */}
                     {busy ? 'Uploading…'
                       : info.options.some(o => o.source === 'event') ? 'Replace it'
-                      : 'Upload one for this event only'}
+                      : IMAGE_CHOICE_ONE_OFF}
                   </label>
                 </Panel>
+
+                {/* ══ ⛔ THE PICTURE CHOOSER IS GONE — 7 October 2026, §6 ══════════════════════════
+                  * It drew a tile per picture in this location's library with the Main one ringed, and
+                  * it existed because a location could have several and only one was used
+                  * automatically. 🔴 A LOCATION HAS ONE EVENT IMAGE NOW, so there is nothing to choose
+                  * between: the choice is which SOURCE — this location's, the standard design, or an
+                  * upload for this post only — and that is the radio group above. */}
 
                 <Panel title="Note (this post only)">
                   <textarea value={note} onChange={e => setNote(e.target.value)} rows={2}
@@ -943,14 +869,16 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup }: {
                 </Panel>
 
                 <Panel title="Post text">
-                  <p className="text-xs text-slate-600 whitespace-pre-wrap">{info.text}</p>
+                  <p className="text-xs text-slate-600 whitespace-pre-wrap">{postText}</p>
                 </Panel>
 
-                <div className="flex flex-wrap gap-2">
-                  <Btn label="Download image" onClick={download} />
-                  <Btn label="Copy text" colour="slate" onClick={() => void copy(info.text)} />
-                  <Btn label="Share" colour="slate" onClick={() => void share()} />
-                </div>
+                {/* 🔴 THE SHARED BAR — the same one the weekly post uses. */}
+                {/* 🔴 THE SHARE BAR GETS `postText`, WHICH IS THE OPERATOR'S IF THEY TYPED ONE. The
+                  * preview above it reads from the same value, so what is shown and what is copied
+                  * cannot differ — which is the whole reason it is one `const` and not two reads. */}
+                <PostShareBar blob={pngBlob} url={png}
+                  fileName={`event-post-${info.event.date}.png`}
+                  caption={postText} captionWord="Post text" onStatus={setMsg} />
               </div>
             </div>
           )}

@@ -131,3 +131,123 @@ export function outlineShadow(outline: string | null, fontSize: number): string 
     `-${d}px -${d}px ${blur}px ${outline}`,
   ].join(', ')
 }
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 THE EFFECTS LAYER (6 October 2026) — SHADOW, OUTLINE, BAND
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// ⛔ WHY THIS IS IN **THIS** FILE AND NOT IN THE RENDERER. Everything below answers one question —
+// "can the words be read on top of this picture?" — which is this module's whole subject. The renderer
+// is where the answer is DRAWN. Keeping the arithmetic here means it is pure, server-side and testable
+// without producing a PNG, exactly as `readabilityFor` already is.
+//
+// ⚠️ THIS FILE IMPORTS NOTHING, AND THAT IS DELIBERATE. `layout.ts` would give it the `Effects` type
+// and a tidier signature; it would also make `contrast → layout → format → …` a new edge in a graph
+// the harness compiles by hand. The inputs below are described structurally instead.
+
+/** What the shadow/outline builder needs. ⚠️ A structural shape, so `Effects` fits it without an import. */
+export interface ShadowInput {
+  shadow: 'none' | 'soft' | 'strong'
+  /** 0–100. 50 = the preset's own strength. */
+  shadowStrength: number
+  outline: boolean
+  outlineColour: string
+  /** 1–10. */
+  outlineWidth: number
+}
+
+/** 0–255 alpha as the two hex digits satori wants on the end of a colour. */
+const alphaHex = (a: number): string =>
+  Math.min(255, Math.max(0, Math.round(a))).toString(16).padStart(2, '0')
+
+/**
+ * A colour with an alpha, as `#rrggbbaa`.
+ *
+ * ⚠️ EIGHT-DIGIT HEX, NOT `rgba()`. satori parses both, but the band is also drawn by the EDITOR's
+ * on-screen preview through the same stored value, and an 8-digit hex is one string that both a CSS
+ * `background-color` and satori accept without a parse step in between.
+ */
+export const withAlpha = (hex: string, opacityPercent: number): string => {
+  const c = parseHex(hex)
+  const a = alphaHex((Math.min(100, Math.max(0, opacityPercent)) / 100) * 255)
+  return c ? `${toHex(c)}${a}` : `#000000${a}`
+}
+
+/**
+ * The preset shadow's offsets.
+ *
+ * 🔴 THE TONE COMES FROM THE **TEXT**, not from the picture, and for the same reason `readabilityFor`
+ * does it that way: white text needs a dark shadow and black text needs a light one. Choosing from the
+ * background would put a pale shadow behind white text on a pale sky — invisible, which is the one case
+ * a shadow exists for.
+ * ⚠️ SCALED WITH THE FONT SIZE. A 3px shadow is invisible at 120px and a smear at 12px; `0.05` and
+ * `0.09` of the size are the soft and strong offsets, measured on a 1080×1350 poster.
+ */
+export function presetShadow(
+  preset: 'none' | 'soft' | 'strong',
+  strengthPercent: number,
+  textColour: string,
+  fontSize: number,
+): string | null {
+  if (preset === 'none') return null
+  const text = parseHex(textColour)
+  const textIsLight = text ? relativeLuminance(text) > 0.5 : true
+  const base = textIsLight ? '#0b0b0b' : '#ffffff'
+  /* ⚠️ STRENGTH MOVES THE **OPACITY**, NOT THE DISTANCE. A stronger shadow further from the letters
+   * reads as a second, blurry copy of the text; a stronger shadow in the same place reads as a
+   * shadow. The preset owns the distance. */
+  const soft = preset === 'soft'
+  const d = Math.max(1, Math.round(fontSize * (soft ? 0.04 : 0.07)))
+  const blur = Math.max(1, Math.round(fontSize * (soft ? 0.09 : 0.06)))
+  const opacity = Math.min(100, Math.max(0, strengthPercent)) / 100
+    * (soft ? 0.7 : 1.0) * 100
+  return `${d}px ${d}px ${blur}px ${withAlpha(base, opacity)}`
+}
+
+/**
+ * Everything that goes in one `textShadow`, in one string.
+ *
+ * 🔴 ONE PROPERTY, SO THEY HAVE TO BE COMBINED HERE. CSS has a single `text-shadow`, which means the
+ * band-free effects — the operator's preset shadow, their explicit outline, and the automatic
+ * readability shadow — are not three independent features but three contributors to one value. Written
+ * separately in the renderer, the last one assigned would silently win, and the automatic one is
+ * assigned last: turning on "Strong shadow" on a low-contrast picture would have switched the shadow
+ * OFF.
+ *
+ * ⚠️ ORDER MATTERS AND THE OUTLINE GOES LAST. `text-shadow` paints the first entry on top, so the
+ * outline — which is four tight offsets pretending to be a stroke — must be painted UNDER the soft
+ * offsets of a shadow, or the shadow fills in the gap the outline is meant to leave.
+ */
+export function textShadowFor(
+  fx: ShadowInput,
+  textColour: string,
+  fontSize: number,
+  /** The automatic rule's answer, from `readabilityFor`. null = the text reads fine as it is. */
+  autoOutline: string | null,
+): string | undefined {
+  const parts: string[] = []
+  const preset = presetShadow(fx.shadow, fx.shadowStrength, textColour, fontSize)
+  if (preset) parts.push(preset)
+  /* ⚠️ THE AUTOMATIC SHADOW IS SKIPPED WHEN THE OPERATOR ALREADY ASKED FOR ONE. Adding a second soft
+   * shadow on top of "Strong" makes the text look bruised, and the automatic rule's job — "the words
+   * are hard to read" — is already done by the one they chose. */
+  if (autoOutline && !preset) {
+    const d = Math.max(1, Math.round(fontSize * 0.035))
+    const blur = Math.max(1, Math.round(fontSize * 0.05))
+    parts.push(`${d}px ${d}px ${blur}px ${autoOutline}`)
+  }
+  if (fx.outline) {
+    /* 🔴 THE OUTLINE IS FOUR OFFSETS, NOT A STROKE, AND THE REPORT SAYS SO. satori has no
+     * `-webkit-text-stroke` and no `paint-order`; four diagonal offsets of the outline colour at a
+     * small blur is the closest honest approximation, and it is the same trick `outlineShadow` above
+     * has always used for the automatic rule. It is visibly an outline and it is NOT a true stroke:
+     * at a thickness above about 8 the corners of a letter round off. */
+    const w = Math.min(10, Math.max(1, Math.round(fx.outlineWidth)))
+    const d = Math.max(1, Math.round(fontSize * 0.012 * w))
+    const blur = Math.max(1, Math.round(d * 0.5))
+    for (const [sx, sy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) {
+      parts.push(`${sx * d}px ${sy * d}px ${blur}px ${fx.outlineColour}`)
+    }
+  }
+  return parts.length ? parts.join(', ') : undefined
+}

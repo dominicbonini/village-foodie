@@ -8,23 +8,35 @@
 // and a CSS lookalike drifts from the renderer the first time either is touched, silently, on artwork
 // that goes out to a truck's customers.
 //
-// What this file DOES draw is the dashed OUTLINES on top of that PNG: they move instantly under the
-// finger or mouse, and a debounced request re-renders the picture underneath. So dragging is immediate
-// and the truth arrives a moment later, rather than every drag waiting on a round trip.
+// ── ⛔ WHAT LEFT THIS FILE ON 6 OCTOBER 2026 ───────────────────────────────────────────────────────
+// THE WHOLE EDITOR. `SetupScreen` used to own a left list, a drag surface and a right-hand column of
+// style controls — and `EventPost.tsx` owned a second copy of all three, which had already drifted
+// (two background colours here, one there; switches there, none here). Both are now
+// `components/manage/DesignEditor.tsx`, and `DraggableBox` moved to its own file.
+//
+// 🔴 WHAT THIS FILE STILL OWNS is the weekly post's own screens: the Weekly | Single event switch, the
+// "upload your blank" card, and the MAKE screen — the week picker, the event ticks, the caption and
+// the per-event posts. The editor is handed the weekly post's add-ons (the week heading, the row
+// spacing, the days-off text, the filled example) as props.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Card, Btn } from './primitives'
-// ⚠️ `font-list`, NOT `fonts`: this is a client component and `fonts` reads the filesystem.
-import { FONT_CHOICES } from '@/lib/weekly-post/font-list'
+/* ⚠️ `Btn` IS NO LONGER IMPORTED HERE: the only two on this screen were Download and Share, and both
+ * moved into `PostShareBar`. The remaining buttons are the text links in the side panels. */
+import { Card } from './primitives'
+/* ⚠️ ONE COPY MODULE FOR THE WHOLE SOCIAL TAB — §B8's line lives there with the rest. */
+import { NEW_SHAPE_RESET } from '@/lib/copy/socialPosts'
+import { DesignEditor, type AnyLayout } from './DesignEditor'
 import {
-  defaultNoteBox, MAX_UPLOAD_BYTES, MIN_UPLOAD_SHORT_SIDE,
-  type Align, type Layout, type TextBox,
+  MAX_UPLOAD_BYTES, MIN_UPLOAD_SHORT_SIDE,
+  type Layout,
 } from '@/lib/weekly-post/layout'
-import { averageSample } from '@/lib/weekly-post/contrast'
+import { DEFAULT_COUNTRY, type CountryCode } from '@/lib/weekly-post/locale'
+/* ⚠️ §2 · THE POSTER'S OWN DAY SHAPE, not this screen's `WeekDayView`. The live stage draws through the
+ * renderer's functions, so it needs the renderer's own type — and the route already sends exactly it. */
+import type { WeekDay } from '@/lib/weekly-post/week-data'
 import { weekLabel } from '@/lib/weekly-post/caption'
 import { EventSetupScreen, EventPostModal } from './EventPost'
-
-type BoxKey = 'heading' | 'date' | 'location' | 'time' | 'note'
+import { PostShareBar } from './PostShareBar'
 
 interface LoadedDesign {
   width: number
@@ -33,6 +45,10 @@ interface LoadedDesign {
   blankUrl: string | null
   exampleUrl: string | null
 }
+
+/* 🔴 THE COUNTRY COMES FROM THE SERVER, THROUGH `countryForTruck()`, AND IS NEVER DECIDED HERE. A
+ * component that defaulted to 'GB' itself would be a second place the product answers that question —
+ * which is the whole point of `lib/weekly-post/locale.ts`. */
 
 interface WeekDayView {
   date: string
@@ -52,7 +68,10 @@ const api = async (token: string, body: Record<string, unknown>) => {
 
 /* ⚠️ THE RENDER CALL IS SEPARATE because the response is a PNG, not JSON, and it carries its warnings
  * in a header. Treating it like the others would make `r.json()` throw on a valid image. */
-async function renderPng(token: string, body: Record<string, unknown>): Promise<{ url: string; warnings: { where: string; message: string }[]; ms: number }> {
+/* ⚠️ IT RETURNS THE `blob` AS WELL AS THE URL (6 October 2026). `PostShareBar` needs a `File` ready
+ * BEFORE the operator taps Share — see that file's header — and the blob is already in hand here, so
+ * handing it over costs nothing and removes the `fetch(png)` that used to happen inside the tap. */
+async function renderPng(token: string, body: Record<string, unknown>): Promise<{ url: string; blob: Blob; warnings: { where: string; message: string }[]; ms: number }> {
   const r = await fetch('/api/weekly-post', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token, action: 'render', ...body }),
@@ -64,7 +83,7 @@ async function renderPng(token: string, body: Record<string, unknown>): Promise<
   const blob = await r.blob()
   let warnings: { where: string; message: string }[] = []
   try { warnings = JSON.parse(decodeURIComponent(r.headers.get('X-Render-Warnings') || '[]')) } catch { /* a header we can live without */ }
-  return { url: URL.createObjectURL(blob), warnings, ms: Number(r.headers.get('X-Render-Ms') || 0) }
+  return { url: URL.createObjectURL(blob), blob, warnings, ms: Number(r.headers.get('X-Render-Ms') || 0) }
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -87,6 +106,7 @@ async function renderPng(token: string, body: Record<string, unknown>): Promise<
  */
 export function WeeklyPostApp({
   token, truckName, initialMode, initialWeek, initialDesignKind, hideKindSwitch, onBack,
+  onAddPlacePictures, onDirtyChange, onSaver,
 }: {
   token: string
   truckName: string
@@ -98,6 +118,17 @@ export function WeeklyPostApp({
    * different heights. `designKind` is still honoured. */
   hideKindSwitch?: boolean
   onBack?: () => void
+  /** 🔴 Part 3: opens Designs › Place pictures from the weekly design's picture toolbar. */
+  onAddPlacePictures?: () => void
+  /* 🔴 REPORTED SO A **SUB-TAB PILL** CAN ASK BEFORE IT NAVIGATES (9 October 2026). The pills live in
+   * the page's bar, outside this screen; without this they would switch tab out from under an unsaved
+   * design with no warning at all. ⚠️ Threaded straight through to `DesignEditor`, which owns the
+   * comparison — this screen only passes it on. */
+  onDirtyChange?: (dirty: boolean) => void
+  /* 🔴 §B10 · THE EDITOR'S OWN SAVE, HANDED UP so the leave dialog can offer "Save and leave".
+   * ⚠️ Threaded straight through to `DesignEditor`, which owns the layout — this screen only passes it
+   * on, exactly as it passes `onDirtyChange`. */
+  onSaver?: (save: (() => void | Promise<void>) | null) => void
 }) {
   const [loading, setLoading] = useState(true)
   const [missingTable, setMissingTable] = useState(false)
@@ -107,6 +138,21 @@ export function WeeklyPostApp({
   const [week, setWeek] = useState<'this' | 'next'>('this')
   const [days, setDays] = useState<WeekDayView[]>([])
   const [orderUrl, setOrderUrl] = useState<string | null>(null)
+  const [country, setCountry] = useState<CountryCode>(DEFAULT_COUNTRY)
+  /* 🔴 PART 3 · WHAT THE PLACE-PICTURE ITEM NEEDS, from the SAME `load` the design comes from. Both
+   * are facts about the TRUCK rather than the design, so the editor is handed them rather than making
+   * a second request for them. */
+  const [hasLogo, setHasLogo] = useState(false)
+  const [placesWithout, setPlacesWithout] = useState<{ without: number; total: number } | null>(null)
+  /* ══ 🔴 §9 · "Show private events" — OFF BY DEFAULT, AND IT LIVES UP HERE ══════════════════════
+   * ⛔ IT IS NOT LOCAL TO THE MAKE SCREEN, and that was the first attempt. The make screen's tick-list
+   * of events comes from the `load` response, so a toggle held down there would change what the POSTER
+   * contained while the list beside it still showed the old set — the operator ticking events off a
+   * list that disagreed with the picture. It is lifted to the one component that calls `load`, exactly
+   * as the week choice already is, so one request answers both.
+   * ⚠️ AND THE SERVER DECIDES. This flag is sent; it is `buildWeekData` that leaves the events out.
+   * Nothing is fetched and then hidden in the browser. */
+  const [showPrivate, setShowPrivate] = useState(false)
   /** Which design the setup screen is editing. Post screens are unaffected. */
   /* 🔴 "Single event" IS THE DEFAULT (5 October 2026). It is the post a truck makes most often — one
    * per pitch, every week — where the weekly poster is made once and then rarely touched. Opening on
@@ -116,14 +162,17 @@ export function WeeklyPostApp({
    * default is unchanged. */
   const [designKind, setDesignKind] = useState<'week' | 'event'>(initialDesignKind ?? 'event')
 
-  const load = useCallback(async (which?: 'this' | 'next') => {
+  const load = useCallback(async (which?: 'this' | 'next', priv?: boolean) => {
     try {
-      const r = await api(token, { action: 'load', week: which })
+      const r = await api(token, { action: 'load', week: which, showPrivate: priv === true })
       setMissingTable(!!r.missingTable)
       setDesign(r.design ?? null)
       setDays(r.week?.days ?? [])
       setWeek(r.week?.which ?? 'this')
       setOrderUrl(r.orderUrl ?? null)
+      setCountry((r.country as CountryCode) ?? DEFAULT_COUNTRY)
+      setHasLogo(r.hasLogo === true)
+      setPlacesWithout((r.placesWithout as { without: number; total: number } | null) ?? null)
       /* 🔴 NO DESIGN ⇒ THE SETUP SCREEN, AUTOMATICALLY — the brief's "shown automatically the first
        * time". A post screen with nothing to post from would be a dead end. */
       /* ⚠️ THE CALLER'S CHOICE WINS WHERE THERE IS A DESIGN. With no design there is nothing to post
@@ -142,7 +191,7 @@ export function WeeklyPostApp({
   /* ⚠️ `initialWeek` IS PASSED TO THE FIRST LOAD, not set afterwards. Loading this week and then
    * reloading next week would show the operator a week they did not ask for, briefly, every time. */
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { void load(initialWeek) }, [load, initialWeek])
+  useEffect(() => { void load(initialWeek, false) }, [load, initialWeek])
 
   if (loading) return <Card className="p-8 text-center"><p className="text-sm text-slate-400">Loading…</p></Card>
 
@@ -190,117 +239,121 @@ export function WeeklyPostApp({
             full page under a "‹ Designs" link, and a Cancel that dropped the operator onto the weekly
             POST screen — a screen they did not ask for — would be two exits that disagree. */}
         {designKind === 'week'
-          ? <SetupScreen token={token} design={design} onDone={() => { void load(week) }}
+          ? <SetupScreen token={token} design={design} country={country} onDirtyChange={onDirtyChange}
+              onSaver={onSaver}
+              hasLogo={hasLogo} placesWithout={placesWithout} onAddPlacePictures={onAddPlacePictures}
+              onDone={() => { void load(week, showPrivate) }}
               onCancel={onBack ?? (design ? () => setMode('post') : undefined)} />
-          : <EventSetupScreen token={token} onCancel={onBack ?? (design ? () => setMode('post') : undefined)} />}
+          /* ⚠️ `EventSetupScreen` READS ITS OWN COUNTRY from `event_load`, so it is not passed one —
+           * see its note. This screen's weekly half takes it from `load` above. */
+          : <EventSetupScreen token={token} onSaver={onSaver}
+              onCancel={onBack ?? (design ? () => setMode('post') : undefined)} />}
       </div>
     )
   }
 
   return <PostScreen token={token} truckName={truckName} design={design!} days={days} week={week}
-    orderUrl={orderUrl} onWeek={w => { setWeek(w); void load(w) }} onEdit={() => setMode('setup')} error={error} />
+    orderUrl={orderUrl} onWeek={w => { setWeek(w); void load(w, showPrivate) }}
+    showPrivate={showPrivate}
+    onShowPrivate={v => { setShowPrivate(v); void load(week, v) }}
+    onEdit={() => setMode('setup')} error={error} />
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE SETUP SCREEN
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-function SetupScreen({ token, design, onDone, onCancel }: {
+function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlacePictures, onDone, onCancel, onDirtyChange, onSaver }: {
   token: string
   design: LoadedDesign | null
+  country: CountryCode
+  hasLogo: boolean
+  placesWithout: { without: number; total: number } | null
+  onAddPlacePictures?: () => void
   onDone: () => void
   onCancel?: () => void
+  /** ⚠️ Threaded straight through to `DesignEditor`, which owns the comparison. */
+  onDirtyChange?: (dirty: boolean) => void
+  /** ⚠️ Threaded straight through too — see `WeeklyPostApp`. */
+  onSaver?: (save: (() => void | Promise<void>) | null) => void
 }) {
-  const [layout, setLayout] = useState<Layout | null>(design?.layout ?? null)
   const [blankUrl, setBlankUrl] = useState<string | null>(design?.blankUrl ?? null)
+  /* ⚠️ STILL SET BY THE UPLOAD PATH, WHICH IS UNTOUCHED (§B7) — only the panel that showed it over the
+   * preview has gone, so nothing reads it any more. ⛔ KEPT RATHER THAN DELETED because the endpoint,
+   * the stored file and `design.exampleUrl` all still exist: this is the one line that would have to
+   * come back if the feature is given a door again. */
   const [exampleUrl, setExampleUrl] = useState<string | null>(design?.exampleUrl ?? null)
+  void exampleUrl
   const [size, setSize] = useState<{ w: number; h: number } | null>(design ? { w: design.width, h: design.height } : null)
-  const [selected, setSelected] = useState<BoxKey>('date')
-  const [busy, setBusy] = useState(false)
-  const [preview, setPreview] = useState<string | null>(null)
-  const [warnings, setWarnings] = useState<{ where: string; message: string }[]>([])
+  const [layout, setLayout] = useState<Layout | null>(design?.layout ?? null)
   const [uploading, setUploading] = useState(false)
-  const [msg, setMsg] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
-  const [showExample, setShowExample] = useState(false)
-
-  const stageRef = useRef<HTMLDivElement | null>(null)
-  const [stageW, setStageW] = useState(0)
-
-  /* ⚠️ THE EDITOR SCALE NEVER REACHES STORAGE. Boxes are stored in the blank's own pixels; this is the
-   * only place the on-screen size is known, and every drag converts back through it. A design made on
-   * a phone therefore renders identically to one made on a desktop. */
-  const scale = size && stageW ? stageW / size.w : 1
-
-  useEffect(() => {
-    const el = stageRef.current
-    if (!el) return
-    const ro = new ResizeObserver(() => setStageW(el.clientWidth))
-    ro.observe(el)
-    setStageW(el.clientWidth)
-    return () => ro.disconnect()
-  }, [blankUrl])
-
-  // ── the debounced preview ───────────────────────────────────────────────────────────────────────
-  /* 🔴 DEBOUNCED WHILE DRAGGING, AND THE OUTLINES DO NOT WAIT FOR IT. Every drag would otherwise be a
-   * round trip and a repaint, which on a touch screen feels broken. The outline moves at once; the
-   * picture catches up when the finger stops. */
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const requestPreview = useCallback((l: Layout, isBusy: boolean) => {
-    if (timer.current) clearTimeout(timer.current)
-    timer.current = setTimeout(async () => {
-      try {
-        const r = await renderPng(token, { layout: l, busy: isBusy })
-        setPreview(prev => { if (prev) URL.revokeObjectURL(prev); return r.url })
-        setWarnings(r.warnings)
-      } catch { /* the outlines still work; the picture is one request behind */ }
-    }, 400)
-  }, [token])
-
-  useEffect(() => { if (layout) requestPreview(layout, busy) }, [layout, busy, requestPreview])
-
-  // ── the readability sampler ─────────────────────────────────────────────────────────────────────
-  /* 🔴 SAMPLING HAPPENS HERE BECAUSE ONLY THE BROWSER HAS A DECODER for both PNG and JPG. The server
-   * has none (no sharp, no canvas), so the editor samples the blank under each box and stores the
-   * average in the design; the renderer decides from it. lib/weekly-post/contrast.ts sets this out.
-   * ⚠️ IT FAILS QUIETLY TO "no sample". A cross-origin blank taints the canvas and `getImageData`
-   * throws — in which case the renderer adds no shadow at all rather than guessing a background and
-   * altering someone's artwork on no evidence. */
-  const blankImg = useRef<HTMLImageElement | null>(null)
-  useEffect(() => {
-    if (!blankUrl) { blankImg.current = null; return }
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.onload = () => { blankImg.current = img }
-    img.onerror = () => { blankImg.current = null }
-    img.src = blankUrl
-  }, [blankUrl])
-
-  const sampleUnder = useCallback((b: TextBox): { r: number; g: number; b: number } | null => {
-    const img = blankImg.current
-    if (!img || !img.naturalWidth) return null
-    try {
-      const c = document.createElement('canvas')
-      const w = Math.max(1, Math.min(64, Math.round(b.w / 8)))
-      const h = Math.max(1, Math.min(64, Math.round(b.h / 8)))
-      c.width = w; c.height = h
-      const ctx = c.getContext('2d', { willReadFrequently: true })
-      if (!ctx) return null
-      ctx.drawImage(img, b.x, b.y, Math.max(1, b.w), Math.max(1, b.h), 0, 0, w, h)
-      return averageSample(ctx.getImageData(0, 0, w, h).data)
-    } catch { return null }
+  const [msg, setMsg] = useState<{ text: string; bad: boolean } | null>(null)
+  /* ══ 🔴 §B8 · A MESSAGE THAT FADES ════════════════════════════════════════════════════════════
+   * ⚠️ SEPARATE FROM `msg`, which is the screen's permanent slot ("Design saved.", "The upload
+   * failed") and must not disappear on a timer. ⛔ THE TIMER IS CLEARED ON UNMOUNT and on a second
+   * flash, or a slow operator uploading twice would be left with a message that outlives its own
+   * reason by five seconds. */
+  const [flash, setFlashText] = useState<string | null>(null)
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const setFlash = useCallback((text: string) => {
+    if (flashTimer.current) clearTimeout(flashTimer.current)
+    setFlashText(text)
+    flashTimer.current = setTimeout(() => { setFlashText(null); flashTimer.current = null }, 5000)
   }, [])
+  useEffect(() => () => { if (flashTimer.current) clearTimeout(flashTimer.current) }, [])
+  /* 🔴 "Preview with" REPLACES THE OLD "Preview a busy week" BUTTON. It was a toggle that changed what
+   * the picture showed and said nothing about what it was showing instead; one select naming all three
+   * ("This week", "Next week", "A busy week") is the same feature with the answer written on it.
+   * ⚠️ "A busy week" IS WEEK **DATA**, NOT A SECOND DRAWING PATH — a 60-character place name, a stacked
+   * Saturday, a cancelled day and a day off, through this same renderer, so what it shows is true. */
+  const [previewWith, setPreviewWith] = useState('this')
 
-  const patchBox = useCallback((key: BoxKey, patch: Partial<TextBox>, resample = false) => {
-    setLayout(prev => {
-      if (!prev) return prev
-      const current = key === 'note' ? prev.note : (prev[key] as TextBox)
-      if (!current) return prev
-      const next = { ...current, ...patch } as TextBox
-      if (resample) next.bgSample = sampleUnder(next)
-      return { ...prev, [key]: next } as Layout
-    })
-  }, [sampleUnder])
+  /* ══ 🔴 §2 · THE WEEK THE LIVE TEXT SAYS — FETCHED ONCE PER "Preview with" ═══════════════════════
+   *
+   * ⛔ THE EDITOR CANNOT INVENT IT. It has the layout, so it knows where every box is and what it looks
+   * like; it does not know that Thursday is Cavendish at 5pm. That is this screen's week, and this
+   * screen is the one that loads it.
+   * ⚠️ ONE REQUEST WHEN THE OPERATOR CHANGES THE CHOICE, AND NOT ONE PER EDIT. The whole point of §2
+   * is that moving a box costs no round trip; fetching the week per drag would have put the round trip
+   * straight back. ⛔ AND IT IS THE **SAME ACTION THE PNG IS RENDERED FROM** (`load`, with the same
+   * `week`), so the live words and the file a truck posts are one answer.
+   * ⛔ **`showPrivate` IS NOT SENT, AND THAT IS PARITY RATHER THAN AN OVERSIGHT.** The design preview's
+   * own PNG (`renderPreview` → the `render` action) does not send it either, so the server leaves
+   * private bookings out of both. The tick that shows them lives on the POST screen, which is where
+   * the operator decides what a particular post says.
+   * ⚠️ A FAILURE IS SILENT AND LEAVES IT `null`, which the editor reads as "fall back to the PNG".
+   */
+  /* 🔴 **IT CARRIES THE CHOICE IT IS FOR.** Switching from This week to Next week leaves the old answer
+   * in state until the new one lands, and without the key the stage would draw LAST week's dates for a
+   * moment — the exact bug §2 exists to remove, reintroduced one layer up. ⚠️ A MISMATCH READS AS "not
+   * loaded", so nothing has to be cleared and this effect sets no state synchronously. */
+  const [liveWeek, setLiveWeek] = useState<
+    { which: string; days: WeekDay[]; start: string; end: string } | null
+  >(null)
+  useEffect(() => {
+    let alive = true
+    void (async () => {
+      try {
+        const r = await api(token, {
+          action: 'load',
+          week: previewWith === 'next' ? 'next' : 'this',
+        })
+        if (!alive || !r.week) return
+        setLiveWeek({
+          which: previewWith,
+          days: (r.week.days ?? []) as WeekDay[],
+          start: String(r.week.start), end: String(r.week.end),
+        })
+      } catch { /* the stage falls back to the PNG, which is what it drew before §2 */ }
+    })()
+    return () => { alive = false }
+  }, [token, previewWith])
+
+  /* ⚠️ THE EDITOR IS REMOUNTED WHEN THE PICTURE CHANGES SHAPE, by its key. A new blank resets the
+   * boxes server-side, and the editor holds the undo history — carrying a history of positions that
+   * were measured against a different canvas would let ⌘Z put a box outside the new picture. */
+  const editorKey = `${size?.w ?? 0}x${size?.h ?? 0}`
 
   // ── uploading ───────────────────────────────────────────────────────────────────────────────────
   const upload = async (file: File, which: 'blank' | 'example') => {
@@ -308,8 +361,8 @@ function SetupScreen({ token, design, onDone, onCancel }: {
     /* ⚠️ CHECKED IN THE BROWSER **AND** ON THE SERVER. This check is for speed — refusing a 40MB file
      * before it is uploaded — not for safety: the server reads the real bytes and is the one that
      * decides, because a client check is advice. */
-    if (file.size > MAX_UPLOAD_BYTES) { setMsg(`That image is ${(file.size / 1024 / 1024).toFixed(1)}MB. The limit is 10MB.`); return }
-    if (!/^image\/(png|jpe?g)$/.test(file.type)) { setMsg('Please choose a PNG or JPG.'); return }
+    if (file.size > MAX_UPLOAD_BYTES) { setMsg({ text: `That image is ${(file.size / 1024 / 1024).toFixed(1)}MB. The limit is 10MB.`, bad: true }); return }
+    if (!/^image\/(png|jpe?g)$/.test(file.type)) { setMsg({ text: 'Please choose a PNG or JPG.', bad: true }); return }
     setUploading(true)
     try {
       const ext = file.type.includes('png') ? 'png' : 'jpg'
@@ -318,36 +371,62 @@ function SetupScreen({ token, design, onDone, onCancel }: {
       if (!put.ok) throw new Error('The upload did not complete')
       const done = await api(token, { action: 'confirm_upload', path: slot.path, which })
       if (which === 'blank') {
+        /* ══ 🔴 §B8 · SAID ONLY WHEN IT IS TRUE, AND ONLY FOR FIVE SECONDS ══════════════════════════
+         * ⛔ IT WAS SHOWN WHENEVER THE SERVER SAID `resetLayout` — which it says for any new blank of a
+         * different SIZE, including a re-export of the same artwork at a higher resolution, where the
+         * boxes land exactly where they were. So a line claiming the operator's work had moved appeared
+         * when nothing had, and it stayed on the screen until something else replaced it.
+         * 🔴 TWO CONDITIONS, BOTH CHECKED HERE: the new picture is a different SHAPE (the ratio moved by
+         * more than 1%, the same tolerance the rest of this product uses), AND the boxes really are not
+         * where they were. ⚠️ THE SECOND IS COMPARED AGAINST THE **OLD** LAYOUT, which this screen still
+         * holds — the server cannot answer it, because it does not know what was on screen. */
+        const before = size, oldLayout = layout
+        const shapeChanged = !before
+          || Math.abs((before.w / Math.max(1, before.h)) - (done.width / Math.max(1, done.height))) > 0.01
+        const boxesMoved = !oldLayout || JSON.stringify([
+          oldLayout.date, oldLayout.location, oldLayout.time, oldLayout.heading, oldLayout.days ?? null,
+        ]) !== JSON.stringify([
+          done.layout.date, done.layout.location, done.layout.time, done.layout.heading, done.layout.days ?? null,
+        ])
         setSize({ w: done.width, h: done.height })
         setLayout(done.layout)
         setBlankUrl(done.blankUrl)
-        if (done.resetLayout) setMsg('New image size — the boxes have been reset to a starting position.')
+        if (done.resetLayout && shapeChanged && boxesMoved) setFlash(NEW_SHAPE_RESET)
       } else {
         setExampleUrl(done.exampleUrl)
-        setShowExample(true)
       }
-    } catch (e) { setMsg(e instanceof Error ? e.message : 'The upload failed') }
+    } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'The upload failed', bad: true }) }
     finally { setUploading(false) }
   }
 
-  const save = async () => {
-    if (!layout) return
+  const save = async (next: AnyLayout) => {
     setSaving(true)
     try {
-      const r = await api(token, { action: 'save_design', layout })
-      setMsg(r.warning ?? 'Design saved.')
+      const r = await api(token, { action: 'save_design', layout: next })
+      setMsg({ text: r.warning ?? 'Design saved.', bad: false })
       onDone()
-    } catch (e) { setMsg(e instanceof Error ? e.message : 'Could not save') }
+    } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'Could not save', bad: true }) }
     finally { setSaving(false) }
   }
+
+  /* ⚠️ `useCallback` SO THE EDITOR'S DEBOUNCED PREVIEW EFFECT DOES NOT RE-FIRE ON EVERY RENDER. The
+   * effect depends on this function; a new identity each render would restart the 400ms timer
+   * continuously and the picture would never arrive. */
+  const renderPreview = useCallback(async (l: AnyLayout, which: string) => {
+    const r = await renderPng(token, {
+      layout: l,
+      week: which === 'next' ? 'next' : 'this',
+      busy: which === 'busy',
+    })
+    return { url: r.url, warnings: r.warnings }
+  }, [token])
 
   // ── no blank yet ────────────────────────────────────────────────────────────────────────────────
   if (!layout || !size || !blankUrl) {
     return (
       <Card className="p-6">
-        {/* 🔴 THE SAME SIZE AND WEIGHT AS "Set up your event post" (EventPost.tsx) — one style for the
-          * two cards that do the same job. It was `text-lg font-black`, which is why it read as a
-          * second page heading under the outer one. */}
+        {/* 🔴 THE SAME SIZE AND WEIGHT AS "Set up your single event post" (EventPost.tsx) — one style
+          * for the two cards that do the same job. */}
         <p className="font-bold text-slate-800">Set up your weekly post</p>
         <p className="text-sm text-slate-600 mt-1 max-w-prose">
           Upload the blank version of the weekly schedule graphic you already make — the same design,
@@ -369,300 +448,88 @@ function SetupScreen({ token, design, onDone, onCancel }: {
           {uploading ? 'Uploading…' : 'Upload your blank image'}
         </label>
         <p className="text-xs text-slate-400 mt-2">PNG or JPG, up to 10MB, at least {MIN_UPLOAD_SHORT_SIDE}px on the short side.</p>
-        {msg && <p className="text-sm text-red-600 mt-2">{msg}</p>}
+        {msg && <p className="text-sm text-red-600 mt-2">{msg.text}</p>}
       </Card>
     )
   }
 
-  const sel: TextBox | null = selected === 'note' ? layout.note : (layout[selected] as TextBox)
-
   return (
-    <div className="space-y-4">
-      {/* ⚠️ NO <h2> HERE ANY MORE — the Week | Single event switch above owns the title, so the two
-          designs' setup screens carry one heading between them rather than one each. */}
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setBusy(b => !b)}
-            className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${busy ? 'border-orange-500 text-orange-700 bg-orange-50' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-            Preview a busy week
-          </button>
-          {onCancel && <Btn label="Cancel" colour="slate" onClick={onCancel} />}
-          <Btn label={saving ? 'Saving…' : 'Save design'} loading={saving} onClick={() => void save()} />
-        </div>
-      </div>
-
+    <>
       {/* ⚠️ A PHONE IS TOLD, NOT BLOCKED. Dragging a box on a 390px screen is unpleasant but it works,
           and refusing to show the screen would strand an operator who only has a phone. */}
-      <p className="md:hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+      <p className="min-[900px]:hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-3">
         Best on a computer or iPad — the boxes are small to drag on a phone.
       </p>
-      {msg && <p className="text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">{msg}</p>}
-      {warnings.length > 0 && (
-        <div className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-          {warnings.map((w, i) => <p key={i}>{w.where === 'heading' || w.where === 'note' ? '' : `${w.where}: `}{w.message}</p>)}
-        </div>
+      {/* ⛔ THE "Filled example" PANEL WAS A `footer` ON THIS EDITOR AND IS GONE — §B7. It uploaded a
+        * finished poster and showed it at 30% over the preview so boxes could be lined up against the
+        * real thing. ⚠️ THE PREVIEW **IS** THE REAL THING NOW: the stage draws the renderer's PNG for
+        * the chosen week, with this truck's own place names in it, so a faint second poster on top of a
+        * true one was two answers to one question. ⛔ THE UPLOAD ENDPOINT AND THE STORED FILE ARE
+        * UNTOUCHED — a capability that lost its door, named in docs/social-tab-6-report.md. */}
+      {/* ⚠️ ABOVE THE EDITOR AND IN ITS OWN SLOT, so it cannot push the poster down when it appears
+        * and leave a gap when it goes: the row is only in the tree while there is something in it, and
+        * it is the only thing in this screen that times out. */}
+      {flash && (
+        <p data-flash className="mb-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+          {flash}
+        </p>
       )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_260px] gap-4">
-        {/* ── LEFT: what to place ─────────────────────────────────────────────────────────────── */}
-        <div className="space-y-3">
-          <Panel title="Your design">
-            <label className="block text-xs text-orange-700 font-bold cursor-pointer">
-              <input type="file" accept="image/png,image/jpeg" className="hidden"
-                onChange={e => { const f = e.target.files?.[0]; if (f) void upload(f, 'blank') }} />
-              {uploading ? 'Uploading…' : 'Replace blank image'}
-            </label>
-            <label className="block text-xs text-orange-700 font-bold cursor-pointer mt-2">
-              <input type="file" accept="image/png,image/jpeg" className="hidden"
-                onChange={e => { const f = e.target.files?.[0]; if (f) void upload(f, 'example') }} />
-              {exampleUrl ? 'Replace filled example' : 'Add a filled example'}
-            </label>
-            {exampleUrl && (
-              <label className="flex items-center gap-2 mt-2 text-xs text-slate-600">
-                <input type="checkbox" checked={showExample} onChange={e => setShowExample(e.target.checked)} />
-                Show example faintly
-              </label>
-            )}
-          </Panel>
-
-          <Panel title="Heading">
-            <SelectBoxButton label="Heading" active={selected === 'heading'} onClick={() => setSelected('heading')} />
-          </Panel>
-
-          <Panel title="Each day row">
-            <p className="text-[11px] text-slate-400 mb-1">Place row 1&apos;s three boxes. The other six days copy it.</p>
-            <SelectBoxButton label="Date" active={selected === 'date'} onClick={() => setSelected('date')} />
-            <SelectBoxButton label="Location" active={selected === 'location'} onClick={() => setSelected('location')} />
-            <SelectBoxButton label="Time" active={selected === 'time'} onClick={() => setSelected('time')} />
-          </Panel>
-
-          <Panel title="Note">
-            {layout.note
-              ? <>
-                  <SelectBoxButton label="Note box" active={selected === 'note'} onClick={() => setSelected('note')} />
-                  <button type="button" className="text-xs text-red-600 font-semibold mt-1"
-                    onClick={() => { setLayout(l => l ? { ...l, note: null } : l); setSelected('date') }}>Remove note box</button>
-                </>
-              : <button type="button" className="text-xs text-orange-700 font-bold"
-                  onClick={() => setLayout(l => l ? { ...l, note: defaultNoteBox(l) } : l)}>+ Add a note box</button>}
-            <p className="text-[11px] text-slate-400 mt-1">A note box only shows when the week has a note.</p>
-          </Panel>
-        </div>
-
-        {/* ── CENTRE: the real render, with draggable outlines on top ─────────────────────────── */}
-        <div>
-          <div ref={stageRef} className="relative w-full select-none touch-none bg-slate-100 rounded-xl overflow-hidden"
-            style={{ aspectRatio: `${size.w} / ${size.h}` }}>
-            {/* 🔴 THE PICTURE IS THE RENDERER'S PNG. Until the first one arrives the blank itself is
-                shown, so the stage is never empty. */}
-            <img src={preview ?? blankUrl} alt="" className="absolute inset-0 w-full h-full object-contain" />
-            {showExample && exampleUrl && (
-              <img src={exampleUrl} alt="" className="absolute inset-0 w-full h-full object-contain opacity-30 pointer-events-none" />
-            )}
-            {/* The six copied rows, shown faintly so the spacing can be judged. Not interactive. */}
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="absolute border border-dashed border-white/25 pointer-events-none"
-                style={{
-                  left: layout.date.x * scale, top: (layout.date.y + layout.rowSpacing * i) * scale,
-                  width: (layout.time.x + layout.time.w - layout.date.x) * scale, height: layout.date.h * scale,
-                }} />
-            ))}
-            {(['heading', 'date', 'location', 'time', 'note'] as BoxKey[]).map(key => {
-              const b = key === 'note' ? layout.note : (layout[key] as TextBox)
-              if (!b) return null
-              return (
-                <DraggableBox key={key} label={key} box={b} scale={scale} active={selected === key}
-                  bounds={size}
-                  onSelect={() => setSelected(key)}
-                  onChange={(patch, done) => patchBox(key, patch, done)} />
-              )
-            })}
-          </div>
-          <p className="text-xs text-slate-400 mt-2">
-            Place row 1&apos;s three boxes: Date · Location · Time. The other six days copy it.
-          </p>
-        </div>
-
-        {/* ── RIGHT: the selected box's controls ──────────────────────────────────────────────── */}
-        <div className="space-y-3">
-          {sel && (
-            <Panel title={selected === 'date' ? 'Date box' : selected === 'location' ? 'Location box' : selected === 'time' ? 'Time box' : selected === 'note' ? 'Note box' : 'Heading'}>
-              <Field label="Font">
-                <select value={sel.fontId} onChange={e => patchBox(selected, { fontId: e.target.value })} className={SELECT}>
-                  {FONT_CHOICES.map(f => <option key={f.id} value={f.id}>{f.family}</option>)}
-                </select>
-              </Field>
-              <Field label="Size">
-                <input type="number" min={6} max={size.h} value={sel.fontSize}
-                  onChange={e => patchBox(selected, { fontSize: Number(e.target.value) || sel.fontSize })} className={SELECT} />
-              </Field>
-              <Field label="Text colour">
-                <input type="color" value={sel.color} onChange={e => patchBox(selected, { color: e.target.value })}
-                  className="w-full h-8 rounded border border-slate-200" />
-              </Field>
-              <Field label="Alignment">
-                <select value={sel.align} onChange={e => patchBox(selected, { align: e.target.value as Align })} className={SELECT}>
-                  <option value="left">Left</option><option value="center">Centre</option><option value="right">Right</option>
-                </select>
-              </Field>
-              <Check label="Capitals" checked={sel.caps} onChange={v => patchBox(selected, { caps: v })} />
-              <Check label="Raised ordinals (28ᵗʰ)" checked={sel.raisedOrdinals} onChange={v => patchBox(selected, { raisedOrdinals: v })} />
-              {selected === 'date' && (
-                <>
-                  <Check label="Two lines" checked={layout.date.twoLines}
-                    onChange={v => setLayout(l => l ? { ...l, date: { ...l.date, twoLines: v } } : l)} />
-                  <OptionalColour label="Background on trading days" value={layout.date.bgTrading}
-                    onChange={v => setLayout(l => l ? { ...l, date: { ...l.date, bgTrading: v } } : l)} />
-                  <OptionalColour label="Background on days off" value={layout.date.bgDayOff}
-                    onChange={v => setLayout(l => l ? { ...l, date: { ...l.date, bgDayOff: v } } : l)} />
-                </>
-              )}
-              {selected === 'heading' && (
-                <Field label="Heading text">
-                  <input value={layout.heading.text}
-                    onChange={e => setLayout(l => l ? { ...l, heading: { ...l.heading, text: e.target.value } } : l)}
-                    className={SELECT} />
-                  <p className="text-[11px] text-slate-400 mt-0.5">Use {'{start}'} and {'{end}'} for the week&apos;s dates.</p>
-                </Field>
-              )}
-            </Panel>
-          )}
-
-          <Panel title="Days off">
-            <Field label="Location shows">
-              <input value={layout.daysOffText}
-                onChange={e => setLayout(l => l ? { ...l, daysOffText: e.target.value } : l)} className={SELECT} />
-            </Field>
-          </Panel>
-
-          <Panel title="Rows">
-            <Field label="Spacing between days (px)">
-              <input type="number" min={1} max={size.h} value={layout.rowSpacing}
-                onChange={e => setLayout(l => l ? { ...l, rowSpacing: Number(e.target.value) || l.rowSpacing } : l)} className={SELECT} />
-            </Field>
-            <p className="text-[11px] text-slate-400">Days run Monday to Sunday.</p>
-          </Panel>
-
-          <Panel title="Times & text">
-            <Field label="Times show as">
-              <select value={layout.timeStyle} onChange={e => setLayout(l => l ? { ...l, timeStyle: e.target.value as '12h' | '24h' } : l)} className={SELECT}>
-                <option value="12h">5pm – 8pm</option>
-                <option value="24h">17:00 – 20:00</option>
-              </select>
-            </Field>
-            <Check label="Keep text readable" checked={layout.keepReadable}
-              onChange={v => setLayout(l => l ? { ...l, keepReadable: v } : l)} />
-            <Check label="Show cancelled events" checked={layout.showCancelled}
-              onChange={v => setLayout(l => l ? { ...l, showCancelled: v } : l)} />
-          </Panel>
-        </div>
-      </div>
-    </div>
+      <DesignEditor
+        onDirtyChange={onDirtyChange}
+        onSaver={onSaver}
+        key={editorKey}
+        token={token}
+        hasLogo={hasLogo}
+        placesWithout={placesWithout}
+        onAddPlacePictures={onAddPlacePictures ?? (onCancel ?? onDone)}
+        designName="Weekly post design"
+        backLabel={onCancel ? '‹ Designs' : '‹ Back'}
+        onBack={onCancel ?? onDone}
+        initialLayout={layout}
+        country={country}
+        background={{ url: blankUrl, width: size.w, height: size.h }}
+        onReplacePicture={f => void upload(f, 'blank')}
+        replacing={uploading}
+        pictureNote="Your picture without any date or place on it. We add those."
+        /* ⛔ "A busy week" IS GONE — §B2 (10 October 2026). It rendered a FABRICATED week — a
+           60-character place name, a stacked Saturday, a cancelled day — so a design could be checked
+           against the worst case. ⚠️ IT WAS REAL AND IT WAS USEFUL, and it is still a server capability
+           (`busy: true` on the render action). What it is not is a week this truck HAS: two of the
+           three choices showed their schedule and one showed somebody else's. */
+        previewOptions={[
+          { id: 'this', label: 'This week' },
+          { id: 'next', label: 'Next week' },
+        ]}
+        previewWith={previewWith}
+        onPreviewWith={setPreviewWith}
+        renderPreview={renderPreview}
+        /* 🔴 §2 · WHAT THE LIVE TEXT SAYS. ⚠️ NO NOTE: the weekly design is set up once and a note is
+         * written per POST, on the post screen — so the design preview has none, exactly as the PNG
+         * this replaced had none. */
+        liveData={liveWeek && liveWeek.which === previewWith
+          ? { kind: 'week', days: liveWeek.days, start: liveWeek.start, end: liveWeek.end, note: null }
+          : null}
+        onSave={l => void save(l)}
+        saving={saving}
+        onCancel={onCancel ?? onDone}
+        message={msg}
+      />
+    </>
   )
 }
 
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-// THE DRAGGABLE OUTLINE
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-
-/**
- * 🔴 POINTER EVENTS, NOT MOUSE EVENTS. One set of handlers covers mouse, trackpad, pen and touch, and
- * `setPointerCapture` keeps the drag attached to this element even when the finger leaves it — which
- * on a small box is most of the drag. Mouse handlers plus a separate touch path would be two
- * implementations of the same gesture, and the touch one is the one that gets tested last.
- *
- * ⚠️ `touch-action: none` ON THE STAGE is what stops the browser treating a drag as a page scroll. A
- * `preventDefault` in the handler is too late: by then the gesture has been claimed.
- *
- * ⚠️ THE BOX IS CLAMPED TO THE IMAGE. The validator refuses a box that reaches outside, so letting one
- * be dragged there would produce a design that cannot be saved and an error at the end of the work.
- */
-export function DraggableBox({ label, box, scale, active, bounds, onSelect, onChange }: {
-  label: string
-  box: TextBox
-  scale: number
-  active: boolean
-  bounds: { w: number; h: number }
-  onSelect: () => void
-  onChange: (patch: Partial<TextBox>, done: boolean) => void
-}) {
-  const start = useRef<{ px: number; py: number; box: TextBox; mode: 'move' | 'nw' | 'ne' | 'sw' | 'se' } | null>(null)
-
-  /* ⚠️ THE MODE COMES OFF `data-mode`, NOT FROM A CLOSURE PER HANDLE. Writing
-   * `onPointerDown={e => begin(e, m)}` inside the handles' `.map()` creates a new function per handle
-   * per render that reaches a ref — which React Compiler's lint rejects ("Passing a ref to a function
-   * may read its value during render"). One handler reading the attribute has no closure to capture,
-   * and it is also what makes all five pointer handlers below identical. */
-  const begin = (e: React.PointerEvent) => {
-    e.stopPropagation()
-    onSelect()
-    const el = e.currentTarget as HTMLElement
-    el.setPointerCapture(e.pointerId)
-    const mode = (el.dataset.mode as 'move' | 'nw' | 'ne' | 'sw' | 'se') || 'move'
-    start.current = { px: e.clientX, py: e.clientY, box, mode }
-  }
-
-  const move = (e: React.PointerEvent) => {
-    const s = start.current
-    if (!s) return
-    const dx = (e.clientX - s.px) / scale
-    const dy = (e.clientY - s.py) / scale
-    const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)))
-    if (s.mode === 'move') {
-      onChange({
-        x: clamp(s.box.x + dx, 0, bounds.w - s.box.w),
-        y: clamp(s.box.y + dy, 0, bounds.h - s.box.h),
-      }, false)
-      return
-    }
-    /* ⚠️ A MINIMUM OF 8px EACH WAY, matching the validator's floor. A box dragged to zero would be
-     * saveable-looking and then rejected. */
-    const MIN = 8
-    let { x, y, w, h } = s.box
-    if (s.mode === 'se') { w = clamp(s.box.w + dx, MIN, bounds.w - x); h = clamp(s.box.h + dy, MIN, bounds.h - y) }
-    if (s.mode === 'sw') { const nx = clamp(s.box.x + dx, 0, s.box.x + s.box.w - MIN); w = s.box.x + s.box.w - nx; x = nx; h = clamp(s.box.h + dy, MIN, bounds.h - y) }
-    if (s.mode === 'ne') { const ny = clamp(s.box.y + dy, 0, s.box.y + s.box.h - MIN); h = s.box.y + s.box.h - ny; y = ny; w = clamp(s.box.w + dx, MIN, bounds.w - x) }
-    if (s.mode === 'nw') {
-      const nx = clamp(s.box.x + dx, 0, s.box.x + s.box.w - MIN)
-      const ny = clamp(s.box.y + dy, 0, s.box.y + s.box.h - MIN)
-      w = s.box.x + s.box.w - nx; h = s.box.y + s.box.h - ny; x = nx; y = ny
-    }
-    onChange({ x, y, w, h }, false)
-  }
-
-  /* 🔴 THE BACKGROUND IS RE-SAMPLED ON RELEASE, NOT ON EVERY MOVE. Sampling is a canvas draw and a
-   * `getImageData` per frame otherwise, and the answer only matters once the box has stopped. */
-  const end = () => { if (start.current) { start.current = null; onChange({}, true) } }
-
-  const HANDLE = 'absolute w-6 h-6 -m-3 rounded-full bg-white border-2 border-orange-500 shadow touch-none'
-  return (
-    <div
-      data-mode="move"
-      onPointerDown={begin}
-      onPointerMove={move}
-      onPointerUp={end}
-      onPointerCancel={end}
-      className={`absolute touch-none cursor-move border-2 border-dashed ${active ? 'border-orange-500 bg-orange-500/10' : 'border-white/70'}`}
-      style={{ left: box.x * scale, top: box.y * scale, width: box.w * scale, height: box.h * scale }}
-    >
-      <span className={`absolute -top-5 left-0 text-[10px] font-bold px-1 rounded ${active ? 'bg-orange-500 text-white' : 'bg-black/50 text-white'}`}>{label}</span>
-      {active && (['nw', 'ne', 'sw', 'se'] as const).map(m => (
-        <span key={m} className={HANDLE} data-mode={m}
-          style={{
-            left: m === 'nw' || m === 'sw' ? 0 : '100%',
-            top: m === 'nw' || m === 'ne' ? 0 : '100%',
-          }}
-          onPointerDown={begin} onPointerMove={move} onPointerUp={end} onPointerCancel={end} />
-      ))}
-    </div>
-  )
-}
+/* ══ ⛔ `DraggableBox` LIVED HERE AND NOW LIVES IN `components/manage/DraggableBox.tsx` ═══════════
+ * It was exported out of this file — a file about the weekly post — for the event screen to import,
+ * which made the weekly post the owner of the drag surface for every design screen in the product.
+ * With ONE shared editor there is no owning screen, so it has its own file, and it gained snapping to
+ * the centre of the picture while it was moving. ⚠️ THERE IS STILL EXACTLY ONE OF IT: its pointer
+ * handling took three fixes to get right on touch and a second copy would have to be fixed again. */
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE POST SCREEN
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, onEdit, error }: {
+function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, showPrivate, onShowPrivate, onEdit, error }: {
   token: string
   truckName: string
   design: LoadedDesign
@@ -670,6 +537,9 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
   week: 'this' | 'next'
   orderUrl: string | null
   onWeek: (w: 'this' | 'next') => void
+  /** §9 · off by default. ⚠️ Owned by `WeeklyPostApp`, because changing it re-asks the server. */
+  showPrivate: boolean
+  onShowPrivate: (v: boolean) => void
   onEdit: () => void
   error: string | null
 }) {
@@ -677,6 +547,8 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
   const [note, setNote] = useState('')
   const [showCancelled, setShowCancelled] = useState(design.layout.showCancelled)
   const [png, setPng] = useState<string | null>(null)
+  /** The same picture as `png`, as the blob it came from — the share bar builds its `File` from this. */
+  const [pngBlob, setPngBlob] = useState<Blob | null>(null)
   const [warnings, setWarnings] = useState<{ where: string; message: string }[]>([])
   const [caption, setCaption] = useState('')
   const [perEvent, setPerEvent] = useState<{ eventId: string; date: string; name: string; status: string; text: string }[]>([])
@@ -693,17 +565,23 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
     setRendering(true)
     try {
       const layout = { ...design.layout, showCancelled }
+      /* ⚠️ `showPrivate` TRAVELS WITH BOTH REQUESTS. The poster and the caption describe the same week;
+       * sending it to one and not the other would produce a picture with a private booking on it and a
+       * caption that did not mention it — or the reverse, which is worse. */
       const [img, caps] = await Promise.all([
-        renderPng(token, { week, excluded, note, layout }),
-        api(token, { action: 'captions', week, excluded, note }),
+        renderPng(token, { week, excluded, note, layout, showPrivate }),
+        api(token, { action: 'captions', week, excluded, note, showPrivate }),
       ])
       setPng(prev => { if (prev) URL.revokeObjectURL(prev); return img.url })
+      /* ⚠️ SET TOGETHER WITH THE URL, from the same response, so the bar can never offer a Share of
+       * one picture and a Download of another. */
+      setPngBlob(img.blob)
       setWarnings(img.warnings)
       setCaption(caps.caption ?? '')
       setPerEvent(caps.perEvent ?? [])
     } catch (e) { setBusyMsg(e instanceof Error ? e.message : 'Could not build the post') }
     finally { setRendering(false) }
-  }, [token, week, excluded, note, showCancelled, design.layout])
+  }, [token, week, excluded, note, showCancelled, showPrivate, design.layout])
 
   /* ⚠️ SAME NARROW DISABLE, SAME REASON as the load effect above: the state is set after an awaited
    * render and caption request, not synchronously in the effect body. */
@@ -715,39 +593,11 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
     catch { setBusyMsg('Could not copy — select the text and copy it by hand.') }
   }
 
-  /**
-   * 🔴 SHARE: THE CAPTION GOES TO THE CLIPBOARD FIRST, THEN THE SHEET OPENS. Instagram and Facebook
-   * both take the image from the share sheet and leave the caption to be pasted, so copying first is
-   * what makes the whole post one gesture. Doing it afterwards would be too late — the sheet takes the
-   * page out of focus and the clipboard write is refused.
-   * ⚠️ FILE SHARING IS FEATURE-DETECTED with `canShare({ files })`, not assumed from the user agent.
-   * Where it is unsupported this falls back to a download plus "caption copied", which is the brief's
-   * rule and is also what desktop Safari needs.
-   */
-  const share = async () => {
-    if (!png) return
-    try { await navigator.clipboard.writeText(caption) } catch { /* the sheet still opens */ }
-    try {
-      const blob = await (await fetch(png)).blob()
-      const file = new File([blob], `weekly-post-${week}.png`, { type: 'image/png' })
-      const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean }
-      if (nav.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file] })
-        setBusyMsg('Caption copied — paste it into your post.')
-        return
-      }
-    } catch { /* fall through to the download */ }
-    download()
-    setBusyMsg('Caption copied, and the image has been downloaded.')
-  }
-
-  const download = () => {
-    if (!png) return
-    const a = document.createElement('a')
-    a.href = png
-    a.download = `weekly-post-${week}.png`
-    a.click()
-  }
+  /* ⛔ `share()` AND `download()` ARE GONE FROM THIS FILE, both of them, and not because they were
+   * tidy to remove: the `share()` that was here is the one that downloaded on a Mac, and the single
+   * event post had the SAME function with the SAME bug. One report, one fix — see
+   * components/manage/PostShareBar.tsx, which owns both and is now the only caller of
+   * `navigator.share` on this screen. */
 
   return (
     <div className="space-y-4">
@@ -783,9 +633,11 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
             {rendering && png && <div className="absolute top-2 right-2 text-[11px] bg-black/60 text-white px-2 py-0.5 rounded">Updating…</div>}
           </div>
 
-          <div className="flex flex-wrap gap-2 mt-3">
-            <Btn label="Download image" onClick={download} />
-            <Btn label="Share" colour="slate" onClick={() => void share()} />
+          {/* 🔴 ONE SHARE BAR, SHARED WITH THE SINGLE EVENT POST. The `share()` that used to live here
+            * downloaded the picture on a Mac — see components/manage/PostShareBar.tsx. */}
+          <div className="mt-3">
+            <PostShareBar blob={pngBlob} url={png} fileName={`weekly-post-${week}.png`}
+              caption={caption} onStatus={setBusyMsg} />
           </div>
         </div>
 
@@ -806,6 +658,24 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
               <span className="text-sm text-slate-700">Show cancelled events</span>
               <Toggle on={showCancelled} onToggle={() => setShowCancelled(v => !v)} />
             </div>
+            {/* ══ 🔴 §9 · "Show private events" — OFF BY DEFAULT ════════════════════════════════════
+              * ⛔ OFF IS THE DEFAULT AND IT IS NOT A PREFERENCE, IT IS THE SAFE DIRECTION. A private
+              * booking is a wedding or a works party; it belongs on the truck's own poster only if they
+              * deliberately put it there. Defaulting to ON would have published it the first time
+              * anyone pressed Download, before they had seen the toggle.
+              * ⚠️ WHEN ON, THE ROW SAYS "Private event" WITH ITS DATE AND TIMES AND NOTHING ELSE — no
+              * place, no town, no place picture. That is not enforced here: `locationName` and
+              * `townLine` in week-data.ts return the label and `null`, which is the same rule the
+              * PUBLIC schedule page obeys, so the poster cannot leak what the schedule will not. */}
+            <div className="flex items-start justify-between gap-2 mt-2 pt-2 border-t border-slate-100">
+              <span className="min-w-0">
+                <span className="block text-sm text-slate-700">Show private events</span>
+                <span className="block text-[11px] text-slate-400 leading-snug">
+                  They show as “Private event” with the date and times — never the place.
+                </span>
+              </span>
+              <Toggle on={showPrivate} onToggle={() => onShowPrivate(!showPrivate)} />
+            </div>
           </Panel>
 
           <Panel title="Note">
@@ -818,8 +688,13 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, on
           <Panel title="Caption for your page">
             <textarea value={caption} onChange={e => setCaption(e.target.value)} rows={7}
               className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            <button type="button" onClick={() => void copy(caption, 'Caption')}
-              className="text-xs font-bold text-orange-700 mt-1">Copy caption</button>
+            {/* ══ ⛔ THE SECOND "Copy caption" IS GONE — 7 October 2026, §7 ════════════════════════
+              * `PostShareBar` already carries one, and the two were not equivalent: the bar's copies
+              * WITHOUT an `await` in front of it, which is what keeps the clipboard write inside
+              * WebKit's transient-activation window. This one went through `copy()`, an async helper —
+              * so on Safari the more prominent of the two buttons was the less reliable one.
+              * 🔴 ONE CONTROL, AND IT IS THE ONE THAT WORKS. The textarea is still editable, and an
+              * edit made here is what the bar copies. */}
           </Panel>
 
           <Panel title="Post for each event">
@@ -882,38 +757,13 @@ export function Panel({ title, children }: { title: string; children: React.Reac
   )
 }
 
-export function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="mb-2">
-      <label className="block text-xs font-bold text-slate-600 mb-1">{label}</label>
-      {children}
-    </div>
-  )
-}
-
-export function Check({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <label className="flex items-center gap-2 text-sm text-slate-700 py-0.5">
-      <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
-      {label}
-    </label>
-  )
-}
-
-/** A colour that can be off. ⚠️ Off is `null`, not '#000000' — the panel is optional on the poster. */
-export function OptionalColour({ label, value, onChange }: { label: string; value: string | null; onChange: (v: string | null) => void }) {
-  return (
-    <div className="mb-2">
-      <label className="flex items-center gap-2 text-xs font-bold text-slate-600 mb-1">
-        <input type="checkbox" checked={value !== null} onChange={e => onChange(e.target.checked ? '#000000' : null)} />
-        {label}
-      </label>
-      {value !== null && (
-        <input type="color" value={value} onChange={e => onChange(e.target.value)} className="w-full h-8 rounded border border-slate-200" />
-      )}
-    </div>
-  )
-}
+/* ══ ⛔ `Field`, `Check` AND `OptionalColour` ARE GONE ═════════════════════════════════════════════
+ * They were this file's style-column furniture, exported so the event screen's style column could use
+ * them. Both columns are now the shared editor's toolbar, whose controls live in
+ * `components/manage/DesignEditorBits.tsx` — `CheckRow`, `OptionalColourRow`, `Slider`, `Stepper` and
+ * `ColourField`. ⚠️ `ColourField` IS NOT A RENAME OF `OptionalColour`: it fixes the bug that was in
+ * both old screens, where a bare `<input type="color">` rendered as an EMPTY well in Safari, so a
+ * design with white text showed no colour at all until the picker was opened. */
 
 /**
  * ⚠️ A LOCAL SWITCH, because `primitives.tsx` has no `Toggle` — the one the rest of Manage uses is
@@ -931,11 +781,5 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
   )
 }
 
-function SelectBoxButton({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick}
-      className={`block w-full text-left text-sm px-2 py-1.5 rounded-lg ${active ? 'bg-orange-50 text-orange-700 font-bold' : 'text-slate-600 hover:bg-slate-50'}`}>
-      {label}
-    </button>
-  )
-}
+/* ⛔ `SelectBoxButton` IS GONE WITH THE LEFT-HAND COLUMN IT BELONGED TO — see the note where `Field`
+ * and `Check` used to be. */

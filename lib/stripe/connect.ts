@@ -65,7 +65,7 @@ import Stripe from 'stripe'
 import { stripeClient as boundedStripeClient } from '@/lib/stripe/client'
 
 // ── 🔴 THE PINNED v2 API VERSION. ONE CONSTANT, AND IT WILL MOVE. ──────────────────────────────────
-// `/v2/core/*` REFUSES a request with no version header — probed: HTTP 400, "You did not provide an API
+// every `/v2/core/` path REFUSES a request with no version header — probed: HTTP 400, "You did not provide an API
 // version." This string is on Stripe's PREVIEW TRAIN, so it is not a stable identifier the way a v1
 // date is; it is a moving target that will one day stop being accepted.
 // ⚠️ SENT EXPLICITLY EVEN THOUGH THE SDK'S OWN DEFAULT CURRENTLY MATCHES IT. `stripe@22.4.0` pins

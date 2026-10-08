@@ -387,8 +387,35 @@ function runTreeSuite() {
      * "pinned to Standard" as a real state, distinct from Automatic. Standard is the ABSENCE of a type
      * (Standard IS the truck's own settings, §70.2), so it could not be a value in
      * `usual_event_type_id`, whose NULL already means Automatic; a boolean is the only shape that
-     * holds both states. Counted here for the same reason every other column is. */
-    && r.declared.get('truck_places').size === 20
+     * holds both states. Counted here for the same reason every other column is.
+     * ⚠️ AND **22** FROM 7 OCTOBER: `20261019_place_picture_slots.sql` added `event_picture_id` and
+     * `weekly_picture_id` — a location's two images, one job each, as nullable references to
+     * `place_pictures(id)` with `ON DELETE SET NULL`. ⛔ THIS COUNT IS WHY THEY ARE ASSERTED BY NAME
+     * BELOW TOO: a pinned size says "exactly this many" and nothing about WHICH, so the pair is named
+     * as well — otherwise swapping a slot column for an unrelated one would pass both halves.
+     * ⚠️ AND **24** FROM 8 OCTOBER: `20261020_poster_picture_tag_captions.sql` added `picture_use`
+     * (where a location's PICTURE is drawn — weekly, event or both) and `social_tag` (its handle, for
+     * the `{location-tag}` caption label). ⛔ THE TWO SLOT COLUMNS WERE **NOT** RENAMED even though
+     * their meanings narrowed — `event_picture_id` is the event POSTER now and `weekly_picture_id` the
+     * location PICTURE — because a rename is a drop-and-add, which the rules forbid. The census would
+     * have caught a rename as a dropped column, which is exactly what it is for.
+     * ⚠️ AND **25** FROM 9 OCTOBER: `20261021_weekly_only_picture.sql` added `weekly_only_picture_id`
+     * — the OPTIONAL override weekly posts use instead of the location picture. ⛔ `picture_use` IS
+     * STILL DECLARED AND IS NO LONGER READ BY ANY CODE; the column stays because dropping one is
+     * irreversible, and the census's job is to say what EXISTS, not what is used.
+     * ⚠️ AND **26** FROM 9 OCTOBER, LATER THE SAME DAY: `20261022_three_location_pictures.sql` added
+     * `event_photo_picture_id` — the EVENT POST picture, so a location has three pictures with three
+     * jobs and no rule to learn. ⛔ **TWO OF THE SIX ARE NOW DEAD AND BOTH ARE STILL DECLARED**:
+     * `picture_use` (dead since 20261021) and `weekly_only_picture_id` (dead AND emptied by 20261022,
+     * its value moved into `weekly_picture_id`). That is the census working as intended — it says what
+     * EXISTS, and a dead column that still exists is a thing a `select *` will still return.
+     * ⚠️ THE COUNT HAS MOVED FOUR TIMES IN FOUR DAYS and the pin is still worth its cost for exactly
+     * that reason: a rename would read as a drop here, and four model changes in four days is precisely
+     * when somebody would reach for one. */
+    && r.declared.get('truck_places').size === 26
+    && ['event_picture_id', 'weekly_picture_id', 'event_photo_picture_id',
+        'weekly_only_picture_id', 'picture_use', 'social_tag']
+      .every(c => r.declared.get('truck_places').has(c))
     && ['area', 'is_favourite', 'is_hidden', 'merged_into_id'].every(c => r.declared.get('truck_places').has(c))
     /* 🔴 AND THE PIN'S COLUMN IS CENSUSED, for the reason the note below gives: a migration written and
      * never read, or read and never applied, would otherwise pass unnoticed — and here the failure mode

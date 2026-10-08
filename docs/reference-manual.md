@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V14.5
+HatchGrab Engineering Reference Manual · V15.6
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 14.5**
+**Version 15.6**
 
 October 2026
 
@@ -26,6 +26,497 @@ version of the document they were holding.** ⚠️ **Grep before finishing:** `
 
 # Changelog
 
+## V15.6 — 10 October 2026 — **THE EDITOR DRAWS ITS OWN WORDS**, THE POSTER TREE LEAVES THE RENDERER, CLEARER BUTTONS, DELETE YOUR OWN TEXT, AND THREE PICTURE BOXES THAT LINE UP. STILL NOT DEPLOYED.
+
+- ⚠️ It supersedes **§V15.5's** stage (an `<img>` of the server's PNG) and **§V15.4's** `grid-rows-subgrid`
+  picture boxes, both hours old. `docs/social-tab-7-report.md` is the full account.
+- ✅ **NO MIGRATION.** Nothing was added to the database and no column changed shape.
+
+| What | Where |
+|---|---|
+| 🔴 **THE POSTER IS A TREE, AND IT LEFT `render.ts` — `lib/weekly-post/draw.ts`** | `boxEl`, `daysEls`, `noteEls`, `poweredByEl`, `darkenEl`, `dateLines` and the two whole assemblies (`weeklyTree`, `eventTree`) are pure now. ⛔ **THE RENDERER NEVER BUILT HTML**: it built `{ type, props: { style } }` objects and handed them to satori, which is a flexbox engine reading CSS — so the tree does not need translating for a browser, it needs MOUNTING in one. `render.ts` is the I/O and the one `ImageResponse` call, which is all that was ever server-only |
+| ⛔ **SO THE EDITOR DRAWS EVERY WORD ITSELF, IN THE SAME FRAME AS THE DRAG** | the stage was the PNG, so a move shifted the OUTLINE at once and the WORDS waited 400ms of debounce plus a render — *"when i move a box the text stays in its old position for seconds"*. 🔴 `components/manage/LivePoster.tsx` MOUNTS THE SAME `El[]` AND DECIDES NOTHING: three translations and no more — the font-family alias, `box-sizing: border-box` (satori's default, not a browser's), and one `transform: scale()`. **Measured: 0.26ms to rebuild a full seven-row poster, and the live page makes no network request at all** |
+| ⛔ **AND THE FIRST VERSION PUT EVERY WORD IN THE WRONG PLACE, BECAUSE `transform-origin` WAS A TAILWIND CLASS** | `origin-top-left` is used by exactly ONE file in this repository — created the same day, after the build — and **no compiled chunk under `.next/static` contains the rule at all**. Tailwind emits only the utilities it finds at build time; the dev server rescanned and the build did not. 🔴 WITH NO RULE THE DEFAULT IS THE ELEMENT'S **CENTRE**, so scaling a 1080×1350 layer about its centre threw the heading's words to (540, 464) in a 460×575 stage and row 7's 341px below the bottom edge — *"the box is at the TOP-LEFT but its words are at the BOTTOM-RIGHT"* and *"all seven rows show NO words at all"*. ⚠️ **A LOAD-BEARING GEOMETRIC PROPERTY DOES NOT GO IN A CLASS**: it is inline now, beside the `transform` it governs. ⛔ **A TAILWIND CLASS IS ONLY AS PRESENT AS THE LAST BUILD THAT SCANNED FOR IT** |
+| 🔴 **AND THERE WERE TWO CONVERSIONS FROM POSTER PIXELS TO SCREEN PIXELS, WHICH IS NOW ONE** | the live layer took `shownW` — the width the stage is ASKED to be — and the box outlines took `scale`, from the width a `ResizeObserver` MEASURED. They happen to agree once the observer has run, which is why this was not the reported bug and is exactly the near-coincidence that becomes one later. ⚠️ `k = scale × designW / W` cancels `renderScale` and **is** `scale` for every design under 2160px |
+| ⛔ **FOUR KINDS OF CHECK WERE GREEN WHILE THE SCREEN WAS WRONG, AND THE REASON IS ONE SENTENCE** | the source harnesses read code; `live-poster.cjs` compares the TREE with the PNG and the tree was right; `social-tab-6-local.cjs` mounts the real editor on a **mini-DOM with no layout engine**, so "where is this box on screen" is not a question it can be asked. 🔴 **NOTHING HAD THE REAL COMPONENT AND A REAL LAYOUT ENGINE IN THE SAME PROCESS** — `scripts/live-text-place.cjs` does: esbuild bundles the real `DesignEditor`, a local server answers the font GET with the committed file, and WebKit and Chromium are asked whether every word is inside its box at five widths and three zooms |
+| 🔴 **A SECOND IMPLEMENTATION IN THE EDITOR WAS THE OBVIOUS ROUTE AND IS THE ONE THIS PRODUCT HAS ALREADY BEEN BURNED BY** | "what does this box look like" and "what does this box say" each had two answers once before, and both drifted. ⚠️ ONE TREE CANNOT DRIFT FROM ITSELF, which is why the refactor came before the feature |
+| ⛔ **THE FONTS ARE THE RENDERER'S OWN FILES, FETCHED ONCE PER FACE** | `GET /api/weekly-post?font=…` returns the TTF; `lib/weekly-post/live-fonts.ts` parses it for `fitLines`'s metrics **and** hands the same buffer to `new FontFace(...)`. ⚠️ ONE REQUEST SERVES BOTH — a Google Fonts stylesheet would have painted and not measured. 🔴 **AN UPLOADED FAMILY IS REFUSED, AND THAT RULE IS OLDER THAN THIS ROUND**: an uploaded font may be commercially licensed and a readable URL from our domain is redistribution. Those boxes draw live in Oswald, the PNG is in the real font, and **the editor says so in a line under the poster** |
+| 🔴 **"Line spacing" MEASURED AND NEVER DREW — FOUND WHILE WIRING THIS, FIXED** | `fit.ts` has always multiplied the line height by the operator's percentage when deciding whether text FITS, and the tree carried no `lineHeight` at all: a box made tall enough for 160% and drawn at 100%. ⚠️ **THE FIX COSTS THE PNG NOTHING AT 100%** — 7 antialiased pixels out of 1,458,000 on the full default design — which is what made it safe to add rather than a change to every poster ever made |
+| ⚠️ **A WRONG MEASUREMENT NEARLY JUSTIFIED THE RIGHT CHANGE FOR THE WRONG REASON** | the first reading said the live words sat 17px above the PNG's and blamed the missing `lineHeight`. The live bounding box had silently included "Powered by HatchGrab", 600px down the page. ⛔ **THE BROWSER CONTROL COULD NOT FAIL** (Oswald's `hhea` line gap is zero, so `normal` already equals our value) **and was replaced by one that can**: 160% spacing, with and without the rule |
+| 🔴 **THE DARKENING IS THE SETTING NOW, NOT THE DIFFERENCE** | it used to draw only what the PNG had not caught up with, because the PNG already had some baked in. The stage shows the BLANK while the live tree is up, so the layer is simply `layout.darken`. ⚠️ THE OLD SUBTRACTION SURVIVES FOR THE FALLBACK, where the stage is the PNG again and the old reasoning holds exactly |
+| ⛔ **THE THREE PICTURE BOXES NO LONGER USE `grid-rows-subgrid` — AND THE REASON IS NOT THAT IT FAILED A TEST** | it lined the rows up in every measurement this repository took, in both engines, and still did not line them up on the operator's screen. 🔴 **THE REPLACEMENT CANNOT HAVE THAT FAILURE MODE**: a flex column with `grow` on the description, so the picture area and the Remove row are pinned to the FOOT of three boxes the grid already makes equal — two fixed heights above a shared bottom edge, by arithmetic rather than by a track-sizing rule |
+| ⚠️ **THE FOOTER ROW IS `h-7` WHETHER OR NOT THERE IS A PICTURE, AND THAT IS THE BIT THAT WOULD HAVE BROKEN IT** | the row is empty in an empty box, so bottom-aligning without a fixed height would sit an empty box's preview 28px lower than a filled one's — "the images should line up" failing between exactly the two states the screen shows at once |
+| 🔴 **THE FILE NAME IS GONE FROM A PICTURE BOX** | the brief asked for it truncated with an ellipsis; the operator asked for it removed, which is the later instruction and the better one — a Supabase file name tells a truck nothing the preview above it does not, and it was the only thing in the box that ever reported a max-content width. ⚠️ `file_name` IS STILL STORED AND STILL SENT |
+| ⛔ **THE BORROW LINK WAS MAKING ONE BOX'S Upload BUTTON SIT 11px HIGHER THAN THE OTHERS** | only one box is ever offered "Use the event post picture", so its centred stack was a line taller. 🔴 IT IS PINNED TO THE FOOT OF THE DROP AREA NOW (`absolute`), out of the flow, so Upload is centred on the same two lines in every box. ⚠️ **A MEASUREMENT FOUND IT, NOT A READING** |
+| ⚠️ **"Aa All text" → "Aa Style all the writing", WITH A GREY SECOND LINE** | "Font, colour and effects for everything". ⛔ EVERY ON YOUR POST BUTTON GAINED A `›`, because a row that opens something should look like it does |
+| 🔴 **ONE FOLD ARROW COMPONENT, AND THE WHOLE HEADING ROW IS THE TARGET** | an 18px chevron, right when closed and down when open. ⚠️ Three sections had three spellings of the same affordance |
+| ⛔ **THE BACKGROUND PICTURE IS A FOLDED SECTION AT THE FOOT OF THE PANEL, ALWAYS** | it stopped being a SELECTION, which is what fixed the real complaint: **a press on a blank part of the artwork used to close whatever panel was open** — an operator halfway through a font list lost it by putting a finger on the poster |
+| 🔴 **YOUR OWN TEXT CAN BE DELETED — A RED-OUTLINED BUTTON AND THE Delete KEY** | at the foot of the box's own settings, with "or press Delete" beside it. ⚠️ THE KEY IS IGNORED WHILE ANYTHING IS BEING TYPED IN, the same focus test ⌘Z and the arrow keys already use. ⛔ **A BUILT-IN ITEM IS SWITCHED OFF, NEVER DELETED** — there is no such thing as a weekly poster with no Date box |
+| ⚠️ **NOTHING IS CUT OFF FROM 1000px UP** | the title row wraps, the page never scrolls sideways, and below 1100 the settings panel drops under the poster. ⛔ **THE CONTROL RESTORES THE FAILING SHAPE** — `shrink-0` and an uncapped select — and reproduces it exactly: 390px of content in a 366px row, document 402 wide at a 390 viewport |
+| 🔴 **CHIPS IN THE CAPTION TEMPLATE EDITOR DELETE AND MOVE AS ONE CHARACTER — AND THE ENGINES DISAGREED** | deleting "List of days" cleared the whole template in Safari, and the component's own comment claimed every engine treats a non-editable inline span as one character. ⛔ **THAT IS TRUE OF CHROMIUM ONLY.** The handler is ours now, in `lib/weekly-post/caption-chips.ts`, driven in BOTH engines by `scripts/caption-chips-render.cjs` pressing a real Backspace. ⚠️ CUT-AND-PASTE CARRIES THE TOKEN, not the label, so moving a chip is a move and not a quiet deletion |
+| ⛔ **"I added +Week dates and saved and it didn't save" — IT HAD SAVED; THE SCREEN NEVER RELOADED** | `saveCaption` now awaits `load()`. ⚠️ THE COMMENT FORBIDDING A RELOAD WAS WRITTEN FOR THE AUTOSAVE ERA and had outlived the thing it protected |
+| ⚠️ **SINGLE EVENT COMES BEFORE WEEKLY ON ALL THREE SCREENS** | Designs, Create a post and Location settings — including the table's columns and ticks. 🔴 **"it matches the table's column order" WAS A REASON ABOUT OUR OWN SCREEN**: the single event post is the one a truck makes most often |
+
+## V15.5 — 10 October 2026 — **"THE 7 DAYS": ONE BOX, SEVEN ROWS**, A PREVIEW THAT IS NOT A MODE, A PICTURE YOU CAN POINT AT, AND AN EDITOR THAT SAYS WHAT IT DOES. STILL NOT DEPLOYED.
+
+- ⚠️ It supersedes **§V15.4's** Edit/Preview switch (hours old) and the weekly design's three-boxes-plus-
+  `rowSpacing` row model, which has been there since the feature was built. `docs/social-tab-6-report.md`
+  is the full account.
+- ✅ **NO MIGRATION.** The new model is a key inside the existing `layout` jsonb column, optional, and
+  absent on every design nobody has opened.
+
+| What | Where |
+|---|---|
+| 🔴 **THE SEVEN DAYS ARE ONE BOX — `Layout.days`, AND IT IS OPTIONAL** | drag it to move all seven rows, pull a corner to scale the rows AND the words, pull a side to stretch. ⛔ **ITS ABSENCE IS NOT A DEFAULT, IT IS A FACT**: this design has not been opened in the new editor, and the renderer draws its legacy rows exactly as it always has. The editor converts on open (`daysFromLegacy`) and the save stores the block |
+| ⛔ **THE RENDERER CARRIES BOTH MODELS, AND THE LEGACY LOOP IS UNTOUCHED DOWN TO THE COMMENT** | `if (l.days) … else <the old loop>`. ⚠️ THE TWO SHARE EVERY FUNCTION THAT DECIDES WHAT A ROW **SAYS** — `dateLines`, `locationLinesFor`, `timeLinesFor` — so only the rectangles differ and the two models cannot word a poster differently |
+| 🔴 **`dayCells` IS THE ONE PLACE A ROW'S GEOMETRY IS DECIDED, AND THE EDITOR CALLS IT TOO** | the brief's own requirement. A cell the operator clicks is the cell the PNG draws in, by construction. ⚠️ `lib/weekly-post/days.ts` IS PURE AND BROWSER-SAFE for that reason, like `font-list`, `locale` and `place-pictures` |
+| ⛔ **THE CONVERSION LIFTS THE BLOCK BY HALF THE DIFFERENCE — `y = row1Top + rowH/2 − rowSpacing/2`** | because a cell CENTRES its words. Without it every row's text drops by `(rowSpacing − rowH) / 2`, seven times, on artwork a truck has approved. ⚠️ `textH` IS THE OLD ROW HEIGHT for the same reason: with the band equal to the whole row, `fitLines` would be handed twice the height and would draw text BIGGER than was approved. **Measured: 5.2% of the block's pixels move, against 11.9% for a genuine rearrangement** |
+| ⚠️ **"Leave them out" LEAVES THE DAY'S SLOT WHERE IT IS** | the other reading — six days sharing the height — was rejected and the reason is the editor: the outline shows seven equal rows, and a poster whose rows moved with the week's data would make that outline a lie. ⛔ Said out loud because two words do not choose between them |
+| 🔴 **THE PARTS' SWITCHES AND STYLES ARE THE `date` / `location` / `time` BOXES THEMSELVES** | font, colour, capitals, date wording, effects, `ownStyle` and `enabled` are already there, already validated, already resolved through `resolveTextBox`. ⛔ **GIVING THE PARTS THEIR OWN STYLE FIELDS WOULD BE A SECOND SET OF TEXT SETTINGS** on one design. What those boxes no longer decide is their own x/y/w/h — which is why a part cannot be nudged or centred |
+| ⛔ **THE PICTURE IS A CELL UNDER "All on one line" AND A COLUMN UNDER THE OTHER TWO** | ⚠️ **AND THAT WAS A REAL BUG A HARNESS FOUND**: as a column always, a picture dragged into the middle of the order jumped to the far right — the list said one order and the poster drew another, which is the one thing a reorder handle must not do. A column is unavoidable where the words are on two lines, because the picture spans both |
+| 🔴 **A CORNER DRAG SCALES THE WORDS; A SIDE DRAG DOES NOT — AND ONLY `DraggableBox` KNOWS WHICH HAPPENED** | so it reports `DragInfo`. ⛔ **THE FACTOR IS MEASURED FROM THE GESTURE'S START**, never frame by frame: fifty frames of ×1.02 is not ×2.7. ⚠️ Four side handles are new; before today the only way to make a box wider was to make it taller too |
+| ⚠️ **THE DAY CELLS ARE `pointer-events-none` AND THE **BLOCK** REPORTS WHERE IT WAS TAPPED** | `onTap`, hit-tested against the same `dayCells`. ⛔ CELLS THAT TOOK POINTER EVENTS WOULD LEAVE NOWHERE TO GRAB THE BLOCK, and "drag the box to move all the rows" is the first thing the brief says about it. A tap is 4 CSS pixels of slop, because a finger always moves a little |
+| 🔴 **"All text" AND THE BACKGROUND PICTURE WERE NOT SELECTABLE AT ALL — A LIVE BUG, FIXED** | `selected` fell back to `'date'` for any key not in `items`, and neither has a box, so neither is in `items`. **Pressing either silently selected the Date box**, which is why both panels looked like they did nothing. It shipped in the 9 October build that introduced them |
+| ⛔ **"Darken the picture" WAS REACHABLE ONLY FROM PLACES NOBODY LOOKS** | the MORE OPTIONS of "All text" and of an **own-style** box — and on a box that FOLLOWS All text that section is not drawn at all. 🔴 **THE RENDERER WAS NEVER THE PROBLEM** (measured: at 60% every channel comes back at ~40%). It is in the background's own settings now, and an editor-only overlay draws the difference the PNG has not caught up with, falling to nothing when it lands |
+| 🔴 **THE LEAVE DIALOG WAS BELOW THE EARLY RETURNS** | so from inside an editor a pill press set the state and **nothing appeared** — which is exactly what was reported about "Location settings". ⚠️ It is one element now, built above the returns and rendered by all four views, with THREE buttons: two were a false choice, because the dialog that exists to protect the work offered no way to keep it. ⛔ "Save and leave" **awaits** the save, and a failure keeps the editor open |
+| ⚠️ **"‹ Designs" ASKS TOO** | it is the exit an operator actually uses — the first thing on the editor's own title row — so the guard that protected the three pills left the front door open |
+| 🔴 **"Shows" WAS FOUR QUESTIONS WEARING ONE LABEL** | a date format, a place format, a clock and a free-text box. Each is asked in full now, and the date's dropdown — which shows today's answer when closed — names the OTHER choices underneath. ⚠️ "Size" → "Text size" with `A−`/`A+` and the handles named; "Line up" → "⇤ Left \| ≡ Centre \| Right ⇥"; "MAKE IT STAND OUT" → "MAKE IT EASIER TO READ"; "Band behind" → "Coloured strip behind the words" |
+| ⚠️ **THE EDITOR-ONLY TINT IS WHAT MAKES WHITE WRITING VISIBLE WHILE EDITING** | rgba(15,23,42,.28) behind every TEXT box, with a dashed white border and a dark `outline` outside it. ⛔ NEVER IN THE PNG — the renderer knows nothing about it — and **not** behind the picture box, which would show a photograph darker than the one about to be posted |
+| ⛔ **"A busy week" AND THE FILLED EXAMPLE LOST THEIR DOORS, NOT THEIR CODE** | the busy week fabricated a worst-case schedule: two of three preview choices showed this truck and one showed somebody else's, which is a thing an operator can post by mistake. The filled example was a faint finished poster over the preview — and the preview **is** the finished poster now. ⚠️ Both server paths are untouched |
+| ⚠️ **"the boxes have been reset" NEEDED A NEW **SHAPE** AND BOXES THAT ACTUALLY MOVED** | `resetLayout` is true for any new picture of a different SIZE, including a re-export of the same artwork at a higher resolution where every box is carried across. The line claimed work had moved when nothing had, and stayed until something else replaced it. It fades after five seconds now, in its own slot |
+| 🔴 **"All text" HAD "Smaller \| Bigger" AND NOW HAS A **SIZE YOU CHOOSE**** | ⛔ TWO NUDGE BUTTONS MADE AN OPERATOR PRESS AND LOOK, PRESS AND LOOK, and never answered the question they were asking: how big is my writing? ⚠️ THE NUMBER IS THE **DATE BOX'S** SIZE AND EVERY BOX MOVES IN PROPORTION — a design's boxes are deliberately different sizes, so setting them all to one number would flatten a hierarchy the truck built on purpose. 🔴 THE REFERENCE BOX LANDS EXACTLY ON WHAT WAS TYPED, which is what keeps the readout and the design agreeing |
+| ⛔ **A DRAG MUST NOT BE ABLE TO PRODUCE A LAYOUT THE VALIDATOR REFUSES** | `DraggableBox`'s floor is 8px for any box, which is the WRONG floor for a block holding seven rows that each have to clear 8px — a block dragged to 8px tall would look saveable and the save would be refused after the work. `minH` is new and is the same rule the clamp-to-the-picture has always followed |
+| 🔴 **THE WEEKLY CAPTION BOX SHOWED THE TEMPLATE — A ROUND-5 MISS, NOT A NEW BUG** | V15.3 added a FILLED `caption` for both weeks to the overview payload and filled it server-side with the Make screen's own two functions… and the card went on reading `captions.week.template`. ⛔ **THE CHECK THAT PASSED WAS ASKING THE ROUTE**, and the route was right all along. ⚠️ A PAYLOAD ASSERTION CANNOT SEE THE SCREEN; the one that can is in `social-posts.cjs` now, written as both halves so it cannot pass against the version that shipped |
+| ⚠️ **TWO PRIMARY BUTTONS THAT ARE MEANT TO READ AS ONE CHOICE MUST BE LEVEL** | the event half's sat under the chosen event and the weekly half's at the foot of its card. ⛔ **TWO CARDS OF DIFFERENT CONTENT CAN ONLY BE LEVEL AT THE FOOT**, so the cost is a scroll on a window shorter than the card — named rather than hidden. ⚠️ **STRIPPING `mt-auto` IS NOT A CONTROL FOR IT**: with the picker expanded the event half is the taller one, so the foot is where its button lands anyway and the control reported "level" with the rule removed. The control restores the OLD ARRANGEMENT |
+| ⛔ **"Circle" DREW A STADIUM, AND ONLY LOOKING AT A POSTER FOUND IT** | the picture's cell under "Big picture" is a weighted share (291 × 140), and a radius of half the shorter side makes a pill. ⚠️ THE CONTROL WAS SATISFIED — the three layouts did draw differently — AND THE SHAPE WAS STILL WRONG. 🔴 THE CELL IS SQUARE WHENEVER THE SHAPE IS `circle`, and a row is the ceiling on a circle's diameter |
+| ⛔ **A FIXTURE THAT DIVERGES FROM THE COMPONENT MEASURES A PAGE NOBODY IS SERVED** | the create-a-post fixture gave a caption box to one half and not the other, so "are the buttons level?" could not have passed however the component was written |
+| ⚠️ **A CHECK WHOSE PREMISE AN OPERATOR CAN CHANGE BY USING THE PRODUCT WILL REPORT A FAILURE NOBODY CAUSED** | "the stored design has no block" passed all afternoon and then failed, because Dominic opened the design and saved it — which is the feature working. It asks the honest question now: whichever state the design is in, is that state right? |
+| ⚠️ **THE DASHBOARD IS BEHIND A LOGIN, SO THE EDITOR IS **MOUNTED** IN THE ROUND-6 HARNESS** | react-dom/client on `scripts/_mini-dom.cjs`, driving the component's real handlers, with the result read back out of the editor's own SAVE. ⛔ **WHAT IT CANNOT DO IS CSS** — no layout engine — so the outlines and the tint are asserted by class in `design-editor.cjs` and the geometry against `dayCells` |
+
+## V15.4 — 9 October 2026 — **THREE BOXES THAT LINE UP (SUBGRID)**, A ZOOM THAT CANNOT WIDEN THE PAGE, THE "LOOK" SWITCH, EDIT/PREVIEW WITH NUDGING, PORTRAIT ADVICE, AND A WEEKLY CAPTION THAT IS FILLED IN. STILL NOT DEPLOYED.
+
+- ⚠️ It supersedes **§V15.3's** "− Fit +" zoom control and its two coloured look notes (hours old).
+  `docs/social-tab-5-report.md` is the full account.
+- ✅ **NO MIGRATION.** `20261022_three_location_pictures.sql` was already run before this round; no SQL
+  was written and none is needed.
+
+| What | Where |
+|---|---|
+| 🔴 **A MEASUREMENT PREMISE MUST NOT MEASURE THE THING UNDER TEST** | proving three subgrid boxes line up means first proving their descriptions are **different lengths**. Row **height** said 79/79/79 and `scrollHeight` said 59/59/59 — ⛔ **BOTH ARE STRETCHED BY SUBGRID ITSELF**, so the premise was asking the alignment mechanism whether alignment was needed. `Range.getClientRects().length` (line boxes) says 2/2/3 and subgrid cannot touch it. **A check whose premise is satisfied by the bug passes on a broken build** |
+| ⛔ **SUBGRID NEEDS EVERY CHILD TO BE A ROW — SO A HIDDEN `<input>` CANNOT BE IN THE FLOW** | the file input is `absolute hidden`; as a normal child it took a grid row and pushed each box down by a box-dependent amount. ⚠️ **AND THE Remove/Upload ROW IS ALWAYS RENDERED, EMPTY WHEN THERE IS NO IMAGE** — a row that exists only when filled is not a row the other boxes can line up against. Measured in Chromium AND WebKit: 163/197/276/428, identical across all three |
+| 🔴 **THE POSTER AREA IS A `grid` WITH `margin: auto`, NOT A CENTRED FLEX ROW** | ⛔ **A CENTRED FLEX CONTAINER'S START-EDGE OVERFLOW IS UNREACHABLE** — `scrollLeft` cannot go below 0 — so at high zoom the left of the poster is permanently off-screen and no scroll gesture can reach it. `margin: auto` in a grid overflows symmetrically and both directions scroll. `min-w-0 max-w-full` so the area can never ask its parent for more width than it has |
+| ⚠️ **THE REPORTED 125% PAGE-WIDENING DID NOT REPRODUCE** | not at any zoom step, in a fixture mirroring the real classes at the real window size. Either it comes from an ancestor outside the editor grid or V15.3's full-width work fixed it hours before the brief was written. **Fixed structurally anyway and now MEASURED as a standing check**: at 1728×1000, Fit vs zoom 6 — page width 1728→1728, panel 1336/380 unchanged, Save 1716 unchanged, poster 2148 inside a 1308 area. ⛔ "I could not reproduce it" is not "it does not happen" |
+| 🔴 **THE "LOOK" SWITCH REPLACES THE TWO COLOURED NOTES — BEHAVIOUR UNCHANGED** | `[🔗 Same as All text]` / `[Its own style]` under the box name, one grey line per position. ⛔ **THE NOTES WERE A STATE READOUT WITH THE CONTROL BURIED IN THE SENTENCE DESCRIBING IT**, and neither note said what the other position would do. Same two functions: `makeOwn` (was "Change just this box") and `makeFollow` (was "Match All text again"). ⚠️ `makeOwn` STILL COPIES THE SHARED LOOK IN AND SETS THE FLAG IN ONE COMMIT, or the box flashes to whatever stale look storage held |
+| ⚠️ **THE GRID HEADING EXPLAINS THE GLYPH, NOT THE GESTURE** | "ON YOUR POST" left, **"🔗 = matches All text"** right, replacing "click to edit". A 🔗 is a fact an operator cannot work out; clicking a button to edit it is one they can. `EDITOR_CLICK_TO_EDIT` kept as the record, no longer drawn |
+| 🔴 **PREVIEW HIDES A BOX WITH `return null`, NOT `display: none`** ⛔ **(V15.5: THE PREVIEW **MODE** IS GONE AFTER ONE ROUND — "👁 Preview post" opens the finished PNG over the top. A mode is a state an operator has to remember being in)** | ⛔ **A CSS-HIDDEN BOX STILL CAPTURES POINTER EVENTS AND IS STILL A NUDGE TARGET** — "can't be dragged" has to mean there is nothing there. `DraggableBox` takes `hidden` and returns null. ⚠️ The selection is held in STATE, not the DOM, so switching back restores the same box selected |
+| ⚠️ **ONLY THE SELECTED BOX IS OUTLINED** ⛔ **(V15.5: still true, but the faint outline is `white/70` with a dark `outline` round it and a tint behind it — `white/25` was invisible on a pale picture)** | solid orange + handles + label; every other box is `border-dashed border-white/25` with no label and its name on `group-hover`. Centre guides are pink and strictly drag-time — `onGuides?.(NO_GUIDES)` fires in the gesture's `end` |
+| 🔴 **THE ARROW-KEY FOCUS TEST COMES BEFORE `preventDefault`** | `INPUT`/`TEXTAREA`/`SELECT`/`isContentEditable` return early. ⛔ **PREVENTING FIRST STOPS A `<select>` DOING WHAT IT HAD ALREADY DECIDED TO DO.** 1 poster pixel, Shift 10, clamped exactly as a drag is — the validator refuses a box reaching outside the image, so an unclamped nudge is a nudge that cannot be saved |
+| ⚠️ **A RUN OF NUDGES IS ONE UNDO STEP — `beginGesture` + `live`, THE SAME PAIR A DRAG USES** | the first press opens the step, the rest are live, the run closes after 600ms of no presses. ⛔ Twenty presses of ↓ is ONE thing the operator did; twenty undo steps to get back is not. A nudge IS a tiny drag, so giving it its own history mechanism would be two ways to move a box |
+| 🔴 **A HOOK MAY NOT READ A `const` DECLARED BELOW IT — THE THIRD TIME IN THIS CODEBASE** | the key handler reads `readOnly` directly rather than `editable`, which lives below with the other render derivations. Stated in a comment at the spot so the next person does not "tidy" it |
+| ⚠️ **THE PORTRAIT ADVICE IS ADVICE, NOT A WARNING, AND IT NAMES THE NUMBERS** | 4:5 within 1% ⇒ `1080 × 1350 · Portrait 4:5` + a **green** "✓ best for Instagram & Facebook"; otherwise the size in grey plus the 1080 × 1350 tip. ⛔ **NOT SHOWN ON A 4:5 DESIGN**, where it is advice to do what is already done — the fastest way to teach an operator to stop reading grey text. 1% is the poster shape rule's own tolerance: 1080 × 1349 is a 4:5 design |
+| 🔴 **THE WEEKLY CARD'S CAPTION IS FILLED ON THE SERVER, FROM THE MAKE SCREEN'S OWN TWO FUNCTIONS** | `fillCaptionTemplate` + `weekCaptionValues` over a `buildWeekData` with the design's **stored** `timeStyle`, for this week and next. ⛔ **THE BRIEF SAID TO SHIP "THE WEEK'S ENTRIES" AND FILL IT CLIENT-SIDE — AND THAT IS THE DRIFT §6 EXISTS TO PREVENT**: `weekCaptionValues` takes a `WeekData`, not entries, so filling in the browser means a SECOND `buildWeekData` with a second copy of five inputs. **The one place what shipped differs from the brief as written** |
+| ⚠️ **TWO §6 CHECKS NOBODY WOULD CATCH BY EYE** | no `{token}` survives in either week, and **the two weeks read differently** — a caption accidentally built from a fixed range passes every other check |
+| ⛔ **THE "Background picture 3840 × 2160" BOX: THE CONTROL HAD A PURPOSE, THE DUPLICATION DID NOT** | the name appeared on the button, as the card's heading and under the panel title; the size appeared twice. **Four readouts of two facts** around the one thing that does something — "Replace picture". The card lost its heading and border, the size lives only in the settings (where §5 wants it), the button carries the name alone. ⚠️ Reported as "it doesn't seem to do anything", and the reason it read that way was the noise, not the control |
+
+## V15.3 — 9 October 2026 — **ONE SHARED TEXT STYLE ("All text")**, A FULL-WIDTH EDITOR WITH A FITTED POSTER, A CAPTION YOU CAN EDIT, AND THREE PICTURES PER LOCATION. STILL NOT DEPLOYED.
+
+- ⚠️ It supersedes **§V15.2's** two-pop-up-free three-column editor (hours old) and its
+  `weekly_only_picture_id` override (hours old). `docs/social-tab-4-report.md` is the full account.
+- ⛔ **THE MIGRATION `20261022_three_location_pictures.sql` HAS NOT BEEN RUN.** Until it is, Location
+  settings answers **503 naming the file** — which is itself a fix, see below.
+
+| What | Where |
+|---|---|
+| 🔴 **A TEXT BOX'S LOOK IS HELD ONCE, ON THE LAYOUT — `Layout.textStyle` / `EventLayout.textStyle`** | font, bold, italic, capitals, colour, letter spacing and every `effects` field. A box either FOLLOWS it (`ownStyle: false`, the default) or owns its own. ⛔ "Copy this style to all text" IS GONE: it was a one-way bulk write, so the next change meant eleven more presses and nothing recorded that the boxes were meant to match |
+| ⛔ **PER BOX FOR EVER: what it says, its size, its position, its line-up, its tilt** | a heading and a time are different sizes in the same design, and `align` is about which edge of **this** box the words sit against. ⚠️ `lineSpacing` IS PER BOX AND THE BRIEF NAMES IT NEITHER WAY — it multiplies the drawn height of a box's text, so it belongs with size rather than colour. **Said out loud because it is a judgement call** |
+| 🔴 **ONE RESOLVER, `resolveTextBox` — THE RENDERER AND THE EDITOR BOTH CALL IT** | the brief's own requirement. ⛔ TWO FUNCTIONS ANSWERING "what does this box look like" is how a preview comes to disagree with the PNG, and this product has shipped that class twice. `LOOK_KEYS` is `satisfies`-checked against `TextLook`, so a field added to one and not the other cannot compile |
+| ⛔ **`fontsUsedBy` HAD TO BE RESOLVED TOO, AND THAT IS THE SUBTLE HALF** | a following box still carries its old `fontId` in storage. Reading the raw field would load a face nothing uses **and fail to load the shared one** — so every following box would fall back to Oswald in the PNG while the editor showed the right name |
+| 🔴 **AN OLD DESIGN'S SHARED STYLE IS TAKEN FROM THE DESIGN, ON READ** | the look of its first **enabled** text box, Date first. Then every box is asked whether its look already equals that: equal ⇒ FOLLOWS, different ⇒ OWN. ⛔ A FLAG DEFAULTED TO `false` WOULD HAVE SILENTLY REPAINTED a Permanent Marker heading in Oswald — on the designs that had been worked on the most |
+| ⛔ **SETTING `effects` ON A FOLLOWING BOX IS NOW A WRITE NOTHING READS** | which is why the panel does not draw a following box's font and colour at all — a control that writes to an ignored field is the one failure here that is completely invisible. ⚠️ **FOUR HARNESS FIXTURES WERE SILENTLY DOING EXACTLY THAT** and said so: "MUST FAIL BUT PASSED", nine undetectable effect variants, and three font renders that drew Oswald |
+| 🔴 **THE EDITOR IS TWO COLUMNS: THE POSTER, AND ONE 380px PANEL** | the item list moved INSIDE the panel. ⛔ A 250px list on the far left and a 320px panel on the far right were the two halves of ONE job with the poster between them — a 1,000px round trip per change. ⚠️ **THE LIST'S LIVE GREY SAMPLES ARE A REAL LOSS**, named in the report |
+| ⛔ **THE PAGE GRANTS FULL WIDTH; THE PANE ASKS FOR IT** | `onFullWidth` → `socialWide`. The content is capped at `max-w-5xl` above 1400px, which is 1024 of a 1728px window. ⚠️ **A `100vw` BREAKOUT IS WRONG**: `vw` includes the vertical scrollbar, so on any page tall enough to scroll it overflows by ~15px and the page pans sideways — over a drag surface |
+| 🔴 **THE POSTER IS FITTED TO THE MEASURED AREA — `min(areaW, areaH × ratio)`** | ⛔ `maxHeight: min(64vh, 820px)` WAS A GUESS and wrong in both directions: on a 16-inch window 64vh left a third of the height unused; on a short one the title row and the hint pushed the bottom off the screen. ⚠️ **`clientWidth` INCLUDES PADDING** — forgetting that made the area scroll sideways at **Fit**, caught by the render harness |
+| ⚠️ **"− Fit +", and Fit is a BUTTON** ⛔ **(V15.4: `[−] [100%] [+]` PLUS A SEPARATE "Fit to screen". The percentage is a LABEL — a readout you can press is a control whose press does nothing you can predict)** | a step count, not a scale, so Fit survives a resize. The AREA scrolls when zoomed, never the page; the poster is `shrink-0` or a flex child's `min-width: auto` would squeeze it back and + would do nothing |
+| 🔴 **THE SWITCH KNOB SAT OUTSIDE ITS TRACK — `absolute top-0.5` WITH NO `left`** | `absolute` with no `left` uses the element's **static position**, which is a property of the inline formatting context it would have had — not a reliable 0. The knob was the only child of an empty `block` span, so where it landed was engine-dependent, and `translate-x-4` carried it out the other side. **Both edges are stated now and nothing is transformed.** ⚠️ Measured against its track in the browser, which is the only way to catch it |
+| ⛔ **THE FONT LIST OPENED PAST THE RIGHT EDGE OF ITS COLUMN** | `w-[22rem]` is 352px, wider than the 380px panel's content box — and the `calc(100vw-2rem)` cap could not help, because on a 1728px window that is 1696px. **A cap against the wrong container is not a cap.** `w-full` is the fix |
+| 🔴 **THE CAPTION ON Create a post IS A PLAIN, FILLED, EDITABLE BOX** | the template is behind "✎ Edit template". ⛔ THE CHIP EDITOR WAS THE CAPTION FIELD, so what the operator read was the TEMPLATE — tokens and all — and editing it edited every event's caption for ever, which "used next time too" said out loud |
+| ⚠️ **THE TEMPLATE PANEL SAVES ON A PRESS, NOT ON A TIMER** | autosave is wrong for a panel with a Cancel button: "Cancel" after fourteen keystrokes have already been written is a button that cannot do what it says |
+| 🔴 **`{venue}` AND `{area}` SPLIT `{place}` — AND `{place}` STILL FILLS IDENTICALLY** | it joined the name and the town with a comma this module chose. It is off the button row and still a label, so every saved template keeps working. ⛔ **THE BRIEF'S DEFAULT TEMPLATE READ `… {area} on {day-date}` AND THE LITERAL "on" IS DROPPED**: `{day-date}` fills through `whenPhrase`, which returns "on Tue 13 Oct" — so the brief's text produced "on on Tue 13 Oct", and "on tonight" in the common case. **The one place what shipped differs from the brief as written** |
+| 🔴 **THREE PICTURES PER LOCATION, THREE JOBS, NO INHERITANCE** | `weekly_picture_id` (weekly posts, no fallback), **new** `event_photo_picture_id` (the single event design's picture space), `event_picture_id` (the poster, unchanged). ⛔ `weekly_only_picture_id` AND `picture_use` ARE BOTH DEAD; the first is also EMPTIED by the migration, its value moved into `weekly_picture_id` |
+| ⚠️ **THE CONVENIENCE THE OVERRIDE EXISTED FOR IS A LINK IN EACH EMPTY BOX** | "Use the event post picture" points the slot at the SAME stored row — `place_slot_use` takes a picture id, so no file is uploaded and none is copied |
+| ⛔ **THE MIGRATION'S BACKFILL IS GUARDED BY ITS OWN COLUMN COMMENT** | `where … is null` alone is not idempotent in the way that matters: the moment an operator presses Remove, the column is null again, so a re-run would restore a picture they had deliberately cleared. §4 sets the comment inside the same transaction, so its presence is an exact record of a completed run |
+| 🔴 **A MISSING COLUMN READ AS "YOU HAVE NO LOCATIONS"** | `social_overview`'s own read named the new column, PostgREST answered `42703`, the error was never looked at, and the screen drew **"No locations yet."** over twenty-one of them. **A wrong answer delivered confidently is worse than an error.** It is a 503 naming the file now — and `MIGRATION_NEEDED` named the wrong migration, so an operator following it would have re-run one that was already fine |
+| ⚠️ **"Town" IS "Area", AND THE DATA KEY IS STILL `town`** | half this product's venues are in a village, so a label that is wrong for half the list is one an operator has to translate. Renaming the KEY would be a migration of every stored event layout for a word |
+| ⚠️ **"Name on posts" IS "Venue name" IN Tidy up places** | a label only, on the same field. The old wording said where the value GOES rather than what it IS — and with the social screen's copy of the field removed, that card is the one editor again |
+
+## V15.2 — 9 October 2026 — THE SETTINGS COME OUT OF THE POP-UPS, **VENUE AND TOWN** BECOME TWO BOXES, ONE LOCATION PICTURE USED EVERYWHERE, AND A SUB-TAB CANNOT DISCARD A DESIGN. STILL NOT DEPLOYED.
+
+- ⚠️ It supersedes **§V15.1's** `picture_use` rule and **§"THE SHARED DESIGN EDITOR"**'s "no right-hand
+  settings column", one and three days old respectively. `docs/social-tab-3-report.md` is the full account.
+- ⛔ **THE MIGRATION `20261021_weekly_only_picture.sql` HAS BEEN RUN** (confirmed by Dominic, 9 October).
+  `20261020_poster_picture_tag_captions.sql` was run the same day. Nothing in this repository runs SQL.
+
+| What | Where |
+|---|---|
+| ⛔ **A POP-UP COVERS THE THING IT CHANGES** | the toolbar's "✦ Effects ▾" and "Advanced ▾" panels were about how the words look **on the poster**, so opening either put a panel between the operator and the only evidence of whether the change helped. They are the **TEXT / MAKE IT STAND OUT / MORE OPTIONS** sections of a sticky 320px third column now |
+| 🔴 **`EffectsPanel` AND `AdvancedPanel` ARE MOUNTED, NOT RE-AUTHORED** | the same two components the pop-ups held. Re-writing them inline would have been the one chance to drop a setting by accident, so the harness asserts their **contents** — every group heading, every sentence — rather than their presence |
+| ⛔ **A TOOLBAR THAT WRAPS IS A TOOLBAR WHOSE CONTROLS MOVE** | nine cells across a `minmax(0,1fr)` column wrapped to two or three rows depending on which item was selected, so the Size stepper was in a different place for the Date than for a note. A column does not move. ⚠️ And "Advanced" hid settings **by name rather than by use** — spacing and tilt are not advanced, they just did not fit |
+| 🔴 **TWO BREAKPOINTS, AND THE BAND BETWEEN THEM IS MEASURED** ⛔ **(V15.3: ONE, at 1100. The list moved inside the panel, so the 900 rule had nothing left to switch on)** | `min-[900px]` adds the list, `min-[1100px]` the panel; below 1100 the panel drops **under the preview**. ⛔ 1000px is a real laptop window and is now a measured width — this project has already shipped `lg:` (1024) as a breakpoint on a 1100px machine. One control per breakpoint, and the 900 control is run **at 1000**, because at 1100 the other rule would answer for it |
+| ⛔ **A STICKY ELEMENT TALLER THAN THE VIEWPORT CANNOT STICK** | so the third column is `max-h-[calc(100vh-2rem)] overflow-y-auto`. With MORE OPTIONS open the panel is ~1900px of controls in a 768px box: the **panel** scrolls, not the page. A scrolling page would take the poster off the screen — the pop-ups' failure in a slower form |
+| 🔴 **VENUE AND TOWN ARE TWO BOXES ON THE SINGLE EVENT DESIGN** | `EventLayout.town` beside `location`, each with full text settings. `placeStyle` survives on the event layout as a **legacy field, read once** — by the migration below — and the renderer passes `'nameOnly'` to both boxes |
+| ⛔ **`parseBox` PUSHES INTO THE ARRAY IT IS HANDED, SO THE `town` DERIVATION NEEDS ITS OWN** | every design saved before the split has no `town` key, and passing the shared `errors` array would have made **every pre-split design fail to open** with "The town box is missing." A throwaway `townErrors` array is the whole fix. ⚠️ Caught by an existing harness check, not by reading the code |
+| ⚠️ **THE MIGRATION IS IN THE VALIDATOR, NOT IN SQL** | Venue keeps the old box exactly; Town is placed at `y = venue bottom` at `TOWN_SCALE = 0.62` — the scale the renderer already drew the town line at inside the venue box — in the venue's own font, colour and alignment. `enabled` follows whether the old `placeStyle` showed a town |
+| ⚠️ **ONE CASE CANNOT BE BOTH "BELOW" AND "THE SAME"** | `placeStyle: 'nameTown'` drew name and town on **one line**. The brief says Town goes directly below and that old layouts look the same; those are incompatible for that one style, and the brief's explicit instruction won. `nameTownBelow` — the default — is pixel-identical |
+| 🔴 **THE WEEKLY DESIGN WAS LEFT ALONE, AND THAT IS THE BRIEF'S OWN CASE** | the weekly poster draws place text **inside each day row** (`render.ts`, `locationLinesFor` per entry with `placeStyle`), not as one box. There is nothing there to split into two boxes |
+| ⛔ **`picture_use` IS DEAD — NOT DROPPED** ⚠️ **(V15.3: its writer `place_picture_use` is deleted too — an action with no caller is a writeable column nothing reads)** | V15.1's three-way "Use it on" asked the truck to decide something the design already decides. **One LOCATION PICTURE (`weekly_picture_id`) is used wherever a design has a picture space.** The column is no longer read or written by anything; its comment says so |
+| 🔴 **`weekly_only_picture_id` IS AN OPT-IN OVERRIDE** ⛔ **(V15.3: DEAD AND EMPTIED. A picture per surface replaced it; its value moved into `weekly_picture_id`)** | defined exactly like `weekly_picture_id` (uuid → `place_pictures(id)` `ON DELETE SET NULL`, partial index). `weeklyPictureFor()` returns `weeklyOnly ?? picture`; `eventPictureFor()` returns `picture`. Weekly posts are the only reader of the override |
+| ⛔ **AN UNKNOWN SLOT NAME WAS A DEFAULT, AND IT CLEARED THE LOCATION PICTURE** | `asSlotName` returned `'weekly'` for anything it did not recognise, so `place_slot_clear` with `slot: 'not-a-slot'` answered **200 `{ok:true}`** having cleared a real location's picture. 🔴 **FOUND BY A LOCAL CHECK AGAINST THE RUNNING ROUTE, AND NO SOURCE CHECK WAS EVER GOING TO FIND IT** — a default looks deliberate. It returns `null` now and all three call sites refuse. ⚠️ Survivable with two names, not with three: `'weekly-only'` and `'weekly'` differ by a suffix, so the likely typo landed on the slot with the most to lose |
+| 🔴 **A SUB-TAB PILL COULD DISCARD AN UNSAVED DESIGN** | the pills live three components above the editor, so they knew nothing about it. The pane hands a guarded `requestArea` **up** to the page through an effect; the editor reports `onDirtyChange`. ⛔ An **in-page** confirm, never `window.confirm` — a browser dialog cannot be styled, cannot speak in the page's voice, and on Safari steals focus in a way that has already cost this product a share sheet |
+| ⚠️ **AND A CLEAN EDITOR NAVIGATES STRAIGHT THROUGH** | which is what makes the question mean something when it is asked. `onArea` is called in exactly **one** place — inside `goArea` — so there is no unguarded route out. "+ Add location pictures" was one, and it also pointed at the wrong tab |
+| ⛔ **"Name on posts" LEFT THE SOCIAL SCREEN** | it wrote `short_name`, and "Tidy up places" edits the name **and the town** side by side. A location's name and its town are one fact about the schedule; a second screen editing half of it is how the two halves come to disagree. A grey note names the real path there |
+| ⚠️ **THE "+1" BADGE IS MEASURED, NOT JUST DRAWN** | it hangs `-right-0.5 -top-0.5` outside its 24px tile, which is exactly the overhang that silently widens a `table-fixed` column and unaligns every row's thumbnails. The claim is an **equality across rows**: every PICTURE cell is the same width, badge or no badge |
+
+## V15.1 — 8 October 2026 — AN EVENT **POSTER** AND A LOCATION **PICTURE** INSTEAD OF TWO SLOTS, A SOCIAL TAG, AND CAPTIONS THE TRUCK OWNS. STILL NOT DEPLOYED.
+
+- ⚠️ It supersedes **§V15.0's** "event slot / weekly slot" meaning, one day old.
+  `docs/social-tab-2-report.md` is the full account.
+- ⛔ **THE MIGRATION `20261020_poster_picture_tag_captions.sql` HAS NOT BEEN RUN.** Nothing in this
+  repository runs SQL.
+
+| What | Where |
+|---|---|
+| ⛔ **THE DESIGN NO LONGER DECIDES WHAT A LOCATION'S IMAGE MEANS** | V15.0's `event_picture_id` was "the event image", and whether it was a PHOTO in a box or the WHOLE POSTER was decided by `placePicture.enabled` on the single event design. **So adding a photo space silently changed what every location's uploaded image meant.** The truck chooses now |
+| 🔴 **TWO KINDS OF THING, TWO NAMES** | **EVENT POSTER** (`event_picture_id`) replaces the standard design as the whole background and is held to the 1% shape rule; **LOCATION PICTURE** (`weekly_picture_id`) is a logo or photo of **any** shape. ⛔ **SUPERSEDED V15.2 — `truck_places.picture_use` SAID WHERE THE PICTURE WAS DRAWN AND IS NOW DEAD.** The column still exists (the rules forbid dropping one) and nothing reads or writes it. One picture is used **wherever a design has a picture space**, and the only exception is the opt-in `weekly_only_picture_id` |
+| ⚠️ **THE COLUMNS WERE NOT RENAMED** | A rename is a drop-and-add as far as PostgREST's cached schema, every select string and every harness assertion is concerned — and the rules forbid dropping a column. The names are slightly behind the meanings; the column comments and `lib/weekly-post/place-pictures.ts` are the record |
+| 🔴 **THE ORDER EXISTS ONCE — `planEventImages()`** | this post's own image > the location's event poster > the standard design, with the picture in the design's photo space ⛔ **(V15.2: no longer "when `picture_use` allows it" — that was a fourth condition and it is gone)**. ⛔ A POSTER BEATS A PICTURE on an event post (the poster IS the background). ⚠️ A **ONE-OFF** DOES NOT: it replaces the picture, never the design, so every box including the photo space still draws |
+| ⛔ **`placePictureSources` TAKES A SURFACE, NOT A SLOT** | it only ever fetches the location PICTURE — the poster is a background swap. The first version filtered on `slot === 'weekly'`, and since both callers pass that slot it silently dropped every event-only picture out of the photo space it had just been told to draw |
+| 🔴 **A SOCIAL TAG PER LOCATION** | `truck_places.social_tag`, normalised by **one** function (`normaliseSocialTag`): trimmed, a leading `@` added, whitespace **refused** rather than stripped, 60 characters. ⛔ No `check` on the column — a constraint would be a second rule and the one with the better message would not be the one that fired |
+| 🔴 **CAPTIONS ARE THE TRUCK'S, SAVED, WITH LABEL CHIPS** | `truck_post_designs.caption_template` per kind. `lib/weekly-post/caption-template.ts` owns the token spelling; the editor is a `contentEditable` div with `contenteditable={false}` chips, so the browser treats each as ONE character. ⚠️ `null` = nobody has set one, and the seed is computed **on read, never written** — the moment a read wrote a seed, "never touched" and "deliberately emptied" would be the same value |
+| ⛔ **A LINE WHOSE LABELS ARE ALL EMPTY IS DROPPED** | `Order ahead: {order-link}` with no link was coming out as a dangling `"Order ahead:"`. `caption.ts` has always agreed — it guards that line with `if (orderUrl)`. ⚠️ A line with one surviving label keeps its words, which is what stops this deleting the whole post when only the tag is missing |
+| 🔴 **THE SEED FILLS BYTE-IDENTICALLY TO `caption.ts`** | including the relative "tonight"/"tomorrow"/"on Tue 13 Oct" — `{day-date}` carries `whenPhrase`, not a bare date. A label that always said "Tue 13 Oct" would have changed what every truck posts |
+| ⚠️ **THE CAPTION TRAVELS WITH THE PICTURE WHERE THE PLATFORM TAKES IT** | `canShare({ files, text })` is asked **separately** from `canShare({ files })` — a platform that takes one may refuse the other. The clipboard write still happens either way, because Facebook and Instagram drop the text whatever `canShare` said |
+| ⚠️ **ONE GRID CONSTANT FOR CREATE A POST AND DESIGNS** | `TWO_HALVES_GRID`. Designs had two narrow columns plus an empty third track left over from a box that had moved out, so two screens one click apart laid out at different widths. Measured as a comparison between two renders: 528/528 on both |
+| ⛔ **"Powered by HatchGrab" — CONFIRMED, NOT FIXED** | four paths, two renderers: the weekly post is `renderWeeklyPost`, and the standard event post, a location's poster and a one-off are all `renderEventPost` with different bytes. Each pushes the mark **last**, which is what puts it above the darken layer. Asserted on the ORDER, not on presence |
+
+## V15.0 — 7 October 2026 — SOCIAL MEDIA BECOMES A TOP TAB, A LOCATION GETS **TWO** IMAGES INSTEAD OF A LIBRARY, AND "WHERE IT GOES" IS REPLACED BY A RULE. STILL NOT DEPLOYED.
+
+- ⚠️ It supersedes **§64.12's** two areas and six boxes, and **§64.13's** picture library screen. Both
+  are one day old. `docs/social-tab-report.md` is the full account.
+- ⛔ **THE MIGRATION `20261019_place_picture_slots.sql` HAS NOT BEEN RUN.** Nothing in this repository
+  runs SQL. Until it is, Location settings lists every location and refuses an upload with a sentence
+  naming the file; every existing post renders byte-identically.
+
+| What | Where |
+|---|---|
+| 🔴 **Social media is its own TOP TAB**, directly after Schedule, gated on `places_posts_preview` | Three pills of its own — **Create a post** · **Designs** · **Location settings** — drawn by the page's shared `SUBTAB_BAR`. Schedule is back to two pills. The label is "Social media" and the icon is 💬 |
+| 🔴 **ONE resolver for every incoming `?tab=&section=`** | `resolveManageLocation()` in `lib/manage-links.ts`. A legacy id now changes the **tab** as well as the section, so the mapping cannot live at the call site — which is how `?section=places` reached **Billing** on 3 October. `posts`/`weekly` ⇒ Create a post, `designs` ⇒ Designs, `places` ⇒ Location settings |
+| ⛔ **The four retired ids are deliberately ABSENT from `TAB_FOR_SECTION`** | The resolver exists to **read** them; a builder that could emit one would keep them alive |
+| 🔴 **A LOCATION HAS AT MOST TWO IMAGES, ONE JOB EACH** | `truck_places.event_picture_id` and `weekly_picture_id` — nullable references to `place_pictures(id)`, `ON DELETE SET NULL`. **One image may fill both**, which is why they are references and not a `slot` column: `place_pictures_path_uidx` is a FULL unique index on `path`, so a copy is impossible |
+| ⛔ **`is_main`, `label`, `sort_order` are no longer read by any screen** | Not dropped, not emptied. `mainPicture`/`inGridOrder` stay live for the legacy mapping and `readPlaceLibrary` |
+| 🔴 **Legacy `event_bg_*` keeps working — the EVENT slot falls back to it, the WEEKLY slot does not** | That asymmetry *is* the compatibility. `event_bg_path` has always meant "the background of a single event post here", which is the event slot's job. There was never a weekly picture |
+| ⛔ **"WHERE IT GOES" IS GONE FROM THE DESIGN EDITOR, AND A RULE REPLACED IT** | Two controls described one thing: a design could record `placement: 'box'` with the item switched **off**. `eventImageMode()` derives it from the switch alone — photo space ON ⇒ the box, cropped to fill; OFF ⇒ the **whole poster**, same-shape 1% rule |
+| 🔴 **THE ORDER OF PREFERENCE EXISTS EXACTLY ONCE** | `resolveDesign`: this post's image > the location's **event slot** > the standard design. ⛔ `event_render` had a **second** resolver that assigned the background unconditionally, silently overriding a one-off — deleted; only the wrong-shape **warning** survives |
+| ⛔ **Remove deletes nothing** | `place_slot_clear` writes `null` to one column. The `place_pictures` row and the stored object both survive, and the other slot is untouched even when it points at the same picture |
+| ⛔ **`EventPostModal`'s Schedule mount and import are gone** | "Make post" on an event row hands the event to the social tab and the modal opens on arrival. Two mounts remain and the second is correct: `WeeklyPost.tsx`'s per-event Image button |
+| ⚠️ **The render harness split** | `scripts/social-posts-render.cjs` lost three of its four fixtures — Social posts' three boxes, the per-location design editor, the picture library page — and kept the shared design editor and the font picker. **`scripts/social-tab-render.cjs`** is new: the three social screens at 1100 and 390, in WebKit **and** Chromium, with four controls. ⛔ Its first run found two faults in itself: an orange matcher that could not see WebKit's `lab(…)`, and tiles matched to boxes by geometry rather than by name — ambiguous the moment two boxes share a top |
+| ⛔ **Two deletions and one capability that lost its door** | `scripts/schedule-places-render.cjs` (tombstone in `harnesses.json`); the second "Copy caption" beside the weekly textarea (`PostShareBar`'s copies **without** an `await`, so it is the one that works in WebKit); and `PlaceDesignPage` — the per-location **text positions** editor. ⚠️ `truck_places.event_layout` is still read, still validated and still preferred, so every location that HAS its own keeps rendering. A truck can no longer **create** one |
+
+## V14.9 — 6–7 October 2026 — THE LANDING PAGE CUT BY HALF, THE COMPARISON TABLE MOVED TO ITS OWN `/features` PAGE, AND SIX HERO ARRANGEMENTS TRIED AND REJECTED IN FAVOUR OF THE ONE ALREADY LIVE. STILL NOT DEPLOYED.
+
+**The hatchgrab.com landing page trimmed from 1,911 to 879 visible words (390px); the feature comparison
+table moved verbatim to a new indexable `/features` page; the order-ticket section deleted; plan-card
+bullets reordered with Social media posts added; "Never type your schedule twice" replaced by a Social
+media posts tile; inline navy icons on the six benefit tiles; the hero tightened by 40% with a navy
+tagline and the no-signup note beside the button; the live three-screen fan confirmed as the hero after
+six alternatives were built and rejected. All work is local on `main` and NOT deployed as of 7 October
+2026.**
+
+⚠️ **Markers used throughout §48's V14.9 subsections:** **OBSERVED** = measured, or seen in a report or a
+screenshot. **REASONED** = a decision or inference, with its reason. **UNVERIFIED** = instructed, but no
+report confirmed it at the time the delta was written. 🟢 **Four items the delta carried as UNVERIFIED
+were checked against the repository during this merge and are now OBSERVED** — see §48's "Open after the
+landing trim".
+
+- 🔴 **TWO BRIEFED PREMISES WERE WRONG**, and both are recorded so they are not briefed again: the landing
+  plan cards are **not** shared with Billing, and the hero screenshots **never** requested 3840px images.
+- 🔴 **NEW ROUTE `/features`** — host-gated like `/compare` but **indexable**, with its own canonical and
+  a sitemap entry. The table moved **verbatim**: 61 lines, identical apart from indentation.
+- 🔴 **THE LIVE THREE-SCREEN FAN IS THE HERO.** Six alternatives were built and rejected. Do not re-open
+  without a new reason.
+- ⚠️ **A LAYOUT TRAP WORTH KEEPING:** `width: max-content` on a grid child raises an `fr` track's
+  automatic minimum and silently shrank the hero fan. `min-width: 0` on the text cell is what holds the
+  `.9fr 1.1fr` split.
+- ⚠️ **WHITE TEXT ON THE ORANGE BUTTONS IS A RECORDED DECISION**, accepted knowing it measures 2.50:1 —
+  below both the 4.5:1 AA floor and the 3:1 large-text floor.
+
+## V14.8 — 18 October 2026 — A PLACE HAS A PICTURE **LIBRARY**, AND BOTH DESIGNS CAN USE IT. STILL NOT DEPLOYED. **SQL NOT RUN.**
+
+**Status — read this first.**
+- 🔴 **ON `main`, LOCAL, NOTHING PUSHED.**
+- ⛔ **THERE IS SQL AND IT HAS NOT BEEN RUN.** `supabase/migrations/20261018_place_picture_library.sql`
+  — three columns, two indexes and the grants, **ALTERing** `public.place_pictures`. It is never
+  dropped, recreated or emptied, and **no stored picture is deleted by anything in this build**.
+- ⚠️ `docs/place-pictures-report.md` is the full account.
+- 🔴 **Saved designs render byte-for-byte as they did** — the new item is OFF unless asked for, proved
+  in pixels on both designs.
+
+### What changed
+
+| | |
+|---|---|
+| 🔴 **The model: a place simply HAS PICTURES** | a logo, a photo, a venue's poster; one is Main. **They are not tied to a post type.** Each DESIGN decides how it uses them |
+| 🔴 **`public.place_pictures` is REUSED, not replaced** | it already held truck · place · path · size · shape · created_at. Three columns added: `is_main`, `label`, `sort_order` |
+| ⛔ **ITS 20261015 COMMENT IS NOW FALSE AND IS REPLACED** | *"THEY DO NOT AFFECT POSTS … nothing in lib/weekly-post or app/api/weekly-post reads this table"*. They do. `places-tab.cjs` asserted that promise and has been **re-aimed to the claim that still matters**: read in exactly ONE server file, by NO component |
+| 🔴 **The existing data is MAPPED ON READ, not moved** | no `insert`, no `update`, no file copied. The legacy `event_bg_path` appears as the place's Main, labelled "Event poster", and is written as a real row only on the **first change** to that place's pictures. **For any place, only one of the two sources ever applies — so nothing can drift** |
+| 🔴 **"Place picture" is a new item in the shared editor** | one implementation, both designs. Weekly: **in each row**, repeated like the text. Single event: **in a box** or **whole background** |
+| ⛔ **"Whole background" is held to the existing 1% shape rule** | a wrong-shaped picture falls back to the standard background, says so in a render warning, **and is marked on the picture itself** |
+| ⛔ **A PRIVATE EVENT NEVER GETS A PLACE PICTURE** | two independent server-side defences: `entryFor` now nulls a private booking's `placeId` (it already nulled its name and town), and the renderer refuses on `entry.isPrivate` |
+| 🔴 **Box 3 is "Place pictures"** | places with **no** pictures first, under their own heading, with an ORANGE "Add"; then "With pictures (n)" with an outlined "Edit". Thumbnails from **one batched read** |
+| ⛔ **The "Own design" tag is gone, and so is the box's old blurb** | V14.5 removed the "Standard" tag because it named an **event type**; the "Own design" tag has now gone the same way. A place does not have a design, it has **pictures**, and the rows worth marking are the ones with **none** — which is a heading over a group, not a badge on twenty rows. `placeDesignFooter` and the four `PLACE_DESIGN_BLURB*` exports were **deleted, not left unused**: an exported sentence nothing renders is one the next person believes is on the screen, and three harness checks were passing on them |
+| 🔴 **A place's pictures page** | a grid, a ★ Main badge and orange ring, a dashed "+ Add picture", and Make main · Rename · Remove. The old text-position editor survives behind a quiet "(optional)" link |
+| ⚠️ **"Show your logo" only where there is one** | the truck's logo is `trucks.logo_storage_path` in the **public `truck-media`** bucket (`lib/truck-logo.ts` is the one resolver). It is still read server-side and inlined as a data URI — the renderer takes no URLs |
+
+### The failure classes
+
+1. ⛔ **satori RENDERS `backgroundSize: 'cover'` AND `'contain'` IDENTICALLY.** A 400×100 picture in a
+   60×60 box came out **byte-for-byte the same** both ways, while an explicit `60px 15px` differed from
+   both — so "Fill the box" and "Fit inside" would have been one setting with two labels, the exact
+   "a setting that does nothing" failure V14.7's font checks exist to catch. **Found by a pixel
+   assertion failing, not by reading the docs.** An `<img>` with `objectFit` does differ, measured the
+   same way, so the picture is an `<img>` inside a clipping div. ⚠️ `paint`'s argument against `<img>`
+   ("it participates in layout and could be displaced by a sibling") does not reach it: it is the only
+   child of an absolutely positioned, fixed-size div.
+2. ⛔ **AN ACTION NAMED AFTER A TABLE BROKE A SWEEP.** `action: 'place_pictures'` made
+   `places-tab.cjs`'s "no component reads `place_pictures`" sweep report a component that reads
+   **nothing of the kind**. A string cannot say which of the two it is. Renamed to
+   `place_picture_list`, which also matches its four siblings. **The action name was arbitrary; the
+   sweep is not.**
+3. ⚠️ **A SLICE WHOSE END ANCHOR WAS AMBIGUOUS — AGAIN, AND IN SQL THIS TIME.** The new table comment
+   is extracted up to its terminating `';`, because the comment's own prose contains a semicolon
+   ("One row per picture; at most one is_main per place") and a bare `;` cut the statement off after
+   seventy characters, failing on correct SQL.
+4. ⚠️ **AND A WHOLE-FILE ABSENCE TEST CAUGHT THE QUOTATION THAT EXPLAINED IT.** "The comment no longer
+   says *THEY DO NOT AFFECT POSTS*" failed because the migration's header **quotes** that sentence in
+   order to say why it is being replaced. Scoped to the `comment on table` statement. **Seventh
+   variation of "a comment interfered with a check on code", and the first in SQL.**
+5. ⚠️ **A SPLIT STRING CONSTANT IS NEVER CONTIGUOUS.** A regex for a whole sentence failed on a
+   two-line concatenation; matched in halves, including the join.
+
+### What was run
+
+| | |
+|---|---|
+| `tsc --noEmit` | clean |
+| `npx next build` | ✓ compiled |
+| **ESLint** | **product-code errors identical: 774 in `app`+`components`+`lib` both ways.** Warnings +2, both the `<img>` baseline class |
+| **New harness** | `scripts/place-pictures.cjs` — **75 checks**, registered (**98** listed) |
+| **Full sweep** | `node scripts/run-harnesses.cjs` — **98 run · 98 passed · 0 failed** |
+| **Browser** | a place's pictures page measured in **WebKit** at **1100×800 and 390×844**, with its own control (the grid's minimum raised past the viewport ⇒ one column) |
+| **Byte-identity** | a stored event design and a stored weekly design both render byte-for-byte as before — **with a full library available** — and the comparison is proved able to fail |
+
+### Open items
+
+| Item | State |
+|---|---|
+| ⛔ **THE SQL** | **not run.** Inline in the chat reply |
+| ⛔ **I COULD NOT RUN THE READ-ONLY PREVIEW** | the rules forbid it. §2's "before/after for Pizza Kitchen" is given as the exact query plus what the mapping will deterministically produce from its output |
+| **Deploy** | **not done — Dominic deploys by hand** |
+| ⚠️ **`truck_places.event_bg_*` is still the source of truth for today's rendering** | until a place's library is touched. Both paths are live, and only one applies per place |
+| ⚠️ **No bulk upload** | one picture at a time, through the existing three-call flow |
+| From V14.7 | `countryForTruck()` still returns `'GB'`; the two part-1 render changes stand |
+
+---
+
+## V14.7 — 6 October 2026 — A 1,819-FONT LIBRARY, UPLOADED FONTS, AND REAL ITALICS. STILL NOT DEPLOYED. **SQL NOT RUN.**
+
+**Status — read this first.**
+- 🔴 **ON `main`, LOCAL, NOTHING PUSHED.**
+- ⛔ **THERE IS SQL, AND IT HAS NOT BEEN RUN.** `supabase/migrations/20261017_post_fonts.sql` — two new
+  tables and one new private bucket. Nothing in the feature works until Dominic applies it; the route
+  answers with a sentence naming the file if the tables are absent.
+- ⚠️ It extends V14.6. `docs/design-fonts-report.md` is the full account.
+- 🔴 **The 21 bundled fonts stay, stay bundled, and keep their BARE ids.** Every design saved before
+  today renders byte-for-byte as it did — proved by `weekly-post.cjs` (221) and `design-editor.cjs` (60).
+
+### What changed
+
+| | |
+|---|---|
+| 🔴 **`lib/weekly-post/font-catalogue.json` — 1,819 families, generated and committed** | by `scripts/build-font-catalogue.mjs`. Only OFL-1.1, Apache-2.0 and UFL-1.0, and **the licence comes from the DIRECTORY the family lives in** inside the `google/fonts` repo (`apache/`, `ofl/`, `ufl/`) rather than a string somebody typed |
+| 🔴 **Every family was PROBED for a static TTF before being listed** | 1,819 requests, 0 refused. The file records `probed: true` and `font-catalogue.ts` **throws at module load** if it is false — "never half-offer a font" |
+| 🔴 **The static-TTF source is the v1 CSS endpoint with an ANDROID 2.2 user agent** | Google serves the format the requesting browser supports. A modern UA gets **woff2**; Chrome 19 gets **woff**; MSIE 6 gets an **EOT**; only an old Android gets `format('truetype')`. ⛔ And it must be `css`, not `css2` — `css2` with the same UA still returns the EOT kit URL. All four measured |
+| 🔴 **A library family is fetched ONCE, ever, across all trucks** | `font_library_cache` (shared, no `truck_id`) + our own private `post-fonts` bucket. The first truck to choose Lobster pays one fetch; every truck after pays a `select` |
+| ⛔ **Nothing is fetched while a post is being rendered** | determinism (Google's URLs carry a version that changes), render time (40ms warm against a 2s ceiling) and availability. Three layers: in-process memory → our storage → Google once |
+| 🔴 **`render.ts` is HANDED its fonts as a `FontBundle`** | because `boxEl` is synchronous and `fitLines` measures with the font's own metrics. Same discipline the background picture already followed: the renderer does no I/O. ⚠️ The parameter is **optional** and defaults to the committed files, which is what kept every existing caller and the whole of `weekly-post.cjs` unchanged |
+| 🔴 **A real italic file is used where one exists; the 12° shear is the fallback only** | 342 of the 1,819 have one. `ResolvedFace.fauxItalic` is what the renderer asks, so the shear can never be applied **on top of** a real italic |
+| 🔴 **Uploaded fonts: TTF/OTF, 5MB, a required tick recorded with the server's clock** | family and face read from the font's own `name`, `OS/2` and `head` tables — never the filename. Up to three faces per family |
+| ⛔ **The browser is never given a font file's URL** | an uploaded font may be commercially licensed; a readable URL from our domain is redistribution. A library row previews with Google's web font CSS (open-licensed, already public); an **uploaded** row previews as a **PNG from our own renderer** (`font_sample`) |
+| ⚠️ **There is no Content-Security-Policy in this product** | checked: not in `next.config.ts`, not in `vercel.json`, no middleware. Nothing was loosened to allow the preview CSS |
+| ⛔ **ALSO FIXED (reported mid-build): "Designs" DESELECTED the "Social posts" pill** | three pills, four sections, and the row tested `shownSection === sec.id` — so `'designs' === 'posts'` was false and the operator stood on a screen no pill claimed. `scheduleSectionPill()` in `lib/manage-links.ts` is the mapping, as DATA |
+| 🔴 **`fontId` is validated by SHAPE, not by membership** | it was `FONT_BY_ID.has()` — the 21. Now: shape here (pure, browser-safe), **existence** on the server, **fallback** in the renderer. All three are needed, and the third is why deleting an uploaded font cannot break a poster |
+
+### The failure classes
+
+1. ⛔ **A COMMENT THAT OPENS A FAKE BLOCK COMMENT HIDES REAL CODE FROM EVERY COMMENT-STRIPPING CHECK.**
+   A user-agent table in `font-store.ts` ended a line with a glob — a star followed by `.ttf` — inside
+   a `//` comment. A slash-star sequence there opens a **block** comment as far as a naive stripper is
+   concerned, and the next closing delimiter was seventeen lines down, so `codeOf()` deleted two
+   exports. `design-fonts.cjs` then reported that **no file in `lib/` fetches a font** — false, and it
+   looked like a product bug.
+   🔴 **SWEPT: CLOSED — 5 members, all fixed.** Four were pre-existing and unrelated
+   (`lib/ratelimit.ts` ×3 counting as one file, `lib/stripe/connect.ts`, `lib/native/useGatedActionResult.tsx`,
+   `lib/weekly-post/render.ts`). All comment-only edits. §7 of that harness now forbids the pattern
+   across `lib/` and `components/`. **Sixth variation of "a comment interfered with a check on code",
+   and the first where the comment HID code rather than satisfying a check.**
+2. ⚠️ **AND THE FIX FOR IT HIT THE SAME CLASS IMMEDIATELY.** The tombstone explaining the glob
+   contained the glob, and a comment inside the new sweep contained a regex literal whose closing
+   delimiter ended the block comment early — breaking the harness outright. Neither note may show the
+   sequence it is about; both say so.
+3. ⚠️ **A UNIQUENESS ASSERTION AT THE WRONG GRANULARITY.** "satori's family names are unique" failed on
+   correct code: one family legitimately appears twice, at 400 and at 700. satori's complaint is about
+   a family offered twice at the **same weight and style**, which is what the key must be.
+4. ⚠️ **A COUNT THAT WENT TO ZERO.** `weekly-post.cjs` asserted `FONT_CHOICES` was looped in exactly
+   one file; the picker does not read it at all now, so the honest count is **zero** — which would pass
+   if the picker had been deleted. Restated as four claims together.
+5. 🔴 **THE HARNESS RUNNER'S SAFETY SCREEN REFUSED THE NEW HARNESS TWICE, AND WAS RIGHT BOTH TIMES** —
+   first for naming the font host in an assertion, then for a NOTE that listed the screen's own banned
+   words while explaining the first refusal. ⛔ Neither was fixed by loosening the screen or by
+   obfuscating the string: the assertion now compares the endpoint against the host recorded in the
+   **generated catalogue**, which is a stronger claim.
+6. ⛔ **A COMMENT THAT ASSERTED A BEHAVIOUR NOBODY HAD IMPLEMENTED.** `SCHEDULE_SECTIONS` said *"The
+   pill is also the active one while `designs` is showing — see `shownSection` below"*. It was not, and
+   `shownSection` did no such mapping. **A "see X below" pointing at code that does not do X is worse
+   than no comment** — it stopped me looking when I read that file in part 1. **SWEPT: the other two
+   sub-tab bars on that page cannot have the fault** (Menu is one pill per section; Settings is a
+   scroll-spy), so the class has one member and it is fixed and checked.
+7. ⚠️ **AND THAT CHECK IS NOW A CALL, NOT A GREP.** `lib/manage-links.ts` is pure, so
+   `social-posts.cjs` compiles and RUNS it: a regex on a map literal proves the map says what it says,
+   not that the function answers correctly.
+8. ✅ **AND THE LOST-LINES ALLOWLIST CAUGHT THE FIX, WHICH IS WHAT IT IS FOR.**
+   `schedule-graphics-places.cjs` had an entry claiming that pill-row line was replaced by
+   `shownSection === sec.id` — the wrong expression. It failed the moment the fix landed, with *"EDIT
+   CLAIMED BUT NOT PRESENT"*. ⚠️ Two stale CLAIMS about the same four lines in one build: the page's
+   comment (nothing checked it) and this entry (it checked itself).
+
+### What was run
+
+| | |
+|---|---|
+| `tsc --noEmit` | clean |
+| `npx next build` | ✓ compiled |
+| **ESLint** | **product code identical: 774 errors in `app`+`components`+`lib` both ways.** Warnings +1 (one `<img>`, the baseline class). Whole-repo errors +4, all `no-require-imports` in the new harness |
+| **New harness** | `scripts/design-fonts.cjs` — **88 checks**, registered (**97** listed) · `social-posts.cjs` **96** (was 92) |
+| **Full sweep** | `node scripts/run-harnesses.cjs` — **97 run · 97 passed · 0 failed** |
+| **Browser** | the font picker measured in **WebKit** at **1100×800 and 390×844**, with its own control (the height cap removed ⇒ the panel outgrows the window) |
+| **Catalogue build** | `node scripts/build-font-catalogue.mjs` — 1,950 families in, **1,819 out**; dropped 6 with no allowed licence, 121 with no latin subset, 4 with no regular weight, **0 with no static TTF** |
+
+### Open items
+
+| Item | State |
+|---|---|
+| ⛔ **THE SQL** | **not run.** `supabase/migrations/20261017_post_fonts.sql`, inline in the chat reply |
+| **Deploy** | **not done — Dominic deploys by hand** |
+| ⚠️ **The picker contacts Google from the operator's browser** | display-only preview CSS for the visible rows. No font is fetched that way for rendering |
+| ⚠️ **Removing an uploaded font does not rewrite designs** | the boxes keep naming it and fall back to Oswald. Said in the confirm and in the report |
+| ⚠️ **No bold italic** | no control can select one; `bold + italic` draws the italic face at its own weight |
+| From V14.6 | `countryForTruck()` still returns `'GB'` for everyone; `public.place_pictures` unread; Chromium's intermittent screenshot timeout |
+
+---
+
+## V14.6 — 6 October 2026 — ONE SHARED DESIGN EDITOR FOR ALL THREE DESIGN SCREENS; A LOCALE TABLE FOR DATES AND TIMES; "Show private events" ON THE WEEKLY MAKE SCREEN. STILL NOT DEPLOYED.
+
+**Status — read this first.**
+- 🔴 **ON `main`, LOCAL, NOTHING PUSHED.**
+- 🔴 **NO SQL AND NONE NEEDED.** Every new setting lives in the existing `layout` jsonb. Nothing was
+  written to the database. Everything stays behind `places_posts_preview` / `schedule_graphics`.
+- ⚠️ It supersedes the editor half of **§64.14** and of V14.3–V14.5: `SetupScreen` and
+  `EventSetupScreen` no longer contain an editor. `docs/design-editor-report.md` is the full account.
+- ⛔ **TWO SAVED-DESIGN BEHAVIOURS CHANGE, BOTH DELIBERATELY AND BOTH ASKED FOR.** They are the only
+  places in this delta where a poster a truck has already approved renders differently without them
+  touching it, and both are asserted as changes in `scripts/design-editor.cjs` §3.
+
+### What changed
+
+| | |
+|---|---|
+| 🔴 **ONE editor, `components/manage/DesignEditor.tsx`** | the weekly design, the single event design and a place's design were three screens with two editors between them, which had already drifted — two background colours on one and one on the other, switches on one and none on the other. The differences are **props** now |
+| 🔴 **No right-hand settings column.** A ~250px list on the left, the picture filling the rest, the selected item's toolbar **directly above** it | the old shape made the operator's eye travel left → right → centre for every adjustment, and squeezed the picture to ~450px on a 1000px laptop. ⛔ **SUPERSEDED V15.2 — THERE IS A RIGHT-HAND COLUMN AGAIN, AND THE TOOLBAR IS GONE.** ⚠️ The 2026-era reason this reversed is not that the old reason was wrong: it is that the toolbar could only ever show the controls that FIT on one row, so the rest went into pop-ups — and a pop-up covers the poster it is about. The new column is 320px and **sticky**, so the eye travels once and the poster never moves |
+| 🔴 **Every item has an on/off switch and a LIVE grey sample** | "Date · Wednesday 14th October", in the design's own style. `enabled` moved from the event layout's boxes onto **every** `TextBox`, default `true` |
+| 🔴 **An Effects popover per item** | Shadow None/Soft/Strong · Outline + colour · **Band behind the words**, which replaces "Background behind the date" and is mapped from it at the same look · "Keep it readable automatically", now **per item** with the old design-wide flag as its default. ⚠️ **V15.2: THE SETTINGS ARE UNCHANGED AND THE POP-UP IS GONE** — `EffectsPanel` is mounted in the panel's **MAKE IT STAND OUT** section, open by default |
+| 🔴 **An Advanced panel per item, closed by default** | WORDING · LETTERS · POSITION · LONG NAMES · STAND OUT · WHOLE PICTURE, plus "Copy this style to all text". ⚠️ **V15.2: THE SAME COMPONENT, in the panel's MORE OPTIONS section**, still folded — but with a summary line naming what is inside, because a folded section without one is a closed door with no sign on it |
+| 🔴 **`lib/weekly-post/locale.ts`** | one table keyed by country holding each country's four date styles, its numeric order and its default time style. **Every** formatter and the renderer read it; GB and US are in it; `countryForTruck()` is the one function that decides and returns `'GB'` today |
+| ⛔ **"Time shows as" is REMOVED** | a single-event post always states its start and its finish. **A design saved as "From 5pm" renders "5pm – 9pm" from now on** |
+| ⛔ **"Raised ordinals" is REMOVED as a setting and is always on** | **a box saved with it off now draws a raised suffix** |
+| 🔴 **"Your own text" replaces "the note box", and there can be up to four** | each carries its own text with one token, `{note}`. An old single `note` migrates to `notes[0]` with text exactly `{note}`, which renders what it always rendered |
+| 🔴 **§9 · "Show private events" on the weekly MAKE screen, OFF by default** | and it is a **reduction**: a private event used to appear on every weekly poster as a "Private event" row with no way to leave it out. **The server decides** — `buildWeekData` drops them; nothing is fetched and hidden in the browser |
+| 🔴 **§8 · "Event post design" → "Single event post design"** | with **standard** bold in its description, a five-word "Used for:" line, and the matching wording fixed in five other places |
+| 🔴 **In "Designs for a place", places WITHOUT their own design come FIRST and their button is ORANGE** | the list's job is to get a picture onto a venue that has not got one. "Edit" stays outlined — it is navigation |
+| 🔴 **`DraggableBox` has its own file and gained centre-snapping** | with a hairline guide while snapped. It was exported out of `WeeklyPost.tsx`; with one shared editor there is no owning screen |
+| 🔴 **`FontPicker` is a component** | grouped by family group, with `familyHasBold` so the Bold button is hidden rather than inert for the six single-weight families. Nothing else in `components/` may loop `FONT_CHOICES` — asserted |
+| ⛔ **The colour control is never an empty box** | a bare `<input type="color">` renders as an empty well in Safari, so a design with white text showed **no colour at all** until the picker was opened. That bug was in **both** old screens, because it was written twice |
+
+### The failure classes
+
+1. ⛔ **A SETTING THAT RENDERS IDENTICALLY ON AND OFF IS WORSE THAN ONE THAT CRASHES**, because the
+   operator believes it worked and posts the result. `scripts/design-editor.cjs` §2 renders the same
+   design twice per new option — once plain, once with that one field changed — and **requires the
+   bytes to differ**. Twenty options, twenty comparisons.
+2. 🔴 **THE COMPATIBILITY PROMISE IS A PIXEL COMPARISON, NOT A TYPE CHECK.** §1 builds a layout in the
+   shape the column actually held before today — by **stripping** the new keys off a fresh one rather
+   than hand-writing a fixture — validates it, renders it, and compares it byte-for-byte with the
+   same design built fresh. ⚠️ **And it proves the comparison can fail**: moving one box must change
+   the bytes, or the whole section would pass on a renderer that produced identical output for
+   everything.
+3. ⛔ **A COUNT IN RAW SOURCE IS THE SAME TRAP AS A BOOLEAN IN RAW SOURCE, AND IT HID BETTER.**
+   `social-posts.cjs`'s "exactly four buttons may be primary" counted `data-primary` in **unstripped**
+   source and went to five, because the note explaining that the new orange place-row button is *not*
+   a primary contains the words `data-primary`. A count going **up** reads as a product change rather
+   than a harness fault. **`codeOf` before any source assertion — including counts.** Sixth instance
+   of this class in this project.
+4. ⚠️ **AN EFFECT ON TEXT HAS NO PIXELS WHEN THE TEXT IS EMPTY.** The re-aimed V20 variant — "a
+   `{note}` box is drawn on every post made without a note" — could not fail until the fixture gave
+   that box a **band**, because an empty text element is zero pixels and the two images came out
+   identical. The same fault the first draft of V15 had, in a new place.
+5. ⚠️ **A MEASUREMENT THAT CANNOT DRAW THE FAILING SHAPE PROVES NOTHING.** The editor's browser block
+   carries its own control: the two-column rule is stripped and 1100px must come out as **one**
+   track, so "the grid has two columns" is a measurement rather than a restatement.
+6. ⚠️ **AN ABSENCE TEST OVER A WHOLE FILE CATCHES THE CORRECT USE TOO.** `!/raisedOrdinals/` on the
+   editor failed on the one correct call left — the formatter that builds the grey **sample**, which
+   is a plain string and cannot draw a superscript. Had I "fixed" the code to satisfy it I would have
+   broken the sample. The check names the control it forbids, not the word.
+7. ⚠️ **FOUR COMMENTS DESCRIBED BEHAVIOUR THAT NO LONGER EXISTS** — `render.ts` and `week-data.ts`
+   still explained the "From 5pm" form. Found by grepping the whole feature for the removed string
+   after the code was finished. **A stale comment is the exact mechanism that kept a `places-tab.cjs`
+   check green for a day.**
+8. ⛔ **A `git stash` TO MEASURE A BASELINE CORRUPTED A RUNNING SWEEP.** The full sweep was in the
+   background reading the working tree; stashing swapped the tree under it. The run was stopped by the
+   **recorded task id** and re-run from a quiet tree. **Never stash while anything is reading the
+   tree.**
+
+### What was run
+
+| | |
+|---|---|
+| `tsc --noEmit` | clean |
+| `npx next build` | ✓ compiled |
+| **ESLint** | **product code identical: 774 errors in `app`+`components`+`lib` both ways**, warnings **down 2** (dead imports removed). Whole-repo errors rise by exactly **4**, all `@typescript-eslint/no-require-imports` in the new harness — the class that already accounts for **525** errors across the 95 existing ones |
+| **New harness** | `scripts/design-editor.cjs` — **60 checks**, registered in `scripts/harnesses.json` (**96** listed) |
+| `scripts/weekly-post.cjs` | **221** checks · **35 mutation variants, 35 failed as required** |
+| `scripts/social-posts-render.cjs` | the editor measured in **WebKit only** at **1100×800 and 390×844**, plus its own control |
+
+### Open items
+
+| Item | State |
+|---|---|
+| **Deploy** | **not done — Dominic deploys by hand** |
+| ⛔ **The two saved-design changes** | "From 5pm" designs now render a range; `raisedOrdinals: false` boxes now draw a raised suffix. Both asked for, both asserted, both in the report |
+| ⚠️ **`countryForTruck()` returns `'GB'` for everyone** | `trucks` has no country column. The US half of the locale table is built, tested and unreachable until it does |
+| ⚠️ **Italic is a 12° shear, not a designed italic** | none of the 21 bundled families has an italic file |
+| ⚠️ **The outline is four layered text-shadows, not a stroke** | satori has no `-webkit-text-stroke` |
+| From V14.5 | `public.place_pictures` unread in the database; Chromium's intermittent screenshot timeout |
+
+---
+
 ## V14.5 — 6 October 2026 — ONE EMPTY STATE, THE DESIGNS BOXES, AND WORDING THAT SAYS WHAT EACH PICTURE IS FOR. STILL NOT DEPLOYED.
 
 **Status — read this first.**
@@ -44,7 +535,7 @@ version of the document they were holding.** ⚠️ **Grep before finishing:** `
 | 🔴 **The Designs boxes: centred picture, badge under it, "Used for" panel, orange button pinned to the bottom** | and the two boxes are equal height whatever their state |
 | 🔴 **Orange moved to Designs** | on that area, setting a design up IS the thing to do. Four primaries in all: one on Make a post, two on Designs, one in the place editor |
 | ⛔ **A landscape design burst out of its box** | **reported live.** 220px tall with no cap makes a 1920×1080 design **391px wide** in a 200–320px column. The width caps at 176 and the height follows the ratio down |
-| ⛔ **The "Standard" tag is gone from place rows** | **reported as "remove the event type"** — and that is how it read: Standard is the name of an **event type** in this product. Only the exception ("Own design") is tagged now |
+| ⛔ **The "Standard" tag is gone from place rows** | **reported as "remove the event type"** — and that is how it read: Standard is the name of an **event type** in this product. Only the exception ("Own design") was tagged after this — and **V14.8 removed that one too**, see above |
 | 🔴 **A place row is ONE line at every width from 390 up** | `flex-wrap` removed; `min-w-0` + `truncate` make the NAME the only thing that gives way |
 | 🔴 **"Design" replaces "Give own design"** | three words for the commonest state in a list was what pushed a one-line row onto two |
 | 🔴 **Every sentence rewritten to say what the picture is FOR** | the intro names the two areas and the order they go in; the two design boxes carry "Used for:" lines; "instead of" is bold because the whole sentence turns on it |
@@ -5369,7 +5860,7 @@ Delta over V8.9 — the **16–17 July hardware-testing session** (first sustain
 
 - **PLAN/FEATURE MATRIX — GATE↔MARKETING DRIFT (the 5th instance of the two-hand-maintained-records class: §65 "APPLIED/live", `/api/dashboard` subset ×2 — `sound_config` + `keep_screen_on`, `update_settings` allowlist, now this).** `lib/features.ts` = the **GATE** (`PLAN_FEATURES` / `canAccess` — what the app *allows*); `lib/plan-features.ts` = the **MARKETING list** (`FEATURE_SECTIONS` — what we *advertise*, rendered by Admin, Manage → Billing, and now `/landing`). They drifted silently: **`whatsapp_replies` was MAX-only in the gate but advertised ✓ Pro** → a Pro truck was sold WhatsApp auto-replies while `canAccess('pro', …)` returned false → it **silently got nothing, no error, no explanation**. Plus a quieter **3-field text drift** between `PLAN_META` and `PLAN_DESCRIPTIONS`/`PLAN_PRICES` (starter/pro wording, tester/demo price).
   - **FIXED:** `whatsapp_replies` → `PRO_FEATURES` (Max inherits it via the spread). `PLAN_META` is now the **single metadata source**; `PLAN_PRICES`/`PLAN_DESCRIPTIONS` **derive** from it, so the text drift cannot recur.
-  - **STRUCTURAL CLOSE (the point):** `findPlanParityViolations()` + `ROW_FEATURE_MAP` in `plan-features.ts` — every row advertised **hard-`true`** for a tier MUST satisfy `canAccess(tier, feature)`. `'coming_soon'` and marketing-only rows (no `Feature`) skip legitimately, so the two files **stay separate but BOUND**. **Runs at module load** (dev **throws**, prod **`console.error` only**) because there is **no test runner** (no vitest/jest — CI is scraper workflows only); **exported** so it becomes a one-line CI test (`expect(findPlanParityViolations()).toEqual([])`) the day vitest lands. **Now runs on `/landing` too** (the page imports the source, so the guard fires when the landing table renders). **STATUS: SWEPT + CLOSED — zero violations at time of writing.**
+  - **STRUCTURAL CLOSE (the point):** `findPlanParityViolations()` + `ROW_FEATURE_MAP` in `plan-features.ts` — every row advertised **hard-`true`** for a tier MUST satisfy `canAccess(tier, feature)`. `'coming_soon'` and marketing-only rows (no `Feature`) skip legitimately, so the two files **stay separate but BOUND**. **Runs at module load** (dev **throws**, prod **`console.error` only**) because there is **no test runner** (no vitest/jest — CI is scraper workflows only); **exported** so it becomes a one-line CI test (`expect(findPlanParityViolations()).toEqual([])`) the day vitest lands. **Now runs on `/landing` too** (the page imports the source, so the guard fires when that route renders). ⚠️ **V14.9 — THE STATED REASON CHANGED AND THE GUARD NEARLY WENT WITH IT.** The clause here used to read *"when the landing table renders"*; the comparison table moved to `/features` on 6 October 2026, so the landing renders no table at all. The guard still fires **only because the page still imports four names** (`PLAN_PRICES`, `PLAN_DESCRIPTIONS`, `PLAN_ALLOWANCES`, `CARD_FEE_ONLINE_LABEL`) for its pricing cards — 🔴 **remove the last of those and the guard silently stops running on that route.** A comment above the import now says so. See §48, "The landing page — what was cut and moved". **STATUS: SWEPT + CLOSED — zero violations at time of writing, and zero throughout the V14.9 work.**
   - **⚠️ THE GUARD'S LIMIT — record this.** It binds **MARKETING to GATE, not either to REALITY.** `canAccess` true means "this plan is **ALLOWED**", **not** "this is **BUILT**". A gate-enabled but unimplemented feature **passes the guard and still ships a false promise.** Caught by hand this session: **Messenger/Instagram auto-replies** (webhook routes are stubs — `// TODO: Route to classifier`, no reply sent) and **kitchen ticket printing** (Phase-A `createStubTransport`, no physical print) were **both gate-enabled AND stated as ready** — a human read the code and held them `coming_soon`. **Neither the gate nor the guard would have stopped that** — only reading the implementation did.
   - **THE RULE:** before advertising a feature, **verify it is BUILT** — not that `canAccess` allows it, and not that someone said it was ready. Same family as **"recorded as applied ≠ applied"** (§65 / V8.8 do-not-relearn): a record that asserts something **nobody checked against reality**.
 
@@ -7174,7 +7665,7 @@ When in doubt, use canAccess().
 
 lib/plan-features.ts is the single source of truth for the pricing matrix, feature sections, footnotes, plan prices, and descriptions. Both the Billing tab and the admin console import it. Never hardcode pricing or feature rows in a component.
 
-FEATURE_SECTIONS (V6) is the canonical structure: three sections — Core operations, Online sales & automation, and Max tier — each a list of FeatureRow objects carrying a human-readable label and starter/pro/max values. Trial and Tester always take the same value as Max. Coming-soon rows (FeatureValue 'coming_soon') are ordered last within their section in the data itself, so both surfaces render them last without any render-time sorting. PLAN_FOOTNOTES is exported and rendered by both surfaces.
+FEATURE_SECTIONS (V6) is the canonical structure: three sections — Core operations, Pro tier (renamed from 'Online sales & automation' on 6 October 2026, so all three headings name a PLAN) and Max tier — each a list of FeatureRow objects carrying a human-readable label and starter/pro/max values. Trial and Tester always take the same value as Max. Coming-soon rows (FeatureValue 'coming_soon') are ordered last within their section in the data itself, so both surfaces render them last without any render-time sorting. PLAN_FOOTNOTES is exported and rendered by both surfaces.
 
 ### Schedule extraction via Gemini — mostly consolidated (V6.2)
 
@@ -25742,6 +26233,313 @@ A request to add Vercel Web Analytics came with the premise *"PostHog was REMOVE
 
 ---
 
+### 🔴 TWO BRIEFED PREMISES THAT WERE WRONG (V14.9 — 6–7 October 2026)
+
+Recorded so they are not briefed again.
+
+- 🔴 **OBSERVED — THE LANDING PLAN CARDS ARE NOT SHARED WITH BILLING.** The Starter/Pro/Max bullet lists
+  are **hand-written `<li>` literals in `app/landing/page.tsx`**, not rendered from `FEATURE_SECTIONS`.
+  Billing renders `FEATURE_SECTIONS` as a plan-columns × feature-rows **matrix** and has **no bullet-list
+  cards at all**.
+  - **CONSEQUENCE, STANDING:** changing `lib/plan-features.ts` — marking a feature live, renaming a row —
+    does **not** update the landing cards. **Any plan-feature change that should show on the landing must
+    be made in both places.**
+  - The matrix, Billing, Admin and the plans PDF all read `lib/plan-features.ts` + `lib/landing-table.ts`.
+    The landing cards read neither. ⚠️ See §48's parity note and §73.10 for the row-level rules.
+- 🔴 **OBSERVED — THE HERO SCREENSHOTS NEVER REQUESTED 3840px IMAGES.** A brief said they did. Measurement
+  across three viewports × three device pixel ratios showed **384 / 640 / 256** at DPR 1, rising with DPR,
+  **never 3840**.
+  - The false figure came from reading the page through a **text-fetching tool**, which reports the
+    largest candidate in a `srcset` — not the one a browser chooses.
+  - ⚠️ **RULE: an image-weight claim comes from a browser measurement, never from fetched page text.**
+
+### The `/features` page (V14.9)
+
+- **OBSERVED** — new route `app/features/page.tsx`, a server component with `dynamic = 'force-dynamic'`
+  (it reads the Host header). It carries the "Every feature, side by side" section — heading, subline,
+  table, footnotes 1–5 — moved **verbatim** into `components/landing/FeatureComparison.tsx`. The old and
+  new JSX were compared line for line: **61 lines, identical apart from indentation.**
+- **OBSERVED** — two helpers moved with it, because the table was their only reader:
+  - `FOOTNOTE_TEXT_OVERRIDES`, the landing-only footnote-2 wording. ⚠️ The shared `FOOTNOTES` are
+    **unmodified**, so Billing and Admin keep the original text.
+  - `Cell`, the ✓ / — / "Coming soon" renderer, which still takes its glyphs from `lib/landing-table.ts`.
+- **OBSERVED** — host handling uses the **same shape as `/compare`**: `isHatchGrabHost(...)`, else
+  `notFound()`.
+  - On the Village Foodie host it is a **404 in Village Foodie's own chrome**.
+  - On a host with no brand (`localhost`) it is also a 404.
+  - On a HatchGrab host it is a 200.
+- **OBSERVED** — indexing, **unlike `/compare`, which is `noindex`**: `robots: index, follow`; canonical
+  `https://www.hatchgrab.com/features`; title `Plans & features compared — HatchGrab UK`, set with
+  `title: { absolute: … }` because `app/layout.tsx` carries a `'%s | HatchGrab'` template and a bare
+  string gets the brand twice.
+- **REASONED — why it is indexable:** this content was public on the **indexed** landing page, and
+  "what's on each plan" is a search people make. **Moving it without indexing would have made public
+  content private by accident.**
+- **OBSERVED** — the sitemap is host-aware and now lists `https://www.hatchgrab.com/features` (monthly,
+  priority 0.8) **on the HatchGrab host only**. The Village Foodie sitemap is unchanged.
+- **OBSERVED** — `/features` uses **one** `.hg-landing` wrapper round the whole page, unlike `/compare`,
+  which splits its in two — because nothing on it is Tailwind. ⚠️ **That single wrapper is also what keeps
+  the priced header row `position: sticky`**, since a sticky element only travels inside its parent's box.
+- 🟢 **CONFIRMED AT MERGE (was UNVERIFIED)** — the "See prices and plans →" link at the bottom was removed
+  on instruction, because it sat alone in a large white band. The whole `<section>` went, not just the
+  link: every bare `<section>` in `landing.css` carries `padding: clamp(3.5rem,7vw,5.5rem) 0`, so an
+  emptied one would have left ~5.5rem of white above the footer. Only a tombstone comment remains.
+
+### The landing page — what was cut and moved (V14.9)
+
+- **OBSERVED** — the comparison table section is **gone from the landing**.
+  - ⚠️ **It had no anchor id.** The only landing anchors that have ever existed are `#pricing` and
+    `#try`, and **nothing** in the codebase — no email, no template in code, no document — linked to the
+    table. There was therefore nothing to preserve, and **no id was invented to pretend otherwise**.
+- **OBSERVED** — the "Everything you need, nothing you don't" section (the Orders eyebrow and the #17
+  Sarah ticket) is **deleted**. It was **inline JSX, not a component**, so nothing was deleted alongside
+  it.
+  - Its CSS (`.ticket-stage`, `.ticket`, `.t-*` in `landing.css`) is now **dead and deliberately left**.
+    ⚠️ `.shot-empty` was **already dead before this work**.
+- **OBSERVED** — a link to `/features` now sits **directly under the plan cards and before** the
+  "Switching from another platform?" block. ⚠️ Before it, deliberately: that block filters itself out for
+  most readers on its first word, so a link after it would sit behind a heading telling half the audience
+  the paragraph is not for them.
+  - 🟢 **CONFIRMED AT MERGE (was UNVERIFIED)** — it was restyled as a **centred outlined button labelled
+    "See every feature →"**, reusing the white "Try Free" outline (`btn btn-ghost`). ⛔ Not `btn-primary`:
+    every orange control on the page opens the demo modal, and an orange button there would compete with
+    the three in the cards above it.
+- **OBSERVED** — **"Features" is in the footer at every width, and in the header from 820px up**
+  (`nav-hide-md`, a `max-width` rule, so the default is visible).
+  - Below 820px it is **footer-only**, because the header row is already within ~59px of full at 640px and
+    **the CTA must never wrap**.
+  - On the landing, nav Pricing stays `#pricing`. On `/features` it is `/landing#pricing`, via the
+    existing `landingHref` prop — one prop, both behaviours, no second nav.
+- **OBSERVED** — the Gusto logo in the testimonial now has `sizes` set for its **77px painted width**: it
+  requests `w=96` (**2.9 KB**) instead of `w=384` (**11.2 KB**). It was **already** lazy-loaded. Nothing
+  else in the testimonial changed.
+- **OBSERVED, before/after:**
+  - visible words on the landing: **1,911 → 879** at 390px, and **1,946 → 905** at 1440px (**−54%**);
+  - `/features` carries ~**995** words;
+  - page weight: **606 KB → 589 KB**.
+- **REASONED** — **the page's weight is JavaScript and fonts, not content.** Three Next.js chunks
+  (~190 KB) and two woff2 fonts (~73 KB) are the five largest requests and are the same on every marketing
+  page. 🔴 **If page weight ever becomes a goal, those are the work; more copy cuts will not move it.**
+- **OBSERVED** — the landing's import from `lib/plan-features.ts` **shrank to four names**.
+  `findPlanParityViolations()` runs **at module load**, so it fires only on routes that import that
+  module. 🔴 **A comment above the import now warns that removing the last of those four silently stops
+  the guard running on the landing.** ⚠️ This supersedes the parenthetical in §16's parity entry, which
+  said the guard fires "when the landing table renders" — the landing renders no table now.
+  - The guard returned **0 violations throughout**.
+
+### Plan cards — landing literals only (V14.9)
+
+- **OBSERVED** — the dangling footnote marker **⁴** after the WhatsApp bullet was **removed**, because the
+  footnotes it pointed at moved to `/features`. ⚠️ **The `*` fee stars stay**, because the paragraph they
+  point to is still on the landing. The test is whether the note is on the same page, and it is applied
+  per marker.
+- **OBSERVED, then superseded** — the Pro card order on 6 October ran … Auto-accept orders / Private
+  events / WhatsApp auto-replies / Messenger & Instagram auto-replies (Coming soon) / Take payment on your
+  phone (Coming soon). **"Private events with their own ordering link" was shortened to "Private
+  events"**, matching the matrix row's own name.
+- 🟢 **CONFIRMED AT MERGE (was UNVERIFIED) — the final Pro card order**, asserted as a whole-list equality
+  in the browser at 390px and 1440px:
+  1. Everything in Free, plus
+  2. Offline order protection
+  3. Take payment online
+  4. Pre-orders & collection times
+  5. Smart slot management
+  6. Auto-accept orders
+  7. Private events
+  8. **Social media posts**
+  9. **WhatsApp auto-replies (Messenger & Instagram coming soon)** — the parenthetical is **plain bullet
+     text at the same size and format as the rest of the line**, not a badge and not muted. ⚠️ It was
+     briefly a smaller muted span and was changed on instruction.
+  10. Take payment on your phone, with its Coming soon badge
+
+  ⛔ **The separate "Messenger & Instagram auto-replies" bullet is removed.** It carried the badge
+  directly under the live WhatsApp line, so the card read as half-finished for a channel nobody buys the
+  plan for.
+- **DECIDED, STANDING** — **on every plan card, all "Coming soon" items sit together at the bottom of the
+  list.** Starter has none; Max already satisfied it.
+- **OBSERVED** — the Starter card's welded "QR code & discovery map listing" bullet was **split into two**,
+  each byte-identical to its matrix row's `name` (`QR code` / `Discovery map listing`).
+- **OBSERVED** — **Social media posts was marked live** in `lib/plan-features.ts` (`pro: true, max: true`,
+  and trial follows Max) **on Dominic's explicit instruction**, after the consequence was put to him and
+  he chose it over the two alternatives.
+  - 🔴 **IT IS A `true` CELL WITH NO `ROW_FEATURE_MAP` ENTRY, AND THAT IS WHY IT BUILDS.**
+    `canAccess(p, 'places_posts_preview')` is **false for every plan** — starter, pro, max, trial, tester
+    and demo — because the key is in no plan set and is held only through `trucks.feature_overrides`,
+    granted today to **one truck**. `findPlanParityViolations()` `continue`s past a row with no map entry,
+    so the `true` cells are never checked. ⛔ **Adding the obvious map entry would make the guard throw at
+    module load** and break four surfaces in dev.
+  - ⚠️ **So the public pricing table advertises a feature no plan grants.** A recorded decision, not an
+    oversight. The two ways to make it honest are written beside the row.
+
+### "What it does" — the six benefit tiles (V14.9)
+
+- **OBSERVED** — "Never type your schedule twice" is **replaced, in the same position**, by a Social media
+  posts tile. ⚠️ **Its copy was rewritten five times in two days; the current line is:**
+  - **Your social media posts, done for you**
+  - *Upload the design you already post on Facebook or Instagram. We'll fill in your dates, places and
+    times, ready to share — every week or every day.*
+  - ⚠️ The delta recorded the 6 October wording ("…**made** for you" / "Every week we fill in…"); it was
+    superseded on 7 October and the heading, the body and the cadence all changed.
+- **REASONED** — the wording deliberately **makes no claim of automatic posting or caption writing**.
+  🔴 **The caption generator is real and this copy does not sell it** — `weekCaption()`
+  (`lib/weekly-post/caption.ts:134`) builds the week's caption and `eventPostText()` (:89) the per-event
+  text — so the tile **under-claims on purpose**. Written down so nobody "corrects" it back.
+  - Schedule auto-import is no longer a tile of its own; it is implied by the posts tile, still stated in
+    the "Getting going" steps, and still listed on `/features`.
+- **OBSERVED** — each tile has a single line-icon **inline before its heading**, in the **same navy as the
+  headings** (`.does-ico` uses `var(--head)`):
+
+  | tile | icon |
+  |---|---|
+  | Kill the queue | clock |
+  | Never promise a time you can't hit | gauge |
+  | Works on any device | monitor + phone |
+  | Social media posts | image |
+  | WhatsApp auto-replies | chat bubble |
+  | No signal? Keep serving. | wifi-off |
+
+  - ⚠️ **`lucide-react` was added for this** — there was no icon library in the repository. **Six named
+    imports, never a namespace import**: lucide ships ~1,500 components and `import * as` defeats
+    tree-shaking. Measured cost: **5.0 KB raw / 2.9 KB gzipped** for the six plus the shared factory.
+  - ⚠️ **The heading is a flex row of two children** — the icon, then the heading text in its own span.
+    🔴 **That span is what puts a wrapped second line under the TEXT rather than under the icon.** The
+    body paragraph keeps the tile's own left edge; only the heading is indented.
+- **OBSERVED** — **tinted icon squares were tried and removed**, and **orange icons were tried and
+  replaced by navy**.
+- **DECIDED** — **all six icons share one colour.** A WhatsApp-green icon was rejected: it read as an
+  error among the others, and as the official WhatsApp mark, which Meta has usage rules for.
+- **OBSERVED** — a **+12% text-size bump** on these tiles **and** the "Getting going" steps was applied and
+  then **reverted on instruction, in two messages**. ⚠️ **The current sizes are the originals:**
+  `.does-item h3` 1.05rem, `.does-item p` .94rem, `.step h3` 1.12rem, `.step p` .95rem.
+  - ⚠️ **Only the `font-size`s went back.** `.does-item h3` is still a flex row — that is the inline-icon
+    layout, a different change.
+  - ⛔ **THERE IS NO TYPE SCALE IN `landing.css` TO USE.** `clamp()` appears on `h1`, `h2` and
+    `blockquote` only; every other size is a per-rule literal. Recorded so the next brief does not ask for
+    one to be respected.
+
+### The hero — the live fan, and six rejected alternatives (V14.9)
+
+- 🔴 **DECIDED — THE LIVE THREE-SCREEN FAN IS THE HERO.** Six alternatives were built on localhost on
+  6–7 October and **all rejected**:
+  1. a flat overlapping stack;
+  2. a rebalanced stack with the dashboard in front;
+  3. a shared-tilt fan with the dashboard in front;
+  4. size variants of that fan;
+  5. a two-screen layout (dashboard plus phone);
+  6. tighter-cluster mockups.
+
+  ⛔ **Do not re-open this without a new reason.**
+- **OBSERVED** — the restored fan **matches live**, compared against the served HTML from
+  www.hatchgrab.com (classes, all three `sizes` and `priority` diffed **identical**):
+
+  | screen | class | width | position | tilt | z |
+  |---|---|---|---|---|---|
+  | `kitchen.png` | `.shot-kds` | `min(58%,320px)` | left, top 8% | **−6°** | 1 |
+  | `dashboard-v4.png` | `.shot-dash` | `min(72%,400px)` | centred | **−1°** | 2 |
+  | `customer-order.png` | `.shot-phone` | `min(26%,140px)` | right 2%, bottom 0 | **+5°** | 3 |
+
+  - **Each screen has its own tilt** — not one shared tilt, which is what every rejected pass used.
+  - Corners **12 / 12 / 18px**, **no border**, shadow
+    `0 22px 50px -20px rgba(15,23,42,.32), 0 2px 8px rgba(15,23,42,.06)`.
+  - **All three are `priority`.**
+  - `sizes` are `(max-width: 939px) 58vw, 320px`, `… 72vw, 400px` and `… 26vw, 140px`.
+- **OBSERVED** — everything the rejected passes added is **removed**: the `.fan-group` wrapper, the ten
+  `--fan-*` custom properties, the background tint, and a **dead second `.shot` rule** that was being
+  overridden by source order and would still have read as the live one. `kitchen.png` is referenced again.
+- **OBSERVED** — the tagline "Less time booking. More time cooking." changed from grey (`--ink-soft`) to
+  the **headline navy `var(--head)`**, measured `rgb(22,49,79)`. **"cooking." keeps its orange italic**
+  (`.hero-tag .lean` is more specific and is not overridden).
+- **OBSERVED** — the block beside the hero button ("Upload a photo of your menu… No signup, no account —
+  just a working demo…") was **removed**. It is replaced by a two-line note **inside `.hero-cta-row`**:
+  - *No signup, no card.* / *See it working in under 60 seconds.*
+  - Style: **`.85rem`**, `--hero-grey` **#3E5472 (7.73:1 on white)**, **16px gap**, vertically centred on
+    the button. ⚠️ `--ink-soft` was rejected for it: **4.44:1 misses the 4.5:1 floor.**
+  - ⚠️ **It is a child of `.hero-cta-row`, which is `column` below the threshold and `row` above it** — so
+    one element gives "right of the button" on a laptop and "under the button" on a phone, with no
+    duplicate markup.
+- **OBSERVED** — **the note sits beside the button only from 1140px up.** Between 940 and 1139px it would
+  **overlap the kitchen screenshot** — by up to **68px** — so it stays stacked under the button there and
+  on phones. Measured clearance: 940px **−68**, 1024px **−31**, 1060px **−14**, 1100px **+5**, 1140px and
+  above **+23**.
+  - To stay on two lines it must overflow its own column into the grid **gutter**: its longer line is
+    ~225px against ~203px of column. ⛔ The alternative was shrinking the text to ~12px.
+  - ⚠️ **The 1140px threshold is tuned to this copy. Re-measure if the note's wording changes; nothing
+    enforces it.**
+  - **`.hero-sub-sm` stays hidden on phones**, so the hero never says the same thing twice.
+- 🔴 **OBSERVED — A LAYOUT TRAP WAS FOUND AND FIXED, AND IT IS WORTH KEEPING.** `width: max-content` on a
+  grid child **raises an `fr` track's automatic minimum**, which silently shrank the fan: the kitchen went
+  **343×272 → 319×253** and the hero stopped matching live. **`min-width: 0` on the hero text cell is what
+  holds the `.9fr 1.1fr` split. Keep it.**
+- **OBSERVED** — hero padding was scaled **×0.6 across every clamp value**, so the reduction is
+  proportional at **all** widths rather than only at the one it was measured on:
+  - top `clamp(1.5rem, 3vw, 2.4rem)`;
+  - bottom `clamp(1.8rem, 3.6vw, 2.7rem)`;
+  - phone `padding-block: 1.5rem 1.2rem`.
+
+  ⛔ **Scaling only the caps would have left the phone untouched**, because below ~853px the `vw` term
+  wins and the cap never applies. **Hero height at 1440px went 566 → 512px** (−40.0% on both paddings).
+  **The screenshots are not clipped** by the hero edge or the trust strip.
+- **OBSERVED** — **the LCP element is the `h1` throughout**, about 60ms on localhost. ⚠️ One rejected pass
+  removed `priority` from `kitchen.png` on instruction and **LCP became that image at 84ms**; restoring
+  the live fan put it back to the `h1`.
+
+### Orange buttons — white text is a recorded decision (V14.9)
+
+- **OBSERVED** — navy text on the filled orange buttons was applied and then **reverted to white on
+  Dominic's instruction**. Measured contrast:
+
+  | text | on `--orange` #EF8B2C (rest) | on `--orange-deep` #D9741A (hover) |
+  |---|---|---|
+  | **white** ← shipped | **2.50:1** | **3.25:1** |
+  | navy #16314F | **5.29:1** | 4.07:1 |
+
+- **DECIDED** — **white stays, as a brand decision**, accepted knowing it is below the **4.5:1 AA floor**
+  and below the **3:1 large-text floor** too — `.btn-lg` is 1.2rem/700, which is large text, and 2.50
+  misses even that. 🔴 **The four numbers are written beside the rule in `landing.css`** so the decision
+  cannot be mistaken for an oversight.
+- **OBSERVED — SCOPE:** `.hg-landing .btn-primary` is shared by **the landing, `/features` and
+  `/compare`**. ⛔ The operator app, Manage, the KDS and the customer ordering pages use Tailwind's
+  `bg-orange-600` and are **never affected by it**.
+- **REASONED, OPEN** — if readability is revisited, the least disruptive option is a **slightly deeper
+  orange on buttons only**, with white text kept.
+
+### Standing decisions from the landing trim (V14.9)
+
+- The **"Upload my menu" button is in the header at all times**, so **no extra CTAs are added elsewhere**
+  on the landing.
+- The **testimonial is unchanged on purpose.** Its white space was judged not a problem.
+- **No competitor name or percentage saving in the hero.** It is a comparative claim that must hold for
+  every visitor, and `/compare` makes that argument properly.
+- **No star ratings and no "trusted by" plurals.** There is no rating, and one customer is not "local
+  favourites".
+- **One icon colour across the benefit tiles.**
+- **REASONED** — **the landing's length is now about right.** Further work is visual polish, not more
+  sections.
+
+### Open after the landing trim (V14.9)
+
+- 🔴 **UNDEPLOYED.** All of the above is local on `main` as of 7 October 2026. Dominic deploys by hand
+  after checking localhost at full width and at phone width.
+- 🟢 **THE DELTA'S FOUR "UNVERIFIED" ITEMS WERE CHECKED AGAINST THE REPOSITORY DURING THIS MERGE AND ALL
+  FOUR HOLD.** They are marked **CONFIRMED AT MERGE** in the subsections above:
+  - the final Pro card order — asserted as a whole-list equality at 390px and 1440px;
+  - the **"See every feature →"** outlined button — `btn btn-ghost`, measured identical to the Try Free
+    outline;
+  - the `/features` bottom-link removal — only a tombstone comment remains;
+  - the pricing heading — `app/landing/page.tsx` renders `<h2>Start free. Upgrade when you need to.</h2>`,
+    and the old line appears nowhere on the page.
+- ⚠️ **HERO SCREENSHOTS SHOW TEST DATA.** The dashboard reads "App Tester" and "Test Event 13". Proposed:
+  recapture all three from the Pizza Kitchen test truck (`test-truck`) with realistic names, **never from
+  a live trading truck**. **Not started.**
+- ⚠️ **OFFER MISMATCH.** Outreach emails offer **4 months free**; the landing and trust strip say **first
+  month free**. Undecided whether to explain it in the emails or leave as is. Also unconfirmed: whether a
+  4-month trial can be granted in the product or is manual.
+- ⚠️ **DEAD CSS SWEEP:** `.ticket-stage`, `.ticket`, `.t-*` and `.shot-empty` in `landing.css`.
+- ⚠️ **THE HEADER "Features" LINK is hidden from 640–819px.** Making room would mean shortening the CTA
+  label or iconising Log in. **Not decided.**
+- ⚠️ **HARNESS FLAKINESS:** `event-types-render.cjs` failed once inside a full sweep running alongside a
+  local `next start`, and **passed on its own**. Treat it as resource contention unless it recurs.
+
 # 49. Deploy posture as of V11.58
 
 ✅ **EVERYTHING FROM BOTH DAYS IS DEPLOYED.** **OBSERVED after deploy: no 500s, no 504s, customer ordering
@@ -27923,6 +28721,15 @@ editor**, and a footer with "Make post for `<date>`" and the quiet way out.
 `lib/weekly-post/week-data.ts` reads `short_name` FIRST and falls back to `name`, so the short one is
 the field that decides what a poster prints. It is written with `sg_upsert_place` — the action "Tidy up
 places" already uses. **No column was added.**
+
+⛔ **SUPERSEDED V15.2 — THE FIELD IS NO LONGER ON THE SOCIAL SCREEN, AND NO COLUMN WAS DROPPED EITHER.**
+The binding above is still exactly true of "Tidy up places", which is now the **one** editor again.
+🔴 **WHY IT WENT:** "Tidy up places" edits a location's name **and its town**, side by side. Those two
+are one fact about the schedule, so a second screen editing only the name was a way to change half of it
+and leave the other half as it was — and the poster then prints a mismatch that **neither** screen can
+show the operator. ⚠️ **WHAT REPLACED IT IS A SENTENCE, NOT A SILENCE:** the Location settings pane
+carries `NAME_FROM_SCHEDULE_NOTE`, which names the real path ("Schedule › Events › Add event › Tidy up
+places") rather than saying "elsewhere". Removing a field and saying nothing leaves an operator hunting.
 
 ⛔ **AND THE "Tidy up places" LABELS WERE WRONG — FIXED IN V14.4 (decided 6 October 2026).** That card
 labelled **`name`** "Name on posts", which is the field the renderer uses **second**: filling in the

@@ -26,6 +26,33 @@ const REPO = path.resolve(__dirname, '..')
 
 const LIB = [
   'lib/weekly-post/week.ts', 'lib/weekly-post/format.ts', 'lib/weekly-post/week-data.ts',
+  /* 🔴 ADDED 6 October 2026. Every date wording moved out of `format.ts` into `locale.ts`, keyed by
+   * country — so an import the list does not include is a `TS2307` that fails the whole harness, which
+   * is the right failure: a fixture that stubbed the table would measure a poster nobody is served. */
+  'lib/weekly-post/locale.ts',
+  /* 🔴 ADDED 6 October 2026 (part 2). `render.ts` is handed its fonts as a BUNDLE now, because a
+   * library or uploaded font's bytes come from storage and `boxEl` is synchronous. ⚠️ `font-store.ts`
+   * and `font-catalogue.ts` are NOT here and must not be: nothing in this harness's graph imports
+   * them, and the catalogue is a 129KB JSON this compile has no reason to copy. */
+  'lib/weekly-post/font-refs.ts', 'lib/weekly-post/font-bundle.ts',
+  /* 🔴 ADDED 18 October 2026 (part 3). A place now has a picture LIBRARY, and `layout.ts` imports
+   * its `NoPictureBehaviour` type while `render.ts` draws the box. ⚠️ `backgrounds.ts` was already
+   * in this list, which is what `place-pictures.ts` defers to for the shape rule. */
+  'lib/weekly-post/place-pictures.ts',
+  /* 🔴 ADDED 10 October 2026. "The 7 days" is ONE box with seven rows, and `days.ts` is the one place
+   * that decides where a part of a row goes — the renderer and the editor both call `dayCells`. ⚠️ An
+   * import this list does not carry is a `TS2307` that fails the whole harness, which is the right
+   * failure: a fixture that stubbed the layout maths would measure a poster nobody is served. */
+  'lib/weekly-post/days.ts',
+  /* 🔴 ADDED 10 October 2026. What each box SAYS — `locationLinesFor`, `timeLinesFor`,
+   * `withWordsBefore` — left `render.ts` so the live editor could use the same functions. ⚠️ An import
+   * this list does not carry is a `TS2307` that fails the whole harness, which is the right failure. */
+  'lib/weekly-post/lines.ts',
+  /* 🔴 ADDED 10 October 2026 (§2). The **whole poster tree** — `boxEl`, `daysEls`, `noteEls`,
+   * `poweredByEl`, `weeklyTree`, `eventTree` — left `render.ts` so the live editor could build the
+   * same tree instead of a second one. ⚠️ `render.ts` IS NOW THE SATORI CALL AND NOTHING ELSE, so
+   * every variant below that patches a drawing rule patches THIS file. */
+  'lib/weekly-post/draw.ts',
   'lib/weekly-post/layout.ts', 'lib/weekly-post/fit.ts', 'lib/weekly-post/contrast.ts',
   'lib/weekly-post/fonts.ts', 'lib/weekly-post/font-list.ts', 'lib/weekly-post/ttf-metrics.ts', 'lib/weekly-post/caption.ts',
   'lib/weekly-post/render.ts', 'lib/weekly-post/image-info.ts', 'lib/weekly-post/backgrounds.ts',
@@ -58,8 +85,10 @@ function build(patch) {
   return {
     week: r('lib/weekly-post/week.js'),
     format: r('lib/weekly-post/format.js'),
+    locale: r('lib/weekly-post/locale.js'),
     data: r('lib/weekly-post/week-data.js'),
     layout: r('lib/weekly-post/layout.js'),
+    days: r('lib/weekly-post/days.js'),
     fit: r('lib/weekly-post/fit.js'),
     contrast: r('lib/weekly-post/contrast.js'),
     fonts: r('lib/weekly-post/fonts.js'),
@@ -164,7 +193,12 @@ head('1 · THE WEEK — Monday to Sunday, Europe/London')
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 head('2 · ORDINALS, DATES AND TIMES')
 {
-  const { ordinal, ordinalSuffix, dayAndMonthRuns, runsToPlain, formatOneTime, formatTimeRangeFor, headingRuns } = M.format
+  const { ordinal, ordinalSuffix, runsToPlain, formatOneTime, formatTimeRangeFor, headingRuns } = M.format
+  const { dateRunsFor, dateLinesFor, dateTextFor, datePartsFor } = M.locale
+  /* ⚠️ THE HEADING'S DATE FORMATTER IS SUPPLIED BY THE CALLER NOW. `format.ts` may not import
+   * `locale.ts` (the cycle is in both files' own notes), so the renderer hands it in — and so does
+   * this harness, with the same GB long form the renderer uses. */
+  const gbLong = (ymd, c) => dateRunsFor(ymd, 'long', 'GB', c)
 
   /* 🔴 THE TEENS ARE THE WHOLE BUG. `n % 10 === 1 ? 'st'` gives 11st, 12nd and 13rd — wrong three days
    * every month, on artwork a truck posts. 21st/22nd/23rd/31st must still take the short suffix. */
@@ -176,17 +210,67 @@ head('2 · ORDINALS, DATES AND TIMES')
     Array.from({ length: 31 }, (_, i) => i + 1).every(n => /^(st|nd|rd|th)$/.test(ordinalSuffix(n))))
   t('⚠️ ordinal() joins the number and the suffix', ordinal(28) === '28th' && ordinal(1) === '1st')
 
+  /* ⚠️ `dayMonth` IS THE STYLE THAT USED TO BE `dayAndMonthRuns` — the day and the month with no
+   * weekday. The assertion is the same one it always was; only the function it asks moved. */
   t('🔴 the date reads "28th September", and capitals are applied to the whole thing',
-    runsToPlain(dayAndMonthRuns('2026-09-28', { caps: false, raisedOrdinals: false })) === '28th September'
-    && runsToPlain(dayAndMonthRuns('2026-09-28', { caps: true, raisedOrdinals: false })) === '28TH SEPTEMBER')
+    dateTextFor('2026-09-28', 'dayMonth', 'GB', { caps: false, raisedOrdinals: false }) === '28th September'
+    && dateTextFor('2026-09-28', 'dayMonth', 'GB', { caps: true, raisedOrdinals: false }) === '28TH SEPTEMBER')
   /* 🔴 A RAISED ORDINAL IS A SEPARATE RUN, NEVER A UNICODE SUPERSCRIPT CHARACTER. Not every bundled
    * family carries ᵗʰ, and a missing glyph is a blank box on a poster. */
   t('🔴 raised ordinals split into runs and mark the suffix, keeping the same words', (() => {
-    const runs = dayAndMonthRuns('2026-09-28', { caps: true, raisedOrdinals: true })
+    const runs = dateRunsFor('2026-09-28', 'dayMonth', 'GB', { caps: true, raisedOrdinals: true })
     return runsToPlain(runs) === '28TH SEPTEMBER' && runs.length === 3
       && runs[1].raised === true && runs[1].text === 'TH'
+      && runs[0].text === '28' && runs[2].text === ' SEPTEMBER'
       && !/[ᵗʰˢᵈ]/.test(runsToPlain(runs))
   })())
+  /* 🔴 AND THE WHOLE DATE, IN BOTH COUNTRIES. The one thing a component may never do again is spell a
+   * date order out, so each of the four styles is asserted against the locale table's own sample — and
+   * a TEENS date beside it, because 11/12/13 are the three days a hand-written ordinal gets wrong. */
+  const CASE = { caps: false, raisedOrdinals: false }
+  const STYLES = {
+    GB: { long: 'Wednesday 14th October', short: 'Wed 14th Oct', dayMonth: '14th October', numeric: 'Wed 14/10' },
+    US: { long: 'Wednesday, October 14th', short: 'Wed, Oct 14th', dayMonth: 'October 14th', numeric: 'Wed 10/14' },
+  }
+  for (const [cc, want] of Object.entries(STYLES)) {
+    t(`🔴 ${cc}: all four date styles read exactly as the picker promises`,
+      Object.entries(want).every(([id, text]) => dateTextFor('2026-10-14', id, cc, CASE) === text))
+  }
+  t('🔴 the picker\'s samples ARE the formatter\'s output — the list cannot promise a format it does not draw',
+    Object.entries(M.locale.LOCALES).every(([cc, spec]) =>
+      spec.dateStyles.every(d => d.sample === dateTextFor('2026-10-14', d.id, cc, CASE))))
+  const TEENS = {
+    GB: { long: 'Wednesday 11th November', short: 'Wed 11th Nov', dayMonth: '11th November', numeric: 'Wed 11/11' },
+    US: { long: 'Wednesday, November 11th', short: 'Wed, Nov 11th', dayMonth: 'November 11th', numeric: 'Wed 11/11' },
+  }
+  for (const [cc, want] of Object.entries(TEENS)) {
+    t(`🔴 ${cc}: a TEENS date is 11th, never 11st — in every style`,
+      Object.entries(want).every(([id, text]) => dateTextFor('2026-11-11', id, cc, CASE) === text))
+  }
+  /* ⛔ THE ONE DIFFERENCE THAT CHANGES THE MEANING RATHER THAN THE STYLE. "14/10" and "10/14" are the
+   * same day written two ways and two different days to a reader from the other country. */
+  t('⛔ the NUMERIC date reverses between GB and US — the reason the table is keyed by country',
+    dateTextFor('2026-10-14', 'numeric', 'GB', CASE) === 'Wed 14/10'
+    && dateTextFor('2026-10-14', 'numeric', 'US', CASE) === 'Wed 10/14')
+  /* 🔴 "Day on its own line" BREAKS WHERE THE COUNTRY ALLOWS, AND THE COMMA GOES WITH IT. A component
+   * that split the finished string on its first space would leave "Wednesday," hanging on a US poster. */
+  t('🔴 two lines break after the weekday, and a US comma is dropped rather than left dangling', (() => {
+    const gb = dateLinesFor('2026-10-14', 'long', 'GB', CASE, true).map(runsToPlain)
+    const us = dateLinesFor('2026-10-14', 'long', 'US', CASE, true).map(runsToPlain)
+    return gb.length === 2 && gb[0] === 'Wednesday' && gb[1] === '14th October'
+      && us.length === 2 && us[0] === 'Wednesday' && us[1] === 'October 14th'
+      && !us.some(l => l.endsWith(','))
+  })())
+  t('⚠️ a style with NO weekday cannot be split, and draws one line rather than an empty one',
+    dateLinesFor('2026-10-14', 'dayMonth', 'GB', CASE, true).length === 1
+    && datePartsFor('2026-10-14', 'dayMonth', 'GB', CASE).weekday.length === 0)
+  t('⛔ an unknown country falls back to GB rather than producing an empty date',
+    dateTextFor('2026-10-14', 'long', 'ZZ', CASE) === 'Wednesday 14th October'
+    && M.locale.countryForTruck(null) === 'GB'
+    && M.locale.countryForTruck({ country: 'US' }) === 'US'
+    && M.locale.countryForTruck({ country: 'ZZ' }) === 'GB')
+  t('⚠️ an old saved design maps to the style that reproduces what it renders today',
+    M.locale.LEGACY_DATE_STYLE === 'long')
 
   t('🔴 12-hour times drop :00 and keep real minutes',
     formatOneTime('17:00', '12h') === '5pm' && formatOneTime('17:30', '12h') === '5:30pm')
@@ -203,13 +287,18 @@ head('2 · ORDINALS, DATES AND TIMES')
     formatOneTime('99:99', '12h') === '' && formatOneTime('', '12h') === '')
 
   t('🔴 the heading fills {start} and {end} with long dates', (() => {
-    const r = headingRuns('Week commencing {start} to {end}', '2026-09-28', '2026-10-04', { caps: false, raisedOrdinals: false })
+    const r = headingRuns('Week commencing {start} to {end}', '2026-09-28', '2026-10-04', CASE, gbLong)
     return runsToPlain(r) === 'Week commencing Monday 28th September to Sunday 4th October'
   })())
   t('⚠️ an unknown token is left visible rather than silently blanked',
-    runsToPlain(headingRuns('Our week {dates}', '2026-09-28', '2026-10-04', { caps: false, raisedOrdinals: false })) === 'Our week {dates}')
+    runsToPlain(headingRuns('Our week {dates}', '2026-09-28', '2026-10-04', CASE, gbLong)) === 'Our week {dates}')
   t('⚠️ an empty heading template falls back to the default rather than rendering nothing',
-    runsToPlain(headingRuns('   ', '2026-09-28', '2026-10-04', { caps: false, raisedOrdinals: false })).startsWith('Week commencing'))
+    runsToPlain(headingRuns('   ', '2026-09-28', '2026-10-04', CASE, gbLong)).startsWith('Week commencing'))
+  /* ⛔ AND THE HEADING FOLLOWS THE COUNTRY TOO, because it takes the formatter rather than owning one.
+   * This is the assertion that would have failed if `headingRuns` had kept its own UK date. */
+  t('⛔ the heading\'s dates follow the country, through the formatter it is handed',
+    runsToPlain(headingRuns('W/c {start}', '2026-10-14', '2026-10-18', CASE,
+      (ymd, c) => dateRunsFor(ymd, 'long', 'US', c))) === 'W/c Wednesday, October 14th')
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -679,22 +768,25 @@ head('8b · THE SINGLE-EVENT POST \u2014 backgrounds, time and layout')
     return stranded.length === 1 && stranded[0].name === 'The Bull Inn'
   })())
 
-  // ── the "From" time ───────────────────────────────────────────────────────────────────────────
-  const { formatEventTime } = M.format
-  t('\u{1F534} "From 5pm" IS THE DEFAULT FORM, and keeps minutes when they are not :00',
-    formatEventTime('17:00', '21:00', '12h', 'from') === 'From 5pm'
-    && formatEventTime('17:30', '21:00', '12h', 'from') === 'From 5:30pm')
-  t('\u{1F534} the range form is the stage 1 wording, unchanged',
-    formatEventTime('17:00', '21:00', '12h', 'range') === '5pm \u2013 9pm')
-  t('\u26a0\ufe0f 24-hour follows the EXISTING timeStyle rather than a second setting',
-    formatEventTime('17:00', '21:00', '24h', 'from') === 'From 17:00'
-    && formatEventTime('17:00', '21:00', '24h', 'range') === '17:00 \u2013 21:00')
-  t('\u26d4 no start time gives NOTHING, never a dangling "From "',
-    formatEventTime(null, '21:00', '12h', 'from') === ''
-    && formatEventTime('', null, '12h', 'from') === '')
-  t('\u26a0\ufe0f midnight and noon are 12am/12pm here too',
-    formatEventTime('00:00', null, '12h', 'from') === 'From 12am'
-    && formatEventTime('12:00', null, '12h', 'from') === 'From 12pm')
+  /* ══ \u26d4 THE "From 5pm" FORM IS GONE (6 October 2026) \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+   * `EventTimeDisplay`, `formatEventTime` and the `timeDisplay` field were REMOVED: a single-event post
+   * now always states its start AND its finish, because "From 5pm" tells a customer when to arrive and
+   * nothing about whether the truck will still be there.
+   * \u{1F534} THE ASSERTION IS THE ABSENCE **PLUS** WHAT REPLACED IT. An absence on its own cannot tell
+   * "removed" from "this harness is looking at the wrong module", so the function being gone is checked
+   * beside the range form actually being produced by the one formatter that is left.
+   * \u26d4 AND THE SECOND HALF IS THE BREAKING CHANGE, STATED: a design saved with `timeDisplay: 'from'`
+   * comes back out of the validator WITHOUT that field, so it renders a range. */
+  t('\u26d4 `formatEventTime` and `EventTimeDisplay` no longer exist',
+    M.format.formatEventTime === undefined && M.format.EventTimeDisplay === undefined)
+  t('\u{1F534} the only time form left is the range, in both clocks',
+    M.format.formatTimeRangeFor('17:00', '21:00', '12h') === '5pm \u2013 9pm'
+    && M.format.formatTimeRangeFor('17:00', '21:00', '24h') === '17:00 \u2013 21:00')
+  t('\u26d4 A SAVED "From 5pm" DESIGN LOSES THE SETTING and renders the range from now on', (() => {
+    const l = M.layout.defaultEventLayout(1080, 1350)
+    const r = M.layout.validateEventLayout({ ...l, timeDisplay: 'from' }, 1080, 1350)
+    return r.ok && !('timeDisplay' in r.layout)
+  })())
 
   // ── the event layout ──────────────────────────────────────────────────────────────────────────
   const { defaultEventLayout, validateEventLayout, defaultEventNoteBox, LAYOUT_VERSION } = M.layout
@@ -704,7 +796,7 @@ head('8b · THE SINGLE-EVENT POST \u2014 backgrounds, time and layout')
     validateEventLayout(good, EW, EH).ok === true)
   t('\u{1F534} the date defaults to ONE line on an event post (two on the weekly one)',
     good.date.twoLines === false && M.layout.defaultLayout(EW, EH).date.twoLines === true)
-  t('\u{1F534} the time defaults to "From"', good.timeDisplay === 'from')
+  t('\u26d4 a fresh event layout carries no `timeDisplay` at all', !('timeDisplay' in good))
   const badEvent = [
     ['not an object', 'hello'],
     ['a wrong version', { ...good, version: LAYOUT_VERSION + 1 }],
@@ -717,15 +809,31 @@ head('8b · THE SINGLE-EVENT POST \u2014 backgrounds, time and layout')
     const r = validateEventLayout(input, EW, EH)
     t(`\u26d4 EVENT LAYOUT REJECTED: ${what}`, r.ok === false && r.errors.length > 0)
   }
-  t('\u26a0\ufe0f an unknown timeDisplay becomes the documented default rather than being refused', (() => {
+  t('\u26a0\ufe0f a stored `timeDisplay` is ignored rather than refused \u2014 an old design still validates', (() => {
     const r = validateEventLayout({ ...good, timeDisplay: 'sideways' }, EW, EH)
-    return r.ok && r.layout.timeDisplay === 'from'
+    return r.ok && !('timeDisplay' in r.layout)
   })())
   t('\u{1F534} THE IMAGE SIZE COMES FROM THE SERVER on the event layout too',
     validateEventLayout({ ...good, width: 9000, height: 9000, time: { ...good.time, x: 5000, w: 400 } }, EW, EH).ok === false)
-  t('\u26a0\ufe0f a note box can be added and validates', (() => {
-    const withNote = { ...good, note: defaultEventNoteBox(good) }
-    return validateEventLayout(withNote, EW, EH).ok === true
+  t('\u26a0\ufe0f a "Your own text" box can be added and validates', (() => {
+    const withNote = { ...good, notes: [defaultEventNoteBox(good)] }
+    const r = validateEventLayout(withNote, EW, EH)
+    return r.ok === true && r.layout.notes.length === 1
+  })())
+  /* \u{1F534} THE MIGRATION, AND IT IS THE WHOLE COMPATIBILITY STORY FOR "Your own text". A design saved
+   * before today has `note: {\u2026}` with no text at all; it must come back as ONE box whose text is the
+   * `{note}` token \u2014 which renders the typed note and nothing when there is none, exactly as the old
+   * note box did. \u26d4 AN EMPTY STRING WOULD HAVE MADE IT VANISH from a poster it has always been on. */
+  t('\u{1F534} AN OLD SINGLE `note` MIGRATES TO `notes[0]` WITH THE `{note}` TOKEN', (() => {
+    const legacy = { ...good, note: { ...defaultEventNoteBox(good), text: undefined } }
+    delete legacy.notes
+    const r = validateEventLayout(legacy, EW, EH)
+    return r.ok && r.layout.notes.length === 1 && r.layout.notes[0].text === M.layout.NOTE_TOKEN
+  })())
+  t('\u26a0\ufe0f the number of text boxes is bounded rather than the save being refused', (() => {
+    const many = Array.from({ length: 9 }, () => defaultEventNoteBox(good))
+    const r = validateEventLayout({ ...good, notes: many }, EW, EH)
+    return r.ok && r.layout.notes.length === M.layout.MAX_NOTE_BOXES
   })())
   /* \u26a0\ufe0f THE TWO LAYOUTS ARE DIFFERENT SHAPES AND EACH VALIDATOR REFUSES THE OTHER \u2014 which is why
    * they are separate functions rather than one with a `kind` branch. */
@@ -1143,6 +1251,231 @@ console.log(`      tall render: ${capped.width}×${capped.height} in ${capped.ms
 t('⚠️ …and a 1080×1920 render is still well under 2s', capped.ms < 2000)
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
+// 9a2 · "THE 7 DAYS" — ONE BOX, SEVEN ROWS (10 October 2026)
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// 🔴 WHAT THESE GUARD. The weekly design's three boxes plus `rowSpacing` became ONE block whose rows
+// share its height and whose parts share each row's width. The brief's hard rule is that **a design
+// nobody has opened renders exactly as it does today**, and that a design that IS opened converts to
+// "the closest new equivalent" — so the checks below are in two halves: the old model is untouched,
+// and the new one lands where the old one was.
+head('9a2 · "THE 7 DAYS" — THE NEW ROW MODEL')
+{
+  const D = M.days
+  const base7 = M.layout.defaultLayout(W, H)
+
+  /* ⛔ THE FIRST AND MOST IMPORTANT ONE: a layout with no block comes back with NO `days` KEY AT ALL.
+   * ⚠️ NOT `days: undefined` — the editor's "are there unsaved changes?" test is a `JSON.stringify`
+   * compare, and a key that appears from nowhere would make every old design dirty on open. */
+  const vLegacy = M.layout.validateLayout(base7, W, H)
+  t('🔴 a design with no "7 days" block validates, and gains no `days` key',
+    vLegacy.ok && !('days' in vLegacy.layout) && JSON.stringify(vLegacy.layout).indexOf('"days"') === -1)
+
+  /* 🔴 THE CONVERSION PUTS EVERY ROW WHERE IT WAS. The block's pitch is `rowSpacing`, and its top is
+   * lifted by half the difference between the pitch and the old row height — because a cell CENTRES
+   * its words. Without the lift every row's text drops by (rowSpacing − rowH) / 2, seven times. */
+  const blk = D.daysFromLegacy(base7)
+  const on7 = { picture: false, dayDate: true, place: true, times: true }
+  let worst = 0
+  for (let i = 0; i < 7; i++) {
+    const cell = D.dayCells(blk, on7, i).find(c => c.key === 'dayDate')
+    const oldCentre = base7.date.y + base7.rowSpacing * i + base7.date.h / 2
+    worst = Math.max(worst, Math.abs((cell.y + cell.h / 2) - oldCentre))
+  }
+  t('🔴 …and converted, every one of the seven rows keeps its old vertical centre (±2px)', worst <= 2)
+  t('🔴 …with the block\'s pitch equal to the old row spacing', blk.h === base7.rowSpacing * 7)
+  /* ⚠️ `textH` IS THE OLD ROW'S HEIGHT, so `fitLines` is handed the height it had and nothing that used
+   * to shrink suddenly draws bigger. */
+  t('⚠️ …and the text band is the old row height, not the whole row', blk.textH === base7.date.h)
+  /* ⚠️ THE ORDER AND THE WIDTHS COME FROM THE BOXES' OWN x AND w. */
+  t('⚠️ …and the parts are in the boxes\' own left-to-right order',
+    J(blk.parts.filter(p => p.key !== 'picture').map(p => p.key)) === J(['dayDate', 'place', 'times']))
+
+  /* ══ 🔴 THE PIXELS: A CONVERTED DESIGN LOOKS LIKE THE ONE IT CAME FROM ══════════════════════════
+   * ⛔ NOT BYTE-IDENTICAL AND THE BRIEF DOES NOT ASK FOR IT — the cells are evenly gapped where the
+   * operator's boxes were not. ⚠️ SO IT IS MEASURED AS A **PROPORTION OF CHANGED PIXELS**, with the
+   * threshold stated: under 2% of the poster. A redesign would be 20%+; a one-pixel rounding is 0.1%. */
+  const legacyPng = decodePng((await M.render.renderWeeklyPost({
+    layout: base7, week: mkWeek(), blankDataUri: bg.uri })).png)
+  const daysLayout = M.layout.validateLayout({ ...base7, days: blk }, W, H)
+  t('🔴 a converted layout validates and keeps its block', daysLayout.ok && !!daysLayout.layout.days)
+  const daysPng = decodePng((await M.render.renderWeeklyPost({
+    layout: daysLayout.layout, week: mkWeek(), blankDataUri: bg.uri })).png)
+  /* ⚠️ COUNTED **INSIDE THE BLOCK**, not over the whole poster. Text is a small share of a 1080×1350
+   * image, so a whole-image percentage flattens every answer towards zero and the difference between
+   * "moved two pixels" and "completely rearranged" stops being visible in the number. */
+  const changedVs = (png) => {
+    let n = 0, total = 0
+    for (let y = blk.y; y < blk.y + blk.h; y++) {
+      for (let x = blk.x; x < blk.x + blk.w; x++) {
+        const i = (y * legacyPng.width + x) * 4
+        total++
+        if (legacyPng.data[i] !== png.data[i]
+          || legacyPng.data[i + 1] !== png.data[i + 1]
+          || legacyPng.data[i + 2] !== png.data[i + 2]) n++
+      }
+    }
+    return n / Math.max(1, total)
+  }
+  const changed = changedVs(daysPng)
+  /* ══ ⚠️ 5% — AND THE NUMBER IS ONLY MEANINGFUL WITH THE CONTROL BELOW ═════════════════════════════
+   * ⛔ A THRESHOLD ON ITS OWN IS A GUESS. 3.3% sounds large until you know that the whole difference is
+   * every glyph moving two or three pixels sideways — the cells are evenly gapped where the operator's
+   * boxes were not — and that a genuinely REARRANGED poster is four times that. So the control renders
+   * the same week under "Day on top" and requires it to differ by much more: if the conversion ever
+   * silently became a redesign, this is what would say so. */
+  t('🔴 …and inside the block, under 8% of its pixels moved', changed < 0.08)
+  const rearrangedLayout = M.layout.validateLayout({ ...daysLayout.layout, days: {
+    ...blk, arrangement: 'dayOnTop', parts: D.QUICK_LAYOUTS.dayOnTop.parts,
+    textH: Math.round(blk.h / 7),
+  } }, W, H).layout
+  const rearranged = changedVs(decodePng((await M.render.renderWeeklyPost({
+    layout: rearrangedLayout, week: mkWeek(), blankDataUri: bg.uri })).png))
+  t('⛔ CONTROL · a genuinely rearranged poster differs by at least twice as much, so the number above means something',
+    rearranged > changed * 2)
+  console.log(`      converted vs legacy: ${(changed * 100).toFixed(2)}% · rearranged vs legacy: ${(rearranged * 100).toFixed(2)}%`)
+
+  /* ⛔ THE CELLS CANNOT OVERLAP AND CANNOT LEAVE THE BLOCK. The old model could do both — `rowSpacing`
+   * smaller than a box's height stacked the rows, and `rowsFitWarning` exists because seven rows so
+   * often fell off the bottom. Neither is a state the new model can hold, and this is the proof. */
+  const allCells = []
+  for (let i = 0; i < 7; i++) allCells.push(...D.dayCells(blk, { picture: true, dayDate: true, place: true, times: true }, i))
+  t('⛔ …every cell of every row is inside the block',
+    allCells.every(c => c.x >= blk.x - 1 && c.y >= blk.y - 1
+      && c.x + c.w <= blk.x + blk.w + 1 && c.y + c.h <= blk.y + blk.h + 1))
+  t('⛔ …and no two cells of one row overlap', (() => {
+    for (let i = 0; i < 7; i++) {
+      const row = D.dayCells(blk, { picture: true, dayDate: true, place: true, times: true }, i)
+        .slice().sort((a, b) => a.x - b.x)
+      for (let k = 1; k < row.length; k++) {
+        /* ⚠️ TWO LINES OF A TWO-LINE ARRANGEMENT MAY SHARE AN x RANGE — they are on different lines, so
+         * the test is only applied to cells that also overlap VERTICALLY. */
+        const a = row[k - 1], b = row[k]
+        const vertical = a.y < b.y + b.h && b.y < a.y + a.h
+        if (vertical && b.x < a.x + a.w - 1) return false
+      }
+    }
+    return true
+  })())
+  t('🔴 …and the seven rows exactly fill the block, with no gap and no overlap', (() => {
+    for (let i = 0; i < 6; i++) {
+      if (D.rowBand(blk, i).y + D.rowBand(blk, i).h !== D.rowBand(blk, i + 1).y) return false
+    }
+    const last = D.rowBand(blk, 6)
+    return D.rowBand(blk, 0).y === blk.y && last.y + last.h === blk.y + blk.h
+  })())
+
+  /* ══ 🔴 THE THREE QUICK LAYOUTS EACH DRAW SOMETHING DIFFERENT ══════════════════════════════════
+   * ⛔ THE CONTROL EVERY ONE OF THESE NEEDS: a "layout" that renders identically to another one is a
+   * button that does nothing, which is exactly the failure this project has shipped twice (two
+   * background colours drawn the same; `backgroundSize: cover` and `contain` identical in satori). */
+  const withPic = { ...daysLayout.layout, placePicture: { ...daysLayout.layout.placePicture, enabled: true, ifMissing: 'blank', borderColour: '#ffffff', borderWidth: 4 } }
+  const shots = {}
+  for (const arr of ['oneLine', 'dayOnTop', 'bigPicture']) {
+    const l2 = { ...withPic, days: { ...withPic.days, arrangement: arr, parts: D.QUICK_LAYOUTS[arr].parts, textH: Math.round(withPic.days.h / 7) } }
+    const v = M.layout.validateLayout(l2, W, H)
+    shots[arr] = decodePng((await M.render.renderWeeklyPost({ layout: v.layout, week: mkWeek(), blankDataUri: bg.uri })).png)
+    t(`🔴 quick layout "${arr}" renders`, v.ok && shots[arr].width === W)
+  }
+  const differs = (a, b) => !diffBounds(shots[a], shots[b], null).empty
+  t('⛔ …and all three draw DIFFERENT posters — a layout that renders identically is a button that does nothing',
+    differs('oneLine', 'dayOnTop') && differs('dayOnTop', 'bigPicture') && differs('oneLine', 'bigPicture'))
+  /* ⚠️ AND "Big picture" REALLY IS BIGGER — measured on the cell, not assumed from the name. */
+  t('⚠️ …and "Big picture" gives the picture more than twice the width "All on one line" does', (() => {
+    const cell = (arr) => D.dayCells(
+      { ...blk, arrangement: arr, parts: D.QUICK_LAYOUTS[arr].parts },
+      { picture: true, dayDate: true, place: true, times: true }, 0).find(c => c.key === 'picture')
+    return cell('bigPicture').w > cell('oneLine').w * 2
+  })())
+
+  /* ══ 🔴 A CIRCLE IS A CIRCLE ════════════════════════════════════════════════════════════════════
+   * ⛔ **FOUND BY LOOKING AT THE RENDERED POSTER, WHICH NO ASSERTION HERE WAS GOING TO DO.** Under "Big
+   * picture" the cell is a weighted share — 291 × 140 — and a radius of half the shorter side makes a
+   * STADIUM. The three-layouts control was satisfied (they all drew differently) and the shape was
+   * still wrong. ⚠️ THE CELL IS SQUARE WHENEVER THE SHAPE IS `circle`, in every arrangement, and a row
+   * is the ceiling on a circle's diameter — so "Big picture · Circle" is as big as a circle can be. */
+  t('🔴 a "Circle" picture gets a SQUARE cell in every arrangement — a radius alone makes a stadium', (() => {
+    const on4 = { picture: true, dayDate: true, place: true, times: true }
+    return ['oneLine', 'dayOnTop', 'bigPicture'].every(arr => {
+      const d = { ...blk, arrangement: arr, parts: D.QUICK_LAYOUTS[arr].parts, pictureShape: 'circle' }
+      const pic = D.dayCells(d, on4, 0).find(c => c.key === 'picture')
+      return pic && pic.w === pic.h
+    })
+  })())
+  /* ⚠️ AND THE RADIUS IS HALF THE SIDE, which is what makes that square a circle rather than a rounded
+   * square. ⛔ `rounded` IS A GENTLE CURVE AND `square` IS NONE, so the three are three. */
+  t('⚠️ …and the three shapes are three different radii', (() => {
+    const r = (sh) => D.shapeRadius(sh, 120, 120)
+    return r('circle') === 60 && r('rounded') > 0 && r('rounded') < 60 && r('square') === 0
+  })())
+
+  /* ══ 🔴 DAYS OFF ════════════════════════════════════════════════════════════════════════════════ */
+  const msgL = M.layout.validateLayout({ ...daysLayout.layout, daysOffText: 'Closed — back Friday' }, W, H).layout
+  const omitL = M.layout.validateLayout({ ...daysLayout.layout, days: { ...blk, daysOff: 'omit' } }, W, H).layout
+  const msgPng = decodePng((await M.render.renderWeeklyPost({ layout: msgL, week: mkWeek(), blankDataUri: bg.uri })).png)
+  const omitPng = decodePng((await M.render.renderWeeklyPost({ layout: omitL, week: mkWeek(), blankDataUri: bg.uri })).png)
+  t('🔴 a custom days-off message is drawn — the poster changes when the words change',
+    !diffBounds(msgPng, daysPng, null).empty)
+  t('🔴 "Leave them out" draws nothing for a day off, and the other days do not move', (() => {
+    /* ⚠️ THE WEEK'S FIRST DAY OFF IS TUESDAY (row 1) in this fixture, and MONDAY (row 0) trades. So the
+     * honest test is: row 1 changed, row 0 did not. ⛔ A WHOLE-IMAGE DIFF WOULD PASS FOR A LAYOUT THAT
+     * MOVED EVERY ROW, which is the reading of "leave them out" this build deliberately did not take. */
+    const r0 = D.rowBand(blk, 0), r1 = D.rowBand(blk, 1)
+    const band = (r) => ({ x: blk.x, y: r.y, w: blk.w, h: r.h })
+    return !diffBounds(omitPng, daysPng, band(r1)).empty
+      && diffBounds(omitPng, daysPng, band(r0)).empty
+  })())
+
+  /* ══ ⚠️ THE PART SWITCHES ARE THE BOXES' OWN `enabled` — NOT A SECOND FIELD ═══════════════════ */
+  const noTimes = M.layout.validateLayout(
+    { ...daysLayout.layout, time: { ...daysLayout.layout.time, enabled: false } }, W, H).layout
+  t('⚠️ switching a part off removes its cell and gives the room to the others', (() => {
+    const before = D.dayCells(blk, { picture: false, dayDate: true, place: true, times: true }, 0)
+    const after = D.dayCells(blk, { picture: false, dayDate: true, place: true, times: false }, 0)
+    return after.length === before.length - 1
+      && !after.some(c => c.key === 'times')
+      && after.find(c => c.key === 'place').w > before.find(c => c.key === 'place').w
+  })())
+  t('⚠️ …and the poster changes with it',
+    !diffBounds(decodePng((await M.render.renderWeeklyPost({ layout: noTimes, week: mkWeek(), blankDataUri: bg.uri })).png), daysPng, null).empty)
+
+  /* ══ 🔴 THE ⇔ HANDLE'S ARITHMETIC — the sum is preserved and neither side can reach zero ════════ */
+  t('🔴 moving a boundary moves weight from one part to the next, and the sum never changes', (() => {
+    const sum = (b) => D.normaliseParts(b.parts).reduce((n, p) => n + p.weight, 0)
+    const moved = D.moveBoundary(blk, 'dayDate', 'place', 10)
+    const w = (b, k) => D.normaliseParts(b.parts).find(p => p.key === k).weight
+    return sum(moved) === sum(blk)
+      && w(moved, 'dayDate') === w(blk, 'dayDate') + 10
+      && w(moved, 'place') === w(blk, 'place') - 10
+  })())
+  t('⛔ …and a part can never be squeezed to nothing — the floor holds', (() => {
+    const far = D.moveBoundary(blk, 'dayDate', 'place', 999)
+    const w = (b, k) => D.normaliseParts(b.parts).find(p => p.key === k).weight
+    return w(far, 'place') >= D.MIN_WEIGHT && w(far, 'dayDate') <= D.MAX_WEIGHT
+  })())
+  t('⚠️ ⋮⋮ reorder moves one part and keeps the rest in order', (() => {
+    const moved = D.reorderParts(blk.parts, 0, 2)
+    return moved.length === 4 && moved[2].key === D.normaliseParts(blk.parts)[0].key
+  })())
+  /* ⛔ AND A STORED LIST CANNOT LOSE A PART OR HOLD ONE TWICE — the validator goes through the same
+   * `normaliseParts` the layout maths uses, so a hand-made payload cannot draw a part twice. */
+  t('⛔ a stored parts list with a duplicate, an unknown key and a missing one comes back whole', (() => {
+    const v = M.layout.validateLayout({ ...base7, days: { ...blk, parts: [
+      { key: 'place', weight: 50 }, { key: 'place', weight: 10 }, { key: 'nope', weight: 10 },
+    ] } }, W, H)
+    const keys = v.layout.days.parts.map(p => p.key)
+    return v.ok && keys.length === 4 && new Set(keys).size === 4 && keys[0] === 'place'
+  })())
+  /* ⚠️ A BLOCK THAT REACHES OUTSIDE THE PICTURE IS AN ERROR, not a clamp — the same rule `parseBox`
+   * applies, and for the same reason: it did not come from the editor. */
+  t('⛔ a block that reaches outside the picture is refused',
+    !M.layout.validateLayout({ ...base7, days: { ...blk, x: W - 10 } }, W, H).ok)
+  /* ⛔ AND `rowsFitWarning` CANNOT FIRE FOR A BLOCK — the state it warns about no longer exists. */
+  t('⚠️ `rowsFitWarning` is silent for a "7 days" design, because the seventh row cannot fall off',
+    M.layout.rowsFitWarning(daysLayout.layout) === null)
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
 // 9b · THE SINGLE-EVENT POST, CHECKED IN THE PIXELS
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 head('9b · THE SINGLE-EVENT POST, IN THE PIXELS')
@@ -1320,19 +1653,57 @@ head('9c · THE WIRING')
   const weekly = fs.readFileSync(path.join(REPO, 'components/manage/WeeklyPost.tsx'), 'utf8')
   const eventUi = fs.readFileSync(path.join(REPO, 'components/manage/EventPost.tsx'), 'utf8')
   const route = fs.readFileSync(path.join(REPO, 'app/api/weekly-post/route.ts'), 'utf8')
+  /* ══ 🔴 THE SHARED EDITOR'S SOURCE, WITH ITS COMMENTS STRIPPED ════════════════════════════════
+   * ⛔ `codeOf` IS NOT OPTIONAL AND THIS PROJECT HAS SHIPPED THE BUG TWICE. A check that tests RAW
+   * source is satisfied by a COMMENT that quotes the thing being checked — `places-tab.cjs` §6 passed
+   * green for a day on a link that had already been changed, because the tombstone explaining the
+   * change contained the old string. Every assertion below that reads the editor reads this. */
+  const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '')
+  const editorUi = codeOf(fs.readFileSync(path.join(REPO, 'components/manage/DesignEditor.tsx'), 'utf8'))
+  const eventCode = codeOf(eventUi)
+  const weeklyCode = codeOf(weekly)
 
-  t('🔴 "Make post" is on each UPCOMING event in Schedule › Events',
+  /* ══ 🔴 "Make post" HANDS THE EVENT TO THE SOCIAL TAB — IT NO LONGER OPENS A MODAL HERE (7 Oct) ══
+   * ⛔ IT HELD `postEventId` AND MOUNTED `EventPostModal` ON SCHEDULE, which was right while there was
+   * nowhere else for it to live. Making a post is Social media › Create a post's job now, so the
+   * button hands the event over — and the modal has exactly ONE mount in the product rather than one
+   * per screen that can start a post.
+   * 🔴 AND THE MODAL IS OPEN ON ARRIVAL, which is the whole point: §1 asks for one press, not two. */
+  t('🔴 "Make post" is on each UPCOMING event in Schedule › Events, and hands it to the social tab',
     />Make post</.test(page)
-    && /setPostEventId\(event\.id\)/.test(page)
+    && /onOpenSocial\('create', event\.id\)/.test(page)
     // ⚠️ inside the `!isPast` branch, so past and cancelled rows keep their existing treatment
-    && page.indexOf('setPostEventId(event.id)') > page.indexOf('{!isPast && ('))
-  /* ⚠️ `'designs'`, NOT `'weekly'` (6 October 2026). "No design yet" is a problem with a DESIGN, and
-   * the screen that fixes it is Social posts › Designs — `?section=weekly` was the whole Social posts
-   * page when it had sub-tabs, and sending an operator to Make a post would send them back to the
-   * button that just refused. ⚠️ `weekly` STILL RESOLVES as a URL; it is no longer where this goes. */
-  t('🔴 …and it opens the modal, which asks the SERVER whether there is a design',
-    /<EventPostModal token=\{token\} eventId=\{postEventId\}/.test(page)
-    && /onNeedsSetup=\{\(\) => \{ setPostEventId\(null\); onSectionChange\('designs'\) \}\}/.test(page))
+    && page.indexOf("onOpenSocial('create', event.id)") > page.indexOf('{!isPast && (')
+    /* ⛔ AND THE SCHEDULE MOUNT IS GONE — `codeOf` FIRST, because the tombstone where it was names
+     * `EventPostModal` in prose, and a pure-absence test satisfied by its own explanation is the
+     * failure mode this file's `codeOf` note was written about. */
+    && !/<EventPostModal/.test(codeOf(page))
+    && !/const \[postEventId, setPostEventId\]/.test(codeOf(page))
+    /* ⚠️ AND THE IMPORT WENT WITH IT, not just the mount: an import of a client modal is a bundle
+     * entry, and a dead one would ship the component to every operator who opens Schedule. */
+    && !/import \{ EventPostModal \}/.test(codeOf(page)))
+  /* ⚠️ "No design yet" STILL CROSSES TO Designs, and it is now the SOCIAL pane that says so — one
+   * mount, one answer. ⛔ `'designs'`, NOT `'create'`: the problem is a DESIGN, and sending the
+   * operator to Create a post would send them back to the button that just refused. */
+  t('🔴 …and the ONE modal mount asks the SERVER whether there is a design', (() => {
+    const social = codeOf(fs.readFileSync(path.join(REPO, 'components/manage/SocialPosts.tsx'), 'utf8'))
+    return /<EventPostModal token=\{token\} eventId=\{posting\}/.test(social)
+      && /onNeedsSetup=\{\(\) => \{ setPosting\(null\); setView\(\{ kind: 'event-design' \}\) \}\}/.test(social)
+      /* ⛔ EXACTLY ONE MOUNT IN THE WHOLE PRODUCT. A count is the only way to say "one", and it is the
+       * claim that stops a second screen growing its own copy of this flow again. */
+      && (social.match(/<EventPostModal/g) || []).length === 1
+  })())
+  /* 🔴 THE HANDOFF IS WIRED AT BOTH ENDS, which is the half a source grep for one string would miss:
+   * the page threads the id in, and the pane OPENS the modal on it and then CLEARS it. ⛔ WITHOUT THE
+   * CLEAR, closing the modal and saving anything at all would put it straight back. */
+  t('⛔ …and the event id travels: the page sets it, the pane opens on it and clears it', (() => {
+    const social = codeOf(fs.readFileSync(path.join(REPO, 'components/manage/SocialPosts.tsx'), 'utf8'))
+    return /setSocialOpenEvent\(eventId \?\? null\)/.test(page)
+      && /openEventId=\{socialOpenEvent\}/.test(page)
+      && /onOpenedEvent=\{\(\) => setSocialOpenEvent\(null\)\}/.test(page)
+      && /setPosting\(openEventId\)/.test(social)
+      && /onOpenedEvent\?\.\(\)/.test(social)
+  })())
 
   /* 🔴 THE §9.3 FIX. Stage 1 recorded that the weekly post's per-event "Share" did exactly what "Copy
    * text" did — two buttons doing one thing — because there was no per-event image to share. There is
@@ -1344,10 +1715,69 @@ head('9c · THE WIRING')
       && copyButtons === 1                                   // only "Copy text" copies now
       && (list.match(/setPostEventId\(p\.eventId\)/g) || []).length === 2   // Image and Share
   })())
-  t('🔴 …and the modal shares the PICTURE and the text, text to the clipboard first',
-    /navigator\.clipboard\.writeText\(info\.text\)/.test(eventUi)
-    && /nav\.canShare\?\.\(\{ files: \[file\] \}\)/.test(eventUi)
-    && eventUi.indexOf('clipboard.writeText(info.text)') < eventUi.indexOf('canShare?.({ files: [file] })'))
+  /* ══ 🔴 THE SHARE IS ONE COMPONENT NOW, AND IT IS SYNCHRONOUS (6 October 2026) ════════════════════
+   * ⛔ REPORTED BY DOMINIC: *"on a MacBook in Safari, pressing Share immediately downloads the image
+   * instead of opening a share sheet."* It did, on both posts. `navigator.share()` needs transient
+   * user activation and WebKit's test is a STACK test — same tick as the click — and the handler did
+   * three `await`s first (clipboard, fetch, blob), so the call arrived in a later microtask, rejected
+   * with `NotAllowedError`, and a bare `catch` turned that into a silent download.
+   * 🔴 SO THE CLAIM IS NOW ABOUT WHAT MADE IT FAIL, not about which strings appear: there is exactly
+   * ONE caller of `navigator.share` in the product, nothing is awaited before it, and the file it
+   * shares was built before the tap. ⚠️ THE "no await" HALF IS THE WHOLE BUG and is asserted as the
+   * ABSENCE of `await` inside the handler — with a positive claim beside it, because an absence alone
+   * would also pass on a handler that had been deleted. */
+  t('🔴 …and the share is ONE component, called straight from the tap, with the file ready', (() => {
+    const strip = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+    const code = strip(fs.readFileSync(path.join(REPO, 'components/manage/PostShareBar.tsx'), 'utf8'))
+    /* ⛔ THE HANDLER, SLICED TO ITS OWN CLOSING BRACE at the function's indentation — a bounded end
+     * anchor, so "no await in `share`" cannot be satisfied by the slice stopping early. */
+    const from = code.indexOf('const share = () => {')
+    const body = from < 0 ? '' : code.slice(from, code.indexOf('\n  }', from))
+    return from >= 0
+      // the clipboard write is FIRST and is not awaited: writing CHECKS activation, sharing CONSUMES it
+      && /void navigator\.clipboard\.writeText\(caption\)/.test(body)
+      && body.indexOf('clipboard.writeText(caption)') < body.indexOf('navigator.share(')
+      /* ══ 🔴 THE CAPTION TRAVELS **WITH** THE FILE WHERE THE PLATFORM ACCEPTS BOTH (8 Oct 2026) ═════
+       * ⚠️ BUILT AS ONE OBJECT LITERAL INSIDE THE TAP, with no `await` in front of it — the activation
+       * rule this whole check exists for is unchanged, which the `!/\bawait\b/` line below still says.
+       * ⛔ AND `canShareText` IS A **SEPARATE** QUESTION FROM `canShareFile`: `canShare` answers on the
+       * exact data it is given, so a platform that takes `{ files }` may refuse `{ files, text }`.
+       * Asking once and sending more than was asked about is how a working share starts throwing. */
+      && /navigator\.share\(canShareText \? \{ files: \[file\], text: caption \} : \{ files: \[file\] \}\)/.test(body)
+      && /nav\.canShare\?\.\(\{ files: \[file\], text: caption \}\) === true/.test(code)
+      /* ⛔ AND THE CLIPBOARD WRITE STILL HAPPENS EITHER WAY. Facebook and Instagram take the picture
+       * and drop the caption whatever `canShare` said — the clipboard is the only thing that reaches
+       * them, which is what the grey line under the buttons tells the operator. */
+      && /SHARE_CAPTION_NOTE/.test(code)
+      && /data-share-caption-note/.test(code)
+      // 🔴 NOT ONE `await`, and the handler is not `async` — that is the fix, stated as code
+      && !/\bawait\b/.test(body) && !/const share = async/.test(code)
+      // ⛔ a cancelled sheet is the operator saying no, and must not download anything
+      && /e\.name === 'AbortError'\) return/.test(body)
+      // ⚠️ the File is built from the blob the render already produced, outside the handler
+      && /new File\(\[blob\], fileName/.test(code)
+      && /nav\.canShare\?\.\(\{ files: \[file\] \}\)/.test(code)
+      /* 🔴 ONE CALLER IN THE PRODUCT: neither make screen calls it any more.
+       * ⚠️ COMMENTS STRIPPED FIRST, AND THIS CHECK CAUGHT ITSELF. Both screens now carry a tombstone
+       * explaining why their `share()` went, and each tombstone NAMES `navigator.share` — so the
+       * absence test failed on correct code. Eighth time in this build that prose has decided a claim
+       * about code; strip first, every time. */
+      && !/navigator\.share/.test(strip(weekly)) && !/navigator\.share/.test(strip(eventUi))
+      // ⚠️ and both screens mount it, so the fix is one fix
+      && /<PostShareBar blob=\{pngBlob\} url=\{png\}/.test(weekly)
+      && /<PostShareBar blob=\{pngBlob\} url=\{png\}/.test(eventUi)
+  })())
+  /* ⛔ AND NO Share BUTTON WHERE A FILE CANNOT BE SHARED. Desktop Chrome and Firefox have
+   * `navigator.share` but not file sharing, so the old button could only ever have downloaded. */
+  t('⛔ …and where a file cannot be shared there are two honest buttons instead', (() => {
+    const bar = fs.readFileSync(path.join(REPO, 'components/manage/PostShareBar.tsx'), 'utf8')
+    const code = bar.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+    return /\{canShareFile && <Btn label="Share"/.test(code)
+      && /<Btn label="Download picture" onClick=\{download\}/.test(code)
+      && /label=\{copied \? 'Copied ✓' : 'Copy caption'\}/.test(code)
+      /* ⚠️ FEATURE DETECTION, NOT USER-AGENT SNIFFING — neither platform is named in the component. */
+      && !/userAgent|Macintosh|iPhone|Safari/.test(code)
+  })())
 
   /* ⚠️ MATCHED ON THE MARKERS THE CODE ACTUALLY USES. The first draft looked for
    * `designKind === 'event'`, which the component never writes — it branches on `=== 'week'` and on
@@ -1371,10 +1801,53 @@ head('9c · THE WIRING')
 
   /* 🔴 REUSE, NOT A FORK. The event screens import the weekly post's editor pieces rather than copying
    * them, and the event renderer calls the same box machinery. */
-  t('🔴 the event setup REUSES the weekly post\'s draggable box and controls',
-    /from '\.\/WeeklyPost'/.test(eventUi)
-    && /DraggableBox/.test(eventUi)
-    && !/function DraggableBox/.test(eventUi))
+  /* ══ 🔴 RE-AIMED 6 October 2026 · ONE EDITOR, AND THE TWO SCREENS HAVE NO DRAG SURFACE OF THEIR OWN
+   * It used to assert that the event screen IMPORTED the weekly post's `DraggableBox` rather than
+   * copying it. There is no weekly editor to import from any more: both screens mount
+   * `components/manage/DesignEditor.tsx`, and the outline lives in its own file.
+   * ⛔ THE ABSENCE IS ASSERTED BESIDE A POSITIVE CLAIM. "Neither screen defines a DraggableBox" passes
+   * vacuously if this harness is reading the wrong files — so it is checked together with both of them
+   * actually mounting `<DesignEditor`, and with the editor importing the one outline. */
+  t('🔴 ONE EDITOR: both design screens mount it, and neither owns a drag surface',
+    /<DesignEditor/.test(eventCode) && /<DesignEditor/.test(weeklyCode)
+    && /from '\.\/DesignEditor'/.test(eventCode) && /from '\.\/DesignEditor'/.test(weeklyCode)
+    && !/DraggableBox/.test(eventCode) && !/DraggableBox/.test(weeklyCode)
+    && /from '\.\/DraggableBox'/.test(editorUi))
+  /* 🔴 AND EXACTLY ONE `DraggableBox` IS DEFINED IN THE WHOLE OF `components/`. The drag handling took
+   * three fixes to get right on touch; a second copy would have to be fixed again. */
+  t('🔴 exactly one DraggableBox is DEFINED anywhere in components/', (() => {
+    const dir = path.join(REPO, 'components')
+    const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e =>
+      e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)])
+    const defs = walk(dir).filter(f => /\.tsx?$/.test(f))
+      .filter(f => /export function DraggableBox\b/.test(codeOf(fs.readFileSync(f, 'utf8'))))
+    return defs.length === 1 && defs[0].endsWith('components/manage/DraggableBox.tsx')
+  })())
+  /* 🔴 AND THE FONT PICKER IS A COMPONENT, which part 2 extends with uploaded fonts. ⛔ NOTHING ELSE IN
+   * `components/` MAY BUILD ONE: a second `<option>`-over-`FONT_CHOICES` loop is the thing that would
+   * have to be changed twice the day a truck can upload a family. */
+  /* ══ 🔴 RE-AIMED 6 October 2026 (part 2) ═════════════════════════════════════════════════════
+   * It asserted that `FONT_CHOICES` — the 21 committed families — was looped in exactly one file. The
+   * picker does not read that list at all any more: it lists a 1,819-entry catalogue fetched from the
+   * server, so `FONT_CHOICES` in `components/` is now **zero** files.
+   * ⛔ A ZERO-COUNT ABSENCE ON ITS OWN WOULD PASS VACUOUSLY — it would also pass if the picker had been
+   * deleted. So the claim is the same claim as before, stated three ways together: nothing in
+   * `components/` reads the bundled list, exactly ONE file fetches the catalogue, exactly ONE renders
+   * the picker, and the editor mounts it. */
+  t('🔴 the font picker is ONE component, and nothing else in components/ builds a font list', (() => {
+    const dir = path.join(REPO, 'components')
+    const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e =>
+      e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)])
+    const files = walk(dir).filter(f => /\.tsx?$/.test(f))
+    const code = new Map(files.map(f => [f, codeOf(fs.readFileSync(f, 'utf8'))]))
+    const readsBundledList = files.filter(f => /FONT_CHOICES/.test(code.get(f)))
+    const fetchesCatalogue = files.filter(f => /action: 'font_catalogue'/.test(code.get(f)))
+    const definesPicker = files.filter(f => /export function FontPicker\b/.test(code.get(f)))
+    return readsBundledList.length === 0
+      && fetchesCatalogue.length === 1 && fetchesCatalogue[0].endsWith('components/manage/useFontLibrary.ts')
+      && definesPicker.length === 1 && definesPicker[0].endsWith('components/manage/FontPicker.tsx')
+      && /<FontPicker/.test(editorUi)
+  })())
   /* ══ STAGE 2b · THE WIRING ═══════════════════════════════════════════════════════════════════ */
 
   /* 🔴 THE MODAL'S CHOICE REACHES THE RESOLVER AS A FORCED SOURCE, and the resolver is what decides the
@@ -1410,22 +1883,39 @@ head('9c · THE WIRING')
 
   /* 🔴 THE TOGGLES EXIST ON EVERY DESIGN INCLUDING STANDARD, and the last-one rule is the layout
    * module's own message rather than a second sentence written in the component. */
-  t('🔴 the setup screen switches each box on and off, and blocks the last one with the shared message',
-    /<Check label="Date" checked=\{layout\?\.date\.enabled !== false\}/.test(eventUi)
-    && /<Check label="Location"/.test(eventUi) && /<Check label="Time"/.test(eventUi)
-    && /setMsg\(\{ text: LAST_TOGGLE_MESSAGE, bad: true \}\)/.test(eventUi)
-    && /toggleIsAllowed\(next\)/.test(eventUi)
-    // ⚠️ AND IT SAYS WHY under the Location toggle, which is the only one with a reason to be off
-    && /The place name is in your picture/.test(eventUi))
+  t('🔴 the editor switches each item on and off, and blocks the last one with the shared message',
+    /<Switch on=\{it\.enabled\}/.test(editorUi)
+    && /toggleItem\(it\.key, !it\.enabled\)/.test(editorUi)
+    /* ⚠️ THE MESSAGE CARRIES ITS OWN `bad` NOW — the editor's own strip is separate from the caller's,
+     * so a refusal cannot be hidden by a stale "Design saved." in the other slot. The CLAIM is
+     * unchanged: it is the LAYOUT MODULE's sentence, not a second one written in the component. */
+    && /setLocalMsg\(\{ text: LAST_TOGGLE_MESSAGE, bad: true \}\)/.test(editorUi)
+    && /toggleIsAllowed\(next\)/.test(editorUi)
+    // ⚠️ AND IT SAYS WHY when Place is off, which is the only switch with a reason to be off
+    && /The place name is in your picture/.test(editorUi)
+    // ⛔ and the two screens no longer have a toggle of their own to disagree with it
+    && !/toggleIsAllowed/.test(eventCode) && !/toggleIsAllowed/.test(weeklyCode))
+  /* ⛔ AND THE RULE IS ENFORCED FOR THE WEEKLY POST TOO NOW. Both designs draw cancelled events the
+   * same two ways, so one rule covers both validators — a UI-only rule would be bypassed by a
+   * hand-made payload. */
+  t('⛔ the last-toggle rule is enforced by BOTH validators, not just the UI', (() => {
+    const w = M.layout.defaultLayout(1080, 1350)
+    const e = M.layout.defaultEventLayout(1080, 1350)
+    const offBoth = (l) => ({ ...l, location: { ...l.location, enabled: false }, time: { ...l.time, enabled: false } })
+    return M.layout.validateLayout(offBoth(w), 1080, 1350).ok === false
+      && M.layout.validateEventLayout(offBoth(e), 1080, 1350).ok === false
+      // ⚠️ and an OLD design, which carries no `enabled` at all, still validates — it was all-on
+      && M.layout.validateLayout(w, 1080, 1350).ok === true
+  })())
 
   /* 🔴 "+ ADD A DESIGN FOR A PLACE" USES THE SAME LIST AS ADD EVENT — favourites first, then by name,
    * with a search. The order comes from the SERVER, so the two screens cannot drift apart. */
   t('🔴 the designs list has Standard first, a status per design, and the place picker',
-    /name: 'Standard', status: 'Used at every other place'/.test(eventUi)
-    && /\+ Add a design for a place/.test(eventUi)
-    && /placeholder="Search places"/.test(eventUi)
-    && /pl\.isFavourite \? '★ ' : ''/.test(eventUi)
-    && /Remove this place’s design/.test(eventUi)
+    /name: 'Standard', status: 'Used at every other place'/.test(eventCode)
+    && /\+ Add a design for a place/.test(eventCode)
+    && /placeholder="Search places"/.test(eventCode)
+    && /pl\.isFavourite \? '★ ' : ''/.test(eventCode)
+    && /Remove this place(’|&rsquo;)s design/.test(eventCode)
     && /a\.is_favourite === true \? 0 : 1/.test(route))
 
   t('🔴 the three status wordings the brief names are the server’s, in one function',
@@ -1434,7 +1924,7 @@ head('9c · THE WIRING')
     && /'Own picture, standard positions'/.test(route)
     && /'Different shape — not used until replaced'/.test(route)
     // ⛔ and the component does not write its own copy of them
-    && !/Own picture and text positions/.test(eventUi))
+    && !/Own picture and text positions/.test(eventCode))
 
   /* 🔴 THE PREVIEW FALLS BACK IN THE BRIEF'S ORDER: the next event here, then the last event here with
    * a label saying so, then the next event anywhere with this place's name put in. */
@@ -1526,17 +2016,37 @@ head('9c · THE WIRING')
     /* ⚠️ "Full name" IS THE LONG ONE NOW (6 October 2026). The two name labels were swapped: `name` is
      * "Full name" and `short_name` is "Name on posts", because `short_name` is what the renderer
      * prints. The CLAIM is unchanged — the two long fields get a row each — only which label is on
-     * the long field moved. `scripts/places-tab.cjs` §4 asserts the bindings. */
+     * the long field moved. `scripts/places-tab.cjs` §4 asserts the bindings.
+     * ⚠️ AND `short_name` IS LABELLED **"Venue name"** FROM 9 OCTOBER, A LABEL ONLY. "Name on posts"
+     * told the operator where the value goes rather than what it is — and with the social screen's own
+     * copy of the field removed, this card is the one editor, so it has to name the thing. The poster's
+     * own item is "Venue" and the field below it is "Area", which is where the word comes from. */
     return widths['Full name'] === true && widths['Address'] === true
-      && widths['Name on posts'] === false && widths['Area'] === false && widths['Postcode'] === false
+      && widths['Venue name'] === false && widths['Area'] === false && widths['Postcode'] === false
+      /* ⛔ AND THE OLD LABEL IS GONE FROM THE CARD, so "renamed" cannot pass while both exist. */
+      && !/label="Name on posts"/.test(card)
   })())
 
-  t('🔴 the event renderer reuses boxEl, the mark and paint — it does not draw its own', (() => {
+  /* ══ 🔴 THE CLAIM MOVED WITH THE DRAWING — 10 OCTOBER 2026 (§2) ═════════════════════════════════
+   * ⛔ IT USED TO READ `renderEventPost`'s OWN BODY for `boxEl(`, `poweredByEl(` and `await paint(`.
+   * The body is five lines now: build the fonts, call `eventTree`, call `paint`. 🔴 THE CLAIM IS
+   * **STRONGER IN TWO HALVES**: the event poster's tree is built by `eventTree` in `draw.ts`, which is
+   * the function the live editor calls, and that tree builder is where the shared drawing is reused.
+   * ⚠️ AND IT STILL ASSERTS THERE IS ONLY ONE `ImageResponse` — which is now a statement about the
+   * whole renderer rather than about one function in it. */
+  t('🔴 the event poster is the SAME tree builder and the same paint — it does not draw its own', (() => {
     const src = fs.readFileSync(path.join(REPO, 'lib/weekly-post/render.ts'), 'utf8')
+    const draw = fs.readFileSync(path.join(REPO, 'lib/weekly-post/draw.ts'), 'utf8')
     const fn = src.slice(src.indexOf('export async function renderEventPost'))
-    return /boxEl\(/.test(fn) && /poweredByEl\(/.test(fn) && /await paint\(/.test(fn)
-      // ⛔ and no second ImageResponse call of its own
-      && !/new ImageResponse/.test(fn)
+    const tree = draw.slice(draw.indexOf('export function eventTree'))
+    return /eventTree\(\{/.test(fn) && /await paint\(/.test(fn)
+      && /boxEl\(/.test(tree) && /poweredByEl\(/.test(tree) && /noteEls\(/.test(tree)
+      // ⛔ exactly ONE ImageResponse in the whole renderer, and `draw.ts` must not import next/og
+      && (src.match(/new ImageResponse/g) || []).length === 1
+      /* ⚠️ THE **IMPORT**, NOT THE WORDS. The first draft tested `/next\/og/` and failed on correct
+       * code: `draw.ts`'s own header explains that it imports no `next/og`, so the words are in the
+       * file and always will be. A claim about a dependency has to read the import. */
+      && !/from ['"]next\/og['"]/.test(draw)
   })())
 }
 
@@ -1731,7 +2241,7 @@ async function variants(ctx) {
   }
   // V14 — the render stops scaling the text with the capped image
   if (ctx) {
-    const p = patch('lib/weekly-post/render.ts',
+    const p = patch('lib/weekly-post/draw.ts',
       'export function renderScale(width: number, height: number): number {\n  const longest = Math.max(width, height)\n  return longest > MAX_RENDER_SIDE ? MAX_RENDER_SIDE / longest : 1\n}',
       'export function renderScale(width: number, height: number): number {\n  void width; void height\n  return 1\n}')
     let detected = true
@@ -1750,13 +2260,16 @@ async function variants(ctx) {
    * box anyway produces an empty text element, which is zero pixels, so the two images were identical
    * and the variant "passed". The rule "a note box only renders when the week has a note" has no
    * pixels of its own — the direction that does is a note that was written and must appear. */
+  /* ⚠️ RE-AIMED 6 October 2026. The guard moved into `noteEls`, which draws every "Your own text" box
+   * with `{note}` substituted. The DIRECTION is unchanged and is the one that has pixels: a note that
+   * was written must appear. */
   if (ctx) {
-    const p = patch('lib/weekly-post/render.ts', '  if (l.note && note) {', '  if (false && l.note && note) {')
+    const p = patch('lib/weekly-post/draw.ts', '    if (!text) return', '    if (true) return')
     let detected = true
     if (p) {
       const V = build(p)
       const l = V.layout.defaultLayout(1080, 1350)
-      l.note = V.layout.defaultNoteBox(l)
+      l.notes = [V.layout.defaultNoteBox(l)]
       const a = await V.render.renderWeeklyPost({ layout: l, week: ctx.mkWeek(), blankDataUri: ctx.bg.uri, note: 'Pre-order for collection' })
       const b = await V.render.renderWeeklyPost({ layout: l, week: ctx.mkWeek(), blankDataUri: ctx.bg.uri, note: '' })
       detected = Buffer.compare(a.png, b.png) === 0
@@ -1829,16 +2342,47 @@ async function variants(ctx) {
     }
     must('V19 🔴 a picture with no recorded size is used — its shape was never checked', detected)
   }
-  // V20 — "From" loses its preposition guard
-  {
-    const p = patch('lib/weekly-post/format.ts',
-      "  return s ? `From ${s}` : ''", "  return `From ${s}`")
+  /* ══ V20 — RE-AIMED 6 October 2026 · THE `{note}` EMPTINESS TEST MADE ON THE **RAW** TEXT ════════
+   *
+   * ⛔ THE OLD V20 ATTACKED `formatEventTime`, WHICH NO LONGER EXISTS — "From 5pm" was removed. What
+   * replaced it in the same part of the code is the "Your own text" box, whose emptiness test is the
+   * one line that keeps every design made before today rendering identically: a migrated box's text is
+   * exactly `{note}`, so with no note typed the SUBSTITUTED string is empty and the box is skipped.
+   * 🔴 TESTING `box.text` INSTEAD WOULD FIND '{note}' NON-EMPTY and draw the box on every poster made
+   * without a note — which is the bug the real code's own comment names.
+   * ⚠️ THE FIXTURE GIVES THE BOX A **BAND**, and that is the whole reason this variant can fail. An
+   * empty text element is zero pixels, so a box drawn with nothing in it would produce an IDENTICAL
+   * image and the variant would "pass" for the same reason the first draft of V15 did. A coloured strip
+   * behind the absent words is visible. */
+  if (ctx) {
+    const p = patch('lib/weekly-post/draw.ts',
+      '    const text = box.text.split(NOTE_TOKEN).join(note).trim()\n    if (!text) return',
+      '    const text = box.text.split(NOTE_TOKEN).join(note).trim()\n    if (!box.text.trim()) return')
     let detected = true
     if (p) {
       const V = build(p)
-      detected = V.format.formatEventTime(null, '21:00', '12h', 'from') !== ''
+      const mk = (mod) => {
+        const l = mod.layout.defaultLayout(1080, 1350)
+        const n = mod.layout.defaultNoteBox(l)
+        n.effects = { ...n.effects, band: true, bandColour: '#ff0000', bandOpacity: 100 }
+        /* ══ 🔴 `ownStyle: true` — AND THE DAY THIS LINE WAS NEEDED IS WORTH RECORDING ════════════════
+         * ⛔ WITHOUT IT THIS VARIANT STOPPED BEING DETECTABLE ON 9 OCTOBER 2026, AND IT WAS THE HARNESS
+         * THAT SAID SO: "MUST FAIL BUT PASSED". "All text" arrived the same day — a shared look held on
+         * the layout, which every box follows unless it owns its own — so `resolveTextBox` was replacing
+         * this fixture's `effects` with the shared look's, where `band` is false. The band never drew,
+         * both images came out identical, and a variant that cannot change the picture cannot be caught.
+         * 🔴 IT IS NOT A WORKAROUND. It is this fixture telling the truth about what it is testing: a box
+         * with a band that the shared style does not have IS a box with its own style, and setting
+         * `effects` on a FOLLOWING box is now a write nothing reads. ⚠️ THE CLAIM IS UNCHANGED — the
+         * emptiness test must be made on the SUBSTITUTED text, not on `box.text`. */
+        n.ownStyle = true
+        return { ...l, notes: [n] }
+      }
+      const bad = await V.render.renderWeeklyPost({ layout: mk(V), week: ctx.mkWeek(), blankDataUri: ctx.bg.uri, note: '' })
+      const good = await M.render.renderWeeklyPost({ layout: mk(M), week: ctx.mkWeek(), blankDataUri: ctx.bg.uri, note: '' })
+      detected = Buffer.compare(bad.png, good.png) !== 0
     }
-    must('V20 🔴 an event with no start time renders a dangling "From "', detected)
+    must('V20 🔴 a "Your own text" box holding only {note} is drawn on every post made without a note', detected)
   }
   // V21 — the event validator stops trusting the server's size
   {
@@ -1855,7 +2399,7 @@ async function variants(ctx) {
   }
   // V22 — a cancelled event is given a time by the display setting
   if (ctx) {
-    const p = patch('lib/weekly-post/render.ts',
+    const p = patch('lib/weekly-post/lines.ts',
       "    out.push({ runs: [{ text: e.status === 'cancelled' ? 'CANCELLED' : textOf(e) }] })",
       "    out.push({ runs: [{ text: textOf(e) }] })")
     let detected = true
@@ -1938,8 +2482,12 @@ async function variants(ctx) {
    * `entry.placeId`; with it null, every event falls back to Standard and a truck's per-venue artwork
    * quietly stops appearing — with no error, on posts that still render perfectly well. */
   {
+    /* ⚠️ RE-ANCHORED 18 October 2026. The line gained the private-event redaction — a private booking
+     * now carries NO place id at all, because part 3 gives a place PICTURES and the renderer finds them
+     * by that id. The variant's MEANING is unchanged: null the id for every event and watch every place
+     * design stop being found. */
     const p = patch('lib/weekly-post/week-data.ts',
-      '    placeId: place?.id ?? null,', '    placeId: null,')
+      '    placeId: ev.is_private ? null : (place?.id ?? null),', '    placeId: null,')
     let detected = true
     if (p) {
       const V = build(p)
@@ -1974,7 +2522,7 @@ async function variants(ctx) {
    * 🔴 THE TOGGLE BECOMES DECORATION. A truck whose picture already names the venue switches Location
    * off, saves, and the name is printed over it anyway — twice on the same poster. */
   if (ctx) {
-    const p = patch('lib/weekly-post/render.ts',
+    const p = patch('lib/weekly-post/draw.ts',
       '  if (l.location.enabled) {', '  if (true) {')
     let detected = true
     if (p) {
@@ -1996,7 +2544,7 @@ async function variants(ctx) {
    * the UI and read as a pair. Tie them in the renderer and a cancelled event at a place with Location
    * off loses the word CANCELLED — the exact poster the last-toggle rule exists to protect. */
   if (ctx) {
-    const p = patch('lib/weekly-post/render.ts',
+    const p = patch('lib/weekly-post/draw.ts',
       '  const tl = l.time.enabled\n', '  const tl = l.time.enabled && l.location.enabled\n')
     let detected = true
     if (p) {

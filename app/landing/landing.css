@@ -28,6 +28,12 @@
   --paper: #FFFFFF;
   --wash: #F5F8FB;
   --head: #16314F;      /* headings — lifted navy, landing-local, provisional */
+  /* 🔴 THE HOVER NAVY, AND IT IS A NEW TOKEN BECAUSE THERE WAS NO EXISTING ONE (7 October 2026).
+     The brief asked to use existing tokens where they exist; the stylesheet had `--head` and nothing
+     darker, so `.btn-navy:hover` would otherwise have carried a literal.
+     📐 white #FFFFFF on this = 16.08:1, against 13.24:1 on `--head` — so the hover is MORE legible
+     than the rest state, which is the right direction for a state the pointer is already on. */
+  --head-deep: #0F2238;
   --ink: #2C4766;       /* body copy — landing-local, provisional */
   --ink-soft: #5F7A99;
   --ink-faint: #9AAFC4;
@@ -92,10 +98,41 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 /* Primary CTA: EXACTLY Billing's "Upgrade to Max" button — bg-orange-600 (var(--orange)) white text, hover
    orange-700 (var(--orange-deep)). ⚠️ CONTRAST: white on orange-600 = 3.56:1 — meets WCAG AA only as LARGE
    text (≥18.66px bold → 3:1), not normal text (4.5:1). Matches Billing's own buttons; see report. */
+/* ══ ⛔ THE FILLED ORANGE BUTTON KEEPS ITS **WHITE** TEXT — 7 October 2026 ═════════════════════════
+   It was changed to navy on request and changed straight back on sight: *"change the orange buttons
+   back to white text."* This rule is therefore exactly what it was before, and the navy experiment
+   left nothing behind.
+   📐 THE MEASUREMENTS ARE RECORDED BECAUSE THEY DO NOT CHANGE WITH THE DECISION, and the token block
+   above has carried a version of this warning for months:
+       white  #FFFFFF on --orange      #EF8B2C  =  2.50:1   ← below the 4.5:1 AA floor
+       navy   #16314F on --orange      #EF8B2C  =  5.29:1
+       white  #FFFFFF on --orange-deep #D9741A  =  3.25:1   (hover)
+       navy   #16314F on --orange-deep #D9741A  =  4.07:1   (hover — also below 4.5)
+   ⚠️ SO THE BUTTON LABEL IS BELOW AA AT NORMAL SIZE, which is an accepted brand decision, not an
+   oversight. `.btn-lg` (1.2rem/700) is LARGE TEXT, where the floor is 3:1 and 2.50 still misses it.
+   🔴 IF THIS IS EVER REVISITED, navy on the rest state is the only one of the four that clears 4.5. */
 .hg-landing .btn-primary { background: var(--orange); color: #fff; }
 .hg-landing .btn-primary:hover { background: var(--orange-deep); transform: translateY(-1px); }
 .hg-landing .btn-ghost { color: var(--ink); border-color: var(--line); }
 .hg-landing .btn-ghost:hover { border-color: var(--ink-faint); }
+/* ══ 🔴 THE NAVY VARIANT — ONE FILLED CONTROL THAT IS NOT ORANGE (7 October 2026) ══════════════════
+   ⛔ IT EXISTS BECAUSE "Compare all features →" IS NOT A DEMO CTA. Every orange control on this page
+   opens the demo modal; this one goes to /features. An orange button here would promise the same
+   action as the three in the cards directly above it and deliver a different one.
+   📐 CONTRAST, MEASURED RATHER THAN ASSUMED:
+       white #FFFFFF on --head      #16314F  =  13.24:1   ← rest    (AA 4.5 and AAA 7 both cleared)
+       white #FFFFFF on --head-deep #0F2238  =  16.08:1   ← hover
+   🟢 WHICH IS THE OPPOSITE SITUATION TO `.btn-primary` ABOVE, whose white-on-orange is 2.50:1 and is
+   an accepted brand decision. This one needs no exception.
+   ⚠️ IT ADDS A FILL AND A WIDER GUTTER AND NOTHING ELSE. The height, the radius, the font and the
+   transition all still come from `.btn`, so it is the same shape as the "Try Free" buttons — which is
+   what the brief asks for. ⛔ `padding-block` IS DELIBERATELY NOT TOUCHED: changing it would change
+   the height, and "same height, wider padding" is one instruction, not two.
+   ⚠️ THE FOCUS RING IS THE PAGE'S OWN. `.hg-landing :focus-visible` is a 2.5px orange ring at a 3px
+   offset and it already applies here — a second ring on this one button would be a second answer to a
+   question the stylesheet settled once. The offset is what keeps it legible against navy. */
+.hg-landing .btn-navy { background: var(--head); color: #fff; border-color: var(--head); padding-inline: 1.9rem; }
+.hg-landing .btn-navy:hover { background: var(--head-deep); border-color: var(--head-deep); transform: translateY(-1px); }
 .hg-landing .btn-quiet { color: var(--ink-soft); padding-inline: .6rem; }
 .hg-landing .btn-quiet:hover { color: var(--ink); }
 /* Large + BOLD so WCAG "large text" applies (≥18.66px AND weight 700) → the 3:1 threshold, which white on
@@ -127,6 +164,19 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .nav-r .btn { white-space: nowrap; }   /* the CTA must never wrap the header */
 .hg-landing .cta-short { display: none; }
 .hg-landing .nav-only-sm { display: none; }   /* mobile-only Log in — hidden on desktop (desktop uses .nav-hide-sm) */
+/* ── 🔴 `nav-hide-md` — A SECOND, WIDER FLOOR, FOR "Features" (6 October 2026) ─────────────────────
+   `nav-hide-sm` drops Pricing and the full Log in below 640px. 819px is where FEATURES drops, and the
+   gap between the two numbers is the whole point: at 640px the row is already within ~59px of full
+   (see the measurement in the logo note in components/landing/LandingNav.tsx), and a `btn-quiet`
+   "Features" needs ~88px including its gap. Adding it at 640 would wrap the header, and `.nav-r .btn`
+   is `white-space: nowrap` precisely so the CTA cannot.
+   ⚠️ IT IS A MAX-WIDTH RULE, SO THE DEFAULT IS VISIBLE. An element with no matching rule shows; a
+   `min-width` rule that was ever edited to the wrong number would hide the link at EVERY width and
+   look like a deletion. This way the failure mode is "shown slightly too narrow", not "gone".
+   ⚠️ THE LINK IS STILL REACHABLE BELOW 819px — it is in the footer at every width. */
+@media(max-width:819px){
+  .hg-landing .nav-hide-md { display: none; }
+}
 @media(max-width:639px){
   .hg-landing .nav-hide-sm { display: none; }   /* < 640px: drop Pricing + full Log in */
   .hg-landing .cta-full { display: none; }
@@ -147,7 +197,17 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    normal-text floor — the deleted tick-list comment claimed 4.61:1 for it and was wrong.
    ⚠️ A CUSTOM-PROPERTY DECLARATION PAINTS NOTHING BY ITSELF. Nothing above 639px references it, so
    tablet and desktop are byte-identical with it present. `--ink-soft` is untouched. */
-.hg-landing .hero { --hero-grey: #3E5472; padding: clamp(2.5rem,5vw,4rem) 0 clamp(3rem,6vw,4.5rem); overflow: hidden; }
+/* ══ 🔴 THE HERO'S PADDING IS 40% SMALLER — 7 October 2026 ════════════════════════════════════════
+   📐 EVERY NUMBER IN BOTH CLAMPS IS MULTIPLIED BY 0.6, which is what makes the reduction proportional
+   at EVERY width rather than only at the one it was measured on — the floor, the vw rate and the cap
+   all scale together, so the phone shrinks by the same 40% the laptop does:
+       top     clamp(2.5rem, 5vw, 4rem)   → clamp(1.5rem, 3vw, 2.4rem)
+       bottom  clamp(3rem, 6vw, 4.5rem)   → clamp(1.8rem, 3.6vw, 2.7rem)
+   ⛔ SCALING ONLY THE CAPS WOULD HAVE LEFT THE PHONE UNTOUCHED, because below ~853px the vw term wins
+   and the cap never applies.
+   ⚠️ `overflow: hidden` STAYS, and the fan's own `min-height` is untouched — so the screenshots keep
+   exactly the box they had and less padding cannot clip them. Measured against the trust strip. */
+.hg-landing .hero { --hero-grey: #3E5472; padding: clamp(1.5rem,3vw,2.4rem) 0 clamp(1.8rem,3.6vw,2.7rem); overflow: hidden; }
 .hg-landing .hero-grid { display: grid; gap: clamp(2.5rem,5vw,3.5rem); grid-template-columns: 1fr; align-items: center; }
 @media(min-width:940px){ .hg-landing .hero-grid { grid-template-columns: .9fr 1.1fr; } }
 .hg-landing h1 { font-family: var(--display); font-weight: 800; color: var(--head); font-size: clamp(2rem,4.3vw,3rem); line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1rem; }
@@ -158,15 +218,34 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    0.55em of leading between them (10-13px depending on the clamp) read as two separate thoughts.
    1.2 sits between h1's 1.05 and .hero-cta-text b's 1.25, so it is the house range, not a new value.
    ⚠️ SPACING ONLY. Font size, weight, colour and the .lean italic on "cooking." are untouched. */
-.hg-landing .hero-tag { font-family: var(--display); font-weight: 700; font-size: clamp(1.15rem,2.2vw,1.45rem); color: var(--ink-soft); letter-spacing: -.015em; line-height: 1.2; max-width: 32ch; margin-bottom: 1.8rem; }
+/* 🔴 NAVY, NOT GREY — 7 October 2026. `--head` is the token the hero headline above it already uses,
+   so the two now read as one block rather than as a heading and a caption.
+   ⚠️ COLOUR ONLY: the wording, the clamp, the 700 weight, the 1.2 line-height and the `<br />` are all
+   untouched. ⚠️ AND `.lean` KEEPS ITS ORANGE ITALIC on "cooking." — that rule is below and is not
+   overridden here, because `.hg-landing .hero-tag .lean` is more specific than this. */
+.hg-landing .hero-tag { font-family: var(--display); font-weight: 700; font-size: clamp(1.15rem,2.2vw,1.45rem); color: var(--head); letter-spacing: -.015em; line-height: 1.2; max-width: 32ch; margin-bottom: 1.8rem; }
 .hg-landing .hero-tag .lean { font-style: italic; color: var(--orange); }
 /* CTA row. MOBILE-first (≤939px): stacked column — full-width button, then CENTRED demo text under it.
    DESKTOP (≥940px, below): button LEFT + text RIGHT on one row, top-aligned. */
 .hg-landing .hero-cta-row { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.2rem; }
 .hg-landing .hero-cta-row .btn-lg { width: 100%; justify-content: center; white-space: nowrap; }
-.hg-landing .hero-cta-text { max-width: 34ch; margin-inline: auto; }
-.hg-landing .hero-cta-text b { display: block; font-family: var(--display); font-weight: 800; font-size: 1.12rem; color: var(--head); letter-spacing: -.015em; margin-bottom: .3rem; line-height: 1.25; }
-.hg-landing .hero-cta-text span { display: block; font-size: .95rem; color: var(--ink-soft); }
+/* ⛔ `.hero-cta-text` AND ITS TWO CHILD RULES ARE DELETED — 6 October 2026. The block beside the button
+   is gone (see app/landing/page.tsx); one line under the button replaced it. Deleted rather than left,
+   because a rule for markup that no longer exists is the thing this stylesheet's notes keep catching.
+   🔴 THE REPLACEMENT — smaller and muted, under the button at every width.
+   ⚠️ `--hero-grey` (#3E5472, 7.73:1 on white) RATHER THAN `--ink-soft` (#5F7A99, 4.44:1): this is small
+   secondary text, and `--ink-soft` MISSES the 4.5:1 floor for normal text. The token is already declared
+   on `.hero` for exactly this job — see its note above — so nothing new enters the sheet.
+   ⚠️ CENTRED BY DEFAULT because `.hero-cta-row`'s column layout is centred; the ≥940px block below
+   left-aligns it with the button, as the old block was. */
+/* 🔴 THE LINE BESIDE THE BUTTON. It is a child of `.hero-cta-row`, which is `column` below 940px and
+   `row` above it — so these base rules are the PHONE/TABLET arrangement (under the button, centred)
+   and the ≥940px block below turns them into "to the right, vertically centred".
+   ⚠️ SMALLER THAN THE TAGLINE, which is `clamp(1.15rem,2.2vw,1.45rem)`: .92rem is unambiguously below
+   its floor at every width, so "smaller" holds without a second clamp to keep in step.
+   ⚠️ `--hero-grey` (#3E5472, 7.73:1 on white) RATHER THAN `--ink-soft` (#5F7A99, 4.44:1): this is small
+   secondary text and `--ink-soft` MISSES the 4.5:1 floor. The token is already declared on `.hero`. */
+.hg-landing .hero-cta-note { font-size: .85rem; line-height: 1.35; color: var(--hero-grey); text-align: center; margin-top: .85rem; }
 /* MOBILE (≤939px): centre the whole left column — title, tagline, and CTA (CTA centring is in its base rule). */
 @media(max-width:939px){
   .hg-landing .hero h1 { text-align: center; }
@@ -174,9 +253,34 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 }
 @media(min-width:940px){
   /* button LEFT + text RIGHT, vertically centred against the text block, button on one slim line. */
-  .hg-landing .hero-cta-row { flex-direction: row; align-items: center; text-align: left; }
+  /* 🔴 FROM 940px THE COLUMN IS LEFT-ALIGNED, but the note still sits UNDER the button — see the
+     1140px block below for why it cannot sit beside it yet. */
+  .hg-landing .hero-cta-row { align-items: flex-start; text-align: left; }
   .hg-landing .hero-cta-row .btn-lg { width: auto; flex: none; }
-  .hg-landing .hero-cta-text { max-width: 30ch; margin-inline: 0; }
+  .hg-landing .hero-cta-note { text-align: left; margin-inline: 0; }
+}
+
+/* ══ 🔴 THE TWO LINES MOVE BESIDE THE BUTTON AT 1140px — AND THAT NUMBER IS MEASURED ═══════════════
+   📐 The note has to overflow its own column to stay on two lines: at .85rem its longer line is ~225px
+   against ~203px of text column, so it uses the grid gutter. **How much gutter there is depends on the
+   viewport**, and below 1140 there is not enough — the line runs into the kitchen screenshot:
+       940px  clear −68px      1060px  clear −14px      1140px  clear +23px
+       1024px clear −31px      1100px  clear  +5px      1440px  clear +23px
+   ⛔ SO THE BESIDE-LAYOUT STARTS WHERE IT FITS, not at the hero's own 940px split. From 1140 the fan
+   has hit its `min()` caps and stops growing, so the clearance is a flat 23px at every wider viewport.
+   ⚠️ BETWEEN 940 AND 1139 THE NOTE STAYS UNDER THE BUTTON, left-aligned with it — the arrangement the
+   brief specifies for phones, reused rather than a third one invented. */
+@media(min-width:1140px){
+  .hg-landing .hero-cta-row { flex-direction: row; align-items: center; justify-content: flex-start; gap: 1rem; }
+  /* ⛔ `min-width: 0` ON THE TEXT CELL IS LOAD-BEARING, AND IT IS A BUG FIX, NOT A TIDY-UP.
+     An `fr` track's automatic minimum is `min-content`, so a `width: max-content` child RAISES the
+     track's floor and steals width from the other column. Measured: the fan dropped from 343×272 to
+     319×253 at 1440 — the hero stopped matching the live page, which is the one thing this workstream
+     exists to restore. `min-width: 0` lets the `.9fr 1.1fr` split hold and the row overflow instead. */
+  .hg-landing .hero-grid > :first-child { min-width: 0; }
+  .hg-landing .hero-cta-row { width: max-content; max-width: none; }
+  /* ⚠️ `nowrap` IS WHAT MAKES IT EXACTLY TWO LINES — the `<br />` in the markup is then the only break. */
+  .hg-landing .hero-cta-note { margin-top: 0; white-space: nowrap; }
 }
 
 /* ══════════════ MOBILE HERO — BELOW 640px ONLY ══════════════════════════════════════════════════════
@@ -211,19 +315,34 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 @media(max-width:639px){
   /* ── what the phone drops. All three are display:none, so they cost no height and no space. ── */
   .hg-landing .hero-tag { display: none; }        /* "Less time booking. More time cooking." */
-  .hg-landing .hero-cta-text { display: none; }   /* the 60-seconds heading + grey paragraph */
+  /* ⛔ `.hero-cta-text { display: none }` WAS HERE AND IS DELETED WITH THE ELEMENT ITSELF.
+     ══ 🔴 AND THE MOBILE SUB-LINE GOES INSTEAD — THE PHONE MUST NOT SAY IT TWICE ══════════════════
+     `.hero-sub-sm` reads "Upload your menu, no signup needed. / See a working demo in under 60
+     seconds." The new line under the button reads "No signup, no card. See it working in under 60
+     seconds." **Both halves of both sentences are the same two facts**, so on a phone the hero would
+     have carried them above AND below the button.
+     🔴 THE BRIEF DECIDES WHICH SURVIVES: "keep only the new line under the button". So the sub-line is
+     hidden here rather than the note — which is also the better of the two on its own merits, because
+     it sits where a reader looks after reading the button rather than before.
+     ⚠️ ITS RULE AND ITS MARKUP ARE BOTH LEFT IN PLACE, not deleted: `.hero-sub-sm` carries a measured
+     width note (it holds on one line from 360px up) that would be expensive to rediscover, and the
+     element costs nothing while `display: none`. This is the one line that switches it off. */
+  .hg-landing .hero-sub-sm { display: none; }
   /* ⚠️ `.trust-strip` IS NO LONGER HIDDEN HERE. It was, because the hero ticks repeated its three
      points; the line under the button that replaced them is itself now deleted, and the supporting line
      above the button carries "no signup needed" instead, so the band earns its place again. Its content, styling and position below the screenshots are exactly
      what they were before that rule existed — the rule is deleted, not overridden, nothing to drift. */
 
-  /* ── what the phone gains: h1 → supporting line → button → screenshot ── */
-  .hg-landing .hero-sub-sm { display: block; }
+  /* ── what the phone gains: h1 → button → the note under it → screenshot ──
+     ⛔ `.hero-sub-sm { display: block }` WAS HERE. It is removed, not overridden — leaving it and
+     adding a third rule to fight it is how two rules for one element end up disagreeing. See the
+     note above. */
 
   /* ── tightening, so the screenshot's top clears the ~660px fold on a 390x844 iPhone ── */
   /* 🧪 TOP PADDING 1.6rem → 2.5rem (25.6px → 40px, +14.4px): the H1 was sitting too close under the
      nav. The BOTTOM stays 2rem — only the space above the heading was asked for. */
-  .hg-landing .hero { padding-block: 2.5rem 2rem; }   /* was 1.6rem 2rem; base rule is clamp(2.5rem,5vw,4rem) / clamp(3rem,6vw,4.5rem) */
+  /* ⚠️ ×0.6 TOO, so the phone override tracks the base rule above rather than drifting away from it. */
+  .hg-landing .hero { padding-block: 1.5rem 1.2rem; }   /* was 2.5rem 2rem */
   .hg-landing .hero-grid { gap: 1.6rem; }             /* was clamp(2.5rem,5vw,3.5rem) → 40px at this width */
   /* 🔴 `.hero h1`, NOT `h1`. landing.css is imported by THREE surfaces — /landing, /compare and
      app/contact/HatchGrabContact.tsx — and the contact page renders `<h1>How can we help?</h1>` inside
@@ -307,7 +426,9 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    ⚠️ background KEPT but changed from --paper to --line: it is visible only in the instant before the
    image paints and in the gap if a file is missing, so a neutral grey reads as "loading", not as a
    deliberate cream panel. See the missing-file failure mode in the report. */
-.hg-landing .shot { background: var(--line); border-radius: 12px; box-shadow: 0 22px 50px -20px rgba(15,23,42,.32),0 2px 8px rgba(15,23,42,.06); overflow: hidden; display: block; position: absolute; }
+/* ⛔ A SECOND `.shot` RULE STOOD HERE — 6 October's thin border and deeper shadow. It is DELETED, not
+   left to be overridden: the restored live rule further down already wins on source order, so leaving
+   this would have been a dead declaration that still reads as the live one. */
 /* 🔴 CONTAIN, NOT COVER. `cover` scales the image until it FILLS the box and lets the excess overflow,
    which zoomed these screenshots and pushed their edges outside the frame — the dashboard tile's nav
    read "d order" instead of "Add order". `contain` scales until the WHOLE image fits, so nothing is
@@ -328,7 +449,6 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    was the last placeholder). `.shot-empty` below re-declares its own paper
    background, dashed border and 1rem padding, and comes LATER in the cascade, so the phone
    placeholder is unaffected by this rule. Delete this rule only when all three slots hold images. */
-.hg-landing .shot-kds, .hg-landing .shot-dash, .hg-landing .shot-phone { background: none; padding: 0; }
 /* ── PLACEHOLDER MODIFIER — for a slot with no screenshot yet. ─────────────────────────────────────
    🔴 THIS EXISTS BECAUSE THE BASE `.shot` RULE IS NOW AN IMAGE FRAME. It was rewritten to
    display:block, no padding, overflow:hidden — correct for an <img>, and wrong for text, which would
@@ -339,18 +459,27 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .shot-empty { background: var(--paper); border: 2px dashed var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; text-align: center; padding: 1rem; }
 .hg-landing .shot-empty .lbl { font-family: var(--display); font-weight: 700; font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
 .hg-landing .shot-empty .hint { font-size: .7rem; color: var(--ink-faint); max-width: 22ch; line-height: 1.35; }
+/* ⛔ THE OLD PER-BREAKPOINT `.shot-*` RULES WERE HERE AND ARE DELETED. They hard-coded six `min()`
+   caps twice over — once for phone/tablet and once for ≥940px — which is exactly the duplication the
+   constants block above removes. There is now ONE set of rules, driven by variables. */
+
+/* ══════════════ ⛔ RESTORED TO THE LIVE FAN — 7 October 2026 ══════════════════════════════════════
+   This hero was arranged six times on 6 October 2026 — kitchen-largest, flat, tilted-fan, fan-resized,
+   two-screen — and every one of them was rejected. **This block is the version that is live on
+   www.hatchgrab.com**, restored from git HEAD, which is where all of that work branched from.
+   🔴 CONFIRMED AGAINST THE LIVE PAGE, NOT ASSUMED: the served HTML carries `class="shot shot-kds"`,
+   `shot-dash`, `shot-phone` and the three `sizes` values below, and all three images carry `priority`.
+   ⛔ EVERYTHING THE SIX PASSES ADDED IS GONE — the `--fan-*` custom properties, the `.fan-group`
+   wrapper, the `.fan::before` tint, the shared-tilt rules and the per-breakpoint `min()` caps. Each
+   screen carries its OWN tilt again, which is what the live fan does and what every "one shared tilt"
+   brief had replaced.
+   ⚠️ THE LINES BELOW ARE COPIED VERBATIM FROM HEAD. Do not "tidy" them — they are the reference. */
+.hg-landing .shot { background: var(--line); border-radius: 12px; box-shadow: 0 22px 50px -20px rgba(15,23,42,.32),0 2px 8px rgba(15,23,42,.06); overflow: hidden; display: block; position: absolute; }
+.hg-landing .shot-kds, .hg-landing .shot-dash, .hg-landing .shot-phone { background: none; padding: 0; }
 .hg-landing .shot-kds { width: min(58%,320px); aspect-ratio: 4/3; left: 0; top: 8%; transform: rotate(-6deg); z-index: 1; }
 .hg-landing .shot-dash { width: min(72%,400px); aspect-ratio: 800/551; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(-1deg); z-index: 2; }
-/* 🔴 aspect-ratio IS 1284/2778, THE REAL FILE, NOT 9/17. 9/17 was a guess made while this slot was
-   an empty placeholder and nothing had to match it. The shot is an iPhone 12 Pro Max capture at
-   1284x2778 (= 0.4622), against 9/17 (= 0.5294) — 12.7% narrower for its height. `.shot img` is
-   `object-fit: contain`, so at 9/17 the image would have letterboxed INSIDE its own frame with a band
-   of frame visible top and bottom. Matching the ratio makes the frame taller instead: 302.9px rather
-   than 264.4px at the 140px cap. It is anchored `bottom: 0`, so it grows UPWARD into the fan, which
-   has room — `.fan` min-height is clamp(300px,42vw,430px) and the frame is meant to overlap the
-   dashboard tile (that is what z-index 3 is for). ⚠️ IF THE FILE IS EVER REPLACED, CHANGE THIS AND THE
-   width/height ON THE <Image> IN page.tsx TOGETHER, or next/image and the CSS disagree about the shape. */
 .hg-landing .shot-phone { width: min(26%,140px); aspect-ratio: 1284/2778; right: 2%; bottom: 0; transform: rotate(5deg); z-index: 3; border-radius: 18px; }
+
 
 /* ---------- trust strip (full-width band under the hero) ---------- */
 .hg-landing .trust-strip { background: var(--wash); border-block: 1px solid var(--line); }
@@ -382,7 +511,48 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .does { display: grid; gap: 1.5rem 2.6rem; grid-template-columns: 1fr; }
 @media(min-width:760px){ .hg-landing .does { grid-template-columns: 1fr 1fr; } }
 .hg-landing .does-item { padding-top: 1.05rem; border-top: 2px solid var(--head); }
-.hg-landing .does-item h3 { font-family: var(--display); font-weight: 700; font-size: 1.05rem; color: var(--head); letter-spacing: -.015em; margin-bottom: .25rem; }
+/* ══ 🔴 THE TILE ICONS — ONE RULE FOR ALL SIX, 6 October 2026 ═══════════════════════════════════════
+   ⛔ THE PALE TINTED SQUARE IS DELETED. It was `width/height: 2.6rem`, `border-radius: 10px`,
+   `background: var(--orange-wash)`, `color: var(--head)` and `margin-bottom: .7rem` — a box above the
+   heading. Removed on request, with no rule left behind: there is no background, no border and no
+   padding box here, which is what the follow-up brief asked for in those words.
+   🔴 ORANGE, FROM `--orange`, WHICH IS ALREADY #EF8B2C — the same value as `HATCHGRAB_ORANGE_HEX` in
+   lib/brand.ts. The brief asked for that hex "defined once" rather than typed six times; it is defined
+   once in this file's token block and was already the page's one orange, so no new declaration and no
+   seventh copy of the hex enters the repository.
+   ⚠️ `color`, NOT `stroke`. lucide renders `stroke="currentColor"`, so an icon swapped in later cannot
+   miss the colour, and there is exactly one declaration to change.
+   ⚠️ 22px, IN PROPORTION TO THE 1.18rem HEADING beside it, and `stroke-width: 2` because a 22px glyph
+   at 1.75 reads thinner than the 700-weight text it sits next to.
+   📐 THE `margin-top` IS WHAT CENTRES IT ON THE FIRST LINE, and it is computed rather than eyeballed:
+   the heading's line box is `1.55em` (the `.hg-landing` body line-height, which this deliberately does
+   NOT override), so half the difference between that box and the glyph is the offset. `em` resolves
+   against the icon's own inherited font-size, which is the heading's — so the two track together if the
+   heading size ever changes. ⛔ A FIXED px OFFSET WOULD DRIFT the moment the type scale moves. */
+/* ⚠️ NAVY SINCE 7 October 2026, from `--head` — the same token the tile headings beside them use, so
+   the glyph and the words it sits against are one colour. It was `--orange` for a day. */
+.hg-landing .does-ico { flex: none; display: block; color: var(--head); margin-top: calc((1.55em - 22px) / 2); }
+.hg-landing .does-ico svg { display: block; width: 22px; height: 22px; stroke-width: 2; }
+/* ══ ⛔ THE +12% TYPE BUMP ON THESE TWO IS REVERTED — 6 October 2026 ═══════════════════════════════
+   The polish brief asked for +10–15% on the "What it does" tiles AND the "Getting going" steps; it
+   went in at h3 1.05→1.18rem and p .94→1.05rem. Dominic, on seeing it: *"the text size in what it does
+   has been changed. its larger than it was before. change it back to how it used to be."*
+   🟢 SO THESE TWO ARE BACK AT THEIR ORIGINAL 1.05rem AND .94rem — the values at the start of the day.
+   ⚠️ AND THE "Getting going" STEPS WENT BACK TOO, in a follow-up a minute later: *"i think the text
+   size in getting going has also been changed."* It had — same brief, same +12%. **The whole type bump
+   from the polish workstream is now reverted**; all four values are the ones they were at the start of
+   6 October 2026.
+   ⚠️ `.does-item h3` IS STILL A FLEX ROW: that is the inline-icon layout, not the type bump, and the
+   two arrived in different changes. Only the `font-size` is reverted. */
+/* 🔴 A FLEX ROW OF TWO: the icon, then the heading's text in its own span.
+   ⛔ `align-items: flex-start`, NOT `center`. Centre would align the icon against the whole heading
+   block, so a two-line heading would push the icon half a line down; flex-start pins it to the top and
+   `.does-ico`'s computed `margin-top` centres it on the FIRST line, which is what was asked for.
+   ⚠️ THE TEXT SPAN IS WHAT KEEPS A WRAPPED SECOND LINE UNDER THE TEXT rather than under the icon — it
+   is its own flex item with its own content box, so it wraps inside that box.
+   ⚠️ `gap: .5rem` = 8px, and `line-height` is deliberately NOT set here: the inherited 1.55 is what the
+   icon's offset is computed against, and overriding it would re-space every heading on the page. */
+.hg-landing .does-item h3 { display: flex; align-items: flex-start; gap: .5rem; font-family: var(--display); font-weight: 700; font-size: 1.05rem; color: var(--head); letter-spacing: -.015em; margin-bottom: .25rem; }
 .hg-landing .does-item p { color: var(--ink-soft); font-size: .94rem; }
 
 /* ---------- testimonial ---------- */
@@ -469,6 +639,9 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 @media(min-width:820px){ .hg-landing .steps { grid-template-columns: repeat(3,1fr); gap: 2.4rem; } }
 .hg-landing .step { counter-increment: s; position: relative; padding-left: 3.1rem; }
 .hg-landing .step::before { content: counter(s); position: absolute; left: 0; top: -.35rem; font-family: var(--display); font-weight: 800; font-style: italic; font-size: 2.1rem; color: var(--orange); letter-spacing: -.04em; }
+/* ⛔ REVERTED WITH `.does-item` ABOVE — 6 October 2026. These were bumped +11.6% (h3 1.12→1.25rem,
+   p .95→1.06rem) by the polish brief and are back at their originals. The two blocks moved together in
+   both directions, which is what keeps two lists that read as siblings at one body size. */
 .hg-landing .step h3 { font-family: var(--display); font-weight: 700; font-size: 1.12rem; color: var(--head); letter-spacing: -.015em; margin-bottom: .35rem; }
 .hg-landing .step p { color: var(--ink-soft); font-size: .95rem; }
 
@@ -531,8 +704,13 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    fills the section's .wrap — so dropping the cap here makes the two edges line up by construction
    rather than by a number that would drift if .wrap ever changed. Nothing changes on a phone, where
    both were already the full column width. */
+/* ⚠️ `--paper`, NOT `--wash` (6 October 2026). This block was wash-on-white; the pricing section is a
+   `.band` now — wash — so the two became the same colour and the block dissolved into its section,
+   losing the boundary it exists to draw. Inverting it keeps the SAME relationship it always had: one
+   step away from whatever it sits on. 🔴 THE BORDER IS WHAT CARRIES IT EITHER WAY, which is why it is
+   not simply removed; `--paper` on wash and the hairline together read as the card it is meant to be. */
 .hg-landing .switch-block { margin-top: 2rem; text-align: center;
-                            background: var(--wash); border: 1px solid var(--line); border-radius: 14px;
+                            background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
                             padding: 1.1rem 1.25rem; }
 .hg-landing .switch-head { font-family: var(--display); font-weight: 700; font-size: 1rem; color: var(--head); letter-spacing: -.01em; }
 .hg-landing .switch-body { font-size: .88rem; color: var(--ink-soft); margin-top: .3rem; }
@@ -540,11 +718,53 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .switch-cta a { color: var(--orange); font-weight: 600; font-size: .95rem; text-decoration: none; }
 .hg-landing .switch-cta a:hover { text-decoration: underline; }
 
+/* ---------- "Compare all features →", under the plan cards ----------
+   ⚠️ THE LABEL AND THE STYLE HAVE BOTH MOVED ON — this block has read "See every feature, plan by
+   plan →" as a text link, "See every feature →" as an outlined `btn-ghost`, and is now a lead-in line
+   plus a filled navy button. What has NOT changed through any of it: the position (under the cards,
+   before the switching block) and the fact that `.btn` is `inline-flex`, so the button sizes to its
+   label at every width with nothing here to say so.
+   ⚠️ SO THESE RULES ONLY CENTRE IT. A `width` or a `max-width` would be the thing that makes it
+   full-width on a phone, which is what the brief asked it not to be — at 390 and at 1440 alike.
+   ⛔ `.features-back` WAS REMOVED FROM THIS BLOCK — the "See prices and plans →" link it styled is
+   gone from /features, so the rule would have styled nothing. Deleted with its markup, not left. */
+/* ══ 🔴 THE LEAD-IN LINE AND THE BUTTON UNDER IT (7 October 2026) ══════════════════════════════════
+   ⚠️ `margin-top: 2.2rem` RATHER THAN THE OLD 1.4rem. There are two blocks here now where there was
+   one, and the pair has to read as its own step between the plan cards above and the switching block
+   below — not as a tail on either. It is the same gap `.switch-block` takes.
+   ⛔ `.feat-cta` IS THE **LEAD-IN**'S RULE NOW, not the button's. It carries the centring for both. */
+.hg-landing .feat-cta { margin-top: 2.2rem; text-align: center; }
+/* 🔴 THE LEAD-IN. ⚠️ THE SAME SIZE AND COLOUR AS `.switch-body` — the brief's instruction, and the
+   right one: both are a muted secondary line introducing a link, so a second size would be a second
+   voice for one job. ⛔ IF ONE IS EVER CHANGED THE OTHER SHOULD BE LOOKED AT; they are not shared
+   because they sit in different blocks and a shared class would tie two sections together for a
+   resemblance rather than a reason. */
+.hg-landing .feat-lead { font-size: .88rem; color: var(--ink-soft); margin-bottom: .7rem; }
+/* ⚠️ `margin-bottom: .7rem` IS THE BRIEF'S "about 10–12px". The root is 16px, so .7rem = 11.2px. */
+.hg-landing .feat-btn { text-align: center; margin-bottom: .4rem; }
+/* ⛔ THE WHITE-FILL RULE IS GONE WITH THE OUTLINED BUTTON IT FILLED. It read
+   `.hg-landing .feat-cta .btn { background: var(--paper) }` and existed because `.btn-ghost` is
+   transparent and looked like a hole in the pricing band's tint. The button is FILLED NAVY now, so
+   there is nothing left for it to do — and a rule that fills a navy button white would be the next
+   person's puzzle. ⚠️ `.btn-ghost` ITSELF WAS NEVER CHANGED and still has its two "Try Free" users. */
+
+/* ⛔ `.li-note` WAS HERE AND IS DELETED — 6 October 2026. It made the WhatsApp bullet's
+   "(Messenger & Instagram coming soon)" smaller and `--ink-faint`; Dominic asked for it at the same
+   size and format as the rest of the bullet, so the span went and the text is now part of the line's
+   own run. A rule styling markup that no longer exists is the thing this stylesheet's notes keep
+   warning about, so it went in the same edit rather than being left for a sweep. */
+
 /* ---------- comparison (FLEX, mirrors Manage → Billing; see file header note) ---------- */
 /* Column width defined ONCE (--cmp-col) and referenced by BOTH the header cols AND the body cells, so a plan
    header can never drift off its tick column. The left region (feat/label) is flex:1 in both, identical. */
-.hg-landing .cmp2 { --cmp-col: 3.6rem; margin-top: 1.4rem; font-size: .9rem; }
-@media(min-width:620px){ .hg-landing .cmp2 { --cmp-col: 6rem; } }
+/* ⚠️ `--cmp-head-h` IS DECLARED BESIDE `--cmp-col` AND CHANGES AT THE SAME BREAKPOINT, DELIBERATELY.
+   The priced header's height follows its column width — 63px below 620px, 83px from 620 up (measured at
+   600/619/620/640) — and the GROUP headings pin directly beneath it. 🔴 TYING THE TWO TOGETHER IS THE
+   WHOLE POINT: a hard-coded offset on `.cmp2-grp` would silently desync the moment the header's
+   typography moved, and the group labels would pin over it or float below it. Same reasoning as
+   `--nav-h` driving both the nav's height and this table's own sticky offset. */
+.hg-landing .cmp2 { --cmp-col: 3.6rem; --cmp-head-h: 63px; margin-top: 1.4rem; font-size: .9rem; }
+@media(min-width:620px){ .hg-landing .cmp2 { --cmp-col: 6rem; --cmp-head-h: 83px; } }
 @media(min-width:900px){ .hg-landing .cmp2 { --cmp-col: 7rem; } }
 /* TOP-align columns: the Trial column has no sub-label, so flex-end dropped its name+price below the others.
    flex-start lines the plan NAMES up on row 1 and the PRICES on row 2 across all columns; subs hang below. */
@@ -563,7 +783,23 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 @media(min-width:620px){ .hg-landing .th-price { font-size: .9rem; } }
 .hg-landing .th-sub { display: block; font-size: .62rem; font-weight: 600; color: var(--ink-faint); line-height: 1.25; margin-top: .1rem; }
 @media(max-width:619px){ .hg-landing .th-sub { display: none; } }   /* keep the sticky header short on phones (2 lines: name + price) */
-.hg-landing .cmp2-grp { font-family: var(--display); font-weight: 700; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); padding: 1.6rem 0 .5rem; }
+/* ══ 🔴 THE GROUP HEADINGS STICK TOO — 7 October 2026, ON REQUEST ═════════════════════════════════
+   Fees · Starter tier · Pro tier · Max tier now pin directly under the priced header, so a reader
+   halfway down a 33-row table can still see **which plan tier** the rows belong to as well as which
+   column is which. ⚠️ THE PLAN COLUMNS ALREADY STUCK — `.cmp2-head` has done so since the table was
+   built; this is the second row of context, not a fix to the first.
+   📐 `top: calc(var(--nav-h) + var(--cmp-head-h))` — the nav's height plus the priced header's, both
+   variables, so nothing here is a magic number and nothing can desync when either moves.
+   ⛔ `z-index: 30`, BELOW `.cmp2-head`'s 40 AND ABOVE THE ROWS. When a group heading reaches the pin
+   point it must slide UNDER the priced header, not over it; the rows have no z-index and pass beneath
+   both. ⚠️ AND IT NEEDS AN OPAQUE BACKGROUND: `var(--wash)` is the band's own colour, so rows scrolling
+   behind it are hidden rather than showing through the letter-spacing.
+   ⚠️ THE TOP PADDING IS .8rem, HALVED FROM 1.6rem (7 October 2026, on request: *"theres too much space
+   between the line above"*). It is part of the sticky box, so it pins WITH the label — at 1.6rem that
+   put 25.6px of empty wash between the priced header and the tier name every time one stuck. Halving it
+   also tightens the gap between groups in normal flow, which is the same spacing seen from the other
+   direction and was the point. */
+.hg-landing .cmp2-grp { position: sticky; top: calc(var(--nav-h) + var(--cmp-head-h)); z-index: 30; background: var(--wash); font-family: var(--display); font-weight: 700; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); padding: .8rem 0 .5rem; }
 .hg-landing .cmp2-row { display: flex; align-items: flex-start; padding: .7rem 0; border-top: 1px solid var(--line); }
 .hg-landing .f-name { color: var(--head); font-weight: 600; display: block; }
 .hg-landing .f-desc { color: var(--ink-soft); font-size: .8rem; line-height: 1.4; display: block; margin-top: .15rem; max-width: 44ch; }

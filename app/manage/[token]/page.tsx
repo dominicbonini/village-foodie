@@ -121,7 +121,11 @@ import { StoreBadges } from '@/components/StoreBadges'   // native-only hide: Au
 import {
   TidyUpPlaces, PlaceList, usePlaces, type Place as SgPlaceRow,
 } from '@/components/manage/SchedulePlaces'
-import { EventPostModal } from '@/components/manage/EventPost'
+/* ⛔ `EventPostModal` IS NO LONGER IMPORTED — its only mount on this page went with the "Make post"
+ * handoff (7 October 2026, §1). The modal has one mount in the product, in
+ * components/manage/SocialPosts.tsx, and this page's row button hands it an event id through
+ * `onOpenSocial`. ⚠️ THE IMPORT LINE IS **REMOVED**, not left unused: an import of a client modal is a
+ * bundle entry, and a dead one would ship the component to every operator who opens Schedule. */
 import { fillFromPlace, timeRangeLabel, placeForEvent } from '@/lib/schedule-graphics/places'
 /* 🔴 THE PREVIEW RENDERS THE PUBLIC PAGE'S OWN CARD. `TruckListCard` is what
  * app/trucks/[slug]/TruckClient.tsx renders for every event on a truck's public schedule; this file
@@ -148,8 +152,9 @@ import { SocialPostsPane } from '@/components/manage/SocialPosts'
 /* 🔴 THE ONE BUILDER FOR A LINK INTO A TAB OR SECTION — see lib/manage-links.ts for the bug that made
  * it exist. The two "Upgrade →" / "View plans" anchors below use it rather than a literal `?tab=…`. */
 import {
-  manageTabHref, canonicalScheduleSection,
-  type ScheduleSection, type LegacyScheduleSection,
+  manageTabHref, canonicalScheduleSection, canonicalSocialSection, resolveManageLocation,
+  type SocialSection,
+  type ScheduleSection,
 } from '@/lib/manage-links'
 
 // ── Types ─────────────────────────────────────────────────────
@@ -168,7 +173,7 @@ interface Van { id: string; truck_id: string; name: string; kds_token: string; a
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
-type Tab = 'menu' | 'reports' | 'schedule' | 'team' | 'settings' | 'payments' | 'billing'
+type Tab = 'menu' | 'reports' | 'schedule' | 'social' | 'team' | 'settings' | 'payments' | 'billing'
 /* 🔴 THE MENU TAB'S THREE SECTIONS. Deals and Extras & Upsells were top-level tabs; all three are
  * about what a customer can order, and splitting them across the tab bar made the operator choose
  * between "my menu" and "things attached to my menu" before they had a reason to.
@@ -237,7 +242,7 @@ const SUBTAB_ROW = 'flex gap-1.5 w-max'
 /* 🔴 THE TABS THAT OWN A SUB-TAB BAR. Read by the notification stack, which must render BELOW a bar
  * where there is one and at the top of the page where there is not. One list, so a fourth tab gaining
  * a bar cannot leave the stack above it — which is the whole failure this guards. */
-const TABS_WITH_SUBTABS: Tab[] = ['menu', 'schedule', 'settings']
+const TABS_WITH_SUBTABS: Tab[] = ['menu', 'schedule', 'social', 'settings']
 const subtabBtn = (on: boolean) =>
   `px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
     on ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
@@ -310,14 +315,31 @@ const SCHEDULE_SECTIONS: { id: ScheduleSection; label: string }[] = [
   /* ⚠️ THE ID IS HYPHENATED, matching `?section=event-types`. It is not `eventTypes`: every other id
    * here is what appears in the URL, and a camelCase one would need a mapping nothing else needs. */
   { id: 'event-types', label: 'Event types' },
-  /* ⛔ ONE PILL FOR BOTH AREAS, and its id is the area the pill opens. The pill is also the active one
-   * while `designs` is showing — see `shownSection` below. */
-  { id: 'posts', label: 'Social posts' },
+  /* ══ ⛔ THE "Social posts" PILL LEFT SCHEDULE ON 7 October 2026 ═══════════════════════════════════
+   * Everything social is its own TOP TAB now — `?tab=social`, three pills of its own. Schedule is back
+   * to the two it had before. ⚠️ `?section=posts`, `designs`, `places` and `weekly` all still resolve,
+   * through `resolveManageLocation`, which is the only thing that knows they changed TAB as well as
+   * section. */
 ]
-/** ⚠️ IT ACCEPTS THE LEGACY IDS, because `canonicalScheduleSection` maps them. A parser that rejected
- *  them would send a live bookmark to Events, which is the bug this replaced. */
-const isScheduleSection = (v: unknown): v is ScheduleSection | LegacyScheduleSection =>
+
+/** Social media's three pills. ⚠️ It opens on `create`, which is why that one is first. */
+const SOCIAL_SECTIONS: { id: SocialSection; label: string }[] = [
+  { id: 'create', label: 'Create a post' },
+  { id: 'designs', label: 'Designs' },
+  /* ⚠️ "Location settings", NOT "Locations" (7 October 2026, Dominic). The pill is MANAGEMENT — give a
+   * location its two images and its name on posts — and "Locations" read like a list of places to go
+   * and look at, which is what Schedule › Events already is. ⛔ THE ID IS STILL `locations`: it is what
+   * `?section=` carries and what `?section=places` resolves onto, so renaming it would break a live
+   * URL to relabel a pill. */
+  { id: 'locations', label: 'Location settings' },
+]
+
+/** ⚠️ LIVE SCHEDULE IDS ONLY. The four retired ones imply the SOCIAL tab now, and are recognised by
+ *  `resolveManageLocation` where the URL is read — not here, where the answer would be the wrong tab. */
+const isScheduleSection = (v: unknown): v is ScheduleSection =>
   canonicalScheduleSection(v) !== null
+/** ⚠️ Accepts the retired Schedule ids too, because they resolve INTO this tab. */
+const isSocialSection = (v: unknown): v is SocialSection => canonicalSocialSection(v) !== null
 type UserRole = 'owner' | 'manager' | 'staff'
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -416,6 +438,26 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('menu')
   const [scheduleSection, setScheduleSection] = useState<ScheduleSection>('events')
+  /** Social media's pill. ⚠️ Opens on `create`, which is the screen a truck arrives wanting. */
+  const [socialSection, setSocialSection] = useState<SocialSection>('create')
+  /* ══ 🔴 THE SOCIAL PANE'S GUARDED NAVIGATOR, WHILE IT IS MOUNTED (9 October 2026) ════════════════
+   * ⛔ A REF, NOT STATE. Storing a function in state re-renders the whole page when the pane registers
+   * it, and the pane re-registers whenever its own dirtiness changes — which is on every edit. Nothing
+   * draws from this; the pill handler reads it at the moment of the press, which is exactly what a ref
+   * is for. ⚠️ The pane sets it to `null` on unmount, so a stale closure cannot outlive the screen. */
+  const socialGo = useRef<((area: SocialSection) => void) | null>(null)
+  /* ══ 🔴 A DESIGN EDITOR ASKS FOR THE WHOLE WINDOW (9 October 2026) ════════════════════════════════
+   * ⛔ THE CONTENT IS CAPPED AT `max-w-5xl` ABOVE 1400px — 1024px of a 1728px window — and a design
+   * editor cannot use the full width however it is built while that cap is on. ⚠️ THE PANE REQUESTS IT
+   * AND THIS PAGE GRANTS IT, because this page owns the container: the alternative was a `100vw`
+   * breakout from inside the pane, and `vw` includes the vertical scrollbar, so on any page tall
+   * enough to scroll it overflows by ~15px and the PAGE pans sideways — over a drag surface, where a
+   * sideways pan is a lost gesture.
+   * ⛔ IT IS STATE AND NOT A REF: the two container class names are computed during render. */
+  const [socialWide, setSocialWide] = useState(false)
+
+  /** 🔴 Set when "Make post" on Schedule › Events hands an event to the social tab — see TABS below. */
+  const [socialOpenEvent, setSocialOpenEvent] = useState<string | null>(null)
   const [menuSection, setMenuSection] = useState<MenuSection>('items')
   const [allergenWizardOpen, setAllergenWizardOpen] = useState(false)   // Slice-3 allergen wizard overlay (lives in MenuTab)
   const [pendingVerifyEvents, setPendingVerifyEvents] = useState<any[] | null>(null)
@@ -716,7 +758,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   useEffect(() => {
     const qs = new URLSearchParams(window.location.search)
     const tabParam = qs.get('tab')
-    const allTabIds: Tab[] = ['menu', 'reports', 'schedule', 'team', 'settings', 'payments', 'billing']
+    const allTabIds: Tab[] = ['menu', 'reports', 'schedule', 'social', 'team', 'settings', 'payments', 'billing']
     if (tabParam && allTabIds.includes(tabParam as Tab)) setActiveTab(tabParam as Tab)
     /* 🔴 THE TWO RETIRED TAB KEYS. `?tab=deals` / `?tab=modifiers` now open MENU with that pill
      * selected — the content is still there, one level in. Without this they would fall through to
@@ -735,9 +777,17 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     /* 🔴 CANONICALISED HERE, SO NOTHING BELOW EVER SEES A LEGACY ID. `?section=places` becomes
      * `designs` and `?section=weekly` becomes `posts` at the one point the URL is read — which is why
      * every switch further down can be exhaustive over the live sections alone. */
-    const canonical = canonicalScheduleSection(sectionParam)
-    if (canonical) {
-      setScheduleSection(canonical)
+    /* ══ 🔴 ONE RESOLVER, BECAUSE A LEGACY SECTION NOW CHANGES THE **TAB** (7 October 2026) ════════
+     * `?tab=schedule&section=posts` has to land on Social media › Create a post — a different tab from
+     * the one the URL names. ⛔ THAT DECISION IS NOT MADE HERE. `resolveManageLocation` owns it, so
+     * this parser cannot send a live bookmark to Billing or Events, which is what happened the last
+     * time a section was retired and the mapping lived at the call site. */
+    const moved = resolveManageLocation(tabParam, sectionParam)
+    if (moved.tab === 'social' && (tabParam === 'social' || isSocialSection(sectionParam))) {
+      setActiveTab('social')
+      if (moved.section) setSocialSection(moved.section as SocialSection)
+    } else if (canonicalScheduleSection(sectionParam)) {
+      setScheduleSection(canonicalScheduleSection(sectionParam)!)
       if (!tabParam) setActiveTab('schedule')
     } else if (isMenuSection(sectionParam)) {
       setMenuSection(sectionParam)
@@ -749,7 +799,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
      * nothing for the default to override. */
     urlAskedForTab.current =
       !!(tabParam && (allTabIds.includes(tabParam as Tab) || LEGACY_TAB_TO_MENU_SECTION[tabParam]))
-      || isScheduleSection(sectionParam) || isMenuSection(sectionParam)
+      || isScheduleSection(sectionParam) || isSocialSection(sectionParam) || isMenuSection(sectionParam)
   }, [])
 
   /* ── 🔴 THE SECTION, WRITTEN BACK INTO THE URL ───────────────────────────────────────────────────
@@ -765,6 +815,10 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     // `?section=` left over from Schedule cannot follow the operator onto Reports.
     const want = activeTab === 'schedule'
       ? (scheduleSection === 'events' ? null : scheduleSection)
+      /* ⚠️ SOCIAL'S DEFAULT WRITES NO PARAM EITHER, for the same reason Schedule's does not: the URL an
+       * operator shares for "the social tab" stays `?tab=social`. */
+      : activeTab === 'social'
+        ? (socialSection === 'create' ? null : socialSection)
       : activeTab === 'menu'
         ? (menuSection === 'items' ? null : menuSection)
         : null
@@ -773,7 +827,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     if (want === have) return
     if (want) url.searchParams.set('section', want); else url.searchParams.delete('section')
     window.history.replaceState(window.history.state, '', url.toString())
-  }, [activeTab, scheduleSection, menuSection])
+  }, [activeTab, scheduleSection, socialSection, menuSection])
 
   // ── ?verify= — the signup confirmation outcome, surfaced here (A2) ────────────────────────────────
   // /api/auth/verify-signup now lands an operator who ALREADY has a truck on this page instead of on
@@ -943,6 +997,27 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const allTabs: { id: Tab; label: string; icon: string; roles: UserRole[] }[] = [
     { id: 'menu',      label: 'Menu',      icon: truck?.truck_emoji || '🍕', roles: ['owner', 'manager'] },
     { id: 'schedule',  label: 'Schedule',  icon: '📅', roles: ['owner', 'manager'] },
+    /* ══ 🔴 SOCIAL MEDIA — ITS OWN TOP TAB, DIRECTLY AFTER SCHEDULE (7 October 2026) ════════════════
+     * It was a pill inside Schedule for a day. ⛔ IT IS GATED ON `schedule_graphics` — Pro, Max and
+     * trial since the 10 October launch — AND IS FILTERED OUT, NOT DISABLED, for a truck without it.
+     * ⚠️ THE REASON FOR FILTERING RATHER THAN GREYING HAS CHANGED AND THE ANSWER HAS NOT: it used to be
+     * "nothing on the screen can say when it will work"; now it is that Billing is where a plan is
+     * changed, and every other plan-gated TAB on this bar is filtered the same way. The filter is
+     * below.
+     * ══ 🔴 THE LABEL IS "Social media", AND THAT IS NOW **OBSERVED** RATHER THAN GUESSED ════════════
+     * It shipped as "Social" for an hour, and the note here said so honestly: the brief asked for the
+     * bar to be checked at 820 / 1024 / 1280px and the label shortened only if it did not fit, and I
+     * could not take that measurement — this page is `/manage/[token]` and needs a real operator
+     * session, which a headless check does not have. The short label was the CAUTIOUS choice, flagged
+     * as an open item rather than reported as a finding.
+     * 🔴 DOMINIC THEN LOOKED AT IT ON HIS LAPTOP AND ASKED FOR THE FULL LABEL. That is the measurement
+     * I could not take, taken by the person who can — so the full one goes back.
+     * ⚠️ THE BAR SCROLLS SIDEWAYS ON A NARROW SCREEN (`overflow-x-auto` on the row), so the failure
+     * mode at 820px is a bar an operator swipes, not a bar that wraps or clips. That is what makes the
+     * full label safe at a width nobody has stood in front of.
+     * ⚠️ 💬 — A SPEECH BUBBLE, NOT A LOUDSPEAKER (7 October 2026, Dominic). 📣 is broadcasting AT
+     * people, which is what an ad is; a post about where the van will be is a message. */
+    { id: 'social',    label: 'Social media', icon: '💬', roles: ['owner', 'manager'] },
     /* ⛔ THE SEPARATE 'Schedule graphics' TAB IS GONE (3 October 2026). It sat here, between Schedule
      * and Deals. Its three sections are sub-tabs INSIDE Schedule now — Events · Weekly post · Places —
      * because every one of them is about the truck's own dates, and a second top-level tab made the
@@ -962,8 +1037,26 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     { id: 'payments',  label: 'Payments',  icon: '💷', roles: ['owner'] },
     { id: 'billing',   label: 'Billing',   icon: '💳', roles: ['owner'] },
   ]
+  /* 🔴 THE PAGE IS WIDE ONLY WHILE THE SOCIAL TAB IS THE ONE ON SCREEN. The pane reports `false` when
+   * it unmounts, so this is belt and braces — but a stale `true` would silently widen Settings, and the
+   * tab check costs nothing. */
+  const wideContent = socialWide && activeTab === 'social'
+
   const tabs = allTabs.filter(t => {
     if (t.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'
+    /* ══ 🔴 THE SOCIAL TAB FOLLOWS THE PLAN (10 October 2026 · launch) ═══════════════════════════════
+     * ⛔ IT WAS `places_posts_preview` — a Feature in no plan, held through `trucks.feature_overrides`
+     * and granted to one truck while this was being built. **It is `schedule_graphics` now**: Pro, Max
+     * and trial, the same key the routes enforce and the same key the comparison table's 'Social media
+     * posts' row is mapped to.
+     * ⚠️ A truck without it sees NO Social tab at all — not a greyed one — so nothing about the top bar
+     * changes for them. 🔴 THAT IS THE EXISTING PATTERN FOR THIS BAR and it is the right one here: a tab
+     * that opens a refusal is worse than no tab, and Billing is where a plan is changed. */
+    if (t.id === 'social') {
+      return t.roles.includes(userRole)
+        && canAccess(truck?.plan ?? 'starter', 'schedule_graphics',
+          truck?.feature_overrides ?? {}, truck?.trial_expires_at ?? null)
+    }
     return t.roles.includes(userRole)
   })
 
@@ -1121,7 +1214,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           Non-scrolling shrink-0 flex child (not sticky) → locked on every tab/browser incl. iPad WKWebView.
           overflow-x-auto stays on the inner row for narrow-width horizontal tab scroll. */}
       <div className="bg-slate-900 border-b border-slate-700 shrink-0 z-40">
-        <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
+        {/* ⚠️ THE TAB BAR WIDENS WITH THE CONTENT, not independently of it. A 1024px bar centred over a
+            1700px editor would read as two unrelated screens stacked on each other. */}
+        <div className={`w-full px-4 flex gap-1 overflow-x-auto ${wideContent ? '' : 'min-[1400px]:max-w-5xl min-[1400px]:mx-auto'}`}>
           {tabs.map(t => (
             // K3: `data-tab-id` is the walkthrough's ANCHOR. It is a stable identifier, not a position —
             // the tour resolves `[data-tab-id="settings"]` at open time, so this bar can be reordered,
@@ -1158,7 +1253,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           on the page — the shell is `h-dvh overflow-hidden` and the bars are `shrink-0` siblings — so
           `window.scrollY` is always 0 here and a spy written against the window would never fire.
           Everything in `useSettingsJumpBar` reads this element's `scrollTop`/`clientHeight`/`scrollHeight`. */}
-      <main id={MANAGE_SCROLLER_ID} className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6"}>
+      {/* 🔴 `wideContent` DROPS THE `max-w-5xl` CAP AND WIDENS THE GUTTER TO 24px, which is the brief's
+          "about 24px side padding". ⚠️ IT IS ONE BOOLEAN READ IN TWO PLACES rather than two conditions,
+          so the bar and the content cannot disagree about which width the page is at. */}
+      <main id={MANAGE_SCROLLER_ID} className={`w-full flex-1 min-h-0 overflow-y-auto pb-6 ${wideContent
+        ? 'px-6'
+        : 'min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4'}`}>
         {/* ══ 🔴 THE TOP GAP IS A BOOLEAN, NOT A `:has()` RULE (4 October 2026, second attempt) ══════
             🔴 WHY THIS CHANGED. The gap above the sub-tab bars was "fixed" on 3 October with a CSS
             rule — `.manage-tab-pad:has(> [data-subtab-bar]:first-child) { padding-top: 0 }` — and
@@ -1214,6 +1314,34 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </div>
           </div>
         )}
+        {/* ══ 🔴 SOCIAL MEDIA'S THREE PILLS — THE SAME BAR AS MENU AND SCHEDULE (7 October 2026) ═════
+            ⛔ THEY ARE HERE, NOT INSIDE `SocialPostsPane`. That component used to draw its OWN
+            segmented control — a light grey track with a white selected segment — because it was a pane
+            inside Schedule and had no bar of its own. It is a top tab now, so it uses the bar every
+            other top tab uses: one `SUBTAB_BAR`/`subtabBtn` definition, so a restyle cannot leave one
+            of the three looking different.
+            ⚠️ THE PANE NO LONGER RENDERS A CONTROL AT ALL — see `data-social-area`'s removal there. */}
+        {activeTab === 'social' && (
+          <div role="tablist" aria-label="Social media sections" data-subtab-bar className={`${SUBTAB_BAR} mb-4`}>
+            <div className={SUBTAB_ROW}>
+              {SOCIAL_SECTIONS.map(sec => (
+                /* ══ 🔴 THE PILL ASKS THE PANE, AND THE PANE MAY REFUSE (9 October 2026) ══════════
+                   ⛔ IT CALLED `setSocialSection` DIRECTLY, so pressing a pill while a design editor
+                   was open switched tab out from under it and threw away unsaved work with no warning.
+                   The pills are here, three components above the editor, and knew nothing about it.
+                   🔴 `socialGo` IS THE PANE'S OWN GUARDED NAVIGATOR, handed up while it is mounted. It
+                   either navigates or opens an in-page confirm; either way this handler is done.
+                   ⚠️ IT FALLS BACK TO THE PLAIN SETTER when the pane is not mounted — the bar renders
+                   with the tab, a frame before the pane registers — so a pill is never dead. */
+                <button key={sec.id} role="tab" aria-selected={socialSection === sec.id}
+                  onClick={() => (socialGo.current ?? setSocialSection)(sec.id)}
+                  className={subtabBtn(socialSection === sec.id)}>
+                  {sec.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {/* 🔴 THE NOTIFICATION STACK, BELOW THE BAR — see `notices` above for why. */}
         {activeTab === 'menu' && notices}
         {/* 🔴 EACH PILL RENDERS THE EXISTING COMPONENT, BODY UNEDITED — same props, same behaviour,
@@ -1227,7 +1355,28 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             tab gains one line rather than eight of SettingsTab's internals. */}
         {activeTab === 'menu' && menuSection === 'capacity' && <KitchenCapacitySection categories={categories} api={api} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
-        <ScheduleTab isActive={activeTab === 'schedule'} section={scheduleSection} onSectionChange={setScheduleSection} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} notices={notices} />
+        <ScheduleTab isActive={activeTab === 'schedule'} section={scheduleSection} onSectionChange={setScheduleSection} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab}
+          /* 🔴 ONE HANDOFF INTO THE SOCIAL TAB. `eventId` is optional: "Make post" passes one so the
+           * post modal opens on arrival, "No design yet" passes none and just lands on Designs. */
+          onOpenSocial={(sec, eventId) => { setSocialSection(sec); setSocialOpenEvent(eventId ?? null); setActiveTab('social') }}
+          pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} notices={notices} />
+        {/* ══ 🔴 SOCIAL MEDIA — ITS OWN TAB, THREE PILLS (7 October 2026) ═══════════════════════════
+            ⛔ MOUNTED ONLY WHILE IT IS THE ACTIVE TAB, unlike ScheduleTab which stays mounted so its
+            pending-approval badge keeps counting. Nothing on this tab feeds a badge, and keeping three
+            screens' worth of state alive behind another tab buys nothing.
+            ⚠️ THE GATE IS ON THE TAB ITSELF (see `tabs` above), so a truck without
+            `schedule_graphics` never reaches this line — and an old `?tab=social` URL from such a
+            truck finds no tab to select and falls through to its default.
+            ⚠️ `manageApi={api}` IS FOR ONE FIELD — a location's name on posts, written with the SAME
+            `sg_upsert_place` "Tidy up places" uses. Everything else is /api/weekly-post. */}
+        {activeTab === 'social' && truck && (
+          <SocialPostsPane truck={truck} token={token} manageApi={api}
+            onRequestArea={go => { socialGo.current = go }}
+            onFullWidth={setSocialWide}
+            area={socialSection} onArea={setSocialSection}
+            openEventId={socialOpenEvent}
+            onOpenedEvent={() => setSocialOpenEvent(null)} />
+        )}
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}
@@ -7202,13 +7351,16 @@ const EVENT_MODAL_WIDE = 'md:h-[90vh] md:max-w-[1040px]'
 /** The one-column size, for an edit and for the upload flow — short stays short. */
 const EVENT_MODAL_NARROW = 'sm:max-w-lg lg:max-w-2xl'
 
-function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles, categories, api, showToast, onTruckUpdate, onVerifySuccess, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved, notices }: {
+function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles, categories, api, showToast, onTruckUpdate, onVerifySuccess, onSwitchTab, onOpenSocial, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved, notices }: {
   /* 🔴 `isActive` IS STILL "the Schedule tab is open", NOT "the Events section is showing", and that
    * is deliberate. Every load in this component keys off it (`loadEvents`, the vans read, the
    * conflict scan) and `onPendingCount` drives the "Schedule (8)" badge on the tab bar. Narrowing it
    * to the Events section would stop the badge updating while the operator stands on Places — the
    * section decides what is RENDERED, never what is LOADED. */
   isActive: boolean; section: ScheduleSection; onSectionChange: (s: ScheduleSection) => void
+  /** 🔴 HANDS AN EVENT TO SOCIAL MEDIA › CREATE A POST, with its modal already open. The only way out
+   *  of this tab into that one, so there is one place that knows the tab moved. */
+  onOpenSocial: (section: SocialSection, eventId?: string) => void
   truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
   /** 🔴 THE PAGE'S SIX NOTIFICATION BANNERS — rendered here, under this tab's own bar, so the bar
    *  stays the first child of the manage scroller's padded wrapper. See `notices` at the page level. */
@@ -7246,36 +7398,29 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    * ⚠️ THE SERVER CHECKS IT TOO, on `upsert_event`, `private_link` and `private_new_link`. This
    * decides what is DRAWN. */
   const canPrivateEvents = canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
-  /* ── 🔴 PLACES AND SOCIAL POSTS — THE PREVIEW KEY (5 October 2026) ──────────────────────────────
-   * `places_posts_preview` is in NO PLAN (lib/features.ts): `canAccess` can only ever return true for
-   * it from `trucks.feature_overrides`, which it consults before any plan. Today exactly one truck
-   * holds it — test-kitchen ("Pizza Kitchen") — so the Places tab, the Social posts tab and the
-   * "Make post" button on an event exist for that truck and for nobody else while they are finished.
-   * ⚠️ IT GATES WHAT IS DRAWN. Every route behind these surfaces checks the same key, so a truck
-   * without it cannot reach them by URL either — including an old `?section=places` bookmark, which
-   * lands on Events. See `SCHEDULE_SECTIONS` and `/api/weekly-post`.
-   * ⛔ IT DOES NOT GATE what every truck already has on this branch: Add event's places list, Tidy up
-   * places, the usual-type pre-selection, event types, private events or pricing. Those shipped and
-   * are not in preview. */
-  const canPlacesPosts = canAccess(truck.plan, 'places_posts_preview', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
-  /** The pills a truck may actually see. ⚠️ FILTERED, NOT DISABLED: a pill that opens a refusal is
-   *  worse than no pill, because nothing on the screen can say when it will work. */
-  const visibleSections = canPlacesPosts
-    ? SCHEDULE_SECTIONS
-    : SCHEDULE_SECTIONS.filter(sec => sec.id !== 'posts')
-  /* 🔴 AN OLD `?section=places` OR `?section=weekly` BOOKMARK LANDS ON EVENTS, and it lands there in
-   * the SAME RENDER — this is a derivation, not a correction applied afterwards. The URL is read at
-   * mount, before the truck row has arrived, so the page cannot know the answer there; it is known
-   * here, where the truck is. ⚠️ `shownSection` IS WHAT EVERY BODY BELOW SWITCHES ON. Using `section`
-   * anywhere past this point would render a gated pane for one frame, or for good. */
-  const shownSection: ScheduleSection =
-    (!canPlacesPosts && (section === 'posts' || section === 'designs')) ? 'events' : section
-  /* ⚠️ AND THE URL IS TIDIED AFTERWARDS, so a refresh does not keep asking for a tab that is not
-   * there. It calls the parent's setter rather than writing state here, and it is a no-op in every
-   * case except the stale-bookmark one. */
-  useEffect(() => {
-    if (shownSection !== section) onSectionChange(shownSection)
-  }, [shownSection, section, onSectionChange])
+  /* ── 🔴 SOCIAL MEDIA — THE PLAN KEY (10 October 2026 · launch) ───────────────────────────────────
+   * ⛔ IT WAS `places_posts_preview`, a Feature in NO PLAN that `canAccess` could only grant from
+   * `trucks.feature_overrides` — one truck held it while the surfaces were being built.
+   * 🔴 **IT IS `schedule_graphics` NOW: Pro, Max and trial**, the one key for this product. Every route
+   * behind these surfaces checks the same key, so a truck without it cannot reach them by URL either.
+   * ⚠️ IT GATES WHAT IS DRAWN; the routes gate what is DONE.
+   * ⛔ IT STILL DOES NOT GATE what every truck already has: Add event's places list, Tidy up places, the
+   * usual-type pre-selection, event types, private events or pricing. Those are not part of this
+   * feature and never were — and switching one of them off to tidy a gate is the mistake the "no plan
+   * gate on Places" note in `/api/manage` was written to prevent. */
+  const canPlacesPosts = canAccess(truck.plan, 'schedule_graphics', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+  /* ══ ⛔ THE GATE MOVED UP A LEVEL ON 7 October 2026 ════════════════════════════════════════════════
+   * The key used to decide whether Schedule showed a third pill. Social media is its own TOP TAB now
+   * and the gate is on the tab itself (see `tabs` in the page body), so Schedule's two pills are the
+   * same for every truck and there is nothing left to filter here.
+   * ⚠️ `canPlacesPosts` IS STILL READ BELOW — the "Make post" shortcut on an event row is behind it,
+   * because the screen it opens is. */
+  const visibleSections = SCHEDULE_SECTIONS
+  /** ⚠️ No gated section can reach this tab any more, so the shown section IS the section. The old
+   *  fall-through to Events existed only for `posts`/`designs`, which now resolve to another tab
+   *  before this component is mounted — see `resolveManageLocation`. */
+  const shownSection: ScheduleSection = section
+  const litPill = shownSection
   /* ── 🔴 THE TRUCK'S TYPES, IN THE GRID'S ORDER (5 October 2026) ─────────────────────────────────
    * Private first, then the custom types as the operator arranged them — the order
    * `/api/event-types` `load` returns, so the pill row, the Places tab's "Usual event type" select
@@ -7322,9 +7467,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const [saving, setSaving] = useState(false)
   const [showPast, setShowPast] = useState(false)
   const [showEventCancelModal, setShowEventCancelModal] = useState(false)
-  /* 🔴 THE SINGLE-EVENT POST MODAL (stage 2). Held here, in ScheduleTab, because "Make post" is on an
-   * event row and the modal is about that event — one open at a time, closed by setting this to null. */
-  const [postEventId, setPostEventId] = useState<string | null>(null)
+  /* ⛔ `postEventId` IS GONE — 7 October 2026, §1. It held the single-event post modal open here, in
+   * ScheduleTab, because "Make post" is on an event row. The modal has ONE mount in the product now
+   * (components/manage/SocialPosts.tsx) and the row button hands the event id to the social tab
+   * through `onOpenSocial`. See the tombstone where the mount was. */
   const [cancellingEvent, setCancellingEvent] = useState<TruckEvent | null>(null)
   const [affectedOrderCount, setAffectedOrderCount] = useState(0)
   const [editingEvent, setEditingEvent] = useState<EditingEvent | null>(null)
@@ -8313,7 +8459,17 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                           ⚠️ AND IT IS BEHIND `canPlacesPosts` TOO — see the note on that capability. The
                           routes refuse as well; this is so the control is not offered. */}
                       {!event.is_private && canPlacesPosts && (
-                      <button onClick={() => setPostEventId(event.id)} className="text-xs font-semibold text-orange-700 border border-orange-200 bg-white rounded-lg px-2 py-1.5 hover:bg-orange-50">
+                      /* ══ 🔴 IT OPENS THE **SOCIAL MEDIA** TAB NOW — 7 October 2026, §1 ══════════════
+                         ⛔ IT USED TO OPEN `EventPostModal` HERE, ON THIS TAB, and that was the right
+                         answer while there was nowhere else for it to live. Making a post is Social
+                         media › Create a post's job now, so the shortcut HANDS THE EVENT OVER rather
+                         than keeping a second copy of the flow on Schedule.
+                         🔴 AND THE MODAL IS OPEN ON ARRIVAL, which is the whole point — one press, not
+                         two. The id travels as `socialOpenEvent` and `SocialPosts` clears it once it
+                         has opened; see the effect there for why clearing matters.
+                         ⚠️ `setPostEventId` IS STILL USED BY NOTHING ELSE ON THIS TAB and its modal
+                         mount has gone with this line — see the tombstone at the mount site. */
+                      <button onClick={() => onOpenSocial('create', event.id)} className="text-xs font-semibold text-orange-700 border border-orange-200 bg-white rounded-lg px-2 py-1.5 hover:bg-orange-50">
                         <span className="sm:hidden">▣</span>
                         <span className="hidden sm:inline">Make post</span>
                       </button>
@@ -9200,10 +9356,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     {isActive && (
       <div role="tablist" aria-label="Schedule sections" data-subtab-bar className={`${SUBTAB_BAR} mb-4`}>
         <div className={SUBTAB_ROW}>
+          {/* 🔴 THE LIT PILL IS THE SECTION'S **PILL**, NOT THE SECTION. Three pills, four sections:
+            * Designs lives inside Social posts, so `scheduleSectionPill('designs')` is `'posts'`.
+            * ⛔ THIS TESTED `shownSection === sec.id` AND LEFT DESIGNS WITH NOTHING LIT — reported by
+            * Dominic. ⚠️ COMPUTED ONCE, outside the map: it is one answer for the whole row, and
+            * calling it per pill would invite the two tests below to drift apart. */}
           {visibleSections.map(sec => (
-            <button key={sec.id} role="tab" aria-selected={shownSection === sec.id}
+            <button key={sec.id} role="tab" aria-selected={litPill === sec.id}
               onClick={() => onSectionChange(sec.id)}
-              className={subtabBtn(shownSection === sec.id)}>
+              className={subtabBtn(litPill === sec.id)}>
               {sec.label}
             </button>
           ))}
@@ -9880,17 +10041,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         </div>
       )}
 
-      {/* ⚠️ "No design yet" SENDS THEM TO THE SETUP, which is the Weekly post tab's Edit design screen
-          on its Single event side — the modal cannot build a post without one, and a dead end here
-          would be the worst place to meet that. */}
-      {postEventId && (
-        <EventPostModal token={token} eventId={postEventId}
-          onClose={() => setPostEventId(null)}
-          /* ⚠️ `designs`, NOT `posts`. "No design yet" is a problem with a DESIGN, and the screen that
-             fixes it is the Designs area — sending them to Make a post would be sending them back to
-             a button that cannot work. */
-          onNeedsSetup={() => { setPostEventId(null); onSectionChange('designs') }} />
-      )}
+      {/* ══ ⛔ `EventPostModal` NO LONGER MOUNTS ON SCHEDULE — 7 October 2026, §1 ═══════════════════
+          The "Make post" button on an event row opens Social media › Create a post with that event's
+          modal already open, so the modal has exactly ONE mount in the product — in
+          components/manage/SocialPosts.tsx — rather than one per screen that can start a post.
+          🔴 WHICH IS WHAT MAKES THE HANDOFF WORTH HAVING: the "No design yet" route out, the reload
+          after a post, and the `?tab=social&section=create` URL are all one piece of code now. Two
+          mounts meant two answers to "what happens when the design is missing", and only one of them
+          could cross to the Designs pill. */}
 
       {/* 🔴 THE PRIVATE LINK & QR PANEL (20261014) — one at a time, over the Events list. */}
       {linkPanelModal}
@@ -9915,17 +10073,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       * ⚠️ NO PLACE DATA CHANGED. Same columns, same actions, same rows — only where they are edited.
       * ⚠️ `?section=places` STILL RESOLVES, to Designs, through `canonicalScheduleSection`.
       *
-      * ══ 🔴 SOCIAL POSTS — ONE PILL, TWO AREAS ════════════════════════════════════════════════════
-      * ⛔ THE "Single event | Weekly" SUB-TABS ARE GONE WITH IT. They split the page by WHICH POST
-      * before asking the question an operator actually arrives with, which is *am I making something
-      * or setting it up?* The two areas answer that; the six boxes answer the rest.
-      * ⚠️ `area` IS IN THE URL AND IS WHAT THE PILL SHOWS AS ACTIVE for both of its values.
-      * ⚠️ `manageApi={api}` IS FOR ONE FIELD — a place's name on posts, written with the SAME
-      * `sg_upsert_place` "Tidy up places" uses. Everything else on the page is /api/weekly-post. */}
-    {isActive && (shownSection === 'posts' || shownSection === 'designs') && (
-      <SocialPostsPane truck={truck} token={token} manageApi={api}
-        area={shownSection} onArea={onSectionChange} />
-    )}
+      * ══ ⛔ AND SOCIAL POSTS LEFT THIS TAB TOO — 7 October 2026 ═══════════════════════════════════
+      * `<SocialPostsPane>` was mounted HERE, behind `shownSection === 'posts' || 'designs'`. It is its
+      * own top tab now (`?tab=social`) with three pills of its own, and this tab is back to the two
+      * sections it had before. ⚠️ Every old link still lands correctly — `resolveManageLocation` maps
+      * `posts`, `designs`, `places` and `weekly` onto the social tab before this component mounts. */}
     {/* ══ 🔴 EVENT TYPES, INLINE — THE SAME COMPONENT, NOT A SECOND COPY OF ITS GRID ═══════════
       * `inline` swaps the overlay's shell for a card in the page's flow and changes nothing else: the
       * same fixed column widths, the same 1000px cap, the same "+ New event type" in the header and

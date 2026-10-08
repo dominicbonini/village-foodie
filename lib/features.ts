@@ -31,25 +31,25 @@ export type Feature =
   | 'schedule_graphics'
   | 'event_types'
   | 'private_events'
-  // ── 🔴 PLACES AND SOCIAL POSTS — A PREVIEW KEY THAT IS IN NO PLAN AT ALL (5 October 2026) ────────
-  // 🔴 IT IS DELIBERATELY ABSENT FROM `PRO_FEATURES`, `MAX_FEATURES` AND EVERY `PLAN_FEATURES` SET, so
-  // `canAccess` reaches its final line and returns false for every plan, on every tier, including
-  // 'trial', 'tester' and 'demo'. The ONLY way to hold it is `trucks.feature_overrides`, which
-  // `canAccess` consults FIRST (line 184) before it looks at any plan.
-  // ⚠️ THAT IS WHY IT IS A `Feature` AND NOT A SECOND BESPOKE OVERRIDE KEY. `batch_reservations` and
-  // `whatsapp_setup_preview` each grew their own resolver because they are not entitlements; this IS
-  // one — it gates a tab, a pill and five routes — so it belongs in the one function that answers
-  // "may this truck do this", and it reaches that function already able to say no.
-  // 🔴 GRANTED TO EXACTLY ONE TRUCK TODAY: test-kitchen ("Pizza Kitchen"). The grant is an UPDATE to
-  // that row's `feature_overrides` and nothing else; see docs/fixes-and-gating-report.md for the SQL.
-  // ⚠️ NO MARKETING ROW, AND THAT IS NOT AN OVERSIGHT — `findPlanParityViolations()` iterates MATRIX
-  // ROWS and `continue`s on a row with no `ROW_FEATURE_MAP` entry, so a Feature with no row cannot
-  // produce a violation. `schedule_graphics` and `embed_schedule` set that precedent.
-  // ⛔ AND IT IS NOT THE SAME KEY AS `schedule_graphics`. That one gates the weekly post's RENDERING
-  // on Max; this one decides whether the Places and Social posts SURFACES exist for a truck at all,
-  // while they are still being built. A truck can hold `schedule_graphics` from its plan and still
-  // not see these two tabs.
-  | 'places_posts_preview'
+  /* ══ ⛔ TOMBSTONE · `places_posts_preview` — REMOVED AT LAUNCH (10 October 2026) ═══════════════════
+   *
+   * IT WAS A `Feature` IN NO PLAN SET AT ALL, held only through `trucks.feature_overrides`, and granted
+   * to exactly one truck: test-kitchen ("Pizza Kitchen"). Its whole job was "is this surface finished
+   * for this truck?" while Social media was being built — a second gate in front of the plan gate.
+   *
+   * 🔴 **SOCIAL MEDIA IS LAUNCHED, SO THE QUESTION IS GONE AND SO IS THE KEY.** Access follows the plan
+   * now, through `schedule_graphics` below — the key the route's own comment already called *"may this
+   * plan have social posts at all"*. ⛔ TWO KEYS FOR ONE PRODUCT WAS THE THING TO REMOVE, not to
+   * re-tier: one of them had to go, and the one that goes is the one whose name says "preview".
+   *
+   * ⚠️ **THE DATABASE ROW IS LEFT ALONE AND IS NOW INERT.** `canAccess` only ever looks up a key it is
+   * given, so `{"places_posts_preview": true}` in `feature_overrides` matches no `Feature` and changes
+   * nothing — which is exactly why it is safe to leave it there rather than run an UPDATE.
+   * 🔴 AND THAT IS ALSO WHY THE KEY WAS **REMOVED RATHER THAN PROMOTED INTO A PLAN SET.** Had it stayed
+   * and joined `PRO_FEATURES`, Pizza Kitchen would still have been granted by its OVERRIDE — overrides
+   * win before any plan is consulted — so the one truck used to check the launch would have been the
+   * one truck not testing the new gate.
+   */
 
 const PRO_FEATURES: Feature[] = [
   'discovery_map',
@@ -95,6 +95,32 @@ const PRO_FEATURES: Feature[] = [
   // token, so its link goes on working and its venue stays off the map — the screens go read-only
   // instead. Taking the gate as permission to RE-PUBLISH a wedding would be the worst possible reading
   // of a billing change.
+  // ── SOCIAL MEDIA / THE POST DESIGNS — Pro, Max and trial (10 October 2026) ──────────────────────
+  // 🔴 **THIS IS THE ONE KEY FOR SOCIAL MEDIA, AND IT MOVED FROM `MAX_FEATURES` TO HERE AT LAUNCH.**
+  // `IN PRO_FEATURES` IS EXACTLY "Pro, Max and trial": `MAX_FEATURES` spreads this array and
+  // `TRIAL_FEATURES` spreads `MAX_FEATURES`, so one entry grants pro / max / trial / tester / demo.
+  // Starter does not have it, which is what the comparison table says.
+  //
+  // ⚠️ THE NAME IS HISTORICAL AND IS KEPT ON PURPOSE. It was coined when the feature was "schedule
+  // graphics"; it gates the Social media tab, Create a post, Designs, Location settings, the "Make
+  // post" row action, Tidy up places and every action in `/api/weekly-post`. 🔴 RENAMING A `Feature`
+  // MEANS TOUCHING `trucks.feature_overrides` IN THE DATABASE, where an operator may already hold this
+  // key — and the launch does not need that risk to be taken. The one place the name is user-visible
+  // is nowhere: it is never shown.
+  //
+  // 🔴 **IT NOW CARRIES A MARKETING ROW, AND THE PARITY GUARD CHECKS IT.** `lib/plan-features.ts` maps
+  // 'Social media posts' to this key, so `findPlanParityViolations()` compares the table's `pro: true,
+  // max: true` against `canAccess` on every module load. ⛔ WHILE THE ROW WAS `true` WITH NO MAP ENTRY
+  // IT WAS AN UNCHECKED PROMISE ON A PUBLIC PRICING PAGE — the file said so in as many words, and said
+  // adding the entry alone would break the build. Adding it *with* this move is what makes it honest.
+  //
+  // ⚠️ IT NEEDS NO SECOND ENABLE COLUMN, for the reason `event_types` gives: the feature is INERT until
+  // the truck acts. A truck that never uploads a blank has no design row, and every screen offers to
+  // set one up rather than publishing anything.
+  // 🔴 CHECKED SERVER-SIDE ON EVERY ACTION, not only in the UI — `gated()` is called once at the top of
+  // `/api/weekly-post`'s POST and GET, so the renders, the saves, the uploads and the font file are all
+  // behind it. The screen decides what is DRAWN; the route decides what is DONE.
+  'schedule_graphics',
   'private_events',
 ]
 
@@ -114,17 +140,6 @@ const MAX_FEATURES: Feature[] = [
   // later stage. findPlanParityViolations() iterates MATRIX ROWS and `continue`s when a row has no
   // ROW_FEATURE_MAP entry, so a Feature with no row cannot produce a violation (plan-features.ts:384-386).
   'embed_schedule',
-  // ── SCHEDULE GRAPHICS — Pro, Max and trial (3 October 2026) ──────────────────────────────────────
-  // 🔴 IN `PRO_FEATURES` IS EXACTLY "Pro, Max and trial". MAX_FEATURES spreads this array and
-  // TRIAL_FEATURES spreads MAX_FEATURES, so one entry here grants all three — plus 'tester' and 'demo',
-  // which also spread the Max/trial sets and are internal and sandbox tiers respectively. Adding it to
-  // MAX_FEATURES as well would be a duplicate in a Set, not a second grant.
-  // ⚠️ NO MARKETING ROW, AND THAT IS NOT AN OVERSIGHT. findPlanParityViolations() iterates FEATURE_SECTIONS
-  // rows and `continue`s on any row with no ROW_FEATURE_MAP entry, so a Feature with no row cannot
-  // produce a violation — the precedent is 'embed_schedule' below, which carried no row for weeks.
-  // The gate is enforcement; the comparison table is presentation, and stage 1 ships no public surface
-  // to advertise. See docs/schedule-graphics-places-report.md.
-  'schedule_graphics',
   // ── Event types — a named preset that supplies one event's SERVICE settings. ───────────────────
   // 🔴 MAX ONLY, SO MAX AND TRIAL. `TRIAL_FEATURES` below is `[...MAX_FEATURES]`, and `canAccess`
   // returns the trial set when `trial_expires_at` is NULL — which is what self-serve signup writes

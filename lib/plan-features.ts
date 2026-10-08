@@ -204,7 +204,25 @@ export const TRANSACTION_ROWS: {
 
 export const FEATURE_SECTIONS: FeatureSection[] = [
   {
-    title: 'Core operations',
+    /* ══ 🔴 'Core operations' → 'Starter tier' → 'Starter' → 'Starter plan' (7 October 2026, Dominic) ══
+     * 🟢 THE THREE GROUP HEADINGS NAME A PLAN: Starter plan · Pro plan · Max plan. The originals
+     * described the KIND of feature ('Core operations', 'Online sales & automation') while the third
+     * described the PLAN ('Max tier'), so the table changed the question it was answering halfway down.
+     * The plan is what a reader is scanning for. "tier" was dropped, then "plan" chosen over nothing.
+     * ⚠️ THE WORD "plan" IS WHAT KEEPS THEM DISTINCT FROM THE COLUMN HEADERS, which read Trial ·
+     * Starter · Pro · Max. For one build the group headings were bare plan names and read as a second,
+     * misaligned set of column labels. ⛔ THE COLUMN HEADERS ARE NOT TOUCHED — they come from
+     * `PLAN_META[p].name` and are a different thing entirely.
+     * ⛔ IT IS ACCURATE, NOT JUST TIDIER: all NINE rows in this section are `starter: true` — checked,
+     * not assumed. If a row that Starter does NOT get is ever added here, this heading becomes a lie;
+     * put it under 'Pro' instead, or rename this again.
+     * ⚠️ SENTENCE CASE, like its two siblings. The capitals on screen are the stylesheet's
+     * (`.cmp2-grp { text-transform: uppercase }`, and Billing's `uppercase tracking-wider`), so a string
+     * typed in capitals would be shouting stored in the data.
+     * 🔴 ONE SOURCE, FOUR SURFACES — /features, Manage → Billing, Admin and the plans PDF all render
+     * this title. There is no landing-only override for a section TITLE and adding one would be a second
+     * source of truth for a heading. */
+    title: 'Starter plan',
     rows: [
       { name: 'Discovery map listing',           detail: 'Your truck appears on the public HatchGrab map so nearby customers can find you.', starter: true,  pro: true,  max: true  },
       { name: 'Universal web dashboard',         detail: 'Run your service from any phone, tablet or laptop browser.', starter: true,  pro: true,  max: true  },
@@ -238,7 +256,21 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
     ],
   },
   {
-    title: 'Online sales & automation',
+    /* ══ 🔴 RENAMED 'Online sales & automation' → 'Pro tier' (6 October 2026, Dominic) ══════════════
+     * 🟢 IT MAKES THE THREE HEADINGS ONE SET: Starter plan · Pro plan · Max plan (7 October: "tier" was
+     * dropped from all three, then "plan" added). The old title
+     * described the KIND of feature while the one below it described the PLAN, so the table changed
+     * the question it was answering halfway down — and the column a reader is scanning for is the plan.
+     * ⛔ IT IS ACCURATE, NOT JUST TIDIER: every row in this section is `pro: true` or `coming_soon`,
+     * and none is `starter: true`. If a Starter-tier row is ever added here, this heading becomes a
+     * lie — put it in 'Core operations' instead, or rename this again.
+     * ⚠️ SENTENCE CASE, LIKE ITS TWO SIBLINGS. The capitals on screen are the stylesheet's
+     * (`.cmp2-grp { text-transform: uppercase }` and Billing's `uppercase tracking-wider`), so a string
+     * typed in capitals would be shouting stored in the data.
+     * 🔴 ONE SOURCE, FOUR SURFACES. This title renders on /features, Manage → Billing, Admin and the
+     * plans PDF. There is no landing-only override for a SECTION title (lib/landing-table.ts overrides
+     * row names and details only), and adding one would be a second source of truth for a heading. */
+    title: 'Pro plan',
     rows: [
       { name: 'Offline Order Protection',                      detail: "If your internet drops mid-service, orders are held safely and sync when you're back — you never lose one.", starter: false, pro: true,           max: true           },
       { name: 'Online payments',                  footnote: '2', detail: 'Take card payment upfront when customers order online, via Stripe.', starter: false, pro: true,           max: true           },
@@ -269,7 +301,16 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // 🔴 NO NEW Feature KEY, AND THAT IS DELIBERATE — see ROW_FEATURE_MAP below.
       { name: 'Pre-order deadline',                           detail: 'Set a cut-off time for items that need notice.', starter: false, pro: true,           max: true           },
       { name: 'Customer time slot selection',                 detail: 'Customers pick a collection time slot, spreading demand across your service.', starter: false, pro: true,           max: true           },
-      { name: 'Smart Slot Management',                        detail: "Orders are paced across time slots to match your kitchen's capacity.", starter: false, pro: true,           max: true           },
+      /* ⚠️ RENAMED 10 October 2026 — was 'Smart Slot Management'. "Smart" is a claim the row cannot
+       * keep and "slot" is our word for it; what the operator actually sets is their kitchen's
+       * capacity, which is what the `detail` has always said. ⛔ THE KEY IN `ROW_FEATURE_MAP` IS
+       * KEYED ON THE ROW NAME, so it was re-keyed in the SAME edit — a renamed row with a stale key
+       * entry is a row `findPlanParityViolations` silently stops checking.
+       * ⚠️ THE `detail` WAS REWRITTEN TOO (10 October 2026, Dominic). "Orders are paced across time
+       * slots to match your kitchen's capacity" described the MECHANISM in our words — "paced",
+       * "slots" — and named nothing the operator does. The new one is the two things they set and the
+       * one thing a customer then sees, which is the same sentence the landing page's own tile uses. */
+      { name: 'Kitchen capacity management',                  detail: 'Set how much your kitchen can cook at a time and how long it takes. Once a slot is full, customers can’t pick it.', starter: false, pro: true,           max: true           },
       // 🔴 MOVED OUT OF 'CORE OPERATIONS' AND OFF STARTER — 2 September 2026, ON REQUEST.
       // Before: 'Core operations', starter TRUE. After: here, starter FALSE. Trial/Pro/Max unchanged.
       // 🟢 THE SECTION MOVE IS PART OF THE CHANGE, NOT TIDYING. 'Core operations' is the section whose
@@ -278,7 +319,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // meaning anything. Every row in THIS section is starter:false, so it is where a paid-tier
       // capability belongs.
       // 🟢 NEXT TO SMART SLOT MANAGEMENT ON PURPOSE: the two are the same idea applied to different
-      // resources — Smart Slot Management paces ORDERS against kitchen capacity, this paces ITEMS against
+      // resources — Kitchen capacity management paces ORDERS against kitchen capacity, this paces ITEMS against
       // stock. Auto-accept follows because it is about handling orders, not pacing them.
       // ⚠️ STARTER IS NOT LEFT WITH NOTHING. 'Instant sold out toggle' stays in Core operations at
       // starter:true — the manual control — so the table still says what a Starter truck can do about
@@ -302,6 +343,25 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * (`private_events`) are untouched; `findPlanParityViolations()` still checks the same `true`
        * cells against the same `canAccess` keys, because nothing about the row changed. */
       { name: 'Private events', detail: 'Add private events that don’t show on the map, with their own private ordering link and QR code.', starter: false, pro: true, max: true },
+      /* ══ 🔴 LAUNCHED, AND THE PROMISE IS CHECKED NOW (10 October 2026) ═══════════════════════════
+       *
+       * ⛔ **THIS ROW WAS A `true` CELL WITH NO `ROW_FEATURE_MAP` ENTRY, AND THE FILE SAID SO.** It
+       * advertised on a public, indexed pricing page something **no plan granted**: the gate was
+       * `places_posts_preview`, a `Feature` in no plan set, held only through `trucks.feature_overrides`
+       * and granted to exactly one truck. The guard could not catch it because
+       * `findPlanParityViolations()` `continue`s past an unmapped row — and the note here warned that
+       * adding the map entry *alone* would make the guard throw at module load.
+       *
+       * 🔴 **BOTH HALVES MOVED TOGETHER, WHICH IS WHAT MAKES IT HONEST.** `schedule_graphics` is in
+       * `PRO_FEATURES` now (Pro, Max and trial), `places_posts_preview` is gone, and this row is mapped
+       * below — so `canAccess('pro', …)` and `canAccess('max', …)` are both true and the guard compares
+       * them against these cells on every module load. The promise is now enforced by the thing that
+       * makes it.
+       * ⚠️ AND IT WAS `'coming_soon'` IN BOTH CELLS UNTIL TODAY. The cells are what carried that, not a
+       * badge — Dominic's own correction on 6 October — so launching it is a two-word change in this one
+       * row and nothing else in any of the four renderers.
+       * ⛔ STARTER STAYS `false`. The table has always said so and the gate has always agreed. */
+      { name: 'Social media posts', detail: 'Upload your designs — we add your dates, places and times for each week and event automatically.', starter: false, pro: true, max: true },
       // Auto-replies stay SPLIT across two rows. They USED to be split because WhatsApp was live and the
       // other two were not; as of 1 September 2026 ALL THREE are coming soon, so the split now carries a
       // different fact: WhatsApp is the one being built first. Do not re-merge them into one row — a
@@ -376,19 +436,19 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        *     'coming_soon' cell is explicitly exempt from that guard (:231) because it promises nothing.
        *
        * ⚠️ TRIAL FOLLOWS MAX WITH NO ENTRY OF ITS OWN: `trialFeatureValue()` returns `row.max` for
-       * every row but two, so the Trial column reads "Coming soon" here as well.
-       * ⚠️ NO FEATURE KEY, NO GATING. This file is presentation (see its header at :229); the real gate
-       * is `canAccess` in lib/features.ts, which this change does not touch. ⛔ THE DAY IT SHIPS it
-       * needs a `Feature` key, a `ROW_FEATURE_MAP` entry AND `true` cells — all three, or the row goes
-       * from honestly unbuilt to an unchecked promise. */
-      { name: 'Social media posts', detail: 'Upload your designs — we add your dates, places and times for each week and event automatically.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+       * every row but two, so the Trial column follows whatever Max says.
+       *
+       * ══ 🔴 THE ROW IS NOT HERE ANY MORE — IT IS `true` AND IT MOVED, 6 October 2026 ════════════════
+       * See it above, directly after 'Private events'. ⛔ READ THE NOTE THERE BEFORE CHANGING IT: it
+       * is a hard `true` with NO `ROW_FEATURE_MAP` entry, which is the one shape this block warned
+       * against — and it is that way on an explicit, recorded instruction, not by oversight. */
       { name: 'Take payment on your phone', footnote: '1', detail: 'Take card payments on a supported phone, so you don\u2019t need a separate card machine.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Advanced reporting', detail: 'Break sales down by date range, item and event to see what’s really selling.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'SMS order alerts', detail: "Text customers automatically when their order's ready. Will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },
     ],
   },
   {
-    title: 'Max tier',
+    title: 'Max plan',
     rows: [
       { name: 'Multi-device kitchen sync', detail: 'Run several screens — front counter and kitchen — all showing the same live orders.', starter: false, pro: false, max: true           },
       { name: 'Multi-user access',         detail: 'Give staff their own logins with the right level of access.', starter: false, pro: false, max: true           },
@@ -686,6 +746,16 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
    * them the rows would have no map entry, the guard would `continue` past them, and the table could
    * promise Pro a Max feature with nothing failing. */
   'Private events': 'private_events',
+  /* ══ 🔴 ADDED AT LAUNCH, 10 OCTOBER 2026 — THE ENTRY THIS TABLE WAS MISSING ═══════════════════════
+   * ⛔ WITHOUT IT THIS ROW WAS AN UNCHECKED PROMISE: `findPlanParityViolations()` `continue`s past a row
+   * with no entry here, so a hard `true` on a public pricing page was compared against nothing. The
+   * row's own note above records that it was deliberate — and that adding this entry alone would have
+   * thrown at module load, because the gate was in no plan set.
+   * 🔴 IT IS SAFE NOW BECAUSE THE GATE MOVED IN THE SAME EDIT. `schedule_graphics` is in `PRO_FEATURES`,
+   * so `pro: true, max: true` is exactly what `canAccess` enforces.
+   * ⚠️ KEYED ON THE ROW NAME, like every entry here: renaming the row above without renaming this
+   * silently drops it from the guard, which then reports clean because it has stopped looking. */
+  'Social media posts': 'schedule_graphics',
   'Custom event types & pricing': 'event_types',
   'Offline Order Protection': 'offline_protection',
   'Online payments': 'online_payments',
@@ -701,7 +771,9 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   // they cannot drift apart without the checker seeing it.
   'Pre-order deadline': 'advance_preordering',
   'Customer time slot selection': 'time_slot_selection',
-  'Smart Slot Management': 'smart_batch_pacing',
+  /* ⚠️ RE-KEYED WITH THE ROW'S RENAME, IN THE SAME EDIT (10 October 2026). The Feature key is
+   * unchanged — `smart_batch_pacing` is what the code gates on — only the row's display name moved. */
+  'Kitchen capacity management': 'smart_batch_pacing',
   'Auto-accept online orders': 'auto_accept',
   'Branded QR code': 'branded_qr_code',
   [WHATSAPP_ROW_NAME]: 'whatsapp_replies',

@@ -23,6 +23,9 @@ import { generateSlots } from '@/lib/slots'   // EXTRACTED from this file — no
 import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
 import { hasValidEventTimes, getLocalDateInTz } from '@/lib/time-utils'
 import { canAccess } from '@/lib/features'
+/* ⚠️ THE ONE PLAN SENTENCE FOR SOCIAL MEDIA, shared with the screen and with `/api/weekly-post` — see
+ * the header of `lib/copy/weeklyPost.ts` for why it is not written out twice. */
+import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
 /* ── 🔴 PRIVATE EVENTS (20261014) ─────────────────────────────────────────────────────────────────
  * `applyPrivacy` is the ONLY writer of is_private / private_name / private_token / the private type
  * on an event — see its header. Nothing in this file writes those columns directly, and
@@ -3129,9 +3132,11 @@ export async function POST(req: NextRequest) {
   // operator keeps their own schedule tidy, which every plan pays for. `resolveTruckAccess` and the
   // staff gate are unchanged — access is still deny-by-default and still owner/manager for the writes.
   //
-  /* ══ 🔴 THE PLACES **TAB** IS IN PREVIEW, AND ITS OWN ACTIONS ARE GATED (5 October 2026) ═════════
-   * `places_posts_preview` is a Feature in NO PLAN (lib/features.ts), so `canAccess` can only grant it
-   * from `trucks.feature_overrides`. One truck holds it today: test-kitchen ("Pizza Kitchen").
+  /* ══ 🔴 THE TAB-ONLY ACTIONS FOLLOW THE PLAN (10 October 2026 · launch) ══════════════════════════
+   * ⛔ IT WAS `places_posts_preview`, A Feature IN NO PLAN, held only through `trucks.feature_overrides`
+   * and granted to one truck. **Social media is launched, so the gate is the plan key** —
+   * `schedule_graphics`, Pro / Max / trial — which is the same key the Social media tab, the weekly and
+   * event post routes and every other surface of this feature now use. ⚠️ ONE KEY, EVERYWHERE.
    *
    * 🔴 AND THE SPLIT IS THE WHOLE POINT, so read it before adding an action to either side:
    *   UNGATED — `sg_places` and `sg_upsert_place`. They are NOT the Places tab's private API. The Add
@@ -3148,12 +3153,14 @@ export async function POST(req: NextRequest) {
    *   ⚠️ A ONE-ENTRY LIST IS STILL A LIST, AND STILL AN ARRAY. Collapsing it to `action === '…'` would
    *     lose the name that says what the rule is, and the next tab-only action would have to re-derive
    *     it.
-   * ⚠️ THE MESSAGE SAYS "not switched on", not "upgrade". No plan sells this yet, so an upgrade
-   * prompt would be an offer nobody can accept. */
+   * ⚠️ THE MESSAGE NAMES THE PLAN NOW. It said "not switched on for this truck", which was true while
+   * no plan sold it and is a lie the moment one does — a Starter truck is being asked to upgrade, not
+   * told to wait. ⛔ IT IS THE **SHARED** SENTENCE, from `lib/copy/weeklyPost.ts`, so the screen and the
+   * route cannot disagree about which plan this is on. */
   const PLACES_TAB_ONLY = ['sg_place_usual_type']
   if (PLACES_TAB_ONLY.includes(action)
-      && !canAccess(truck.plan, 'places_posts_preview', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-    return NextResponse.json({ error: 'The Places tab is not switched on for this truck.' }, { status: 403 })
+      && !canAccess(truck.plan, 'schedule_graphics', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+    return NextResponse.json({ error: WEEKLY_POST_PLAN_REFUSAL }, { status: 403 })
   }
 
   if (action === 'sg_places') {

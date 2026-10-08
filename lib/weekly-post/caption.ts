@@ -13,18 +13,19 @@
 // ⚠️ PURE. No clock of its own, no database, no network.
 
 import { localDateOfInstant } from '@/lib/time-utils'
-import { formatOneTime, ordinal, type TimeStyle } from './format'
+import { formatOneTime, type TimeStyle } from './format'
 import { WEEKDAY_NAMES, WEEK_TZ, weekdayOf } from './week'
+/* 🔴 THE CAPTION ASKS THE SAME LOCALE TABLE THE POSTER DOES (6 October 2026). It used to carry its own
+ * `SHORT_DAYS`/`SHORT_MONTHS` arrays and spell "Tue 13 Oct" out in the UK's order — a third copy of
+ * "how is a date written", after the renderer's and the formatter's. ⚠️ GB OUTPUT IS UNCHANGED, which
+ * is checked: the caption an operator copies today reads exactly as it did. */
+import { dateTextFor, shortDateTextFor, DEFAULT_COUNTRY, type CountryCode } from './locale'
 import type { WeekData, DayEntry } from './week-data'
 
-const SHORT_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const
-const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const
-
-/** "Tue 13 Oct". */
-export function shortDate(ymd: string): string {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd)
-  if (!m) return ymd
-  return `${SHORT_DAYS[weekdayOf(ymd)]} ${Number(m[3])} ${SHORT_MONTHS[Number(m[2]) - 1]}`
+/** "Tue 13 Oct". ⚠️ The country is optional because every existing caller is a GB truck. */
+export function shortDate(ymd: string, country: CountryCode = DEFAULT_COUNTRY): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return ymd
+  return shortDateTextFor(ymd, country)
 }
 
 /** The hour an event counts as an evening one. ⚠️ The brief's rule: start at or after 17:00. */
@@ -62,10 +63,19 @@ export function whenWord(eventDate: string, startTime: string | null | undefined
   return 'dated'
 }
 
-/** The phrase itself: "today", "tonight", "tomorrow", "on Tue 13 Oct". */
-export function whenPhrase(eventDate: string, startTime: string | null | undefined, now: Date | string): string {
+/** The phrase itself: "today", "tonight", "tomorrow", "on Tue 13 Oct".
+ *  ⚠️ `country` IS OPTIONAL AND DEFAULTS TO GB, which is what every existing caller passes implicitly.
+ *  It was added when `caption-template.ts` began asking for this phrase: that module already threads a
+ *  country through every other label, and a date written in the UK's order inside an otherwise
+ *  localised caption would have been the one inconsistent string. */
+export function whenPhrase(
+  eventDate: string,
+  startTime: string | null | undefined,
+  now: Date | string,
+  country: CountryCode = DEFAULT_COUNTRY,
+): string {
   const w = whenWord(eventDate, startTime, now)
-  return w === 'dated' ? `on ${shortDate(eventDate)}` : w
+  return w === 'dated' ? `on ${shortDate(eventDate, country)}` : w
 }
 
 export interface EventPostInput {
@@ -159,11 +169,13 @@ export function weekCaption(input: WeekCaptionInput): string {
   return lines.join('\n')
 }
 
-/** "Week commencing Monday 28th September" — the heading used in the screen's own copy. */
-export function weekLabel(startYmd: string): string {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(startYmd)
-  if (!m) return startYmd
-  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December']
-  return `${WEEKDAY_NAMES[weekdayOf(startYmd)]} ${ordinal(Number(m[3]))} ${MONTHS[Number(m[2]) - 1]}`
+/**
+ * "Week commencing Monday 28th September" — the heading used in the screen's own copy.
+ *
+ * ⚠️ `raisedOrdinals: false` HERE AND NOWHERE NEAR THE POSTER. This is a plain string for a caption and
+ * a page heading; a raised suffix needs two runs and a renderer, and a caption has neither.
+ */
+export function weekLabel(startYmd: string, country: CountryCode = DEFAULT_COUNTRY): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startYmd)) return startYmd
+  return dateTextFor(startYmd, 'long', country, { caps: false, raisedOrdinals: false })
 }

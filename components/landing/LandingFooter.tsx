@@ -78,6 +78,10 @@ export function LandingFooter({ landingHref = '' }: { landingHref?: string } = {
             wrapper to `align-items: center`, so the stack reads brand -> links -> badge, all centred. */}
         <div className="foot-right">
           <div className="foot-links">
+            {/* 🔴 FEATURES IS IN THE FOOTER AT EVERY WIDTH, which is what makes the header's 820px
+                floor acceptable: below that the link still exists, here. ⚠️ `.foot-links` is a wrapping
+                flex row, so a fifth item costs nothing — unlike the nav, which must not wrap. */}
+            <a href="/features">Features</a>
             <a href={`${landingHref}#pricing`}>Pricing</a>
             <a href={PRIVACY_PATH}>Privacy</a>
             <a href={TERMS_PATH}>Terms</a>

@@ -462,7 +462,13 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
           * `saveField('short_name', …)` are untouched, and `scripts/places-tab.cjs` §4 now asserts
           * which label is bound to which field so they cannot drift apart again.
           * ⚠️ THE PLACE DESIGN EDITOR'S "Name on posts" IS BOUND TO `short_name` AND STAYS THAT WAY —
-          * it was right; this card was the one that disagreed with the renderer. */}
+          * it was right; this card was the one that disagreed with the renderer.
+          * ══ 🔴 AND "Name on posts" IS **"Venue name"** SINCE 9 OCTOBER 2026 ════════════════════════
+          * ⛔ A LABEL ONLY, ON THE SAME FIELD. The old wording was accurate and unhelpful: it told the
+          * operator WHERE the value goes rather than WHAT it is, and with the social screen's own copy
+          * of the field now removed, this card is the one editor — so it has to name the thing. ⚠️ The
+          * poster's own item is called "Venue" too, and "Area" beside it is the field below. One word
+          * for one thing, on both screens. */}
         <div className="sm:col-span-2 min-w-0">
           <Input label="Full name" value={name} onChange={setName}
             onBlur={() => saveField('name', name, place.name)} />
@@ -471,7 +477,7 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
           <Input label="Address" value={address} onChange={setAddress}
             onBlur={() => saveField('address', address, place.address)} />
         </div>
-        <Input label="Name on posts" value={shortName} onChange={setShortName}
+        <Input label="Venue name" value={shortName} onChange={setShortName}
           onBlur={() => saveField('short_name', shortName, place.short_name)}
           hint="Leave blank to use the full name." />
         <Input label="Area" value={area} onChange={setArea}

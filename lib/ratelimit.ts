@@ -22,7 +22,8 @@ export const strictRatelimit = new Ratelimit({
 // SPLIT OUT OF STRICT ON 11 AUGUST 2026, AFTER IT REFUSED REAL CUSTOMERS.
 //
 // ── WHAT HAPPENED ───────────────────────────────────────────────────────────────────────────────────
-// /api/events shared the STRICT bucket (3/min, keyed on IP alone) with /api/discovery/*. A normal
+// /api/events shared the STRICT bucket (3/min, keyed on IP alone) with everything under
+// /api/discovery. A normal
 // customer journey — order page, "change event", back — costs exactly 3, so the FOURTH request in a
 // minute was refused. Vercel logs for 14:53 on 11 August: EIGHT 429s in fifty seconds, all on
 // /api/events, while /api/menu returned 200 throughout. The customer saw a failure card and could not
@@ -63,7 +64,7 @@ export const eventsRatelimit = new Ratelimit({
   prefix: 'vf_rl_events',
 })
 
-// ── EMBED tier — /embed/* and /api/embed/*, AND NOTHING ELSE ────────────────────────────────────────
+// ── EMBED tier — everything under /embed and /api/embed, AND NOTHING ELSE ───────────────────────────
 //
 // ── WHY IT IS NOT ON STRICT, WHICH IS WHERE THE OBVIOUS ANSWER WOULD HAVE PUT IT ────────────────────
 // The embed's data used to have to come from /api/discovery/events, which is STRICT at 3/min keyed on
@@ -73,7 +74,7 @@ export const eventsRatelimit = new Ratelimit({
 // UK carriers use CGNAT and offices NAT behind one address, so "four visitors from one IP" is a Tuesday.
 //
 // ── WHY IT IS NOT ON GENERAL EITHER ─────────────────────────────────────────────────────────────────
-// GENERAL is 60/min keyed on IP alone, shared across /trucks and /trucks/*. An embed is loaded by
+// GENERAL is 60/min keyed on IP alone, shared across /trucks and everything under it. An embed is loaded by
 // people who never chose to visit us — they went to the operator's website — so its traffic shape is
 // the operator's traffic shape, not ours, and it must not be able to exhaust a bucket that the
 // discovery pages also draw from. Its own prefix means an embed surge cannot 429 the profile pages.

@@ -20,8 +20,19 @@
 // convention `lib/plan-features.ts` follows for every other row.
 
 /**
- * What a truck without `schedule_graphics` is told, on the screen and by the route.
- * ⚠️ `scripts/places-posts-gating.cjs` pins this wording AND asserts the key is Max-only, so the
- * sentence and the gate cannot drift apart again.
+ * What a truck without `schedule_graphics` is told, on the screen and by every route.
+ *
+ * ══ 🔴 "Pro", NOT "Max" — CHANGED AT LAUNCH (10 October 2026) ═════════════════════════════════════
+ * ⛔ THE KEY MOVED FROM `MAX_FEATURES` TO `PRO_FEATURES`, so the old sentence — "The weekly post is on
+ * Max" — became the mirror image of the mistake this file was created to fix: it would send a Starter
+ * truck to buy the wrong plan, and it would tell a Pro truck the feature is not on their plan when it
+ * is. ⚠️ THE SENTENCE NAMES THE CHEAPEST PLAN THAT INCLUDES IT, which is what an upgrade prompt is for
+ * and what `lib/plan-features.ts` does for every other row.
+ * ⚠️ IT SAYS "Social media posts", THE NAME ON THE PRICING TABLE, rather than "the weekly post" — the
+ * one key now gates the whole tab (weekly posts, single event posts, designs and location settings),
+ * so naming only one of them would be a smaller promise than the gate makes.
+ * 🔴 `scripts/places-posts-gating.cjs` PINS THIS WORDING AND ASSERTS THE KEY'S TIERS, so the sentence
+ * and the gate cannot drift apart again — and it is now used by `/api/weekly-post`, `/api/manage` and
+ * the screen, so there is one claim in one place.
  */
-export const WEEKLY_POST_PLAN_REFUSAL = 'The weekly post is on Max'
+export const WEEKLY_POST_PLAN_REFUSAL = 'Social media posts are on Pro and Max'

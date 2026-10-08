@@ -80,3 +80,41 @@ export function fontsForDesign(ids: readonly { id: string; bold: boolean }[]): A
   }
   return out
 }
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 THE BUNDLED FILES AS `FontFile`s (6 October 2026)
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// `font-store.ts` builds one bundle out of three sources — committed files, library files from our
+// storage, and a truck's uploads — and it must not touch `fs` to do it (the harness drives it with no
+// font directory). So this is the one function that turns a committed id into bytes, and it is
+// INJECTED into the store rather than imported by it.
+
+/**
+ * Every face this product has a committed file for, for the given ids.
+ *
+ * ⚠️ IT RETURNS BOTH WEIGHTS WHERE BOTH EXIST, rather than the one the design currently asks for. The
+ * bundle resolves `bold` itself, and a design whose box is toggled to bold in the editor must not need
+ * a second round trip to find a file that was on disk all along. Six of the 21 are single-weight;
+ * `resolveWeight` already answers that and `FontBundle.resolve` flags it as a faux bold.
+ * ⛔ NO ITALIC FILES EXIST FOR ANY OF THE 21, which is why the 12° shear was built in the first place
+ * (part 1, §5.2). A library or uploaded family with a real italic gets one; these never will unless
+ * the files are committed.
+ */
+export function bundledFontFiles(ids: readonly string[]): import('./font-bundle').FontFile[] {
+  const out: import('./font-bundle').FontFile[] = []
+  const seen = new Set<string>()
+  for (const id of ids) {
+    const choice = FONT_BY_ID.get(id)
+    if (!choice) continue
+    for (const weight of [400, 700] as const) {
+      if (!choice.weights.includes(weight)) continue
+      const key = `${choice.id}|${weight}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      const f = loadFontFile(choice.id, weight === 700)
+      out.push({ id: choice.id, family: f.family, weight, style: 'normal', data: f.data })
+    }
+  }
+  return out
+}

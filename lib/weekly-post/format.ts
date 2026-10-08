@@ -5,7 +5,16 @@
 // strings — no clock, no timezone, no `new Date()` on a date-only value (which is UTC midnight and
 // shifts the day for anyone west of London).
 
-import { WEEKDAY_NAMES, weekdayOf } from './week'
+// ── ⛔ WHAT MOVED OUT OF HERE ON 6 OCTOBER 2026 ────────────────────────────────────────────────────
+// EVERY DATE WORDING. `dayAndMonthRuns`, `weekdayName` and `longDateRuns` wrote "28th September" and
+// nothing else — the UK's order, hard-coded in the module every other module asks about words. They
+// now live in `./locale.ts`, keyed by country, because "28th September" and "September 28th" are the
+// same date and only one of them is correct for a given truck.
+//
+// 🔴 WHAT STAYED IS WHAT IS THE SAME EVERYWHERE: the ordinal suffix rule, capitals, the run type, and
+// the clock. ⚠️ AND THIS MODULE MUST NOT IMPORT `./locale`, because `./locale` imports THIS ONE for
+// `ordinal` and `TextRun`. That is why `headingRuns` TAKES a date formatter rather than calling one —
+// see its own note.
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // ORDINALS
@@ -36,15 +45,6 @@ export const ordinal = (n: number): string => `${n}${ordinalSuffix(n)}`
 // DATES
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'] as const
-
-const parts = (ymd: string) => {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd)
-  if (!m) throw new Error(`format: not a YYYY-MM-DD date: ${JSON.stringify(ymd)}`)
-  return { y: Number(m[1]), mo: Number(m[2]), d: Number(m[3]) }
-}
-
 export interface TextCase {
   /** ALL CAPITALS. */
   caps: boolean
@@ -65,33 +65,6 @@ export interface TextRun {
 }
 
 const applyCaps = (s: string, caps: boolean) => (caps ? s.toUpperCase() : s)
-
-/**
- * "28th September", as runs so a raised ordinal can be drawn.
- *
- * ⚠️ THE SUFFIX IS SPLIT OUT ONLY WHEN `raisedOrdinals` IS ON. With it off the whole thing is one run,
- * so the common case stays a single text node and measures as one string.
- */
-export function dayAndMonthRuns(ymd: string, c: TextCase): TextRun[] {
-  const { mo, d } = parts(ymd)
-  const month = MONTHS[mo - 1]
-  if (!c.raisedOrdinals) return [{ text: applyCaps(`${ordinal(d)} ${month}`, c.caps) }]
-  return [
-    { text: applyCaps(String(d), c.caps) },
-    { text: applyCaps(ordinalSuffix(d), c.caps), raised: true },
-    { text: applyCaps(` ${month}`, c.caps) },
-  ]
-}
-
-/** "Monday". */
-export function weekdayName(ymd: string, c: TextCase): string {
-  return applyCaps(WEEKDAY_NAMES[weekdayOf(ymd)], c.caps)
-}
-
-/** "Monday 28th September" — the heading's date token, as runs. */
-export function longDateRuns(ymd: string, c: TextCase): TextRun[] {
-  return [{ text: applyCaps(`${WEEKDAY_NAMES[weekdayOf(ymd)]} `, c.caps) }, ...dayAndMonthRuns(ymd, c)]
-}
 
 /** Flatten runs for measuring and for anything that wants a plain string (captions, warnings). */
 export const runsToPlain = (runs: readonly TextRun[]): string => runs.map(r => r.text).join('')
@@ -145,31 +118,18 @@ export function formatTimeRangeFor(
   return s || e || ''
 }
 
-/**
- * How a single-event post states its time.
+/* ══ ⛔ `EventTimeDisplay` AND `formatEventTime` ARE GONE (6 October 2026) ═════════════════════════
  *
- * 🔴 "From 5pm" IS THE DEFAULT FOR ONE EVENT, and that is not a style preference. A weekly poster
- * lists seven rows and a range reads naturally in a column; a single-event post is usually shared on the
- * day, where "From 5pm" is what a truck writes — it says when to come without promising when they leave.
- * The range stays available for trucks whose pitches genuinely end at a stated time.
+ * They offered a single-event post "From 5pm" or "5pm – 9pm", and defaulted to the first. The brief
+ * removes the choice: a single-event post now always states the start AND the finish, through
+ * `formatTimeRangeFor` above — the same function the weekly post has always used, so the two posters
+ * can no longer word a time differently.
  *
- * ⚠️ IT DEFERS TO `timeStyle` FOR THE CLOCK, so a truck that chose 24-hour times on the weekly post
- * gets "From 17:00" here rather than a second, contradictory setting.
- * ⚠️ NO START TIME ⇒ EMPTY, never "From ". An unconfirmed event can have no time, and a dangling
- * preposition on finished artwork reads as a fault.
+ * ⚠️ **A DESIGN SAVED WITH "From 5pm" RENDERS THE RANGE FROM NOW ON.** That is the one place in this
+ * build where an existing, approved poster changes without the truck touching it, and it is recorded in
+ * docs/design-editor-report.md rather than left to be discovered. `validateEventLayout` no longer reads
+ * the stored `timeDisplay` at all, so the next save drops it.
  */
-export type EventTimeDisplay = 'from' | 'range'
-
-export function formatEventTime(
-  start: string | null | undefined,
-  end: string | null | undefined,
-  style: TimeStyle,
-  display: EventTimeDisplay,
-): string {
-  if (display === 'range') return formatTimeRangeFor(start, end, style)
-  const s = start ? formatOneTime(start, style) : ''
-  return s ? `From ${s}` : ''
-}
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE HEADING'S TOKENS
@@ -183,8 +143,21 @@ export const DEFAULT_HEADING = 'Week commencing {start} to {end}'
  * ⚠️ AN UNKNOWN TOKEN IS LEFT ALONE, not blanked. An operator who types `{dates}` should see
  * `{dates}` on the preview and understand it did nothing — a silently empty heading looks like the
  * renderer failed.
+ *
+ * 🔴 THE DATE FORMATTER IS AN ARGUMENT, AND THAT IS NOT A STYLE CHOICE. The wording of a date now
+ * comes from `./locale.ts`, which imports THIS module for `ordinal` and `TextRun`. Calling it from
+ * here would close the cycle, and in a module graph the harness compiles as plain CommonJS a cycle
+ * means one of the two gets a half-initialised copy of the other — a class of bug that shows up as an
+ * undefined function at render time and nowhere earlier. Taking the formatter in keeps this file a
+ * leaf, and the renderer (which already knows the truck's country) supplies it.
  */
-export function headingRuns(template: string, start: string, end: string, c: TextCase): TextRun[] {
+export function headingRuns(
+  template: string,
+  start: string,
+  end: string,
+  c: TextCase,
+  dateRuns: (ymd: string, c: TextCase) => TextRun[],
+): TextRun[] {
   const text = template && template.trim() ? template : DEFAULT_HEADING
   const out: TextRun[] = []
   const re = /\{(start|end)\}/g
@@ -192,7 +165,7 @@ export function headingRuns(template: string, start: string, end: string, c: Tex
   let m: RegExpExecArray | null
   while ((m = re.exec(text))) {
     if (m.index > last) out.push({ text: applyCaps(text.slice(last, m.index), c.caps) })
-    out.push(...longDateRuns(m[1] === 'start' ? start : end, c))
+    out.push(...dateRuns(m[1] === 'start' ? start : end, c))
     last = m.index + m[0].length
   }
   if (last < text.length) out.push({ text: applyCaps(text.slice(last), c.caps) })

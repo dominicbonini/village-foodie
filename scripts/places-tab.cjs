@@ -72,58 +72,118 @@ const SQL = read('supabase/migrations/20261015_places_tab.sql')
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // 1 · THE PILLS, AND EVERY OLD ?section= LINK
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-head('1 · three pills — and both retired section ids still resolve')
+head('1 · two pills — and all four retired section ids still resolve')
 
 {
   /* 🔴 READ OUT OF `SCHEDULE_SECTIONS` ITSELF, in declaration order, because that array IS the bar. */
+  /* ⚠️ THE END ANCHOR IS **BOUNDED** AND IT HAD TO BE RE-AIMED (7 October 2026). It ran to
+   * `const isScheduleSection`, which used to be the next declaration — and `SOCIAL_SECTIONS` now sits
+   * between them, so the slice swallowed its three pills and this check read five. A slice that grows
+   * when something is inserted into it is a slice that reads the wrong array and says nothing. */
   const block = MANAGE.slice(
     MANAGE.indexOf('const SCHEDULE_SECTIONS'),
-    MANAGE.indexOf('const isScheduleSection'),
+    MANAGE.indexOf('const SOCIAL_SECTIONS'),
   )
   const ids = [...block.matchAll(/\{ id: '([^']+)', label: '([^']+)' \}/g)].map(m => [m[1], m[2]])
-  t(`🔴 the pills are Events · Event types · Social posts (${ids.map(i => i[1]).join(' · ')})`,
-    JSON.stringify(ids.map(i => i[1])) === JSON.stringify(['Events', 'Event types', 'Social posts']))
+  /* ══ ⛔ THE PILL COUNT HAS BEEN 3 → 4 → 3 → **2** (7 October 2026) ════════════════════════════════
+   * Places was a pill for one day; Social posts was the third pill for one more. Everything social is
+   * its own TOP TAB now, with three pills of its own, so Schedule is back to the two things it has
+   * always actually been about. */
+  t(`🔴 Schedule's pills are Events · Event types (${ids.map(i => i[1]).join(' · ')})`,
+    JSON.stringify(ids.map(i => i[1])) === JSON.stringify(['Events', 'Event types']))
+  /* 🔴 AND THE SOCIAL TAB'S OWN THREE, READ OUT OF `SOCIAL_SECTIONS` — the array that IS that bar. */
+  t('🔴 …and the social tab\'s pills are Create a post · Designs · Location settings', (() => {
+    const b = MANAGE.slice(MANAGE.indexOf('const SOCIAL_SECTIONS'),
+      MANAGE.indexOf('const isScheduleSection'))
+    const got = [...b.matchAll(/\{ id: '([^']+)', label: '([^']+)' \}/g)].map(m => [m[1], m[2]])
+    return JSON.stringify(got) === JSON.stringify([
+      ['create', 'Create a post'], ['designs', 'Designs'], ['locations', 'Location settings'],
+    ])
+  })())
 
-  /* ══ ⛔ THE PILL COUNT HAS BEEN 3 → 4 → 3, AND THE THIRD IS NOT A REVERT (6 October 2026) ═════════
-   * Places was a pill for one day. The four controls it held moved to the two screens that were
-   * already about them — the five fields to "Tidy up places", the usual type and hiding to Add event,
-   * the post picture to Social posts › Designs — and Social posts became ONE pill with TWO AREAS.
-   * 🔴 SO THE CLAIM WORTH ASSERTING IS NOT "there is no Places pill". It is that the two RETIRED IDS
-   * STILL RESOLVE, to the screens that replaced them: `?section=places` → Designs, `?section=weekly`
-   * → Make a post. ⛔ A VALIDATOR THAT REJECTED THEM WOULD SEND A LIVE BOOKMARK TO EVENTS, which is
-   * the bug the Places pill's FIRST removal shipped on 3 October. */
+  /* 🔴 SO THE CLAIM WORTH ASSERTING IS NOT "there is no Places pill". It is that the four RETIRED IDS
+   * STILL RESOLVE, to the screens that replaced them: `?section=places` → Location settings,
+   * `?section=posts`/`weekly` → Create a post, `?section=designs` → Designs. ⛔ A VALIDATOR THAT
+   * REJECTED THEM WOULD SEND A LIVE BOOKMARK TO EVENTS, which is the bug the Places pill's FIRST
+   * removal shipped on 3 October — and to BILLING, which is what it did before that. */
   const LINKS = read('lib/manage-links.ts')
-  t('⛔ neither retired id is a pill any more',
-    !ids.some(([id]) => id === 'places' || id === 'weekly'))
-  t('🔴 …and both are still MAPPED, never dropped', (() => {
+  t('⛔ none of the retired ids is a pill any more',
+    !ids.some(([id]) => ['places', 'weekly', 'posts', 'designs'].includes(id)))
+  t('🔴 …and all four are still MAPPED, never dropped', (() => {
     const map = LINKS.slice(LINKS.indexOf('const LEGACY_SCHEDULE_SECTION'),
       LINKS.indexOf('const LIVE_SCHEDULE_SECTIONS'))
-    return /places: 'designs',/.test(map) && /weekly: 'posts',/.test(map)
+    return /posts: 'create',/.test(map) && /weekly: 'create',/.test(map)
+      && /designs: 'designs',/.test(map) && /places: 'locations',/.test(map)
   })())
-  t('🔴 …and the page canonicalises AT THE URL, so nothing below ever sees a legacy id',
-    /const canonical = canonicalScheduleSection\(sectionParam\)/.test(MANAGE)
-    && /setScheduleSection\(canonical\)/.test(MANAGE))
-  /* ⛔ AND THE TYPE IS DECLARED ONCE. Two copies is how a section comes to exist in a pill bar and not
-   * in the link builder — which is the exact shape of the bug `lib/manage-links.ts` was created for. */
-  t('⛔ `ScheduleSection` is declared in the link builder and imported by the page',
-    /export type ScheduleSection = 'events' \| 'event-types' \| 'posts' \| 'designs'/.test(LINKS)
+  /* ⛔ AND THEY ARE RESOLVED BY **ONE** FUNCTION, WHICH ANSWERS THE TAB TOO. That is the half that is
+   * new: a legacy id now changes the TAB as well as the section, so a chain of `if`s at the call site
+   * is exactly how `?section=places` reached Billing. ⚠️ DRIVEN, NOT READ — the four ids are put
+   * through the real resolver and the answer is asserted, which a regex on the map cannot do. */
+  /* ⛔ AND THEY ARE RESOLVED BY **ONE** FUNCTION, WHICH ANSWERS THE TAB TOO. That is the half that is
+   * new: a legacy id now changes the TAB as well as the section, so a chain of `if`s at the call site
+   * is exactly how `?section=places` reached Billing.
+   * ⚠️ ASSERTED ON THE SOURCE HERE, AND **DRIVEN** IN `scripts/social-posts.cjs` §5 — which compiles
+   * the module and puts all four ids through the real function, including the "nothing lands on
+   * Billing" claim. This file has no TypeScript compiler, and a regex-stripped copy of a resolver to
+   * get at four lines would be a transpiler nobody asked for. */
+  t('🔴 …and ONE resolver answers both halves, in one function', (() => {
+    const fn = LINKS.slice(LINKS.indexOf('export function resolveManageLocation'),
+      LINKS.indexOf('export function canonicalSocialSection'))
+    return /if \(t === 'social'\) \{/.test(fn)
+      && /const moved = LEGACY_SCHEDULE_SECTION\[sec as LegacyScheduleSection\]/.test(fn)
+      && /if \(moved\) return \{ tab: 'social', section: moved \}/.test(fn)
+      /* ⛔ AND A BARE `?section=` IS HONOURED TOO, through `TAB_FOR_SECTION` — some links in the wild
+       * carry no `?tab=`, and guessing is what sent one to Billing. */
+      && /if \(!t && sec\) \{/.test(fn)
+      && /return resolveManageLocation\(owner, sec\)/.test(fn)
+      /* ⚠️ AND IT IS TOTAL: nothing throws, nothing returns null, every input gets a usable location. */
+      && /return \{ tab: \(t as ManageTab\) \|\| 'schedule', section: sec \|\| null \}/.test(fn)
+      /* ⛔ THE DRIVEN HALF IS NAMED, so "it is checked elsewhere" is a fact the reader can follow
+       * rather than a claim this file is making about itself. */
+      && /resolveManageLocation\('schedule', id\)/.test(read('scripts/social-posts.cjs'))
+  })())
+  t('🔴 …and the page resolves AT THE URL, so nothing below ever sees a legacy id',
+    /const moved = resolveManageLocation\(tabParam, sectionParam\)/.test(MANAGE)
+    && /setSocialSection\(moved\.section as SocialSection\)/.test(MANAGE))
+  /* ⛔ AND THE TYPES ARE DECLARED ONCE. Two copies is how a section comes to exist in a pill bar and
+   * not in the link builder — the exact shape of the bug `lib/manage-links.ts` was created for. */
+  t('⛔ `ScheduleSection` and `SocialSection` are declared in the link builder and imported',
+    /export type ScheduleSection = 'events' \| 'event-types'/.test(LINKS)
+    && /export type SocialSection = 'create' \| 'designs' \| 'locations'/.test(LINKS)
     && !/^type ScheduleSection =/m.test(codeOf(MANAGE))
-    && /type ScheduleSection, type LegacyScheduleSection,/.test(MANAGE))
+    && !/^type SocialSection =/m.test(codeOf(MANAGE))
+    && /type ScheduleSection,/.test(MANAGE) && /type SocialSection,/.test(MANAGE))
 
-  /* ⛔ AND NOTHING STILL CALLS `onSectionChange` WITH A SECTION THAT NO LONGER EXISTS. ⚠️ THE LIVE
-   * SECTIONS ARE THE FOUR, NOT THE THREE PILLS — `designs` is reachable only through the segmented
-   * control, and `onSectionChange('designs')` is how the page gets there. */
-  t('⛔ every onSectionChange(…) names a LIVE section', (() => {
-    const live = ['events', 'event-types', 'posts', 'designs']
-    const calls = [...MANAGE.matchAll(/onSectionChange\('([^']+)'\)/g)].map(m => m[1])
-    return calls.length > 0 && calls.every(c => live.includes(c))
+  /* ⛔ AND NOTHING STILL CALLS `onSectionChange` WITH A SECTION THAT NO LONGER EXISTS. ⚠️ SCHEDULE'S
+   * LIVE SECTIONS ARE NOW EXACTLY ITS TWO PILLS — `posts` and `designs` belong to another tab and are
+   * reached through `onOpenSocial`, which is a different prop with a different type. */
+  /* ══ ⚠️ THERE ARE NO LITERAL CALLS LEFT TO CHECK, AND THAT IS THE STRONGER STATE (7 October 2026) ══
+   * This read every `onSectionChange('x')` in the page and asserted `x` was live. The three literal
+   * calls it was written for have all gone: two were `'posts'`/`'designs'`, which belong to another tab
+   * and travel through `onOpenSocial` — a different prop with a different type — and the third was the
+   * gate's URL tidy-up, which no longer exists.
+   * 🔴 SO THE CLAIM BECOMES THE ONE THAT MAKES A WRONG ID **UNTYPEABLE**: the only call passes
+   * `sec.id` straight out of `SCHEDULE_SECTIONS`, whose entries are typed `ScheduleSection`. ⛔ AND THE
+   * ABSENCE IS ASSERTED BESIDE IT, because a pure absence proves nothing on its own — a deleted pill
+   * row would satisfy it. */
+  t('⛔ the only onSectionChange call is the pill row, passing a TYPED id', (() => {
+    const literals = [...MANAGE.matchAll(/onSectionChange\('([^']+)'\)/g)].map(m => m[1])
+    return literals.length === 0
+      && /onClick=\{\(\) => onSectionChange\(sec\.id\)\}/.test(MANAGE)
+      /* ⚠️ **ONE** CALL IN THE WHOLE PAGE. The prop pass-through (`onSectionChange={setScheduleSection}`)
+       * and the type (`onSectionChange: (s: …) => void`) are not calls and do not match this. */
+      && (codeOf(MANAGE).match(/onSectionChange\(/g) || []).length === 1
+      && /const SCHEDULE_SECTIONS: \{ id: ScheduleSection; label: string \}\[\]/.test(MANAGE)
+      && /onSectionChange: \(s: ScheduleSection\) => void/.test(MANAGE)
   })())
-  /* 🔴 AND THE PANE IS MOUNTED, FOR BOTH AREAS. ⚠️ `shownSection`, NOT `section`: Social posts is
-   * behind `places_posts_preview`, so the tab DERIVES which pill is shown and a stale bookmark on an
-   * ungated truck lands on Events in the same render. */
-  t('🔴 the Social posts pane is mounted for both areas, on the DERIVED section',
-    /isActive && \(shownSection === 'posts' \|\| shownSection === 'designs'\) && \(/.test(MANAGE)
-    && /<SocialPostsPane /.test(MANAGE))
+  /* 🔴 AND THE PANE IS MOUNTED ON THE **TAB**, ONCE. ⚠️ IT LEFT ScheduleTab ENTIRELY: it used to be
+   * behind `shownSection === 'posts' || 'designs'` inside that component, and the gate that derived
+   * `shownSection` moved up to the tab filter with it. */
+  t('🔴 the social pane is mounted at page level, on the active TAB, exactly once',
+    /\{activeTab === 'social' && truck && \(/.test(MANAGE)
+    && (MANAGE.match(/<SocialPostsPane /g) || []).length === 1
+    /* ⛔ AND NOT INSIDE ScheduleTab ANY MORE — `codeOf` first, because the tombstone there names it. */
+    && !/shownSection === 'posts'/.test(codeOf(MANAGE)))
   /* ⛔ AND THE PLACES TAB IS GONE — the file, the mount and the import. */
   t('⛔ `PlacesTab` is deleted: no file, no mount, no import',
     !exists('components/manage/PlacesTab.tsx')
@@ -155,13 +215,26 @@ head('1b · a section link carries its tab, and a trial default cannot override 
     /export function manageSectionHref\(/.test(LINKS)
     && !/useState|window\.|useRouter/.test(codeOf(LINKS)))
   t('⛔ …and a caller names a SECTION and cannot supply the tab',
-    /const TAB_FOR_SECTION: Record<ScheduleSection \| LegacyScheduleSection \| MenuSection, ManageTab>/.test(LINKS)
+    /const TAB_FOR_SECTION: Record<ScheduleSection \| SocialSection \| MenuSection, ManageTab>/.test(LINKS)
     && !/manageSectionHref\(\s*section[^)]*tab:/.test(LINKS))
-  t('🔴 …and every section it knows maps to a tab', (() => {
-    const map = LINKS.slice(LINKS.indexOf('const TAB_FOR_SECTION'), LINKS.indexOf('export function manageSectionHref'))
-    return ['events', "'event-types'", 'places', 'weekly', 'items', 'capacity', 'extras', 'deals']
-      .every(k => map.includes(k.replace(/'/g, '')))
-      && /places: 'schedule'/.test(map) && /weekly: 'schedule'/.test(map) && /deals: 'menu'/.test(map)
+  /* ══ 🔴 THE MAP'S CONTENTS INVERTED ON 7 OCTOBER, AND THE CLAIM INVERTED WITH THEM ═══════════════
+   * ⛔ IT USED TO ASSERT `places: 'schedule'` AND `weekly: 'schedule'` — proof that a link naming a
+   * retired id carried its tab. The four retired ids are now deliberately **ABSENT**:
+   * `resolveManageLocation` exists to READ them, and a builder that could still emit one would quietly
+   * keep them alive.
+   * 🔴 SO THE MAP MUST HOLD THE LIVE SECTIONS OF ALL THREE TABS AND NONE OF THE RETIRED SCHEDULE IDS.
+   * ⚠️ `designs` IS IN IT AS A **SOCIAL** section, which is its live meaning; the legacy Schedule
+   * meaning lives in `LEGACY_SCHEDULE_SECTION` and is read-only. */
+  t('🔴 …and every LIVE section maps to a tab — and no retired one does', (() => {
+    const map = LINKS.slice(LINKS.indexOf('const TAB_FOR_SECTION'), LINKS.indexOf('/* ⛔ THE FOUR RETIRED'))
+    const code = codeOf(map)
+    return /events: 'schedule', 'event-types': 'schedule',/.test(code)
+      && /create: 'social', designs: 'social', locations: 'social',/.test(code)
+      && /items: 'menu', capacity: 'menu', extras: 'menu', deals: 'menu',/.test(code)
+      /* ⛔ `codeOf` FIRST — the note directly under the map spells out "`?section=posts`" as prose, and
+       * a pure-absence test satisfied by its own explanation is the failure mode this file's `codeOf`
+       * was written for. */
+      && !/\bposts:/.test(code) && !/\bweekly:/.test(code) && !/\bplaces:/.test(code)
   })())
   t('🔴 …and it emits BOTH params, every time',
     /const qs = `\?tab=\$\{tab\}&section=\$\{section\}`/.test(LINKS))
@@ -220,9 +293,17 @@ head('1b · a section link carries its tab, and a trial default cannot override 
    * 🔴 ASSERTED ON THE ONE EXPRESSION, NOT ON FOUR ASSIGNMENTS. The ref is written once, after all
    * four branches, from the same predicates the branches used — so it cannot be true for a `?tab=`
    * the page does not recognise, and it cannot be missed on one branch out of four. */
-    t('⛔ …and a bare `?section=` counts as asking for a tab',
-      /urlAskedForTab\.current =\s*\n\s*!!\(tabParam && \(allTabIds\.includes\(tabParam as Tab\) \|\| LEGACY_TAB_TO_MENU_SECTION\[tabParam\]\)\)\s*\n\s*\|\| isScheduleSection\(sectionParam\) \|\| isMenuSection\(sectionParam\)/
-        .test(code))
+    /* ⚠️ `isSocialSection` JOINED THE EXPRESSION ON 7 OCTOBER, and it had to: `?section=places` now
+     * implies the SOCIAL tab, so without it a live bookmark would select that tab and then be
+     * overridden by the trial default — the exact bug this ref exists to prevent, moved one tab over. */
+    t('⛔ …and a bare `?section=` counts as asking for a tab, on any of the three tabs',
+      /urlAskedForTab\.current =\s*\n\s*!!\(tabParam && \(allTabIds\.includes\(tabParam as Tab\) \|\| LEGACY_TAB_TO_MENU_SECTION\[tabParam\]\)\)\s*\n\s*\|\| isScheduleSection\(sectionParam\) \|\| isSocialSection\(sectionParam\) \|\| isMenuSection\(sectionParam\)/
+        .test(code)
+      /* 🔴 AND `isSocialSection` ACCEPTS THE RETIRED IDS, which is what makes the clause above true for
+       * `?section=places`. Its Schedule sibling must NOT — a Schedule guard that said yes to `places`
+       * would select a Schedule section no pane renders. */
+      && /const isSocialSection = \(v: unknown\): v is SocialSection => canonicalSocialSection\(v\) !== null/.test(code)
+      && /const isScheduleSection = \(v: unknown\): v is ScheduleSection =>\s*\n\s*canonicalScheduleSection\(v\) !== null/.test(code))
   }
 }
 
@@ -403,12 +484,42 @@ head('3 · the post picture lives in Social posts › Designs, and place_picture
    *   • the post picture goes through the EXISTING upload flow, with the server's own shape check. */
   t('⛔ the table is still in the database — the migration is NOT reverted',
     /create table if not exists public\.place_pictures/.test(SQL))
-  t('⛔ …and NOTHING in app/, lib/ or components/ reads it', (() => {
-    const hits = []
-    for (const f of walk('lib').concat(walk('app')).concat(walk('components'))) {
-      if (/place_pictures/.test(codeOf(read(f)))) hits.push(f)
-    }
-    return hits.length === 0
+  /* ══ ⛔ RE-AIMED 18 OCTOBER 2026, AND THIS ONE IS A **REVERSAL**, NOT A MOVE ═══════════════════
+   *
+   * It asserted that NOTHING in `app/`, `lib/` or `components/` read `place_pictures`, and the table's
+   * own comment said the same: *"THEY DO NOT AFFECT POSTS."* Part 3 makes that table the place picture
+   * LIBRARY, so it is read by the renderer's caller, by the Designs box and by the pictures page. The
+   * old assertion was true of a feature that existed for one day; keeping it would have blocked the
+   * work it was written to protect the absence of.
+   *
+   * 🔴 WHAT REPLACES IT IS THE SAME INSTINCT, AIMED AT WHAT STILL MATTERS: the table is read in exactly
+   * ONE server file, and NO component touches it directly. A browser must never be able to enumerate a
+   * truck's pictures, and a second reader in `lib/` would be a second opinion on what a place's Main
+   * picture is. ⚠️ The migration replaces the table's comment for the same reason.
+   */
+  t('⛔ …and it is read in exactly ONE server file, and by NO component', (() => {
+    const inLib = walk('lib').filter(f => /place_pictures/.test(codeOf(read(f))))
+    const inApp = walk('app').filter(f => /place_pictures/.test(codeOf(read(f))))
+    const inComponents = walk('components').filter(f => /place_pictures/.test(codeOf(read(f))))
+    return inLib.length === 0
+      && inApp.length === 1 && inApp[0] === 'app/api/weekly-post/route.ts'
+      && inComponents.length === 0
+  })())
+  /* ⚠️ THE ABSENCE IS CHECKED ON THE `comment on table` STATEMENT ALONE, NOT ON THE WHOLE FILE. The
+   * 20261018 migration's header QUOTES the sentence it is replacing, in order to explain why — and a
+   * whole-file absence test failed on that quotation. The seventh time this project has met "a comment
+   * interfered with a check on code", and the first where the comment was in SQL. */
+  t('🔴 …and the table\'s comment no longer claims the pictures do not affect posts', (() => {
+    const sql = read('supabase/migrations/20261018_place_picture_library.sql')
+    const i = sql.indexOf('comment on table public.place_pictures is')
+    /* ⛔ THE END ANCHOR IS THE CLOSING QUOTE **AND** THE SEMICOLON, NOT THE SEMICOLON ALONE. The
+     * comment's own prose contains one — "One row per picture; at most one is_main per place" — so a
+     * bare `;` cut the statement off after seventy characters and the assertion failed on correct SQL.
+     * ⚠️ The project's own lesson about slices needing a bounded, UNAMBIGUOUS end anchor, met again. */
+    const end = i < 0 ? -1 : sql.indexOf("';", i)
+    const stmt = i < 0 || end < 0 ? '' : sql.slice(i, end)
+    return /THEY DO AFFECT POSTS AS OF 20261018/.test(stmt)
+      && !/THEY DO NOT AFFECT POSTS/.test(stmt)
   })())
   t('⛔ …and the five routes that did are still gone from the manage route',
     ['sg_place_pictures', 'sg_place_picture_url', 'sg_place_picture_save',
@@ -417,19 +528,40 @@ head('3 · the post picture lives in Social posts › Designs, and place_picture
   t('🔴 …and the route\'s tombstone still warns against dropping it',
     /DO NOT "TIDY UP" THE TABLE WITHOUT ASKING/.test(ROUTE))
 
-  /* ══ 🔴 ONE DRAG SURFACE IN THIS PRODUCT, AND IT IS `EventSetupScreen` ═══════════════════════════
-   * ⛔ THE REASON IS ON RECORD: the single-event editor's pointer handling took three fixes. A second
-   * one would be a second set of those bugs, and the place editor is a PAGE AROUND the existing screen
-   * rather than a new one. ⚠️ ASSERTED AS A COUNT: exactly one `DraggableBox` definition, and the place
-   * page mounts the existing screen rather than drawing boxes itself. */
+  /* ══ 🔴 ONE DRAG SURFACE IN THIS PRODUCT ════════════════════════════════════════════════════════
+   * ⛔ THE REASON IS ON RECORD: the editor's pointer handling took three fixes to get right on touch.
+   * A second one would be a second set of those bugs, and the place editor is a PAGE AROUND the shared
+   * editor rather than a new one.
+   * ⚠️ RE-AIMED 6 October 2026. It used to require the one definition to be in `WeeklyPost.tsx` — a
+   * file about the weekly post, which exported the drag surface for every design screen in the
+   * product. It is `components/manage/DraggableBox.tsx` now, because with ONE shared editor there is
+   * no owning screen. The COUNT, which is the thing that matters, is unchanged. */
   t('🔴 there is exactly ONE draggable-box implementation in the product', (() => {
     const defs = walk('components').concat(walk('lib'))
       .filter(f => /export function DraggableBox/.test(codeOf(read(f))))
-    return defs.length === 1 && defs[0] === 'components/manage/WeeklyPost.tsx'
+    return defs.length === 1 && defs[0] === 'components/manage/DraggableBox.tsx'
   })())
-  t('⛔ …and the place design editor MOUNTS it rather than redrawing it',
-    /<EventSetupScreen token=\{token\} onlyPlaceId=\{placeId\}/.test(SOCIAL)
-    && !/DraggableBox/.test(codeOf(SOCIAL)))
+  /* ══ ⛔ THE PER-LOCATION EDITOR IS GONE — 7 October 2026 ════════════════════════════════════════
+   * `PlaceDesignPage` was `EventSetupScreen` focused on one location, reached from a quiet link at the
+   * bottom of the pictures page. The brief removes that link, so the editor has no door and went with
+   * it. ⛔ THE DATA AND THE RENDERING ARE UNTOUCHED: `truck_places.event_layout` is still read by
+   * `eventPostContext`, still validated against that location's own picture, and still preferred over
+   * the standard positions — so every location that HAS its own keeps rendering as it does. What a
+   * truck can no longer do is create one.
+   * 🔴 THE CLAIM THIS CHECK EXISTED FOR IS UNCHANGED AND STILL ASSERTED: there is ONE drag surface in
+   * the product (above), and the social screens do not draw a second one. The focused mode of
+   * `EventSetupScreen` survives for the **Standard** design, which Designs opens. */
+  t('⛔ …and the social screens mount the shared editor, never a second drag surface',
+    /<EventSetupScreen token=\{token\} onlyStandard onCancel=\{back\}\s*\n\s*onDirtyChange=\{setEditorDirty\} onSaver=/.test(SOCIAL)
+    && !/DraggableBox/.test(codeOf(SOCIAL))
+    /* ⛔ AND THE PER-LOCATION MODE IS NOT MOUNTED ANYWHERE — `onlyPlaceId` still EXISTS on the screen
+     * (the setup wizard's own flow uses the prop's siblings) but nothing passes it. ⚠️ Asserted over
+     * the whole tree rather than over this one file, because "nothing mounts it" is a tree-wide claim. */
+    && (() => {
+      const callers = walk('components').concat(walk('app'))
+        .filter(f => /onlyPlaceId=\{/.test(codeOf(read(f))))
+      return callers.length === 0
+    })())
 
   /* 🔴 THE UPLOAD IS THE EXISTING THREE-CALL FLOW, and it adds NO action to the route. */
   t('🔴 the upload is upload_url → PUT → confirm_upload, with which=place', (() => {
@@ -443,10 +575,24 @@ head('3 · the post picture lives in Social posts › Designs, and place_picture
   /* ⛔ AND "Use Standard design here instead" IS THE REMOVE, CONFIRMED. It is the one irreversible act
    * on that page, and it has ONE control — the editor's own "Remove this place's design" panel is
    * suppressed in the focused mode so the two cannot carry different confirms. */
-  t('⛔ removing a place\'s picture is confirmed, and has exactly one control',
-    /window\.confirm\(standardDesignConfirm\(/.test(SOCIAL)
-    && /action: 'event_remove_place_design'/.test(SOCIAL)
-    && /current && !onStandard && !onlyPlaceId && \(/.test(read('components/manage/EventPost.tsx')))
+  /* ⚠️ THE SUPPRESSION MOVED WITH THE PANEL. The editor's own "Remove this place's design" is now the
+   * `footer` prop that `EventSetupScreen` passes in, and the condition that suppresses it in the
+   * focused mode is the same one, in the same file, guarding the same markup. */
+  /* ══ ⛔ "Use Standard design here instead" WENT WITH THE PER-LOCATION EDITOR (7 October 2026) ══════
+   * It was that page's one irreversible act, and the claim was that it had exactly ONE control.
+   * 🔴 THE EQUIVALENT ACT IS NOW "Remove" ON A SLOT, AND IT IS **NOT** IRREVERSIBLE — which is a better
+   * answer than a confirm. The slot is nulled; the `place_pictures` row and the stored object both
+   * survive, so pointing it back costs one press. ⚠️ IT IS STILL CONFIRMED, and the confirm SAYS the
+   * image is kept — a truck told "Remove" without that sentence has every reason to think otherwise. */
+  t('⛔ removing a location\'s image is confirmed, says the image is kept, and deletes nothing',
+    /window\.confirm\(slotRemoveConfirm\(/.test(SOCIAL)
+    && /It stops being used\. The image itself is kept\./.test(read('lib/copy/socialPosts.ts'))
+    && /api\('place_slot_clear', \{ placeId: selected\.id, slot: 'event' \}\)/.test(SOCIAL)
+    && /api\('place_slot_clear', \{ placeId: selected\.id, slot: 'weekly' \}\)/.test(SOCIAL)
+    /* ⛔ AND THE OLD IRREVERSIBLE PATH IS NOT CALLED FROM ANY SCREEN. `event_remove_place_design` still
+     * exists on the route — it is what the setup wizard's own flow uses — but the social screens do
+     * not reach it. ⚠️ `codeOf` first: the tombstones name it in prose. */
+    && !/action: 'event_remove_place_design'/.test(codeOf(SOCIAL)))
 
   /* ══ ⛔ NO PER-PLACE `event_load` LOOP FOR THUMBNAILS ════════════════════════════════════════════
    * The Designs list draws a thumbnail for every place, and the only action that signed one was
@@ -485,8 +631,12 @@ head('4 · hiding a place is in Add event now, and there is still only one list'
     const detail = SHARED.slice(SHARED.indexOf('export function PlaceDetail'),
       SHARED.indexOf('export function TidyUpPlaces'))
     /* ⚠️ "Full name" REPLACED "Short name" IN THIS LIST (6 October 2026) — the two name labels were
-     * swapped, and WHICH LABEL IS BOUND TO WHICH COLUMN is asserted on its own below. */
-    const five = ['Full name', 'Name on posts', 'Address', 'Area', 'Postcode']
+     * swapped, and WHICH LABEL IS BOUND TO WHICH COLUMN is asserted on its own below.
+     * ⚠️ AND "Name on posts" IS "Venue name" FROM 9 OCTOBER, A LABEL ONLY. The old wording said where
+     * the value GOES rather than what it IS, and with the social screen's own copy of the field removed
+     * this card is the one editor again — so it has to name the thing. "Venue" is the poster's own item
+     * name and "Area" is the field below it. */
+    const five = ['Full name', 'Venue name', 'Address', 'Area', 'Postcode']
       .every(f => detail.includes(`label="${f}"`))
     /* ⛔ THE `key` IS NOT DECORATION. `PlaceDetail` holds the five fields as LOCAL DRAFT STATE and
      * saves them ON BLUR, so without a remount per place the pane shows the previous place's values
@@ -505,17 +655,38 @@ head('4 · hiding a place is in Add event now, and there is still only one list'
       SHARED.indexOf('export function TidyUpPlaces'))
     const bound = (label, field) => new RegExp(
       `label="${label}"[^>]*?onBlur=\\{\\(\\) => saveField\\('${field}'`, 's').test(detail)
-    return bound('Name on posts', 'short_name')
+    return bound('Venue name', 'short_name')
       && bound('Full name', 'name')
+      /* ⛔ AND THE OLD LABEL IS GONE, so "renamed" cannot pass while both exist. */
+      && !detail.includes('label="Name on posts"')
       /* ⛔ AND THE RENDERER STILL PREFERS IT. If that ever changes, these labels become wrong again. */
       && /const short = String\(place\?\.short_name \?\? ''\)\.trim\(\)\s*\n\s*if \(short\) return short/
         .test(read('lib/weekly-post/week-data.ts'))
   })())
-  t('⚠️ …and "Name on posts" says what blank means',
+  t('⚠️ …and "Venue name" says what blank means',
     /hint="Leave blank to use the full name\."/.test(SHARED))
-  /* ⚠️ THE PLACE DESIGN EDITOR'S "Name on posts" IS THE SAME COLUMN — it was already right. */
-  t('⛔ …and the place design editor\'s field writes the same column',
-    /manageApi\('sg_upsert_place', \{ id: placeId, short_name: next \}\)/.test(SOCIAL))
+  /* ══ ⛔ AND THIS SCREEN IS THE **ONLY** WRITER AGAIN — 9 OCTOBER 2026 ════════════════════════════
+   * The field was copied to the Location settings pane on 7 October, writing the same column through
+   * the same action, and the claim then was that one writer meant the two screens could not disagree.
+   * 🔴 THAT WAS TRUE OF `short_name` AND FALSE OF THE PAIR. This card edits the name AND THE TOWN, side
+   * by side; the social pane edited only the name. A location's name and its town are one fact about
+   * the schedule, so the second screen was a way to change half of it and leave the other half as it
+   * was — and the poster then prints a mismatch that neither screen can show the operator.
+   * ⚠️ SO THE COPY WENT AND THIS CARD IS THE ONE PLACE AGAIN. Asserted as an absence over the social
+   * screen, with the writer above unchanged. */
+  t('⛔ …and the social screen no longer writes it — this card is the one place again',
+    !/Name on posts/.test(codeOf(SOCIAL))
+    && !/short_name: value\.trim\(\)/.test(codeOf(SOCIAL))
+    /* ⚠️ `manageApi` WAS DESTRUCTURED FOR THAT ONE FIELD and is not any more, which is the structural
+     * half of the same fact: the social screen has no door to this action left to walk through. */
+    && !/manageApi\('sg_upsert_place'/.test(codeOf(SOCIAL))
+    /* 🔴 AND THE SOCIAL SCREEN SAYS WHERE THE NAME IS EDITED rather than going quiet. The note names
+     * the real path to this card, so removing the field does not leave an operator hunting. */
+    && /data-name-from-schedule/.test(SOCIAL)
+    /* ⚠️ "area", NOT "town" (9 October 2026) — the same rename as the editor's item, for the same
+     * reason: half the venues on this product are in a village, and this card calls the field "Area". */
+    && /'Name and area come from your schedule\. Edit them in Schedule › Events › Add event › Tidy up places\.'/
+      .test(read('lib/copy/socialPosts.ts')))
 
   t('⛔ …and nothing else defines a place list, detail or loader', (() => {
     const owners = walk('components').concat(walk('app'))
@@ -596,16 +767,33 @@ head('5 · nothing added here upserts onto a partial index')
     /create unique index if not exists place_pictures_path_uidx\s*\n\s*on public\.place_pictures \(path\);/.test(SQL))
   t('⛔ …and the pin\'s index IS partial, which is safe because nothing upserts onto an index',
     /create index if not exists truck_places_usual_event_type_idx[\s\S]{0,120}where usual_event_type_id is not null/.test(SQL))
-  /* ⛔ AND NOW IT IS VACUOUSLY TRUE, WHICH IS WORTH SAYING OUT LOUD: nothing touches `place_pictures`
-   * at all any more (§3 asserts that directly), so nothing can upsert it. The index checks above stay
-   * because the TABLE and its indexes are still in the database — a later feature that reaches for them
-   * meets the same 42P10 trap 20261013 taught. */
-  t('⛔ …and nothing upserts `place_pictures` — nothing touches it at all', (() => {
-    const hits = []
-    for (const f of walk('lib').concat(walk('app')).concat(walk('components'))) {
-      if (/place_pictures/.test(codeOf(read(f)))) hits.push(f)
-    }
-    return hits.length === 0
+  /* ══ ⛔ RE-AIMED 18 OCTOBER 2026 — IT WAS VACUOUS AND IT IS NOT ANY MORE ═══════════════════════
+   * It asserted that nothing touched `place_pictures` at all, which made "nothing upserts it" true for
+   * free. Part 3 reads and writes it, so the claim has to be the REAL one the 20261013 trap is about:
+   * ⛔ `place_pictures_one_main_per_place_uidx` IS **PARTIAL**, so it can never be an `ON CONFLICT`
+   * target — a partial index raises 42P10 if one is attempted. "Make main" is two UPDATE statements,
+   * which is exactly why a partial index is the right guard here, and this is what keeps it so. */
+  t('⛔ nothing upserts onto the PARTIAL one-main index — it is a guard, never a conflict target', (() => {
+    const route = codeOf(read('app/api/weekly-post/route.ts'))
+    /* ⚠️ EVERY `upsert` ON THIS TABLE IS LISTED AND EACH ONE'S TARGET IS NAMED. There is one, and it
+     * targets `path` — the FULL unique index the 20261015 migration created for exactly this. */
+    /* ══ ⚠️ A **WINDOW**, NOT A LAZY `[\s\S]{0,n}?\)` ═══════════════════════════════════════════════
+     * The lazy version stopped at the first `)` in the payload — `String(body.fileName ?? '')` — so the
+     * second upsert's match ended before its `onConflict` and this check failed on correct code. ⛔ A
+     * NON-GREEDY BOUND IS NOT AN END ANCHOR: it finds the nearest match, not the right one.
+     * 🔴 SO EACH OCCURRENCE TAKES A FIXED WINDOW, and the window is required to hold exactly ONE
+     * `.upsert(` — otherwise a window could read the NEXT upsert's target and call it this one's. */
+    const upserts = [...route.matchAll(/from\('place_pictures'\)\s*\.upsert\(/g)]
+      .map(m => route.slice(m.index, m.index + 900))
+      .filter(w => (w.match(/\.upsert\(/g) || []).length === 1)
+    /* ⚠️ **TWO** SINCE 7 OCTOBER: `materialiseLegacy`, and §6's "Also save it for <location>" — which
+     * inserts a row for an object that is already stored, so one press cannot be allowed to 23505 on
+     * the path index. ⛔ EVERY ONE IS LISTED AND EACH ONE'S TARGET IS NAMED, and both target `path` —
+     * the FULL unique index the 20261015 migration created for exactly this. */
+    return upserts.length === 2
+      && upserts.every(u => /onConflict: 'path'/.test(u))
+      && !/onConflict: '[^']*is_main/.test(route)
+      && !/onConflict: 'place_id'/.test(route)
   })())
   t('🔴 …and the repository-wide §7b guard still exists',
     /ON CONFLICT targets are real, non-partial uniques/.test(read('scripts/event-pricing.cjs')))
@@ -650,9 +838,12 @@ head('6 · Social posts: the two design editors, and a check that a COMMENT was 
    * heading below it. The outer one is gone and the card's now matches the event card's style. */
   t('⛔ the outer page heading is gone — no `text-lg font-black` heading in the setup switch',
     !/<h2 className="text-lg font-black text-slate-900">\s*\n?\s*\{designKind === 'week'/.test(WP))
+  /* ⚠️ "Set up your SINGLE EVENT post" SINCE 6 October 2026 — the box on Designs that opens this card
+   * is "Single event post design", and a card that named the design differently would send the operator
+   * looking for a box that is not there. The CLAIM is unchanged: the two cards share one style. */
   t('🔴 …and the weekly card heading matches the event card\'s exactly', (() => {
     const weekly = /<p className="font-bold text-slate-800">Set up your weekly post<\/p>/.test(WP)
-    const event = /<p className="font-bold text-slate-800">Set up your event post<\/p>/.test(EP)
+    const event = /<p className="font-bold text-slate-800">Set up your single event post<\/p>/.test(EP)
     return weekly && event
   })())
   t('⛔ and "Set up your weekly post" appears exactly ONCE in the rendered code',
@@ -679,12 +870,16 @@ head('6 · Social posts: the two design editors, and a check that a COMMENT was 
   /* 🔴 THE PLACE DESIGN EDITOR IS A PAGE AROUND THE EXISTING SCREEN. `onlyPlaceId` locks it to one
    * place and hides the list and the picker; the chrome — the back link, the name, "Make post for …",
    * "Use Standard design here instead" — belongs to the caller. */
-  t('🔴 the place editor opens the existing screen focused on one place',
-    /<EventSetupScreen token=\{token\} onlyPlaceId=\{placeId\}/.test(SOCIAL)
+  /* ⚠️ RE-AIMED 7 October 2026 — see the note in §6 on `onlyPlaceId`. The FOCUSED MODE is what this
+   * check is about and it survives for the Standard design, which Social media › Designs opens. */
+  t('🔴 Designs opens the existing screen focused on the STANDARD design',
+    /<EventSetupScreen token=\{token\} onlyStandard onCancel=\{back\}\s*\n\s*onDirtyChange=\{setEditorDirty\} onSaver=/.test(SOCIAL)
     && /onlyStandard\?: boolean/.test(EP) && /onlyPlaceId\?: string/.test(EP))
+  /* ⚠️ THE DESIGNS LIST IS A PILL ROW ABOVE THE EDITOR NOW rather than a left-hand column — the left
+   * column is the shared editor's TEXT list. The suppression is the same condition on the same block. */
   t('⛔ …and in that mode the screen hides its own Designs list and picker',
-    /\{!onlyStandard && !onlyPlaceId && \(<>/.test(EP)
-    && /\{picking && !onlyStandard && !onlyPlaceId && \(/.test(EP))
+    /\{!onlyStandard && !onlyPlaceId && \(/.test(codeOf(EP))
+    && /\{picking && !onlyStandard && !onlyPlaceId && \(/.test(codeOf(EP)))
 }
 
 // ── SUMMARY ───────────────────────────────────────────────────────────────────────────────────────

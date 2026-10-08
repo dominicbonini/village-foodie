@@ -7,7 +7,7 @@
 // ══════════════════════════════════════════════════════════════════════════════════════════════════
 //
 //   Make a post  ·  Weekly post · Single event post · Post for a place
-//   Designs      ·  Weekly post design · Event post design · Designs for a place
+//   Designs      ·  Weekly post design · Single event post design · Designs for a place
 //
 // ⛔ EVERY BOX IS A DOOR, NOT A SCREEN. "Make this week's post" opens `WeeklyPostApp`'s post screen;
 // every "Make post" opens `EventPostModal` — the SAME modal the Events list opens; "Edit weekly
@@ -28,7 +28,7 @@
 // town and no place; it is drawn greyed, in its date position, with no button. A place's `next` is its
 // next PUBLIC event, because that is the event its button would post. Nothing here decides any of that.
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 /* ⛔ `Btn` IS NO LONGER IMPORTED (6 October 2026). Its `colour` palette is the dashboard's, where
  * orange is the ordinary button; on this screen orange MEANS "make something" and nothing else, so the
  * two shapes are `BTN_PRIMARY` and `BTN_OUTLINE` below and there are exactly two primaries. */
@@ -36,19 +36,109 @@ import { Card, Input, Spinner } from '@/components/manage/primitives'
 /* 🔴 THE ONE TIME-RANGE FORMATTER. See the tombstone where this file had its own. */
 import { formatTimeRange } from '@/lib/time-utils'
 import { WeeklyPostApp } from '@/components/manage/WeeklyPost'
+import { MAX_UPLOAD_BYTES } from '@/lib/weekly-post/layout'
+/* ── 8 October 2026: where a location's picture is used, and the caption labels. */
+/* ⛔ `pictureOnWeekly` / `pictureOnEvent` ARE GONE — a location picture is used wherever a design has
+ * a space for it, so there is no "is this surface allowed?" left to ask. `PictureUse` goes with them. */
+import {
+  labelsFor,
+  /* 🔴 §5 · THE CAPTION IS FILLED **ON THIS SCREEN** (9 October 2026). ⛔ These are the SAME two pure
+   * functions `event_post` uses on the server, so the caption on the card and the caption the modal
+   * would have written cannot drift — which is the only reason filling it here is safe. ⚠️ Filling it
+   * here is what makes "pick another event" refresh the caption with no round trip. */
+  fillCaptionTemplate, eventCaptionValues,
+  type CaptionKind, type CaptionLabelId,
+} from '@/lib/weekly-post/caption-template'
+/* ══ 🔴 THE CHIP EDITOR'S DOM OPERATIONS (10 October 2026) ═════════════════════════════════════════
+ * ⚠️ A SEPARATE MODULE BECAUSE **DELETING A CHIP CLEARED THE WHOLE TEMPLATE IN WEBKIT** and the fix
+ * has to be drivable in a real browser. See that file's header. ⛔ IT TOUCHES `window` AND `document`,
+ * so it belongs to this client component and must never be imported by a route. */
+import {
+  captionChipHtml, captionHtml, captionFromDom, handleChipDeleteKey, selectionAsTemplate,
+  hasCaptionToken,
+} from '@/lib/weekly-post/caption-chips'
+/* ⛔ `WRONG_SHAPE_NOTE` IS NO LONGER IMPORTED. It was the per-picture badge on the library grid —
+ * "Different shape — can't be used as a whole background". The Locations screen says the rule on the
+ * BOX instead, with the required size in it (`EVENT_BOX_POSTER_SHAPE`), because a truck needs the
+ * size before they export a poster rather than after it is refused. The constant is still exported
+ * and still drives `scripts/place-pictures.cjs`. */
 import { EventSetupScreen, EventPostModal } from '@/components/manage/EventPost'
 import { FeatureGate } from '@/components/FeatureGate'
 import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
 import { manageSectionHref } from '@/lib/manage-links'
 import type { Plan } from '@/lib/features'
+/* ══ ⛔ ELEVEN COPY CONSTANTS LEFT THIS IMPORT — 7 October 2026 ════════════════════════════════════
+ * They belonged to the pictures library page and to "Post for a place", both of which are gone:
+ * `PLACE_POST_BOX_BLURB`, `PLACE_POST_FOOTER_NOTE`, `PLACE_PICTURES_TITLE`/`_BLURB`/
+ * `_NONE_HEADING`/`_SOME_HEADING`/`_PAGE_LINE`, `picturesCount`, `PLACE_OWN_POSITIONS_LINK`,
+ * `removePictureConfirm`, `placePicturesFooter`, `placeDesignScope`, `standardDesignConfirm` and
+ * `USE_STANDARD_LINK`.
+ * ⚠️ THEY ARE STILL **EXPORTED** FROM lib/copy/socialPosts.ts AND THAT IS DELIBERATE: three harnesses
+ * assert on them by name, and `scripts/place-pictures.cjs` drives the rules they describe. Deleting a
+ * copy constant is a separate change from deleting the screen that read it, and a dead export with no
+ * reader is cheaper than a harness that cannot find its subject. Named in docs/social-tab-report.md. */
 import {
-  MAKE_POST_FOOTNOTE, WEEKLY_BOX_BLURB, EVENT_BOX_BLURB, PLACE_POST_BOX_BLURB, PRIVATE_EVENT_ROW,
-  WEEKLY_DESIGN_BLURB, EVENT_DESIGN_BLURB, PLACE_POST_FOOTER_NOTE,
-  INTRO_DESIGNS_WORD, INTRO_MAKE_WORD, INTRO_AFTER_DESIGNS, INTRO_AFTER_MAKE,
-  WEEKLY_DESIGN_USED_FOR, EVENT_DESIGN_USED_FOR, USED_FOR_LABEL,
-  PLACE_DESIGN_BLURB_BEFORE, PLACE_DESIGN_BLURB_BOLD, PLACE_DESIGN_BLURB_AFTER,
+  MAKE_POST_FOOTNOTE, WEEKLY_BOX_BLURB, EVENT_BOX_BLURB, PRIVATE_EVENT_ROW,
+  WEEKLY_DESIGN_BLURB,
+  EVENT_DESIGN_TITLE, EVENT_DESIGN_BLURB_BEFORE, EVENT_DESIGN_BLURB_BOLD, EVENT_DESIGN_BLURB_AFTER,
+  EVENT_DESIGN_BUTTON_NEW, EVENT_DESIGN_BUTTON_EDIT,
+  /* ⛔ `INTRO_DESIGNS_WORD` / `INTRO_MAKE_WORD` / `INTRO_AFTER_DESIGNS` / `INTRO_AFTER_MAKE` ARE NO
+   * LONGER IMPORTED — the shared intro they built is gone (8 October 2026). They are still exported
+   * from the copy module, which three harnesses read by name. */
+  TAB_CREATE_HEADING, TAB_CREATE_BLURB, TAB_DESIGNS_HEADING, TAB_DESIGNS_BLURB,
+  TAB_LOCATIONS_HEADING, TAB_LOCATIONS_BLURB, LOCATIONS_CARD_TITLE,
+  /* ⛔ `POSTER_BOX_TITLE` ("Event poster (optional)") IS NO LONGER IMPORTED — §1 renames the box to
+   * "Location poster (optional)", because "Event poster" sat one word away from "Picture for event
+   * posts" while being a different thing. It stays exported as the record. */
+  LOCATION_POSTER_TITLE,
+  /* ── 9 October 2026: THREE pictures, one per job. ⛔ NINE CONSTANTS ARE NO LONGER IMPORTED and all
+   * nine stay EXPORTED, because harnesses read them by name and they are the record of the wording:
+   * `PICTURE_BOX_TITLE` / `PICTURE_BOX_BLURB` / `PICTURE_BOX_BLURB_V3` (the single "Location picture"
+   * box), `WEEKLY_ONLY_ADD_LINK` / `_BOX_TITLE` / `_BOX_BLURB` / `_BADGE` (the override and its "+1"),
+   * the four `PICTURE_USE_*` (the retired "Use it on" radios) and `posterBoxBlurb` (the size sentence
+   * the poster description lost). */
+  POSTER_BOX_BLURB, NAME_FROM_SCHEDULE_NOTE,
+  /* ⛔ `LEAVE_CONFIRM_TITLE` AND `LEAVE_CONFIRM_GO` ARE NO LONGER DRAWN — §B10 replaced the two-button
+   * dialog with a three-button one, and its title asks the question the third button answers. Both stay
+   * exported as the record of the wording. */
+  LEAVE_CONFIRM_STAY, LEAVE_TITLE, LEAVE_BODY, LEAVE_SAVE_AND_GO, LEAVE_WITHOUT_SAVING,
+  SOCIAL_TAG_LABEL, SOCIAL_TAG_HINT, SOCIAL_TAG_PLACEHOLDER,
+  CAPTION_WEEK_TITLE, CAPTION_EVENT_TITLE, captionAddLabel,
+  /* ⛔ `CAPTION_SAVED_NOTE` AND `CAPTION_SAVED_TICK` ARE NO LONGER IMPORTED. The template editor is
+   * Save / Cancel now rather than debounced autosave, so "Saved automatically" and its fading tick
+   * describe behaviour the screen no longer has. Both stay exported as the record. */
+  NEXT_EVENT_HEADING_V4, PICK_ANOTHER_HEADING, CREATE_FOR_NEXT, CREATE_FOR_THIS,
+  SHOW_ALL_UPCOMING, HIDE_ALL_UPCOMING,
+  CAPTION_HEADING, CAPTION_THIS_POST_NOTE, EDIT_TEMPLATE_LINK,
+  TEMPLATE_PANEL_TITLE, TEMPLATE_PANEL_BLURB, TEMPLATE_PANEL_BLURB_WEEK,
+  TEMPLATE_SAVE, TEMPLATE_CANCEL, TEMPLATE_PANEL_NOTE,
+  /* ⛔ `WEEKLY_DESIGN_USED_FOR`, `EVENT_DESIGN_USED_FOR` AND `USED_FOR_LABEL` ARE NO LONGER IMPORTED —
+   * see the `UsedFor` tombstone below. The constants remain in the copy module as the record. */
   EMPTY_WEEKLY_TITLE, EMPTY_EVENT_TITLE, EMPTY_BODY, EMPTY_BUTTON,
-  placeDesignScope, standardDesignConfirm, USE_STANDARD_LINK, POST_NAME_HINT,
+  /* ── 7 October 2026: Create a post's two halves, and the Locations sub-tab. */
+  CREATE_WEEKLY_TITLE, CREATE_EVENT_TITLE, weekEventsLine, CREATE_WEEKLY_BUTTON,
+  /* ⛔ `NEXT_EVENT_HEADING`, `createPostForLabel` AND `MORE_EVENTS_LABEL` ARE NO LONGER IMPORTED —
+   * 9 October 2026, §5. The heading is `NEXT_EVENT_HEADING_V4` ("YOUR NEXT EVENT"); the button no
+   * longer names the date, because the card above it already shows which event it is about; and the
+   * expander is "Show all upcoming events (n) ⌄" over a list the first three of which are always
+   * visible. All three stay exported as the record of the wording. */ NO_UPCOMING_EVENTS, imageSourceLine,
+  LOCATIONS_SEARCH_LABEL, CHIP_ALL, CHIP_HIDDEN,
+  COL_LOCATION, LOCATIONS_NONE, LOCATIONS_NO_MATCH, LOCATIONS_PICK_ONE,
+  COL_POSTER, COL_WEEKLY, COL_EVENT, CHIP_NO_PICTURES,
+  WEEKLY_PIC_TITLE, WEEKLY_PIC_BLURB, EVENT_PIC_TITLE, EVENT_PIC_BLURB,
+  DROP_A_PICTURE, DROP_A_POSTER, USE_EVENT_PICTURE, USE_WEEKLY_PICTURE,
+  /* ⛔ ELEVEN MORE COPY CONSTANTS LEFT THIS IMPORT ON 8 OCTOBER, with the wording they carried:
+   * `LOCATIONS_TITLE`/`_BLURB` (the card's description, now the page's), `CHIP_MISSING` ("Missing
+   * images", now "No images"), the four `EVENT_BOX_PHOTO_*`/`_POSTER_*` pairs and
+   * `EVENT_BOX_POSTER_SHAPE`/`_ADD_PHOTO_SPACE` (the event box's wording used to follow the DESIGN —
+   * it does not any more), and `WEEKLY_BOX_TITLE`/`_BLURB_LOC`/`WEEKLY_USE_EVENT_IMAGE`/
+   * `WEEKLY_NOT_ON_LINE` (the weekly box became the LOCATION PICTURE box with its own radio).
+   * ⚠️ THEY ARE STILL **EXPORTED** AND THAT IS DELIBERATE: harnesses assert on them by name, and a dead
+   * export with no reader is cheaper than a harness that cannot find its subject. */
+  /* ⛔ `SLOT_REPLACE` AND `SLOT_EMPTY` ARE NO LONGER IMPORTED. "Replace" was a second button that did
+   * what dropping a file does, and "Nothing yet" was the empty tile's text — the empty box says "Drop a
+   * picture here" instead, which is an instruction rather than a status. Both stay exported. */
+  SLOT_UPLOAD, SLOT_REMOVE, slotRemoveConfirm,
 } from '@/lib/copy/socialPosts'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -67,6 +157,25 @@ export interface PostEvent {
   placeId: string | null
   /** Which design this post WILL use. `own` only when the place has a picture of its own. */
   design: 'own' | 'standard' | 'none'
+  /* ══ 🔴 WHICH IMAGE THIS POST WILL USE, AND WHAT KIND IT IS (7 October 2026) ═══════════════════
+   * `design` says WHOSE; this says WHAT, and the two are not the same question. A location's event
+   * image is a PHOTO cropped into a space when the single event design has one, and the WHOLE POSTER
+   * when it has not — decided by the design, resolved on the server (`eventImageMode`). The grey line
+   * under "Your next event" names it, because it is the one thing a 96px thumbnail cannot show. */
+  imageSource?: 'place-photo' | 'place-poster' | 'standard' | 'none'
+  /** The name the poster would print — `short_name` first, as `locationName` resolves it. */
+  placeName?: string | null
+}
+
+/** One of a location's two images, as the Locations screen draws it. */
+export interface SlotImage {
+  id: string
+  url: string | null
+  width: number | null
+  height: number | null
+  fileName: string
+  /** 🔴 True for an image mapped from the legacy `event_bg_*` columns — it has no row yet. */
+  legacy: boolean
 }
 
 export interface PostPlace {
@@ -75,9 +184,37 @@ export interface PostPlace {
   shortName: string | null
   area: string | null
   isFavourite: boolean
+  /** 🔴 Whether this location is hidden. The table shows it only under the "Hidden n" chip. */
+  isHidden?: boolean
+  /* ══ 🔴 THE LOCATION'S **TWO** IMAGES — THE WHOLE MODEL, ON THE WIRE ═══════════════════════════
+   * ⚠️ EITHER MAY BE NULL AND BOTH MAY BE THE **SAME** PICTURE. The `event` one falls back to the
+   * legacy `event_bg_*` mapping on the server, which is how a location nobody has touched still draws
+   * what it draws today. See lib/weekly-post/place-pictures.ts. */
+  /** 🔴 The EVENT POST picture — the single event design's picture space. ⚠️ No fallback to weekly. */
+  eventPhotoImage?: SlotImage | null
+  /* ⚠️ `eventImage` IS THE **EVENT POSTER** AND `weeklyImage` IS THE **LOCATION PICTURE** (8 October
+   * 2026). The payload keys kept their names for the same reason the columns did — a rename is a
+   * breaking change to every reader for a word — and the screen names them properly. */
+  eventImage?: SlotImage | null
+  weeklyImage?: SlotImage | null
+  /* ⛔ `weeklyOnlyImage` IS GONE FROM THIS SHAPE — 9 October 2026. It was an opt-in override weekly
+   * posts used instead of the one location picture; with a picture PER SURFACE there is nothing left
+   * to override, and 20261022 moved every stored value into `weekly_picture_id` and emptied the
+   * column. The server no longer sends the key. */
+  /* ⛔ `pictureUse` IS GONE FROM THIS SHAPE — 9 October 2026. The column stays and is no longer read;
+   * a location picture is used wherever a design has a space for it. */
+  /** 🔴 This location's social handle, for the `{location-tag}` caption label. Never for a private. */
+  socialTag?: string | null
+  /** ⚠️ THE OLD SINGLE-PICTURE FLAG — `truck_places.event_bg_path`. Kept because the event design
+   *  still renders from it; it is NOT the library's count. See `pictureCount`. */
   hasPicture: boolean
   /** A short-lived signed URL, from the ONE read. Null when the place has no picture of its own. */
   imageUrl: string | null
+  /** 🔴 HOW MANY PICTURES THIS PLACE'S LIBRARY HOLDS (part 3), from the one batched read. */
+  pictureCount: number
+  /** The Main picture's signed thumbnail, from the same read. ⚠️ Never a public URL. */
+  mainUrl: string | null
+  mainLabel: string | null
   width: number | null
   height: number | null
   ownPositions: boolean
@@ -87,22 +224,53 @@ export interface PostPlace {
 }
 
 interface Overview {
+  /** 🔴 Whether the truck has a logo we could draw — decides whether "Show your logo" is offered. */
+  hasLogo?: boolean
   weekly: {
     ready: boolean
     previewUrl: string | null
     /** The design's own pixel size, so the preview tile is drawn in its shape rather than a guess. */
     width: number | null
     height: number | null
-    thisWeek: { start: string; end: string; events: number }
-    nextWeek: { start: string; end: string; events: number }
+    /* ⚠️ `privateEvents` IS COUNTED SEPARATELY AND `events` IS THE **PUBLIC** TALLY. "4 events · 1
+     * private event left out" would contradict itself if the first number included the second. */
+    /** 🔴 §6 · `caption` IS THE FINISHED weekly caption for that week, filled on the server with the
+     *  same two functions the weekly Make screen uses. ⚠️ Optional, so a payload from before this
+     *  existed falls back to the template rather than to an empty box. */
+    thisWeek: { start: string; end: string; events: number; privateEvents?: number; caption?: string }
+    nextWeek: { start: string; end: string; events: number; privateEvents?: number; caption?: string }
     defaultWeek: 'this' | 'next'
   }
-  standard: { ready: boolean; previewUrl: string | null; width: number | null; height: number | null }
+  standard: {
+    ready: boolean; previewUrl: string | null; width: number | null; height: number | null
+    /** 🔴 Whether the single event design has a photo space — which decides whether a location's event
+     *  image is a photo in a box or the whole poster, and therefore what the Locations screen asks for. */
+    photoSpace?: boolean
+  }
+  /** 🔴 Whether the weekly design draws a location picture at all. The Locations pane says so. */
+  weeklyPictureOn?: boolean
+  /* 🔴 THE TWO SAVED CAPTION TEMPLATES, seeded on read. ⚠️ `saved` is false when the server is
+   * returning the seed rather than a stored row — so a "Saved ✓" tick cannot appear over a caption
+   * nobody has saved. */
+  captions?: {
+    week: { template: string; saved: boolean }
+    event: { template: string; saved: boolean }
+  }
+  /** 🔴 §5 · The three per-truck facts the screen needs to fill a template itself. See the route. */
+  captionBits?: { orderUrl: string | null; timeStyle: '12h' | '24h'; country?: string }
   upcoming: PostEvent[]
   places: PostPlace[]
 }
 
-export type SocialArea = 'posts' | 'designs'
+/**
+ * ══ 🔴 THREE AREAS, AND IT IS A TOP TAB NOW (7 October 2026) ══════════════════════════════════════
+ * `'posts' | 'designs'` until 6 October, as a pill inside Schedule. Social media is its own top tab
+ * with three pills of its own, drawn by the page's shared sub-tab bar rather than by this component.
+ * ⚠️ THE IDS ARE THE URL'S (`?tab=social&section=create|designs|locations`), resolved by
+ * `resolveManageLocation` in lib/manage-links.ts, which also maps the four retired Schedule ids onto
+ * them so no live bookmark lands on Billing or Events.
+ */
+export type SocialArea = 'create' | 'designs' | 'locations'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // SMALL SHARED PIECES
@@ -130,11 +298,10 @@ export function shortDate(ymd: string | null | undefined): string {
  * and "which design" is the question the bar exists to answer.
  * ⚠️ A PRIVATE ROW HAS NO BAR AT ALL, because it has no post — `none` is transparent and keeps the
  * row's text aligned with the ones above and below it. */
-const DESIGN_BAR: Record<PostEvent['design'], string> = {
-  own: 'bg-orange-500',
-  standard: 'bg-slate-800',
-  none: 'bg-transparent',
-}
+/* ⛔ `DESIGN_BAR` IS GONE — 7 October 2026. It was the coloured spine on each row of the old flat
+ * six-event list, saying which design that post would use. The right half of Create a post says it in
+ * WORDS now, under the next event, and names the location — which is what an operator can act on. A
+ * 4px colour that needed a legend nobody had was the weaker half of that answer. */
 
 /* ══ 🔴 A BOX HEADING IS A HEADING, NOT A LABEL (6 October 2026) ══════════════════════════════════
  * ⛔ IT WAS `SUBCARD_HEADING` — `text-xs font-black uppercase tracking-widest`. That treatment is for
@@ -158,6 +325,21 @@ const BTN_PRIMARY =
   'inline-flex items-center justify-center rounded-xl bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50'
 const BTN_OUTLINE =
   'inline-flex shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50'
+/* ⛔ `BTN_OUTLINE_ORANGE` IS GONE WITH "Designs for a place" (7 October 2026). It was the orange row
+ * button on the locations that had no picture yet — the half of that list an operator could act on.
+ * The Locations table has no row buttons at all: a row selects, and the acting is in the pane. */
+
+/* ══ 🔴 ONE GRID, USED BY CREATE A POST **AND** DESIGNS (8 October 2026) ═══════════════════════════
+ * ⛔ THEY WERE TWO DIFFERENT GRIDS AND IT SHOWED. Create a post was two equal halves across the full
+ * content width; Designs was `minmax(200px,320px) minmax(200px,320px) minmax(0,1fr)` — two narrow
+ * columns and an empty third track left over from the box that used to sit in it. So the two screens
+ * an operator switches between with one click laid their boxes out at different widths, and the
+ * pictures in the narrower one were smaller for no reason anybody could name.
+ * 🔴 ONE CONSTANT, NOT TWO COPIES OF THE SAME STRING. A shared breakpoint written twice is a shared
+ * breakpoint until someone edits one of them.
+ * ⚠️ `min-[900px]:` IS MEASURED, NOT INHERITED: a 16in MacBook Pro in Safari with a normal window is
+ * 1000–1100px, which is the machine this is used on, so `lg:` (1024) stacked it on a laptop. */
+export const TWO_HALVES_GRID = 'grid grid-cols-1 items-stretch gap-3 min-[900px]:grid-cols-2'
 
 /** A box on either area. ⚠️ `min-w-0` on every one: a grid column will not shrink below its content
  *  without it, and one long venue name would then push the whole page sideways. */
@@ -212,24 +394,15 @@ function EmptyBox({ title, onGo }: { title: string; onGo: () => void }) {
  * ⛔ IT ANSWERS THE QUESTION THE TWO DESIGN BOXES COULD NOT. They are two pictures with almost
  * identical descriptions; what tells them apart is not what is ON them, it is which posts USE them.
  */
-function UsedFor({ text }: { text: string }) {
-  return (
-    <p data-used-for className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-xs leading-relaxed text-slate-500">
-      <span className="font-bold text-slate-700">{USED_FOR_LABEL}</span> {text}
-    </p>
-  )
-}
-
-/**
- * ══ 🔴 A DESIGN PREVIEW TILE — THE SAME SIZE WHETHER OR NOT THERE IS A PICTURE ════════════════════
- *
- * ⛔ THE EMPTY STATE USED TO BE A DIFFERENT SHAPE. An `aspect-[4/5]` box with no image collapsed to
- * whatever its content needed, so "Not set up" drew a thin bar where a tall tile would be — and the
- * two Designs boxes were then different heights for a reason that had nothing to do with the designs.
- * 🔴 THE SIZE IS FIXED AND IS THE DESIGN'S OWN SHAPE: `width`/`height` come from the row, so an event
- * design that is square previews square. ⚠️ FALLS BACK TO 4:5, which is what the weekly poster is.
- * ⚠️ "No design yet" IS CENTRED IN THE SAME TILE, not beside it — that is the whole point.
- */
+/* ══ ⛔ TOMBSTONE · `UsedFor` — REMOVED 9 OCTOBER 2026 ════════════════════════════════════════════
+ * It drew a grey panel under each design's tile: **Used for:** "the weekly post only." on one and
+ * "every post about a single event." on the other.
+ * 🔴 THE BRIEF REMOVES BOTH LINES, and the reason they can go is that the box titles now carry the
+ * same fact: "Weekly post design" and "Single event post design" say what each is for in their own
+ * names. A sentence under each saying it again was the same information twice on one card — and it was
+ * the taller half of the two boxes, on a screen where the design tiles are what an operator reads.
+ * ⚠️ THE CONSTANTS STAY IN lib/copy/socialPosts.ts WITH THEIR OWN NOTE, unreferenced, because they are
+ * the record of what the wording was. */
 function DesignTile({ url, w, h }: { url: string | null; w: number | null; h: number | null }) {
   /* 🔴 A FIXED HEIGHT AND A DERIVED WIDTH, not `aspect-ratio` on a full-width box. Three boxes in a
    * row are different widths; a width-driven aspect ratio would make the three previews three
@@ -266,24 +439,9 @@ function DesignTile({ url, w, h }: { url: string | null; w: number | null; h: nu
   )
 }
 
-/**
- * A place's tile in "Designs for a place" — 28×35, portrait.
- *
- * ⛔ A PLACE ON STANDARD GETS A PLAIN TILE WITH NO TEXT IN IT. It said "Standard" in 9px inside a
- * 40px box, which is unreadable AND redundant: the tag beside it says the same word at a size somebody
- * can read. A tile is there to show a picture or to show that there is not one.
- */
-function PlaceTile({ url }: { url: string | null }) {
-  return (
-    <div data-place-tile
-      className="flex h-[35px] w-[28px] shrink-0 items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-slate-100">
-      {url
-        /* eslint-disable-next-line @next/next/no-img-element -- a signed, expiring Supabase URL. */
-        ? <img src={url} alt="" className="h-full w-full object-cover" />
-        : null}
-    </div>
-  )
-}
+/* ⛔ `PlaceTile` IS GONE — 7 October 2026. A 28×35 thumbnail for the "Designs for a place" list. The
+ * Locations table draws its own 24×30 pair (one per slot) with a grey dash for an empty one, because
+ * a row there has TWO images to show rather than one. */
 
 /**
  * "Own design" — a small rounded tag, to the right of the name and before the button.
@@ -299,10 +457,10 @@ function PlaceTile({ url }: { url: string | null }) {
  * ⚠️ THE DEFAULT IS STILL VISIBLE ON THE ROW, twice over: a blank tile rather than a thumbnail, and a
  * button that reads "Design" rather than "Edit". Nothing was lost with the word.
  */
-function DesignTag({ own }: { own: boolean }) {
-  if (!own) return null
-  return <span data-design-tag className="shrink-0 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-semibold text-orange-700">Own design</span>
-}
+/* ⛔ `DesignTag` IS GONE WITH THE BOX IT BELONGED TO. It marked the exception in "Designs for a
+ * place" — the handful of places with their own picture. "Place pictures" marks the exception the
+ * other way round: the places with NONE come first, under their own heading, which says more than a
+ * tag on the rest ever did. */
 
 /** "✓ Set up" / "Not set up". */
 function ReadyBadge({ ready }: { ready: boolean }) {
@@ -311,13 +469,9 @@ function ReadyBadge({ ready }: { ready: boolean }) {
     : <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500">Not set up</span>
 }
 
-/** The back link at the top of every full-page view this file opens. */
-function BackLink({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick}
-      className="text-xs font-bold text-slate-500 hover:text-slate-800">‹ {label}</button>
-  )
-}
+/* ⛔ `BackLink` IS GONE — 9 October 2026. It drew a standalone "‹ Designs" row above each full-page
+ * view, and the editor's own title row already begins with one beside the title it goes back from. Two
+ * ways back for one journey, stacked, costing a row of height on the screen that needs it most. */
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE PANE
@@ -337,7 +491,7 @@ function BackLink({ label, onClick }: { label: string; onClick: () => void }) {
  * ⚠️ THE PREVIEW KEY IS NOT CHECKED HERE. The page.tsx pill list already filters on it, so a truck
  * without it cannot reach this component at all — and the route refuses it a second time.
  */
-export function SocialPostsPane({ truck, token, area, onArea, manageApi }: {
+export function SocialPostsPane({ truck, token, area, onArea, manageApi, openEventId, onOpenedEvent, onRequestArea, onFullWidth }: {
   truck: {
     plan: Plan
     feature_overrides: Record<string, boolean> | null
@@ -345,14 +499,33 @@ export function SocialPostsPane({ truck, token, area, onArea, manageApi }: {
     name?: string | null
   } | null
   token: string
-  /** Which of the two areas is open. It is in the URL — see lib/manage-links.ts. */
+  /** Which of the three areas is open. It is in the URL — see lib/manage-links.ts. */
   area: SocialArea
   onArea: (a: SocialArea) => void
-  /** /api/manage, for the one field this page writes that is not a design: a place's name on posts. */
+  /** /api/manage, for the one field this page writes that is not a design: a location's name on posts. */
   manageApi: (action: string, extra?: Record<string, unknown>) => Promise<unknown>
+  /** 🔴 An event handed over by Schedule › Events' "Make post" — its modal opens on arrival. */
+  openEventId?: string | null
+  /** Cleared once the pane has consumed `openEventId`, so a later pill switch cannot reopen it. */
+  onOpenedEvent?: () => void
+  /** 🔴 Hands the page a guarded navigator, so a sub-tab pill asks before leaving an unsaved design. */
+  onRequestArea?: (go: ((area: SocialArea) => void) | null) => void
+  /**
+   * ══ 🔴 "THIS PANE WANTS THE WHOLE WINDOW" (9 October 2026) ═════════════════════════════════════
+   * ⛔ THE PAGE CAPS ITS CONTENT AT `max-w-5xl` ABOVE 1400px, which is 1024px of a 1728px window — so a
+   * design editor asked to use the full width could not, however it was built. ⚠️ A `100vw` BREAKOUT
+   * (`margin-left: calc(50% - 50vw)`) WAS THE OTHER OPTION AND IS WRONG: `vw` includes the vertical
+   * scrollbar, so on any page tall enough to scroll it overflows by ~15px and the PAGE pans sideways —
+   * over a drag surface, where a sideways pan is a lost gesture.
+   * 🔴 SO THE PANE ASKS AND THE PAGE ANSWERS. The page owns its container; this is a request, not a
+   * reach into it.
+   */
+  onFullWidth?: (on: boolean) => void
 }) {
   return (
-    <SocialPosts truck={truck} token={token} area={area} onArea={onArea} manageApi={manageApi} />
+    <SocialPosts truck={truck} token={token} area={area} onArea={onArea} manageApi={manageApi}
+      openEventId={openEventId ?? null} onOpenedEvent={onOpenedEvent} onRequestArea={onRequestArea}
+      onFullWidth={onFullWidth} />
   )
 }
 
@@ -361,9 +534,26 @@ type View =
   | { kind: 'weekly-post'; week: 'this' | 'next' }
   | { kind: 'weekly-design' }
   | { kind: 'event-design' }
-  | { kind: 'place-design'; placeId: string }
+  /* ══ ⛔ `place-pictures` AND `place-design` ARE GONE — 7 October 2026 ════════════════════════════
+   * The pictures page was a LIBRARY — a grid, a ★ Main, a Make main / Rename menu and a sentence
+   * explaining that the Main one was used automatically. A location now has at most two images with
+   * one job each, so there is nothing to browse and nothing to promote: the Locations sub-tab's two
+   * boxes are the whole screen, and they are a pane rather than a page (no second "‹ ‹").
+   *
+   * ⚠️ `place-design` WAS THE PER-LOCATION **TEXT POSITIONS** EDITOR, reached from a quiet link at the
+   * bottom of that page. The brief removes the link, so the editor has no door and it has gone with
+   * it. ⛔ WHAT IS **NOT** GONE IS THE DATA OR THE BEHAVIOUR: `truck_places.event_layout` is still
+   * read by `eventPostContext`, still validated against that location's own picture, and still used
+   * in preference to the standard positions — so every location that has its own keeps rendering
+   * exactly as it does. A location can no longer be GIVEN its own from the UI, which is a capability
+   * that lost its door rather than a capability that was deleted. Named in docs/social-tab-report.md
+   * rather than left to be discovered. */
 
-function SocialPosts({ truck, token, area, onArea, manageApi }: {
+/* ⛔ `manageApi` IS NO LONGER DESTRUCTURED. Its one reader was "Name on posts", which left this screen
+ * on 9 October when the field moved to Tidy up places. ⚠️ IT IS STILL IN THE PROP TYPE and the page
+ * still passes it — removing it would be a change to the page's mount for nothing, and the next thing
+ * this pane needs to write through `/api/manage` will want it back. */
+function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, onRequestArea, onFullWidth }: {
   truck: {
     plan: Plan
     feature_overrides: Record<string, boolean> | null
@@ -373,16 +563,59 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
   token: string
   area: SocialArea
   onArea: (a: SocialArea) => void
+  openEventId?: string | null
+  onOpenedEvent?: () => void
+  /* 🔴 HANDS THE PAGE A GUARDED NAVIGATOR (9 October 2026). The sub-tab pills live in the page's own
+   * bar; this is how they come to ask before leaving an unsaved design. ⚠️ `null` on unmount, so a
+   * page that has left this pane cannot go on calling into it. */
+  onRequestArea?: (go: ((area: SocialArea) => void) | null) => void
+  /** 🔴 "This pane wants the whole window" — see the note on `SocialPostsPane`. */
+  onFullWidth?: (on: boolean) => void
   manageApi: (action: string, extra?: Record<string, unknown>) => Promise<unknown>
 }) {
   const [data, setData] = useState<Overview | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [view, setView] = useState<View>({ kind: 'boxes' })
+  /* ══ 🔴 "THE EDITOR HAS UNSAVED CHANGES" — REPORTED UP FROM `DesignEditor` ════════════════════════
+   * ⚠️ IT IS STATE HERE AND A REF THERE, and both are right: the editor reads it inside a handler that
+   * must have the current answer, and this pane RENDERS from it — the confirm is a dialog, not an
+   * alert, so it has to be in the tree. */
+  const [editorDirty, setEditorDirty] = useState(false)
+  /**
+   * 🔴 The press waiting on an answer. ⚠️ null = no dialog is open.
+   * ⛔ `'back'` IS A TARGET TOO (10 October 2026, §B10). "‹ Designs" inside the editor used to close it
+   * without asking, so the one way out an operator actually uses was the one that threw work away
+   * silently — while a sub-tab pill asked. One guard, every exit.
+   */
+  const [leaveTo, setLeaveTo] = useState<SocialArea | 'back' | null>(null)
+  /* ══ 🔴 §B10 · THE EDITOR'S OWN SAVE, SO THE DIALOG CAN OFFER "Save and leave" ═══════════════════
+   * ⚠️ A REF, NOT STATE: it is read inside a click handler that must have the current one, and nothing
+   * renders from it — a state write per keystroke of the editor's layout would re-render this pane for
+   * no reason. ⛔ THE EDITOR CLEARS IT ON UNMOUNT, so this cannot save a design that is not open. */
+  const editorSave = useRef<(() => void | Promise<void>) | null>(null)
   /** The event whose post modal is open. One at a time, closed by setting this to null. */
   const [posting, setPosting] = useState<string | null>(null)
+  /* ══ 🔴 §5 · THE CHOSEN EVENT AND THE CAPTION THAT GOES WITH IT (9 October 2026) ═══════════════════
+   *
+   * ⛔ THEY LIVE **HERE**, NOT IN `NextEventHalf`, and they have to: the caption box is a sibling of
+   * that card, not a child of it, and the post modal is a third sibling again. A choice held in the
+   * card could not reach either. ⚠️ `null` MEANS "the next one", which is resolved where it is used so
+   * that a reload, a refresh of the overview or an event passing cannot leave a stale id selected.
+   * 🔴 `postText` IS THE OPERATOR'S OWN WORDS and it is what the modal shares. ⚠️ It is `undefined`
+   * until the box has reported once, which is how the modal tells "no box was offered" (Schedule's own
+   * Make post) from "the box was emptied" — those must behave differently. */
+  const [chosenEventId, setChosenEventId] = useState<string | null>(null)
+  const [postText, setPostText] = useState<string | undefined>(undefined)
+  /* ⚠️ THE WEEKLY CARD'S BOX REPORTS TOO, and nothing reads it yet — the weekly MAKE screen owns its
+   * own caption and has since 8 October. ⛔ IT IS WIRED ANYWAY rather than passing a no-op, because a
+   * `() => {}` would be the kind of thing somebody later takes for a finished feature. The report says
+   * what is missing. */
+  const [weekCaption, setWeekCaption] = useState<string | undefined>(undefined)
+  void weekCaption
   const [week, setWeek] = useState<'this' | 'next'>('this')
-  const [eventSearch, setEventSearch] = useState('')
-  const [designSearch, setDesignSearch] = useState('')
+  /* ⛔ `eventSearch` AND `designSearch` WENT WITH THE TWO LISTS THAT HAD SEARCH BOXES ("Post for a
+   * place" and "Designs for a place"). The Locations table owns its own search, because the state
+   * belongs with the filter chips it works alongside. */
 
   const load = useCallback(async () => {
     try {
@@ -407,6 +640,122 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load() }, [load])
 
+  /* ══ 🔴 THE HANDOFF FROM SCHEDULE › EVENTS' "Make post" (§1) ══════════════════════════════════════
+   * That button switches to this tab with `section=create` AND an event id, and the modal must be open
+   * when the operator arrives — one press, not two.
+   * ⛔ IT IS AN EFFECT AND IT HAS TO BE. The id arrives as a PROP from a tab switch, so there is no
+   * event handler in this component to hang it on, and `posting` is this component's state. The
+   * disable is the same per-line one `load` carries, and for the same reason: the setState is the
+   * response to something outside React changing.
+   * 🔴 `onOpenedEvent()` CLEARS THE PROP, which is what stops the modal reopening every time this
+   * component re-renders — including after the operator closes it. Without it, closing the modal and
+   * then saving anything at all would put it straight back.
+   * ⚠️ IT DOES NOT CHECK `area`: the page has already set the section to `create`, and an id that
+   * arrived while the operator was on Designs is still an id they asked to post about. */
+  useEffect(() => {
+    if (!openEventId) return
+    /* ⚠️ THE DISABLE SITS ON THE `setPosting` LINE, NOT ON THE `useEffect`. Put above the hook it is
+     * reported as unused — the rule fires on the CALL, so that is where the exemption has to be. */
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPosting(openEventId)
+    onOpenedEvent?.()
+  }, [openEventId, onOpenedEvent])
+
+  /* ⛔ EVERY HOOK BEFORE EVERY EARLY RETURN. `saveCaption` was declared beside the other derived
+   * values near the bottom — which is after the five `if (view.kind === …) return` branches, so on a
+   * full-page view it was never called and React's hook order changed between renders. The lint rule
+   * caught it; the symptom would have been a caption editor that lost its saver after opening the
+   * weekly post screen once. */
+  /**
+   * Save one post type's caption template.
+   *
+   * ══ 🔴 IT RELOADS AFTERWARDS — AND THE COMMENT THAT SAID IT MUST NOT WAS OUT OF DATE ══════════════
+   *
+   * ⛔ DOMINIC, 10 OCTOBER 2026: *"i added +Week dates then saved template but it didnt save."* **It
+   * did.** The row in the database begins `{week-dates} Pizza Kitchen — where we are this week:` — the
+   * press wrote exactly what he asked for. What did not happen is the SCREEN changing: this function
+   * deliberately did not reload, so `data.captions.week.template` stayed as it was, the caption box
+   * went on showing the caption the server had filled from the OLD template, and reopening "✎ Edit
+   * template" showed the old one with his chip missing. From where he was sitting that is a save that
+   * did nothing, and he was right to report it.
+   * ⛔ THE OLD REASONING WAS TRUE OF A SCREEN THAT NO LONGER EXISTS. It read: "`load()` would hand the
+   * editor a new `initial`, the `key` would change, React would mount a fresh editor and the caret
+   * would jump to the start — **on every debounce, while the operator is still typing**." That was the
+   * AUTOSAVE era. There is one write now, on a deliberate press, and the panel CLOSES immediately
+   * after it — so there is no caret left to lose and nothing is still being typed.
+   * 🔴 AND THE RELOAD IS NOT COSMETIC: the filled caption on the card is built on the SERVER from the
+   * template, so without it the card would go on showing a caption built from a template that no longer
+   * exists — the one failure this round's §2 is about, in a different place.
+   * ⚠️ IT THROWS ON FAILURE so the editor can show its own error and stay open. A silent failure here
+   * would close the panel over a caption that was never written.
+   */
+  const saveCaption = useCallback(async (kind: 'week' | 'event', template: string) => {
+    const r = await fetch('/api/weekly-post', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, action: 'caption_save', kind, template }),
+    })
+    if (!r.ok) {
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      throw new Error(String(j.error ?? 'That did not save.'))
+    }
+    /* ⚠️ AWAITED, so the panel's `onSave` does not close over a screen that is still showing the old
+     * words — the caller closes the editor the moment this resolves. */
+    await load()
+  }, [token, load])
+
+  /* ⛔ EVERY HOOK BEFORE EVERY EARLY RETURN. These three sat beside the other derived values near the
+   * bottom — which is after the `if (view.kind === …) return` branches, so inside a full-page editor
+   * they were never called and React's hook order changed between renders. The lint rule caught it;
+   * the symptom would have been the pill guard going dead exactly when an editor was open, which is
+   * the only time it matters. */
+  /* ══ 🔴 A PILL PRESS GOES THROUGH HERE WHILE AN EDITOR IS OPEN (9 October 2026) ══════════════════
+   * ⛔ THE PILLS SWITCHED TAB OUT FROM UNDER AN OPEN EDITOR WITH NO WARNING. They live in the page's
+   * own sub-tab bar, three components above this pane, so they knew nothing about an unsaved design —
+   * an operator who had spent ten minutes placing boxes could lose all of it by pressing "Designs" to
+   * check something.
+   * 🔴 AN IN-PAGE CONFIRM, NOT `window.confirm`. A browser dialog cannot be styled, cannot be read by
+   * the page's own voice, and on Safari steals focus in a way that has already cost this product a
+   * share sheet. ⚠️ AND IT IS ONLY ASKED WHEN THERE IS SOMETHING TO LOSE: a clean editor navigates
+   * straight through, which is what makes the question mean something when it is asked.
+   * ⚠️ IT ALSO CLOSES THE EDITOR. Switching pill while standing in a full-page view has to put the
+   * pane back on its boxes, or the new pill would render behind the editor it did not close. */
+  const goArea = useCallback((area2: SocialArea) => {
+    setView({ kind: 'boxes' })
+    setEditorDirty(false)
+    onArea(area2)
+  }, [onArea])
+
+  const requestArea = useCallback((area2: SocialArea) => {
+    if (editorDirty) { setLeaveTo(area2); return }
+    goArea(area2)
+  }, [editorDirty, goArea])
+
+  /* 🔴 THE ONE PLACE A DECISION IS CARRIED OUT, so "Save and leave" and "Leave without saving" cannot
+   * end up in different places. ⚠️ `'back'` CLOSES THE EDITOR AND RELOADS, which is what "‹ Designs"
+   * has always done; an area switches tab. */
+  const leaveNow = useCallback((to: SocialArea | 'back') => {
+    if (to === 'back') { setEditorDirty(false); setView({ kind: 'boxes' }); void load(); return }
+    goArea(to)
+  }, [goArea, load])
+
+  /* ⚠️ HANDED UP TO THE PAGE, which owns the pills. ⛔ IT IS AN EFFECT rather than a render-time call
+   * for the same reason `onDirtyChange` is: setting a parent's state during this component's render is
+   * the React warning, and the page only needs the handler after the render that produced it. */
+  useEffect(() => {
+    onRequestArea?.(requestArea)
+    return () => onRequestArea?.(null)
+  }, [onRequestArea, requestArea])
+
+  /* 🔴 THE THREE FULL-PAGE EDITOR VIEWS ARE THE ONES THAT WANT THE WHOLE WINDOW — and only those. The
+   * boxes view is a two-column reading screen that is better at the page's normal width.
+   * ⚠️ THE CLEAN-UP ARM MATTERS AS MUCH AS THE REPORT: leaving the page wide after the editor closed
+   * would silently change every other screen on the tab. */
+  const wantsFullWidth = view.kind === 'weekly-design' || view.kind === 'event-design' || view.kind === 'weekly-post'
+  useEffect(() => {
+    onFullWidth?.(wantsFullWidth)
+    return () => onFullWidth?.(false)
+  }, [onFullWidth, wantsFullWidth])
+
   const gate = (children: React.ReactNode) => (
     <FeatureGate
       feature="schedule_graphics"
@@ -419,69 +768,173 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
     </FeatureGate>
   )
 
-  const back = () => { setView({ kind: 'boxes' }); void load() }
+  /* ══ 🔴 §B10 · "‹ Designs" ASKS, LIKE A PILL DOES ════════════════════════════════════════════════
+   * ⛔ IT DID NOT, AND IT IS THE EXIT AN OPERATOR ACTUALLY USES — it is the first thing on the editor's
+   * own title row. So the guard that protected the three pills left the front door open. */
+  const back = () => {
+    if (editorDirty) { setLeaveTo('back'); return }
+    leaveNow('back')
+  }
 
   // ── THE FULL-PAGE VIEWS ──────────────────────────────────────────────────────────────────────
-  if (view.kind === 'weekly-post') {
-    return (
-      <div className="space-y-3">
-        <BackLink label="Social posts" onClick={back} />
-        {gate(<WeeklyPostApp token={token} truckName={truck?.name ?? 'Your truck'}
-          initialMode="post" initialWeek={view.week} onBack={back} />)}
+  /* ══ ⛔ THE STANDALONE "‹ Designs" ROW IS GONE — 9 October 2026 ══════════════════════════════════
+   * Every one of these three views drew a `BackLink` ABOVE the editor, and the editor's own title row
+   * already starts with one ("‹ Designs  Single event post design"). Two ways back, stacked, for one
+   * journey — and the upper one cost a whole row of vertical space on a screen whose whole problem is
+   * that the poster wants more.
+   * 🔴 THE INLINE ONE IS THE SURVIVOR, because it is the one beside the title it takes you back from.
+   * ⚠️ `BackLink` IS STILL EXPORTED AND USED BY NOTHING — see its own note. */
+  /* ══ ⛔ EVERY HOOK BEFORE EVERY EARLY RETURN — THE THIRD TIME THIS FILE HAS LEARNT IT ══════════════
+   * The caption memo below sat beside the other derived values, which is AFTER the
+   * `if (view.kind === …) return` branches — so inside a full-page editor it was never called and
+   * React's hook order changed between renders. `react-hooks/rules-of-hooks` caught it, as it caught
+   * `saveCaption` and then `goArea`/`requestArea` before it. ⚠️ THE SYMPTOM WOULD HAVE BEEN THE CAPTION
+   * GOING BLANK after closing an editor, which reads as a server problem. */
+
+  /** One location by id, for the right half's "which image" line. ⚠️ A private event has no place.
+   *  ⛔ `useCallback` BECAUSE THE CAPTION MEMO DEPENDS ON IT — a new function every render would refill
+   *  the caption every render, and a caption that re-fills under the operator retypes their edit away. */
+  const placeById = useCallback(
+    (id: string | null | undefined): PostPlace | null =>
+      id ? ((data?.places ?? []).find(p => p.id === id) ?? null) : null,
+    [data],
+  )
+
+  /* ══ 🔴 §5 · THE CHOSEN EVENT, AND ITS CAPTION, FILLED HERE ════════════════════════════════════════
+   *
+   * ⛔ `chosenEventId` IS RESOLVED AGAINST THE **CURRENT** LIST rather than trusted. The overview is
+   * re-read after every upload and every design save, and an event that has passed since the operator
+   * chose it is simply gone from `upcoming` — so a stored id has to fall back to the next public event
+   * rather than leaving the card blank.
+   * 🔴 AND THE CAPTION IS FILLED WITH THE **SAME TWO PURE FUNCTIONS** `event_post` uses on the server,
+   * from the same values. That is what makes it safe to fill on the client: there is one implementation
+   * of "what does this caption say", and this is a second CALLER of it, not a second copy.
+   * ⚠️ `now: new Date()` IS CORRECT HERE AND IS THE REASON `{day-date}` IS RELATIVE. The label fills to
+   * "tonight" / "tomorrow" / "on Tue 13 Oct" as of the moment the operator is looking, which is what
+   * `caption.ts` has always done — a date baked in on Sunday would be a lie by Wednesday.
+   */
+  const postableUpcoming = (data?.upcoming ?? []).filter(e => !e.isPrivate)
+  const chosenEvent = postableUpcoming.find(e => e.id === chosenEventId) ?? postableUpcoming[0] ?? null
+  const eventCaption = useMemo(() => {
+    if (!chosenEvent || !data) return ''
+    const template = data.captions?.event.template ?? ''
+    if (!template) return ''
+    return fillCaptionTemplate(template, eventCaptionValues({
+      /* ⚠️ `placeName` IS WHAT THE POSTER PRINTS (`short_name` first) and `venue` is the full name.
+       * The caption must agree with the poster, so the resolved one leads. */
+      placeName: chosenEvent.placeName ?? chosenEvent.venue ?? '',
+      town: chosenEvent.town,
+      date: chosenEvent.date,
+      startTime: chosenEvent.startTime,
+      endTime: chosenEvent.endTime,
+      orderUrl: data.captionBits?.orderUrl ?? null,
+      timeStyle: data.captionBits?.timeStyle ?? '12h',
+      /* 🔴 THE LOCATION'S OWN HANDLE, AND **NEVER** FOR A PRIVATE BOOKING — `chosenEvent` is drawn from
+       * `postableUpcoming`, so a private event cannot reach this line at all. */
+      socialTag: placeById(chosenEvent.placeId)?.socialTag ?? null,
+      country: (data.captionBits?.country as 'GB' | 'US' | undefined) ?? 'GB',
+      now: new Date(),
+    }))
+    /* ⚠️ `placeById` AND `data` ARE THE DEPENDENCIES THAT MATTER; `placeById` closes over `places`,
+     * which comes out of `data`, so listing `data` covers both. ⛔ `new Date()` IS NOT A DEPENDENCY and
+     * must not be — a caption that re-filled every render would retype itself under the operator. */
+  }, [chosenEvent, data, placeById])
+
+  /* ══════════════════════════════════════════════════════════════════════════════════════════════
+   * 🔴 §B10 · THE LEAVE DIALOG — BUILT HERE, **ABOVE** THE EARLY RETURNS
+   * ══════════════════════════════════════════════════════════════════════════════════════════════
+   *
+   * ⛔ **THIS IS THE BUG DOMINIC REPORTED.** The dialog was rendered in the boxes view's JSX — which is
+   * below three `if (view.kind === …) return` branches. So from inside an editor with unsaved changes,
+   * a pill press called `setLeaveTo(...)` and **nothing appeared**: the state changed, the dialog was
+   * not in the tree, and the operator pressed "Location settings" and watched the screen do nothing.
+   * 🔴 IT IS ONE ELEMENT NOW, INCLUDED BY ALL FOUR RETURNS — which is also why it is built before them
+   * rather than copied into each.
+   * ⚠️ AND IT HAS THREE BUTTONS. Two were a false choice: the dialog that exists to protect the
+   * operator's work offered no way to keep it.
+   */
+  const leaveDialog = leaveTo && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      data-leave-confirm
+      /* ⚠️ A CLICK ON THE BACKDROP IS "Keep editing", which is the SAFE answer. A backdrop that
+       * discarded work would be the most destructive control on the screen and the easiest to hit by
+       * accident. */
+      onClick={() => setLeaveTo(null)}>
+      <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl"
+        onClick={e => e.stopPropagation()}>
+        <p className="text-sm font-bold text-slate-900" data-leave-title>{LEAVE_TITLE}</p>
+        <p className="mt-1 text-[12px] leading-snug text-slate-500" data-leave-body>{LEAVE_BODY}</p>
+        <div className="mt-4 flex flex-wrap justify-end gap-2">
+          {/* ⛔ "Keep editing" IS FIRST AND IS THE OUTLINED ONE; the destructive answer is not where a
+            * hurried press lands. 🔴 "Save and leave" IS THE ORANGE ONE — the brief's instruction, and
+            * the one that loses nothing. */}
+          <button type="button" data-keep-editing className={BTN_OUTLINE}
+            onClick={() => setLeaveTo(null)}>{LEAVE_CONFIRM_STAY}</button>
+          <button type="button" data-leave-anyway
+            className="inline-flex shrink-0 items-center justify-center rounded-xl border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
+            onClick={() => { const to = leaveTo; setLeaveTo(null); leaveNow(to) }}>
+            {LEAVE_WITHOUT_SAVING}
+          </button>
+          {/* ⚠️ IT **AWAITS** THE SAVE BEFORE LEAVING. The editor's `onSave` goes to the server; leaving
+            * first would unmount the screen that reports whether it worked, and an operator who chose
+            * "Save and leave" would have no way to find out that it had not. ⛔ AND A FAILED SAVE KEEPS
+            * THE EDITOR OPEN, with its own error message, rather than discarding the work anyway. */}
+          <button type="button" data-save-and-leave
+            className="inline-flex shrink-0 items-center justify-center rounded-xl bg-orange-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-orange-700"
+            onClick={() => {
+              const to = leaveTo
+              const save = editorSave.current
+              void (async () => {
+                try { await save?.() } catch { setLeaveTo(null); return }
+                setLeaveTo(null)
+                leaveNow(to)
+              })()
+            }}>
+            {LEAVE_SAVE_AND_GO}
+          </button>
+        </div>
       </div>
-    )
+    </div>
+  )
+
+  if (view.kind === 'weekly-post') {
+    return (<>{gate(<WeeklyPostApp token={token} truckName={truck?.name ?? 'Your truck'}
+      initialMode="post" initialWeek={view.week} onBack={back} onDirtyChange={setEditorDirty}
+      onSaver={fn => { editorSave.current = fn }} />)}{leaveDialog}</>)
   }
   if (view.kind === 'weekly-design') {
-    return (
-      <div className="space-y-3">
-        <BackLink label="Designs" onClick={back} />
-        {gate(<WeeklyPostApp token={token} truckName={truck?.name ?? 'Your truck'}
-          initialMode="setup" initialDesignKind="week" hideKindSwitch onBack={back} />)}
-      </div>
-    )
+    /* ══ 🔴 "+ Add location pictures" GOES TO **Location settings**, THROUGH `requestArea` ═══════════
+      * ⛔ IT WENT TO Designs, AND CALLED `onArea` DIRECTLY. Both halves of that were wrong by 9 October:
+      *   • Designs no longer holds a per-location picture list at all — that was "Designs for a place",
+      *     sorted so the empty ones came first, and it is tombstoned above. A location's picture is set
+      *     in Location settings now, so the old target is a tab where there is nothing to do.
+      *   • `onArea` DIRECTLY IS AN UNGUARDED WAY OUT OF AN OPEN EDITOR. This link is pressed from inside
+      *     the weekly design editor, with boxes possibly just moved — the one situation the sub-tab
+      *     guard exists for. `requestArea` asks first and `goArea` closes the editor, so the `setView`
+      *     this used to do by hand is already done for it. */
+    return (<>{gate(<WeeklyPostApp token={token} truckName={truck?.name ?? 'Your truck'}
+      initialMode="setup" initialDesignKind="week" hideKindSwitch onBack={back}
+      onDirtyChange={setEditorDirty}
+      onSaver={fn => { editorSave.current = fn }}
+      onAddPlacePictures={() => requestArea('locations')} />)}{leaveDialog}</>)
   }
   if (view.kind === 'event-design') {
-    return (
-      <div className="space-y-3">
-        <BackLink label="Designs" onClick={back} />
-        {gate(<EventSetupScreen token={token} onlyStandard onCancel={back} />)}
-      </div>
-    )
+    return (<>{gate(<EventSetupScreen token={token} onlyStandard onCancel={back}
+      onDirtyChange={setEditorDirty} onSaver={fn => { editorSave.current = fn }} />)}{leaveDialog}</>)
   }
-  if (view.kind === 'place-design') {
-    const place = data?.places.find(p => p.id === view.placeId) ?? null
-    return (
-      <PlaceDesignPage
-        token={token} manageApi={manageApi} place={place} placeId={view.placeId}
-        onBack={back}
-        onMakePost={id => setPosting(id)}
-        gate={gate}
-      />
-    )
-  }
-
   // ── THE BOXES ────────────────────────────────────────────────────────────────────────────────
   const places = data?.places ?? []
-  const withOwn = places.filter(p => p.hasPicture).length
 
-  const matches = (p: PostPlace, q: string) => {
-    const s = q.trim().toLowerCase()
-    if (!s) return true
-    return p.name.toLowerCase().includes(s)
-      || String(p.shortName ?? '').toLowerCase().includes(s)
-      || String(p.area ?? '').toLowerCase().includes(s)
-  }
-
-  /* 🔴 PLACES WITH THEIR OWN DESIGN COME FIRST in Box 3 of Designs — the brief's order, and the right
-   * one: the list's job there is "what have I given a picture to, and what is still on Standard?", and
-   * a truck with twenty places and two designs should see the two without scrolling. */
-  const designList = places.filter(p => matches(p, designSearch))
-    .slice()
-    .sort((a, b) => (a.hasPicture === b.hasPicture ? 0 : a.hasPicture ? -1 : 1))
-
-  const postList = places.filter(p => matches(p, eventSearch))
+  /* ⛔ `matches`, `designList`, `withoutPictures` AND `withPictures` ARE GONE — 7 October 2026. They
+   * sorted "Designs for a place" so the locations with NO picture came first, under their own heading.
+   * 🔴 THE Locations TABLE DOES THAT WITH A **CHIP** INSTEAD — "Missing images n" — which is better in
+   * the way that matters: the number is visible before it is pressed, so an operator knows whether
+   * there is anything to do without scrolling a list to find out. `LocationsArea` owns its own search
+   * and filtering, because that state belongs with the chips. */
 
   const weekChoice = week === 'this' ? data?.weekly.thisWeek : data?.weekly.nextWeek
+
+
 
   /* ══ ⛔ THE "Set up your event design first" LINE AND THE DISABLED BUTTONS ARE GONE (6 Oct 2026) ═══
    * They were one of THREE different answers to one situation — the weekly box relabelled its orange
@@ -493,46 +946,32 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
    * editor: the operator may need the weekly one or the event one, and Designs is where both are.
    * ⚠️ IT GOES THROUGH `onSectionChange`, so the URL becomes `?section=designs` — the area is
    * addressable and a reload stays put. Same path the segmented control takes. */
-  const goToDesigns = () => onArea('designs')
+  const goToDesigns = () => requestArea('designs')
 
   return (
     <div className="space-y-3" data-social-posts>
-      {/* ── HEADER ───────────────────────────────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xl font-black text-slate-900">Social posts</p>
-          {/* ══ 🔴 THE INTRO NAMES THE TWO AREAS AND THE ORDER THEY GO IN (6 October 2026) ══════════
-            * ⛔ IT SAID "Make a picture for your week, an event or a place — and set up how they look."
-            * That named the six boxes and said nothing about the choice an operator has to make first:
-            * which area they are in, and why there are two.
-            * 🔴 Designs is the ONCE; Make a post is the EVERY WEEK. An operator who reads this knows
-            * why a Make a post box can be empty before they meet one.
-            * ⚠️ THE TWO BOLD WORDS ARE THE SEGMENTED CONTROL'S OWN LABELS, so they read as the control
-            * rather than as emphasis. */}
-          <p className="mt-0.5 max-w-[46rem] text-sm text-slate-500" data-page-intro>
-            <span className="font-bold text-slate-700">{INTRO_DESIGNS_WORD}</span>{INTRO_AFTER_DESIGNS}
-            <span className="font-bold text-slate-700">{INTRO_MAKE_WORD}</span>{INTRO_AFTER_MAKE}
-          </p>
-        </div>
-        {/* ══ 🔴 A SEGMENTED CONTROL, AND IT IS IN THE URL ═══════════════════════════════════════
-          * "Send me the designs screen" has to be a link somebody can send, so the choice is
-          * `?section=posts` / `?section=designs` through the one builder rather than React state
-          * nobody can address.
-          * ⛔ A LIGHT GREY TRACK WITH A WHITE SELECTED SEGMENT, NOT ORANGE TEXT (6 October 2026). It
-          * was an orange-on-pale-orange pill in a bordered box, which is this product's PRIMARY
-          * colour — and a view switch is not an action. Orange is reserved for making something. */}
-        <div role="tablist" aria-label="Social posts area" data-social-area
-          className="inline-flex shrink-0 gap-1 rounded-xl bg-slate-100 p-1">
-          {([['posts', 'Make a post'], ['designs', 'Designs']] as const).map(([k, label]) => (
-            <button key={k} type="button" role="tab" aria-selected={area === k}
-              onClick={() => onArea(k)}
-              className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${area === k
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-800'}`}>
-              {label}
-            </button>
-          ))}
-        </div>
+      {/* ══ 🔴 EACH SUB-TAB SAYS WHAT **IT** IS FOR — 8 October 2026 ═══════════════════════════════
+        * ⛔ A SHARED "Social posts" HEADING AND A SHARED INTRO STOOD HERE, and between them they
+        * answered the wrong question twice. The heading named the TAB — which the pill bar directly
+        * above it already names, in the same words, highlighted — and the intro was a map of two areas
+        * ("Designs is where you upload… Make a post puts…") that are now three pills in that bar.
+        * 🔴 A PAGE THAT EXPLAINS ITS OWN NAVIGATION IS A PAGE WHOSE NAVIGATION IS NOT EXPLAINING
+        * ITSELF. Each pill now answers "what is this screen for?", which is the only question a
+        * heading on a sub-tab has to answer.
+        * ⚠️ ONE BLOCK, THREE PAIRS, CHOSEN BY `area` — not three copies of the markup. The three
+        * headings must stay the same size and the same distance from the bar, and that is a fact about
+        * one element rather than a habit shared by three. */}
+      <div className="min-w-0" data-tab-head>
+        <p className="text-xl font-black text-slate-900" data-tab-heading>
+          {area === 'create' ? TAB_CREATE_HEADING
+            : area === 'designs' ? TAB_DESIGNS_HEADING
+            : TAB_LOCATIONS_HEADING}
+        </p>
+        <p className="mt-0.5 max-w-[46rem] text-sm text-slate-500" data-tab-blurb>
+          {area === 'create' ? TAB_CREATE_BLURB
+            : area === 'designs' ? TAB_DESIGNS_BLURB
+            : TAB_LOCATIONS_BLURB}
+        </p>
       </div>
 
       {error && (
@@ -544,28 +983,76 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
       )}
       {!data && !error && <div className="p-8 text-center"><Spinner /></div>}
 
-      {data && area === 'posts' && (
+      {data && area === 'create' && (
         <>
-          {/* ══ 🔴 THREE EQUAL COLUMNS FROM **900px**, ONE BELOW IT (6 October 2026) ═══════════════
-            * ⛔ IT WAS `lg:` — 1024px — AND THAT WAS WRONG ON THE MACHINE THIS IS USED ON. A 16in
-            * MacBook Pro in Safari with a normal window is 1000–1100px wide, so the three boxes
-            * STACKED on a laptop, which is the width the design was drawn for.
-            * ⛔ AND THE RENDER HARNESS COULD NOT SEE IT: it measured 1440 (side by side) and 820
-            * (stacked) and never a laptop window. **A breakpoint with no measurement between its two
-            * sides is a breakpoint nobody has checked.** It is measured at 1000, 1100, 1280, 1440 and
-            * 1728 now, and 900 is below every one of them.
-            * ⚠️ `min-[900px]:` IS AN ARBITRARY VARIANT, not a custom screen. Tailwind 4 supports it,
-            * and a one-off breakpoint used by exactly two grids does not belong in the theme.
-            * ⚠️ `items-stretch`, so three boxes of very different content lengths are the same height —
-            * which is what makes them read as three choices of one kind rather than three loose cards. */}
-          <div className="grid grid-cols-1 items-stretch gap-3 min-[900px]:grid-cols-3" data-make-boxes>
-            {/* ── BOX 1 · WEEKLY ─────────────────────────────────────────────────────────────── */}
-            <Box title="Weekly post" blurb={WEEKLY_BOX_BLURB}>
+          {/* ══ 🔴 TWO HALVES SIDE BY SIDE FROM **900px**, STACKED BELOW IT (7 October 2026) ════════
+            * ⛔ THERE WERE THREE BOXES AND THE THIRD HAS GONE. "Post for a place" was a third door
+            * into the same modal — pick a venue, post its next event — and the right half below does
+            * that job better by naming the next event outright instead of making the operator pick the
+            * venue it happens to be at. Nothing it could do is now impossible.
+            * ⚠️ `min-[900px]:` IS THE SAME BREAKPOINT THE THREE BOXES USED, and it is deliberate
+            * rather than inherited: a 16in MacBook Pro in Safari with a normal window is 1000–1100px,
+            * which is the machine this is used on, so `lg:` (1024) stacked it on a laptop. **A
+            * breakpoint with no measurement between its two sides is a breakpoint nobody has checked**
+            * — it is measured at 390 and 1100 by scripts/social-posts-render.cjs.
+            * ⚠️ `items-stretch`, so two halves of very different lengths are the same height and read
+            * as two choices of one kind rather than two loose cards. */}
+          <div className={TWO_HALVES_GRID} data-create-halves>
+            {/* ══ 🔴 THE SINGLE EVENT HALF IS ON THE **LEFT** (10 October 2026, Dominic) ═══════════════
+              * ⛔ THE WEEKLY POST HELD THE LEFT FOR FOUR ROUNDS, and the order was inherited rather than
+              * chosen: the weekly poster was the first thing this feature could make. **A single event
+              * post is the one a truck makes most often** — one per pitch, several a week — where the
+              * weekly one is made once and then rarely touched. The thing done daily reads first.
+              * ⚠️ DESIGNS AND LOCATION SETTINGS MOVED IN THE SAME EDIT, so the three screens of this tab
+              * agree about which post comes first; two of them disagreeing is worse than either order. */}
+            {/* ── LEFT · SINGLE EVENT POST ────────────────────────────────────────────────────── */}
+            <Box title={CREATE_EVENT_TITLE} blurb={EVENT_BOX_BLURB}>
+              {gate(!data.standard.ready ? (
+                <EmptyBox title={EMPTY_EVENT_TITLE} onGo={goToDesigns} />
+              ) : (
+                <>
+                  <NextEventHalf
+                    events={data.upcoming}
+                    photoSpace={data.standard.photoSpace === true}
+                    standardUrl={data.standard.previewUrl}
+                    standardW={data.standard.width}
+                    standardH={data.standard.height}
+                    /* ⚠️ THE **EVENT POST** PICTURE, not the weekly one and not the poster — this
+                     * thumbnail stands in for what the single event post will be drawn on. */
+                    placeImageUrl={id => placeById(id)?.eventPhotoImage?.url ?? null}
+                    onPost={id => setPosting(id)}
+                    chosenId={chosenEventId}
+                    onChoose={setChosenEventId}
+                  />
+                  {/* 🔴 THE `key` IS THE FILLED TEXT ITSELF, which is what makes "pick another event"
+                    * refresh the box: a different event fills to a different string, so the textarea
+                    * remounts with it. ⛔ IT ALSO MEANS AN EDIT IS LOST WHEN THE OPERATOR PICKS A
+                    * DIFFERENT EVENT, and that is correct — the caption was for the other post. */}
+                  <PostCaption
+                    key={`cap-event-${eventCaption}`}
+                    kind="event"
+                    filled={eventCaption}
+                    template={data.captions?.event.template ?? ''}
+                    busy={false}
+                    onSave={t => saveCaption('event', t)}
+                    onTextChange={setPostText}
+                  />
+                </>
+              ))}
+            </Box>
+
+            {/* ── RIGHT · WEEKLY POST ─────────────────────────────────────────────────────────── */}
+            <Box title={CREATE_WEEKLY_TITLE} blurb={WEEKLY_BOX_BLURB}>
               {gate(!data.weekly.ready ? (
                 <EmptyBox title={EMPTY_WEEKLY_TITLE} onGo={goToDesigns} />
               ) : (
                 <>
-                  <label className="block text-xs font-bold text-slate-600">Which week</label>
+                  {/* 🔴 THE DESIGN'S OWN THUMBNAIL, IN ITS OWN SHAPE. Same tile the Designs box draws,
+                    * so an operator recognises what they are about to make. */}
+                  <div className="flex flex-col items-center">
+                    <DesignTile url={data.weekly.previewUrl} w={data.weekly.width} h={data.weekly.height} />
+                  </div>
+                  <label className="mt-3 block text-xs font-bold text-slate-600">Which week</label>
                   <select value={week} onChange={e => setWeek(e.target.value as 'this' | 'next')}
                     data-week-select
                     className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
@@ -573,122 +1060,43 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
                     <option value="next">Next week · {shortDate(data.weekly.nextWeek.start)} – {shortDate(data.weekly.nextWeek.end)}</option>
                   </select>
                   {/* ⛔ NO "last made" — WE DO NOT STORE IT. The brief says to leave it out rather than
-                    * invent one, and a date nobody recorded would be a date an operator plans around. */}
-                  <p className="mt-1.5 text-[11px] text-slate-400">
-                    {weekChoice?.events ?? 0} event{(weekChoice?.events ?? 0) === 1 ? '' : 's'}
+                    * invent one, and a date nobody recorded would be a date an operator plans around.
+                    * 🔴 WHAT IT DOES SAY IS WHAT IS **LEFT OUT**: a private booking is not posted
+                    * about at all, and a week whose numbers do not add up is the question this answers
+                    * before it is asked. See `weekEventsLine`. */}
+                  <p className="mt-1.5 text-[11px] text-slate-400" data-week-events>
+                    {weekEventsLine(weekChoice?.events ?? 0, weekChoice?.privateEvents ?? 0)}
                   </p>
-                  {/* 🔴 THE ONE ORANGE BUTTON ON THIS AREA, and it is only ever drawn when the design
-                    * is ready — the empty state above is the other branch. ⛔ IT NO LONGER RELABELS
-                    * ITSELF TO "Set up weekly design": a button that changes its own meaning depending
-                    * on data the operator cannot see is a button they learn not to trust. */}
+                  {/* 🔴 ONE OF THE TWO ORANGE BUTTONS ON THIS AREA, and it is only drawn when the
+                    * design is ready — the empty state above is the other branch. */}
                   <div className="mt-auto pt-3">
                     <button type="button" data-primary className={`${BTN_PRIMARY} w-full`}
                       onClick={() => setView({ kind: 'weekly-post', week })}>
-                      Make this week’s post
+                      {CREATE_WEEKLY_BUTTON}
                     </button>
                   </div>
-                </>
-              ))}
-            </Box>
-
-            {/* ── BOX 2 · SINGLE EVENT ───────────────────────────────────────────────────────── */}
-            <Box title="Single event post" blurb={EVENT_BOX_BLURB}>
-              {gate(!data.standard.ready ? (
-                <EmptyBox title={EMPTY_EVENT_TITLE} onGo={goToDesigns} />
-              ) : (
-                <>
-                  {/* ⛔ `max-h-72` IS NOT DECORATION — IT IS WHAT MAKES THE LIST SCROLL (6 Oct 2026).
-                      `flex-1 min-h-0 overflow-y-auto` lets a child be SHORTER than its content only
-                      when something above it decides the height. These boxes sit in the page's own
-                      flow with nothing capping them, so a truck with twenty places grew the box, and
-                      `items-stretch` then dragged the other two boxes to the same height. Measured:
-                      scripts/social-posts-render.cjs renders a 20-row list at three widths. */}
-                  <ul className="mt-2 max-h-72 min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto"
-                    data-upcoming-list>
-                    {data.upcoming.length === 0 && (
-                      <li className="py-3 text-sm text-slate-400">Nothing coming up.</li>
-                    )}
-                    {/* ══ 🔴 THE ROW WRAPS RATHER THAN OVERFLOWS AT A NARROW COLUMN WIDTH ═══════════
-                      * `flex-wrap` with the text block at `min-w-[9rem] flex-1`: at a comfortable
-                      * width the date, the venue and the button sit on one line; when the column is
-                      * too narrow for that the BUTTON drops under the text. ⛔ IT NEVER OVERFLOWS,
-                      * which is what a `shrink-0` button in a `nowrap` row would do. */}
-                    {data.upcoming.map(ev => (
-                      <li key={ev.id} className="flex flex-wrap items-stretch gap-x-2 gap-y-1.5 py-2">
-                        {/* ⚠️ `self-stretch` IS WHAT MAKES IT FULL ROW HEIGHT. `aria-hidden` because it
-                            says which design, and the row already says everything a reader needs. */}
-                        <span aria-hidden="true" data-design-bar
-                          className={`w-1 shrink-0 self-stretch rounded-full ${DESIGN_BAR[ev.design]}`} />
-                        <span className="min-w-[9rem] flex-1">
-                          {/* ⛔ A PRIVATE EVENT KEEPS ITS DATE AND LOSES EVERYTHING ELSE. Its venue and
-                              town never left the server. */}
-                          <span className={`block truncate text-sm font-bold ${ev.isPrivate ? 'text-slate-400' : 'text-slate-900'}`}>
-                            {shortDate(ev.date)}
-                            <span className="ml-1.5 font-medium text-slate-400">{formatTimeRange(ev.startTime, ev.endTime)}</span>
-                          </span>
-                          <span className={`block truncate text-sm ${ev.isPrivate ? 'italic text-slate-400' : 'text-slate-500'}`}>
-                            {ev.isPrivate ? PRIVATE_EVENT_ROW : (ev.venue ?? '—')}
-                          </span>
-                        </span>
-                        {/* ⛔ NO BUTTON ON A PRIVATE EVENT, EVER. There is no post for one — the route
-                            refuses `event_post` for it — so a button here would be one that cannot work.
-                            ⚠️ AND NO `disabled` ARM ANY MORE: this list is only drawn when the design is
-                            ready. With no design the whole box is the empty panel, which says what is
-                            missing instead of greying six buttons that explain nothing. */}
-                        {!ev.isPrivate && (
-                          <button type="button" className={`${BTN_OUTLINE} self-center`}
-                            onClick={() => setPosting(ev.id)}>Make post</button>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-auto pt-2">
-                    <a href={manageSectionHref('events')}
-                      className="text-sm font-semibold text-slate-600 underline hover:no-underline">
-                      See all upcoming events
-                    </a>
-                  </div>
-                </>
-              ))}
-            </Box>
-
-            {/* ── BOX 3 · POST FOR A PLACE ───────────────────────────────────────────────────── */}
-            <Box title="Post for a place" blurb={PLACE_POST_BOX_BLURB}>
-              {gate(!data.standard.ready ? (
-                <EmptyBox title={EMPTY_EVENT_TITLE} onGo={goToDesigns} />
-              ) : (
-                <>
-                  <Input label="Search places" value={eventSearch} onChange={setEventSearch}
-                    placeholder="Name or area" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
-                  <ul className="mt-2 max-h-72 min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto"
-                    data-place-post-list>
-                    {postList.length === 0 && (
-                      <li className="py-3 text-sm text-slate-400">
-                        {places.length === 0 ? 'No places yet.' : 'Nothing matches that.'}
-                      </li>
-                    )}
-                    {postList.map(pl => (
-                      <li key={pl.id} className="flex flex-wrap items-center gap-x-2 gap-y-1.5 py-2">
-                        <span className="min-w-[9rem] flex-1">
-                          <span className="block truncate text-sm font-bold text-slate-900">
-                            {pl.name}{pl.area ? <span className="font-medium text-slate-400"> · {pl.area}</span> : null}
-                          </span>
-                          <span className="block truncate text-sm text-slate-500">
-                            {pl.next ? `Next: ${shortDate(pl.next.date)}` : 'Nothing booked'}
-                          </span>
-                        </span>
-                        {pl.next
-                          ? <button type="button" className={BTN_OUTLINE}
-                              onClick={() => setPosting(pl.next!.id)}>Make post</button>
-                          /* ⚠️ A DASH, NOT A DISABLED BUTTON. A greyed button invites a press and then
-                             explains nothing; a dash says there is nothing to do here. */
-                          : <span aria-hidden="true" className="px-2 text-sm text-slate-300">—</span>}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-auto pt-2 text-xs text-slate-400">
-                    {places.length} place{places.length === 1 ? '' : 's'} · {PLACE_POST_FOOTER_NOTE}
-                  </p>
+                  {/* ══ 🔴 THE WEEKLY CARD IS THE SAME PATTERN AS THE EVENT ONE, AND NOW SO IS ITS TEXT
+                    * ⛔ **IT SHOWED THE TEMPLATE — `{day-list}`, `{order-link}` AND ALL — AND THAT WAS A
+                    * REAL BUG, REPORTED BY DOMINIC ON 10 OCTOBER.** The 9 October round added `caption`
+                    * to both weeks in the overview payload and filled it on the server with the Make
+                    * screen's own two functions… and this card went on reading `captions.week.template`.
+                    * ⚠️ THE CHECK THAT PASSED WAS ASKING THE **ROUTE**, which was right all along — a
+                    * payload assertion cannot see the screen, and the one that can is in
+                    * `scripts/social-posts.cjs` now.
+                    * 🔴 `weekChoice` IS THE WEEK THE SELECT ABOVE IS ON, so changing "Which week"
+                    * changes the caption with it — the same rule the event card follows when a
+                    * different event is picked.
+                    * ⚠️ THE TEMPLATE IS STILL THE TEMPLATE: "✎ Edit template" edits the thing with the
+                    * tokens in it, which is what that button has always meant. */}
+                  <PostCaption
+                    key={`cap-week-${weekChoice?.caption ?? data.captions?.week.template ?? ''}`}
+                    kind="week"
+                    filled={weekChoice?.caption ?? data.captions?.week.template ?? ''}
+                    template={data.captions?.week.template ?? ''}
+                    busy={false}
+                    onSave={t => saveCaption('week', t)}
+                    onTextChange={setWeekCaption}
+                  />
                 </>
               ))}
             </Box>
@@ -697,19 +1105,47 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
         </>
       )}
 
-      {/* ══ 🔴 TWO FIXED-ISH COLUMNS AND THE REST (6 October 2026) ═════════════════════════════════
-        * The two design boxes hold a preview tile and a button; "Designs for a place" holds a list
-        * that benefits from every pixel. ⛔ `1fr_1fr_1.4fr` GAVE THE LIST TOO LITTLE at 1000px and the
-        * two previews too much at 1728.
-        * ⚠️ `minmax(200px, 320px)` IS BOTH HALVES OF THE BRIEF: comfortable at ~320px on a wide
-        * screen, and allowed to shrink to 200px below ~1100 **without leaving the row**.
-        * ⚠️ AND THIS COMMENT IS OUT HERE RATHER THAN INSIDE THE `&& (` BELOW: a JSX comment cannot be
-        * the first thing in a JavaScript parenthesis, only inside JSX. (Writing one out INSIDE a JSX
-        * comment does not work either — its closing marker ends the comment it is being quoted in.) */}
+      {/* ══ 🔴 DESIGNS USES CREATE A POST'S GRID — THE SAME CONSTANT (8 October 2026) ═══════════════
+        * ⛔ IT WAS `minmax(200px,320px)_minmax(200px,320px)_minmax(0,1fr)`: two narrow columns and an
+        * empty third track, left behind when "Location images" moved out of this area. So the two
+        * screens one click apart laid their boxes out at different widths, and these pictures were
+        * smaller than Create a post's for a reason that had stopped existing.
+        * ⚠️ THE PICTURES STAY CENTRED and the orange button stays pinned to the bottom — both are the
+        * boxes' own rules (`items-center` on the tile wrapper, `mt-auto` on the button) and neither
+        * depends on the column width. */}
       {data && area === 'designs' && (
-        <div className="grid grid-cols-1 items-stretch gap-3 min-[900px]:grid-cols-[minmax(200px,320px)_minmax(200px,320px)_minmax(0,1fr)]"
-          data-design-boxes>
-          {/* ── BOX 1 · WEEKLY DESIGN ──────────────────────────────────────────────────────────── */}
+        <div className={TWO_HALVES_GRID} data-design-boxes>
+          {/* ⚠️ THE SINGLE EVENT DESIGN LEADS (10 October 2026) — the same order as Create a post and
+            * Location settings, for the reason given there: the post a truck makes most often reads
+            * first, and three screens of one tab disagreeing about it is worse than either order. */}
+          {/* ── BOX 1 · EVENT DESIGN — FIRST, because it is the post made most often ───────────── */}
+          {/* ══ 🔴 "Single event post design", AND "standard" IS BOLD ═════════════════════════════
+            * ⛔ IT WAS "Event post design" — which named the wrong distinction, because the box beside
+            * it ("Designs for a place") is ALSO a design for event posts. An operator reading the two
+            * headings could not tell which one their next post would use. The bold "standard" is what
+            * ties the two boxes together: this is the default, and a place with its own replaces it. */}
+          <Box title={EVENT_DESIGN_TITLE} blurb={<>
+            {EVENT_DESIGN_BLURB_BEFORE}
+            <strong className="font-bold text-slate-700">{EVENT_DESIGN_BLURB_BOLD}</strong>
+            {EVENT_DESIGN_BLURB_AFTER}
+          </>}>
+            {gate(
+              <>
+                <div className="flex flex-col items-center">
+                  <DesignTile url={data.standard.previewUrl} w={data.standard.width} h={data.standard.height} />
+                  <div className="mt-2"><ReadyBadge ready={data.standard.ready} /></div>
+                </div>
+                <div className="mt-auto pt-3">
+                  <button type="button" data-primary className={`${BTN_PRIMARY} w-full`}
+                    onClick={() => setView({ kind: 'event-design' })}>
+                    {data.standard.ready ? EVENT_DESIGN_BUTTON_EDIT : EVENT_DESIGN_BUTTON_NEW}
+                  </button>
+                </div>
+              </>,
+            )}
+          </Box>
+
+          {/* ── BOX 2 · WEEKLY DESIGN ──────────────────────────────────────────────────────────── */}
           <Box title="Weekly post design" blurb={WEEKLY_DESIGN_BLURB}>
             {gate(
               <>
@@ -721,7 +1157,6 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
                   <DesignTile url={data.weekly.previewUrl} w={data.weekly.width} h={data.weekly.height} />
                   <div className="mt-2"><ReadyBadge ready={data.weekly.ready} /></div>
                 </div>
-                <UsedFor text={WEEKLY_DESIGN_USED_FOR} />
                 {/* 🔴 ORANGE, AND PINNED TO THE BOTTOM (6 October 2026, Dominic). On Designs, setting a
                   * design up IS the thing to do — these two are the only orange buttons on the area. */}
                 <div className="mt-auto pt-3">
@@ -734,97 +1169,1120 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
             )}
           </Box>
 
-          {/* ── BOX 2 · EVENT DESIGN ───────────────────────────────────────────────────────────── */}
-          <Box title="Event post design" blurb={EVENT_DESIGN_BLURB}>
-            {gate(
-              <>
-                <div className="flex flex-col items-center">
-                  <DesignTile url={data.standard.previewUrl} w={data.standard.width} h={data.standard.height} />
-                  <div className="mt-2"><ReadyBadge ready={data.standard.ready} /></div>
-                </div>
-                <UsedFor text={EVENT_DESIGN_USED_FOR} />
-                <div className="mt-auto pt-3">
-                  <button type="button" data-primary className={`${BTN_PRIMARY} w-full`}
-                    onClick={() => setView({ kind: 'event-design' })}>
-                    {data.standard.ready ? 'Edit event design' : 'Set up event design'}
-                  </button>
-                </div>
-              </>,
-            )}
-          </Box>
-
           {/* ── BOX 3 · DESIGNS FOR A PLACE ────────────────────────────────────────────────────── */}
           {/* ⚠️ TWO BOLD WORDS, AND THEY ARE THE POINT. A place design REPLACES the event design there;
             * an operator who reads "instead of" as "as well as" will give a venue its logo and wonder
             * why the date stopped appearing where it used to. */}
-          <Box title="Designs for a place" blurb={
-            <>
-              {PLACE_DESIGN_BLURB_BEFORE}
-              <span className="font-bold text-slate-700">{PLACE_DESIGN_BLURB_BOLD}</span>
-              {PLACE_DESIGN_BLURB_AFTER}
-            </>
-          }>
-            {gate(
-              <>
-                <Input label="Search places" value={designSearch} onChange={setDesignSearch}
-                  placeholder="Name or area" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
-                <ul className="mt-2 max-h-72 min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto"
-                  data-place-design-list>
-                  {designList.length === 0 && (
-                    <li className="py-3 text-sm text-slate-400">
-                      {places.length === 0 ? 'No places yet.' : 'Nothing matches that.'}
-                    </li>
-                  )}
-                  {/* ══ 🔴 ONE LINE, AT EVERY WIDTH FROM 390px UP (6 October 2026, Dominic) ═════════
-                    * ⛔ `flex-wrap` IS GONE FROM THIS ROW. It let the button drop onto a line of its
-                    * own in a narrow column, and in a LIST — where every row is the same shape — one
-                    * row silently becoming two lines is what makes a list hard to scan.
-                    * 🔴 THE NAME IS THE ONLY THING THAT GIVES WAY. `min-w-0` + `truncate` on the text
-                    * block and `shrink-0` on the tile, the tag and the button: the row cannot grow, so
-                    * the name ellipsises. ⚠️ `min-w-0` IS REQUIRED — a flex child's default
-                    * `min-width: auto` refuses to shrink below its content, which is exactly how a
-                    * "truncating" name pushes a button out of its box instead.
-                    * ⚠️ MEASURED at 390, 1000, 1100, 1280, 1440 and 1728 by the render harness: the
-                    * button's top is inside the row and the button is inside the box at all six. */}
-                  {designList.map(pl => (
-                    <li key={pl.id} className="flex items-center gap-2 py-2">
-                      {/* 🔴 THE THUMBNAIL IS THE SIGNED URL FROM THE ONE READ. No per-place call. */}
-                      <PlaceTile url={pl.imageUrl} />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-bold text-slate-900">{pl.name}</span>
-                        {pl.area && <span className="block truncate text-sm text-slate-400">{pl.area}</span>}
-                      </span>
-                      {/* ⛔ THE TAG IS TO THE RIGHT OF THE NAME AND BEFORE THE BUTTON. It used to be a
-                        * coloured word inside the sub-line, where it competed with the town for the
-                        * same sentence — and a row with no town read "Own design" as the address. */}
-                      <DesignTag own={pl.hasPicture} />
-                      {/* ⚠️ "Design" IS A VERB HERE, and it is the shorter of the two labels — which is
-                        * what keeps a one-line row one line in a 200px column. "Give own design" was
-                        * three words for the commonest state in the list. */}
-                      <button type="button" className={BTN_OUTLINE}
-                        onClick={() => setView({ kind: 'place-design', placeId: pl.id })}>
-                        {pl.hasPicture ? 'Edit' : 'Design'}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-                {/* ⚠️ "its own" / "their own" — ONE PLACE IS NOT "THEY". And the second half names the
-                  * design by the name Box 2 gives it, so the footer and the box above it agree. */}
-                <p data-design-footer className="mt-auto pt-2 text-xs text-slate-400">
-                  {withOwn} with {withOwn === 1 ? 'its' : 'their'} own design · {places.length - withOwn} using your event post design
-                </p>
-              </>,
-            )}
-          </Box>
+          {/* ══ ⛔ THE "Location images" BOX LEFT DESIGNS — 7 October 2026 ═══════════════════════
+            * Designs is TWO boxes: the weekly post design and the single event post design. A list of
+            * locations was never a design; it was here because there was nowhere else to put it.
+            * 🔴 IT IS THE **Locations** PILL NOW, with a table and a per-location pane — and the model
+            * under it changed with the screen: a location has at most TWO images, one for event posts
+            * and one for the weekly post, instead of a library with a Main. See
+            * `supabase/migrations/20261019_place_picture_slots.sql`. */}
         </div>
       )}
 
+      {/* ══ 🔴 THE LOCATIONS AREA — A TABLE AND ONE SELECTED LOCATION (7 October 2026) ═══════════
+        * ⚠️ MANAGEMENT ONLY. There is no Create post button anywhere on it: making a post is Create a
+        * post's job, and a second door into the same modal is exactly what "Post for a place" was.
+        * ⛔ AND THE OLD PICTURES PAGE IS GONE WITH IT — the image grid, ★ Main, "Main is used
+        * automatically", the Make main / Rename menu, "Own text positions…" and the double "‹ ‹".
+        * A location has two images with one job each, so there is nothing to browse and nothing to
+        * promote. The remaining pieces are named in docs/social-tab-report.md. */}
+      {data && area === 'locations' && (
+        <LocationsArea
+          token={token} places={places}
+          onChanged={() => void load()}
+          gate={gate}
+        />
+      )}
+
+      {/* 🔴 THE SAME ONE ELEMENT THE THREE FULL-PAGE VIEWS RENDER — see `leaveDialog` above. */}
+      {leaveDialog}
+
       {/* 🔴 THE SAME MODAL THE EVENTS LIST OPENS. One make flow, opened from four places. */}
       {posting && (
+        /* ══ 🔴 THE OPERATOR'S CAPTION TRAVELS INTO THE MODAL — §5 ═════════════════════════════════
+          * ⛔ ONLY WHEN THE MODAL IS ABOUT THE **CHOSEN** EVENT. `posting` is also set by Schedule ›
+          * Events' own "Make post" (through `openEventId`), and that door has no caption box in front
+          * of it — handing it this one would put the wrong event's words on the post. ⚠️ `undefined`
+          * then, which is what tells the modal to use the server's own text. */
         <EventPostModal token={token} eventId={posting}
+          captionOverride={posting === chosenEvent?.id ? postText : undefined}
           onClose={() => { setPosting(null); void load() }}
           onNeedsSetup={() => { setPosting(null); setView({ kind: 'event-design' }) }} />
       )}
+    </div>
+  )
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 "Single event post" — THE NEXT EVENT IN FULL, THEN THE REST COLLAPSED (7 October 2026)
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// ⛔ IT WAS A FLAT LIST OF SIX ROWS WITH SIX IDENTICAL BUTTONS, and that made every event equally
+// likely to be the one you wanted — which is wrong, because it almost always is the next one. The
+// headline answers "post about my next event" in one press and names the date on the button; the other
+// ten are behind a disclosure for the times it is not.
+//
+// 🔴 AND THE HEADLINE SAYS **WHICH IMAGE** IT WILL USE, which nothing said before. Three different
+// images produce the same 96px thumbnail — the location's photo, the location's poster, or the standard
+// design — and the only one an operator can act on is the one actually chosen. `imageSource` comes
+// from the server, resolved by the same rule the renderer applies.
+
+/**
+ * ══ 🔴 §5 · "YOUR NEXT EVENT", AND A WAY TO PICK A DIFFERENT ONE (9 October 2026) ═════════════════
+ *
+ * ⛔ WHAT THIS REPLACES: the headline showed the DATE first, in bold, with the venue third in grey —
+ * and the only other way to post was a collapsed "▾ 5 more events" list where every row carried its
+ * own "Make post" button. Three things were wrong with that:
+ *   1. 🔴 THE DATE IS NOT WHAT AN OPERATOR RECOGNISES AN EVENT BY. They know "the Kings Arms one". The
+ *      venue is the identity; the date is when it is.
+ *   2. ⛔ A BUTTON PER ROW IS A SECOND DOOR TO ONE MODAL, and it skipped the caption box entirely —
+ *      which is how an edited caption would have been silently discarded for every event but the first.
+ *   3. ⚠️ THE THREE SOONEST EVENTS WERE BEHIND A PRESS. A truck's next few days is the thing this card
+ *      is for; collapsing it to save four lines hid the common case to make room for the rare one.
+ *
+ * 🔴 SO: ONE CHOSEN EVENT AT THE TOP, three rows under it to change it, and the rest behind the press.
+ * Picking a row changes what the card is about — the heading's event, the button's words, and the
+ * caption — and there is exactly one button that opens the modal.
+ */
+function NextEventHalf({
+  events, photoSpace, standardUrl, standardW, standardH, placeImageUrl, onPost,
+  chosenId, onChoose,
+}: {
+  events: readonly PostEvent[]
+  /** Whether the single event design has a photo space — it decides "photo" vs "poster" in the line. */
+  photoSpace: boolean
+  standardUrl: string | null
+  standardW: number | null
+  standardH: number | null
+  placeImageUrl: (placeId: string | null) => string | null
+  onPost: (eventId: string) => void
+  /** 🔴 Held by the PARENT, because the caption box below this card is filled from the same choice. */
+  chosenId: string | null
+  onChoose: (id: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  /* 🔴 THE DEFAULT IS THE NEXT **PUBLIC** EVENT, not the next event. There is no post for a private
+   * booking — the route refuses `event_post` for one — so a private event can never be the chosen one.
+   * ⚠️ IT STILL APPEARS IN THE LIST BELOW, greyed, in its date position, because leaving it out would
+   * make the operator's own diary look wrong. */
+  const postable = events.filter(e => !e.isPrivate)
+  const chosen = postable.find(e => e.id === chosenId) ?? postable[0] ?? null
+  /* ⚠️ THE PICKER LISTS EVERY EVENT **EXCEPT THE CHOSEN ONE**, privates included. ⛔ NOT "except the
+   * first": once the operator has picked the third event, the first belongs back in the list — a
+   * picker that could not take you back to where you started would be a one-way door. */
+  const others = events.filter(e => e.id !== chosen?.id)
+  const firstThree = others.slice(0, 3)
+  const rest = others.slice(3)
+
+  if (!chosen && others.length === 0) {
+    return <p className="py-3 text-sm text-slate-400">{NO_UPCOMING_EVENTS}</p>
+  }
+
+  /** One row in the picker. ⚠️ Date · venue · area, in that order, which is how a diary reads. */
+  const row = (ev: PostEvent) => (
+    <li key={ev.id}>
+      {/* ⛔ THE WHOLE ROW IS THE BUTTON, not a button at the end of it. A row that selects needs no
+        * second control, and the one it had opened the modal — skipping the caption box above it. */}
+      <button type="button" data-pick-event={ev.id} disabled={ev.isPrivate}
+        onClick={() => onChoose(ev.id)}
+        className={`flex w-full items-baseline gap-2 py-1.5 text-left ${ev.isPrivate
+          ? 'cursor-default' : 'hover:bg-slate-50'}`}>
+        <span className={`shrink-0 text-xs font-semibold ${ev.isPrivate ? 'text-slate-400' : 'text-slate-700'}`}>
+          {shortDate(ev.date)}
+        </span>
+        {/* ⛔ A PRIVATE EVENT KEEPS ITS DATE AND LOSES EVERYTHING ELSE. Its venue and area never left
+          * the server, so there is nothing here to hide. */}
+        <span className={`min-w-0 flex-1 truncate text-xs ${ev.isPrivate
+          ? 'italic text-slate-400' : 'text-slate-600'}`}>
+          {ev.isPrivate ? PRIVATE_EVENT_ROW : (ev.venue ?? '—')}
+        </span>
+        {!ev.isPrivate && ev.town && (
+          <span className="shrink-0 truncate text-xs text-slate-400">{ev.town}</span>
+        )}
+      </button>
+    </li>
+  )
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col" data-next-event-half>
+      {chosen && (
+        <>
+          {/* ⚠️ THE HEADING DOES NOT CHANGE WHEN A DIFFERENT EVENT IS PICKED, and the BUTTON does. The
+            * heading names the section; the button names the action, and only one of those is about
+            * which event is chosen. */}
+          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">{NEXT_EVENT_HEADING_V4}</p>
+          <div className="mt-2 flex items-start gap-3">
+            {/* ⚠️ THE **LOCATION'S** PICTURE WHEN IT HAS ONE, ELSE THE STANDARD DESIGN'S PREVIEW. The
+              * tile is what the post will be drawn on, as far as a thumbnail can say so. */}
+            <DesignTile url={placeImageUrl(chosen.placeId) ?? standardUrl} w={standardW} h={standardH} />
+            <div className="min-w-0 flex-1">
+              {/* ══ 🔴 THE VENUE FIRST, LARGE AND BOLD — 21px ════════════════════════════════════════
+                * ⛔ IT WAS THE DATE IN 14px BOLD WITH THE VENUE THIRD IN GREY. An operator knows their
+                * events by WHERE they are; the date tells them which Kings Arms one, not which event.
+                * ⚠️ `truncate`, SO A LONG VENUE NAME GIVES WAY rather than wrapping under the tile and
+                * pushing the date out of the card. */}
+              <p className="truncate text-[21px] font-bold leading-tight text-slate-900" data-chosen-venue>
+                {chosen.venue ?? '—'}
+              </p>
+              {chosen.town && (
+                <p className="truncate text-sm text-slate-400" data-chosen-area>{chosen.town}</p>
+              )}
+              {/* ⚠️ DATE AND TIMES ON ONE LINE, semi-bold — one fact about when, not two. */}
+              <p className="mt-0.5 truncate text-sm font-semibold text-slate-700" data-chosen-when>
+                {shortDate(chosen.date)}
+                {formatTimeRange(chosen.startTime, chosen.endTime)
+                  ? ` · ${formatTimeRange(chosen.startTime, chosen.endTime)}`
+                  : ''}
+              </p>
+              {/* 🔴 THE GREY LINE NAMING THE IMAGE. ⚠️ THE **CLIENT** DOES NOT DECIDE photo-vs-poster:
+                * `imageSource` already says, from the server. `photoSpace` is only the fallback for a
+                * payload from before this field existed, so the line is never blank. */}
+              <p className="mt-1 text-[11px] text-slate-400" data-image-source>
+                {imageSourceLine(
+                  chosen.imageSource
+                    ?? (placeImageUrl(chosen.placeId) ? (photoSpace ? 'place-photo' : 'place-poster') : 'standard'),
+                  chosen.placeName ?? chosen.venue,
+                )}
+              </p>
+            </div>
+          </div>
+        </>
+      )}
+
+      {others.length > 0 && (
+        <div className="mt-3 border-t border-slate-100 pt-2" data-pick-block>
+          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">{PICK_ANOTHER_HEADING}</p>
+          <ul className="mt-0.5 divide-y divide-slate-100" data-pick-list>
+            {firstThree.map(row)}
+            {/* ⚠️ THE EXPANDED REST IS THE SAME `row`, in the same list, so an expanded picker is one
+              * list and not two with a divider between them. */}
+            {open && rest.map(row)}
+          </ul>
+          {rest.length > 0 && (
+            /* ⚠️ A `<button aria-expanded>`, NOT A `<details>`. The chevron has to be the product's own
+             * glyph at the product's own size, and a `<summary>` marker is the browser's. */
+            <button type="button" data-more-events aria-expanded={open}
+              onClick={() => setOpen(v => !v)}
+              className="mt-1.5 text-xs font-semibold text-slate-600 underline hover:no-underline">
+              {open ? HIDE_ALL_UPCOMING : SHOW_ALL_UPCOMING(rest.length)}
+            </button>
+          )}
+          <p className="mt-2">
+            <a href={manageSectionHref('events')}
+              className="text-xs font-semibold text-slate-600 underline hover:no-underline">
+              See all upcoming events
+            </a>
+          </p>
+        </div>
+      )}
+
+      {/* ══ 🔴 THE BUTTON IS AT THE FOOT OF THE HALF, SO THE TWO ORANGE BUTTONS LINE UP ════════════
+        * ⛔ IT SAT DIRECTLY UNDER THE CHOSEN EVENT, ABOVE "OR PICK ANOTHER EVENT" — and the weekly
+        * card's button is pinned to the bottom of its own half. So the two primary buttons on the
+        * screen sat at two different heights, which is what Dominic reported: the eye reads two
+        * choices of one kind and finds them out of step.
+        * 🔴 `mt-auto` IN A `flex-1 flex-col`, THE SAME MECHANISM THE WEEKLY HALF USES — both buttons
+        * are now the last thing before the caption block, and the caption is the same component at the
+        * same `rows={5}` in both, so they line up at every width rather than at one.
+        * ⚠️ ITS WORDS STILL SAY WHICH EVENT IT IS ABOUT — "next event" while the first is chosen,
+        * "this event" once another has been picked — so moving it below the picker costs nothing: the
+        * button names its own subject. */}
+      {chosen && (
+        <div className="mt-auto pt-3" data-post-action>
+          <button type="button" data-primary className={`${BTN_PRIMARY} w-full`}
+            onClick={() => onPost(chosen.id)}>
+            {chosen.id === postable[0]?.id ? CREATE_FOR_NEXT : CREATE_FOR_THIS}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 THE CAPTION EDITOR — TEXT PLUS CHIPS (8 October 2026)
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// ⛔ THE BRIEF'S HARD REQUIREMENT IS "shown as small pale-orange chips (never raw codes like {place})"
+// AND "chips can be deleted like a character and moved by typing around them". Those two together rule
+// out the two obvious implementations:
+//
+//   • A `<textarea>` showing `{place}` — raw codes, which the brief forbids outright.
+//   • A rich-text editor with real inline widgets — `contentEditable`, a selection model, a paste
+//     sanitiser and an undo stack. That is a component, not a feature, and this product has one drag
+//     surface precisely because the second of anything is the second set of its bugs.
+//
+// 🔴 SO IT IS A `contentEditable` DIV WITH THE CHIPS AS **`contentEditable={false}` SPANS**, and the
+// browser's own editing engine does the rest. That is the whole trick: a false-editable inline element
+// inside an editable host is treated by every engine as ONE character — Backspace deletes it whole, the
+// caret steps over it, and typing on either side puts text on either side. ⚠️ WHICH IS EXACTLY WHAT THE
+// BRIEF ASKS FOR, and it is the browser's behaviour rather than ours to maintain.
+//
+// ⛔ THE VALUE IS READ BACK OUT OF THE DOM, NOT HELD IN REACT STATE. A controlled `contentEditable` is
+// the classic way to destroy a caret: React re-renders, the DOM node is replaced, and the cursor jumps
+// to the start on every keystroke. 🔴 SO REACT RENDERS IT **ONCE** (`key` on the location/kind) and
+// never again from state; `onInput` serialises the DOM and hands the string to the debounced save.
+
+/* ⛔ `captionChipHtml`, `captionHtml` AND `captionFromDom` MOVED TO `lib/weekly-post/caption-chips.ts`
+ * ON 10 OCTOBER 2026, with the chip delete that had to go with them. The reason is in that file's
+ * header and it is not tidiness: **deleting a chip cleared the whole template in WebKit**, the engine
+ * this product is used in, and a behaviour that differs between engines has to be driven in a real one
+ * to be believed. A handler closed over a React ref cannot be; an exported DOM function can, and
+ * `scripts/caption-chips-render.cjs` presses a real Backspace against it in both. */
+
+/**
+ * ══ 🔴 §5 · THE CAPTION FOR **THIS** POST, AND THE WAY INTO THE TEMPLATE ══════════════════════════
+ *
+ * ⛔ WHAT WAS HERE: the chip editor, directly, with a debounced autosave and "Saved automatically ·
+ * used next time too" under it. So the only caption on the card was the TEMPLATE — tokens and all —
+ * and every keystroke went to the database. Two things followed, and both were wrong:
+ *   1. 🔴 THE OPERATOR COULD NOT CHANGE ONE POST. Editing the caption for tonight's event edited the
+ *      caption for every event, for ever, and the note said so out loud.
+ *   2. ⛔ THE CAPTION THEY WERE LOOKING AT WAS NOT THE CAPTION THEY WOULD POST. "Pizza Kitchen at
+ *      {venue}, {area} on {day-date}" is a template; the post says "Pizza Kitchen at The Kings Arms,
+ *      Lavenham on Wednesday". Reading one and posting the other is not a preview.
+ *
+ * 🔴 SO THE BOX IS A PLAIN `<textarea>` HOLDING THE **FILLED** CAPTION, and the template is behind a
+ * link. ⚠️ A `<textarea>` AND NOT A `contentEditable`: there are no chips in it, nothing to style, and
+ * a textarea gets the platform's own spellcheck, caret and undo for free — all three of which the chip
+ * editor had to work around.
+ *
+ * ⚠️ TYPING IS **NEVER SAVED**. The edited text lives in this component and travels to the modal; the
+ * template row is untouched unless the operator opens the panel and presses Save.
+ */
+function PostCaption({ kind, filled, template, busy, onSave, onTextChange }: {
+  kind: CaptionKind
+  /** 🔴 The template, filled in for the chosen event. ⚠️ Changing it REPLACES the box — see the `key`. */
+  filled: string
+  /** The raw template, for the panel. */
+  template: string
+  busy: boolean
+  onSave: (template: string) => Promise<void>
+  /** 🔴 Reported up so the post modal shares what is in the box. */
+  onTextChange: (text: string) => void
+}) {
+  const [editingTemplate, setEditingTemplate] = useState(false)
+  /* ⛔ THE BOX'S VALUE IS LOCAL STATE SEEDED FROM `filled`, and the `key` at the call site is what
+   * re-seeds it when the chosen event changes. ⚠️ A `value={filled}` CONTROLLED BOX WOULD BE
+   * UNTYPEABLE and a `defaultValue` would never refresh — the keyed-remount is the one shape that does
+   * both, and it is the same trick the chip editor used for the same reason. */
+  const [text, setText] = useState(filled)
+
+  /* ⚠️ THE PARENT IS TOLD ON MOUNT TOO, not only on a keystroke: the modal has to be able to share the
+   * UNEDITED caption, which is the overwhelmingly common case. ⛔ AN EFFECT, because a parent's state
+   * must not be set during this component's render. */
+  useEffect(() => { onTextChange(text) }, [text, onTextChange])
+
+  return (
+    <div className="mt-3 border-t border-slate-100 pt-3" data-post-caption={kind}>
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">{CAPTION_HEADING}</p>
+        {/* 🔴 THE LINK IS TOP RIGHT OF THE CAPTION, which is where a "settings for this thing" control
+          * belongs — and it is the only way to the template, so the box below cannot be mistaken for
+          * one. */}
+        {!editingTemplate && (
+          <button type="button" data-edit-template onClick={() => setEditingTemplate(true)}
+            className="text-[11px] font-semibold text-slate-600 underline hover:no-underline">
+            {EDIT_TEMPLATE_LINK}
+          </button>
+        )}
+      </div>
+
+      {editingTemplate ? (
+        /* ⚠️ **IN PLACE OF** THE BOX, NOT UNDER IT. Two caption fields on one card, one of them full of
+         * tokens, is the confusion this whole section exists to remove. */
+        <CaptionEditor
+          kind={kind}
+          initial={template}
+          busy={busy}
+          onCancel={() => setEditingTemplate(false)}
+          onSave={async t => {
+            await onSave(t)
+            setEditingTemplate(false)
+          }}
+        />
+      ) : (
+        <>
+          <textarea
+            data-caption-text
+            value={text}
+            disabled={busy}
+            onChange={e => setText(e.target.value)}
+            rows={5}
+            className="mt-1 w-full resize-y rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+          />
+          <p className="mt-1 text-[11px] leading-relaxed text-slate-400" data-caption-note>
+            {CAPTION_THIS_POST_NOTE}
+          </p>
+        </>
+      )}
+    </div>
+  )
+}
+
+function CaptionEditor({ kind, initial, busy, onSave, onCancel }: {
+  kind: CaptionKind
+  initial: string
+  busy: boolean
+  onSave: (template: string) => Promise<void>
+  /** 🔴 §5 · Back to the caption box, with nothing written. */
+  onCancel: () => void
+}) {
+  const hostRef = useRef<HTMLDivElement | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+
+  /* ══ ⛔ THE DEBOUNCED AUTOSAVE IS GONE — 9 OCTOBER 2026 ════════════════════════════════════════════
+   *
+   * IT WAS A 1s DEBOUNCE WITH "Saved automatically" AND A FADING TICK, and it was right for the shape
+   * this editor used to have: it WAS the caption field, always on screen, and a truck's words had to
+   * survive them closing the tab. 🔴 IT IS A PANEL THE OPERATOR OPENS ON PURPOSE NOW, and autosave is
+   * wrong for a panel with a Cancel button — "Cancel" after fourteen keystrokes have already been
+   * written is a button that cannot do what it says.
+   * ⚠️ SO THERE IS ONE WRITE, ON Save, AND THE TIMERS WENT WITH IT. Nothing here can fire against an
+   * unmounted component, which is what the two `clearTimeout`s in the cleanup existed to prevent.
+   */
+
+  const save = () => {
+    const host = hostRef.current
+    if (!host) return
+    setSaving(true); setErr(null)
+    void onSave(captionFromDom(host))
+      .catch(e => setErr(e instanceof Error ? e.message : 'That did not save.'))
+      .finally(() => setSaving(false))
+  }
+
+  /**
+   * Insert a chip at the caret.
+   *
+   * 🔴 `document.execCommand('insertHTML')` IS DELIBERATE AND IS NOT A RELIC. It is the only call that
+   * inserts at the caret **and joins the browser's own undo stack**, so ⌘Z after pressing a label
+   * removes the chip rather than skipping back past the operator's last sentence. The modern
+   * replacement (Range surgery) does neither. It is deprecated and universally supported; the day that
+   * changes, the fallback below is what runs.
+   * ⚠️ THE EDITOR IS FOCUSED FIRST, because `insertHTML` with no caret inside the host inserts nowhere.
+   */
+  const insert = (id: CaptionLabelId, label: string) => {
+    const host = hostRef.current
+    if (!host) return
+    host.focus()
+    const html = captionChipHtml(id, label) + '&nbsp;'
+    let done = false
+    try { done = document.execCommand('insertHTML', false, html) } catch { done = false }
+    if (!done) {
+      /* ⛔ THE FALLBACK APPENDS RATHER THAN GUESSING AT THE CARET. A chip in the wrong place is worse
+       * than a chip at the end, which the operator can drag a word past. */
+      host.insertAdjacentHTML('beforeend', html)
+    }
+  }
+
+  /**
+   * ══ 🔴 DELETING A CHIP DELETED THE WHOLE TEMPLATE — REPORTED 10 OCTOBER 2026 ═══════════════════
+   *
+   * ⛔ DOMINIC: *"i tried to delete the 'list of days' from the template but it cleared all the
+   * template."* The comment at the top of this section claimed every engine treats a
+   * `contenteditable="false"` span as one character. Chromium does; **WebKit does not** — and WebKit is
+   * the engine this product is used in.
+   * 🔴 THE TWO DELETE KEYS ARE OURS NOW, AND ONLY FOR THE CHIP CASE: `handleChipDeleteKey` removes that
+   * one node and returns true, and everything else is handed straight back to the browser.
+   * ⚠️ THE LOGIC IS IN `lib/weekly-post/caption-chips.ts` so a real browser can be made to press a real
+   * Backspace against it — see that file's header, and `scripts/caption-chips-render.cjs`.
+   */
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const host = hostRef.current
+    if (host && handleChipDeleteKey(host, e.key)) e.preventDefault()
+  }
+
+  /**
+   * ══ 🔴 CUT, COPY AND PASTE CARRY THE **TOKEN**, WHICH IS HOW A CHIP MOVES ═══════════════════════
+   *
+   * ⛔ DOMINIC ASKED FOR A CHIP TO BE *"deleted and moved correctly as an editor"*, and moving it was
+   * the half that silently corrupted the template: the clipboard took the chip's **label** ("List of
+   * days"), because that is the text the span displays — so cutting a chip and pasting it two lines
+   * down replaced a token with three ordinary words, and the caption quietly stopped filling it in.
+   */
+  const onCopyOrCut = (e: React.ClipboardEvent<HTMLDivElement>, cut: boolean) => {
+    const host = hostRef.current
+    const text = host ? selectionAsTemplate(host) : ''
+    if (!text) return
+    e.preventDefault()
+    e.clipboardData.setData('text/plain', text)
+    if (cut) window.getSelection()?.deleteFromDocument()
+  }
+
+  const title = kind === 'week' ? CAPTION_WEEK_TITLE : CAPTION_EVENT_TITLE
+
+  return (
+    <div className="mt-1" data-caption-editor={kind}>
+      {/* ⚠️ THE PANEL NAMES ITSELF AND SAYS WHAT IT GOVERNS. "Caption template" alone would leave the
+        * operator guessing whether it is this post's or every post's — which is the one thing the box
+        * it replaced got wrong. */}
+      <p className="text-sm font-bold text-slate-900">{TEMPLATE_PANEL_TITLE}</p>
+      <p className="text-[11px] text-slate-400">
+        {kind === 'week' ? TEMPLATE_PANEL_BLURB_WEEK : TEMPLATE_PANEL_BLURB}
+      </p>
+      {/* ⚠️ `suppressContentEditableWarning` BECAUSE REACT IS RIGHT TO WARN IN GENERAL AND WRONG HERE:
+        * the warning is about React managing children it does not own, and this editor deliberately
+        * hands the children to the browser after the first render. The `key` at the call site is what
+        * makes a NEW template mount a NEW editor rather than fighting the caret. */}
+      <div
+        ref={hostRef}
+        contentEditable={!busy}
+        suppressContentEditableWarning
+        data-caption-input
+        role="textbox"
+        aria-multiline="true"
+        aria-label={title}
+        /* ⛔ NO `onInput` HANDLER. Nothing is saved until Save is pressed, and the browser owns the
+         * field's contents between the first render and that press — which is the whole point of
+         * `suppressContentEditableWarning` above. */
+        /* ⛔ PASTE IS FORCED TO PLAIN TEXT. Without this, pasting from a word processor brings fonts,
+         * colours and `<style>` blocks into a field whose value is read back as text — and a pasted
+         * `<span contenteditable="false">` could even masquerade as a chip. */
+        onKeyDown={onKeyDown}
+        onCopy={e => onCopyOrCut(e, false)}
+        onCut={e => onCopyOrCut(e, true)}
+        onPaste={e => {
+          e.preventDefault()
+          const text = e.clipboardData.getData('text/plain')
+          /* 🔴 ANY `{token}` IN THE PASTE COMES BACK AS A CHIP. `captionHtml` is the same function that
+           * drew the field in the first place, so a pasted template and a loaded one cannot differ.
+           * ⚠️ PLAIN TEXT WITH NO TOKEN TAKES THE OLD PATH — `insertText` keeps the browser's undo
+           * stack, which `insertHTML` on an ordinary paste would not be worth losing. */
+          try {
+            if (hasCaptionToken(text)) document.execCommand('insertHTML', false, captionHtml(text))
+            else document.execCommand('insertText', false, text)
+          } catch { /* the field keeps its value */ }
+        }}
+        className="mt-1 min-h-[6rem] w-full whitespace-pre-wrap rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+        dangerouslySetInnerHTML={{ __html: captionHtml(initial) }}
+      />
+      <div className="mt-1.5 flex flex-wrap items-center gap-1.5" data-caption-labels>
+        {labelsFor(kind).map(l => (
+          <button key={l.id} type="button" disabled={busy} data-caption-add={l.id}
+            onClick={() => insert(l.id, l.label)}
+            className="rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-semibold text-orange-800 hover:bg-orange-100 disabled:opacity-50">
+            {captionAddLabel(l.label)}
+          </button>
+        ))}
+      </div>
+      {/* 🔴 SAVE AND CANCEL, IN THAT ORDER. ⚠️ Save is the orange one because it is the thing the panel
+        * was opened to do; Cancel is outlined because going back is not an action on the data. */}
+      <div className="mt-2 flex items-center gap-1.5">
+        <button type="button" disabled={busy || saving} onClick={save} data-template-save
+          className={`${BTN_PRIMARY}`}>{saving ? 'Saving…' : TEMPLATE_SAVE}</button>
+        <button type="button" disabled={saving} onClick={onCancel} data-template-cancel
+          className={BTN_OUTLINE}>{TEMPLATE_CANCEL}</button>
+      </div>
+      {err && <p className="mt-1 text-[11px] text-red-600">{err}</p>}
+      {/* ⚠️ THE NOTE SAYS WHAT THE ORANGE WORDS **ARE** and what Saving reaches. An operator looking at
+        * a field full of chips needs the first; one about to press Save needs the second. */}
+      <p className="mt-1 text-[11px] leading-relaxed text-slate-400" data-template-note>
+        {TEMPLATE_PANEL_NOTE}
+      </p>
+    </div>
+  )
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 THE LOCATIONS SUB-TAB (7 October 2026) — A TABLE, AND ONE LOCATION'S TWO IMAGES
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// ⛔ WHAT THIS REPLACES, AND WHY IT IS SMALLER: "Location images" was a list that opened a PAGE per
+// location, and that page was a picture library — a grid, a ★ Main, a Make main / Rename menu, and a
+// sentence explaining that the Main one was used automatically. Every one of those exists because a
+// location could have any number of pictures and only one of them was used.
+//
+// 🔴 A LOCATION HAS **THREE** PICTURES, ONE PER JOB — a WEEKLY post picture, an EVENT post picture and
+// a POSTER — so there is nothing to browse, nothing to promote and nothing to explain. Three boxes with
+// a drop area and a Remove say the whole model, and "which one is used" is answered by the box's title.
+// ⚠️ IT WAS TWO FROM 7 OCTOBER AND ONE-PLUS-AN-OVERRIDE FROM 9 OCTOBER, and the reason it is three now
+// is that "one picture used everywhere" had two consequences nobody could see: a logo chosen for a
+// 180px line on a weekly poster was also the photo cropped into a 1080px space on an event post.
+//
+// ⚠️ TABLE LEFT, SELECTED LOCATION RIGHT, side by side from 900px and stacked below it — the same
+// breakpoint Create a post uses, for the same measured reason.
+
+/* ⛔ `SlotBoxCopy` WENT WITH `SlotBox`. `PictureBox` takes `title` and `blurb` as two plain props,
+ * because there is no longer a case where the pair is computed and passed around together. */
+/* ══ ⛔ TOMBSTONE · `SlotBox` — DELETED 9 OCTOBER 2026 ════════════════════════════════════════════
+ * It was the poster/picture box on Location settings: a 70px `object-cover` tile, the file name beside
+ * it, and Replace and Remove stacked in a column. `PictureBox` below replaces it on that screen.
+ * 🔴 IT WAS KEPT UNRENDERED FOR ABOUT TEN MINUTES, with a note saying the event modal's one-off upload
+ * might want it — and then deleted, because that is exactly what dead code with an excuse attached
+ * looks like. The modal has its own control and always has.
+ * ⚠️ WHAT WENT WITH IT, in case it is wanted again: `object-cover` CROPPED the preview (a wide logo
+ * showed as its middle third), the tile took its aspect ratio from the standard design so an empty
+ * poster box still said what shape was wanted, and "Replace" was a second button that did what
+ * dropping a file does. The first is a bug, the second is a real loss — see the report — and the third
+ * is the one the brief removed. */
+
+/**
+ * ══ 🔴 ONE OF THE THREE PICTURE BOXES (9 October 2026) ════════════════════════════════════════════
+ *
+ * ⛔ IT REPLACES `SlotBox` ON THIS SCREEN, and the differences are all the brief's:
+ *   • **A LARGE PREVIEW, AND THE PICTURE IS SHOWN WHOLE.** `SlotBox` drew a 70px tile with
+ *     `object-cover`, which CROPS — so a wide logo appeared as its middle third and an operator
+ *     checking they had uploaded the right file was shown something that was not quite it.
+ *     `object-contain` on a fixed-height area shows the picture, letterboxed, which is what a preview
+ *     is for. ⚠️ THE HEIGHT IS THE SAME IN ALL THREE, which is what makes the boxes equal.
+ *   • **Remove ONLY, NO Replace.** Replace was a second button that did what dropping a new file does;
+ *     two presses for one outcome, on the box with the least room. ⚠️ A FILLED BOX IS THEREFORE
+ *     Remove-then-upload, which is one more press in the rare case and one fewer button in every case.
+ *   • **A DASHED DROP AREA WHEN EMPTY**, which says "you may drop here" without a sentence — and
+ *     drag-and-drop actually works, rather than the dashes being decoration.
+ *
+ * ⚠️ THE FILE INPUT IS STILL A `<label>` ROUND A HIDDEN `<input type="file">`. The native control is
+ * the only thing that opens a file picker without a user-gesture problem on Safari, and a
+ * `<label htmlFor>` is the only way to style it.
+ */
+function PictureBox({ title, blurb, slotKey, image, busy, onUpload, onRemove, borrow, dropLabel }: {
+  title: string
+  blurb: string
+  /** Only for the input's `id`, so three boxes on one screen cannot share one. */
+  slotKey: string
+  image: SlotImage | null
+  busy: boolean
+  onUpload: (file: File) => void
+  onRemove: () => void
+  /** "Use the … picture", or null when there is nothing to borrow. */
+  borrow: { label: string; onClick: () => void } | null
+  dropLabel?: string
+}) {
+  const inputId = `pic-${slotKey}`
+  /* ⚠️ `over` IS PURELY VISUAL and it is per box, so dragging across the row highlights one at a time.
+   * ⛔ `dragleave` FIRES WHEN THE POINTER CROSSES INTO A **CHILD** of the drop area, so the flag would
+   * flicker off over the preview and the button. The counter is what makes it honest: enter and leave
+   * are balanced, and only a zero means the pointer has really gone. */
+  const [depth, setDepth] = useState(0)
+  const over = depth > 0
+
+  /** ⚠️ ONE PATH FOR A DROP AND FOR THE FILE DIALOG, so neither can take a file the other refuses. */
+  const take = (f: File | undefined | null) => { if (f) onUpload(f) }
+
+  return (
+    /* ══ 🔴 §1 · THE THREE BOXES LINE UP — A FLEX COLUMN WITH THE DESCRIPTION TAKING THE SLACK ════════
+     *
+     * ⛔ **DOMINIC, 10 OCTOBER, ON THE SCREEN ITSELF:** *"when the images are empty in location
+     * settings, make sure the upload box lines up — currently it sits below the text, which has
+     * different lengths. Best to move the upload box to the bottom so they line up."* And: *"the same
+     * when they are uploaded — the images should line up."* And: *"the pictures are wider than the box
+     * they're in; the remove button is not in the box either."*
+     *
+     * ⛔ **THIS REPLACES `grid-rows-subgrid`, WHICH WAS THE WRONG TOOL AND IS GONE.** It did line the
+     * rows up in every measurement this repository took — three boxes adopting the parent's four rows,
+     * each row as tall as the tallest — and the operator's own screen still showed the Upload buttons at
+     * three different heights. ⚠️ I COULD NOT REPRODUCE THAT, and the report says so plainly: the
+     * compiled stylesheet the dev server is serving right now **does** carry `.grid-rows-subgrid`,
+     * `.grid-cols-[minmax(0,1fr)]` and the pane's own `minmax` track, and the WebKit measurement passed
+     * at 1100, 1280 and 1728. 🔴 SO THE FIX IS NOT A SECOND ATTEMPT AT THE SAME MECHANISM. Subgrid put
+     * the alignment in the hands of a layout feature whose failure mode I cannot see from here; what
+     * replaces it cannot have that failure mode at all:
+     *
+     *   • **A FLEX COLUMN**, and `grow` on the DESCRIPTION. The grid still stretches the three boxes to
+     *     one height — that part was never in doubt — and the description absorbing the slack pushes the
+     *     preview and the Remove row to the FOOT of every box. Two fixed heights above the bottom edge
+     *     of three equal boxes is the same y, by arithmetic rather than by a track-sizing rule.
+     *   • **THE FOOTER ROW IS `h-7` WHETHER OR NOT THERE IS A PICTURE.** ⛔ THIS IS THE BIT THAT WOULD
+     *     HAVE BROKEN IT: the row is empty in an empty box, so bottom-aligning without a fixed height
+     *     would sit an empty box's preview 28px LOWER than a filled one's — the brief's "the images
+     *     should line up" failing between exactly the two states the screen shows at once.
+     *   • **NOTHING IN THE BOX REPORTS A MAX-CONTENT WIDTH ANY MORE**, because the file name is gone
+     *     (below), so the overflow §1 was written about has no contributor left. A flex column's items
+     *     stretch to the content box; a `w-full object-contain` picture inside a fixed-height area is
+     *     contained; and `min-w-0` keeps the box itself from asking the 3-column track for more.
+     *
+     * ⚠️ WHAT IS LOST WITH SUBGRID: the TITLE and the DESCRIPTION are no longer forced to equal heights
+     * between boxes — only everything from the preview down is. That is invisible here because all three
+     * titles are one line, and it is the honest trade: the operator's complaint is about the previews and
+     * the buttons, which is what the bottom edge now governs. ⛔ IF A TITLE EVER WRAPS IN ONE BOX ONLY,
+     * the descriptions will start at different heights again — and that is fine, because they already
+     * END at different heights and always will.
+     */
+    <div data-picture-box={slotKey}
+      className="flex min-w-0 flex-col rounded-xl border border-slate-200 bg-white p-3">
+      <p className="text-sm font-bold text-slate-900">{title}</p>
+      {/* 🔴 `grow` IS THE WHOLE ALIGNMENT. It is on the description because the description is the one
+        * thing here whose height differs between the three boxes — one, two and two lines at a third of
+        * this pane — so it is the one that should absorb the difference. */}
+      <p className="mt-0.5 grow text-xs leading-relaxed text-slate-500">{blurb}</p>
+
+      {/* 🔴 THE PREVIEW AREA — ONE FIXED HEIGHT, WHATEVER IS IN IT, which is half of what makes the
+        * three previews line up. The other half is the footer's fixed height below. */}
+      <div
+        onDragEnter={e => { e.preventDefault(); setDepth(d => d + 1) }}
+        onDragOver={e => e.preventDefault()}
+        onDragLeave={() => setDepth(d => Math.max(0, d - 1))}
+        onDrop={e => {
+          e.preventDefault()
+          setDepth(0)
+          take(e.dataTransfer?.files?.[0])
+        }}
+        data-drop-area
+        className={`relative mt-2 flex h-[132px] min-w-0 items-center justify-center overflow-hidden rounded-lg border ${image
+          ? 'border-slate-200 bg-slate-50'
+          : `border-2 border-dashed ${over ? 'border-orange-400 bg-orange-50' : 'border-slate-300 bg-slate-50'}`}`}>
+        {image?.url
+          /* eslint-disable-next-line @next/next/no-img-element -- a signed, expiring Supabase URL. */
+          ? <img src={image.url} alt="" className="h-full w-full object-contain" />
+          : (
+            <div className="min-w-0 px-2 text-center">
+              <p className="text-[11px] font-semibold text-slate-400">{dropLabel ?? DROP_A_PICTURE}</p>
+              <label htmlFor={inputId} data-upload
+                className={`mt-1.5 inline-flex cursor-pointer items-center rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 ${busy ? 'pointer-events-none opacity-50' : ''}`}>
+                {SLOT_UPLOAD}
+              </label>
+              {/* ══ 🔴 THE BORROW LINK IS **PINNED TO THE FOOT OF THE DROP AREA** ═══════════════════
+                * ⚠️ IT IS STILL INSIDE THE EMPTY AREA, because it is the other way to fill this box and
+                * putting it outside would make it look like a setting.
+                * ⛔ BUT IT USED TO SIT IN THE SAME CENTRED STACK AS Upload, AND THAT IS A BUG THE
+                * MEASUREMENT CAUGHT: only ONE of the three boxes is ever offered a borrow, so that box's
+                * stack was one line taller and centring put its Upload button **11px higher** than the
+                * other two — *"make sure the upload box lines up"*, failing for a reason that had
+                * nothing to do with the descriptions above. 🔴 TAKING IT OUT OF THE FLOW is what fixes
+                * it: Upload is centred on the same two lines in every box, filled or empty, offered a
+                * borrow or not. */}
+              {borrow && (
+                <button type="button" disabled={busy} onClick={borrow.onClick} data-borrow
+                  className="absolute inset-x-2 bottom-1.5 block text-[11px] font-semibold text-slate-600 underline hover:no-underline disabled:text-slate-300">
+                  {borrow.label}
+                </button>
+              )}
+            </div>
+          )}
+      </div>
+
+      {/* ⚠️ THE INPUT LIVES OUTSIDE THE CONDITIONAL so the `htmlFor` above always has a target. */}
+      <input id={inputId} type="file" accept="image/png,image/jpeg" className="absolute hidden" disabled={busy}
+        onChange={e => { take(e.target.files?.[0]); e.currentTarget.value = '' }} />
+
+      {/* ══ 🔴 THE FOOTER IS `h-7` WHETHER OR NOT THERE IS A PICTURE ══════════════════════════════════
+        * ⛔ AN EMPTY BOX RENDERS NOTHING IN IT, and that is exactly why the height is fixed rather than
+        * left to the contents: the previews are lined up by the box's BOTTOM edge now, so a footer that
+        * collapsed to nothing in two boxes and stood 28px tall in the third would put their previews at
+        * two different heights — the very thing the operator reported.
+        * ⛔ **THE FILE NAME IS GONE — Dominic, 10 October: "remove the photo name eg Screenshot
+        * 2026-10-05 at 11.11.21.png".** The brief had asked for it truncated with an ellipsis; the
+        * operator asked for it removed, which is the later instruction and the better one — a Supabase
+        * file name tells a truck nothing they cannot see in the preview above it, and it was the one
+        * thing in this box that ever reported a max-content width. ⚠️ `fileName` IS STILL STORED AND
+        * STILL SENT (the route writes `file_name`), so nothing is lost but the line. */}
+      <div className="mt-2 flex h-7 min-w-0 items-center justify-end">
+        {image && (
+          <button type="button" disabled={busy} onClick={onRemove} data-remove
+            className="shrink-0 rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 disabled:opacity-50">
+            {SLOT_REMOVE}
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function SocialTagField({ initial, busy, onSave }: {
+  initial: string
+  busy: boolean
+  onSave: (value: string) => void
+}) {
+  const [value, setValue] = useState(initial)
+  return (
+    <div className="mt-3">
+      <label className="block text-xs font-bold text-slate-600">
+        {SOCIAL_TAG_LABEL} <span className="font-medium text-slate-400">{SOCIAL_TAG_HINT}</span>
+      </label>
+      <input value={value} onChange={e => setValue(e.target.value)} placeholder={SOCIAL_TAG_PLACEHOLDER}
+        data-social-tag autoCapitalize="none" autoCorrect="off" spellCheck={false}
+        className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" />
+      <button type="button" disabled={busy} className={`${BTN_OUTLINE} mt-2`} data-save-tag
+        onClick={() => onSave(value)}>
+        Save tag
+      </button>
+    </div>
+  )
+}
+
+/* ⛔ FOUR PROPS LEFT THIS COMPONENT ON 9 OCTOBER, and each went with something the screen no longer
+ * does: `manageApi` wrote "Name on posts", which moved to Tidy up places; `photoSpace` and
+ * `weeklyPictureOn` chose which of three amber lines to show under the picture box, and those lines
+ * belonged to a "Use it on" choice that no longer exists; `onEditWeeklyDesign` / `onEditEventDesign`
+ * were the links those lines carried. ⚠️ `standardW`/`standardH` STAY — the poster tile is still drawn
+ * in the standard design's shape, which is how an operator sees what is being asked for. */
+/** Which chip is pressed. ⚠️ Declared here because it is this component's own state and nothing
+ *  else's — it previously sat beside `SlotBox` and was deleted with it. */
+type LocFilter = 'all' | 'missing' | 'hidden'
+
+function LocationsArea({
+  token, places, onChanged, gate,
+}: {
+  token: string
+  places: readonly PostPlace[]
+  /* ⛔ `standardW` / `standardH` ARE NO LONGER TAKEN — 9 October 2026. They shaped the POSTER box's
+   * tile to the standard design's aspect ratio, so an EMPTY poster box said what shape was wanted
+   * without a number. ⚠️ THE THREE BOXES ARE THE SAME SIZE NOW, which is the brief's instruction, and a
+   * box that took its own shape from a design could not be. **This is a real loss and it is in the
+   * report**: an operator uploading their first poster no longer sees the target shape, only the
+   * refusal if they get it wrong. The refusal still names the size. */
+  onChanged: () => void
+  gate: (children: React.ReactNode) => React.ReactNode
+}) {
+  const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState<LocFilter>('all')
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<{ text: string; bad: boolean } | null>(null)
+
+  /* ⛔ HIDDEN LOCATIONS ARE ONLY VISIBLE UNDER THE Hidden CHIP. They are in the payload — the chip
+   * needs a count — but a hidden location is one the operator has put away, and listing it in the
+   * default view would undo that. */
+  const visible = useMemo(() => places.filter(p => p.isHidden !== true), [places])
+  const hidden = useMemo(() => places.filter(p => p.isHidden === true), [places])
+  /* ══ ⚠️ "No pictures" MEANS THE TWO **PICTURES** ARE EMPTY — NOT THE POSTER ════════════════════════
+   * ⛔ IT USED TO MEAN "either slot is empty", POSTER INCLUDED, and with three slots that would put
+   * nearly every location on the list: a location poster is a finished design for a specific venue and
+   * most trucks will never make one. A chip that matches almost everything sorts nothing.
+   * 🔴 SO IT IS THE TWO PICTURES, which are the two an ordinary location wants. ⚠️ RENAMED FROM "No
+   * images" to "No pictures" to match the three boxes' own word — and from "Missing images" before
+   * that, because "missing" implies something ought to be there and all three are optional. */
+  const missing = useMemo(
+    () => visible.filter(p => !p.weeklyImage || !p.eventPhotoImage), [visible])
+
+  const rows = useMemo(() => {
+    const base = filter === 'hidden' ? hidden : filter === 'missing' ? missing : visible
+    const q = search.trim().toLowerCase()
+    if (!q) return base
+    return base.filter(p =>
+      p.name.toLowerCase().includes(q)
+      || String(p.shortName ?? '').toLowerCase().includes(q)
+      || String(p.area ?? '').toLowerCase().includes(q))
+  }, [filter, search, hidden, missing, visible])
+
+  const selected = places.find(p => p.id === selectedId) ?? null
+
+  const api = async (action: string, extra: Record<string, unknown>) => {
+    const r = await fetch('/api/weekly-post', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, action, ...extra }),
+    })
+    const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+    if (!r.ok) throw new Error(String(j.error ?? 'That did not work.'))
+    return j
+  }
+
+  const run = async (fn: () => Promise<unknown>, after: string) => {
+    setBusy(true); setMsg(null)
+    try {
+      await fn()
+      onChanged()
+      setMsg({ text: after, bad: false })
+    } catch (e) {
+      setMsg({ text: e instanceof Error ? e.message : 'That did not work.', bad: true })
+    } finally { setBusy(false) }
+  }
+
+  /**
+   * Upload an image into one slot.
+   *
+   * 🔴 ONE PRESS, WHETHER IT IS Upload OR Replace. The server inserts a `place_pictures` row and points
+   * the slot at it in the same request; the row the slot pointed at before stays, unreferenced and
+   * undeleted, with its file.
+   * ⚠️ `'event'` IS THE **POSTER'S** SLOT, `'weekly'` the weekly picture's and `'event-photo'` the
+   * event picture's — the column names, not the screen's words. ⛔ `'event'` MEANING THE POSTER IS THE
+   * ONE GENUINELY MISLEADING NAME IN THIS MODEL and it is kept because renaming a column is a
+   * drop-and-add. See the note in lib/weekly-post/place-pictures.ts and the column comments.
+   */
+  const upload = (placeId: string, slot: 'event' | 'weekly' | 'event-photo') => async (file: File) => {
+    setMsg(null)
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setMsg({ text: `That image is ${(file.size / 1024 / 1024).toFixed(1)}MB. The limit is 10MB.`, bad: true })
+      return
+    }
+    if (!/^image\/(png|jpe?g)$/.test(file.type)) {
+      setMsg({ text: 'Please choose a PNG or JPG.', bad: true })
+      return
+    }
+    await run(async () => {
+      const ext = file.type.includes('png') ? 'png' : 'jpg'
+      const up = (await api('upload_url', { which: 'place-picture', ext })) as { uploadUrl: string; path: string }
+      const put = await fetch(up.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
+      if (!put.ok) throw new Error('The upload did not complete')
+      await api('place_picture_confirm', { placeId, path: up.path, fileName: file.name, slot })
+    }, 'Image saved.')
+  }
+
+  const chip = (id: LocFilter, label: string) => (
+    <button key={id} type="button" data-loc-chip={id} onClick={() => setFilter(id)}
+      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+        filter === id ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+      {label}
+    </button>
+  )
+
+  /* ══ 🔴 A ✓ OR A –, NOT A 24px THUMBNAIL (9 October 2026) ══════════════════════════════════════════
+   *
+   * ⛔ IT WAS A THUMBNAIL PER SLOT, 24 × 30. At that size a logo is a coloured smudge and a photo is a
+   * grey rectangle — so it answered "is there one?" at the cost of looking as though it answered
+   * "which one?", which it could not. ⚠️ AND A THIRD COLUMN OF THEM WOULD HAVE MADE THE ROW WIDER
+   * than the names in it, which is the one thing a `table-fixed` list must not do.
+   * 🔴 SO THE COLUMN ANSWERS THE QUESTION IT CAN: set, or not. A green tick in a circle and a grey
+   * dash, 16px each — the full-size picture is one click away in the pane, where it is big enough to
+   * recognise. ⚠️ THE DASH IS THE SAME GLYPH the rest of this product uses for nothing. */
+  const tick = (image: SlotImage | null) => (
+    <span className="flex justify-center" data-slot-tick={image ? 'set' : 'none'}>
+      {image
+        ? <span className="flex h-4 w-4 items-center justify-center rounded-full bg-green-100 text-[10px] font-bold leading-none text-green-700">✓</span>
+        : <span className="text-[13px] font-bold leading-none text-slate-300">–</span>}
+    </span>
+  )
+
+  const msgNode = msg
+    ? <p className={`mt-2 text-sm ${msg.bad ? 'text-red-600' : 'text-green-700'}`}>{msg.text}</p>
+    : null
+
+  /* ⛔ THE THREE LINES UNDER THE PICTURE BOX ARE GONE — 9 October 2026. They said "turn it on in your
+   * weekly design →", "your single event design has no photo space yet →" and "this location has an
+   * event poster, so…". 🔴 THE FIRST TWO BELONGED TO A CHOICE THAT NO LONGER EXISTS: a picture is used
+   * wherever a design has a space, so "you chose a surface that cannot draw it" is not a state the
+   * screen can produce. ⚠️ THE THIRD — the poster winning on event posts — is still TRUE and is still
+   * how `planEventImages` behaves; it is simply not worth a line on a screen that no longer asks the
+   * truck to choose, because nothing they did caused it. */
+
+  return (
+    /* ══ 🔴 A NARROWER TABLE — ABOUT A THIRD, NOT A HALF (8 October 2026) ══════════════════════════
+     * ⛔ IT WAS `minmax(0,1fr) minmax(280px,420px)`, so the table took everything the pane did not and
+     * at 1440 that is two thirds of the page for three columns, two of which are 24px wide. The pane is
+     * where the work happens.
+     * ⚠️ `minmax(280px,1fr)` BESIDE `minmax(0,2.6fr)` IS THE BRIEF'S OWN RATIO and it is a RATIO rather
+     * than a width, so it holds at 1100 and at 1728 alike. The 280px floor is what stops a long venue
+     * name squeezing the column to nothing before it truncates.
+     * ⚠️ `items-start`, NOT `items-stretch`: a short pane must not be stretched to a sixty-row table's
+     * height. */
+    <div className="grid grid-cols-1 items-start gap-3 min-[900px]:grid-cols-[minmax(280px,1fr)_minmax(0,2.6fr)]"
+      data-locations-area>
+      {/* ── LEFT · THE TABLE ──────────────────────────────────────────────────────────────────── */}
+      {/* ⚠️ "Locations", AND THE CARD CARRIES NO DESCRIPTION. The PILL and the page heading say
+        * "Location settings"; the page description directly above already says what the screen is for,
+        * and repeating it inside the card would be the same sentence twice on one screen. */}
+      <Box title={LOCATIONS_CARD_TITLE}>
+        {gate(
+          <>
+            <Input label={LOCATIONS_SEARCH_LABEL} value={search} onChange={setSearch}
+              placeholder="Name or area" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
+            <div className="mt-2 flex flex-wrap gap-1.5" data-loc-chips>
+              {chip('all', CHIP_ALL(visible.length))}
+              {chip('missing', CHIP_NO_PICTURES(missing.length))}
+              {chip('hidden', CHIP_HIDDEN(hidden.length))}
+            </div>
+            {/* ⛔ `max-h` AND `overflow-y-auto` ARE WHAT MAKE THE LIST SCROLL **INSIDE ITS CARD**.
+              * Without a cap a truck with sixty locations grows the card, the page grows with it, and
+              * the selected location's pane is off the bottom of the screen — which is the one thing a
+              * two-pane screen must not do. */}
+            <div className="mt-2 max-h-[30rem] min-h-0 overflow-y-auto" data-loc-table>
+              <table className="w-full table-fixed border-collapse text-sm">
+                <thead>
+                  <tr className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                    <th className="w-auto py-1 text-left">{COL_LOCATION}</th>
+                    {/* ══ ⚠️ WEEKLY · EVENT · POSTER — THE SAME ORDER AS THE THREE BOXES IN THE PANE ════
+                      * ⛔ A TABLE WHOSE COLUMNS RAN IN A DIFFERENT ORDER FROM THE BOXES would make the
+                      * operator re-learn which tick is which every time they looked from one to the
+                      * other — and with three of them, two of which are "pictures", that is a mistake
+                      * waiting to be made. ⚠️ THE OLD ORDER WAS POSTER THEN PICTURE; the poster is LAST
+                      * now, because it is the one most trucks never set and the two pictures are what
+                      * the row is usually about.
+                      * ⚠️ `w-[44px]` EACH: a 16px tick centred, with room for the header's own word. */}
+                    {/* ⚠️ EVENT BEFORE WEEKLY (10 October 2026) — the same order as the three boxes
+                      * beside it and as the other two screens of this tab. ⛔ A TABLE WHOSE COLUMNS RUN
+                      * ONE WAY AND A PANE WHOSE BOXES RUN THE OTHER is two orders on one screen, which
+                      * is worse than either. */}
+                    <th className="w-[44px] py-1 text-center">{COL_EVENT}</th>
+                    <th className="w-[44px] py-1 text-center">{COL_WEEKLY}</th>
+                    <th className="w-[44px] py-1 text-center">{COL_POSTER}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {rows.length === 0 && (
+                    <tr><td colSpan={4} className="py-3 text-sm text-slate-400">
+                      {places.length === 0 ? LOCATIONS_NONE : LOCATIONS_NO_MATCH}
+                    </td></tr>
+                  )}
+                  {rows.map(pl => (
+                    /* ⚠️ THE **ROW** IS THE CONTROL. ⛔ `<tr onClick>` ALONE IS NOT KEYBOARD-REACHABLE,
+                     * so the name cell holds a real `<button>` and the row's click is a convenience. */
+                    <tr key={pl.id} data-loc-row
+                      onClick={() => { setSelectedId(pl.id); setMsg(null) }}
+                      className={`cursor-pointer ${selectedId === pl.id ? 'bg-orange-50' : 'hover:bg-slate-50'}`}>
+                      {/* ══ 🔴 THE NAME WRAPS TO TWO LINES INSTEAD OF BEING CUT OFF ════════════════════
+                        * ⛔ IT WAS `truncate` AND `font-bold`, AND BOTH WERE WRONG HERE. "The Kings Arms
+                        * at Great Finborough" became "The Kings Arms at Great Fi…" in a 200px column, so
+                        * the one thing the row exists to identify was the thing it could not show — and
+                        * two venues on the same street became the same row. ⚠️ `line-clamp-2` RATHER THAN
+                        * UNBOUNDED WRAPPING: two lines is enough for every name in the data and keeps the
+                        * rows near enough the same height to scan.
+                        * ⚠️ AND WEIGHT **500**, not bold. Every row was bold, so nothing was emphasised —
+                        * and a list of sixty bold names is heavier to read than a list of sixty plain
+                        * ones. The AREA stays grey underneath, where it was. */}
+                      <td className="min-w-0 py-1.5 pr-2 align-top">
+                        <button type="button" className="block w-full min-w-0 text-left">
+                          {/* ⛔ NO `block` HERE, AND THE RENDER HARNESS IS WHY. `line-clamp-2` sets
+                            * `display: -webkit-box` — that is how the clamp works at all — and `block`
+                            * sets `display: block`. Two classes, one property: whichever rule comes
+                            * later in the compiled stylesheet wins, and `block` won. The names wrapped
+                            * to THREE lines and the measurement said so.
+                            * ⚠️ `line-clamp-2` IS ALREADY A BLOCK-LEVEL DISPLAY, so nothing is lost. */}
+                          <span className="text-sm font-medium leading-snug text-slate-900 line-clamp-2"
+                            data-loc-name>{pl.name}</span>
+                          <span className="block truncate text-xs text-slate-400">
+                            {pl.area ?? ''}{pl.isHidden ? (pl.area ? ' · hidden' : 'hidden') : ''}
+                          </span>
+                        </button>
+                      </td>
+                      <td className="py-1.5 align-top">{tick(pl.eventPhotoImage ?? null)}</td>
+                      <td className="py-1.5 align-top">{tick(pl.weeklyImage ?? null)}</td>
+                      <td className="py-1.5 align-top">{tick(pl.eventImage ?? null)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>,
+        )}
+      </Box>
+
+      {/* ── RIGHT · THE SELECTED LOCATION ─────────────────────────────────────────────────────── */}
+      <Card className="flex min-w-0 flex-col p-4" data-loc-pane>
+        {!selected ? (
+          <p className="py-6 text-center text-sm text-slate-400">{LOCATIONS_PICK_ONE}</p>
+        ) : gate(
+          <>
+            <p className="text-[17px] font-bold leading-tight text-slate-900">
+              {selected.name}
+              {selected.area ? <span className="font-medium text-slate-400"> · {selected.area}</span> : null}
+            </p>
+
+            {/* ⛔ "Name on posts" LEFT THIS SCREEN — 9 October 2026. It wrote `short_name`, which
+              * "Tidy up places" also writes, and that other screen edits the TOWN beside it. A
+              * location's name and its town are one fact about the schedule, and splitting the pair
+              * across two screens is how they come to disagree.
+              * ⚠️ THE NOTE NAMES THE REAL PATH rather than saying "elsewhere". */}
+            <p className="mt-1 text-[11px] leading-relaxed text-slate-400" data-name-from-schedule>
+              {NAME_FROM_SCHEDULE_NOTE}
+            </p>
+
+            {msgNode}
+
+            {/* ══ 🔴 THREE BOXES OF EQUAL SIZE, SIDE BY SIDE ════════════════════════════════════════════
+              * ⛔ IT WAS **TWO** COLUMNS WITH THE OVERRIDE STACKED UNDER ONE OF THEM, which made the
+              * third picture visibly subordinate to the second — and it was, under the old model. With
+              * a picture per surface there is no hierarchy left to draw: three jobs, three boxes, the
+              * same size. ⚠️ `items-stretch` IS WHAT MAKES THEM EQUAL, and the preview inside each has a
+              * fixed height, so a box with a picture and a box without are the same box.
+              * ⚠️ THEY STACK BELOW 900px, where three columns of a preview and a button is narrower
+              * than any of them needs. ⛔ NOT 640: three across needs half again as much room as two
+              * did, and 640 ÷ 3 is 200px per box with a 12px gap. */}
+            {/* ⚠️ `items-stretch` IS THE DEFAULT AND IT IS WHAT MAKES THE THREE BOXES ONE HEIGHT — and
+              * that, with each box being a flex column whose description takes the slack, is what lines
+              * the previews and the Remove rows up. ⛔ `grid-rows-[auto_auto_auto_auto]` IS GONE: it
+              * existed only for the boxes' `grid-rows-subgrid` to adopt, and the boxes no longer use it.
+              * See the long note on `PictureBox` for why that mechanism was replaced. */}
+            <div className="mt-3 grid grid-cols-1 gap-3 min-[900px]:grid-cols-3"
+              data-loc-boxes>
+              {/* ══ 🔴 THE EVENT PICTURE IS FIRST (10 October 2026, Dominic) ═══════════════════════
+                * ⛔ WEEKLY LED "matching the table's column order", which was a reason about this
+                * screen's own table rather than about the operator. **The single event post is the one
+                * a truck makes most often**, so its picture is the one they come here to set — and
+                * Designs and Create a post were reordered the same way in the same edit, so the three
+                * screens of this tab agree. ⚠️ THE TABLE'S COLUMNS MOVED WITH THEM, below. */}
+              <PictureBox
+                title={EVENT_PIC_TITLE} blurb={EVENT_PIC_BLURB} slotKey="event-photo"
+                image={selected.eventPhotoImage ?? null} busy={busy}
+                onUpload={upload(selected.id, 'event-photo')}
+                onRemove={() => {
+                  if (!window.confirm(slotRemoveConfirm('picture'))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event-photo' }), 'Removed.')
+                }}
+                borrow={!selected.eventPhotoImage && selected.weeklyImage
+                  ? {
+                    label: USE_WEEKLY_PICTURE,
+                    onClick: () => void run(
+                      () => api('place_slot_use', {
+                        placeId: selected.id, slot: 'event-photo',
+                        pictureId: selected.weeklyImage?.id,
+                      }),
+                      'Event posts now use that picture too.'),
+                  }
+                  : null}
+              />
+
+              {/* ══ 🔴 THE LOCATION POSTER ════════════════════════════════════════════════════════════
+                * ⚠️ NO "use the other one" LINK, AND THAT IS NOT AN OVERSIGHT. A poster is held to the
+                * standard design's shape to within 1%; offering to point it at a logo would be offering
+                * an upload that is about to be refused. ⚠️ THE SIZE IS NOT IN THE DESCRIPTION either —
+                * the shape rule still applies and a wrong-shape upload is still refused in its own
+                * words, but a number to read before a job most trucks never do was a cost on everybody. */}
+
+              <PictureBox
+                title={WEEKLY_PIC_TITLE} blurb={WEEKLY_PIC_BLURB} slotKey="weekly"
+                image={selected.weeklyImage ?? null} busy={busy}
+                onUpload={upload(selected.id, 'weekly')}
+                onRemove={() => {
+                  if (!window.confirm(slotRemoveConfirm('picture'))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'weekly' }), 'Removed.')
+                }}
+                /* ══ 🔴 "Use the event post picture" — ONE ROW, NOT A SECOND FILE ════════════════════
+                  * ⛔ OFFERED ONLY WHEN **THIS** BOX IS EMPTY AND THE OTHER IS FULL, which is the only
+                  * state in which it means anything: with both empty there is nothing to point at, and
+                  * with this one full it would be a replace dressed up as a shortcut.
+                  * 🔴 IT POINTS THE COLUMN AT THE SAME `place_pictures` ROW. `place_slot_use` takes a
+                  * picture id, so no file is uploaded and no file is copied — and because
+                  * `place_pictures_path_uidx` is a FULL unique index on `path`, a copy is impossible
+                  * anyway. ⚠️ A LEGACY IMAGE HAS NO ROW YET and `place_slot_use` writes one first; that
+                  * is why `slotOut` sends `legacy` with the id. */
+                borrow={!selected.weeklyImage && selected.eventPhotoImage
+                  ? {
+                    label: USE_EVENT_PICTURE,
+                    onClick: () => void run(
+                      () => api('place_slot_use', {
+                        placeId: selected.id, slot: 'weekly',
+                        pictureId: selected.eventPhotoImage?.id,
+                      }),
+                      'Weekly posts now use that picture too.'),
+                  }
+                  : null}
+              />
+
+              <PictureBox
+                title={LOCATION_POSTER_TITLE} blurb={POSTER_BOX_BLURB} slotKey="event"
+                image={selected.eventImage ?? null} busy={busy}
+                dropLabel={DROP_A_POSTER}
+                onUpload={upload(selected.id, 'event')}
+                onRemove={() => {
+                  if (!window.confirm(slotRemoveConfirm('poster'))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event' }), 'Removed.')
+                }}
+                borrow={null}
+              />
+            </div>
+
+            {/* ── THE TAG ──────────────────────────────────────────────────────────────────────── */}
+            {/* ⛔ THE TAG IS **NOT** `sg_upsert_place`'s PATH. It is a column this feature added,
+              * written by this feature's own route so the normaliser runs on the way in. */}
+            <div className="mt-4 border-t border-slate-100 pt-3">
+              <SocialTagField
+                key={`t-${selected.id}`}
+                initial={selected.socialTag ?? ''}
+                busy={busy}
+                onSave={value => void run(
+                  () => api('place_social_tag', { placeId: selected.id, tag: value }),
+                  'Tag saved.',
+                )}
+              />
+            </div>
+          </>,
+        )}
+      </Card>
     </div>
   )
 }
@@ -837,138 +2295,45 @@ function SocialPosts({ truck, token, area, onArea, manageApi }: {
  * ══ 🔴 ONE PLACE'S EVENT DESIGN, AS A FULL PAGE ══════════════════════════════════════════════════
  *
  * ⛔ THE EDITOR INSIDE IT IS `EventSetupScreen`, FOCUSED. Everything this page adds is CHROME — the
- * back link, the name, the scope sentence, the name-on-posts field, "Make post for …" and the quiet
- * way out. The picture, the drag surface, the fonts, the preview and every save path are the existing
- * screen's, because a second drag surface would be a second set of the three pointer bugs that one had.
+ * back link, the name, the scope sentence, "Make post for …" and the quiet way out. The picture, the
+ * drag surface, the fonts, the preview and every save path are the existing screen's, because a second
+ * drag surface would be a second set of the three pointer bugs that one had.
  *
- * ⚠️ "Name on posts" IS BOUND TO `short_name`, AND THAT IS NOT A PREFERENCE. `locationName()` in
- * lib/weekly-post/week-data.ts reads `short_name` FIRST and falls back to `name`, so the short one is
- * the field that decides what a poster prints. ⛔ THE "Tidy up places" CARD LABELS `name` "Name on
- * posts", which is the field the renderer uses SECOND — that label is wrong, it is named in
- * docs/social-posts-report.md, and it was left alone because the brief says to leave Tidy up as it is.
- * ⚠️ NO COLUMN WAS ADDED. The field already existed; what is new is a control over it on the screen
- * where it matters.
+ * ⚠️ THE "Name on posts" FIELD WAS PART OF THAT CHROME UNTIL 9 OCTOBER 2026 and is not any more. It
+ * wrote `short_name`, which `locationName()` in lib/weekly-post/week-data.ts reads FIRST — so it was
+ * the field that decided what a poster prints, which is why it was offered here at all.
+ * 🔴 IT WENT BECAUSE "Tidy up places" EDITS THE NAME AND THE TOWN TOGETHER. Those two are one fact
+ * about the schedule; a second screen editing only the name is how they come to disagree, and the
+ * poster then prints a mismatch that neither screen can show the operator. The Location settings pane
+ * carries a grey note naming the real path there instead.
+ * ⚠️ NOTHING ABOUT THE DATA CHANGED EITHER WAY. No column was added when the field arrived and none
+ * was dropped when it left; `short_name` is still read first by the renderer. ⛔ THE "Tidy up places"
+ * CARD STILL LABELS `name` "Name on posts", which is the field the renderer uses SECOND — that label
+ * is wrong, it is named in docs/social-posts-report.md, and it is left alone because the brief says to
+ * leave Tidy up as it is.
  */
-function PlaceDesignPage({ token, manageApi, place, placeId, onBack, onMakePost, gate }: {
-  token: string
-  manageApi: (action: string, extra?: Record<string, unknown>) => Promise<unknown>
-  place: PostPlace | null
-  placeId: string
-  onBack: () => void
-  onMakePost: (eventId: string) => void
-  gate: (children: React.ReactNode) => React.ReactNode
-}) {
-  const [postName, setPostName] = useState(place?.shortName ?? '')
-  const [nameMsg, setNameMsg] = useState<string | null>(null)
-  const [removing, setRemoving] = useState(false)
-  const [removeMsg, setRemoveMsg] = useState<string | null>(null)
-  /** Which of this place's upcoming public events the preview is about. */
-  const [previewEvent, setPreviewEvent] = useState<string>('')
 
-  const upcoming = useMemo(() => place?.upcoming ?? [], [place])
-  useEffect(() => {
-    /* ⚠️ THE DEFAULT IS THE NEXT ONE, SET WHEN THE LIST ARRIVES. It is a one-shot seed and not a
-     * derivation, because the operator may then choose another and must keep it. */
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!previewEvent && upcoming.length > 0) setPreviewEvent(upcoming[0].id)
-  }, [upcoming, previewEvent])
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// ⛔ TOMBSTONE · `PlacePicturesPage`, `PlacePictureRow`, `PlaceDesignPage` AND `LibraryPicture`
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// All four were deleted on 7 October 2026 with the library model they served. What they were:
+//
+//   • `PlacePicturesPage` — a grid of a location's pictures with ★ Main, a Make main / Rename menu,
+//     "Main is used automatically", and a quiet link to the text-positions editor. 🔴 EVERY ONE OF
+//     THOSE CONTROLS EXISTED BECAUSE A LOCATION COULD HAVE ANY NUMBER OF PICTURES AND ONLY ONE WAS
+//     USED. With two slots, one job each, the question they answered does not arise.
+//   • `PlacePictureRow` — its list row, with a thumbnail and a picture count.
+//   • `PlaceDesignPage` — the per-location text-positions editor. See the note on the `View` union:
+//     the DATA and the RENDERING are untouched; what went is the way to create one.
+//   • `LibraryPicture` — the page's own row shape, with `isMain`, `sortOrder` and `wholeBackgroundOk`.
+//
+// ⚠️ `place_picture_list`, `place_picture_main`, `place_picture_rename` AND `place_picture_remove` ARE
+// STILL ON THE ROUTE AND NOTHING CALLS THEM. They are left because removing a route action is a
+// separate change with its own blast radius (`scripts/place-pictures.cjs` drives three of them), and
+// because `place_picture_remove` is the only path that deletes a stored object — which the next person
+// to read this should know exists and know nothing presses. Named in docs/social-tab-report.md.
+//
+// ⚠️ `inGridOrder` / `mainPicture` IN lib/weekly-post/place-pictures.ts ARE STILL LIVE. The legacy
+// mapping and `readPlaceLibrary` both use them; they are the store's own order, not a screen's.
 
-  const saveName = async () => {
-    const next = postName.trim()
-    if (next === (place?.shortName ?? '')) return
-    setNameMsg(null)
-    try {
-      /* 🔴 THE EXISTING PLACE WRITE, on /api/manage — the same action "Tidy up places" uses for the
-       * same column. No second save path, and no new route. */
-      await manageApi('sg_upsert_place', { id: placeId, short_name: next })
-      setNameMsg('Saved')
-    } catch (e) {
-      setNameMsg(e instanceof Error ? e.message : 'Couldn’t save that name.')
-    }
-  }
-
-  const switchToStandard = async () => {
-    if (!window.confirm(standardDesignConfirm(place?.name ?? 'this place'))) return
-    setRemoving(true); setRemoveMsg(null)
-    try {
-      const r = await fetch('/api/weekly-post', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, action: 'event_remove_place_design', placeId }),
-      })
-      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
-      if (!r.ok) throw new Error(String(j.error ?? 'That did not work.'))
-      onBack()
-    } catch (e) {
-      setRemoveMsg(e instanceof Error ? e.message : 'Couldn’t remove that picture.')
-      setRemoving(false)
-    }
-  }
-
-  const next = place?.next ?? null
-
-  return (
-    <div className="space-y-3" data-place-design-page>
-      <BackLink label="Social posts › Designs" onClick={onBack} />
-      <div className="min-w-0">
-        <p className="truncate text-lg font-black text-slate-900">{place?.name ?? 'This place'}</p>
-        <p className="text-xs text-slate-500">
-          {place?.area ? `${place.area} · ` : ''}event design for this place
-        </p>
-      </div>
-      <p className="text-xs text-slate-500">{placeDesignScope(place?.name ?? 'this place')}</p>
-
-      {/* 🔴 "Name on posts", AND THE PREVIEW SELECT, ABOVE THE EDITOR. They belong to this page; the
-        * editor below is the existing screen and is not reshaped around them. */}
-      <Card className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">
-        <div className="min-w-0">
-          <Input label="Name on posts" value={postName} onChange={setPostName} onBlur={() => void saveName()}
-            hint={POST_NAME_HINT(place?.name ?? 'this place')} />
-          {nameMsg && <p className="mt-1 text-[11px] text-slate-500">{nameMsg}</p>}
-        </div>
-        <div className="min-w-0">
-          <label className="mb-1 block text-xs font-bold text-slate-600">Preview with</label>
-          {upcoming.length > 0 ? (
-            <select value={previewEvent} onChange={e => setPreviewEvent(e.target.value)}
-              data-preview-with
-              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
-              {upcoming.map(ev => (
-                <option key={ev.id} value={ev.id}>
-                  {shortDate(ev.date)} · {formatTimeRange(ev.startTime, ev.endTime)}
-                </option>
-              ))}
-            </select>
-          ) : (
-            /* ⚠️ SAID OUT LOUD. The editor below previews on a sample rather than on this place's own
-             * event, and an operator judging their artwork should know which they are looking at. */
-            <p className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
-              Nothing booked here yet — the preview uses a sample.
-            </p>
-          )}
-        </div>
-      </Card>
-
-      {gate(<EventSetupScreen token={token} onlyPlaceId={placeId} onCancel={onBack} />)}
-
-      <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
-        {next
-          /* 🔴 ONE OF THE TWO ORANGE BUTTONS IN THIS PRODUCT. Making a post is the act; everything
-           * else on these screens edits or opens something. */
-          ? <button type="button" data-primary className={BTN_PRIMARY}
-              onClick={() => onMakePost(next.id)}>Make post for {shortDate(next.date)}</button>
-          /* ⚠️ HIDDEN, NOT DISABLED, when there is nothing to post — the brief's rule and the honest
-           * one: there is no event for this button to be about. */
-          : <span />}
-        <div className="flex flex-col items-end gap-1">
-          {place?.hasPicture && (
-            <button type="button" disabled={removing} onClick={() => void switchToStandard()}
-              data-use-standard
-              className="text-xs font-semibold text-slate-500 underline hover:text-slate-800 disabled:opacity-50">
-              {removing ? 'Removing…' : USE_STANDARD_LINK}
-            </button>
-          )}
-          {removeMsg && <p className="text-[11px] text-red-600">{removeMsg}</p>}
-        </div>
-      </Card>
-    </div>
-  )
-}

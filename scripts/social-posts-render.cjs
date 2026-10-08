@@ -31,8 +31,8 @@ const os = require('os')
 
 const REPO = path.resolve(__dirname, '..')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
-const SOCIAL = read('components/manage/SocialPosts.tsx')
-const COPY = read('lib/copy/socialPosts.ts')
+/* ⛔ `SOCIAL` AND `COPY` ARE NO LONGER READ HERE. They fed the three fixtures this file lost on
+ * 7 October — see the tombstone below. `scripts/social-tab-render.cjs` lifts from them now. */
 
 /** Lift one class string out of the real source, or THROW. */
 function lift(src, re, what) {
@@ -70,431 +70,556 @@ const HEAD = css => `<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><style>${css}</style>
 <style>body{margin:0}</style></head><body>`
 
-/* 🔴 A REAL SUFFOLK PUB NAME, 34 CHARACTERS. The boxes are a third of the page wide; what crowds them
- * is a venue name, not lorem. */
-const LONG_NAME = 'The Kings Arms at Great Finborough'
+/* ⛔ `LONG_NAME` MOVED TO `scripts/social-tab-render.cjs` with the lists that needed crowding. The
+ * editor and the picker are measured on their own content. */
 
-/**
- * ══ 🔴 SOCIAL POSTS — EITHER AREA ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════════════════════════════════════════
+ * ⛔ TOMBSTONE · `socialFixture`, `placeEditorFixture`, `picturesPageFixture`, `rects`,
+ *    `picturesRects` — AND THE MEASUREMENTS THAT DROVE THEM (7 October 2026)
+ * ══════════════════════════════════════════════════════════════════════════════════════════════════
  *
- * @param area    'posts' (Make a post) or 'designs'.
- * @param rows    how many rows the two list boxes hold. 20 is a truck with a full address book, which
- *                is the case that decides whether a list scrolls inside its box or stretches it.
- * @param oneCol  the CONTROL: the grid removed, so 1440 must stack. Without it the side-by-side
- *                assertions would pass on a page that never had three columns.
+ * This file measured FOUR screens. Three of them no longer exist:
+ *
+ *   • `socialFixture` drew **Social posts** — one pill inside Schedule with a segmented control and
+ *     THREE boxes per area. Social media is its own top tab now, "Create a post" is TWO halves, and
+ *     Designs is TWO boxes. Every assertion it carried was about a count of three, a segmented
+ *     control, a colour bar on a six-row list, or a group heading over a sorted list.
+ *   • `placeEditorFixture` drew the per-location design editor, which has lost its door entirely —
+ *     see `docs/social-tab-report.md` §6 for what that costs and what it does not.
+ *   • `picturesPageFixture` drew the picture LIBRARY page: a grid, a ★ Main, an add tile. A location
+ *     has at most two images with one job each, so there is nothing to browse.
+ *
+ * 🔴 WHAT REPLACED THEM IS `scripts/social-tab-render.cjs` — the three new screens, in WebKit, at the
+ * two widths the brief names (1100 and 390), with its own controls.
+ *
+ * ⚠️ WHAT STAYS IN THIS FILE IS THE HALF THAT IS STILL LIVE: the shared DESIGN EDITOR and the FONT
+ * PICKER. Both are unchanged screens, both are measured here already, and moving them would be a
+ * second edit with no benefit.
+ *
+ * ⛔ THE CONTROLS WENT WITH THEIR FIXTURES, which is the part worth saying out loud: a control proves
+ * a measurement can tell two shapes apart, and a control for a fixture that no longer exists proves
+ * nothing. The new file carries its own.
  */
-function socialFixture(css, { area = 'posts', rows = 20, oneCol = false, ready = true, landscape = false } = {}) {
-  const makeGrid = lift(SOCIAL, /<div className="(grid grid-cols-1 items-stretch gap-3 min-\[900px\]:grid-cols-3)" data-make-boxes>/, 'the Make a post grid')
-  const designGrid = lift(SOCIAL, /<div className="(grid grid-cols-1 items-stretch gap-3 min-\[900px\]:grid-cols-\[minmax\(200px,320px\)_minmax\(200px,320px\)_minmax\(0,1fr\)\])"/, 'the Designs grid')
-  const boxCard = lift(SOCIAL, /<Card className=\{`(flex min-w-0 flex-col p-4) \$\{className\}`\}>/, 'a box')
-  const boxBody = lift(SOCIAL, /<div className="(mt-3 flex min-h-0 min-w-0 flex-1 flex-col)">\{children\}<\/div>/, "a box's body")
-  const boxHeading = lift(SOCIAL, /const BOX_HEADING = '([^']+)'/, 'the box heading')
-  const boxBlurb = lift(SOCIAL, /const BOX_BLURB = '([^']+)'/, 'the box blurb')
-  const btnPrimary = lift(SOCIAL, /const BTN_PRIMARY =\n\s*'([^']+)'/, 'the primary button')
-  const btnOutline = lift(SOCIAL, /const BTN_OUTLINE =\n\s*'([^']+)'/, 'the outlined button')
-  const listUl = lift(SOCIAL, /<ul className="(mt-2 max-h-72 min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto)"\n\s*data-upcoming-list>/, 'the upcoming list')
-  const seg = lift(SOCIAL, /data-social-area\n\s*className="([^"]+)"/, 'the segmented control')
-  const segBtn = lift(SOCIAL, /className=\{`(rounded-lg px-3 py-1\.5 text-sm font-semibold transition-colors) \$\{area === k/, 'a segment')
-  const segOn = lift(SOCIAL, /\? '(bg-white text-slate-900 shadow-sm)'/, 'the selected segment')
-  const segOff = lift(SOCIAL, /: '(text-slate-500 hover:text-slate-800)'/, 'an unselected segment')
-  const designTile = lift(SOCIAL, /data-design-tile\n\s*style=\{\{ height, width, maxWidth: '100%' \}\}\n\s*className="([^"]+)"/, 'the design tile')
-  /* 🔴 THE TILE'S OWN SIZING RULE, LIFTED AS NUMBERS — so the fixture computes the same box the
-   * component does rather than a copy of it that can drift. */
-  const tileH = Number(lift(SOCIAL, /const H = (\d+)\n\s*const MAX_W/, 'the tile height'))
-  const tileMaxW = Number(lift(SOCIAL, /const MAX_W = (\d+)/, 'the tile max width'))
-  const placeTile = lift(SOCIAL, /<div data-place-tile\n\s*className="([^"]+)">/, 'a place tile')
-  const tagOwn = lift(SOCIAL, /<span data-design-tag className="([^"]+)">Own design<\/span>/, 'the Own design tag')
-  /* ⛔ THERE IS NO "Standard" TAG TO LIFT ANY MORE — see `DesignTag`. Only the exception is marked. */
-  const barCls = lift(SOCIAL, /data-design-bar\n\s*className=\{`(w-1 shrink-0 self-stretch rounded-full)/, 'the design bar')
-  const footnote = lift(COPY, /export const MAKE_POST_FOOTNOTE =\n\s*'([^']+)'/, 'the footnote')
-  const introDesigns = lift(COPY, /export const INTRO_DESIGNS_WORD = '([^']+)'/, 'the intro Designs word')
-  const introMake = lift(COPY, /export const INTRO_MAKE_WORD = '([^']+)'/, 'the intro Make word')
-  const introAfterDesigns = lift(COPY, /export const INTRO_AFTER_DESIGNS = '([^']+)'/, 'the intro, part 2')
-  const introAfterMake = lift(COPY, /export const INTRO_AFTER_MAKE = '([^']+)'/, 'the intro, part 4')
-  /* 🔴 THE EMPTY PANEL AND THE "Used for" PANEL, LIFTED — both are new on 6 October and both are
-   * measured: the panel for "no orange and it fills the box", the Used-for line for "it fits". */
-  const emptyPanel = lift(SOCIAL, /<div data-empty-box\n\s*className="([^"]+)">/, 'the empty panel')
-  const usedFor = lift(SOCIAL, /<p data-used-for className="([^"]+)">/, 'the Used for panel')
-  /* ⚠️ TWO TITLES, NOT ONE. The weekly box names the WEEKLY design and the other two name the EVENT
-   * design — the first draft of this fixture used the event one in all three, so the screenshot showed
-   * the weekly box blaming the wrong design. The component always had it right; the fixture did not. */
-  const emptyWeeklyTitle = lift(COPY, /export const EMPTY_WEEKLY_TITLE = '([^']+)'/, 'the weekly empty title')
-  const emptyTitle = lift(COPY, /export const EMPTY_EVENT_TITLE = '([^']+)'/, 'the empty title')
-  const emptyBody = lift(COPY, /export const EMPTY_BODY = '([^']+)'/, 'the empty body')
-  const emptyButton = lift(COPY, /export const EMPTY_BUTTON = '([^']+)'/, 'the empty button')
-  const usedForText = lift(COPY, /export const EVENT_DESIGN_USED_FOR =\n\s*'([^']+)'/, 'the Used for text')
-  const usedForLabel = lift(COPY, /export const USED_FOR_LABEL = '([^']+)'/, 'the Used for label')
 
-  /* ══ 🔴 THE EMPTY STATE, DRAWN AS THE COMPONENT DRAWS IT ═══════════════════════════════════════
-   * ⚠️ `id` IS PASSED IN so each box's panel can be found and measured on its own — "the three boxes
-   * are still equal height when all three are empty" is a comparison between three of these. */
-  const emptyBox = (id) => `
-    <div id="${id}" class="${emptyPanel}">
-      <p id="${id}title" class="text-sm font-bold text-slate-700">${id === 'empty1' ? emptyWeeklyTitle : emptyTitle}</p>
-      <p class="max-w-[20rem] text-sm text-slate-500">${emptyBody}</p>
-      <button id="${id}btn" class="${btnOutline} mt-1">${emptyButton}</button>
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 THE SHARED DESIGN EDITOR, MEASURED (6 October 2026)
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// ══ 🔴 THE CLAIM INVERTED ON 9 OCTOBER 2026: "NO THIRD COLUMN" → A THIRD COLUMN ══════════════════
+//
+// ⛔ THIS BLOCK USED TO SAY THE BROWSER WAS HERE TO PROVE A THIRD COLUMN WAS **ABSENT**, and that the
+// toolbar above the picture wrapped rather than scrolling. Both of those shapes are gone. The toolbar
+// was one row of nine cells with "✦ Effects ▾" and "Advanced ▾" opening pop-ups on the end of it, and
+// three things were wrong with it: a pop-up covers the poster it is about, a wrapping toolbar is a
+// toolbar whose controls move between items, and "Advanced" hid settings by name rather than by use.
+// The settings are a sticky 320px third column now.
+//
+// 🔴 WHAT NEEDS A BROWSER IS THEREFORE THE OPPOSITE QUESTION, and it is a harder one:
+//   • "exactly ONE settings panel is on screen" — the panel is built once and rendered in two places,
+//     a third column above 1100 and a block under the preview below it. A class census sees both
+//     wrappers in the source and cannot say which one a layout engine paints.
+//   • "the settings never cover the poster" — the reason the pop-ups went. It is a question about two
+//     boxes' coordinates, which only a layout engine has.
+//   • "the panel is sticky, and CAN be" — a `sticky` element inside an `overflow:hidden` ancestor does
+//     not stick, and one taller than the viewport cannot stick either. With MORE OPTIONS open the
+//     panel is 1900px of controls, so `max-h` + `overflow-y-auto` is what decides whether the PANEL
+//     scrolls or the PAGE does — and a scrolling page takes the poster off the screen, which is the
+//     pop-ups' failure in a slower form.
+//   • "the picture is as large as fits" is `min(64vh, column width × ratio)`, which is arithmetic the
+//     browser does and nothing else can.
+//
+// 🔴 THREE WIDTHS AND **WEBKIT ONLY**. WebKit is the brief's instruction and the right trade: the device
+// is a Mac and the browser is Safari. ⚠️ THE THIRD WIDTH IS NEW AND IS THE POINT — this layout has TWO
+// breakpoints now (900 and 1100), so 1100 is above both, 390 below both, and **1000 is the band
+// between them**: wide enough for the list beside the poster, too narrow for a 320px panel as well.
+// ⛔ THAT BAND IS WHERE THIS PROJECT HAS ALREADY SHIPPED A BUG — `lg:` (1024) was once set as the
+// breakpoint on a machine 1100px wide — so a sweep of the two ends would measure only the two cases
+// nobody gets wrong.
+//
+// ⚠️ IT IS NOT THE PAGE, AND SAYS SO. There is no operator session here, so what is rendered is the
+// editor's OWN class names, lifted out of the source — so the fixture breaks rather than measuring a
+// screen nobody is served.
+
+function editorFixture(css, { oneCol = false, twoCol = false, moreOpen = false, zoom = 0 } = {}) {
+  const ED = read('components/manage/DesignEditor.tsx')
+  const BITS = read('components/manage/DesignEditorBits.tsx')
+
+  /* ══ 🔴 THREE TRACKS, LIFTED AS ONE STRING ════════════════════════════════════════════════════════
+   * ⚠️ `twoCol` STRIPS THE 1100 RULE and `oneCol` the 900 one — each control removes exactly one of the
+   * two breakpoints, so a failure says WHICH breakpoint stopped working. ⛔ BOTH STRIP BY REGEX rather
+   * than by naming the track list: the sibling harness shipped a control that spelled out a ratio,
+   * the ratio changed, and the control quietly stopped controlling anything. */
+  const gridRaw = lift(ED, /<div className="(grid grid-cols-1 min-\[1100px\]:grid-cols-\[minmax\(0,1fr\)_380px\] gap-4 items-start)"\n\s*data-editor-grid>/, 'the editor grid')
+  /* ⚠️ ONE BREAKPOINT NOW, SO ONE CONTROL. `oneCol` strips it; `twoCol` is kept as an alias so the
+   * control block below reads the same way, and both produce the same single-column fallback. */
+  const grid = (oneCol || twoCol) ? gridRaw.replace(/min-\[1100px\]:grid-cols-\S+/, '') : gridRaw
+  /* ⛔ `leftCol`, `chips` AND `chipWrap` ARE GONE. The 250px column and its under-900 chip row went
+   * with the two-column rewrite: the item list is INSIDE the panel now, so there is no width at which
+   * it is absent and nothing for a chip row to stand in for. */
+  const area = lift(ED, /<div ref=\{areaRef\}\n\s*data-stage-area\n\s*className="([^"]+)"/, 'the grey stage area')
+  /* ══ ⛔ THE "✎ Edit | 👁 Preview" SWITCH WAS LIFTED HERE AND IS GONE (10 October 2026, §B1) ════════
+   * Both lifts threw if the switch left the source, which is exactly what they were for — and exactly
+   * what happened: the switch was a MODE and has been replaced by a button that opens the finished post
+   * over the top. 🔴 THE GUARD IS KEPT, POINTED AT WHAT REPLACED IT: if "👁 Preview post" ever leaves
+   * the title row, this fixture refuses to build rather than measuring a screen nobody is served. */
+  lift(ED, /onClick=\{\(\) => setPreviewOpen\(true\)\} (data-preview-post)/, 'the Preview post button')
+  const panelCard = lift(ED, /<div className="(rounded-2xl border border-slate-200 bg-white p-3)" data-settings-panel>/, 'the settings card')
+  /* ⚠️ `shrink-0` IS NEW AND IS LOAD-BEARING: the poster is a flex child of the centred area, and a
+   * flex child's default `min-width: auto` would squeeze it back to fit once zoomed — so + would do
+   * nothing. ⛔ AND THE BACKGROUND IS `bg-slate-200` against the area's `bg-slate-100`, so an unfitted
+   * poster is visible as a shape rather than blending into its own container. */
+  /* ══ 🔴 `m-auto`, NOT `shrink-0` — §2's ZOOM FIX ════════════════════════════════════════════════
+   * ⛔ THE AREA WAS `flex items-center justify-center` AND THE POSTER `shrink-0`. A flex container with
+   * `justify-content: center` whose item is too big overflows BOTH sides, and the part past the start
+   * edge is UNREACHABLE — `scrollLeft` cannot go below 0 — so at 150% the left half of the poster could
+   * not be scrolled to. 🔴 THE AREA IS A `grid` AND THE POSTER HAS `margin: auto`: they centre the same
+   * way and the scrollable region stays correct in both directions. */
+  const stage = lift(ED, /className="(relative m-auto select-none touch-none overflow-hidden rounded-xl bg-slate-200)"/, 'the stage')
+  const caption = lift(ED, /<p className="(min-w-0 grow text-xs text-slate-400)" data-stage-hint>/, 'the hint')
+  /* 🔴 THE ZOOM'S OWN ROW, lifted so the fixture cannot measure a control the screen has stopped using. */
+  const zoomRow = lift(ED, /<div className="(flex shrink-0 items-center gap-1)" data-zoom>/, 'the zoom row')
+  /* ══ 🔴 THE PANEL'S TWO WRAPPERS AND ITS CARD — THE SHAPE THAT REPLACED THE TWO POP-UPS ═══════════
+   * ⛔ THE PANEL IS ONE ELEMENT RENDERED IN ONE OF TWO PLACES: a sticky third column above 1100, and
+   * under the preview below it. Both wrappers are lifted, and the fixture draws BOTH — because the
+   * claim being measured is that exactly ONE of them is ever visible. A fixture that drew only the one
+   * expected at this width could not tell a working breakpoint from a missing wrapper. */
+  /* ══ 🔴 ONE PANEL COLUMN, STICKY ONLY ABOVE THE BREAKPOINT ════════════════════════════════════════
+   * ⚠️ IT WAS TWO WRAPPERS — a sticky third column and a copy under the preview — because the item list
+   * was a separate column that stayed put at both widths. With the list inside the panel there is ONE
+   * element, and the breakpoint moves the whole thing. ⛔ `sticky` IS PREFIXED `min-[1100px]:` because
+   * below it the panel sits under the poster, where there is nothing above it to stay level with. */
+  const panelCol = lift(ED, /<div className="(min-w-0 min-\[1100px\]:sticky min-\[1100px\]:top-4 min-\[1100px\]:max-h-\[calc\(100vh-2rem\)\] min-\[1100px\]:overflow-y-auto)"\n\s*data-settings-col>/, 'the panel column')
+  const toolLabel = lift(BITS, /export const TOOL_LABEL = '([^']+)'/, 'the field label')
+  const toolInput = lift(BITS, /export const TOOL_INPUT = '([^']+)'/, 'a field input')
+  const toolBtn = lift(BITS, /export const TOOL_BTN = '([^']+)'/, 'a small button')
+  const toolBtnOff = lift(BITS, /export const TOOL_BTN_OFF = '([^']+)'/, 'an unselected button')
+  const sectionCls = lift(ED, /<div className="(border-t border-slate-100 pt-3 first:border-t-0 first:pt-0)" data-settings-section=\{title\}>/, 'a foldable section')
+  /* 🔴 THE STAGE'S OWN SIZING RULE, LIFTED AS A STRING — so the fixture computes the same box the
+   * component does rather than a copy of it that can drift. */
+  /* ══ 🔴 THE **AREA'S** HEIGHT IS THE CAP NOW, NOT THE STAGE'S ════════════════════════════════════
+   * ⛔ IT WAS `maxHeight: min(64vh, 820px)` ON THE POSTER — a guess at how much of the window it may
+   * have, wrong in both directions: on a 16-inch window 64vh left a third of the height unused, and on
+   * a short one the title row and the hint pushed the bottom off the screen because neither was
+   * counted. 🔴 THE AREA IS CAPPED INSTEAD and the poster is FITTED INSIDE IT, measured. */
+  const areaMax = lift(ED, /style=\{\{ height: '(min\(72vh, 820px\))' \}\}>/, "the stage area's height")
+
+  /* ⚠️ A PORTRAIT 4:5 DESIGN, which is what a social post is. A square one would hide the case where
+   * the picture is taller than the window. */
+  const W = 1080, H = 1350
+
+  const sel = (text) => `<select class="${toolInput} w-full"><option>${text}</option></select>`
+  const btn = (text) => `<button class="${toolBtn} ${toolBtnOff}">${text}</button>`
+  const field = (label, inner) =>
+    `<div><span class="${toolLabel}">${label}</span><div class="mt-0.5">${inner}</div></div>`
+
+  /* ══ 🔴 THE PANEL, WITH EVERY CONTROL THE TOOLBAR HAD ═════════════════════════════════════════════
+   * ⛔ THE WORST CASE IS THE **DATE** ITEM, which is why it is the one drawn: it is the only item with
+   * its own "Date style" dropdown on top of the six style controls, so it is the tallest TEXT section
+   * there is. ⚠️ AND MORE OPTIONS IS DRAWN AT ITS FULL HEIGHT under `moreOpen`, which is the case that
+   * decides whether a sticky panel can stick: a panel taller than the viewport cannot. */
+  const stand = `
+    <div class="${sectionCls}" data-section="stand">
+      <button class="flex w-full items-center justify-between gap-2 text-left">
+        <span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">MAKE IT STAND OUT</span>
+        <span class="text-xs text-slate-400">▴</span>
+      </button>
+      <div class="mt-2" data-body="stand">
+        ${field('Outline', `${btn('Off')}${btn('Thin')}${btn('Thick')}`)}
+        <p class="mt-1 text-[11px] leading-relaxed text-slate-400">A thin line around each letter.</p>
+        ${field('Label strip', `${btn('Off')}${btn('On')}`)}
+        <p class="mt-1 text-[11px] leading-relaxed text-slate-400">A coloured strip behind the text, like a label.</p>
+        ${field('Keep it readable', `${btn('On')}`)}
+        <p class="mt-1 text-[11px] leading-relaxed text-slate-400">If the words are hard to read on your picture, we add a soft shadow. Your colours never change.</p>
+      </div>
     </div>`
 
-  /* 🔴 THE BUTTONS ARE THE COMPONENT'S OWN TWO CLASS STRINGS, lifted. What is measured is whether a
-   * full-width primary with a four-word label stays inside a third-width box at 900 — AND which ones
-   * are orange, which is a claim about the computed background, not about a class name. */
-  const btn = (label, cls = '') =>
-    `<button data-primary class="${btnPrimary} ${cls}">${label}</button>`
-  const ghost = (label) => `<button class="${btnOutline}">${label}</button>`
+  const more = `
+    <div class="${sectionCls}" data-section="more">
+      <button class="flex w-full items-center justify-between gap-2 text-left">
+        <span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">MORE OPTIONS</span>
+        <span class="text-xs text-slate-400">${moreOpen ? '▴' : '▾'}</span>
+      </button>
+      ${moreOpen ? '' : `<p class="mt-0.5 text-[11px] leading-relaxed text-slate-400" data-summary="more">Spacing, tilt, italic, words before, darken the picture, copy this style, centre the box</p>`}
+      ${moreOpen ? `<div class="mt-2" data-body="more">
+        ${['Wording', 'Letters', 'Position', 'Long names', 'Stand out', 'Whole picture'].map(g => `
+          <p class="mt-3 text-[10px] font-bold uppercase tracking-wide text-slate-400">${g}</p>
+          ${field('Words before', `<input class="${toolInput} w-full" value="Every Wednesday at">`)}
+          ${field('Spacing', `${btn('−')}<input class="${toolInput} w-14 text-center" value="96">${btn('+')}`)}
+          ${field('Tilt', `${btn('−')}<input class="${toolInput} w-14 text-center" value="0">${btn('+')}`)}`).join('')}
+        <button class="${toolBtn} ${toolBtnOff} mt-3">Copy this style to all text</button>
+      </div>` : ''}
+    </div>`
 
-  const eventRow = (i, priv) => `
-    <li class="flex flex-wrap items-stretch gap-x-2 gap-y-1.5 py-2">
-      <span id="evBar-${i}" class="${barCls} ${priv ? 'bg-transparent' : i % 2 ? 'bg-orange-500' : 'bg-slate-800'}"></span>
-      <span class="min-w-[9rem] flex-1">
-        <span id="evDate-${i}" class="block truncate text-sm font-bold ${priv ? 'text-slate-400' : 'text-slate-900'}">Tue 13 Oct<span class="ml-1.5 font-medium text-slate-400">17:00 – 20:00</span></span>
-        <span id="evSub-${i}" class="block truncate text-sm ${priv ? 'italic text-slate-400' : 'text-slate-500'}">${priv ? 'Private event · no post' : LONG_NAME}</span>
+  const itemBtn = (label, extra, sel_) => `
+    <button class="min-w-0 grow rounded-lg border px-2 py-1.5 text-left ${sel_
+      ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white'}">
+      <span class="flex items-center gap-1 text-[12px] leading-tight ${sel_
+        ? 'font-bold text-orange-700' : 'font-semibold text-slate-700'}">
+        <span class="min-w-0 truncate">${label}</span>${extra || ''}
       </span>
-      ${priv ? '' : `<span id="evBtn-${i}"><button class="${btnOutline} self-center">Make post</button></span>`}
-    </li>`
+    </button>`
 
-  const placeRow = (i) => `
-    <li class="flex flex-wrap items-center gap-x-2 gap-y-1.5 py-2">
-      <span class="min-w-[9rem] flex-1">
-        <span id="plName-${i}" class="block truncate text-sm font-bold text-slate-900">${LONG_NAME}<span class="font-medium text-slate-400"> · Wickhambrook</span></span>
-        <span class="block truncate text-sm text-slate-500">Next: Tue 13 Oct</span>
-      </span>
-      <span id="plBtn-${i}">${ghost('Make post')}</span>
-    </li>`
+  /** One item: its switch, its name, and the "own" badge where it has its own style. */
+  const itemCell = (name, own) => `
+    <div class="flex min-w-0 items-center gap-1.5">
+      <button class="shrink-0"><span class="relative block h-5 w-9 rounded-full bg-green-500"><span class="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow left-auto right-0.5" data-switch-knob></span></span></button>
+      ${itemBtn(name, own ? '<span class="shrink-0 rounded bg-amber-100 px-1 text-[9px] font-bold uppercase tracking-wide text-amber-700" data-own-badge>own</span>' : '', false)}
+    </div>`
 
-  /* ⛔ NO `flex-wrap` — THE ROW IS ONE LINE AT EVERY WIDTH. `min-w-0` on the text block is what makes
-   * the NAME the thing that gives way; without it a flex child's `min-width: auto` refuses to shrink
-   * below its content and pushes the button out of the box instead. */
-  const designRow = (i, own) => `
-    <li id="dsRow-${i}" class="flex items-center gap-2 py-2">
-      <div id="dsTile-${i}" class="${placeTile}">${own ? '<span style="display:block;width:100%;height:100%;background:#cbd5e1"></span>' : ''}</div>
-      <span class="min-w-0 flex-1">
-        <span id="dsName-${i}" class="block truncate text-sm font-bold text-slate-900">${LONG_NAME}</span>
-        <span class="block truncate text-sm text-slate-400">Wickhambrook</span>
-      </span>
-      <!-- ONLY THE EXCEPTION IS TAGGED. "Standard" read as the event type of that name and said nothing
-           a blank tile and a "Design" button were not already saying. -->
-      ${own ? `<span id="dsTag-${i}" class="${tagOwn}">Own design</span>` : ''}
-      <span id="dsBtn-${i}">${ghost(own ? 'Edit' : 'Design')}</span>
-    </li>`
-
-  /* 🔴 THE DESIGN TILE, DRAWN EXACTLY AS THE COMPONENT DRAWS IT — a fixed height and a derived width.
-   * ⚠️ BOTH STATES ARE RENDERED IN THE SAME FIXTURE so the harness can compare their boxes: "the empty
-   * tile is the same size as a filled one" is a comparison, not a number. */
-  const designTileHtml = (id, filled, w, h) => {
-    /* ⛔ THE SAME ARITHMETIC THE COMPONENT DOES, FROM ITS OWN TWO NUMBERS. 220px tall unless that would
-     * make it wider than MAX_W, in which case the width caps and the height follows — which is the fix
-     * for a landscape design bursting out of a 200px column. */
-    const ratio = w && h ? w / h : 4 / 5
-    const width = Math.min(Math.round(tileH * ratio), tileMaxW)
-    const height = Math.round(width / ratio)
-    return `<div id="${id}" class="${designTile}" style="height:${height}px;width:${width}px;max-width:100%">${
-      filled ? '<span style="display:block;width:100%;height:100%;background:#cbd5e1"></span>' : 'No design yet'}</div>`
-  }
-
-  const field = (label) =>
-    `<div><label class="block text-xs font-bold text-slate-600 mb-1">${label}</label>
-      <input class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" value="" /></div>`
-
-  /** A box heading and its description, exactly as `<Box>` composes them. */
-  const boxHead = (id, title, blurb) =>
-    `<p id="${id}" class="${boxHeading}">${title}</p><p class="${boxBlurb}">${blurb}</p>`
-
-  const makeBoxes = `
-  <div id="grid" class="${oneCol ? 'grid grid-cols-1 gap-3' : makeGrid}">
-    <div id="box1" class="${boxCard}">
-      ${boxHead('head1', 'Weekly post', 'One picture showing everywhere you’ll be this week.')}
-      <div class="${boxBody}">
-        ${!ready ? emptyBox('empty1') : `
-        <label class="block text-xs font-bold text-slate-600">Which week</label>
-        <select id="weekSelect" class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
-          <option>This week · Mon 6 Oct – Sun 12 Oct</option>
-        </select>
-        <p class="mt-1.5 text-[11px] text-slate-400">4 events</p>
-        <div class="mt-auto pt-3"><span id="box1btn">${btn('Make this week’s post', 'w-full')}</span></div>`}
+  /* ══ 🔴 THE ITEM GRID LIVES **INSIDE** THE PANEL NOW ════════════════════════════════════════════════
+   * ⛔ IT WAS A 250px COLUMN ON THE FAR SIDE OF THE POSTER, with the settings on the other — the two
+   * halves of ONE job as far apart as the screen allowed. ⚠️ ITS LIVE GREY SAMPLES WENT WITH THE MOVE
+   * ("Date · Wednesday 14th October"): two across has room for a name, a switch and a badge, not for a
+   * sample. ⚠️ THE WEEKLY LIST IS DRAWN because it is the longer of the two — a week heading, the EACH
+   * ROW group of five, and a note box. The single-event list is a subset of it. */
+  const itemGrid = `
+    <div id="itemGrid" data-item-grid>
+      <div class="flex items-baseline justify-between gap-2">
+        <p class="text-[11px] font-bold uppercase tracking-wide text-slate-400">ON YOUR POST</p>
+        <span class="text-[10px] text-slate-400">click to edit</span>
       </div>
-    </div>
-    <div id="box2" class="${boxCard}">
-      ${boxHead('head2', 'Single event post', 'One picture for one event: its date, place and times.')}
-      <div class="${boxBody}">
-        ${!ready ? emptyBox('empty2') : `
-        <ul id="list2" class="${listUl}">
-          ${Array.from({ length: 6 }, (_, i) => eventRow(i, i === 2)).join('')}
-        </ul>
-        <div class="mt-auto pt-2"><a id="allEvents" class="text-sm font-semibold text-slate-600 underline">See all upcoming events</a></div>`}
+      <div class="mt-1.5 flex">
+        ${itemBtn('Aa  All text', '<span class="shrink-0 text-[10px] font-medium text-slate-400">· style every text box at once</span>', false)}
       </div>
-    </div>
-    <div id="box3" class="${boxCard}">
-      ${boxHead('head3', 'Post for a place', 'Pick a place and post the next event you have there.')}
-      <div class="${boxBody}">
-        ${!ready ? emptyBox('empty3') : `
-        ${field('Search places')}
-        <ul id="list3" class="${listUl}">
-          ${Array.from({ length: rows }, (_, i) => placeRow(i)).join('')}
-        </ul>
-        <p class="mt-auto pt-2 text-xs text-slate-400">${rows} places · hidden places aren’t listed</p>`}
+      <div class="mt-1.5 grid grid-cols-2 gap-1.5">
+        ${itemCell('Week heading', false)}
+        ${itemCell('Your own text', true)}
       </div>
-    </div>
-  </div>
-  <p id="footnote" class="text-xs leading-relaxed text-slate-400">${footnote}</p>`
-
-  /* ⚠️ BOX 1 IS DRAWN **FILLED** AND BOX 2 **EMPTY**, deliberately: the two tiles are then measured
-   * against each other, which is the only way to prove "the empty one is the same size as a filled
-   * one" without writing a number into this file. */
-  /* ⚠️ `ready` DECIDES BOTH BOXES, AND THE TWO TILES ARE STILL COMPARED. In the ready state both are
-   * filled; in the empty state both are empty — and the "same size either way" claim is proved ACROSS
-   * the two fixtures by the harness, which records the tile box in each. */
-  const designBoxes = `
-  <div id="grid" class="${oneCol ? 'grid grid-cols-1 gap-3' : designGrid}">
-    <div id="box1" class="${boxCard}">
-      ${boxHead('head1', 'Weekly post design', 'Your background picture for the weekly schedule post. Each week we write your days, places and times on top of it.')}
-      <div class="${boxBody}">
-        <!-- CENTRED TOGETHER: the tile and its badge share one wrapper, or the badge drifts left the
-             moment the tile is portrait — which it always is. -->
-        <div id="tileWrap1" class="flex flex-col items-center">
-          ${designTileHtml('tileFilled', ready, ...(landscape ? [1920, 1080] : [1080, 1350]))}
-          <div class="mt-2"><span class="rounded-full ${ready ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'} px-2 py-0.5 text-[11px] font-bold">${ready ? '✓ Set up' : 'Not set up'}</span></div>
+      <p class="mt-2 text-[10px] font-bold uppercase tracking-wide text-slate-400">Each row</p>
+      <div class="mt-1 grid grid-cols-2 gap-1.5">
+        ${itemCell('Date', false)}
+        ${itemCell('Place', false)}
+        ${itemCell('Time', false)}
+        ${itemCell('Rows', false)}
+        ${itemCell('Location picture', false)}
+      </div>
+      <button class="mt-1.5 w-full rounded-lg border border-dashed border-slate-300 py-1.5 text-[12px] font-bold text-orange-700">+ Add your own text</button>
+      <div id="bgRow" class="mt-2 border-t border-slate-100 pt-2">
+        <div class="flex items-center gap-1.5">
+          <span class="w-9 shrink-0"></span>
+          ${itemBtn('Background picture', `<span class="shrink-0 text-[10px] font-medium text-slate-400">· ${W} × ${H}</span>`, false)}
         </div>
-        <p id="usedFor1" class="${usedFor}"><span class="font-bold text-slate-700">${usedForLabel}</span> the weekly post only.</p>
-        <!-- ORANGE AND FULL WIDTH, AS THE COMPONENT RENDERS IT. On Designs, setting a design up IS the
-             thing to do, so these two are the area's only primaries. -->
-        <div class="mt-auto pt-3"><span id="box1btn"><button data-primary class="${btnPrimary} w-full">${ready ? 'Edit weekly design' : 'Set up weekly design'}</button></span></div>
       </div>
-    </div>
-    <div id="box2" class="${boxCard}">
-      ${boxHead('head2', 'Event post design', 'Your background picture for a single event post. We write that event’s date, place and times on top of it.')}
-      <div class="${boxBody}">
-        <div id="tileWrap2" class="flex flex-col items-center">
-          ${designTileHtml('tileEmpty', false, ...(landscape ? [1920, 1080] : [1080, 1350]))}
-          <div class="mt-2"><span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500">Not set up</span></div>
-        </div>
-        <p id="usedFor2" class="${usedFor}"><span class="font-bold text-slate-700">${usedForLabel}</span> ${usedForText}</p>
-        <div class="mt-auto pt-3"><span id="box2btn"><button data-primary class="${btnPrimary} w-full">${ready ? 'Edit event design' : 'Set up event design'}</button></span></div>
-      </div>
-    </div>
-    <div id="box3" class="${boxCard}">
-      ${boxHead('head3', 'Designs for a place', 'Want a different picture at one venue — a pub’s logo, a festival’s poster? Give that place its own design. Event posts there use it instead of your event post design.')}
-      <div class="${boxBody}">
-        ${field('Search places')}
-        <ul id="list3" class="${listUl}">
-          ${Array.from({ length: rows }, (_, i) => designRow(i, i < 2)).join('')}
-        </ul>
-        <p id="designFooter" class="mt-auto pt-2 text-xs text-slate-400">2 with their own design · ${rows - 2} using your event post design</p>
-      </div>
-    </div>
-  </div>`
+    </div>`
 
+  /* ══ 🔴 THE PANEL — THE GRID, THEN THE SELECTED ITEM'S SETTINGS ════════════════════════════════════
+   * ⚠️ THE "TEXT" HEADING IS GONE: with the item's name in bold directly above the font and colour rows
+   * it was a second heading for the same block. The MARKER stays, because this harness measures it.
+   * ⚠️ THE **DATE** ITEM IS DRAWN because it is the worst case — the only item with a "Shows" dropdown
+   * on top of the five style rows, so it is the tallest TEXT section there is. */
+  const panelHtml = `
+    <div id="panelCard" class="${panelCard}" data-settings-panel>
+      ${itemGrid}
+      <div class="mt-3 border-t border-slate-100 pt-3">
+        <p class="text-sm font-bold text-slate-900" data-settings-title>Date</p>
+        <p class="mt-0.5 text-[11px] leading-snug text-slate-400">Settings for the box you’ve picked</p>
+        <div class="mt-2.5">
+          <div class="space-y-2" data-settings-section="TEXT" data-body="text">
+            ${field('Shows', sel('Wednesday 14th October'))}
+            ${field('Font', `<div class="flex items-center gap-1.5"><div class="min-w-0 grow">${sel('Permanent Marker')}</div><div class="flex shrink-0 items-center gap-1">${btn('−')}<input class="${toolInput} w-14 text-center" value="42">${btn('+')}</div></div>`)}
+            ${field('Colour', `<div class="flex items-center gap-1">${`<span style="width:1.5rem;height:1.5rem;display:inline-block;background:#fff;border:2px solid #cbd5e1;border-radius:.375rem"></span>`.repeat(8)}<span style="width:2rem;height:1.5rem;display:inline-block;background:#fff;border:2px solid #cbd5e1;border-radius:.375rem"></span></div>`)}
+            ${field('Style', `<div class="flex items-center gap-2"><div class="flex shrink-0 items-center gap-1">${btn('B')}${btn('I')}${btn('AA')}</div><span class="shrink-0 text-[10px] font-bold uppercase tracking-wide text-slate-400">Line up</span><div class="flex shrink-0 items-center gap-1">${btn('·')}${btn('·')}${btn('·')}</div></div>`)}
+          </div>
+          ${stand}
+          ${more}
+        </div>
+      </div>
+    </div>`
+
+  /* ══ 🔴 §7 (10 October 2026) · THE TITLE ROW, AS THE SCREEN ACTUALLY HAS IT ════════════════════════
+   * ⛔ THE FIXTURE'S ROW WAS A ROUND BEHIND and could not have shown the overflow Dominic reported: it
+   * was missing "👁 Preview post" (added 9 October), it still offered "A busy week" (removed 10
+   * October), and its `<select>` carried `style="max-width:10rem"` — a cap THE COMPONENT DOES NOT HAVE.
+   * 🔴 A SELECT WITH NO CAP SIZES ITSELF TO ITS LONGEST OPTION, and the real options carry a date range
+   * ("This week · Mon 12 Oct – Sun 18 Oct"). That is the one item in this row that can be wide, and the
+   * label around it is `shrink-0` — so if anything in the title row can push the page sideways, it is
+   * this. The fixture now draws it the way the screen does and the measurement can see it. */
+  const topBar = `
+    <div id="topbar" class="flex flex-wrap items-center gap-2 gap-y-3">
+      <button class="text-sm font-bold text-orange-700 shrink-0">‹ Designs</button>
+      <span class="text-sm font-black text-slate-900 truncate min-w-0">Weekly post design</span>
+      <div class="grow"></div>
+      <label class="flex min-w-0 items-center gap-1"><span class="shrink-0 text-[10px] font-bold uppercase tracking-wide text-slate-400">Preview with</span><select class="${toolInput} min-w-0 max-w-[12rem] truncate"><option>This week · Mon 12 Oct – Sun 18 Oct</option><option>Next week · Mon 19 Oct – Sun 25 Oct</option></select></label>
+      <button class="${toolBtn} ${toolBtnOff} shrink-0">👁 Preview post</button>
+      ${btn('Undo')}${btn('Redo')}
+      <button class="inline-flex items-center justify-center rounded-xl bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700">Cancel</button>
+      <button id="saveBtn" class="inline-flex items-center justify-center rounded-xl bg-orange-600 px-3 py-1.5 text-xs font-semibold text-white">Save design</button>
+    </div>`
+
+  /* 🔴 THE POSTER'S WIDTH IS A **NUMBER THE FIXTURE CANNOT COMPUTE** — it is `min(areaW, areaH × ratio)`
+   * and only the layout engine knows the area's height once the title row and the hint have taken
+   * theirs. So the
+   * fixture reproduces the component's own arithmetic in a one-line script, which is the honest way to
+   * measure "fitted": the measurement below then checks the RESULT against the area it was fitted to. */
   return `${HEAD(css)}
-<div style="background:#f8fafc;min-height:100vh;padding:16px">
-  <div class="space-y-3">
-    <div class="flex flex-wrap items-start justify-between gap-3">
-      <div class="min-w-0">
-        <p class="text-xl font-black text-slate-900">Social posts</p>
-        <p id="intro" class="mt-0.5 max-w-[46rem] text-sm text-slate-500"><span class="font-bold text-slate-700">${introDesigns}</span>${introAfterDesigns}<span class="font-bold text-slate-700">${introMake}</span>${introAfterMake}</p>
+  <div class="p-3 space-y-3">
+    ${topBar}
+    <div id="grid" class="${grid}" data-editor-grid>
+      <div id="midCol" class="min-w-0">
+        <div id="stageArea" class="${area}" style="height:${areaMax}">
+          <div id="stage" class="${stage}" style="aspect-ratio:${W} / ${H};width:0">
+            <div class="absolute" style="left:6%;top:20%;width:30%;height:5%;border:2px dashed #f97316"></div>
+          </div>
+        </div>
+        <div class="mt-1.5 flex items-center gap-3">
+          <p id="caption" class="${caption}">Drag a box to move it · drag a corner to resize</p>
+          <div id="zoom" class="${zoomRow}">
+            ${btn('−')}<button id="zoomFit" class="${toolBtn} ${toolBtnOff}">Fit</button>${btn('+')}
+          </div>
+        </div>
       </div>
-      <div id="seg" class="${seg}">
-        <button id="segPosts" class="${segBtn} ${area === 'posts' ? segOn : segOff}">Make a post</button>
-        <button id="segDesigns" class="${segBtn} ${area === 'designs' ? segOn : segOff}">Designs</button>
-      </div>
+      <div id="panelCol" class="${panelCol}" data-settings-col>${panelHtml}</div>
     </div>
-    ${area === 'posts' ? makeBoxes : designBoxes}
   </div>
-</div></body></html>`
+  <script>
+    /* THE COMPONENT'S OWN ARITHMETIC, COPIED ONCE AND DELIBERATELY: min(areaW, areaH x ratio), times
+       the zoom. A FIXTURE THAT GUESSED A WIDTH WOULD BE MEASURING ITS OWN GUESS. */
+    (function () {
+      var area = document.getElementById('stageArea')
+      var stage = document.getElementById('stage')
+      var ratio = ${W} / ${H}
+      var cs = getComputedStyle(area)
+      var px = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
+      var py = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
+      var aw = area.clientWidth - px, ah = area.clientHeight - py
+      var fit = Math.max(40, Math.min(aw, ah * ratio))
+      stage.style.width = Math.round(fit * Math.pow(1.25, ${zoom})) + 'px'
+    })()
+  </script></body></html>`
 }
 
 /**
- * ══ 🔴 THE PLACE DESIGN EDITOR ═══════════════════════════════════════════════════════════════════
- * A full page: a back link, the place's name, the scope sentence, a two-field card, the existing
- * editor, and a footer with "Make post for …" and the quiet way out. What is measured is the CHROME —
- * the editor inside it is `EventSetupScreen` and is measured by its own fixtures elsewhere.
+ * ══ 🔴 THE FONT PICKER, OPEN (6 October 2026, part 2) ════════════════════════════════════════════
+ *
+ * ⛔ WHAT NEEDED A BROWSER: the panel holds a search box, six wrapping tabs, up to sixty rows and an
+ * upload block, and it opens from a button inside a toolbar that already wraps. Two claims about it
+ * are only true once laid out:
+ *   • **the list scrolls INSIDE the panel** — a panel that grew with its contents would be sixty rows
+ *     tall and the PAGE would scroll instead, taking the picture the operator is judging the font
+ *     against off the screen;
+ *   • **no sideways scroll at 390px** — a fixed 22rem panel opened near the right edge of a phone
+ *     pushes the page, and a class census cannot see that.
+ *
+ * ⚠️ THE ROWS ARE DRAWN WITH A LONG SAMPLE IN A WIDE FALLBACK FACE, deliberately: the fixture has no
+ * network, so no Google web font loads, and Georgia at 17px is wider than most of the real faces. If
+ * the row survives that it survives the real ones.
  */
-function placeEditorFixture(css) {
-  const card = lift(SOCIAL, /<Card className="(grid grid-cols-1 gap-3 p-4 sm:grid-cols-2)">/, 'the editor card')
-  const footer = lift(SOCIAL, /<Card className="(flex flex-wrap items-center justify-between gap-3 p-4)">/, 'the editor footer')
-  const useStd = lift(SOCIAL, /data-use-standard\n\s*className="([^"]+)"/, 'the use-Standard link')
-  const scope = lift(COPY, /export const placeDesignScope = \(place: string\): string =>\n\s*`([^`]+)`/, 'the scope sentence')
-    .replace('${place}', LONG_NAME)
+function pickerFixture(css, { width = 380 } = {}) {
+  const PICK = read('components/manage/FontPicker.tsx')
+  const BITS = read('components/manage/DesignEditorBits.tsx')
+  /* ══ 🔴 THE PANEL IS `w-full` NOW, NOT `w-[22rem]` (9 October 2026) ═══════════════════════════════
+   * ⛔ 22rem IS 352px — WIDER THAN THE 380px SETTINGS PANEL'S CONTENT BOX — and the `calc(100vw-2rem)`
+   * cap could not help: on a 1728px window that is 1696px, so the list opened at its full 352px and ran
+   * past the right edge of the column it lives in. **A cap against the wrong container is not a cap.**
+   * ⚠️ WHICH CHANGES WHAT THIS FIXTURE HAS TO DO: `w-full` means the panel's width comes from its
+   * PARENT, so the fixture gives the parent a width and the measurement checks containment. */
+  const panel = lift(PICK, /className="(absolute z-50 left-0 top-full mt-1 w-full[^"]*)"/, 'the picker panel')
+  const list = lift(PICK, /<div className="(mt-2 max-h-\[46vh\] min-h-\[8rem\] overflow-y-auto overflow-x-hidden)">/, 'the picker list')
+  const search = lift(PICK, /placeholder=\{lib\.loading \? 'Loading fonts…' : `Search \$\{lib\.count\.toLocaleString\('en-GB'\)\} fonts`\}\n\s*className="([^"]+)"/, 'the search box')
+  const tabWrap = lift(PICK, /<div className="(mt-2 flex flex-wrap gap-1)">/, 'the tab row')
+  const toolInput = lift(BITS, /export const TOOL_INPUT = '([^']+)'/, 'the toolbar input')
+  /* 🔴 THE COUNT IS LIFTED FROM THE GENERATED CATALOGUE, not typed here. A fixture that said "1,500"
+   * would be measuring a sentence the screen does not show. */
+  const count = JSON.parse(read('lib/weekly-post/font-catalogue.json')).count
+
+  const TABS = ['All', 'Bold & tall', 'Handwritten', 'Classic', 'Clean', 'Yours']
+  /* ⚠️ A REAL, LONG FAMILY NAME. "Cormorant Garamond" and the date sample together are what crowd a
+   * 22rem panel; "Arial" would prove nothing. */
+  const SAMPLE = 'Wednesday 14th October'
+  const row = (i, name, selected) => `
+    <button id="fRow-${i}" class="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left ${
+      selected ? 'bg-orange-50 ring-1 ring-orange-400' : 'hover:bg-slate-50'}">
+      <span class="min-w-0 flex-1">
+        <span id="fName-${i}" class="block truncate text-[11px] ${selected ? 'font-bold text-orange-700' : 'text-slate-400'}">${name}</span>
+        <span id="fSample-${i}" class="block truncate text-[17px] leading-snug text-slate-800" style="font-family: Georgia, serif">${SAMPLE}</span>
+      </span>
+      <span class="shrink-0 text-[10px] text-slate-300">OFL-1.1</span>
+    </button>`
+
+  const names = ['Oswald', 'Bebas Neue', 'Anton', 'Cormorant Garamond', 'Permanent Marker', 'Playfair Display',
+    'Alfa Slab One', 'Shadows Into Light', 'Barlow Condensed', 'Archivo Narrow']
+  /* ⚠️ SIXTY ROWS — the cap the component uses. The scroll claim is about a FULL list. */
+  const rows = Array.from({ length: 60 }, (_, i) => row(i, names[i % names.length], i === 0)).join('')
 
   return `${HEAD(css)}
-<div style="background:#f8fafc;min-height:100vh;padding:16px">
-  <div class="space-y-3">
-    <button id="back" class="text-xs font-bold text-slate-500">‹ Social posts › Designs</button>
-    <div class="min-w-0">
-      <p id="placeName" class="truncate text-lg font-black text-slate-900">${LONG_NAME}</p>
-      <p class="text-xs text-slate-500">Wickhambrook · event design for this place</p>
-    </div>
-    <p id="scope" class="text-xs text-slate-500">${scope}</p>
-    <div id="fields" class="${card}" style="background:#fff;border:1px solid #e2e8f0;border-radius:16px">
-      <div class="min-w-0">
-        <label class="block text-xs font-bold text-slate-600 mb-1">Name on posts</label>
-        <input id="nameInput" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" value="Kings Arms" />
-        <p id="nameHint" class="text-slate-400 text-xs mt-0.5">Printed on posts for this place. Leave it blank to use “${LONG_NAME}”.</p>
+  <div class="p-3">
+    <div class="relative mb-3 flex flex-wrap items-end gap-x-3 gap-y-3 rounded-2xl border border-slate-200 bg-white px-3 py-2">
+      <div class="shrink-0">
+        <span class="block text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">Font</span>
+        <!-- THE PARENT IS THE SETTINGS PANEL'S OWN WIDTH, because w-full takes its size from here.
+             A FIXTURE THAT SIZED THE PANEL DIRECTLY would be measuring its own number rather than the
+             rule the component relies on. -->
+        <!-- min(), BECAUSE THE SETTINGS COLUMN IS 380px ONLY ABOVE 1100. Below it the panel drops under
+             the poster and the column is minmax(0,1fr) — the content width. A fixture that hard-coded
+             380 at 390 would be measuring a column that cannot exist. -->
+        <!-- AN EXPLICIT PIXEL WIDTH, SET BY THE CALLER PER VIEWPORT. The settings column is 380px only
+             above 1100; below it the panel drops under the poster and the column is the content width.
+             A min(380px, 100%) here resolved against an auto-width ancestor and came out at 169 — a
+             fixture measuring its own layout accident rather than the rule. -->
+        <div id="host" class="relative" style="width:${width}px">
+          <button id="trigger" class="${toolInput} w-full flex items-center justify-between gap-1 text-left">
+            <span class="min-w-0 truncate">Cormorant Garamond</span><span class="shrink-0 text-slate-400">▾</span>
+          </button>
+          <div id="panel" class="${panel}">
+            <input id="search" class="${search}" placeholder="Search ${count.toLocaleString('en-GB')} fonts" />
+            <div id="tabs" class="${tabWrap}">
+              ${TABS.map((t, i) => `<button id="tab-${i}" class="rounded-lg px-2 py-1 text-xs font-bold ${i === 0 ? 'bg-orange-50 text-orange-700' : 'text-slate-500'}">${t}</button>`).join('')}
+            </div>
+            <div id="list" class="${list}">
+              <p class="px-2 pt-1 pb-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">Popular for posters</p>
+              ${rows}
+            </div>
+            <!-- THE UPLOAD SECTION IS NOT AT THE BOTTOM ANY MORE (section 8). It was a tick, a
+                 greyed-out file button and two grey lines UNDER a capped list of forty rows, so the one
+                 thing an operator with their own font came here to do was the thing furthest from the
+                 top. The button is beside the search box now and is always enabled; the tick gates
+                 "Add font". -->
+          </div>
+        </div>
       </div>
-      <div class="min-w-0">
-        <label class="mb-1 block text-xs font-bold text-slate-600">Preview with</label>
-        <select id="previewWith" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"><option>Tue 13 Oct · 17:00–20:00</option></select>
+      <div class="shrink-0">
+        <span class="block text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">Size</span>
+        <input class="${toolInput} w-14 text-center" value="42" />
       </div>
     </div>
-    <div style="height:280px;background:#eef2f7;border:1px solid #cbd5e1;border-radius:16px">the existing editor</div>
-    <div id="footer" class="${footer}" style="background:#fff;border:1px solid #e2e8f0;border-radius:16px">
-      <span id="makePost"><button class="bg-orange-600 text-white font-semibold rounded-xl px-4 py-2 text-sm">Make post for Tue 13 Oct</button></span>
-      <div class="flex flex-col items-end gap-1">
-        <button id="useStandard" class="${useStd}">Use Standard design here instead</button>
-      </div>
-    </div>
-  </div>
-</div></body></html>`
+  </div></body></html>`
 }
 
-/* ══ 🔴 THE ONLY BUTTONS THAT MAY BE ORANGE ═══════════════════════════════════════════════════════
- * ⛔ IT IS A SET OF IDS, so adding an orange button is a visible change to this line rather than a
- * quiet drift back to fourteen of them.
- *   Make a post → `box1btn` only, and only when the weekly design is ready: "Make this week's post".
- *   Designs     → `box1btn` and `box2btn`: the two design buttons, Edit or Set up (6 October 2026 —
- *                 on that area, setting a design up IS the thing to do).
- *   the editor  → `makePost`, "Make post for <date>".
- * ⚠️ THE SET IS THE UNION; the per-area COUNTS below are what stop one leaking into the other. */
-const ALLOWED_ORANGE = new Set(['box1btn', 'box2btn', 'makePost'])
-
-/** Which box an empty panel belongs to, by its id. ⚠️ By NAME, never by a prefix chain with a
- *  catch-all `else` — that is how a box-2 element came to be checked against box 3's edges. */
-const boxOfIndex = (r, id) => (id === 'empty1' ? r.box1 : id === 'empty2' ? r.box2 : r.box3)
-
-const rects = () => {
+const pickerRects = () => {
   const box = (id) => {
     const el = document.getElementById(id)
     if (!el) return null
-    const b = el.getBoundingClientRect()
+    const r = el.getBoundingClientRect()
     return {
-      left: Math.round(b.left), right: Math.round(b.right), top: Math.round(b.top),
-      bottom: Math.round(b.bottom), width: Math.round(b.width), height: Math.round(b.height),
-      visible: b.width > 0 && b.height > 0,
+      top: Math.round(r.top), left: Math.round(r.left), right: Math.round(r.right),
+      bottom: Math.round(r.bottom), width: Math.round(r.width), height: Math.round(r.height),
+      scrollH: el.scrollHeight, clientH: el.clientHeight,
+      scrollW: el.scrollWidth, clientW: el.clientWidth,
     }
   }
-  const scrolls = (id) => {
-    const el = document.getElementById(id)
-    return el ? el.scrollHeight > el.clientHeight + 1 : false
-  }
-  const btns = []
-  for (const id of ['box1btn', 'box2btn', 'evBtn-0', 'plBtn-0', 'dsBtn-0', 'dsBtn-5']) {
-    const b = box(id)
-    if (b) btns.push({ id, ...b })
-  }
-  /* ⛔ THE COMPUTED STYLE, NOT THE CLASS. `text-transform` is the only honest test of "title case, not
-   * uppercased": a source string can be title case and still render shouting. */
-  const headings = []
-  for (const id of ['head1', 'head2', 'head3']) {
-    const el = document.getElementById(id)
+  const rowBoxes = []
+  for (let i = 0; i < 60; i++) {
+    const el = document.getElementById('fRow-' + i)
     if (!el) continue
-    const cs = getComputedStyle(el)
-    headings.push({ id, transform: cs.textTransform, size: parseFloat(cs.fontSize) })
+    const r = el.getBoundingClientRect()
+    rowBoxes.push({ left: Math.round(r.left), right: Math.round(r.right), height: Math.round(r.height) })
   }
-  /* 🔴 EVERY BUTTON ON THE SCREEN, AND WHICH OF THEM ARE ORANGE — read off the computed background, so
-   * a colour arriving from anywhere is caught, not only one spelled `bg-orange-600`. */
-  const orangeButtons = []
-  const buttonBg = []
-  for (const el of document.querySelectorAll('button')) {
-    const id = el.id || el.closest('[id]')?.id || '(unnamed)'
-    const bg = getComputedStyle(el).backgroundColor
-    /* ⛔ THE COMPUTED VALUE IS NOT ALWAYS `rgb(...)`. Tailwind 4 writes colours as `oklch()`, and a
-     * browser may hand the computed background back in that form — the first version of this matched
-     * `rgba?\(` only, found nothing, and reported that NO button was orange, which passed the
-     * "only the allowed ones are orange" check for the worst possible reason.
-     * 🔴 SO THE COLOUR IS RESOLVED BY THE BROWSER ITSELF, through a canvas, which gives real channel
-     * values whatever notation the stylesheet used. */
-    buttonBg.push(id + '=' + bg)
-    const c = (() => {
-      const m = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
-      if (m) return [Number(m[1]), Number(m[2]), Number(m[3])]
-      try {
-        const cv = document.createElement('canvas')
-        cv.width = 1; cv.height = 1
-        const ctx = cv.getContext('2d')
-        if (!ctx) return null
-        ctx.fillStyle = '#000'
-        ctx.fillStyle = bg
-        ctx.fillRect(0, 0, 1, 1)
-        const d = ctx.getImageData(0, 0, 1, 1).data
-        return [d[0], d[1], d[2]]
-      } catch { return null }
-    })()
-    if (!c) continue
-    const [r0, g0, b0] = c
-    /* ⚠️ "ORANGE" IS A RANGE, NOT A HEX. Red well above green, green above blue — which catches
-     * orange-600 and any neighbour somebody reaches for later. */
-    if (r0 > 180 && g0 < r0 - 50 && b0 < g0) orangeButtons.push(id)
-  }
-  /* ⚠️ THE BARS, WITH THEIR ROW'S HEIGHT, because "full row height" is a comparison. */
-  const bars = []
-  for (let i = 0; i < 6; i++) {
-    const el = document.getElementById('evBar-' + i)
-    if (!el || !el.parentElement) continue
-    const b = el.getBoundingClientRect()
-    const row = el.parentElement
-    const cs = getComputedStyle(row)
-    /* ⛔ THE ROW'S **CONTENT** HEIGHT, NOT ITS BORDER BOX. The row carries `py-2`, so a bar that
-     * stretches the full content height still measures 16px short of the box — the first version
-     * compared against the border box and failed on correct markup at all seven widths. */
-    const rowContent = row.getBoundingClientRect().height
-      - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
-    if (b.height === 0) continue
-    bars.push({
-      height: Math.round(b.height), width: Math.round(b.width), rowHeight: Math.round(rowContent),
-    })
-  }
-  const stdTile = document.getElementById('dsTile-5')
   return {
-    innerW: window.innerWidth,
+    innerW: window.innerWidth, innerH: window.innerHeight,
     docScrollW: document.documentElement.scrollWidth,
-    headings, orangeButtons, buttonBg, bars,
-    /* ⚠️ THE THREE EMPTY PANELS AND THEIR BUTTONS. Read as a list, so "all three" is a count rather
-     * than three separate lookups that could each be null for a different reason. */
-    emptyPanels: ['empty1', 'empty2', 'empty3'].map(id => { const b = box(id); return b && { id, ...b } }).filter(Boolean),
-    emptyButtons: ['empty1btn', 'empty2btn', 'empty3btn'].map(id => box(id)).filter(Boolean),
-    emptyTitles: ['empty1title', 'empty2title', 'empty3title']
-      .map(id => (document.getElementById(id)?.textContent || '').trim()).filter(Boolean),
-    tileWrap1: box('tileWrap1'), tileWrap2: box('tileWrap2'),
-    usedFor1: box('usedFor1'), usedFor2: box('usedFor2'),
-    designFooter: box('designFooter'),
-    designFooterText: (document.getElementById('designFooter')?.textContent || '').trim(),
-    /* ⚠️ EVERY PLACE ROW AND ITS BUTTON, for "one line at every width". */
-    placeRows: (() => {
-      const out = []
-      for (let i = 0; i < 20; i++) {
-        const row = document.getElementById('dsRow-' + i)
-        const btn = document.getElementById('dsBtn-' + i)
-        if (!row || !btn) continue
-        const rb = row.getBoundingClientRect()
-        const bb = btn.getBoundingClientRect()
-        if (rb.height === 0) continue
-        out.push({
-          rowTop: Math.round(rb.top), rowBottom: Math.round(rb.bottom), rowHeight: Math.round(rb.height),
-          btnTop: Math.round(bb.top), btnBottom: Math.round(bb.bottom), btnRight: Math.round(bb.right),
-        })
+    panel: box('panel'), list: box('list'), search: box('search'), tabs: box('tabs'),
+    /* ⛔ `upload` AND `uploadNote` WERE THE BOTTOM SECTION'S BOXES and it is gone — §8 moves the button
+     * beside the search box. ⚠️ `host` IS NEW: the panel is `w-full` now, so what it must fit inside is
+     * its PARENT, and that is the box to compare it with. */
+    host: box('host'), trigger: box('trigger'),
+    searchText: document.getElementById('search')?.getAttribute('placeholder') ?? '',
+    tabCount: document.querySelectorAll('[id^="tab-"]').length,
+    tabRows: new Set([...document.querySelectorAll('[id^="tab-"]')]
+      .map(e => Math.round(e.getBoundingClientRect().top))).size,
+    rows: rowBoxes,
+  }
+}
+
+/** What is measured about the editor. ⚠️ A separate reader, so the six-box one stays readable. */
+const editorRects = () => {
+  /** ⚠️ `editorRects` RUNS IN THE PAGE and has no closure over this file — every helper it uses has to
+   *  be declared here. `all` was added with the switch-knob measurement and was missing. */
+  const all = (sel) => [...document.querySelectorAll(sel)]
+  const box = (id) => {
+    const el = document.getElementById(id)
+    if (!el) return null
+    const r = el.getBoundingClientRect()
+    const cs = getComputedStyle(el)
+    return {
+      top: Math.round(r.top), left: Math.round(r.left), right: Math.round(r.right),
+      bottom: Math.round(r.bottom), width: Math.round(r.width), height: Math.round(r.height),
+      visible: cs.display !== 'none' && cs.visibility !== 'hidden' && r.width > 0 && r.height > 0,
+      scrollW: el.scrollWidth, clientW: el.clientWidth,
+      /* 🔴 THE **CONTENT** BOX, which is what a child can be fitted to. `clientWidth` includes padding;
+       * the poster-fitting bug was exactly that confusion, so the harness states both. */
+      contentW: Math.round(el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)),
+      contentH: Math.round(el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)),
+      cols: cs.gridTemplateColumns,
+    }
+  }
+  return {
+    innerW: window.innerWidth, innerH: window.innerHeight,
+    docScrollW: document.documentElement.scrollWidth,
+    grid: box('grid'), midCol: box('midCol'),
+    /* ⛔ `leftCol`, `listCard` AND `chips` ARE GONE WITH THE 250px COLUMN AND ITS UNDER-900 CHIP ROW.
+     * The item list is inside the panel now, so there is no width at which it is absent. */
+    bgRow: box('bgRow'), stageArea: box('stageArea'), stage: box('stage'),
+    zoom: box('zoom'), itemGrid: box('itemGrid'),
+    caption: box('caption'), topbar: box('topbar'), saveBtn: box('saveBtn'),
+    /* ══ 🔴 THE SWITCH KNOB, MEASURED AGAINST ITS TRACK — REPORTED BY DOMINIC ════════════════════════
+     * ⛔ IT SAT OUTSIDE THE GREEN TRACK. The knob was `absolute top-0.5` with **no `left`**, so its
+     * horizontal position was its STATIC POSITION — a property of the inline formatting context it
+     * would have had, not a reliable 0 — and `translate-x-4` carried it out the other side.
+     * 🔴 THIS IS THE ONLY WAY TO CHECK IT. A class census sees `translate-x-4` and cannot tell where
+     * the element it moves started from; only a layout engine knows. */
+    knobs: all('[data-switch-knob]').map(el => {
+      const track = el.parentElement
+      const k = el.getBoundingClientRect(), t = track.getBoundingClientRect()
+      return {
+        inside: k.left >= t.left - 0.5 && k.right <= t.right + 0.5
+          && k.top >= t.top - 0.5 && k.bottom <= t.bottom + 0.5,
+        gapLeft: Math.round(k.left - t.left),
+        gapRight: Math.round(t.right - k.right),
       }
-      return out
+    }),
+    /* ══ 🔴 THE TWO HOMES OF THE ONE PANEL ═══════════════════════════════════════════════════════════
+     * ⛔ `panelCol` IS THE STICKY THIRD COLUMN and `panelUnder` the block under the preview. The fixture
+     * draws both, because the claim is that exactly ONE is ever visible — a fixture that drew only the
+     * one expected at this width could not tell a working breakpoint from a missing wrapper. */
+    panelCol: box('panelCol'), panelCard: box('panelCard'),
+    /* ⚠️ `position` AND `overflowY` ON THE THIRD COLUMN, read computed. "Sticky" is not a class claim:
+     * a `sticky` element inside an `overflow:hidden` ancestor does not stick, and a class census cannot
+     * see that. ⛔ AND `maxHeight` IS WHAT MAKES STICKY POSSIBLE AT ALL — an element taller than the
+     * viewport cannot stick, and its bottom controls would be unreachable. */
+    panelColStyle: (() => {
+      const el = document.getElementById('panelCol')
+      if (!el) return null
+      const cs = getComputedStyle(el)
+      return { position: cs.position, overflowY: cs.overflowY, top: cs.top,
+               maxH: Math.round(parseFloat(cs.maxHeight) || 0),
+               scrollH: el.scrollHeight, clientH: el.clientHeight }
     })(),
-    tileFilled: box('tileFilled'), tileEmpty: box('tileEmpty'),
-    placeTile: box('dsTile-5'),
-    /* ⛔ `textContent`, TRIMMED. A tile with a picture in it has no text either; `dsTile-5` is one of
-     * the Standard rows, which is the case the claim is about. */
-    standardTileText: stdTile ? (stdTile.textContent || '').trim() : '',
-    /* ⚠️ ROW 5 IS A PLACE ON THE EVENT DESIGN (no tag), ROW 0 HAS ITS OWN (tagged). Both are read, so
-     * the claim is asserted in both directions rather than as a single absence. */
-    designTag: box('dsTag-5'), dsName: box('dsName-5'),
-    ownTag: box('dsTag-0'), ownName: box('dsName-0'),
-    grid: box('grid'), box1: box('box1'), box2: box('box2'), box3: box('box3'),
-    seg: box('seg'), footnote: box('footnote'),
-    list2Scrolls: scrolls('list2'), list3Scrolls: scrolls('list3'),
-    list2: box('list2'), list3: box('list3'),
-    /* ⛔ A PRIVATE ROW HAS NO BUTTON. Asserted as an ABSENCE, which is the only honest way: a hidden
-     * or disabled one would still be in the DOM. */
-    privateBtn: document.getElementById('evBtn-2') !== null,
-    privateSub: box('evSub-2'),
-    btns,
-    /* ── the place editor ── */
-    fields: box('fields'), footer: box('footer'), useStandard: box('useStandard'),
-    makePost: box('makePost'), scope: box('scope'), placeName: box('placeName'),
-    nameHint: box('nameHint'), previewWith: box('previewWith'),
+    /* 🔴 HOW MANY SETTINGS PANELS ARE **VISIBLE**. Two would be two panels to keep in step and the one
+     * nobody is looking at is the one that would drift; zero would be the settings gone. */
+    /* ⚠️ STILL COUNTED, AND THE ANSWER IS STILL ONE — but for a different reason: the panel is ONE
+     * element in ONE place now, where it used to be one element rendered into two wrappers. */
+    panelsVisible: [...document.querySelectorAll('[data-settings-panel]')].filter(el => {
+      const cs = getComputedStyle(el)
+      const r = el.getBoundingClientRect()
+      return cs.display !== 'none' && cs.visibility !== 'hidden' && r.width > 0 && r.height > 0
+    }).length,
+    /* ⚠️ THE THREE SECTIONS' HEADERS, BODIES AND THE FOLDED ONE'S SUMMARY — inside the VISIBLE panel
+     * only, so a hidden copy cannot answer for the one on screen. */
+    sections: (() => {
+      const panel = [...document.querySelectorAll('[data-settings-panel]')]
+        .find(el => getComputedStyle(el).display !== 'none' && el.getBoundingClientRect().height > 0)
+      if (!panel) return null
+      const seen = (sel) => !!panel.querySelector(sel)
+      return {
+        /* ⚠️ THE "TEXT" HEADING IS GONE — with the item's name in bold directly above the font and
+         * colour rows it was a second heading for the same block. The MARKER stays and is what this
+         * reads, because the block itself is still the thing being measured. */
+        text: seen('[data-settings-section="TEXT"]'), textBody: seen('[data-body="text"]'),
+        stand: seen('[data-section="stand"]'), standBody: seen('[data-body="stand"]'),
+        more: seen('[data-section="more"]'), moreBody: seen('[data-body="more"]'),
+        moreSummary: (panel.querySelector('[data-summary="more"]') || {}).textContent || '',
+        title: (panel.querySelector('[data-settings-title]') || {}).textContent || '',
+      }
+    })(),
+    /* ⛔ THE COUNT OF COLUMNS, READ OFF THE COMPUTED GRID. "There is no right-hand column" is a claim
+     * about the TRACK LIST, which is the only thing that can prove a third column is absent rather
+     * than merely empty. */
+    gridTrackCount: (() => {
+      const el = document.getElementById('grid')
+      if (!el) return -1
+      const v = getComputedStyle(el).gridTemplateColumns
+      return v && v !== 'none' ? v.trim().split(/\s+/).length : -1
+    })(),
   }
 }
 
@@ -540,16 +665,13 @@ async function measure() {
   const css = appCss()
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hg-social-'))
   const write = (name, html) => { const f = path.join(tmp, name); fs.writeFileSync(f, html); return 'file://' + f }
-  const shotDir = path.join(REPO, 'docs/screenshots/social-posts')
-  fs.mkdirSync(shotDir, { recursive: true })
-  /* 🔴 THE LAYOUT SHOTS ARE THEIR OWN FOLDER, at the two widths that matter for the side-by-side
-   * claim: 1100 (a normal laptop window — the width the bug was reported at) and 1728 (full screen). */
-  const layoutShots = path.join(REPO, 'docs/screenshots/social-posts-layout')
-  fs.mkdirSync(layoutShots, { recursive: true })
-  /* 🔴 THE POLISH SHOTS: both areas in BOTH states at the laptop width, because the empty state is the
-   * one this truck is in and the one no screenshot had ever shown. */
-  const polishShots = path.join(REPO, 'docs/screenshots/social-posts-polish')
-  fs.mkdirSync(polishShots, { recursive: true })
+  /* ⛔ `shotDir`, `layoutShots` AND `polishShots` WENT WITH THE FIXTURES THEY HELD. The screenshots
+   * already in `docs/screenshots/social-posts*` are of screens that no longer exist; they are left on
+   * disk as a record of what was there rather than deleted, and `scripts/social-tab-render.cjs`
+   * writes the new ones to its own folder. */
+  /* 🔴 THE EDITOR'S OWN SHOTS, at the two widths it is measured at. */
+  const editorShots = path.join(REPO, 'docs/screenshots/design-editor')
+  fs.mkdirSync(editorShots, { recursive: true })
 
   const list = await engines()
   let measured = 0
@@ -558,318 +680,350 @@ async function measure() {
     measured++
     lines.push(`── ${eng.name} ────────────────────────────────────────────────────────────────`)
 
-    /* ══ 🔴 FIVE WIDTHS ABOVE THE BREAKPOINT AND TWO BELOW (6 October 2026) ═══════════════════════
-     * ⛔ THIS FILE USED TO MEASURE 1440 AND 820 AND NOTHING BETWEEN THEM, and that is exactly how the
-     * reported bug got through: the grid went side-by-side at `lg` (1024), and a 16in MacBook Pro in
-     * Safari with a normal window is 1000–1100px wide. Both measured widths were CORRECT and the
-     * laptop — the machine this is used on — was not measured at all.
-     * 🔴 A BREAKPOINT WITH NO MEASUREMENT BETWEEN ITS TWO SIDES IS A BREAKPOINT NOBODY HAS CHECKED.
-     * 1000 and 1100 are the real window; 1280 and 1440 are external monitors; 1728 is this laptop's
-     * full-screen width. 820 and 390 are the two that must STACK. */
-    const WIDTHS = [
-      [1000, 800, 'laptop window'],
-      [1100, 800, 'laptop window, wider'],
-      [1280, 800, 'desktop'],
-      [1440, 900, 'desktop, wide'],
-      [1728, 1117, 'MacBook Pro 16in, full screen'],
-      [820, 1180, 'iPad portrait'],
-      [390, 844, 'phone'],
-    ]
-    /** The breakpoint itself, in one place — every "side by side or stacked?" branch reads it. */
-    const SIDE_BY_SIDE = 900
-    for (const [w, h, label] of WIDTHS) {
-      await eng.setViewport(w, h)
+    /* ⛔ THE SEVEN-WIDTH SWEEP OVER Social posts' THREE BOXES WENT WITH ITS FIXTURE — see the
+     * tombstone at the top of this file. `scripts/social-tab-render.cjs` measures the screens that
+     * replaced it. ⚠️ THE EDITOR AND THE PICKER SET THEIR OWN VIEWPORTS BELOW, so nothing here needs
+     * to leave one behind. */
 
-      /* ══ 🔴 BOTH STATES, AT EVERY WIDTH (6 October 2026) ═════════════════════════════════════════
-       * `ready: true`  — both designs set up, one place with its own design: the normal screen.
-       * `ready: false` — nothing set up: all three Make-a-post boxes are the empty panel, and both
-       *                  Designs boxes show an empty tile and a "Set up …" button.
-       * ⛔ THE EMPTY STATE IS THE ONE PIZZA KITCHEN IS IN, and it was never rendered before today. */
-      for (const [area, ready] of [
-        ['posts', true], ['designs', true], ['posts', false], ['designs', false],
-      ]) {
-        const tag = ready ? area : `${area}-empty`
-        await eng.page.goto(write(`sp-${tag}-${w}-${eng.name}.html`, socialFixture(css, { area, ready })))
-        const r = await eng.page.evaluate(rects)
-        lines.push(`  ${w}×${h} (${label}) ${tag}  boxes ${r.box1.width}/${r.box2.width}/${r.box3.width} @ y${r.box1.top}/${r.box2.top}/${r.box3.top}`)
+    /* ══ 🔴 THE SHARED DESIGN EDITOR — WEBKIT ONLY, TWO WIDTHS ════════════════════════════════════
+     * ⛔ THE BRIEF'S INSTRUCTION, AND THE RIGHT TRADE. The device is a Mac and the browser is Safari,
+     * and this layout has ONE breakpoint: 1100 is above it (a laptop window — the width the previous
+     * breakpoint bug was reported at) and 390 is below it (a phone). Measuring it in Chromium too, at
+     * seven widths, would be twelve more measurements of the same two cases.
+     * ⚠️ SKIPPED AND SAID SO on Chromium rather than silently not run — an engine that quietly
+     * measures nothing is how a harness reports a pass it never earned. */
+    if (eng.name !== 'WebKit') {
+      lines.push('  ⚠️ the design editor is measured in WebKit only (the brief) — skipped here')
+    } else {
+      /* ══ 🔴 THREE WIDTHS NOW, AND THE MIDDLE ONE IS THE POINT ════════════════════════════════
+       * ⛔ IT WAS 1100 AND 390 — above and below the one breakpoint this layout had. There are TWO
+       * now, at 900 and 1100, and the band BETWEEN them is a real laptop window: 1000px is wide enough
+       * for the list beside the poster and too narrow for a 320px panel as well. ⚠️ THAT BAND IS
+       * EXACTLY WHERE THIS PROJECT HAS ALREADY SHIPPED A BUG — `lg:` (1024) was set once when the
+       * machine was 1100px wide — so a sweep that measured only the two ends would measure only the
+       * two cases nobody gets wrong. */
+      /* ══ 🔴 §7 (10 October 2026) · THE FIVE WIDTHS THE BRIEF NAMES, PLUS THE PHONE ══════════════════
+       * ⛔ DOMINIC: *"at my window width the settings panel and the Save design button are cut off on
+       * the right."* Three widths could not find it — 1100, 1000 and 390 are the two breakpoint edges
+       * and a phone, which is exactly the set that misses whatever happens in between. ⚠️ 1440 AND 1728
+       * ARE THE WIDE CASES, where the editor has most room and is therefore least suspected. */
+      const EDITOR_WIDTHS = [
+        [1000, 800, 'narrow laptop'], [1100, 800, 'laptop window'], [1280, 900, 'desktop'],
+        [1440, 900, 'large desktop'], [1728, 1000, 'full window'], [390, 844, 'phone'],
+      ]
+      for (const [w, h, label] of EDITOR_WIDTHS) {
+        await eng.setViewport(w, h)
+        await eng.page.goto(write(`editor-${w}-${eng.name}.html`, editorFixture(css)))
+        const r = await eng.page.evaluate(editorRects)
+        lines.push(`  ${w}×${h} (${label}) editor  grid ${r.gridTrackCount} col · panel ${r.panelsVisible} visible · stage ${r.stage.width}×${r.stage.height}`)
 
-        t(r.docScrollW <= r.innerW, `🔴 ${w} ${tag}: NO HORIZONTAL PAGE SCROLL`)
-        t([r.box1, r.box2, r.box3].every(b => b.right <= r.innerW + 1),
-          `🔴 ${w} ${tag}: all three boxes fit across the viewport`)
-        t(r.seg.right <= r.innerW + 1 && r.seg.visible,
-          `⚠️ ${w} ${tag}: the segmented control is on screen and inside the page`)
-        if (w >= SIDE_BY_SIDE) {
-          /* 🔴 THREE IN A ROW, which is the brief's layout — asserted as "same top", not as three
-           * widths, so a design change to the column ratios does not fail a claim about the ROW. */
-          t(r.box1.top === r.box2.top && r.box2.top === r.box3.top,
-            `🔴 ${w} ${tag}: the three boxes are in ONE row`)
-          t(r.box1.left < r.box2.left && r.box2.left < r.box3.left,
-            `⚠️ ${w} ${tag}: …in order, left to right`)
-          /* ⚠️ `items-stretch` IS WHAT MAKES THEM READ AS THREE CHOICES OF ONE KIND rather than three
-           * unrelated cards. Three boxes of very different content lengths must come out equal. */
-          t(Math.abs(r.box1.height - r.box2.height) <= 1 && Math.abs(r.box2.height - r.box3.height) <= 1,
-            `🔴 ${w} ${tag}: …and the same height (${r.box1.height}/${r.box2.height}/${r.box3.height})`)
+        /* 🔴 THE ONE THING THIS SCREEN MUST NEVER DO. A drag surface on a page that pans sideways is a
+         * page where a drag moves the page instead of the box. */
+        t(r.docScrollW <= r.innerW, `🔴 ${w} editor: NO HORIZONTAL PAGE SCROLL`)
+
+        /* ══ 🔴 THE TRACK COUNT, PER BREAKPOINT ═══════════════════════════════════════════════════
+         * ⛔ READ OFF THE COMPUTED **TRACK LIST**, which is the only thing that can tell a column that
+         * is absent from one that is merely empty this render — and the only thing that can tell a
+         * two-track grid from one whose second item has wrapped.
+         * ⚠️ ONE BREAKPOINT NOW: two columns at 1100, one below. It was two breakpoints and three
+         * columns this morning; the list moved inside the panel, so the 900 rule had nothing left to
+         * switch on. */
+        const wantTracks = w >= 1100 ? 2 : 1
+        t(r.gridTrackCount === wantTracks,
+          `🔴 ${w} editor: the grid has ${wantTracks} column(s) (saw ${r.gridTrackCount}: ${r.grid.cols})`)
+
+        /* ══ ⛔ EXACTLY ONE SETTINGS PANEL IS ON SCREEN ════════════════════════════════════════════
+         * ⚠️ IT WAS ONE ELEMENT RENDERED INTO **TWO** WRAPPERS and is one element in one place now. The
+         * number is the same and the reason is simpler, which is the point. */
+        t(r.panelsVisible === 1,
+          `⛔ ${w} editor: exactly ONE settings panel is visible (saw ${r.panelsVisible})`)
+
+        /* ══ 🔴 §7 · NOTHING IS CUT OFF ON THE RIGHT ══════════════════════════════════════════════════
+         * ⛔ THE REPORT WAS SPECIFIC — the settings panel AND the Save button — so both are measured by
+         * name rather than by a page-level scroll check that could pass while an element sat under the
+         * edge. ⚠️ `right <= innerW` IS THE CLAIM: an element whose right edge is past the viewport is
+         * cut off whether or not the page admits it by scrolling.
+         * 🔴 AND THE TITLE ROW **WRAPS** RATHER THAN OVERFLOWING, which is what `flex-wrap` buys and
+         * what the measurement has to prove: a row that grew past the page would report the same
+         * `right` for its last button either way, so the row's own width is checked against its
+         * container as well. */
+        t(r.saveBtn && r.saveBtn.right <= r.innerW + 1,
+          `🔴 ${w} editor: the Save button is on screen (right ${r.saveBtn?.right} of ${r.innerW})`)
+        t(r.panelCol && r.panelCol.right <= r.innerW + 1,
+          `🔴 ${w} editor: the settings panel is on screen (right ${r.panelCol?.right} of ${r.innerW})`)
+        t(r.topbar && r.topbar.width <= r.innerW + 1,
+          `🔴 ${w} editor: the title row fits across the page (${r.topbar?.width} of ${r.innerW})`)
+        t(r.topbar && r.topbar.scrollW <= r.topbar.clientW + 1,
+          `🔴 ${w} editor: …and it WRAPS rather than overflowing (content ${r.topbar?.scrollW} in ${r.topbar?.clientW})`)
+
+        /* ══ 🔴 A SETTING NEVER COVERS THE POSTER — WHICH IS WHY THE POP-UPS WENT ══════════════════
+         * ⛔ THIS IS THE MEASUREMENT THE WHOLE CHANGE EXISTS FOR, and it is one a source check cannot
+         * make: every setting in the two pop-ups was about how the words look ON THE POSTER, and
+         * opening either put a panel over it. Here the panel is beside the poster above 1100 and under
+         * it below — and in NEITHER case do their boxes overlap. */
+        const overlaps = r.panelCol.left < r.stage.right && r.panelCol.right > r.stage.left
+          && r.panelCol.top < r.stage.bottom && r.panelCol.bottom > r.stage.top
+        t(!overlaps,
+          `🔴 ${w} editor: the settings never cover the poster (panel ${r.panelCol.left}…${r.panelCol.right} × ${r.panelCol.top}…${r.panelCol.bottom}, poster ${r.stage.left}…${r.stage.right} × ${r.stage.top}…${r.stage.bottom})`)
+
+        /* ══ 🔴 **THE POSTER IS THE LARGEST SIZE THAT FITS THE AREA, BOTH WAYS** ════════════════════
+         * ⛔ IT WAS CAPPED AT `min(64vh, 820px)` — a GUESS at how much of the window it may have, wrong
+         * in both directions: on a 16-inch window 64vh left a third of the height unused, and on a
+         * short window the title row and the hint pushed the bottom off the screen because neither was
+         * counted. 🔴 SO IT IS FITTED TO THE MEASURED AREA, and this is the measurement that says so:
+         * it touches ONE of the area's two dimensions and overflows neither. */
+        /* ⚠️ COMPARED AGAINST THE AREA'S **CONTENT** BOX, not its border box. `clientWidth` includes
+         * padding, and forgetting that is the bug this check caught: the poster was fitted to 366 inside
+         * a 342px content box on a phone, so the area scrolled sideways at Fit. */
+        t(r.stage.width <= r.stageArea.contentW + 1 && r.stage.height <= r.stageArea.contentH + 1,
+          `🔴 ${w} editor: the poster fits the area (${r.stage.width}×${r.stage.height} in ${r.stageArea.contentW}×${r.stageArea.contentH})`)
+        /* ⛔ AND IT IS **AS LARGE AS FITS**, not merely inside: one dimension is within 8px of the
+         * area's. A poster at half the available size would pass the containment test alone, which is
+         * exactly the failure the old `vh` cap produced. */
+        t(Math.abs(r.stage.width - r.stageArea.contentW) <= 8
+          || Math.abs(r.stage.height - r.stageArea.contentH) <= 8,
+          `🔴 ${w} editor: …and it is as large as fits — it touches one edge (${r.stage.width}/${r.stageArea.contentW} wide, ${r.stage.height}/${r.stageArea.contentH} tall)`)
+        /* ⚠️ AND AT **Fit** NOTHING SCROLLS, which is what makes + meaningful. */
+        t(r.stageArea.scrollW <= r.stageArea.clientW + 1,
+          `⚠️ ${w} editor: at Fit the area does not scroll sideways`)
+
+        if (w >= 1100) {
+          /* ══ 🔴 THE PANEL IS THE SECOND COLUMN, TO THE RIGHT OF THE POSTER ════════════════════════ */
+          t(r.panelCol.left >= r.stage.right - 1,
+            `🔴 ${w} editor: the panel is to the RIGHT of the poster (panel starts ${r.panelCol.left}, poster ends ${r.stage.right})`)
+          t(r.panelCol.width >= 360 && r.panelCol.width <= 400,
+            `⚠️ ${w} editor: …and it is about 380px wide (${r.panelCol.width})`)
+          /* ⛔ AND IT IS GENUINELY STICKY, READ COMPUTED. A `sticky` class inside an `overflow:hidden`
+           * ancestor does not stick, and nothing but the browser can say so. */
+          t(r.panelColStyle?.position === 'sticky',
+            `🔴 ${w} editor: the panel column is sticky (position: ${r.panelColStyle?.position})`)
+          t((r.panelColStyle?.maxH ?? 0) > 0 && r.panelColStyle.maxH <= r.innerH,
+            `⛔ ${w} editor: …and capped to the window, so it CAN stick (max-height ${r.panelColStyle?.maxH} ≤ ${r.innerH})`)
+          t(r.panelColStyle?.overflowY === 'auto' || r.panelColStyle?.overflowY === 'scroll',
+            `⛔ ${w} editor: …and scrolls inside itself (overflow-y: ${r.panelColStyle?.overflowY})`)
         } else {
-          t(r.box2.top >= r.box1.bottom && r.box3.top >= r.box2.bottom,
-            `🔴 ${w} ${tag}: the boxes STACK below ${SIDE_BY_SIDE}px`)
+          /* ══ 🔴 BELOW 1100 THE PANEL DROPS **UNDER THE POSTER** — the brief's own instruction ══════
+           * ⚠️ AND IT IS THE RIGHT ONE: at 1000px a 380px column would take more than a third of the
+           * width from the poster, which is the thing the operator is looking at. */
+          t(r.panelCol.top >= r.stage.bottom - 1,
+            `🔴 ${w} editor: the panel drops UNDER the poster (panel starts ${r.panelCol.top}, poster ends ${r.stage.bottom})`)
+          /* ⛔ AND IT IS NOT STICKY THERE. Under the poster there is nothing above it to stay level
+           * with, and a `sticky` element filling its own scroll container is a no-op at best. */
+          t(r.panelColStyle?.position !== 'sticky',
+            `⛔ ${w} editor: …and it is not sticky there (position: ${r.panelColStyle?.position})`)
         }
 
-        /* ══ 🔴 THE LOOK, MEASURED RATHER THAN READ OFF THE SOURCE ═══════════════════════════════
-         * ⛔ A HEADING IS TITLE CASE. `text-transform` is the only honest test: a source string can be
-         * title case and still render shouting, which is exactly what `uppercase tracking-widest` did
-         * to all six of these. */
-        t(r.headings.length === 3 && r.headings.every(x => x.transform === 'none'),
-          `🔴 ${w} ${tag}: the box headings are title case, not uppercased (${r.headings.map(x => x.transform).join('/')})`)
-        t(r.headings.every(x => x.size >= 16 && x.size <= 18),
-          `⚠️ ${w} ${tag}: …at about 17px (${r.headings.map(x => Math.round(x.size)).join('/')})`)
-        /* ⛔ ORANGE MEANS "MAKE SOMETHING". Counted on the COMPUTED background, over every button on the
-         * screen — a class-name count cannot see a colour arriving from somewhere else. */
-        /* ⛔ AND THE POSITIVE HALF IS ASSERTED TOO, BELOW. "Only the allowed ones are orange" passes
-         * when the measurement finds NOTHING orange — which is exactly what happened on the first run
-         * of this check, because the computed background came back as `oklch(…)` and the matcher only
-         * knew `rgb(…)`. **A pure-absence assertion cannot tell "correct" from "measured nothing."** */
-        t(r.orangeButtons.every(id => ALLOWED_ORANGE.has(id)),
-          `🔴 ${w} ${tag}: only the make/set-up buttons are orange (orange: ${r.orangeButtons.join(', ') || 'none'}${
-            r.orangeButtons.every(id => ALLOWED_ORANGE.has(id)) ? '' : ` · all: ${r.buttonBg.join(' ')}`})`)
-        if (area === 'posts') {
-          /* ⛔ ONE ORANGE BUTTON ON MAKE A POST — AND NONE AT ALL WHEN THE BOXES ARE EMPTY. Orange means
-           * "make something", and making something is the one thing an empty box cannot do. */
-          t(ready ? r.orangeButtons.join() === 'box1btn' : r.orangeButtons.length === 0,
-            `🔴 ${w} posts${ready ? '' : ' (empty)'}: ${ready
-              ? 'exactly one orange button, and it is the weekly one'
-              : 'NO orange anywhere — an empty box cannot make anything'} (saw: ${r.orangeButtons.join(', ') || 'none'})`)
-        } else {
-          /* 🔴 EXACTLY THE TWO DESIGN BUTTONS, in both states. They are the only orange on this area,
-           * and they are orange whether they say Edit or Set up — the job is the same job. */
-          t(r.orangeButtons.join() === 'box1btn,box2btn',
-            `🔴 ${w} designs: exactly the two design buttons are orange (saw: ${r.orangeButtons.join(', ') || 'none'})`)
-          /* 🔴 THE EMPTY TILE IS THE SAME SIZE AS A FILLED ONE. Asserted as a COMPARISON between the
-           * two tiles rendered side by side in this fixture, not against a number written in here. */
-          t(r.tileFilled && r.tileEmpty
-            && r.tileFilled.width === r.tileEmpty.width
-            && r.tileFilled.height === r.tileEmpty.height,
-            `🔴 ${w} designs: the empty design tile is the same size as a filled one (${r.tileEmpty?.width}×${r.tileEmpty?.height} vs ${r.tileFilled?.width}×${r.tileFilled?.height})`)
-          t((r.tileEmpty?.height ?? 0) >= 120,
-            `⚠️ ${w} designs: …and it is a TILE, not a thin bar (${r.tileEmpty?.height}px tall)`)
-          /* ⛔ NO TEXT IN A STANDARD PLACE TILE. It said "Standard" in 9px inside a 40px box —
-           * unreadable, and the tag beside it says the same word at a size somebody can read. */
-          t(r.standardTileText === '',
-            `🔴 ${w} designs: a Standard place tile holds no text (saw "${r.standardTileText}")`)
-          t(r.placeTile && r.placeTile.width === 28 && r.placeTile.height === 35,
-            `⚠️ ${w} designs: …and it is the 28×35 portrait tile (${r.placeTile?.width}×${r.placeTile?.height})`)
-          /* ⛔ ONLY A PLACE WITH ITS OWN DESIGN IS TAGGED (6 October 2026). "Standard" read as the
-           * EVENT TYPE of that name and said nothing a blank tile and a "Design" button were not
-           * already saying. ⚠️ ASSERTED BOTH WAYS: row 0 has its own design and carries the tag; row 5
-           * does not and carries nothing. */
-          t(!!r.ownTag && r.ownTag.left > (r.ownName?.right ?? 0) - 1,
-            `⚠️ ${w} designs: the "Own design" tag sits after the name`)
-          t(!r.designTag,
-            `⛔ ${w} designs: …and a place on the event design carries NO tag`)
+        /* ══ 🔴 THE ITEM LIST IS INSIDE THE PANEL, AND Background picture IS ITS LAST ROW ═══════════
+         * ⛔ THE LIST WAS A 250px COLUMN ON THE FAR SIDE OF THE POSTER, with the settings on the other —
+         * the two halves of ONE job as far apart as the screen allowed, so picking a box and changing
+         * it was a 1,000px round trip. ⚠️ MEASURED AS CONTAINMENT, which is what "inside" means. */
+        t(r.itemGrid.visible
+          && r.itemGrid.top >= r.panelCard.top - 1 && r.itemGrid.bottom <= r.panelCard.bottom + 1
+          && r.itemGrid.left >= r.panelCard.left - 1 && r.itemGrid.right <= r.panelCard.right + 1,
+          `🔴 ${w} editor: the item list is INSIDE the settings panel`)
+        /* ⛔ AND Background picture IS A ROW INSIDE THAT LIST, not a card under it — which is what made
+         * it the one thing you could change without selecting it. */
+        t(r.bgRow.visible && r.bgRow.bottom <= r.itemGrid.bottom + 1 && r.bgRow.top >= r.itemGrid.top,
+          `🔴 ${w} editor: Background picture is a ROW INSIDE the list, not a card under it`)
 
-          /* ══ 🔴 THE PICTURE IS CENTRED IN ITS BOX, IN BOTH STATES (6 October 2026) ═══════════════
-           * ⛔ ASSERTED ON THE CENTRES, WITHIN 2px — not on a class. `mx-auto` on the tile alone would
-           * pass a class census and still leave the BADGE against the left edge, which is what the
-           * shared `items-center` wrapper is for. Both boxes, set up and not. */
-          for (const [n, wrap, boxEl] of [[1, r.tileWrap1, r.box1], [2, r.tileWrap2, r.box2]]) {
-            const tile = n === 1 ? r.tileFilled : r.tileEmpty
-            const tileMid = tile ? (tile.left + tile.right) / 2 : null
-            const boxMid = (boxEl.left + boxEl.right) / 2
-            t(tile !== null && Math.abs(tileMid - boxMid) <= 2,
-              `🔴 ${w} ${tag}: design box ${n}'s picture is centred (${tileMid} vs ${boxMid})`)
-            t(!!wrap && wrap.right <= boxEl.right + 1,
-              `⚠️ ${w} ${tag}: …and its wrapper stays inside the box`)
-            /* ⛔ AND THE PICTURE NEVER BURSTS OUT OF THE BOX. Reported live on 6 October: a LANDSCAPE
-             * event design at a fixed 220px height is 391px wide in a 200–320px column. Every design
-             * measured before that day was portrait, so no fixture had ever produced one. */
-            t(!!tile && tile.left >= boxEl.left - 1 && tile.right <= boxEl.right + 1,
-              `🔴 ${w} ${tag}: …and the picture is inside the box (${tile?.width}px wide in ${boxEl.width}px)`)
-          }
-          /* 🔴 THE TWO DESIGN BOXES ARE EQUAL HEIGHT WHATEVER THEIR STATE. One set up and one not is the
-           * commonest real case and the one most likely to make them differ.
-           * ⚠️ IT IS A CLAIM ABOUT A ROW, so it is only asserted where there is one. Stacked at 390,
-           * each box is as tall as its own content — box 2's description is a line longer — and
-           * `items-stretch` has nothing to equalise. Asserting it there failed on correct markup. */
-          if (w >= SIDE_BY_SIDE) {
-            t(Math.abs(r.box1.height - r.box2.height) <= 1,
-              `🔴 ${w} ${tag}: the two design boxes are equal height (${r.box1.height} vs ${r.box2.height})`)
-          }
-          t(!!r.usedFor1 && !!r.usedFor2
-            && r.usedFor1.right <= r.box1.right + 1 && r.usedFor2.right <= r.box2.right + 1,
-            `⚠️ ${w} ${tag}: …and both "Used for" panels fit inside their box`)
+        /* ══ 🔴 THE SWITCH KNOB SITS **INSIDE** ITS TRACK — REPORTED BY DOMINIC ═════════════════════
+         * ⛔ IT DID NOT. The knob was `absolute top-0.5` with **no `left`**, so its horizontal position
+         * was its STATIC POSITION — a property of the inline formatting context it would have had, not
+         * a reliable 0 — and `translate-x-4` carried it out the other side.
+         * 🔴 THIS IS THE ONLY CHECK THAT COULD HAVE CAUGHT IT. A class census sees `translate-x-4` and
+         * cannot tell where the element it moves started from; only a layout engine knows.
+         * ⚠️ AND THE CLEARANCE IS ASSERTED TOO, so "inside" cannot be satisfied by a knob exactly
+         * filling its track. */
+        t(r.knobs.length > 0 && r.knobs.every(k => k.inside),
+          `🔴 ${w} editor: every switch knob is INSIDE its track (${r.knobs.length} switches)`)
+        t(r.knobs.every(k => k.gapLeft >= 0 && k.gapRight >= 0 && (k.gapLeft + k.gapRight) >= 2),
+          `⚠️ ${w} editor: …with clearance at both ends (left ${r.knobs[0]?.gapLeft}, right ${r.knobs[0]?.gapRight})`)
 
-          /* ══ 🔴 A PLACE ROW IS ONE LINE, AT EVERY WIDTH FROM 390 UP ═══════════════════════════════
-           * ⛔ ASSERTED AS THE BUTTON'S TOP BEING INSIDE THE ROW'S FIRST LINE, which is what "did not
-           * wrap" actually means. A row that wrapped is twice as tall and its button starts below the
-           * text — so the row height alone would not catch a tall row that happened to fit. */
-          t(r.placeRows.length > 0, `⚠️ ${w} ${tag}: the place rows rendered (${r.placeRows.length})`)
-          t(r.placeRows.every(x => x.btnTop < x.rowTop + x.rowHeight / 2),
-            `🔴 ${w} ${tag}: every place row is ONE line — the button never drops under the text`)
-          t(r.placeRows.every(x => x.btnBottom <= x.rowBottom + 1),
-            `⚠️ ${w} ${tag}: …and the button sits inside its row`)
-          t(r.placeRows.every(x => x.btnRight <= r.box3.right + 1),
-            `🔴 ${w} ${tag}: …and inside the box`)
-          /* ⚠️ EVERY ROW THE SAME HEIGHT — the thing a wrapping row destroys in a list.
-           * ⛔ WITHIN 1px, NOT EXACTLY: `divide-y` puts a 1px border on every row but the last, so an
-           * exact-equality test fails on correct markup. (It did, at all six widths.) A wrapped row is
-           * twice the height, which is nowhere near the tolerance. */
-          const heights = [...new Set(r.placeRows.map(x => x.rowHeight))]
-          t(Math.max(...heights) - Math.min(...heights) <= 1,
-            `⚠️ ${w} ${tag}: …and every row is the same height (${heights.join('/')})`)
-          /* ⚠️ THE FOOTER NAMES THE EVENT POST DESIGN, not "Standard" — the word that read as an event
-           * type everywhere else on this screen. */
-          t(!!r.designFooter && r.designFooterText.includes('using your event post design'),
-            `⚠️ ${w} ${tag}: the footer names the event post design`)
-        }
-        /* ⚠️ ONLY IN THE READY STATE: with nothing set up there is no event list to carry bars. */
-        if (area === 'posts' && ready) {
-          /* 🔴 THE COLOUR BAR IS FULL ROW HEIGHT. It was a 32px stub beside a taller row. */
-          t(r.bars.length > 0 && r.bars.every(b => b.height >= b.rowHeight - 2),
-            `🔴 ${w} posts: the design bar is full row height (${r.bars.map(b => `${b.height}/${b.rowHeight}`).join(' ')})`)
-          t(r.bars.every(b => b.width >= 3 && b.width <= 5),
-            `⚠️ ${w} posts: …and 4px wide (${r.bars.map(b => b.width).join('/')})`)
-        }
-        /* 🔴 EVERY BUTTON INSIDE ITS BOX. A full-width primary with a four-word label in a third-width
-         * column at 390 is the case this exists for. */
-        /* ⚠️ MAPPED BY NAME, NOT BY PREFIX. The first version read `id.startsWith('box1') ? … : 'box2'
-         * ? … : box3`, so `evBtn-0` — which is in BOX 2 — was checked against box 3's edges and failed
-         * on correct markup. A fallback branch that catches everything it was not told about is a
-         * fallback that mislabels. */
-        const BOX_OF = { box1btn: r.box1, box2btn: r.box2, 'evBtn-0': r.box2, 'plBtn-0': r.box3, 'dsBtn-0': r.box3, 'dsBtn-5': r.box3 }
-        const boxOf = (id) => BOX_OF[id] ?? null
-        /* ⚠️ THE EMPTY STATE HAS NONE OF THESE BUTTONS — its three "Go to Designs" buttons are checked
-         * by their own block below. A `length > 0` demand here would fail on a correct empty screen. */
-        t((ready ? r.btns.length > 0 : true) && r.btns.every(b => {
-          const box = boxOf(b.id)
-          return box && b.right <= box.right + 1 && b.left >= box.left - 1
-        }), `🔴 ${w} ${tag}: every button is inside its own box (${r.btns.length} checked)`)
-        /* ⛔ A PRIVATE EVENT HAS NO BUTTON AT ALL — an absence, not a disabled control.
-         * ⚠️ ONLY IN THE READY STATE: with nothing set up there is no list at all, which is a stronger
-         * version of the same claim and is asserted as the empty panel below. */
-        if (area === 'posts' && ready) {
-          t(!r.privateBtn, `⛔ ${w}: the private event row has NO Make post button`)
-          t(!!r.privateSub?.visible, `⚠️ ${w}: …and still shows its line, greyed, in its date position`)
-          t(!!r.footnote && r.footnote.right <= r.innerW + 1, `⚠️ ${w}: the footnote fits across the page`)
-        }
+        /* ══ 🔴 THE THREE SECTIONS, WITH THE BRIEF'S OWN DEFAULTS ══════════════════════════════════
+         * ⚠️ READ OUT OF THE **VISIBLE** PANEL, so a hidden copy cannot answer for the one on screen.
+         * ⛔ TEXT HAS A BODY AND NO FOLD; MAKE IT STAND OUT HAS A BODY (open); MORE OPTIONS HAS NO BODY
+         * AND A SUMMARY (folded). A folded section with no summary is a closed door with no sign on it,
+         * which is the one thing that would make "nothing is lost" a lie on the screen. */
+        t(!!r.sections && r.sections.text && r.sections.textBody,
+          `🔴 ${w} editor: TEXT is open, with its controls on screen`)
+        t(!!r.sections && r.sections.stand && r.sections.standBody,
+          `🔴 ${w} editor: MAKE IT STAND OUT is OPEN by default`)
+        t(!!r.sections && r.sections.more && r.sections.moreBody === false
+          && /Spacing, tilt, italic/.test(r.sections.moreSummary),
+          `🔴 ${w} editor: MORE OPTIONS is FOLDED, with a summary naming what is inside`)
+        /* ⚠️ AND THE PANEL SAYS WHICH BOX IT IS ABOUT. An operator who clicked a box on the poster
+         * needs to know which one before they change anything in it. */
+        t(!!r.sections && r.sections.title === 'Date',
+          `⚠️ ${w} editor: …and the panel's header names the selected item ("${r.sections?.title}")`)
 
-        /* ══ 🔴 THE EMPTY STATE — THE SAME PANEL IN EVERY BOX THAT CANNOT WORK YET ════════════════
-         * ⛔ THREE PANELS ON MAKE A POST, NOT ONE, AND NOT A LINE ABOVE A GREYED LIST. The old
-         * treatment left the lists in place with their buttons disabled, which is a promise that they
-         * will work under some condition the screen does not name. */
-        if (!ready && area === 'posts') {
-          t(r.emptyPanels.length === 3,
-            `🔴 ${w}: all three Make a post boxes show the empty panel (${r.emptyPanels.length})`)
-          t(r.emptyPanels.every(p => p.right <= boxOfIndex(r, p.id).right + 1
-            && p.left >= boxOfIndex(r, p.id).left - 1),
-            `🔴 ${w}: …each inside its own box`)
-          /* ⚠️ IT FILLS THE BOX, which is what keeps the three the same height when all three are
-           * empty — and what stops an empty box reading as a broken one. */
-          t(r.emptyPanels.every(p => p.height >= 140),
-            `⚠️ ${w}: …filling the box rather than sitting as a strip (${r.emptyPanels.map(p => p.height).join('/')})`)
-          t(r.emptyButtons.length === 3 && r.emptyButtons.every(b => b.visible),
-            `🔴 ${w}: …each with its own "Go to Designs"`)
-          /* ⛔ AND THE LISTS ARE GONE, not greyed. */
-          t(!r.list2 && !r.list3, `⛔ ${w}: …and no list is left behind with disabled buttons`)
-          /* ⛔ AND THE WEEKLY BOX BLAMES THE WEEKLY DESIGN, not the event one. The first draft of this
-           * fixture used one title for all three and the screenshot showed the weekly box naming the
-           * wrong design — the component was right, the fixture was not. */
-          t(r.emptyTitles.length === 3
-            && r.emptyTitles[0].includes('weekly post')
-            && r.emptyTitles[1].includes('event post') && r.emptyTitles[2].includes('event post'),
-            `🔴 ${w}: …and the weekly box names the WEEKLY design (${r.emptyTitles.join(' | ')})`)
-        }
+        t(r.caption.visible && r.caption.top >= r.stage.bottom - 1,
+          `⚠️ ${w} editor: the caption is under the picture`)
+        t(r.saveBtn.right <= r.innerW + 1 && r.topbar.scrollW <= r.topbar.clientW + 1,
+          `⚠️ ${w} editor: the top bar wraps and Save design is on screen`)
+
+        await eng.shot(path.join(editorShots, `editor-${w}.png`))
       }
 
-      /* ══ ⛔ A LANDSCAPE DESIGN MUST NOT BURST OUT OF ITS BOX (6 October 2026, reported live) ═══════
-       * Every design these fixtures had ever drawn was PORTRAIT, so a tile wider than its column was a
-       * shape no measurement could produce — and the overflow was reported by Dominic looking at the
-       * real screen rather than by anything here. A 1920×1080 design at a fixed 220px height is 391px
-       * wide; the column it sits in is between 200 and 320px.
-       * 🔴 RENDERED AT EVERY WIDTH NOW, in both design boxes, against the box's own edges. */
+      /* ══ 🔴 ZOOMED IN, AT 1728 — THE BUG DOMINIC REPORTED ══════════════════════════════════════════
+       * ⛔ "zooming in (e.g. 125%) currently widens the whole page, cutting off the settings panel and
+       * the Save button." 🔴 THE CLAIM IS THEREFORE A **COMPARISON WITH THE UNZOOMED RENDER**: the page
+       * does not get wider, the panel does not move, and the Save button stays where it was. ⚠️ A
+       * containment test alone would not catch it — the panel could be pushed off screen and still be
+       * "inside" a page that had grown. */
       {
-        await eng.page.goto(write(`sp-land-${w}-${eng.name}.html`,
-          socialFixture(css, { area: 'designs', landscape: true })))
-        const L = await eng.page.evaluate(rects)
-        lines.push(`  ${w} landscape design  tile ${L.tileFilled?.width}×${L.tileFilled?.height} in a ${L.box1.width}px box`)
-        t(!!L.tileFilled && L.tileFilled.left >= L.box1.left - 1 && L.tileFilled.right <= L.box1.right + 1,
-          `🔴 ${w}: a LANDSCAPE design stays inside its box (${L.tileFilled?.width}px in ${L.box1.width}px)`)
-        t(!!L.tileEmpty && L.tileEmpty.right <= L.box2.right + 1,
-          `⚠️ ${w}: …and so does an empty tile of the same shape`)
-        t(L.docScrollW <= L.innerW, `🔴 ${w}: …and it does not scroll the page sideways`)
-        /* ⚠️ AND IT IS STILL CENTRED. A capped width that was not re-centred would sit left. */
-        t(!!L.tileFilled
-          && Math.abs((L.tileFilled.left + L.tileFilled.right) / 2 - (L.box1.left + L.box1.right) / 2) <= 2,
-          `⚠️ ${w}: …and is still centred in its box`)
+        await eng.setViewport(1728, 1000)
+        await eng.page.goto(write(`editor-fit-${eng.name}.html`, editorFixture(css)))
+        const atFit = await eng.page.evaluate(editorRects)
+        await eng.page.goto(write(`editor-zoom-${eng.name}.html`, editorFixture(css, { zoom: 6 })))
+        const zoomed = await eng.page.evaluate(editorRects)
+        lines.push(`  1728×1000 editor zoomed  page ${atFit.docScrollW}→${zoomed.docScrollW} · panel ${atFit.panelCol.left}→${zoomed.panelCol.left} · poster ${atFit.stage.width}→${zoomed.stage.width}`)
+        /* ⚠️ THE PREMISE FIRST: the poster really did get bigger, or the rest of this proves nothing. */
+        t(zoomed.stage.width > atFit.stage.width + 20,
+          `⚠️ 1728 editor+zoom: the poster really is bigger (${atFit.stage.width} → ${zoomed.stage.width})`)
+        t(zoomed.docScrollW <= zoomed.innerW,
+          `🔴 1728 editor+zoom: THE PAGE DOES NOT WIDEN (scrollWidth ${zoomed.docScrollW} ≤ ${zoomed.innerW})`)
+        t(zoomed.panelCol.left === atFit.panelCol.left && zoomed.panelCol.width === atFit.panelCol.width,
+          `🔴 1728 editor+zoom: …and the settings panel has not moved or narrowed (${atFit.panelCol.left}/${atFit.panelCol.width} → ${zoomed.panelCol.left}/${zoomed.panelCol.width})`)
+        t(zoomed.saveBtn.right <= zoomed.innerW + 1 && zoomed.saveBtn.right === atFit.saveBtn.right,
+          `🔴 1728 editor+zoom: …and Save design is exactly where it was (${atFit.saveBtn.right} → ${zoomed.saveBtn.right})`)
+        /* ⛔ AND THE **AREA** IS WHAT SCROLLS, in both directions — which is where the zoom is supposed
+         * to go. A page that did not widen because the poster was clipped would fail this. */
+        t(zoomed.stageArea.scrollW > zoomed.stageArea.clientW,
+          `⛔ 1728 editor+zoom: …and the grey AREA scrolls sideways instead (${zoomed.stageArea.scrollW} in ${zoomed.stageArea.clientW})`)
       }
 
-      /* ══ 🔴 A LONG LIST MUST SCROLL INSIDE ITS BOX ══════════════════════════════════════════════
-       * Twenty places is a truck with a full address book. ⛔ WITHOUT `min-h-0` ON THE SCROLLER the
-       * box grows to its content, the row stops being a row, and the other two boxes are dragged to
-       * the same height — which is the exact failure `items-stretch` turns from ugly into absurd. */
-      for (const area of ['posts', 'designs']) {
-        await eng.page.goto(write(`sp-long-${area}-${w}-${eng.name}.html`, socialFixture(css, { area, rows: 20 })))
-        const r = await eng.page.evaluate(rects)
-        if (w >= SIDE_BY_SIDE) {
-          t(r.list3Scrolls, `🔴 ${w} ${area}: a 20-place list scrolls INSIDE its box`)
-          t(Math.abs(r.box1.height - r.box3.height) <= 1,
-            `🔴 ${w} ${area}: …so the box is no taller than the others (${r.box1.height} vs ${r.box3.height})`)
-          t(r.list3.bottom <= r.box3.bottom + 1,
-            `⚠️ ${w} ${area}: …and the list ends inside the box`)
-        }
-        t(r.docScrollW <= r.innerW, `🔴 ${w} ${area}: 20 rows still do not scroll the PAGE sideways`)
+      /* ══ 🔴 MORE OPTIONS OPEN, AT 1100 — THE CASE THAT DECIDES WHETHER STICKY WORKS ══════════════
+       * ⛔ A STICKY ELEMENT TALLER THAN THE VIEWPORT CANNOT STICK. Opened, MORE OPTIONS is six groups
+       * of three controls, which is far taller than an 800px window — so without `max-h` plus
+       * `overflow-y-auto` the panel would scroll the PAGE and take the poster off the screen, which is
+       * the pop-ups' failure in a slower form. 🔴 SO THE CLAIM IS THAT THE **PANEL** SCROLLS, not the
+       * page: more content than box, AND the box no taller than the window. */
+      {
+        await eng.setViewport(1100, 800)
+        await eng.page.goto(write(`editor-more-${eng.name}.html`, editorFixture(css, { moreOpen: true })))
+        const r = await eng.page.evaluate(editorRects)
+        lines.push(`  1100×800 editor (MORE OPTIONS open)  panel ${r.panelColStyle?.clientH}px showing ${r.panelColStyle?.scrollH}px`)
+        t(r.docScrollW <= r.innerW, '🔴 1100 editor+more: NO HORIZONTAL PAGE SCROLL')
+        t((r.panelColStyle?.scrollH ?? 0) > (r.panelColStyle?.clientH ?? 0) + 50,
+          `🔴 1100 editor+more: the panel SCROLLS inside itself (${r.panelColStyle?.scrollH}px of controls in ${r.panelColStyle?.clientH}px)`)
+        t(r.panelCol.height <= r.innerH,
+          `🔴 1100 editor+more: …and the panel itself fits the window (${r.panelCol.height} ≤ ${r.innerH}) — the PAGE does not grow`)
+        /* ⚠️ AND THE POSTER IS STILL THE SAME SIZE. Opening a section must not move or shrink the thing
+         * the section is about — which is what a pop-up anchored to a toolbar button did every time. */
+        t(r.stage.width > 100 && r.sections?.moreBody === true,
+          `⚠️ 1100 editor+more: …with MORE OPTIONS' own controls on screen beside an unshrunken poster (${r.stage.width}px)`)
+        await eng.shot(path.join(editorShots, 'editor-1100-more-options.png'))
       }
 
-      /* ══ 🔴 THE PLACE DESIGN EDITOR ═════════════════════════════════════════════════════════════ */
-      await eng.page.goto(write(`sp-editor-${w}-${eng.name}.html`, placeEditorFixture(css)))
-      const e = await eng.page.evaluate(rects)
-      lines.push(`  ${w}×${h} place editor  fields ${e.fields.width} · footer ${e.footer.width}×${e.footer.height}`)
-      t(e.docScrollW <= e.innerW, `🔴 ${w} editor: NO HORIZONTAL PAGE SCROLL`)
-      t(e.placeName.right <= e.innerW + 1 && e.scope.right <= e.innerW + 1,
-        `⚠️ ${w} editor: the name and the scope sentence fit`)
-      t(e.nameHint.right <= e.fields.right + 1 && e.previewWith.right <= e.fields.right + 1,
-        `🔴 ${w} editor: "Name on posts" and "Preview with" stay inside their card`)
-      /* ⛔ THE QUIET WAY OUT IS ON THE FAR RIGHT AND INSIDE THE FOOTER. It removes a picture after a
-       * confirm; it must not be the thing a thumb lands on, and it must not fall off the card. */
-      t(e.useStandard.right <= e.footer.right + 1 && e.makePost.left >= e.footer.left - 1,
-        `🔴 ${w} editor: "Make post" is on the left and "Use Standard…" inside the footer`)
-      if (w >= 640) {
-        t(e.useStandard.left > e.makePost.right,
-          `⚠️ ${w} editor: …and they are on one row, at opposite ends`)
+      /* ══ 🔴 THE FONT PICKER, AT THE SAME TWO WIDTHS (part 2) ══════════════════════════════════
+       * ⚠️ ONE QUICK MEASUREMENT, which is what §5 asks for: "One quick WebKit render of the picker at
+       * 1100 and 390: no sideways scroll, list scrolls inside." */
+      for (const [w, h, label] of EDITOR_WIDTHS) {
+        await eng.setViewport(w, h)
+        /* ⚠️ 380 WHERE THE PANEL IS THE SECOND COLUMN, AND THE CONTENT WIDTH BELOW IT. ⛔ `w - 48`,
+         * NOT `w - 24`: the fixture's page has padding and so does the card inside it, and a host wider
+         * than the content box made the PAGE scroll sideways — which the first measurement in this
+         * block then reported, correctly, as a failure of the fixture rather than of the component. */
+        await eng.page.goto(write(`picker-${w}-${eng.name}.html`,
+          pickerFixture(css, { width: w >= 1100 ? 380 : w - 48 })))
+        const r = await eng.page.evaluate(pickerRects)
+        lines.push(`  ${w}×${h} (${label}) font picker  panel ${r.panel.width}×${r.panel.height} · list ${r.list.clientH}px showing ${r.list.scrollH}px · tabs on ${r.tabRows} row(s)`)
+
+        t(r.docScrollW <= r.innerW, `🔴 ${w} picker: NO HORIZONTAL PAGE SCROLL with the list open`)
+        t(r.panel.right <= r.innerW + 1 && r.panel.left >= -1,
+          `🔴 ${w} picker: the panel is inside the viewport (${r.panel.left}…${r.panel.right} in ${r.innerW})`)
+
+        /* 🔴 THE LIST SCROLLS **INSIDE** THE PANEL. `scrollHeight > clientHeight` is the honest test —
+         * there is more content than box — and it is asserted BESIDE the panel being shorter than the
+         * window, because a panel that had simply grown would also have `scrollHeight` content. */
+        t(r.list.scrollH > r.list.clientH + 50,
+          `🔴 ${w} picker: the list SCROLLS inside itself (${r.list.scrollH}px of rows in ${r.list.clientH}px)`)
+        t(r.panel.height <= r.innerH,
+          `🔴 ${w} picker: …and the panel itself fits the window (${r.panel.height} ≤ ${r.innerH}) — the PAGE does not grow`)
+
+        /* ⛔ EVERY ROW IS INSIDE THE PANEL. A long family name plus the date sample plus a licence tag
+         * is what crowds a 22rem panel, and `min-w-0`+`truncate` is what makes the NAME give way. */
+        t(r.rows.length >= 50 && r.rows.every(row => row.right <= r.panel.right + 1 && row.left >= r.panel.left - 1),
+          `🔴 ${w} picker: all ${r.rows.length} rows are inside the panel`)
+        /* ⚠️ AND EVERY ROW IS THE SAME HEIGHT. One row wrapping to two lines is what makes a list of
+         * sixty impossible to scan — and it is the thing a long name would cause. */
+        t(new Set(r.rows.map(row => row.height)).size === 1,
+          `⚠️ ${w} picker: …and every row is one line (${[...new Set(r.rows.map(x => x.height))].join('/')}px)`)
+
+        t(r.search.right <= r.panel.right + 1 && r.search.width > 100,
+          `⚠️ ${w} picker: the search box fits the panel`)
+        /* 🔴 THE REAL COUNT IS ON SCREEN. The fixture lifts it from the generated catalogue, so this
+         * fails if the component ever hard-codes a number. */
+        t(/^Search [\d,]+ fonts$/.test(r.searchText) && !/1,500/.test(r.searchText),
+          `🔴 ${w} picker: the search box shows the real font count ("${r.searchText}")`)
+        t(r.tabCount === 6 && r.tabs.right <= r.panel.right + 1,
+          `⚠️ ${w} picker: all six tabs are present and inside the panel (on ${r.tabRows} row(s))`)
+        /* ══ 🔴 THE PANEL FITS **ITS PARENT**, WHICH IS WHAT `w-full` IS FOR ════════════════════════
+         * ⛔ IT WAS `w-[22rem]` — 352px — CAPPED AT `calc(100vw-2rem)`, and on a 1728px window that cap
+         * is 1696px: so the list opened at its full 352px and ran past the right edge of the 380px
+         * settings column it lives in. **A cap against the wrong container is not a cap**, and this is
+         * the measurement that says so. ⚠️ THE PARENT IS GIVEN THE PANEL'S REAL WIDTH by the fixture, so
+         * what is measured is the rule rather than a number this file chose. */
+        t(r.panel.right <= r.host.right + 1 && r.panel.left >= r.host.left - 1,
+          `🔴 ${w} picker: the panel fits inside its own column (${r.panel.left}…${r.panel.right} in ${r.host.left}…${r.host.right})`)
+        /* ⚠️ "AS WIDE AS ITS COLUMN **OR** CAPPED AT THE VIEWPORT", whichever is smaller. The viewport
+         * cap is the belt `w-full` cannot provide: a 390px phone where the row is nearly the whole
+         * screen. ⛔ ASSERTING EQUALITY ALONE WOULD HAVE MADE THE CAP A FAILURE. */
+        t(Math.abs(r.panel.width - Math.min(r.host.width, r.innerW - 32)) <= 1,
+          `⚠️ ${w} picker: …and it is as wide as that column, or capped at the viewport (${r.panel.width} vs ${r.host.width})`)
+
+        await eng.shot(path.join(editorShots, `font-picker-${w}.png`))
       }
 
-      /* ⚠️ 1100 AND 1728 — the laptop window and the laptop full screen. ⛔ 1440 WAS THE OLD SET AND IT
-       * IS THE ONE WIDTH THAT HID THE BUG: the layout was right there and wrong on the machine. The
-       * phone shot stays, because stacking is the other half of the claim. */
-      if (w === 1100 || w === 1728 || w === 390) {
-        await eng.page.goto(write(`sp-shot-posts-${w}-${eng.name}.html`, socialFixture(css, { area: 'posts' })))
-        await eng.shot(path.join(layoutShots, `social-make-${w}-${eng.name.toLowerCase()}.png`))
-        await eng.page.goto(write(`sp-shot-designs-${w}-${eng.name}.html`, socialFixture(css, { area: 'designs' })))
-        await eng.shot(path.join(layoutShots, `social-designs-${w}-${eng.name.toLowerCase()}.png`))
-      }
-      /* 🔴 BOTH AREAS IN BOTH STATES, AT THE LAPTOP WIDTH. ⛔ THE EMPTY ONES ARE THE POINT: that is the
-       * state Pizza Kitchen is actually in, and it had never been rendered until today. */
-      if (w === 1100) {
-        for (const [area, ready] of [
-          ['posts', true], ['designs', true], ['posts', false], ['designs', false],
-        ]) {
-          await eng.page.goto(write(`sp-pol-${area}-${ready}-${eng.name}.html`, socialFixture(css, { area, ready })))
-          await eng.shot(path.join(polishShots,
-            `social-${area}-${ready ? 'set-up' : 'empty'}-1100-${eng.name.toLowerCase()}.png`))
-        }
-      }
-      if (w === 1440 || w === 390) {
-        await eng.page.goto(write(`sp-shot-editor-${w}-${eng.name}.html`, placeEditorFixture(css)))
-        await eng.shot(path.join(shotDir, `social-place-editor-${w}-${eng.name.toLowerCase()}.png`))
-      }
+      /* ── THE PICKER'S CONTROL ──────────────────────────────────────────────────────────────────
+       * ⛔ WITHOUT IT, "the list scrolls inside" WOULD PASS ON A PANEL THAT HAD NO HEIGHT CAP — the
+       * rows would still overflow something. With the cap removed the PANEL grows past the window,
+       * which is the failure the assertion above is about. */
+      await eng.setViewport(390, 844)
+      await eng.page.goto(write(`picker-ctl-${eng.name}.html`,
+        pickerFixture(css, { width: 366 }).replace(/max-h-\[46vh\]/, '')))
+      const pctl = await eng.page.evaluate(pickerRects)
+      t(pctl.panel.height > pctl.innerH,
+        '🔴 CONTROL: with the list\'s height cap removed, the panel outgrows the window — so the scroll claim is a measurement')
+
+      /* ── THE EDITOR'S CONTROLS, ONE PER BREAKPOINT ──────────────────────────────────────────────
+       * ⛔ WITHOUT THEM, "the grid has three columns at 1100" WOULD PASS ON A PAGE THAT NEVER HAD A
+       * GRID. A fixture must be able to render the shape that FAILS — this project has shipped a check
+       * that could only draw the expected one and passed vacuously for a day.
+       * 🔴 TWO CONTROLS, BECAUSE THERE ARE TWO BREAKPOINTS, and each strips exactly one of them. A
+       * single control stripping both would pass while telling nobody WHICH rule had stopped working —
+       * and the 1100 one is the new rule, so it is the one most likely to be the next thing lost. */
+      /* ══ ⛔ ONE CONTROL, BECAUSE THERE IS ONE BREAKPOINT ════════════════════════════════════════════
+       * ⚠️ THERE WERE TWO — one per breakpoint, with the 900 one deliberately run at 1000 because at
+       * 1100 the other rule would have answered for it. The 900 rule is gone: the item list lives
+       * inside the panel, so there was nothing left for it to switch on.
+       * ⛔ WITHOUT THIS CONTROL, "two columns at 1100" WOULD PASS ON A PAGE THAT NEVER HAD A GRID. A
+       * fixture must be able to render the shape that FAILS — this project has shipped a check that
+       * could only draw the expected one and passed vacuously for a day. */
+      await eng.setViewport(1100, 800)
+      await eng.page.goto(write(`editor-ctl-1col-${eng.name}.html`, editorFixture(css, { oneCol: true })))
+      const ctl1 = await eng.page.evaluate(editorRects)
+      t(ctl1.gridTrackCount === 1,
+        `🔴 CONTROL: with the 1100px rule removed, 1100 becomes ONE column (saw ${ctl1.gridTrackCount}) — so the track count can tell them apart`)
+
+      /* ══ ⛔ §7's CONTROL: THE TITLE ROW AS IT WAS ══════════════════════════════════════════════════
+       * 🔴 THIS IS THE BUG, RESTORED. `shrink-0` on the label and no cap on the `<select>` — the shape
+       * that shipped — and the measurement must notice the row overflowing its own box. Without it,
+       * "the title row wraps rather than overflowing" would be a claim about a fixture that could not
+       * have drawn anything else. ⚠️ AT 390, where a long option has nowhere to go. */
+      await eng.setViewport(390, 844)
+      await eng.page.goto(write(`editor-ctl-nowrap-${eng.name}.html`,
+        editorFixture(css)
+          .replace('flex min-w-0 items-center gap-1"><span class="shrink-0 text-[10px]',
+            'flex items-center gap-1 shrink-0"><span class="text-[10px]')
+          .replace(' min-w-0 max-w-[12rem] truncate"><option>This week', '"><option>This week')))
+      const ctl2 = await eng.page.evaluate(editorRects)
+      t(ctl2.topbar.scrollW > ctl2.topbar.clientW,
+        `🔴 CONTROL: with the Preview-with control unshrinkable the title row OVERFLOWS (content ${ctl2.topbar.scrollW} in ${ctl2.topbar.clientW}) — so "it wraps" is a measurement`)
+      t(ctl2.docScrollW > ctl2.innerW,
+        `⛔ CONTROL: …and the page scrolls sideways with it (${ctl2.docScrollW} > ${ctl2.innerW}) — over a drag surface`)
     }
 
-    /* ── THE CONTROL ───────────────────────────────────────────────────────────────────────────── */
-    {
-      await eng.setViewport(1440, 900)
-      await eng.page.goto(write(`sp-ctl-${eng.name}.html`, socialFixture(css, { oneCol: true })))
-      const c = await eng.page.evaluate(rects)
-      t(c.box2.top >= c.box1.bottom,
-        '🔴 CONTROL: with the three-column grid removed, 1440 stacks — so the measurement can tell them apart')
-    }
 
     await eng.close()
   }

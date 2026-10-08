@@ -121,6 +121,20 @@ export function LandingNav({ cta, landingHref = '', ctaFirst = false }: { cta?: 
             ⚠️ BOTH Log in links point at /login — the real page (app/login/page.tsx), not `#`. They are plain
             <a> like every other link on this page (no next/link is imported here), so it is a full navigation
             out of the landing route, which is what a login needs. */}
+        {/* ══ 🔴 "Features" — HIDDEN BELOW 820px, AND THAT IS A MEASUREMENT, NOT A PREFERENCE ══════
+            It is `nav-hide-md`, a WIDER floor than Pricing's `nav-hide-sm` (640px), because the row is
+            already at its limit at 640: the note on the logo above records the measurement — gutters
+            leave ~589px and logo + gap + Pricing + Log in + CTA ≈ 530px, so ~59px spare. A `btn-quiet`
+            "Features" is ~82px plus a 6.4px gap. It does not fit, and `.nav-r .btn` is
+            `white-space: nowrap` with the standing instruction that "the CTA must never wrap the
+            header" — so the thing that would give way is the one that must not.
+            ⚠️ SO ON A PHONE **AND** ON A NARROW TABLET, Features is in the FOOTER only, which is the
+            fallback the brief asks for. Both widths were measured in a browser rather than reasoned
+            about; see docs/landing-trim-report.md.
+            🔴 `/features` IS AN ABSOLUTE PATH AND TAKES NO `landingHref`. It is a real route on the
+            HatchGrab host at exactly one address, so unlike `#pricing` there is no fragment to resolve
+            against the current page and nothing for a child route to get wrong. */}
+        <a href="/features" className="btn btn-quiet nav-hide-md">Features</a>
         <a href={`${landingHref}#pricing`} className="btn btn-quiet nav-hide-sm">Pricing</a>
         <a href="/login" className="btn btn-ghost nav-hide-sm">Log in</a>
         {/* ── 🔴 `ctaFirst` SWAPS TWO ELEMENTS, AND ONLY BELOW 640px DOES IT SHOW ──────────────────
