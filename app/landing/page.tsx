@@ -340,8 +340,8 @@ export default function LandingPage() {
                 a truck owner scanning the page could not tell from either which control they were being
                 sold. The two sentences underneath are unchanged, because they were already the plain
                 version of the same two facts. */}
-            <div className="does-item"><h3><TileIcon icon={Clock} /><span>Customers choose collection times</span></h3><p>Customers order ahead and pick a collection time. No shouting over the fryer.</p></div>
-            <div className="does-item"><h3><TileIcon icon={Gauge} /><span>Set your kitchen capacity</span></h3><p>Set your kitchen’s capacity. That’s how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
+            <div className="does-item"><h3><TileIcon icon={Clock} /><span>Customers choose collection times</span></h3><p>Customers order ahead and pick a collection time. Less queues, and food ready when they arrive.</p></div>
+            <div className="does-item"><h3><TileIcon icon={Gauge} /><span>Set your kitchen capacity</span></h3><p>Set how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
             <div className="does-item"><h3><TileIcon icon={MonitorSmartphone} /><span>Works on any device</span></h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
             {/* ══ 🔴 REPLACED "Never type your schedule twice" — 6 October 2026, ON REQUEST ═══════════
                 Same position in the grid, same `does-item` markup and styling as the other five, which
