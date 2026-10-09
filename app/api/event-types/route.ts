@@ -41,6 +41,10 @@ import { readTypesForTruck, countUpcomingByType, usualTypeForPlace } from '@/lib
 import {
   readTypePricingForTruck, readEventPricing, loadPricingItems,
 } from '@/lib/event-pricing/read'
+/* 🔴 THE "Set each price myself" LOCK-IN. The DECISION and the ARITHMETIC are in their own module so
+ * `scripts/event-pricing.cjs` can put real numbers through the real code with no database at all; the
+ * reads and the write stay here. See the block in `set_type_pricing`. */
+import { shouldLockIn, lockedInPrices, oldSetupOf } from '@/lib/event-pricing/lock-in'
 /* ⚠️ `priceAtEvent` IS NOW IMPORTED, AND THE OLD NOTE HERE IS SUPERSEDED (5 October 2026). It read
  * "NO priceForItem HERE, DELIBERATELY — the SCREENS compute". That was right while the only screen
  * computing prices was the Event types grid, which already holds the whole setup. It is WRONG for the
@@ -1069,12 +1073,82 @@ export async function POST(req: NextRequest) {
      * be the operator losing their work every time they charged menu prices for a weekend. */
     if ('price_change_on' in body) patch.price_change_on = body.price_change_on === true
     if (Object.keys(patch).length === 0) return NextResponse.json({ ok: true })
+
+    /* ══ 🔴 "SET EACH PRICE MYSELF" FREEZES WHAT WAS ALREADY BEING CHARGED ═══════════════════════
+     *
+     * **DOMINIC'S RULE:** *"when an event type is switched to 'Set each price myself', every item
+     * keeps exactly the price it had just before the switch, under the old rule including its
+     * rounding. A price only changes when the operator edits that item."*
+     *
+     * ⛔ **WITHOUT THIS, CLEARING THE ROUNDING WOULD MOVE EVERY PRICE.** `applyPriceRule` applies a
+     * stored rounding whatever the mode, so a type on "+10%, nearest £1" switched to `'none'` went on
+     * rounding every untyped item to the pound — with the control hidden on both screens, because
+     * rounding is not one of `PRICE_MODES_WITH_AMOUNT`. Taking the rounding away on its own would
+     * drop a £14.00 item to £12.50 on a settings save. See docs/phone-fixes-2-report.md §2.4.
+     *
+     * 🔴 **SO THE PRICES ARE WRITTEN DOWN FIRST, THEN THE RULE IS TAKEN AWAY — IN THAT ORDER, IN THIS
+     * ONE SAVE.** `shouldLockIn` decides (and is unit-measured in scripts/event-pricing.cjs);
+     * `lockedInPrices` computes each untyped item's price with the SAME `applyPriceRule` the customer's
+     * menu and the order submit charge with, under the OLD mode, amount and rounding.
+     * ⚠️ IT ALSO COVERS §2 OF THE BRIEF — a type ALREADY sitting in `'none'` with a stale rounding is
+     * locked in the next time it is saved. No migration, no backfill, and nothing changes for a type
+     * nobody saves. */
+    const current = await readTypePricingForTruck(supabase, truck.id)
+    const row = current.byTypeId.get(id)
+    /* ⛔ A FAILED READ MUST NOT SILENTLY SKIP THE LOCK-IN. `ok: false` means the rows could not be
+     * read, so whether this save would move a price is unknown — and writing the patch anyway is
+     * exactly the silent price change this exists to prevent. */
+    if (!current.ok || !row) {
+      return NextResponse.json({ error: 'Could not read this type\u2019s prices; nothing was saved' }, { status: 400 })
+    }
+    const wasOn = row.price_change_on === true
+    const lockIn = shouldLockIn({
+      wasOn,
+      willBeOn: 'price_change_on' in patch ? patch.price_change_on === true : wasOn,
+      oldMode: row.price_mode,
+      oldRounding: row.price_rounding,
+      newMode: 'price_mode' in patch ? String(patch.price_mode) : row.price_mode,
+    })
+    if (lockIn) {
+      const { ok, items } = await loadPricingItems(supabase, truck.id)
+      if (!ok) {
+        return NextResponse.json({ error: 'Could not read the menu; nothing was saved' }, { status: 400 })
+      }
+      const freeze = lockedInPrices(
+        items,
+        oldSetupOf(row.price_mode, row.price_amount, row.price_rounding),
+        current.typedByTypeId.get(id) ?? {},
+      )
+      if (freeze.length) {
+        /* ⚠️ `ignoreDuplicates` IS THE "items that already have a typed price keep it" RULE, enforced
+         * by the database rather than only by the read above — two saves racing must not let one
+         * overwrite the operator's own number with a recomputed one. ⛔ THE SAME NON-PARTIAL UNIQUE
+         * `set_type_item_price` upserts on; see its note for why it cannot be a partial index. */
+        const { error: freezeErr } = await supabase.from('event_item_prices').upsert(
+          freeze.map(f => ({
+            truck_id: truck.id, event_type_id: id, event_id: null, item_id: f.itemId,
+            price: f.price, updated_at: new Date().toISOString(),
+          })),
+          { onConflict: 'event_type_id,item_id', ignoreDuplicates: true },
+        )
+        /* ⛔ AND IF THE FREEZE FAILS, THE SETTINGS ARE NOT SAVED. Writing the patch anyway would clear
+         * the rounding with no prices written down — the one outcome worse than either half. */
+        if (freezeErr) return NextResponse.json({ error: freezeErr.message }, { status: 400 })
+      }
+      /* 🔴 ONLY NOW IS THE RULE TAKEN AWAY. The amount is cleared and the rounding set to 'none', so
+       * the stale rounding stops applying — which is safe precisely because every price it was
+       * affecting has just been written down. ⚠️ THESE OVERRIDE WHATEVER THE BODY SENT: a client
+       * cannot ask to keep a rounding that nothing on either screen can show. */
+      patch.price_amount = null
+      patch.price_rounding = 'none'
+    }
+
     patch.updated_at = new Date().toISOString()
 
     const { error } = await supabase
       .from('event_types').update(patch).eq('id', id).eq('truck_id', truck.id)
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-    return NextResponse.json({ ok: true })
+    return NextResponse.json({ ok: true, lockedIn: lockIn })
   }
 
   // ── A TYPE'S TYPED PRICE FOR ONE ITEM: set, or clear back to the rule ────────────────────────

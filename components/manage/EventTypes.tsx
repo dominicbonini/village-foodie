@@ -2310,8 +2310,13 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
               {/* ⚠️ THE OVERRIDE COUNT, IN PLAIN WORDS AND ONLY WHEN THERE IS ONE. It was
                 * `"2 set by hand"` — jargon for the mechanism, where what an operator wants to know is
                 * that two dishes are not following the rule. ⛔ HIDDEN AT ZERO: "0 items have their own
-                * price" is a sentence about nothing, and no overrides is the normal state. */}
-              {ownPrices > 0 && (
+                * price" is a sentence about nothing, and no overrides is the normal state.
+                * ⛔ **AND HIDDEN ENTIRELY IN "Set each price myself"**, where it says nothing at all:
+                * every item in that mode has its own price — the save writes one for each of them, so
+                * the line would read "30 items have their own price" under a heading that already
+                * says "Set the price of each item". ⚠️ IT IS A COUNT OF ITEMS **DEPARTING FROM A
+                * RULE**, so a screen with no rule has nothing for it to count. */}
+              {!setEach && ownPrices > 0 && (
                 <p className="pl-4 pb-1 text-[11px] text-slate-400" data-phone-own-count>
                   {ownPriceCount(ownPrices)}
                 </p>

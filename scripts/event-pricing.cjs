@@ -59,7 +59,7 @@ const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*
  * precedence, the copy-on-choose boundary and the fail-open. A harness that compiled it and never ran
  * it would be proving things about `price.ts` alone, which is the easy half. */
 const LIB = [
-  'lib/event-pricing/price.ts', 'lib/event-pricing/read.ts',
+  'lib/event-pricing/price.ts', 'lib/event-pricing/read.ts', 'lib/event-pricing/lock-in.ts',
   'lib/order-repricing.ts', 'lib/order-calculations.ts',
 ]
 
@@ -69,6 +69,7 @@ function build(root, files, tag) {
   return {
     price: (() => { try { return c.req('lib/event-pricing/price.js') } catch { return null } })(),
     read: (() => { try { return c.req('lib/event-pricing/read.js') } catch { return null } })(),
+    lock: (() => { try { return c.req('lib/event-pricing/lock-in.js') } catch { return null } })(),
     repricing: c.req('lib/order-repricing.js'),
     calc: c.req('lib/order-calculations.js'),
   }
@@ -76,6 +77,7 @@ function build(root, files, tag) {
 const NOW = build(REPO, LIB, 'ep-now')
 const P = NOW.price
 const R = NOW.read
+const LK = NOW.lock
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE STUB CLIENT
@@ -985,6 +987,127 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     for (const [k, files] of [...byTable.entries()].sort()) {
       console.log(`        • ${k} — ${[...new Set(files)].join(', ')}`)
     }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════════════════════════
+  // 7c · 🔴 "SET EACH PRICE MYSELF" FREEZES WHAT WAS ALREADY BEING CHARGED
+  // ════════════════════════════════════════════════════════════════════════════════════════════════
+  /**
+   * **DOMINIC'S RULE:** *"when an event type is switched to 'Set each price myself', every item keeps
+   * exactly the price it had just before the switch, under the old rule including its rounding. A
+   * price only changes when the operator edits that item."*
+   *
+   * ⛔ WHAT MAKES THIS A MONEY CHECK RATHER THAN A SETTINGS ONE: the stored rounding was applying to
+   * every untyped item in `'none'` mode with the control hidden on both screens, so simply clearing it
+   * would have dropped a £14.00 item to £12.50 on a settings save. The lock-in writes the prices down
+   * first. ⚠️ THE NUMBERS BELOW ARE THE BRIEF'S OWN.
+   */
+  head('7c · "Set each price myself" keeps the prices that were being charged')
+  if (!LK || !P) {
+    t('🔴 the lock-in module compiles', false)
+  } else {
+    const ITEMS = [
+      { id: 'marg', name: 'Margherita', pricePence: 1250, categoryId: null },
+      { id: 'pepp', name: 'Pepperoni', pricePence: 1100, categoryId: null },
+    ]
+    const OLD = LK.oldSetupOf('add_pct', 10, 'nearest_1')
+
+    /* 🔴 THE BRIEF'S FIRST NUMBER. "+10%, nearest £1" on £12.50 is 1375 to the penny and £14 to the
+     * pound — so the price the customer is being charged before the switch is £14.00. */
+    t(`🔴 "+10%, nearest £1" charges £14.00 for a £12.50 item (${J(P.applyPriceRule(1250, OLD))}p)`,
+      P.applyPriceRule(1250, OLD) === 1400)
+
+    /* ⛔ THE DECISION. Switching this type to 'none' must lock in; the three ways it must NOT. */
+    const ask = (o) => LK.shouldLockIn({ wasOn: true, willBeOn: true, oldMode: 'add_pct', oldRounding: 'nearest_1', newMode: 'none', ...o })
+    t('🔴 a switch from a rule TO "Set each price myself" locks the prices in', ask({}) === true)
+    t('⛔ …switching OUT of it does not, or the new rule would be dead on arrival (every item typed)',
+      ask({ oldMode: 'none', oldRounding: 'none', newMode: 'add_pct' }) === false)
+    t('⛔ …a type that is OFF does not, because it was charging menu prices anyway',
+      ask({ wasOn: false }) === false)
+    t('⛔ …and being turned OFF does not either', ask({ willBeOn: false }) === false)
+    /* 🔴 §2 OF THE BRIEF: a type ALREADY in 'none' with a stale rounding is locked in the next time it
+     * is saved — no migration, no backfill. */
+    t('🔴 a type already in "none" with a stored rounding locks in on its NEXT save',
+      ask({ oldMode: 'none', oldRounding: 'nearest_1', newMode: 'none' }) === true)
+    /* ⚠️ AND IT SETTLES. After one lock-in the type is 'none' with rounding 'none', which moves no
+     * price — so no later save locks in again, which is what lets §3's new items keep following the
+     * menu price instead of being frozen by the next save of an unrelated setting. */
+    t('⚠️ …and once locked in, a later save does NOT lock in again (it has settled)',
+      ask({ oldMode: 'none', oldRounding: 'none', newMode: 'none' }) === false)
+
+    /* 🔴 THE PRICES WRITTEN DOWN. £12.50 → £14.00; a typed £11.00 is left exactly as it is. */
+    const frozen = LK.lockedInPrices(ITEMS, OLD, { pepp: 11 })
+    t(`🔴 the untyped item is written down at the £14.00 it was charging (${J(frozen)})`,
+      frozen.length === 1 && frozen[0].itemId === 'marg' && frozen[0].price === 14)
+    t('⛔ …and the item that already had its own £11.00 is NOT touched',
+      !frozen.some(f => f.itemId === 'pepp'))
+
+    /* 🔴 THE WHOLE POINT, END TO END: what the customer is charged before and after, to the penny. */
+    const NEW = { mode: 'none', amount: null, rounding: 'none', typed: { marg: 14, pepp: 11 } }
+    t(`🔴 AFTER THE SWITCH THE £12.50 ITEM IS STILL £14.00 (${P.priceForItem(1250, NEW, 'marg')}p) — and it is now a typed price`,
+      P.priceForItem(1250, NEW, 'marg') === 1400)
+    t(`🔴 …and the typed £11.00 item is still £11.00 (${P.priceForItem(1100, NEW, 'pepp')}p)`,
+      P.priceForItem(1100, NEW, 'pepp') === 1100)
+
+    /* ⚠️ EDITING ONE ITEM CHANGES ONLY THAT ITEM — the second half of Dominic's rule. */
+    const EDITED = { ...NEW, typed: { ...NEW.typed, marg: 13.5 } }
+    t('⚠️ editing one item changes only that item (£14.00 → £13.50, Pepperoni untouched at £11.00)',
+      P.priceForItem(1250, EDITED, 'marg') === 1350 && P.priceForItem(1100, EDITED, 'pepp') === 1100)
+
+    /* 🔴 §3 · AN ITEM ADDED AFTER THE SWITCH has no typed price, and the rounding is gone, so it
+     * charges its menu price. ⛔ THIS IS WHY THE "has it settled" CLAUSE ABOVE MATTERS: a lock-in that
+     * ran on every save would freeze this dish at its menu price the next time anything was saved. */
+    t(`🔴 a dish added AFTER the switch charges its menu price (£9.99 → ${P.priceForItem(999, NEW, 'newdish')}p)`,
+      P.priceForItem(999, NEW, 'newdish') === 999)
+
+    /* 🔴 §2 · AND A TYPE ALREADY IN 'none' WITH A STORED ROUNDING CHARGES WHAT IT CHARGES TODAY until
+     * it is saved. ⛔ THE ARITHMETIC IS DELIBERATELY UNCHANGED, which is what this asserts: £12.50 with
+     * rounding 'nearest_1' and no rule is still £13.00 today. */
+    const STALE = { mode: 'none', amount: null, rounding: 'nearest_1', typed: {} }
+    t(`🔴 an un-saved type already in "none" with a rounding still rounds, exactly as today (£12.50 → ${P.priceForItem(1250, STALE, 'marg')}p)`,
+      P.priceForItem(1250, STALE, 'marg') === 1300)
+    /* ⚠️ …AND AFTER ITS NEXT SAVE IT IS UNCHANGED: the lock-in writes £13.00 down, then the rounding
+     * goes, and £13.00 is what it goes on charging. */
+    const staleFrozen = LK.lockedInPrices(ITEMS, LK.oldSetupOf('none', null, 'nearest_1'), {})
+    const SETTLED = { mode: 'none', amount: null, rounding: 'none', typed: Object.fromEntries(staleFrozen.map(x => [x.itemId, x.price])) }
+    t(`⚠️ …and after that save it charges the SAME £13.00 (${P.priceForItem(1250, SETTLED, 'marg')}p)`,
+      P.priceForItem(1250, SETTLED, 'marg') === 1300)
+
+    /* ══ ⛔ THE CONTROL — THE LOCK-IN IS SKIPPED AND THE DROP IS CAUGHT ═══════════════════════════
+     * 🔴 THIS IS THE FAULT THE WHOLE SECTION EXISTS TO PREVENT, reproduced: the rounding is cleared
+     * with no prices written down, and the £14.00 item falls to £12.50. ⚠️ MEASURED, NOT ARGUED — a
+     * check that only asserted the good path would pass just as happily against a lock-in that never
+     * ran. */
+    const SKIPPED = { mode: 'none', amount: null, rounding: 'none', typed: {} }
+    const dropped = P.priceForItem(1250, SKIPPED, 'marg')
+    t(`⛔ CONTROL: with the lock-in skipped the £14.00 item drops to £${(dropped / 100).toFixed(2)} — so "prices are kept" is a measurement`,
+      dropped === 1250)
+
+    /* ══ 🔴 AND THE ROUTE DOES IT IN THE RIGHT ORDER ═════════════════════════════════════════════
+     * ⛔ THE ORDER IS THE LOAD-BEARING PART AND NO UNIT CHECK ABOVE CAN SEE IT: the prices must be
+     * written BEFORE the patch clears the rounding, in the same save. Clearing first and failing on
+     * the freeze would leave a type with no rule and no prices — the one outcome worse than either
+     * half. ⚠️ SO THIS READS THE ROUTE'S OWN TEXT for the sequence, with the comments stripped. */
+    const route = codeOf(fs.readFileSync(path.join(REPO, 'app/api/event-types/route.ts'), 'utf8'))
+    const iDecide = route.indexOf('shouldLockIn({')
+    const iFreeze = route.indexOf('lockedInPrices(')
+    const iWrite = route.indexOf("patch.price_rounding = 'none'")
+    /* ⚠️ SEARCHED **FROM** THE CLEAR, NOT FROM THE TOP OF THE FILE. The service-settings save earlier
+     * in this route also updates `event_types` with a local called `patch`, so a bare `indexOf` finds
+     * that one and the ordering reads as violated on correct code — which is what it did. The claim is
+     * about THIS save's update, and that is the one after the clear. */
+    const iUpdate = iWrite < 0 ? -1 : route.indexOf(".from('event_types').update(patch)", iWrite)
+    t('🔴 the route decides, freezes, THEN clears the rounding, and only then writes the patch',
+      iDecide > 0 && iFreeze > iDecide && iWrite > iFreeze && iUpdate > iWrite)
+    /* ⛔ AND A FAILED FREEZE STOPS THE SAVE. Without this the rounding would be cleared anyway. */
+    t('⛔ …and if the freeze fails, nothing is saved',
+      /if \(freezeErr\) return NextResponse\.json\(\{ error: freezeErr\.message \}, \{ status: 400 \}\)/.test(route))
+    /* ⚠️ THE CLIENT CANNOT ASK TO KEEP THE ROUNDING: the patch's values are overridden, not defaulted. */
+    t('⚠️ …and the amount and rounding are OVERRIDDEN, not merely defaulted',
+      /patch\.price_amount = null/.test(route) && /patch\.price_rounding = 'none'/.test(route))
+    /* 🔴 THE FREEZE IS AN INSERT-IF-ABSENT, so a race cannot overwrite the operator's own number. */
+    t('🔴 …and an item that already has its own price is protected by the DATABASE too (ignoreDuplicates)',
+      /ignoreDuplicates: true/.test(route))
   }
 
   // ════════════════════════════════════════════════════════════════════════════════════════════════
