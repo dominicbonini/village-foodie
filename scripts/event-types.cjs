@@ -2254,8 +2254,15 @@ head('5b · THE MODAL AND THE CARD')
     return /data-price-edit-open/.test(page) && /\{EVENT_PRICE_EDIT\}/.test(page)
       && /data-price-edit-actions/.test(page)
       && /\{EVENT_PRICE_CANCEL\}/.test(page) && /EVENT_PRICE_SAVE/.test(page)
-      /* ⚠️ THE PHONE RULE: full width under the title below `sm`, top-right from `sm` up. */
-      && /className="w-full sm:w-auto bg-slate-100/.test(page)
+      /* ══ ⚠️ THE RULE CHANGED ON 10 OCTOBER AND SO DID THIS LINE ════════════════════════════════
+       * It read `w-full sm:w-auto bg-slate-100` — full width under the title below `sm`, top-right
+       * from `sm` up. Dominic saw that full-width grey bar on the device: a solid bar the width of
+       * the card reads as the card's primary action, and the primary action here is the stock
+       * controls below it. ⛔ IT IS COMPACT AND OUTLINED NOW, ON THE TITLE ROW AT EVERY WIDTH, and
+       * `scripts/event-types-render.cjs` measures that it really lands there (100px of a 324px row
+       * at 390, tops level). ⚠️ `shrink-0` IS THE LOAD-BEARING HALF of the class: without it the
+       * button would be squeezed by a long title rather than keeping its own width. */
+      && /className="shrink-0 border border-slate-300 bg-white/.test(page)
       /* ⚠️ AND IT IS DISABLED UNTIL 20261011 IS APPLIED — an editor whose save would 400. */
       && /disabled=\{!priceReady\|\|!activeEvent\}/.test(page)
   })())
@@ -2430,6 +2437,17 @@ head('5b · THE MODAL AND THE CARD')
       /^<span className="w-12 shrink-0 flex justify-center"><Toggle on=\{isAvailable\} disabled=\{catClosed\} onToggle=\{\(\)=>updateStock\(item\.name,!isAvailable,stock\?\.stock_count\?\?null,cat,!!stock\?\.no_item_cap\)\}\/><\/span>$/,
       /^<input type="number" inputMode="numeric" min="0" placeholder="∞"$/,
       /^<span className="w-12 shrink-0 flex justify-center"><Toggle on=\{catStock\?\.available\?\?true\} onToggle=\{\(\)=>updateCategoryAvailable\(cat,!\(catStock\?\.available\?\?true\)\)\}\/><\/span>$/,
+      /* ══ 🔴 ④ TWO COLUMN HEADINGS WERE SHORTENED (Dominic, 10 October 2026) ══════════════════════
+       * "ITEM LIMIT" is 10 characters in a 64px column and "AVAILABLE" is 9 in a 48px one, at 10px
+       * black uppercase with `tracking-wide` — measured at 390, both overflowed their column and ran
+       * into the neighbour, which is how a heading comes to sit over the wrong control without
+       * looking broken. ⛔ THE COLUMN WIDTHS DID NOT MOVE: `w-16`/`w-12` are the ROW cells' widths
+       * too, so changing them would have moved every control under them. The WORDS changed.
+       * ⚠️ THE FULL WORDS SURVIVE WHERE THEY ARE HEARD — every limit input and every switch keeps its
+       * own `aria-label`, so a screen reader still says "Available", not "On". The companion check
+       * below asserts the two new headings are really there. */
+      /^<span className="w-16 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">Item limit<\/span>$/,
+      /^<span className="w-12 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">Available<\/span>$/,
     ]
     /* 🔴 THE COMPANION CHECK FOR THE ONE ACCOUNTED EDIT. An entry on that list excuses a lost line
      * only while its replacement exists; without this, deleting the call outright would read as
@@ -2455,6 +2473,13 @@ head('5b · THE MODAL AND THE CARD')
         && /<p className=\{`font-bold text-sm \$\{!isAvailable\?'text-red-500':'text-slate-800'\}`\}>\{item\.name\}<\/p>/.test(nowPage)
         && !/\{item\.name\}<span className="text-slate-600 font-normal ml-1\.5">/.test(nowPage)
         && /\{EVENT_PRICE_COLUMN_LABEL\}/.test(nowPage)
+        /* ④ THE TWO SHORTENED HEADINGS, IN THEIR OWN COLUMNS' WIDTHS. ⛔ WITHOUT THIS, DELETING BOTH
+         * HEADINGS OUTRIGHT WOULD READ AS "explained" — the whole point of the companion check. */
+        && /<span className="w-16 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">Limit<\/span>/.test(nowPage)
+        && /<span className="w-12 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">On<\/span>/.test(nowPage)
+        /* ⚠️ AND THE LONG WORDS ARE STILL WHAT A SCREEN READER HEARS. */
+        && /ariaLabel=\{`Available — \$\{item\.name\}`\}/.test(nowPage)
+        && /aria-label=\{`Item limit — \$\{item\.name\}`\}/.test(nowPage)
     })())
     const unexplained = gone.filter(l => !ALLOWED.some(re => re.test(l)))
     if (unexplained.length) {

@@ -139,6 +139,9 @@ import {
    * what dropping a file does, and "Nothing yet" was the empty tile's text — the empty box says "Drop a
    * picture here" instead, which is an instruction rather than a status. Both stay exported. */
   SLOT_UPLOAD, SLOT_REMOVE, slotRemoveConfirm,
+  /* ⚠️ §3 · THE PHONE SCREEN'S OWN LINES AND ITS BACK LINK — see their notes in the copy module for
+   * why the cards do not reuse the desktop blurbs. */
+  PHONE_PIC_EVENT_LINE, PHONE_PIC_WEEKLY_LINE, PHONE_PIC_POSTER_LINE, PHONE_ALL_LOCATIONS,
 } from '@/lib/copy/socialPosts'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -1883,6 +1886,89 @@ function PictureBox({ title, blurb, slotKey, image, busy, onUpload, onRemove, bo
   )
 }
 
+/**
+ * ══ 🔴 §3 · ONE LOCATION PICTURE, AS A COMPACT CARD FOR A PHONE (10 October 2026) ════════════════
+ *
+ * ⛔ **IT IS NOT A NARROWER `PictureBox`, AND IT SHOULD NOT BE.** That component is three equal boxes
+ * side by side with a 132px preview each, and the thing that makes it work — a flex column whose
+ * description absorbs the slack so the previews line up — has nothing to line up with when there is
+ * one card per row. ⚠️ THE BRIEF ASKED FOR A DIFFERENT SHAPE, not a smaller one: *"a 72px thumbnail (or
+ * a dashed empty square), title, one grey line, and a 'Remove' or 'Upload' button."*
+ *
+ * 🔴 **BOTH VARIANTS ARE RENDERED AND CSS CHOOSES, WHICH IS WHY THE INPUT ID IS PREFIXED.** The phone
+ * cards and the desktop boxes are both in the tree, shown and hidden by `md:` classes — no media-query
+ * hook, no hydration mismatch and no frame of the wrong layout. ⛔ BUT TWO `<label htmlFor>` PAIRS WITH
+ * THE SAME id WOULD BOTH BIND TO THE FIRST INPUT, so a tap on the phone card's Upload would open the
+ * desktop box's file picker. The prefix is what keeps them apart, and it is why `slotKey` is not
+ * enough on its own.
+ */
+function PhonePictureCard({ title, line, slotKey, image, busy, onUpload, onRemove, borrow }: {
+  title: string
+  /** The one grey line. ⚠️ Not the desktop blurb — see `PHONE_PIC_EVENT_LINE` and its note. */
+  line: string
+  slotKey: string
+  image: SlotImage | null
+  busy: boolean
+  onUpload: (file: File) => void
+  onRemove: () => void
+  /** "Use the … picture", or null. ⚠️ Only ever offered on an EMPTY card — see the desktop box. */
+  borrow: { label: string; onClick: () => void } | null
+}) {
+  const inputId = `pic-phone-${slotKey}`
+  return (
+    <div data-phone-pic-card={slotKey}
+      className="flex min-w-0 items-start gap-3 rounded-xl border border-slate-200 bg-white p-3">
+      {/* ══ 🔴 72px, FIXED, AND `shrink-0` ══════════════════════════════════════════════════════════
+        * ⚠️ `object-contain` LIKE THE DESKTOP PREVIEW, not `object-cover`: a wide logo shown as its
+        * middle third is the bug the desktop box fixed, and a smaller thumbnail is no reason to
+        * reintroduce it. ⛔ AN EMPTY ONE IS A DASHED SQUARE — the brief's own word — which says "a
+        * picture goes here" without a sentence. */}
+      <div data-phone-thumb
+        className={`flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg ${image
+          ? 'border border-slate-200 bg-slate-50'
+          : 'border-2 border-dashed border-slate-300 bg-slate-50'}`}>
+        {image?.url && (
+          /* eslint-disable-next-line @next/next/no-img-element -- a signed, expiring Supabase URL. */
+          <img src={image.url} alt="" className="h-full w-full object-contain" />
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-bold leading-tight text-slate-900">{title}</p>
+        {/* ⚠️ ONE LINE, AND IT IS ALLOWED TO WRAP. `line-clamp-2` rather than `truncate`: these lines
+          * are 36–43 characters and wrap to two at 390px, and a cut-off description tells the operator
+          * less than a wrapped one. The CARD's height follows it, which is fine — these are stacked. */}
+        <p className="mt-0.5 text-[11px] leading-snug text-slate-500 line-clamp-2">{line}</p>
+        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+          {image ? (
+            <button type="button" disabled={busy} onClick={onRemove} data-phone-remove
+              className="shrink-0 rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 disabled:opacity-50">
+              {SLOT_REMOVE}
+            </button>
+          ) : (
+            <label htmlFor={inputId} data-phone-upload
+              className={`inline-flex shrink-0 cursor-pointer items-center rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 ${busy ? 'pointer-events-none opacity-50' : ''}`}>
+              {SLOT_UPLOAD}
+            </label>
+          )}
+          {/* ⚠️ THE BORROW LINK STAYS ON THE EMPTY CARD — the brief says so, and it is the other way to
+            * fill this one. ⛔ IT IS BESIDE Upload RATHER THAN UNDER IT: a 72px card has no room for a
+            * third row, and `flex-wrap` lets it drop to its own line when the words are long. */}
+          {borrow && (
+            <button type="button" disabled={busy} onClick={borrow.onClick} data-phone-borrow
+              className="text-[11px] font-semibold text-slate-600 underline hover:no-underline disabled:text-slate-300">
+              {borrow.label}
+            </button>
+          )}
+        </div>
+      </div>
+      {/* ⚠️ THE INPUT IS OUTSIDE THE CONDITIONAL so `htmlFor` always has a target, and `hidden` so it
+        * takes no space. ⛔ ITS id CARRIES THE `pic-phone-` PREFIX — see this component's note. */}
+      <input id={inputId} type="file" accept="image/png,image/jpeg" className="hidden" disabled={busy}
+        onChange={e => { const f = e.target.files?.[0]; if (f) onUpload(f); e.currentTarget.value = '' }} />
+    </div>
+  )
+}
+
 function SocialTagField({ initial, busy, onSave }: {
   initial: string
   busy: boolean
@@ -1961,6 +2047,52 @@ function LocationsArea({
   }, [filter, search, hidden, missing, visible])
 
   const selected = places.find(p => p.id === selectedId) ?? null
+
+  /* ══ 🔴 §3 · OPENING A LOCATION ON A PHONE IS A **HISTORY ENTRY** (10 October 2026) ═══════════════
+   *
+   * ⛔ THE BRIEF: *"the phone back gesture or the browser back button returns to the list."* On a phone
+   * the detail is a SCREEN, and a screen you cannot leave with the gesture every other screen answers
+   * is a trap — the operator's next move after the back swipe does nothing would be to leave Manage
+   * altogether.
+   * 🔴 `pushState` ON OPEN, `popstate` CLEARS THE SELECTION. One entry per open, never two: `closeLocation`
+   * calls `history.back()` rather than clearing the state itself, so the link and the gesture leave the
+   * history in exactly the same place. ⛔ CLEARING THE STATE **AND** PUSHING WOULD STRAND AN ENTRY, and
+   * the operator's second back press would appear to do nothing.
+   *
+   * ⚠️ **THE MEDIA QUERY IS READ AT THE MOMENT OF THE TAP, NOT AT RENDER.** That is what keeps this out
+   * of the hydration problem entirely: it is an event handler, so there is no server render to
+   * disagree with. ⛔ AND ON A DESKTOP NOTHING IS PUSHED — the list is beside the pane, so back
+   * belongs to the page, not to this card.
+   * ⚠️ `onPopState` IS REGISTERED UNCONDITIONALLY and only ever CLEARS. If a phone is rotated to
+   * landscape past 768px while a location is open, the pane simply becomes the right-hand pane and a
+   * stray back press clears the selection — which is what the desktop "pick a location" state is.
+   */
+  const phoneNow = () =>
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      && window.matchMedia('(max-width: 767px)').matches
+
+  const openLocation = (id: string) => {
+    setSelectedId(id)
+    setMsg(null)
+    if (phoneNow()) {
+      try { window.history.pushState({ hgLocation: id }, '') } catch { /* no history ⇒ the link still works */ }
+    }
+  }
+  const closeLocation = () => {
+    /* ⚠️ IF THERE IS AN ENTRY TO POP, POP IT — the `popstate` handler is what clears the selection, so
+     * the two paths end in one place. Otherwise (desktop, or a browser that refused the push) clear it
+     * directly, because nothing is going to call back. */
+    if (phoneNow() && window.history.state && (window.history.state as { hgLocation?: string }).hgLocation) {
+      window.history.back()
+      return
+    }
+    setSelectedId(null)
+  }
+  useEffect(() => {
+    const onPop = () => setSelectedId(null)
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
 
   const api = async (action: string, extra: Record<string, unknown>) => {
     const r = await fetch('/api/weekly-post', {
@@ -2062,10 +2194,27 @@ function LocationsArea({
      * height. */
     <div className="grid grid-cols-1 items-start gap-3 min-[900px]:grid-cols-[minmax(280px,1fr)_minmax(0,2.6fr)]"
       data-locations-area>
+      {/* ══ 🔴 §3 (10 October 2026) · BELOW 768px THIS IS **TWO SCREENS**, NOT TWO PANES ═════════════
+        *
+        * ⛔ **DOMINIC, ON AN iPHONE.** Stacked, the pane sat under a sixty-row table: choosing a
+        * location scrolled the three picture boxes off the bottom of the screen, so the operator tapped
+        * a row and nothing appeared to happen.
+        * 🔴 THE SWITCH IS **PURE CSS**, and that is deliberate. `selectedId` already exists, so "which
+        * screen" is `selectedId ? detail : list` — expressed as `hidden`/`md:block` rather than through
+        * a media-query hook. ⚠️ A HOOK WOULD MEAN GUESSING ON THE SERVER: the first render would be
+        * desktop, and a phone would paint the wrong layout for a frame and risk a hydration mismatch.
+        * ⚠️ 768px IS THE BRIEF'S BREAKPOINT — `md:` — AND IT IS NOT 900. The two-PANE grid still starts
+        * at 900, untouched, so 768–899 keeps the stacked arrangement it has today, which is what *"tablet
+        * (768px and up) stay exactly as they are"* asks for. ⛔ THE TWO NUMBERS ARE DIFFERENT ON PURPOSE
+        * and this is the note that stops them being "tidied" into one. */}
       {/* ── LEFT · THE TABLE ──────────────────────────────────────────────────────────────────── */}
       {/* ⚠️ "Locations", AND THE CARD CARRIES NO DESCRIPTION. The PILL and the page heading say
         * "Location settings"; the page description directly above already says what the screen is for,
         * and repeating it inside the card would be the same sentence twice on one screen. */}
+      {/* ⚠️ THE LIST IS HIDDEN ON A PHONE **ONLY WHILE A LOCATION IS OPEN**, and always visible from
+        * 768px up. ⛔ `md:block` IS WHAT MAKES THE SECOND HALF TRUE — without it the desktop pane would
+        * lose its table the moment a row was clicked. */}
+      <div className={selectedId ? 'hidden md:block' : 'block'} data-loc-list-screen>
       <Box title={LOCATIONS_CARD_TITLE}>
         {gate(
           <>
@@ -2100,11 +2249,25 @@ function LocationsArea({
                     <th className="w-[44px] py-1 text-center">{COL_EVENT}</th>
                     <th className="w-[44px] py-1 text-center">{COL_WEEKLY}</th>
                     <th className="w-[44px] py-1 text-center">{COL_POSTER}</th>
+                    {/* ══ 🔴 §3 · A `›` COLUMN, ON A PHONE ONLY ════════════════════════════════════
+                      * ⚠️ `md:hidden` ON BOTH THE HEADER AND THE CELL, so from 768px up the column is
+                      * not there at all and the table is the four columns it has always been — which
+                      * is what *"desktop and tablet stay exactly as they are"* means for this table.
+                      * ⛔ IT SAYS "this row goes somewhere", which on a phone it now does: the row
+                      * opens its own screen. Beside a pane it would be pointing at something already
+                      * on display. ⚠️ THE HEADER IS EMPTY AND THAT IS RIGHT — a column of chevrons has
+                      * no name, and `aria-hidden` keeps it out of the row's announcement. */}
+                    <th className="w-[20px] py-1 md:hidden" aria-hidden="true" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
+                  {/* ⚠️ `colSpan={5}` SINCE §3 — the phone's `›` column counts. A `colSpan` that lagged
+                    * the header would leave the empty-state line short of the table's width and pull a
+                    * hairline across it. ⛔ THE COMMENT IS **ABOVE** THE GUARD, not inside it: a
+                    * JSX comment node between `&& (` and the element is not an expression, and TS
+                    * reports it as a missing `)` fifteen lines further down. */}
                   {rows.length === 0 && (
-                    <tr><td colSpan={4} className="py-3 text-sm text-slate-400">
+                    <tr><td colSpan={5} className="py-3 text-sm text-slate-400">
                       {places.length === 0 ? LOCATIONS_NONE : LOCATIONS_NO_MATCH}
                     </td></tr>
                   )}
@@ -2112,7 +2275,7 @@ function LocationsArea({
                     /* ⚠️ THE **ROW** IS THE CONTROL. ⛔ `<tr onClick>` ALONE IS NOT KEYBOARD-REACHABLE,
                      * so the name cell holds a real `<button>` and the row's click is a convenience. */
                     <tr key={pl.id} data-loc-row
-                      onClick={() => { setSelectedId(pl.id); setMsg(null) }}
+                      onClick={() => openLocation(pl.id)}
                       className={`cursor-pointer ${selectedId === pl.id ? 'bg-orange-50' : 'hover:bg-slate-50'}`}>
                       {/* ══ 🔴 THE NAME WRAPS TO TWO LINES INSTEAD OF BEING CUT OFF ════════════════════
                         * ⛔ IT WAS `truncate` AND `font-bold`, AND BOTH WERE WRONG HERE. "The Kings Arms
@@ -2142,6 +2305,8 @@ function LocationsArea({
                       <td className="py-1.5 align-top">{tick(pl.eventPhotoImage ?? null)}</td>
                       <td className="py-1.5 align-top">{tick(pl.weeklyImage ?? null)}</td>
                       <td className="py-1.5 align-top">{tick(pl.eventImage ?? null)}</td>
+                      <td className="py-1.5 pl-1 align-top text-right text-slate-300 md:hidden"
+                        aria-hidden="true" data-loc-chevron>›</td>
                     </tr>
                   ))}
                 </tbody>
@@ -2150,8 +2315,27 @@ function LocationsArea({
           </>,
         )}
       </Box>
+      </div>
 
       {/* ── RIGHT · THE SELECTED LOCATION ─────────────────────────────────────────────────────── */}
+      {/* ⚠️ ON A PHONE IT IS A SCREEN AND IT IS ONLY THERE WHEN SOMETHING IS OPEN; from 768px up it is
+        * the right-hand pane and is always there, showing "pick a location" when nothing is.
+        * ⚠️ `md:block` IS RIGHT AND `md:flex` WOULD BE WRONG: this div is only a wrapper, and the FLEX
+        * COLUMN is the `<Card>` inside it. Making the wrapper a flex container would put the Card in a
+        * row of one and leave the column's own `p-4` and gaps to it. ⛔ THE FIRST VERSION OF THIS NOTE
+        * SAID THE OPPOSITE of the code beside it, which is worse than no note at all. */}
+      <div className={selectedId ? 'block' : 'hidden md:block'} data-loc-detail-screen>
+      {/* ══ 🔴 §3 · "‹ All locations" — THE WAY BACK, ON A PHONE ONLY ═══════════════════════════════
+        * ⚠️ `md:hidden`: from 768px up the list is beside it, so a back link would be a button that
+        * leads to something already on screen. ⛔ IT ALSO POPS THE HISTORY ENTRY rather than merely
+        * clearing the state — see `openLocation` — so the link and the phone's own back gesture leave
+        * the history in the same place. */}
+      {selected && (
+        <button type="button" data-loc-back onClick={closeLocation}
+          className="mb-2 inline-flex items-center text-sm font-semibold text-slate-600 md:hidden">
+          {PHONE_ALL_LOCATIONS}
+        </button>
+      )}
       <Card className="flex min-w-0 flex-col p-4" data-loc-pane>
         {!selected ? (
           <p className="py-6 text-center text-sm text-slate-400">{LOCATIONS_PICK_ONE}</p>
@@ -2187,7 +2371,73 @@ function LocationsArea({
               * the previews and the Remove rows up. ⛔ `grid-rows-[auto_auto_auto_auto]` IS GONE: it
               * existed only for the boxes' `grid-rows-subgrid` to adopt, and the boxes no longer use it.
               * See the long note on `PictureBox` for why that mechanism was replaced. */}
-            <div className="mt-3 grid grid-cols-1 gap-3 min-[900px]:grid-cols-3"
+            {/* ══ 🔴 §3 · THE PHONE'S THREE COMPACT CARDS (10 October 2026) ═══════════════════════
+              * ⚠️ `md:hidden` — below 768px these replace the three boxes below, which are
+              * `hidden md:grid`. Both are in the tree and CSS chooses; see `PhonePictureCard` for why
+              * that is better than a media-query hook, and why its input ids carry a prefix.
+              * ⛔ THE ORDER IS THE BRIEF'S AND IT IS THE SAME AS THE DESKTOP BOXES' — event photo,
+              * weekly, poster — so the two layouts cannot teach an operator two different orders.
+              * ⚠️ THE BORROW LINKS ARE THE SAME TWO CONDITIONS, written once each here and once in the
+              * boxes. 🔴 THAT IS THE ONE DUPLICATION THIS SHAPE COSTS, and it is named rather than
+              * hidden: the condition — "this box is empty AND the other is full" — is three lines of
+              * JSX in each, and lifting it into a helper would mean a helper that returns a prop
+              * object, which is harder to read than the thing it replaces. */}
+            <div className="mt-3 space-y-2 md:hidden" data-loc-phone-cards>
+              <PhonePictureCard
+                title={EVENT_PIC_TITLE} line={PHONE_PIC_EVENT_LINE} slotKey="event-photo"
+                image={selected.eventPhotoImage ?? null} busy={busy}
+                onUpload={upload(selected.id, 'event-photo')}
+                onRemove={() => {
+                  if (!window.confirm(slotRemoveConfirm('picture'))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event-photo' }), 'Removed.')
+                }}
+                borrow={!selected.eventPhotoImage && selected.weeklyImage
+                  ? {
+                    label: USE_WEEKLY_PICTURE,
+                    onClick: () => void run(
+                      () => api('place_slot_use', {
+                        placeId: selected.id, slot: 'event-photo',
+                        pictureId: selected.weeklyImage?.id,
+                      }),
+                      'Event posts now use that picture too.'),
+                  }
+                  : null} />
+              <PhonePictureCard
+                title={WEEKLY_PIC_TITLE} line={PHONE_PIC_WEEKLY_LINE} slotKey="weekly"
+                image={selected.weeklyImage ?? null} busy={busy}
+                onUpload={upload(selected.id, 'weekly')}
+                onRemove={() => {
+                  if (!window.confirm(slotRemoveConfirm('picture'))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'weekly' }), 'Removed.')
+                }}
+                borrow={!selected.weeklyImage && selected.eventPhotoImage
+                  ? {
+                    label: USE_EVENT_PICTURE,
+                    onClick: () => void run(
+                      () => api('place_slot_use', {
+                        placeId: selected.id, slot: 'weekly',
+                        pictureId: selected.eventPhotoImage?.id,
+                      }),
+                      'Weekly posts now use that picture too.'),
+                  }
+                  : null} />
+              <PhonePictureCard
+                title={LOCATION_POSTER_TITLE} line={PHONE_PIC_POSTER_LINE} slotKey="event"
+                image={selected.eventImage ?? null} busy={busy}
+                onUpload={upload(selected.id, 'event')}
+                onRemove={() => {
+                  if (!window.confirm(slotRemoveConfirm('poster'))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event' }), 'Removed.')
+                }}
+                /* ⚠️ NO BORROW ON THE POSTER, for the reason the desktop box gives: a poster is held to
+                 * the standard design's shape to within 1%, so pointing it at a logo would be offering
+                 * an upload that is about to be refused. */
+                borrow={null} />
+            </div>
+
+            {/* ⚠️ `hidden md:grid` — the desktop boxes, unchanged from 768px up. ⛔ `md:grid` AND NOT
+              * `md:block`: this is a grid and `block` would stack the three boxes without the gap. */}
+            <div className="mt-3 hidden grid-cols-1 gap-3 md:grid min-[900px]:grid-cols-3"
               data-loc-boxes>
               {/* ══ 🔴 THE EVENT PICTURE IS FIRST (10 October 2026, Dominic) ═══════════════════════
                 * ⛔ WEEKLY LED "matching the table's column order", which was a reason about this
@@ -2283,6 +2533,7 @@ function LocationsArea({
           </>,
         )}
       </Card>
+      </div>
     </div>
   )
 }

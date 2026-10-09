@@ -748,6 +748,50 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    there is nothing left for it to do — and a rule that fills a navy button white would be the next
    person's puzzle. ⚠️ `.btn-ghost` ITSELF WAS NEVER CHANGED and still has its two "Try Free" users. */
 
+/* ══════════ 🔴 THE MOBILE ORDER OF THE PRICING SECTION — below 640px only ══════════════════════════
+   On a phone the three plan cards were the fourth thing down, under the heading, the fee paragraph and
+   an orange trial box. A reader who came to this section to see the prices had to scroll past all of it.
+   🔴 THE CARDS COME STRAIGHT AFTER THE HEADER NOW, and the trial box, the compare link, the switching
+   block and the small print follow them.
+
+   ⚠️ THE FEE PARAGRAPH STAYS WITH THE HEADING, which is where it has always been and where it was asked
+   to stay — it is part of the header block, not a separate step. So `.price-head` moves as ONE unit and
+   its box is left alone: its own `margin-bottom: 2.2rem` and the `.price-head .lede` rules above still
+   apply exactly as they do on a desktop.
+
+   ⛔ IT IS `order` ON THE EXISTING ELEMENTS — NOT A SECOND COPY OF THE CONTENT. Every word is rendered
+   once, in one place in the markup, so the wording is identical on every screen and there is no second
+   version to keep in step. ⚠️ DESKTOP AND LAPTOP ARE UNTOUCHED: above 639px there is no flex container
+   and no `order`, so the section is the block flow it has always been.
+
+   ⚠️ THE TWO MARGIN LINES ARE NOT TIDYING — each is a seam the new order created or changed, and the
+   stylesheet's `* { margin: 0 }` reset is what makes them predictable: every margin on this page is
+   deliberate, so nothing collapses by accident and a flex container changes no gap it is not told to. */
+@media(max-width:639px){
+  .hg-landing #pricing .wrap { display: flex; flex-direction: column; }
+
+  /* a · the label, the heading and the fee paragraph, as one block */
+  .hg-landing #pricing .price-head { order: 1; }
+
+  /* b · the three plan cards */
+  .hg-landing #pricing .plans { order: 2; }
+
+  /* c · the orange trial box. ⚠️ `.plans` has no bottom margin, so the box takes the gap above it — and
+     its own `margin-bottom: 2rem` would ADD to `.feat-cta`'s `margin-top` below, so it hands that one
+     over rather than keeping both. */
+  .hg-landing #pricing .trial-banner { order: 3; margin-top: 2rem; margin-bottom: 0; }
+
+  /* d · "Not sure which plan?" and the button, which stay the pair they are */
+  .hg-landing #pricing .feat-cta { order: 4; }
+  /* ⚠️ `margin-bottom: .4rem` COLLAPSED INTO `.switch-block`'s 2rem in block flow and would add to it
+     here. Zeroed, the gap below the button is the 2rem it has always been. */
+  .hg-landing #pricing .feat-btn { order: 5; margin-bottom: 0; }
+
+  /* e · the switching block, then f · the small print */
+  .hg-landing #pricing .switch-block { order: 6; }
+  .hg-landing #pricing .price-foot { order: 7; }
+}
+
 /* ⛔ `.li-note` WAS HERE AND IS DELETED — 6 October 2026. It made the WhatsApp bullet's
    "(Messenger & Instagram coming soon)" smaller and `--ink-faint`; Dominic asked for it at the same
    size and format as the rest of the bullet, so the span went and the text is now part of the line's

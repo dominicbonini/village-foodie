@@ -658,7 +658,13 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
        * Kings Arms at Great Finborough" became "The Kings Arms at Great Fi…" in a 200px column, so the
        * one thing the row exists to identify was the thing it could not show. */
       && /font-medium leading-snug text-slate-900 line-clamp-2/.test(SP)
-      && /onClick=\{\(\) => \{ setSelectedId\(pl\.id\); setMsg\(null\) \}\}/.test(SP)
+      /* ⚠️ §3 (10 October 2026): THE ROW CALLS `openLocation`, NOT `setSelectedId` DIRECTLY. Below 768px
+       * the selected location is its own SCREEN, so opening one also pushes a history entry — which is
+       * what makes the phone's back gesture return to the list. ⛔ BOTH HALVES ARE ASSERTED, because a
+       * row that opened the screen without the push would leave the operator on a screen the back
+       * gesture cannot leave. */
+      && /onClick=\{\(\) => openLocation\(pl\.id\)\}/.test(SP)
+      && /window\.history\.pushState\(\{ hgLocation: id \}, ''\)/.test(SP)
       /* ⛔ AND THE LIST SCROLLS **INSIDE ITS CARD**. Without a cap a truck with sixty locations grows
        * the card, the page grows with it, and the selected location's pane is off the bottom of the
        * screen — the one thing a two-pane screen must not do. */
@@ -1050,9 +1056,14 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
     /* ⛔ AND THE OLD PAGE'S CONTROLS ARE ALL GONE. A removal that leaves one behind is a removal the
      * next person undoes by accident. `codeOf` first — the tombstone names every one of them. */
     t('⛔ the grid, ★ Main, the Make main / Rename menu and "Own text positions" are gone',
-      !/data-main-badge/.test(SP) && !/★ Main/.test(SP)
+      /* ⚠️ `codeOf` ON THE TWO THAT NAME THEMSELVES IN THE TOMBSTONES. "★ Main" and
+       * `PLACE_OWN_POSITIONS_LINK` are both WRITTEN DOWN in the comments that record their removal — so
+       * a raw search of the file finds the obituary and reports the deceased alive. ⛔ THE CONSTRUCT,
+       * NOT THE PROSE: this is the third time in this workstream a check has been broken by a comment
+       * that quotes the literal it looks for. */
+      !/data-main-badge/.test(SP) && !/★ Main/.test(codeOf(SP))
       && !/data-add-tile/.test(SP)
-      && !/PLACE_OWN_POSITIONS_LINK/.test(SP)
+      && !/PLACE_OWN_POSITIONS_LINK/.test(codeOf(SP))
       && !/removePictureConfirm\(/.test(SP)
       /* ⚠️ `slotRemoveConfirm` IS THE SURVIVOR and still says the image is kept. */
       && /window\.confirm\(slotRemoveConfirm\('poster'\)\)/.test(SP)
@@ -1065,7 +1076,10 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
        * rather than here, because that is where it lives. */
       && (SP.match(/<BackLink /g) || []).length === 0
       && !/function BackLink/.test(codeOf(SP))
-      && /onClick=\{onBack\} className="text-sm font-bold text-orange-700 shrink-0"/
+      /* ⚠️ THE INLINE BACK BUTTON GAINED `data-phone-back` ON 10 OCTOBER — one button, two
+       * presentations ("‹" on a phone, "‹ Designs" above 768px) and **the same `onBack`**, which is the
+       * whole of the leave guard: this component owns the dialog and already intercepts that prop. */
+      && /onClick=\{onBack\} data-phone-back\s*\n\s*className="text-sm font-bold text-orange-700 shrink-0"/
         .test(read('components/manage/DesignEditor.tsx')))
 
     /* 🔴 THE THUMBNAILS COME FROM THE ONE BATCHED READ — never one call per place. */

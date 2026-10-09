@@ -623,7 +623,19 @@ export default function LandingPage() {
               <div className="plan-name">{PLAN_META.pro.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.pro}</div>
               <PlanPrice plan="pro" />
-              <div className="plan-fee">{PLAN_ALLOWANCES.pro}<sup className="fee-star">*</sup></div>
+              {/* ══ 🔴 "No fee on walk-ups." — ADDED 10 October 2026, ON PRO AND MAX ONLY ═══════════════
+                  ⚠️ IT IS APPENDED **HERE**, NOT IN `PLAN_ALLOWANCES`. That constant is read by the
+                  features PDF and by the comparison table as well as by this card, and the brief asks for
+                  the two cards — changing the source string would have changed three surfaces.
+                  ⛔ THE STAR STAYS WHERE IT IS, on the percentage it footnotes: the new sentence follows
+                  it, so the line reads "…then 0.99%*. No fee on walk-ups." and the footnote still points
+                  at the fee it is about. ⚠️ PLAIN TEXT IN THE SAME `.plan-fee`, so it takes the same size,
+                  colour and weight as the rest of the line with no second rule to keep in step.
+                  🔴 IT IS NOT A NEW CLAIM — the section's own lede has said "Walk-ups carry no HatchGrab
+                  platform fee on any plan" all along. This puts it where a reader comparing two cards is
+                  actually looking. ⚠️ STARTER IS DELIBERATELY UNTOUCHED: its fee line is "Pay at Hatch",
+                  which is a model and not an allowance, and the brief names Pro and Max. */}
+              <div className="plan-fee">{PLAN_ALLOWANCES.pro}<sup className="fee-star">*</sup>. No fee on walk-ups.</div>
               <ul>
                 <li className="lead">Everything in Free, plus</li>
                 <li>Offline order protection</li>
@@ -714,7 +726,8 @@ export default function LandingPage() {
               <div className="plan-name">{PLAN_META.max.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.max}</div>
               <PlanPrice plan="max" />
-              <div className="plan-fee">{PLAN_ALLOWANCES.max}<sup className="fee-star">*</sup></div>
+              {/* ⚠️ THE SAME SENTENCE AS PRO'S, FOR THE SAME REASON — see the note on the Pro card. */}
+              <div className="plan-fee">{PLAN_ALLOWANCES.max}<sup className="fee-star">*</sup>. No fee on walk-ups.</div>
               <ul>
                 <li className="lead">Everything in Pro, plus</li>
                 <li>Multi-device kitchen sync</li>

@@ -5720,14 +5720,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 reconnect" — which OfflineBanner now says persistently, with a COUNT, on every tab. It
                 added nothing this tab did not already have on screen above it. */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              {/* ══ 🔴 THE HEADER, WITH THE PRICE EDITOR'S ONE BUTTON (5 October 2026) ═══════════════
-                  ⚠️ `flex-wrap` + `w-full sm:w-auto` IS THE PHONE RULE, and it is the brief's: at 390px
-                  the button drops to its own full-width row under the title; from `sm` up it sits at
-                  the top right. Measured in both engines by scripts/event-types-render.cjs.
-                  ⛔ IN EDIT MODE THE ONE BUTTON BECOMES TWO, and Save is the only orange thing on this
-                  card — the card's other controls write immediately, so an orange button here would be
-                  the only one that means "commit". */}
-              <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
+              {/* ══ 🔴 THE HEADER, WITH THE PRICE EDITOR'S ONE BUTTON ════════════════════════════════
+                  ⛔ **IT WAS A FULL-WIDTH GREY BAR UNDER THE TITLE AT 390px** (`w-full sm:w-auto`), on
+                  the rule that a phone button drops to its own row. Dominic, on the device: make it a
+                  compact outlined button on the title row. 🔴 A FULL-WIDTH SOLID BAR READS AS THE
+                  CARD'S PRIMARY ACTION, and this card's primary action is the stock controls below it —
+                  the price editor is a mode you occasionally enter. The size now matches the job.
+                  ⚠️ `items-center`, NOT `items-start`: with the button on the same line as the title at
+                  every width, the two should sit on one baseline rather than hang from the top.
+                  ⛔ `flex-wrap` STAYS — in EDIT MODE the one button becomes two (Cancel + Save) and
+                  those keep their `w-full sm:w-auto` phone rule, because two buttons on a 390px title
+                  row would leave neither wide enough to read. Save is the only orange thing on this
+                  card: its other controls write immediately, so orange here means "commit".
+                  Measured in both engines by scripts/event-types-render.cjs. */}
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
                 <p className="text-sm font-semibold text-slate-800 tracking-wide">Items — this event</p>
                 {priceEditing?(
                   <div className="flex items-center gap-2 w-full sm:w-auto" data-price-edit-actions>
@@ -5745,7 +5751,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                      An editor whose save would 400 is worse than none. */
                   <button type="button" onClick={()=>setPriceEditing(true)} disabled={!priceReady||!activeEvent}
                     data-price-edit-open
-                    className="w-full sm:w-auto bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-lg hover:bg-slate-200 text-xs disabled:opacity-40">
+                    className="shrink-0 border border-slate-300 bg-white text-slate-700 font-bold px-2.5 py-1 rounded-lg hover:bg-slate-50 text-xs disabled:opacity-40">
                     {EVENT_PRICE_EDIT}
                   </button>
                 )}
@@ -5780,10 +5786,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   {/* 🔴 PRICE FIRST, THEN LIMIT, THEN AVAILABLE — the order the brief asks for, and the
                       order of consequence: what it costs, how many there are, whether it is on at all.
                       ⚠️ `w-20` NOT `w-16`: a four-character money box ("£12.50") does not fit the limit
-                      column's width, and measured at 390px a narrower box clipped the decimals. */}
+                      column's width, and measured at 390px a narrower box clipped the decimals.
+                      ══ 🔴 THE HEADINGS ARE SHORTER THAN THEIR COLUMNS' OLD WORDS ════════════════════
+                      ⛔ "ITEM LIMIT" IS 10 CHARACTERS IN A 64px COLUMN AND "AVAILABLE" IS 9 IN A 48px
+                      ONE — at 10px black uppercase with `tracking-wide` both overflowed their column
+                      and ran into the neighbour, which is how a heading comes to sit over the wrong
+                      control. 🔴 THE COLUMN WIDTHS ARE NOT WHAT CHANGED: `w-20`/`w-16`/`w-12` are the
+                      row cells' widths too, and moving them would move every control under them. The
+                      WORDS changed instead — "LIMIT" and "ON" fit, and each still sits centred over
+                      its own column at 390px. ⚠️ THE FULL WORDS SURVIVE WHERE THERE IS ROOM FOR THEM:
+                      every limit input and every switch keeps its own `aria-label`, so a screen reader
+                      still hears "Available" and not "On". */}
                   <span className="w-20 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{EVENT_PRICE_COLUMN_LABEL}</span>
-                  <span className="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Item limit</span>
-                  <span className="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Available</span>
+                  <span className="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Limit</span>
+                  <span className="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">On</span>
                 </div>
                 <div className="space-y-5">
                   {Object.entries(menuGroups).map(([cat,items])=>{
@@ -6010,11 +6026,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                         updateStock(item.name,isAvailable,next,cat,false)
                                       }
                                     }}
+                                    /* ⚠️ NAMED FOR THE SAME REASON THE SWITCH BESIDE IT IS — the
+                                       heading over this column is now "Limit". */
+                                    aria-label={`Item limit — ${item.name}`}
                                     className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white disabled:cursor-not-allowed disabled:bg-slate-100 ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={catClosed?'Category closed for this event':isDefault?'Default stock — save to override':followsCategory?'Following category total — type a number to cap':'Item stock'}/>
                                 </div>
                                 {/* ⛔ LOCKED WHILE PRICES ARE BEING EDITED — `stockLocked`, which the
-                                    blue note above promises. One act at a time. */}
-                                <span className="w-12 shrink-0 flex justify-center"><Toggle on={isAvailable} disabled={stockLocked} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>
+                                    blue note above promises. One act at a time.
+                                    ══ 🔴 `ariaLabel` ADDED 10 OCTOBER 2026, WITH THE SHORTER HEADING ═══
+                                    ⛔ THIS SWITCH HAD NO ACCESSIBLE NAME AT ALL. The column heading was
+                                    the only thing naming it, it is not associated with the control by
+                                    any markup, and that heading is now the two letters "On" because
+                                    "AVAILABLE" overflowed its 48px column at 390. ⚠️ SHORTENING THE
+                                    VISIBLE WORD IS WHAT MADE THIS WORTH FIXING RATHER THAN NOTING: a
+                                    screen reader now hears the dish's own name and "Available". */}
+                                <span className="w-12 shrink-0 flex justify-center"><Toggle on={isAvailable} disabled={stockLocked} ariaLabel={`Available — ${item.name}`} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>
                               </div>
                             )
                           })}

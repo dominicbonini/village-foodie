@@ -743,7 +743,15 @@ function itemsFixture(css, editing = false, longName = false) {
   const headCls = lift(PAGE, /<span className="(w-20 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400)">\{EVENT_PRICE_COLUMN_LABEL\}/, 'the Price column header')
   const plainCls = lift(PAGE, /<p data-event-price className=\{`(w-20 text-right text-sm font-bold tabular-nums) /, 'the read-only price')
   const noteCls = lift(PAGE, /<div className="(mb-4 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2)" data-price-edit-note>/, 'the edit note')
-  const editBtnCls = lift(PAGE, /data-price-edit-open\s*\n\s*className="(w-full sm:w-auto bg-slate-100 text-slate-700 font-bold px-3 py-1\.5 rounded-lg hover:bg-slate-200 text-xs disabled:opacity-40)"/, 'the Edit prices button')
+  /* ⚠️ 10 October 2026: the button is a COMPACT OUTLINED one on the title row at every width now —
+   * it was `w-full sm:w-auto` and a solid grey bar under the title at 390. The lift is what made this
+   * file notice; the checks below are what make the new shape a claim rather than a class string. */
+  const editBtnCls = lift(PAGE, /data-price-edit-open\s*\n\s*className="(shrink-0 border border-slate-300 bg-white text-slate-700 font-bold px-2\.5 py-1 rounded-lg hover:bg-slate-50 text-xs disabled:opacity-40)"/, 'the Edit prices button')
+  const cardHeadCls = lift(PAGE, /<div className="(flex flex-wrap items-center justify-between gap-2 mb-1)">\s*\n\s*<p className="text-sm font-semibold text-slate-800 tracking-wide">Items/, 'the card header row')
+  /* 🔴 THE TWO SHORTENED HEADINGS, LIFTED — "Item limit"/"Available" overflowed their 64px and 48px
+   * columns at 390. If either word grows again, this file rebuilds with it and the fit check speaks. */
+  const limitHead = lift(PAGE, /<span className="w-16 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">(.+?)<\/span>/, 'the Limit column header')
+  const onHead = lift(PAGE, /<span className="w-12 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">(.+?)<\/span>/, 'the On column header')
   const COPY = read('lib/copy/serviceSettings.ts')
   const editLabel = lift(COPY, /export const EVENT_PRICE_EDIT = '(.+?)'/, 'the Edit prices label')
   const saveLabel = lift(COPY, /export const EVENT_PRICE_SAVE = '(.+?)'/, 'the Save prices label')
@@ -768,14 +776,14 @@ function itemsFixture(css, editing = false, longName = false) {
         ${own ? `<p data-own-note class="text-[11px] text-blue-500 mt-0.5">Festival £12.00 · this event</p>` : ''}
       </div>
       <div class="flex flex-col items-end gap-0.5 w-20 shrink-0">${price(pounds, own)}</div>
-      <div class="flex flex-col items-center gap-0.5 w-16 shrink-0">${limit(editing)}</div>
-      <span class="w-12 shrink-0 flex justify-center">${sw(true, editing)}</span>
+      <div data-limit-cell class="flex flex-col items-center gap-0.5 w-16 shrink-0">${limit(editing)}</div>
+      <span data-on-cell class="w-12 shrink-0 flex justify-center">${sw(true, editing)}</span>
     </div>`
 
   return `${HEAD(css)}
 <div id="scope" style="background:#f8fafc;padding:16px">
   <div id="card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-    <div id="cardhead" class="flex flex-wrap items-start justify-between gap-2 mb-1">
+    <div id="cardhead" class="${cardHeadCls}">
       <p class="text-sm font-semibold text-slate-800 tracking-wide">Items — this event</p>
       ${editing
         ? `<div id="editactions" class="flex items-center gap-2 w-full sm:w-auto"><button type="button" class="flex-1 sm:flex-none bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs">Cancel</button><button type="button" class="flex-1 sm:flex-none bg-orange-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs">${saveLabel}</button></div>`
@@ -786,8 +794,8 @@ function itemsFixture(css, editing = false, longName = false) {
     <div class="flex items-center gap-2 pr-2 mb-2">
       <span class="flex-1"></span>
       <span id="pricehead" class="${headCls}">Price</span>
-      <span class="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Item limit</span>
-      <span class="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Available</span>
+      <span id="limithead" class="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">${limitHead}</span>
+      <span id="onhead" class="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">${onHead}</span>
     </div>
     <div class="space-y-1.5">
       ${item(NAME, 13, true)}
@@ -1209,6 +1217,20 @@ const probe = () => {
     /* ══ 🔴 THE 5 OCTOBER SURFACES (Menu & Stock's Price column, and the dark event bar) ═══════════ */
     cardhead: box('cardhead'), editbtn: box('editbtn'), editactions: box('editactions'),
     editnote: box('editnote'), pricehead: box('pricehead'),
+    /* 🔴 §3 · THE TWO SHORTENED COLUMN HEADINGS, AND THE CELLS THEY MUST SIT OVER. ⚠️ A HEADING
+     * "fitting" is `scrollWidth <= clientWidth` on the heading itself: the span is the column's width,
+     * so a word wider than it overflows into the neighbour rather than being clipped — which is how a
+     * heading comes to sit over the wrong control without looking broken. */
+    limithead: box('limithead'), onhead: box('onhead'),
+    headFits: ['limithead', 'onhead', 'pricehead'].map(id => {
+      const el = document.getElementById(id)
+      return el ? { id, over: el.scrollWidth - el.clientWidth, text: (el.textContent || '').trim() } : null
+    }).filter(Boolean),
+    /* ⚠️ THE FIRST ROW'S CELLS, SO "the columns stay aligned with the rows" IS A MEASUREMENT. */
+    limitCell: (() => { const e = document.querySelector('[data-limit-cell]'); if (!e) return null
+      const b = e.getBoundingClientRect(); return { left: Math.round(b.left), right: Math.round(b.right) } })(),
+    onCell: (() => { const e = document.querySelector('[data-on-cell]'); if (!e) return null
+      const b = e.getBoundingClientRect(); return { left: Math.round(b.left), right: Math.round(b.right) } })(),
     bar: box('bar'), titlecol: box('titlecol'), title: box('title'),
     /* ⚠️ THE TITLE'S TEXT, SEPARATELY — `box` returns geometry only, and the private-event claim is
      * about WORDS: no venue and no town may appear in it. */
@@ -1746,15 +1768,31 @@ async function main() {
         `🔴 items ${w} read-only: limits and availability are LIVE (${ro.limitsEnabled}, ${ro.availEnabled})`)
       t(!!ro.editbtn && !ro.editactions && !ro.editnote,
         `🔴 items ${w} read-only: one "✎ Edit prices" button, no Cancel/Save, no blue note`)
-      /* 🔴 THE PHONE RULE: below `sm` the button is its own full-width row under the title; from `sm`
-       * up it sits at the top right of the header. Measured, not asserted from a class. */
-      if (w === 390) {
-        t(ro.editbtn.top >= ro.cardhead.top + 10 && ro.editbtn.width >= ro.cardhead.width - 2,
-          `🔴 items 390: the Edit prices button is full width UNDER the title (${ro.editbtn.width}px of ${ro.cardhead.width}px)`)
-      } else {
-        t(ro.editbtn.right <= ro.cardhead.right + 1 && ro.editbtn.width < ro.cardhead.width / 2,
-          `🔴 items ${w}: the Edit prices button is at the top RIGHT (${ro.editbtn.width}px of ${ro.cardhead.width}px)`)
+      /* ══ 🔴 §3 (10 October 2026) · THE SAME RULE AT EVERY WIDTH — AND IT IS THE OPPOSITE OF THE
+       * ONE THIS FILE USED TO ASSERT. It read: "below `sm` the button is its own full-width row under
+       * the title". Dominic saw that on the device and asked for a compact outlined button on the
+       * title row instead, at every width. ⛔ THE OLD CHECK WENT RED WHEN THE DESIGN CHANGED, WHICH IS
+       * WHAT IT WAS FOR — it is replaced rather than deleted, so the claim is still measured.
+       * ⚠️ THREE FACTS, ALL MEASURED: it is on the title's own line (tops within a few px), it is at
+       * the RIGHT of the header, and it is COMPACT (well under half the row). */
+      t(Math.abs(ro.editbtn.top - ro.cardhead.top) <= 8,
+        `🔴 items ${w}: the Edit prices button is ON the title row (button top ${ro.editbtn.top}, row top ${ro.cardhead.top})`)
+      t(ro.editbtn.right <= ro.cardhead.right + 1 && ro.editbtn.width < ro.cardhead.width / 2,
+        `🔴 items ${w}: …at the RIGHT of it, and compact (${ro.editbtn.width}px of ${ro.cardhead.width}px)`)
+
+      /* ══ 🔴 §3 · THE COLUMN HEADINGS FIT, AND SIT OVER THEIR OWN COLUMNS ═══════════════════════
+       * ⛔ "ITEM LIMIT" IN 64px AND "AVAILABLE" IN 48px BOTH OVERFLOWED at 390 — 10px black uppercase
+       * with `tracking-wide`. ⚠️ MEASURED AS OVERFLOW ON THE HEADING ITSELF, not as a character count:
+       * the span IS the column's width, so a word wider than it runs into the neighbour. */
+      for (const hf of ro.headFits) {
+        t(hf.over <= 0, `🔴 items ${w}: the "${hf.text}" heading fits its column (${hf.over}px over)`)
       }
+      /* ⚠️ AND THE HEADINGS ARE STILL CENTRED OVER THE CONTROLS THEY NAME. Shortening a word must not
+       * move a column: `w-16`/`w-12` are the ROW cells' widths too, so these edges must agree. */
+      t(Math.abs(ro.limithead.left - ro.limitCell.left) <= 1 && Math.abs(ro.limithead.right - ro.limitCell.right) <= 1,
+        `🔴 items ${w}: the Limit heading is aligned with the limit column (${ro.limithead.left}–${ro.limithead.right} over ${ro.limitCell.left}–${ro.limitCell.right})`)
+      t(Math.abs(ro.onhead.left - ro.onCell.left) <= 1 && Math.abs(ro.onhead.right - ro.onCell.right) <= 1,
+        `🔴 items ${w}: the On heading is aligned with the availability column (${ro.onhead.left}–${ro.onhead.right} over ${ro.onCell.left}–${ro.onCell.right})`)
       /* ⚠️ THE BLUE LINE UNDER A CHANGED ITEM NAMES THE TYPE, not always "menu". */
       t(ro.ownNotes.length === 1 && /^Festival £\d+\.\d\d · this event$/.test(ro.ownNotes[0]),
         `⚠️ items ${w}: the changed item's line names the TYPE it departs from (${JSON.stringify(ro.ownNotes)})`)

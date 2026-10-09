@@ -431,16 +431,28 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * 🔴 WHAT THE LIST LOST IS NAMED HERE RATHER THAN HIDDEN: its live grey samples ("Date · Wednesday
    * 14th October"). Two across has room for a name, a switch and a badge, not for a sample. What
    * replaces them is a poster big enough to read. */
+  /* ══ ⚠️ REWRITTEN 10 OCTOBER 2026, BECAUSE THE PHONE EDITOR CHANGED THE CLASS LIST ════════════════
+   * ⛔ IT USED TO MATCH `grid-cols-1 min-[1100px]:grid-cols-[…]` AS ONE ADJACENT STRING, which broke the
+   * moment the element gained the phone's `flex`/`grow`/`md:grid` classes between them — while the claim
+   * it was making was still perfectly true. 🔴 SO IT READS THE ELEMENT'S CLASS LIST AS **TOKENS** now.
+   * ⚠️ `grid-cols-1` MUST BE UNPREFIXED, and that is the sharpest clause here: Tailwind compiles the
+   * `md:` block AFTER the `min-[1100px]:` one, so a `md:`-prefixed column count would match at 1100 and
+   * WIN, dropping the settings panel below the poster at every desktop size. It did exactly that, and
+   * `scripts/phone-editor.cjs` caught it by measuring the element at 768, 1100 and 1728. */
+  const gridCls = (ED.match(/className="([^"]*)"\s*\n\s*data-editor-grid>/) || [])[1] || ''
+  const gridTok = new Set(gridCls.split(/\s+/).filter(Boolean))
   t('🔴 two columns from 1100px, one below — and never `lg`',
-    /grid-cols-1 min-\[1100px\]:grid-cols-\[minmax\(0,1fr\)_380px\]/.test(ED)
+    gridTok.has('grid-cols-1')
+    && gridTok.has('min-[1100px]:grid-cols-[minmax(0,1fr)_380px]')
     && !/\blg:grid-cols/.test(ED)
     /* ⛔ AND THE PANEL IS STICKY **ABOVE THE BREAKPOINT ONLY**. Below it the panel is under the poster,
      * where there is nothing above it to stay level with — a `sticky` there would pin it to the top of
      * a scroll container it fills, which is a no-op at best. */
     && /min-\[1100px\]:sticky min-\[1100px\]:top-4 min-\[1100px\]:max-h-\[calc\(100vh-2rem\)\] min-\[1100px\]:overflow-y-auto/.test(ED)
     /* ⚠️ `items-start`, SO THE PANEL DOES NOT STRETCH to the poster's height and leave a tall empty
-     * card under MORE OPTIONS. */
-    && /gap-4 items-start"\s*\n\s*data-editor-grid>/.test(ED))
+     * card under MORE OPTIONS. ⛔ `md:` NOW, because below the breakpoint the same element is the phone
+     * shell's flex column and its one child must stretch to the full width. */
+    && gridTok.has('gap-4') && gridTok.has('md:items-start'))
 
   /* ⛔ THE TOOLBAR AND BOTH POP-UPS ARE STILL GONE. `codeOf` first — the tombstone where `Toolbar` was
    * names it, the Popovers and every reason they went. */
@@ -744,7 +756,9 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
   t('⚠️ with nothing selected the panel gives the brief\'s instruction',
     /EDITOR_NOTHING_SELECTED = 'Click anything on your post to change it'/.test(EDCOPY)
     && /EDITOR_SETTINGS_FOR = 'Settings for the box you’ve picked'/.test(EDCOPY)
-    && /if \(!selItem\) return shell\(/.test(ED)
+    /* ⚠️ `wrap`, NOT `shell`: with `only` undefined `wrap` IS `shell` (the desktop card), and with a
+     * group set it is the sheet's bare body. One branch, both screens. */
+    && /if \(!selItem\) return wrap\(/.test(ED)
     && /\{EDITOR_NOTHING_SELECTED\}/.test(ED))
 
   /* ══ 🔴 THE POSTER IS FITTED TO THE MEASURED AREA, AND THERE IS A ZOOM ═════════════════════════════
@@ -805,7 +819,11 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
      * ⚠️ `min-w-0 max-w-full` SAYS TWICE what the grid track's `minmax(0,1fr)` already says, because the
      * symptom Dominic reported — the settings panel pushed off the screen — is what happens if either
      * is missing. */
-    && /data-stage-area\s*\n\s*className="grid min-w-0 max-w-full overflow-auto rounded-2xl bg-slate-100 p-3"/.test(ED)
+    /* ⚠️ THE `grid` AND THE `m-auto` ARE WHAT THIS CLAUSE IS ABOUT and both are still here; what is new
+     * is the phone's sizing. ⛔ `md:h-[min(72vh,820px)] md:grow-0` IS THE DESKTOP'S OLD INLINE HEIGHT,
+     * moved to a class so that below the breakpoint `grow` can hand the poster whatever the sheet and
+     * the item bar leave it. */
+    && /data-stage-area\s*\n\s*data-phone-stage\s*\n\s*className="grid min-h-0 min-w-0 max-w-full grow overflow-auto rounded-2xl bg-slate-100 p-3\s*\n\s*md:h-\[min\(72vh,820px\)\] md:grow-0"/.test(ED)
     && /className="relative m-auto select-none touch-none overflow-hidden rounded-xl bg-slate-200"/.test(ED)
     && !/justify-center overflow-auto/.test(ED))
 
@@ -967,7 +985,9 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     && /data-darken>/.test(ED)
     && !/· \{W\} × \{H\}<\/span>/.test(ED)
     /* ⛔ THE CARD IS A PLAIN BLOCK NOW — no border, no heading — because the panel already drew both. */
-    && /const pictureCard = \(\s*\n\s*<div className="space-y-2">/.test(ED)
+    /* ⚠️ IT TAKES A GROUP NOW — `pictureCard(only?)` is how the phone sheet's Picture and Darken tabs
+     * are two halves of THIS card rather than a copy of it. With no argument it is the desktop's. */
+    && /const pictureCard = \(only\?: SettingsGroup\) => \(\s*\n\s*<div className="space-y-2">/.test(ED)
     && !/uppercase tracking-wide text-slate-400 mb-2">Background picture/.test(ED)
     /* ⚠️ AND "Replace picture" IS STILL THERE, which is the whole reason the control was kept. */
     && /\{replacing \? 'Uploading…' : 'Replace picture'\}/.test(ED))
@@ -975,8 +995,14 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
   /* ⚠️ THE HINT IS THE BRIEF'S SENTENCE, with a "·" between the two gestures rather than a full stop —
    * they are two gestures, not two sentences. ⛔ AND IT SHARES ITS LINE WITH THE ZOOM, so the control
    * costs no height on the one screen whose whole problem is height. */
+  /* ⚠️ THE SENTENCE IS DESKTOP-ONLY SINCE 10 OCTOBER, and the paragraph around it is not: at 390 it
+   * wrapped onto THREE lines and took 48px off the poster, to say something a finger discovers in one
+   * gesture — while the phone's own grey line below names both ways to choose a box. ⛔ THE `<p>` STAYS
+   * so the live-font warning inside it, which a phone operator must still see, keeps its place. */
   t('⚠️ the hint under the poster is the brief\'s sentence, on the zoom\'s line',
-    /data-stage-hint>\s*\n\s*Drag a box to move it · drag a corner to resize/.test(ED)
+    /data-stage-hint>/.test(ED)
+    && /<span className="hidden md:inline">Drag a box to move it · drag a corner to resize<\/span>/.test(ED)
+    && /data-live-font-note/.test(ED)
     && ED.indexOf('data-stage-hint') < ED.indexOf('data-zoom>'))
 
   /* ══ 🔴 THE SWITCH KNOB SITS **INSIDE** ITS TRACK — REPORTED BY DOMINIC ════════════════════════════

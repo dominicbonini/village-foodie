@@ -904,3 +904,47 @@ export const DELETE_OWN_TEXT_KEY = 'or press Delete'
  */
 export const LIVE_FONT_FALLBACK =
   'Your own uploaded font can’t be shown here, so that text is in Oswald while you edit. Press “👁 Preview post” to see it properly.'
+
+/* ══ 🔴 §3 (10 October 2026) · LOCATION SETTINGS ON A PHONE ═══════════════════════════════════════
+ *
+ * ⛔ **THE PHONE CARDS CARRY THEIR OWN ONE-LINE DESCRIPTIONS, AND THAT IS NOT DUPLICATED COPY.** The
+ * desktop boxes say the whole thing — *"A logo or photo in the picture space of your single event
+ * design."* — because they have a 132px preview and a third of a pane to say it in. A 72px card on a
+ * 390px screen has one line, and a truncated sentence is worse than a shorter one.
+ * ⚠️ THEY ARE THE BRIEF'S OWN WORDS, verbatim, so the phone screen says what was asked for rather than
+ * what I would have written. 🔴 ONE CONSTANT PER LINE, so the card and any check read the same string.
+ */
+export const PHONE_PIC_EVENT_LINE = 'In your single event design’s picture space'
+export const PHONE_PIC_WEEKLY_LINE = 'On this location’s line of your weekly post'
+export const PHONE_PIC_POSTER_LINE = 'Used instead of your single event design'
+
+/** The way back from one location to the list. ⚠️ "All locations", not "Back": a back link should say
+ *  where it goes, and this screen is reachable only from that list. */
+export const PHONE_ALL_LOCATIONS = '‹ All locations'
+
+/* ══ 🔴 §4 (10 October 2026) · THE PHONE DESIGN EDITOR ════════════════════════════════════════════
+ *
+ * ⚠️ THE BRIEF'S OWN WORDS, so the screen says what was asked for rather than what I would have
+ * written. ⛔ ONE CONSTANT EACH, in the copy module, because the phone bar and the harness that checks
+ * it must read the same string — a label typed twice is a label that drifts the first time it is
+ * shortened.
+ */
+export const PHONE_EDIT_HINT =
+  'Tap the writing on your poster, or pick something below, to change it'
+/** The item bar's labels. ⚠️ SHORT BY DESIGN: these sit under an icon in a 64px square. */
+export const PHONE_ITEM_ALL_TEXT = 'All writing'
+export const PHONE_ITEM_ADD_TEXT = 'Add text'
+export const PHONE_ITEM_PICTURE = 'Picture'
+/** The sheet's tab labels, in the brief's order. */
+export const PHONE_TAB_WORDS = 'Words'
+export const PHONE_TAB_SIZE = 'Size'
+export const PHONE_TAB_STYLE = 'Style'
+export const PHONE_TAB_READABLE = 'Readable'
+export const PHONE_TAB_MORE = 'More'
+export const PHONE_TAB_LAYOUT = 'Layout'
+export const PHONE_TAB_ROW = 'Row'
+export const PHONE_TAB_DAYS_OFF = 'Days off'
+export const PHONE_TAB_PICTURE = 'Picture'
+export const PHONE_TAB_DARKEN = 'Darken'
+/** ⚠️ The sheet's close button, named for a screen reader as well as drawn. */
+export const PHONE_SHEET_CLOSE = 'Close'

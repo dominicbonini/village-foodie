@@ -84,6 +84,11 @@ import {
    * ⚠️ `USE_FOR_ALL_TEXT` AND `OWN_BADGE` SURVIVE: the first is still the link at the foot of an
    * own-style box, which §3 says stays, and the second is still the grid's badge. */
   USE_FOR_ALL_TEXT, OWN_BADGE,
+  /* ⚠️ §4 · THE PHONE EDITOR'S OWN WORDS — the hint, the bar's five or six labels, and the tabs. See
+   * their notes in the copy module for why they are shorter than the desktop's. */
+  PHONE_EDIT_HINT, PHONE_ITEM_ALL_TEXT, PHONE_ITEM_ADD_TEXT, PHONE_ITEM_PICTURE, PHONE_SHEET_CLOSE,
+  PHONE_TAB_WORDS, PHONE_TAB_SIZE, PHONE_TAB_STYLE, PHONE_TAB_READABLE, PHONE_TAB_MORE,
+  PHONE_TAB_LAYOUT, PHONE_TAB_ROW, PHONE_TAB_DAYS_OFF, PHONE_TAB_PICTURE, PHONE_TAB_DARKEN,
 } from '@/lib/copy/socialPosts'
 import { Btn } from './primitives'
 import { DraggableBox, NO_GUIDES, type DragInfo, type SnapGuides } from './DraggableBox'
@@ -1216,18 +1221,135 @@ export function DesignEditor(props: DesignEditorProps) {
   })
 
   /** A tap on the block: whichever cell of whichever row it landed in selects that part. */
+  /* ══════════════════════════════════════════════════════════════════════════════════════════════
+   * 🔴 §4 · THE PHONE SHEET'S STATE, ITS LIST OF ITEMS AND ITS TABS (10 October 2026)
+   * ══════════════════════════════════════════════════════════════════════════════════════════════
+   *
+   * ⚠️ ALL OF IT IS **PHONE-ONLY BY REACHABILITY, NOT BY A MEDIA QUERY**. Nothing here is read unless
+   * the bar or the poster opens the sheet, and both of those are `md:hidden` — so on a desktop this
+   * state exists, stays null, and renders nothing. ⛔ A `matchMedia` HOOK WOULD HAVE MEANT GUESSING ON
+   * THE SERVER and painting the wrong layout for a frame; the whole split is CSS for that reason.
+   */
+  /** Which item the sheet is for — a selection key, or `'background'` for the poster's own picture. */
+  const [sheetFor, setSheetFor] = useState<string | null>(null)
+  /** Which tab. ⚠️ `null` IS "no sheet": one piece of state, so the two cannot disagree. */
+  const [sheetTab, setSheetTab] = useState<SettingsGroup | null>(null)
+  /* 🔴 THE HEIGHT IS A NUMBER, because the handle drags it. ⚠️ IT IS SET FROM THE WINDOW the first time
+   * the sheet opens rather than at mount: at mount the window may still be laying out, and a sheet that
+   * opened at a height computed from 0 would flash. */
+  const [sheetH, setSheetH] = useState(0)
+  const sheetGrab = useRef<{ y: number; h: number } | null>(null)
+  /* ══ 🔴 THE FLOOR AND THE CEILING ════════════════════════════════════════════════════════════════
+   * ⛔ **THE CEILING IS THE BRIEF'S OWN CONDITION**: *"it must stop short of covering the poster
+   * completely."* 72% of the window leaves the poster a little over a quarter of the screen, which is
+   * enough to see a box move — and `SHEET_MIN` stops a clumsy drag leaving a sheet with nothing in it.
+   * ⚠️ ONE CLAMP, USED BY THE OPEN AND BY THE DRAG, so they cannot disagree about what is allowed. */
+  const SHEET_MIN = 160
+  /**
+   * ⚠️ THE CEILING IS EXPRESSED AS **WHAT IS LEFT FOR THE POSTER**, not as a share of the screen. The
+   * sheet is a section of the flex column, so every pixel it takes is a pixel the stage area gives up —
+   * and the brief's condition on the handle is that dragging up *"must stop short of covering the poster
+   * completely"*. ⛔ A PERCENTAGE OF THE SCREEN CANNOT SAY THAT: 72% of a short screen leaves less than
+   * 72% of a tall one does, so the one number that matters would drift with the device. 🔴 SO THE RULE
+   * IS THE SENTENCE: leave `POSTER_FLOOR` for the poster and its chrome, whatever the screen.
+   */
+  /* ⚠️ 380, AND IT IS A MEASURED NUMBER. The floor has to cover the poster's own area **and the chrome
+   * above and below it** — the top bar, the hint-and-zoom line, the item bar and the column's gaps,
+   * which came to 246px at 390×844. At 300 the handle could drag the poster's area down to 54px, which
+   * is not a poster. ⛔ IT IS NOT A SHARE OF THE SCREEN: see `clampSheet`. */
+  const POSTER_FLOOR = 380
+  const clampSheet = (px: number) => {
+    const h = typeof window === 'undefined' ? 800 : window.innerHeight
+    return Math.max(SHEET_MIN, Math.min(Math.max(SHEET_MIN, h - POSTER_FLOOR), Math.round(px)))
+  }
+  const closeSheet = () => { setSheetTab(null); setSheetFor(null) }
+
+  /**
+   * ══ 🔴 WHICH GROUPS A SELECTION ACTUALLY HAS ═════════════════════════════════════════════════════
+   *
+   * ⛔ **DERIVED, NOT A LIST I LIKED.** A tab with nothing in it looks finished and does nothing, so
+   * the sheet asks what this selection draws rather than assuming. ⚠️ THE ORDER IS THE BRIEF'S.
+   * ⚠️ "All text" HAS NO **Words**: it has no wording to set, which is why `GROUPS` is per-selection
+   * and not one constant.
+   */
+  const groupsFor = (key: string): { id: SettingsGroup; label: string }[] => {
+    if (key === 'background') {
+      return [{ id: 'picture', label: PHONE_TAB_PICTURE }, { id: 'darken', label: PHONE_TAB_DARKEN }]
+    }
+    if (key === DAYS_KEY) {
+      return [
+        { id: 'layout', label: PHONE_TAB_LAYOUT },
+        { id: 'row', label: PHONE_TAB_ROW },
+        { id: 'daysoff', label: PHONE_TAB_DAYS_OFF },
+        { id: 'more', label: PHONE_TAB_MORE },
+      ]
+    }
+    if (key === ALL_TEXT_KEY) {
+      return [
+        { id: 'size', label: PHONE_TAB_SIZE },
+        { id: 'style', label: PHONE_TAB_STYLE },
+        { id: 'readable', label: PHONE_TAB_READABLE },
+        { id: 'more', label: PHONE_TAB_MORE },
+      ]
+    }
+    /* 🔴 **EVERY TAB IN THIS LIST DRAWS SOMETHING**, which is the whole reason the list is computed
+     * and not written down. ⚠️ Style IS ALWAYS THERE: the panel's `show('style')` block is the
+     * "Match All text / Its own style" switch, so even a box that follows has something to say on
+     * that tab — it is how you make the box its own. ⛔ READABLE IS NOT: the panel draws "Make it
+     * stand out" only for a box that owns its style (`show('readable') && owns`), so a following box
+     * would get an empty tab. That shared setting lives on All writing, one tap away. */
+    const b = boxAt(layout, key)
+    const ownsIt = !!b && b.ownStyle
+    const out: { id: SettingsGroup; label: string }[] = [
+      { id: 'words', label: PHONE_TAB_WORDS },
+      { id: 'size', label: PHONE_TAB_SIZE },
+      { id: 'style', label: PHONE_TAB_STYLE },
+    ]
+    if (ownsIt) out.push({ id: 'readable', label: PHONE_TAB_READABLE })
+    out.push({ id: 'more', label: PHONE_TAB_MORE })
+    return out
+  }
+
+  /** Open the sheet on one item. ⚠️ THE FIRST TAB IS THE FIRST GROUP THAT EXISTS, never a fixed id. */
+  const openSheet = (key: string) => {
+    const gs = groupsFor(key)
+    if (!gs.length) return
+    if (key !== 'background') setSelected(key as ItemKey)
+    setSheetFor(key)
+    setSheetTab(gs[0].id)
+    setSheetH(h => (h > 0 ? h : clampSheet(Math.round(
+      (typeof window === 'undefined' ? 800 : window.innerHeight) * 0.5))))
+  }
+
+  /* ══ 🔴 §4 · PICKING ON THE POSTER OPENS THE SHEET TOO (10 October 2026) ═════════════════════════
+   *
+   * ⛔ THE BRIEF: *"Tapping words on the poster selects that item too."* On a phone "selects" has to
+   * mean the settings appear — a selection with no sheet would highlight a button at the foot of the
+   * screen and change nothing an operator can see.
+   * ⚠️ **IT IS NOT GUARDED BY A MEDIA QUERY, AND THAT IS DELIBERATE.** The sheet is `md:hidden`, so on
+   * a desktop this sets some state and renders nothing — which is cheaper and safer than asking the
+   * window how wide it is on every tap, and leaves the desktop's fingerprint untouched.
+   * 🔴 ONE FUNCTION FOR BOTH PATHS. The day block hit-tests `dayCells` and reports a part; every other
+   * box reports itself from `DraggableBox`. Two call sites, one behaviour — a second copy is how one of
+   * them would come to open the sheet and the other not. */
+  const pickOnPoster = (key: ItemKey) => {
+    setSelected(key)
+    /* ⚠️ `openSheet` ALSO CALLS `setSelected`, which is harmless and keeps it usable from the bar. */
+    openSheet(key)
+  }
+
   const selectPartAt = (nx: number, ny: number) => {
     if (!daysBlock || !dayOn) return
     for (let i = 0; i < DAYS_IN_WEEK; i++) {
       for (const c of dayCells(daysBlock, dayOn, i)) {
         if (nx >= c.x && nx <= c.x + c.w && ny >= c.y && ny <= c.y + c.h) {
-          setSelected(PART_ITEM_KEY[c.key])
+          pickOnPoster(PART_ITEM_KEY[c.key])
           return
         }
       }
     }
     /* ⚠️ A TAP IN A GAP LEAVES THE BLOCK SELECTED, which is what was pressed. */
-    setSelected(DAYS_KEY)
+    pickOnPoster(DAYS_KEY)
   }
 
   /* ══ 🔴 §2 · THE LIVE POSTER — BUILT EVERY RENDER, FROM THE LAYOUT ON SCREEN ═════════════════════
@@ -1335,9 +1457,20 @@ export function DesignEditor(props: DesignEditorProps) {
 
   // ── THE TOP BAR ─────────────────────────────────────────────────────────────────────────────────
   const topBar = (
-    <div className="flex flex-wrap items-center gap-2 gap-y-3">
-      <button type="button" onClick={onBack} className="text-sm font-bold text-orange-700 shrink-0">
-        {backLabel}
+    /* ⚠️ §4 · `shrink-0` AND `data-phone-topbar` — ONE BAR, TWO PRESENTATIONS. On a phone it is the
+     * shell's fixed first row; at 768px up it is the title row it has always been, and `md:` puts back
+     * the three controls a phone hides. ⛔ A SECOND PHONE TOP BAR WOULD BE A SECOND "‹" to wire to the
+     * leave guard, and a second Save. */
+    <div data-phone-topbar className="flex shrink-0 flex-wrap items-center gap-2 gap-y-3">
+      {/* 🔴 "‹" ON A PHONE, THE FULL LABEL ON THE DESKTOP — and **the same `onBack`**, which is the
+        * whole of the leave guard: the parent (`SocialPosts`) owns the dialog and already intercepts
+        * this prop for the desktop's own back link. ⛔ A PHONE BACK THAT CALLED SOMETHING ELSE would be
+        * an exit with no guard on the one screen where a stray swipe is likeliest. */}
+      <button type="button" onClick={onBack} data-phone-back
+        className="text-sm font-bold text-orange-700 shrink-0">
+        <span className="md:hidden" aria-hidden="true">‹</span>
+        <span className="hidden md:inline">{backLabel}</span>
+        <span className="sr-only md:hidden">{backLabel}</span>
       </button>
       <span className="text-sm font-black text-slate-900 truncate min-w-0">{designName}</span>
       <div className="grow" />
@@ -1351,8 +1484,12 @@ export function DesignEditor(props: DesignEditorProps) {
         * at 12rem and ellipsises, and the row wraps as it was always meant to. ⚠️ THE VALUE IS STILL
         * READABLE: the chosen option is what a closed select shows, and it is the short end of the
         * string — "This week · Mon 12 Oct…" tells an operator which week they are previewing. */}
+      {/* ⚠️ §4 · "Preview with" IS DESKTOP-ONLY. Its options carry a date range or a venue name, which is
+        * the one thing in this row that cannot fit a 390px phone — §7 of round 7 measured it pushing the
+        * page sideways over a drag surface. ⛔ THE CHOICE IS NOT LOST: the phone previews with whatever
+        * the screen that opened the editor had chosen, which is the same default the desktop starts on. */}
       {previewOptions.length > 0 && (
-        <label className="flex min-w-0 items-center gap-1">
+        <label className="hidden min-w-0 items-center gap-1 md:flex">
           <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-slate-400">Preview with</span>
           <select value={previewWith} onChange={e => onPreviewWith(e.target.value)}
             className={`${TOOL_INPUT} min-w-0 max-w-[12rem] truncate`}>
@@ -1365,19 +1502,54 @@ export function DesignEditor(props: DesignEditorProps) {
         * renderer's output, the same bytes the stage is drawing — at full size with nothing on top of
         * it. ⛔ IT IS NOT A SECOND RENDER and must not be: a "preview" that asked for its own PNG could
         * answer differently from the one the operator has been looking at. */}
+      {/* ⚠️ §4 · THE EYE ALONE ON A PHONE. "👁 Preview post" is 230px of a 390px row — with it the bar
+        * wrapped onto a second line and the poster lost 60px to a title row. ⛔ THE WORDS ARE NOT GONE:
+        * `sr-only` keeps them for a screen reader, which is the only reader that cannot see the eye. */}
       <button type="button" onClick={() => setPreviewOpen(true)} data-preview-post
-        className={`${TOOL_BTN} ${TOOL_BTN_OFF} shrink-0`}>{PREVIEW_POST_BTN}</button>
+        className={`${TOOL_BTN} ${TOOL_BTN_OFF} shrink-0`}>
+        <span aria-hidden="true" className="md:hidden">{PREVIEW_POST_BTN.slice(0, 2)}</span>
+        <span className="hidden md:inline">{PREVIEW_POST_BTN}</span>
+        <span className="sr-only md:hidden">{PREVIEW_POST_BTN}</span>
+      </button>
       {/* ⚠️ DISABLED RATHER THAN HIDDEN. A button that appears and disappears moves everything beside
         * it, so the Cancel and Save buttons would shift the first time anything was undone. */}
+      {/* ⚠️ §4 · UNDO IS ON BOTH — the brief asks for "↶ Undo" on the phone bar, and it is the control
+        * that makes "no confirm" safe everywhere else in this editor. The glyph leads on a phone where
+        * the word would not fit beside four other controls. */}
       <button type="button" onClick={undo} disabled={!hist.past.length}
-        title="Undo (⌘Z)"
-        className={`${TOOL_BTN} ${TOOL_BTN_OFF} disabled:text-slate-300 disabled:border-slate-100`}>Undo</button>
-      <button type="button" onClick={redo} disabled={!hist.future.length}
-        title="Redo (⇧⌘Z)"
-        className={`${TOOL_BTN} ${TOOL_BTN_OFF} disabled:text-slate-300 disabled:border-slate-100`}>Redo</button>
-      <Btn label="Cancel" colour="slate" size="sm" onClick={onCancel} />
-      <Btn label={saving ? 'Saving…' : 'Save design'} loading={saving} size="sm"
-        disabled={!editable} onClick={() => { void doSave() }} />
+        title="Undo (⌘Z)" data-phone-undo
+        className={`${TOOL_BTN} ${TOOL_BTN_OFF} disabled:text-slate-300 disabled:border-slate-100`}>
+        <span aria-hidden="true" className="md:hidden">↶</span>
+        <span className="hidden md:inline">Undo</span>
+        <span className="sr-only md:hidden">Undo</span>
+      </button>
+      {/* ⚠️ REDO AND CANCEL ARE DESKTOP-ONLY. ⛔ NOT BECAUSE THEY DO NOT MATTER but because the brief
+        * names five controls for the phone bar and a sixth and seventh would make every one of them too
+        * small to hit: Redo is reachable by ⇧⌘Z on a keyboard and by undoing the undo nowhere else, and
+        * **Cancel is "‹"** — the back link asks about unsaved work, which is what Cancel did. */}
+      {/* ══ ⛔ `hidden` ON THIS BUTTON DID NOTHING, AND THE SCREENSHOT IS HOW IT WAS FOUND ════════════
+        * 🔴 `TOOL_BTN` ALREADY CARRIES `inline-flex`, and Tailwind compiles `.inline-flex` AFTER
+        * `.hidden` — two base-layer utilities for the same property, so the later one wins and Redo
+        * stayed on the phone bar, wrapping it onto a second row. ⚠️ THE WRAPPER IS THE FIX: a `<span>`
+        * whose only classes are the two display ones has nothing to argue with. ⛔ EVERY `hidden md:…`
+        * IN THIS FILE IS ON AN ELEMENT THAT SETS NO OTHER DISPLAY — Cancel was already a wrapper, which
+        * is why it was correctly hidden and this was not. */}
+      <span className="hidden md:inline-flex">
+        <button type="button" onClick={redo} disabled={!hist.future.length}
+          title="Redo (⇧⌘Z)"
+          className={`${TOOL_BTN} ${TOOL_BTN_OFF} disabled:text-slate-300 disabled:border-slate-100`}>Redo</button>
+      </span>
+      <span className="hidden md:inline-flex"><Btn label="Cancel" colour="slate" size="sm" onClick={onCancel} /></span>
+      {/* 🔴 THE ORANGE SAVE, ON BOTH. ⚠️ `Btn`'s DEFAULT **IS** ORANGE, so "an orange Save" is the button
+        * this row already had — there was nothing to change but the words, which shorten on a phone. */}
+      {/* ⚠️ §4 · `shrink-0`, AND THE WORDS ARE THE DESKTOP'S. With Redo gone and "Preview post" down to
+        * its eye, "Save design" fits a 390px row beside the other four — and `Btn` takes a plain string,
+        * so shortening it on a phone would mean either two Save buttons or widening a primitive the
+        * whole app shares. Neither is worth one word. */}
+      <span data-phone-save className="shrink-0">
+        <Btn label={saving ? 'Saving…' : 'Save design'} loading={saving} size="sm"
+          disabled={!editable} onClick={() => { void doSave() }} />
+      </span>
     </div>
   )
 
@@ -1547,8 +1719,23 @@ export function DesignEditor(props: DesignEditorProps) {
    * the name alone. ⛔ IF THE BOX STILL LOOKS INERT AFTER THIS, the next thing to try is making it a
    * drop target like the Location settings boxes — say so and I will.
    */
-  const pictureCard = (
+  /**
+   * ══ 🔴 §4 · THE BACKGROUND CARD, AND IT IS A **FUNCTION** NOW ════════════════════════════════════
+   *
+   * ⛔ IT WAS A `const` NODE, rendered once inside the panel's always-present BACKGROUND section. The
+   * phone's **🖼 Picture** sheet shows the same card with the brief's two tabs — *Picture · Darken* —
+   * so it needs to be askable for one group at a time. ⚠️ ONE ARGUMENT, DEFAULTED, so every existing
+   * call site is unchanged: `pictureCard()` is exactly the node it was.
+   * ⛔ A SECOND COPY FOR THE PHONE WOULD HAVE BEEN THE DRIFT the whole `only` design exists to stop —
+   * the darken slider has already been lost once, to a panel it was mounted in and never drawn from.
+   */
+  /* ⚠️ §4 · `only` SPLITS THIS CARD INTO THE SHEET'S TWO TABS, and the split has to be a PARTITION:
+   * with the picture block shown on both, the Darken tab repeated the thumbnail, the size line and
+   * Replace above its slider, and the two tabs stopped meaning different things. ⛔ `undefined` IS THE
+   * DESKTOP and shows the whole card, which is the one shape that must not change. */
+  const pictureCard = (only?: SettingsGroup) => (
     <div className="space-y-2">
+      {(only === undefined || only === 'picture') && (<>
       <div className="flex items-start gap-3">
         <span className="shrink-0 w-14 rounded-lg overflow-hidden bg-slate-100 border border-slate-200"
           style={{ aspectRatio: `${W} / ${H}` }}>
@@ -1584,6 +1771,7 @@ export function DesignEditor(props: DesignEditorProps) {
         * poster, with its dates already printed on it, and then wondering why every date appears
         * twice. */}
       <p className="text-[11px] text-slate-400 leading-snug">{pictureNote}</p>
+      </>)}
 
       {/* ══ 🔴 §B3 · "Darken the picture", WHERE SOMEBODY WOULD LOOK FOR IT ══════════════════════════
         * ⛔ IT WAS IN THE MORE OPTIONS OF A TEXT BOX — and on a box that follows "All text" that section
@@ -1591,11 +1779,17 @@ export function DesignEditor(props: DesignEditorProps) {
         * not find it. The renderer has always drawn it (measured: at 60% every channel comes back at
         * about 40% of its value); what was missing was a way to reach it and a preview that reacted
         * before the next PNG arrived. Both are fixed, and this is the half an operator sees. */}
-      <div className="border-t border-slate-100 pt-2" data-darken>
-        <Slider label={DARKEN_LABEL} value={layout.darken} min={0} max={MAX_DARKEN} step={5}
-          format={v => `${v}%`} hint={DARKEN_HINT}
-          onChange={v => commit(l => ({ ...l, darken: v }))} />
-      </div>
+      {/* ⚠️ THE RULE ABOVE IT IS A SEPARATOR FROM THE PICTURE BLOCK, so on the sheet's Darken tab —
+        * where there is nothing above it to separate from — it would be a line across the top of an
+        * empty space. ⛔ AND THIS COMMENT BELONGS **ABOVE** THE GUARD: a braced JSX comment placed
+        * immediately inside `&& (` is not an expression, and the parser reports it lines later. */}
+      {(only === undefined || only === 'darken') && (
+        <div className={only === undefined ? 'border-t border-slate-100 pt-2' : ''} data-darken>
+          <Slider label={DARKEN_LABEL} value={layout.darken} min={0} max={MAX_DARKEN} step={5}
+            format={v => `${v}%`} hint={DARKEN_HINT}
+            onChange={v => commit(l => ({ ...l, darken: v }))} />
+        </div>
+      )}
     </div>
   )
 
@@ -1603,36 +1797,115 @@ export function DesignEditor(props: DesignEditorProps) {
    * third column above 1100px and a copy under the preview below it — because the ITEM LIST was a
    * separate column that stayed put at both widths. With the list inside the panel there is one
    * element in one place, and the breakpoint moves the whole panel rather than swapping two wrappers. */
+  /* ══ 🔴 §4 · ONE PROP BUNDLE, TWO INSTANCES ══════════════════════════════════════════════════════
+   * ⛔ THESE WERE WRITTEN OUT INLINE on the one `<SettingsPanel>`. The phone sheet mounts the SAME
+   * component with `only` set, and a second inline copy of twenty-five props is a second place for one
+   * of them to be forgotten — which on this component means a control that silently writes nowhere.
+   * ⚠️ SPREADING THE SAME VALUES IS IDENTICAL OUTPUT, and the baseline fingerprint says so. */
+  const panelProps = {
+    layout, selected, selItem, sel, country,
+    editable, H,
+    patchSel, commit,
+    patchEffects,
+    patchShared, patchSharedEffects,
+    makeOwn, makeFollow, promoteToShared,
+    setAllTextSize, ownNames,
+    centreSel,
+    removeNote,
+    live, beginGesture,
+    onQuick: applyQuickLayout, onReorder: reorderDayParts,
+    onToggleItem: toggleItem, onSelectItem: setSelected,
+    token,
+    fontLib,
+    sample: selItem?.key === 'date' ? selItem.sample : dateSampleFor(layout, country),
+    hasLogo: hasLogo === true,
+    placesWithout: placesWithout ?? null,
+    onAddPlacePictures: onAddPlacePictures ?? (() => {}),
+    stand: standOpen, setStand: setStandOpen,
+    more: moreOpen, setMore: setMoreOpen,
+    bg: bgOpen, setBg: setBgOpen,
+  }
+
   const settingsPanel = (
-    <SettingsPanel
-      layout={layout} selected={selected} selItem={selItem} sel={sel} country={country}
-      editable={editable} H={H}
-      patchSel={patchSel} commit={commit}
-      patchEffects={patchEffects}
-      patchShared={patchShared} patchSharedEffects={patchSharedEffects}
-      makeOwn={makeOwn} makeFollow={makeFollow} promoteToShared={promoteToShared}
-      setAllTextSize={setAllTextSize} ownNames={ownNames}
-      itemGrid={itemGrid}
-      centreSel={centreSel}
-      removeNote={removeNote}
-      live={live} beginGesture={beginGesture}
-      onQuick={applyQuickLayout} onReorder={reorderDayParts}
-      onToggleItem={toggleItem} onSelectItem={setSelected}
-      token={token}
-      fontLib={fontLib}
-      sample={selItem?.key === 'date' ? selItem.sample : dateSampleFor(layout, country)}
-      hasLogo={hasLogo === true}
-      placesWithout={placesWithout ?? null}
-      onAddPlacePictures={onAddPlacePictures ?? (() => {})}
-      backgroundCard={pictureCard}
-      stand={standOpen} setStand={setStandOpen}
-      more={moreOpen} setMore={setMoreOpen}
-      bg={bgOpen} setBg={setBgOpen}
-    />
+    <SettingsPanel {...panelProps} itemGrid={itemGrid} backgroundCard={pictureCard()} />
   )
 
+  const sheetTabs = sheetFor ? groupsFor(sheetFor) : []
+  /* ⚠️ THE SHEET'S TITLE IS THE ITEM'S OWN NAME, from the same `items` list the desktop panel names it
+   * from — so the two cannot call the same box two things. */
+  const sheetName = sheetFor === 'background'
+    ? BACKGROUND_SECTION
+    : (items.find(i => i.key === sheetFor)?.name
+      ?? (sheetFor === ALL_TEXT_KEY ? ALL_TEXT_TITLE : 'this box'))
+
+  /**
+   * ══ 🔴 THE BRIEF'S ITEM BAR, PER DESIGN ══════════════════════════════════════════════════════════
+   *
+   * ⚠️ WRITTEN DOWN ONCE, HERE. ⛔ IT IS A FIXED LIST AND NOT `items` FILTERED: the brief names these
+   * and only these, in this order, and a bar derived from the live item list would gain a button the
+   * moment a design switched its location picture on — which is a box reached by tapping it, not one of
+   * the five or six things an operator comes to this screen to do.
+   * 🔴 **🖼 Picture IS THE BACKGROUND** — the truck's own artwork, Replace and Darken. That is what an
+   * operator means by "the picture" of their poster, and it matches the brief's two tabs exactly.
+   */
+  const phoneItems: { key: string; icon: string; label: string; onPick: () => void }[] = [
+    { key: ALL_TEXT_KEY, icon: 'Aa', label: PHONE_ITEM_ALL_TEXT, onPick: () => openSheet(ALL_TEXT_KEY) },
+    ...(isWeekLayout(layout)
+      ? [
+        { key: 'heading', icon: '¶', label: items.find(i => i.key === 'heading')?.name ?? 'Week heading', onPick: () => openSheet('heading') },
+        ...((layout as Layout).days
+          ? [{ key: DAYS_KEY, icon: '▤', label: DAYS_ITEM, onPick: () => openSheet(DAYS_KEY) }]
+          /* ⚠️ A LEGACY DESIGN HAS NO BLOCK, so its three row boxes are reached by tapping them — the
+           * same way every other box is. ⛔ A BUTTON FOR A BLOCK THAT DOES NOT EXIST would open an
+           * empty sheet. */
+          : []),
+      ]
+      : [
+        { key: 'date', icon: '📅', label: items.find(i => i.key === 'date')?.name ?? 'Date', onPick: () => openSheet('date') },
+        { key: 'location', icon: '📍', label: items.find(i => i.key === 'location')?.name ?? 'Venue', onPick: () => openSheet('location') },
+        { key: 'town', icon: '🏘', label: items.find(i => i.key === 'town')?.name ?? 'Area', onPick: () => openSheet('town') },
+        { key: 'time', icon: '🕒', label: items.find(i => i.key === 'time')?.name ?? 'Time', onPick: () => openSheet('time') },
+      ]),
+    /* ⚠️ "＋ Add text" ADDS **AND OPENS**: `addNote` already selects the new box, so the sheet follows
+     * it. ⛔ ADDING WITHOUT OPENING would leave a box on the poster with no way to type in it. */
+    /* ⚠️ "＋ Add text" ADDS **AND OPENS** the new box's sheet, on the Words tab — which is where you
+     * type the words. ⛔ ADDING WITHOUT OPENING would leave an empty box on the poster and no way in.
+     * ⚠️ THE KEY IS COMPUTED BEFORE THE ADD, because `commit` has not run when `openSheet` asks. */
+    { key: 'add-note', icon: '＋', label: PHONE_ITEM_ADD_TEXT,
+      onPick: () => {
+        if (layout.notes.length >= MAX_NOTE_BOXES) return
+        const key = `${NOTE_PREFIX}${layout.notes.length}`
+        addNote()
+        openSheet(key)
+      } },
+    { key: 'background', icon: '🖼', label: PHONE_ITEM_PICTURE, onPick: () => openSheet('background') },
+  ]
+
+  /* 🔴 THE SHEET'S BODY IS **THE SAME COMPONENT** THE DESKTOP PANEL IS. ⚠️ One instance each, both
+   * given the same props; the only difference is `only`, which is the tab. ⛔ The background is the
+   * card, asked for one of its two groups — see `pictureCard`. */
+  /* ⚠️ `data-phone-sheet-body` ON BOTH ARMS. `SettingsPanel` puts it on itself when `only` is set (see
+   * `wrap`), and the picture card has no such wrapper of its own — so without this one the Picture
+   * sheet's body was unmarked, and anything measuring "what is in this tab" found an empty sheet. */
+  const sheetBody = !sheetTab ? null : sheetFor === 'background'
+    ? <div data-phone-sheet-body>{pictureCard(sheetTab)}</div>
+    : <SettingsPanel {...panelProps} only={sheetTab} backgroundCard={null} itemGrid={null} />
+
   return (
-    <div className="space-y-3">
+    /* ══ 🔴 §4 · ON A PHONE THE EDITOR IS A FULL-SCREEN SHELL (10 October 2026) ═══════════════════════
+     *
+     * ⛔ **`fixed inset-0`, AND IT IS WHAT MAKES "the poster never scrolls away" TRUE.** A poster pinned
+     * with `sticky` inside a scrolling page still goes when the page goes; a shell that IS the viewport
+     * has no page to scroll. ⚠️ THE SHEET SCROLLS INSIDE ITSELF INSTEAD, which is the brief's own rule.
+     * 🔴 AND IT IS A **FLEX COLUMN**, so the poster's area is simply `grow`: the editor already measures
+     * that area and fits the poster to it (`fitW`), so the phone needs no second sizing arithmetic and
+     * no CSS variable — the layout engine hands it the space left over and the existing code does the
+     * rest. ⛔ A MEASURED `calc(100vh - …)` WOULD HAVE BEEN A SECOND ANSWER to "how tall is the area",
+     * and the one that mattered would have been wrong whenever the sheet moved.
+     * ⚠️ `md:` RESTORES THE DESKTOP EXACTLY: static, block, `space-y-3`, no padding of its own. The
+     * baseline fingerprint in `scripts/phone-editor.cjs` is what proves that rather than this comment. */
+    <div className="fixed inset-0 z-40 flex min-h-0 flex-col gap-3 bg-white p-3
+      md:static md:z-auto md:block md:min-h-0 md:space-y-3 md:bg-transparent md:p-0">
       {topBar}
 
       {scope && (
@@ -1671,9 +1944,22 @@ export function DesignEditor(props: DesignEditorProps) {
         * half the page. Below it the panel drops UNDER the poster, which is the brief's instruction.
         * ⚠️ `items-start` SO THE PANEL DOES NOT STRETCH to the poster's height and leave a tall empty
         * card under MORE OPTIONS. */}
-      <div className="grid grid-cols-1 min-[1100px]:grid-cols-[minmax(0,1fr)_380px] gap-4 items-start"
+      {/* ⚠️ §4 · ON A PHONE THIS GRID IS THE SHELL'S GROW REGION — one column, `min-h-0` so it can
+        * shrink, and `grow` so the poster gets everything the top bar and the item bar leave. ⛔ IT IS
+        * THE SAME ELEMENT: `md:` puts the two-column grid back, and the baseline proves it. */}
+      {/* ══ 🔴 §4 · THE COLUMN COUNT IS UNPREFIXED, AND THAT IS NOT A SLIP ══════════════════════════
+        * ⛔ TAILWIND COMPILES THE `md:` BLOCK **AFTER** THE `min-[1100px]:` ONE, so at 1100px and wider
+        * both match and the LATER one wins. Giving the column count a `md:` prefix therefore beat the
+        * two-column rule below and dropped the settings panel under the poster on every desktop.
+        * 🔴 THE FINGERPRINT CAUGHT IT — `stageArea` went 704→1100 wide at 1100.
+        * ⚠️ UNPREFIXED, IT SITS IN THE BASE LAYER — before every media query, which is where the
+        * original had it and the only place it reliably loses to the 1100px rule. It costs the phone
+        * nothing: the shell is `flex` there, and `grid-template-columns` means nothing to a flex box.
+        * ⛔ DO NOT WRITE THE PREFIXED CLASS NAME IN THIS COMMENT: Tailwind scans prose as well as code
+        * and will emit the very utility the note warns against. */}
+      <div className="flex min-h-0 grow flex-col gap-4 grid-cols-1 md:grid md:items-start min-[1100px]:grid-cols-[minmax(0,1fr)_380px]"
         data-editor-grid>
-        <div className="min-w-0">
+        <div className="flex min-h-0 min-w-0 grow flex-col md:block">
           {/* ══ 🔴 THE GREY AREA — MEASURED, AND IT SCROLLS WHEN ZOOMED ═══════════════════════════════
             * ⚠️ ITS HEIGHT IS THE WINDOW MINUS WHAT IS ABOVE AND BELOW IT, which is what `--hg-stage`
             * carries: there is no way to say "the rest of the height" in a grid whose other rows are
@@ -1698,10 +1984,20 @@ export function DesignEditor(props: DesignEditorProps) {
             * ⚠️ `min-w-0` IS THE BELT on top of the grid track's own `minmax(0,1fr)`: an `overflow-auto`
             * box cannot be widened by its content, and this says so twice because the symptom — the
             * settings panel pushed off the screen — is the one Dominic reported. */}
+          {/* ══ 🔴 §4 · THE AREA IS THE **LEFTOVER SPACE** ON A PHONE ═════════════════════════════════
+            * ⚠️ AND NOTHING ELSE CHANGES, which is the point: the editor already measures this element
+            * and fits the poster to it (`area` → `fitW` → `shownW`), so handing it a different height
+            * is the whole of "the poster is sized to the space left above the bottom bar". ⛔ WHEN THE
+            * SHEET OPENS the shell's flex column gives this element less room, the ResizeObserver
+            * fires, and the poster shrinks to suit — **no second arithmetic and nothing to keep in
+            * step**. ⚠️ THE DESKTOP'S `min(72vh, 820px)` IS NOW A CLASS rather than an inline style,
+            * because an inline style cannot carry a breakpoint; the computed height is the same number
+            * and the baseline fingerprint is what says so. */}
           <div ref={areaRef}
             data-stage-area
-            className="grid min-w-0 max-w-full overflow-auto rounded-2xl bg-slate-100 p-3"
-            style={{ height: 'min(72vh, 820px)' }}>
+            data-phone-stage
+            className="grid min-h-0 min-w-0 max-w-full grow overflow-auto rounded-2xl bg-slate-100 p-3
+              md:h-[min(72vh,820px)] md:grow-0">
             {/* ── THE POSTER, FITTED TO THE AREA ────────────────────────────────────────────────
               * 🔴 ITS WIDTH IS A **MEASURED NUMBER**, not a CSS expression. `min(areaW, areaH × ratio)`
               * is what "the largest size that fits both width and height" means, and only the layout
@@ -1849,7 +2145,7 @@ export function DesignEditor(props: DesignEditorProps) {
                     /* ⚠️ §B5's TINT IS FOR **WORDS**. A picture box drawn over a tint would show the
                      * operator a photograph that is darker than the one they are about to post. */
                     tint={!isPic}
-                    onSelect={() => setSelected(it.key)}
+                    onSelect={() => pickOnPoster(it.key)}
                     onGuides={setGuides}
                     onChange={(patch, done, info) => {
                       if (done) {
@@ -1920,7 +2216,12 @@ export function DesignEditor(props: DesignEditorProps) {
             * the one screen whose whole problem is height. */}
           <div className="mt-1.5 flex items-center gap-3">
             <p className="min-w-0 grow text-xs text-slate-400" data-stage-hint>
-              Drag a box to move it · drag a corner to resize
+              {/* ⚠️ §4 · DESKTOP-ONLY WORDS, AND THE `<p>` ITSELF STAYS. At 390 this sentence wrapped
+                * onto THREE lines and took 48px off the poster, to say something a finger discovers in
+                * one gesture — while the phone's own grey line below already names both ways to choose
+                * a box. ⛔ THE PARAGRAPH IS NOT WHAT IS HIDDEN: the font warning under it is the one
+                * thing on this row a phone operator must still see, and it is `block` on its own. */}
+              <span className="hidden md:inline">Drag a box to move it · drag a corner to resize</span>
               {/* ══ 🔴 §2 · THE ONE THING THE LIVE STAGE CANNOT SHOW ══════════════════════════════
                 * ⛔ AN UPLOADED FAMILY IS NEVER SENT TO A BROWSER (the rule the route states where it
                 * is enforced), so those boxes draw live in Oswald and in the real font in the PNG.
@@ -1977,11 +2278,136 @@ export function DesignEditor(props: DesignEditorProps) {
           * bottom controls would be unreachable, and the page scrolling is what takes the poster off
           * the screen. ⚠️ BELOW 1100px IT IS STILL THIS ELEMENT, simply no longer sticky and no longer
           * capped: under the poster there is nothing above it to stay level with. */}
-        <div className="min-w-0 min-[1100px]:sticky min-[1100px]:top-4 min-[1100px]:max-h-[calc(100vh-2rem)] min-[1100px]:overflow-y-auto"
+        {/* ⚠️ §4 · THE PANEL IS DESKTOP-ONLY. On a phone the SAME component is rendered by the sheet
+          * with `only` set — one component, two presentations, which is the brief's rule. ⛔ NOT
+          * "hidden and reused": the sheet mounts its own instance, and the panel's own shell (its card,
+          * its item grid, its background section) is exactly what a sheet must not have inside it. */}
+        <div className="hidden min-w-0 md:block min-[1100px]:sticky min-[1100px]:top-4 min-[1100px]:max-h-[calc(100vh-2rem)] min-[1100px]:overflow-y-auto"
           data-settings-col>
           {settingsPanel}
         </div>
       </div>
+
+
+      {/* ══════════════════════════════════════════════════════════════════════════════════════════
+        * 🔴 §4 · THE PHONE'S ITEM BAR, HINT AND SHEET (10 October 2026)
+        * ══════════════════════════════════════════════════════════════════════════════════════════
+        *
+        * ⛔ **THE BAR IS NOT THE DESKTOP'S ITEM GRID, AND THAT IS NOT A COPY.** The grid is two across
+        * with a name and an on/off switch per row, inside the panel; the brief asks for a sideways row
+        * of square icon-and-label buttons, a fixed list per design, at the foot of the screen. They are
+        * different controls for the same job. 🔴 WHAT IS **SHARED** IS THE SETTINGS — the sheet renders
+        * `SettingsPanel` with `only` — which is the thing the brief says must not be duplicated and the
+        * thing that has actually drifted in this product before.
+        * ⚠️ THE LIST IS THE BRIEF'S, PER DESIGN, and `phoneItems` is where it is written down once. */}
+      {phoneItems.length > 0 && (
+        <div className="shrink-0 md:hidden">
+          {/* 🔴 THE GREY LINE, ONLY WITH NOTHING SELECTED. ⚠️ AN INSTRUCTION RATHER THAN A STATUS: it
+            * names both ways in, because "tap the poster" is the one an operator will not guess. */}
+          {!sheetTab && (
+            <p className="px-1 pb-1.5 text-[11px] leading-snug text-slate-400" data-phone-hint>
+              {PHONE_EDIT_HINT}
+            </p>
+          )}
+          {/* ⚠️ `overflow-x-auto` ON THE ROW AND NOTHING ON THE PAGE. Seven 64px squares do not fit a
+            * 390px screen, which is why the brief asks for a scroller — and the shell is `fixed`, so
+            * there is no page scroll for this to leak into. ⛔ `flex-nowrap` IS LOAD-BEARING: without it
+            * the squares would wrap and the bar would eat the poster's height. */}
+          <div data-phone-itembar
+            className="-mx-3 flex flex-nowrap gap-1.5 overflow-x-auto px-3 pb-1">
+            {phoneItems.map(it => (
+              <button key={it.key} type="button"
+                data-phone-item-btn={it.key}
+                data-phone-on={sheetFor === it.key ? 'yes' : 'no'}
+                onClick={() => it.onPick()}
+                className={`flex h-16 w-16 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl border text-[10px] font-bold leading-tight ${
+                  sheetFor === it.key
+                    ? 'border-orange-500 bg-orange-50 text-orange-700'
+                    : 'border-slate-200 bg-white text-slate-600'}`}>
+                <span className="text-base leading-none" aria-hidden="true">{it.icon}</span>
+                <span className="px-0.5 text-center">{it.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ══ 🔴 §4 · THE SHEET ══════════════════════════════════════════════════════════════════════
+        * ⛔ **IT IS THE LAST SECTION OF THE FLEX COLUMN, NOT A `fixed` OVERLAY** — and that is the whole
+        * difference between the brief's sheet and a panel dropped on top of one. The brief asks for the
+        * poster *"sized to the space left above the bottom bar **or above the open sheet**"*: in the
+        * flow, the stage area's `grow` IS that sentence. It gives up exactly the height the sheet takes,
+        * the ResizeObserver fires, `fitW` refits, and the poster is smaller and wholly visible.
+        * 🔴 IT WAS `fixed inset-x-0 bottom-0 z-50` FIRST, AND THAT WAS WRONG TWICE: the poster was not
+        * resized at all, only hidden behind the sheet from the middle down, and the sheet also covered
+        * the item bar — so the selected button could not be the orange one the brief asks for, and
+        * switching item meant closing the sheet first. ⚠️ A SPACER THE SHEET'S HEIGHT WOULD HAVE FIXED
+        * THE FIRST ONLY, and written the same number in two places; the flow needs no second number.
+        * ⛔ ITS HEIGHT IS A **NUMBER IN STATE**, not a class: the handle drags it, and a dragged size
+        * cannot be a breakpoint. `clampSheet` is what stops it squeezing the poster to nothing. */}
+      {sheetTab && sheetFor && (
+        <div data-phone-sheet
+          /* ⚠️ `-mx-3 -mb-3` BLEEDS IT OUT OF THE SHELL'S PADDING, the same way the item bar does: a
+            * bottom sheet floating 12px off the bottom edge is not a bottom sheet. */
+          className="-mx-3 -mb-3 flex shrink-0 flex-col rounded-t-2xl border-t border-slate-200 bg-white shadow-[0_-8px_24px_-12px_rgba(15,23,42,.25)] md:hidden"
+          style={{ height: `${sheetH}px` }}>
+          {/* 🔴 THE HANDLE — one control, two directions, which is what the brief asks for. ⚠️ POINTER
+            * EVENTS AND `touch-none`, the same construction `DraggableBox` needed three fixes to get
+            * right on touch: a handle that let the browser treat the drag as a page scroll would move
+            * nothing. ⛔ THE GRAB'S START HEIGHT IS CAPTURED ONCE, so a long drag cannot compound. */}
+          <div data-phone-handle
+            className="flex h-8 shrink-0 cursor-row-resize touch-none items-center justify-center"
+            onPointerDown={e => {
+              ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+              sheetGrab.current = { y: e.clientY, h: sheetH }
+            }}
+            onPointerMove={e => {
+              const g = sheetGrab.current
+              if (!g) return
+              /* ⚠️ UP IS NEGATIVE, SO THE HEIGHT GROWS BY THE DISTANCE DRAGGED UP. */
+              setSheetH(clampSheet(g.h + (g.y - e.clientY)))
+            }}
+            onPointerUp={e => {
+              const g = sheetGrab.current
+              sheetGrab.current = null
+              /* 🔴 DRAGGED DOWN PAST THE FLOOR ⇒ CLOSE. ⚠️ MEASURED FROM THE GESTURE'S START, not from
+               * the current height, so a small nudge never closes it and a real pull always does. */
+              if (g && e.clientY - g.y > 90) closeSheet()
+            }}
+            onPointerCancel={() => { sheetGrab.current = null }}>
+            <span className="h-1.5 w-10 rounded-full bg-slate-300" aria-hidden="true" />
+          </div>
+          <div className="flex shrink-0 items-center gap-2 px-3 pb-1">
+            <p className="min-w-0 grow truncate text-sm font-bold text-slate-900" data-phone-sheet-title>
+              {sheetName}
+            </p>
+            <button type="button" data-phone-sheet-close onClick={closeSheet}
+              className="shrink-0 rounded-lg px-2 py-1 text-sm font-bold text-slate-500">
+              <span aria-hidden="true">✕</span>
+              <span className="sr-only">{PHONE_SHEET_CLOSE}</span>
+            </button>
+          </div>
+          {/* ⚠️ THE TABS SCROLL SIDEWAYS TOO — five of them do not fit 390px either. */}
+          <div className="-mx-0 flex shrink-0 flex-nowrap gap-1 overflow-x-auto px-3 pb-2">
+            {sheetTabs.map(tb => (
+              <button key={tb.id} type="button" data-sheet-tab={tb.id}
+                data-phone-on={sheetTab === tb.id ? 'yes' : 'no'}
+                onClick={() => setSheetTab(tb.id)}
+                className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${sheetTab === tb.id
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-slate-100 text-slate-700'}`}>
+                {tb.label}
+              </button>
+            ))}
+          </div>
+          {/* 🔴 **THE SHEET SCROLLS INSIDE ITSELF, NEVER THE PAGE** — the brief's rule, and the reason
+            * the shell is `fixed`. ⚠️ `min-h-0` IS WHAT MAKES `overflow-y-auto` WORK in a flex column:
+            * without it the child's content sets the height and the scroll never engages. */}
+          <div className="min-h-0 grow overflow-y-auto px-3 pb-4" data-phone-sheet-scroll>
+            {sheetBody}
+          </div>
+        </div>
+      )}
 
       {/* ══ 🔴 §B1 · THE FINISHED POST, OVER THE TOP ═══════════════════════════════════════════════
         * ⚠️ ONLY IN THE TREE WHILE IT IS OPEN, so there is no hidden dialog waiting to be opened by the
@@ -2259,7 +2685,7 @@ function RowsPanel({ layout, commit, editable, H }: {
  */
 function DaysPanel({
   days, layout, country, editable, commit, live, beginGesture, onQuick, onReorder, more, setMore,
-  onToggle, onSelectPart,
+  onToggle, onSelectPart, only,
 }: {
   days: DaysBlock
   layout: Layout
@@ -2274,7 +2700,16 @@ function DaysPanel({
   setMore: (v: boolean) => void
   onToggle: (key: ItemKey, on: boolean) => void
   onSelectPart: (key: ItemKey) => void
+  /**
+   * ══ 🔴 §4 · ONE GROUP ONLY — A PHONE TAB ═════════════════════════════════════════════════════════
+   * ⚠️ `undefined` IS THE DESKTOP and draws all four blocks in the order they have always been in.
+   * ⛔ THE FOUR GROUPS ARE THIS PANEL'S OWN BLOCKS — the quick layouts, what's in each row, days off,
+   * and MORE OPTIONS — which is why the filter lives here and not in `SettingsPanel`: that file would
+   * otherwise have to know what is inside this one.
+   */
+  only?: SettingsGroup
 }) {
+  const show = (g: SettingsGroup) => only === undefined || only === g
   const parts = normaliseParts(days.parts)
   const on = partsOn(layout)
   const patch = (p: Partial<DaysBlock>) =>
@@ -2315,6 +2750,7 @@ function DaysPanel({
       {/* ══ 🔴 QUICK LAYOUTS — THREE PICTURES, NOT THREE WORDS ══════════════════════════════════════
         * ⚠️ EACH BUTTON **DRAWS** WHAT IT DOES: bars where the parts go. A truck owner choosing between
         * "All on one line" and "Day on top" is choosing a shape, and a shape is a thing to look at. */}
+      {show('layout') && (
       <div data-quick-layouts>
         <GroupHeading>{DAYS_QUICK_HEADING}</GroupHeading>
         <div className="grid grid-cols-3 gap-1.5">
@@ -2334,10 +2770,13 @@ function DaysPanel({
         </div>
         <p className="mt-1 text-[11px] text-slate-400">{DAYS_QUICK_HINT}</p>
       </div>
+      )}
 
       {/* ══ 🔴 WHAT'S IN EACH ROW ═══════════════════════════════════════════════════════════════════
         * ⚠️ THE SWITCH IS THE BOX'S OWN `enabled` — the same field the renderer has always read and the
         * same one the old six-item list toggled. Nothing about what is drawn is stored twice. */}
+      {/* ⚠️ §4 · THE **Row** TAB: what each of the seven rows holds, and in which order. */}
+      {show('row') && (
       <div>
         <GroupHeading>{DAYS_PARTS_HEADING}</GroupHeading>
         <div ref={rowsRef} className="space-y-1" data-part-list>
@@ -2382,10 +2821,12 @@ function DaysPanel({
         <button type="button" className="hidden" data-part-move
           onClick={() => onReorder(0, 1)}>move</button>
       </div>
+      )}
 
       {/* ══ 🔴 DAYS OFF ════════════════════════════════════════════════════════════════════════════
         * ⚠️ THE MESSAGE BOX IS ONLY THERE WHEN IT IS DRAWN. A text field under "Leave them out" would
         * be a field whose contents never appear anywhere. */}
+      {show('daysoff') && (
       <div data-days-off>
         <GroupHeading>{DAYS_OFF_HEADING}</GroupHeading>
         <div className="inline-flex overflow-hidden rounded-lg border border-slate-300 bg-white">
@@ -2408,7 +2849,9 @@ function DaysPanel({
           <p className="mt-1 text-[11px] text-slate-400">{DAYS_OFF_OMIT_HINT}</p>
         )}
       </div>
+      )}
 
+      {show('more') && (
       <Section title={EDITOR_SECTION_MORE} summary={DAYS_MORE_SUMMARY}
         open={more} onToggle={() => setMore(!more)}>
         <>
@@ -2433,6 +2876,7 @@ function DaysPanel({
           </div>
         </>
       </Section>
+      )}
     </div>
   )
 }
@@ -2669,7 +3113,41 @@ function Section({ title, summary, open, onToggle, children }: {
  * 🔴 AND "All text" IS THE FIRST THING IN IT, because on a weekly design it is the control an operator
  * wants first: eleven boxes, one font.
  */
+/**
+ * ══ 🔴 §4 · THE SETTINGS ARE **ONE COMPONENT**, SHOWN TWO WAYS (10 October 2026) ══════════════════
+ *
+ * ⛔ THE BRIEF'S RULE IS THE WHOLE ARCHITECTURE: *"one shared settings component for the desktop panel
+ * and the phone sheet — no copies."* A second phone-only panel would be a second answer to "what are
+ * this box's settings", and this product has shipped that class of bug three times in a fortnight: the
+ * darken slider that reached no panel, the caption box that read the template, the words drawn in two
+ * places.
+ *
+ * 🔴 SO `SettingsPanel` TAKES ONE OPTIONAL PROP AND NOTHING ELSE CHANGES. `only` undefined renders
+ * every group, in the order it has always had, inside the panel's own shell — **the desktop is
+ * unchanged by construction**, and `scripts/phone-editor.cjs` holds a fingerprint of it taken before
+ * this prop existed. `only` set renders ONE group, which is what a phone tab is.
+ *
+ * ⚠️ THE GROUPS ARE NOT NEW BLOCKS. They are the blocks the panel already had — `data-look`, the TEXT
+ * fields, MAKE IT EASIER TO READ, MORE OPTIONS — plus two rows each branch already built as named
+ * consts. Naming them was the work; nothing moved.
+ * ⛔ AND `GROUPS_FOR` IS DERIVED FROM WHAT IS ACTUALLY DRAWN, not from a list of names I liked. A tab
+ * with nothing in it looks finished and does nothing, so the sheet asks the panel which groups have
+ * content and draws tabs for those. See `settingsGroupsFor`.
+ */
+export type SettingsGroup =
+  /* a text box, and "All text" */
+  | 'words' | 'size' | 'style' | 'readable' | 'more'
+  /* "The 7 days" */
+  | 'layout' | 'row' | 'daysoff'
+  /* the location picture */
+  | 'picture' | 'darken'
+
 function SettingsPanel(p: SettingsProps & {
+  /**
+   * ONE GROUP ONLY — a phone tab. ⚠️ `undefined` IS THE DESKTOP and renders every group, which is what
+   * makes "the desktop did not change" true rather than merely checked.
+   */
+  only?: SettingsGroup
   stand: boolean
   setStand: (v: boolean) => void
   more: boolean
@@ -2687,7 +3165,7 @@ function SettingsPanel(p: SettingsProps & {
     patchShared, patchSharedEffects, makeOwn, makeFollow, promoteToShared, setAllTextSize,
     centreSel, removeNote, live, beginGesture, onQuick, onReorder, onToggleItem, onSelectItem,
     token, fontLib, sample, hasLogo, placesWithout,
-    onAddPlacePictures, stand, setStand, more, setMore, itemGrid, ownNames,
+    onAddPlacePictures, stand, setStand, more, setMore, itemGrid, ownNames, only,
   } = p
   const isWeek = isWeekLayout(layout)
   const spec = LOCALES[country]
@@ -2725,6 +3203,18 @@ function SettingsPanel(p: SettingsProps & {
     </div>
   )
 
+  /* ══ 🔴 §4 · ONE LINE DECIDES WHETHER A GROUP IS DRAWN ═══════════════════════════════════════════
+   * ⚠️ `only` UNDEFINED ⇒ EVERY GROUP, which is the desktop. ⛔ IT IS A **FILTER**, NOT A SWITCH: the
+   * blocks stay where they are, in the order the panel has always had them, so the desktop's reading
+   * order is the source of truth for both presentations. */
+  const show = (g: SettingsGroup) => only === undefined || only === g
+
+  /* ⚠️ THE SHEET SUPPLIES ITS OWN CHROME — a handle, the item name, a ✕ and the tab row — so the
+   * panel's card border, its item grid and its background section would be a second frame inside it.
+   * ⛔ THE **CONTENTS** ARE THE SAME NODES either way, which is the point of the prop. */
+  const wrap = (body: React.ReactNode, title?: string, subtitle?: string) =>
+    only === undefined ? shell(body, title, subtitle) : <div data-phone-sheet-body>{body}</div>
+
   /* ══ 🔴 "All text" ════════════════════════════════════════════════════════════════════════════════
    * ⚠️ IT HAS NO "Shows" AND NO "Line up". Both are per box by definition — a date style belongs to the
    * one box that draws a date, and `align` is about which edge of **this** box the words sit against.
@@ -2732,9 +3222,13 @@ function SettingsPanel(p: SettingsProps & {
    * show: the boxes on a design are deliberately different sizes and the thing an operator wants is to
    * move them all without flattening them. */
   if (selected === ALL_TEXT_KEY) {
-    return shell(
+    return wrap(
       <>
+        {/* ⚠️ §4 · "All text" HAS NO **Words** GROUP, and that is not an omission: it has no wording to
+          * set. Its tabs are therefore Size · Style · Readable · More, and `settingsGroupsFor` says so
+          * in one place rather than the sheet guessing. */}
         <div className="space-y-2" data-settings-section="TEXT">
+          {show('style') && (
           <Field label="Font">
             <div className="flex items-center gap-1.5">
               <div className="min-w-0 grow">
@@ -2744,38 +3238,57 @@ function SettingsPanel(p: SettingsProps & {
               </div>
             </div>
           </Field>
+          )}
           {/* ══ 🔴 A SIZE, NOT TWO NUDGE BUTTONS — see `setAllTextSize` ══════════════════════════════
             * ⚠️ IT SITS WHERE THE SIZE STEPPER SITS FOR A BOX, so the panel reads the same way on every
             * selection, and the grey line says what the number does to the boxes that are not it. */}
-          <Field label={LABEL_TEXT_SIZE}>
-            <Stepper value={layout.date.fontSize} min={6} max={H} step={2}
-              minusLabel="A−" plusLabel="A+" onChange={v => setAllTextSize(v)} />
-          </Field>
-          <p className="text-[11px] leading-snug text-slate-400" data-all-size-hint>{ALL_TEXT_SIZE_HINT}</p>
-          <Field label="Colour">
-            <ColourField value={shared.color} onChange={c => patchShared({ color: c })} label="Text colour" />
-          </Field>
-          <Field label={LABEL_LETTERS}>
-            <StyleRow look={shared} fontLib={fontLib} editable={editable}
-              onPatch={patchShared} align={null} onAlign={null} />
-          </Field>
+          {show('size') && (
+            <>
+              <Field label={LABEL_TEXT_SIZE}>
+                <Stepper value={layout.date.fontSize} min={6} max={H} step={2}
+                  minusLabel="A−" plusLabel="A+" onChange={v => setAllTextSize(v)} />
+              </Field>
+              <p className="text-[11px] leading-snug text-slate-400" data-all-size-hint>{ALL_TEXT_SIZE_HINT}</p>
+            </>
+          )}
+          {show('style') && (
+            <>
+              <Field label="Colour">
+                <ColourField value={shared.color} onChange={c => patchShared({ color: c })} label="Text colour" />
+              </Field>
+              <Field label={LABEL_LETTERS}>
+                <StyleRow look={shared} fontLib={fontLib} editable={editable}
+                  onPatch={patchShared} align={null} onAlign={null} />
+              </Field>
+            </>
+          )}
         </div>
 
-        <Section title={SECTION_EASIER_TO_READ} open={stand} onToggle={() => setStand(!stand)}>
-          <EffectsPanel fx={shared.effects} dateBox={null} isWeek={isWeek}
-            patchSel={patchSel} patchEffects={patchSharedEffects} />
-        </Section>
-        <Section title={EDITOR_SECTION_MORE} summary={MORE_SUMMARY_PLAIN}
-          open={more} onToggle={() => setMore(!more)}>
-          <MoreShared fx={shared.effects} look={shared} layout={layout}
-            patchLook={patchShared} patchEffects={patchSharedEffects} H={H} />
-        </Section>
+        {/* ⚠️ §4 · ON A PHONE A SECTION'S FOLD IS FORCED OPEN, because the tab IS the fold: a tab whose
+          * contents were collapsed would be a tab with a heading and nothing under it. ⛔ ON THE DESKTOP
+          * `open` IS THE OPERATOR'S OWN FOLD, untouched. */}
+        {show('readable') && (
+          <Section title={SECTION_EASIER_TO_READ} open={only !== undefined || stand}
+            onToggle={() => setStand(!stand)}>
+            <EffectsPanel fx={shared.effects} dateBox={null} isWeek={isWeek}
+              patchSel={patchSel} patchEffects={patchSharedEffects} />
+          </Section>
+        )}
+        {show('more') && (
+          <Section title={EDITOR_SECTION_MORE} summary={MORE_SUMMARY_PLAIN}
+            open={only !== undefined || more} onToggle={() => setMore(!more)}>
+            <MoreShared fx={shared.effects} look={shared} layout={layout}
+              patchLook={patchShared} patchEffects={patchSharedEffects} H={H} />
+          </Section>
+        )}
 
         {/* ══ 🔴 THE AMBER NOTE — "SOME BOXES ARE NOT CHANGED BY THIS" ══════════════════════════════
           * ⛔ WITHOUT IT, "All text" IS A CONTROL THAT SILENTLY DOES LESS THAN ITS NAME. An operator who
           * had given their heading its own font would change the shared colour, watch the heading stay
           * put, and have no way to find out why. ⚠️ IT NAMES THE BOXES and offers the undo. */}
-        {ownNames.length > 0 && (
+        {/* ⚠️ §4 · THE AMBER NOTE RIDES WITH **More** ON A PHONE. It is advice rather than a control, and
+          * a tab of its own would be a tab you cannot change anything in. */}
+        {show('more') && ownNames.length > 0 && (
           <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-2.5 py-2" data-own-warning>
             <p className="text-[11px] leading-relaxed text-amber-800">
               {ownNames.map(o => o.name).join(', ')} {ownNames.length === 1 ? 'has' : 'have'} its own style, so it isn’t changed.{' '}
@@ -2794,14 +3307,18 @@ function SettingsPanel(p: SettingsProps & {
   }
 
   /* ⛔ NOTHING SELECTED. The brief's own sentence, and it is an instruction rather than a status. */
-  if (!selItem) return shell(<p className="text-sm text-slate-400">{EDITOR_NOTHING_SELECTED}</p>)
+  if (!selItem) return wrap(<p className="text-sm text-slate-400">{EDITOR_NOTHING_SELECTED}</p>)
 
   /* ══ 🔴 "THE 7 DAYS" — ITS OWN PANEL, AND NO TEXT SETTINGS IN IT ══════════════════════════════ */
   if (selected === DAYS_KEY && isWeek && (layout as Layout).days) {
-    return shell(
+    return wrap(
+      /* ⚠️ §4 · `only` GOES **DOWN**, because "The 7 days" is wholly `DaysPanel`'s — its four tabs
+       * (Layout · Row · Days off · More) are that component's own blocks, and filtering them from out
+       * here would mean this file knowing what is inside it. */
       <DaysPanel days={(layout as Layout).days!} layout={layout as Layout} country={country}
         editable={editable} commit={commit} live={live} beginGesture={beginGesture}
         onQuick={onQuick} onReorder={onReorder} more={more} setMore={setMore}
+        only={only}
         onToggle={onToggleItem} onSelectPart={onSelectItem} />,
       DAYS_ITEM, DAYS_BLURB,
     )
@@ -2813,7 +3330,15 @@ function SettingsPanel(p: SettingsProps & {
   /* ⚠️ THE PICTURE BOX KEEPS ITS OWN CONTROLS — fill/fit, corners, "if a location has no image", the
    * border and the radius. A picture has no font and no capitals, so the text sections would be empty. */
   if (selected === PLACE_PICTURE_KEY) {
-    return shell(
+    return wrap(
+      /* ⚠️ §4 · THIS PANEL TAKES NO `only`, AND THAT IS A READING OF THE BRIEF WORTH WRITING DOWN. The
+       * phone bar's **🖼 Picture** is the BACKGROUND — the truck's own artwork, "Replace picture" and
+       * "Darken the picture" — which is what an operator means by "the picture" of their poster, and
+       * which matches the brief's two tabs (Picture · Darken) exactly. ⛔ THIS IS THE **LOCATION**
+       * picture box instead: a logo in a space on the design, an item that exists only once it is
+       * switched on, and not one of the items the brief lists in the bar. So it is reached on a phone
+       * the same way every other box is — by tapping it on the poster — and its settings are one
+       * group. */
       <PicturePanel layout={layout} commit={commit} editable={editable} isWeek={isWeek}
         hasLogo={hasLogo === true} placesWithout={placesWithout ?? null}
         onAddPlacePictures={onAddPlacePictures ?? (() => {})} />,
@@ -2823,7 +3348,11 @@ function SettingsPanel(p: SettingsProps & {
 
   /* ⚠️ `rows` HAS NO BOX AND NO TEXT — it is the weekly list's spacing. */
   if (!sel) {
-    return shell(
+    return wrap(
+      /* ⚠️ §4 · `rows` IS NOT IN THE PHONE'S ITEM BAR — the brief lists "The 7 days" instead, and a
+       * converted design has no `rows` item at all. ⛔ IT STILL GOES THROUGH `wrap` so that a LEGACY
+       * design opened on a phone is not a branch that renders the desktop's whole shell inside a
+       * sheet. Its one group is `layout`, which is what `settingsGroupsFor` reports. */
       <RowsPanel layout={layout} commit={commit} editable={editable} H={H} />,
       itemName, SETTINGS_CLICKED,
     )
@@ -2917,7 +3446,7 @@ function SettingsPanel(p: SettingsProps & {
     </Field>
   )
 
-  return shell(
+  return wrap(
     <>
       {/* ══ 🔴 §3 · THE "LOOK" SWITCH — ONE CONTROL WITH TWO VISIBLE POSITIONS ════════════════════════
         *
@@ -2935,6 +3464,7 @@ function SettingsPanel(p: SettingsProps & {
         * ⚠️ THE BEHAVIOUR IS UNCHANGED: "Its own style" copies the shared look in and then marks the box
         * own — the copy and the flag in one commit, or the box would visibly change to whatever stale
         * look it carried in storage the instant the operator asked to change *just this box*. */}
+      {show('style') && (
       <div data-look>
         {/* ⚠️ "Style", NOT "LOOK" — §C. The heading was a noun an operator had to map onto what the
           * switch did; the two positions now say it themselves. */}
@@ -2956,52 +3486,82 @@ function SettingsPanel(p: SettingsProps & {
           {owns ? STYLE_OWN_HINT : STYLE_MATCH_HINT}
         </p>
       </div>
+      )}
 
       <div className="mt-2.5 space-y-2" data-settings-section="TEXT">
-        {showsRow}
+        {/* ⚠️ §4 · `showsRow` IS THE **Words** TAB — the date wording, the place wording, the clock, a
+          * heading's text, a note's text. Whichever of those this box has. */}
+        {show('words') && showsRow}
         {/* ⚠️ A FOLLOWING BOX SHOWS **ONLY** THE PER-BOX SETTINGS — Shows, Size, Line up, MORE OPTIONS.
           * ⛔ DRAWING ITS FONT AND COLOUR WOULD BE DRAWING CONTROLS THAT WRITE TO FIELDS NOTHING READS,
           * which is the one failure here that is completely invisible: the operator changes the colour,
           * the poster does not change, and nothing on the screen explains it. */}
         {owns ? (
           <>
-            <Field label="Font">
-              <div className="flex items-center gap-1.5">
-                <div className="min-w-0 grow">
-                  <FontPicker value={shown.fontId} onChange={id => patchSel({ fontId: id })}
-                    token={token} disabled={!editable} sample={sample}
-                    className={`${TOOL_INPUT} w-full`} />
+            {show('style') && (
+              <Field label="Font">
+                <div className="flex items-center gap-1.5">
+                  <div className="min-w-0 grow">
+                    <FontPicker value={shown.fontId} onChange={id => patchSel({ fontId: id })}
+                      token={token} disabled={!editable} sample={sample}
+                      className={`${TOOL_INPUT} w-full`} />
+                  </div>
+                  {/* ══ ⚠️ THE INLINE SIZE STEPPER IS **DESKTOP ONLY** ═══════════════════════════════
+                    * 🔴 ON A PHONE THERE IS A **Size** TAB, and the same control in two tabs is exactly
+                    * what tabs exist to prevent: an operator who changes it in one and looks for it in
+                    * the other has been given two answers. ⛔ ON THE DESKTOP THERE IS NO Size TAB, so
+                    * the Stepper beside the font is the only place an owning box's size lives — and it
+                    * stays precisely where it is, which is what the baseline fingerprint checks. */}
+                  {only === undefined && (
+                    <div className="flex shrink-0 items-center gap-1">
+                      <Stepper value={sel.fontSize} min={6} max={H} step={2}
+                        onChange={v => patchSel({ fontSize: v })} />
+                    </div>
+                  )}
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  <Stepper value={sel.fontSize} min={6} max={H} step={2}
-                    onChange={v => patchSel({ fontSize: v })} />
-                </div>
-              </div>
-            </Field>
-            <Field label="Colour">
-              <ColourField value={shown.color} onChange={c => patchSel({ color: c })} label="Text colour" />
-            </Field>
-            <Field label={LABEL_LETTERS}>
-              <StyleRow look={shown} fontLib={fontLib} editable={editable}
-                onPatch={patchSel} align={sel.align} onAlign={a => patchSel({ align: a })} />
-            </Field>
+              </Field>
+            )}
+            {show('style') && (
+              <Field label="Colour">
+                <ColourField value={shown.color} onChange={c => patchSel({ color: c })} label="Text colour" />
+              </Field>
+            )}
+            {show('style') && (
+              <Field label={LABEL_LETTERS}>
+                <StyleRow look={shown} fontLib={fontLib} editable={editable}
+                  onPatch={patchSel} align={sel.align} onAlign={a => patchSel({ align: a })} />
+              </Field>
+            )}
+            {/* 🔴 AND THE PHONE'S **Size** TAB CARRIES THEM FOR AN OWNING BOX TOO. ⚠️ `only !== undefined`
+              * IS WHAT KEEPS THE DESKTOP BYTE-IDENTICAL: there, size is the Stepper above. */}
+            {only !== undefined && show('size') && (
+              <>
+                {sizeRow}
+                {lineUpRow}
+              </>
+            )}
           </>
         ) : (
-          <>
-            {sizeRow}
-            {lineUpRow}
-          </>
+          /* ⚠️ A FOLLOWING BOX'S TWO ROWS **ARE** ITS Size TAB, and `show('size')` is true on the
+           * desktop — so this arm is unchanged there. */
+          show('size') && (
+            <>
+              {sizeRow}
+              {lineUpRow}
+            </>
+          )
         )}
       </div>
 
       {/* ⚠️ MAKE IT STAND OUT IS SHARED-OR-OWN LIKE THE REST OF THE LOOK, so a following box does not
         * get it — the shared one is on the "All text" panel, one press away and named there. */}
-      {owns && (
-        <Section title={SECTION_EASIER_TO_READ} open={stand} onToggle={() => setStand(!stand)}>
+      {show('readable') && owns && (
+        <Section title={SECTION_EASIER_TO_READ} open={only !== undefined || stand} onToggle={() => setStand(!stand)}>
           <EffectsPanel fx={shown.effects} dateBox={dateBox} isWeek={isWeek}
             patchSel={patchSel} patchEffects={patchEffects} />
         </Section>
       )}
+      {show('more') && (
       <Section title={EDITOR_SECTION_MORE}
         summary={MORE_SUMMARY_PLAIN}
         open={more} onToggle={() => setMore(!more)}>
@@ -3015,6 +3575,7 @@ function SettingsPanel(p: SettingsProps & {
           )}
         </>
       </Section>
+      )}
 
       {/* ══ 🔴 §6 · DELETE YOUR OWN TEXT (10 October 2026) ═══════════════════════════════════════════
         * ⛔ IT WAS A RED **LINK AT THE BOTTOM OF A FOLDED SECTION**, which is the hardest place on the
@@ -3027,7 +3588,10 @@ function SettingsPanel(p: SettingsProps & {
         * ⛔ ONLY A "Your own text" BOX. The built-in items are switched off, never deleted — a design
         * with no Date box is a state the validator and the renderer both understand, and a design
         * MISSING one is not. */}
-      {noteIndex(selected) >= 0 && (
+      {/* ⚠️ §4 · DELETE RIDES WITH **More** ON A PHONE. It is the destructive end of the panel and it
+        * belongs behind the same one tap it is behind on the desktop — not on a tab of its own, where
+        * it would be the only thing in it. */}
+      {show('more') && noteIndex(selected) >= 0 && (
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-2.5">
           <button type="button" disabled={!editable} data-delete-note
             onClick={() => removeNote(selected)}
@@ -3043,7 +3607,7 @@ function SettingsPanel(p: SettingsProps & {
         * promotes this box's look to the SHARED one and makes every box — including the other own-style
         * boxes — follow it. ⚠️ ONLY OFFERED ON A BOX THAT OWNS ITS STYLE, because on a following box it
         * would mean "make the shared style the shared style". */}
-      {owns && (
+      {show('more') && owns && (
         <div className="mt-3 border-t border-slate-100 pt-2.5">
           <button type="button" disabled={!editable} onClick={() => promoteToShared(selected)}
             className="text-xs font-bold text-orange-700 disabled:text-slate-300" data-use-for-all>

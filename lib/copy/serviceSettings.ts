@@ -289,6 +289,31 @@ export const ITEM_PRICES_SHOW = 'Show prices'
 export const ITEM_PRICES_HIDE = 'Hide prices'
 
 /**
+ * ══ 🔴 §2 · THE PHONE CARD'S OWN WORDS FOR THE ITEM PRICES (10 October 2026) ══════════════════════
+ *
+ * ⛔ **DOMINIC DID NOT NOTICE THE CHIP AT ALL.** The phone card folded forty dish prices behind a grey
+ * `Show 30 items ▾` chip the size of a badge, sitting beside a second grey line that read
+ * `"2 set by hand"`. Two pieces of jargon and a control that did not look like one.
+ *
+ * 🔴 THE FOLD IS NOW DECIDED BY THE MODE, WHICH IS THE WHOLE POINT. "Set each price myself" **is** the
+ * instruction to set each price, so the list opens with no control at all and this heading sits over
+ * it — asking an operator to press a button to reach the thing they just chose was the fold at its
+ * least defensible. Every other mode has an across-the-board rule that already answers "what will this
+ * cost", so the list is an optional second look and gets a real button.
+ */
+export const PRICE_ITEMS_HEADING = 'Set the price of each item'
+/** ⚠️ "›" AND "⌃", THE SAME TWO GLYPHS THE REST OF THIS PRODUCT USES for "opens" and "closes". */
+export const PRICE_ITEMS_OPEN = 'See or change each item\u2019s price \u203a'
+export const PRICE_ITEMS_CLOSE = 'Hide item prices \u2303'
+/**
+ * ⛔ IT WAS `"2 set by hand"`. "Set by hand" names the MECHANISM; an operator wants to know that two
+ * dishes are not following the rule. ⚠️ **HIDDEN AT ZERO**, because "0 items have their own price" is
+ * a sentence about nothing — the absence of overrides is the normal state and needs no line.
+ */
+export const ownPriceCount = (n: number) =>
+  n === 1 ? '1 item has its own price' : `${n} items have their own price`
+
+/**
  * The DASHBOARD SHEET's footer line.
  *
  * ⛔ REMOVED FROM THE GRID ENTIRELY (5 October 2026). It spanned the van columns inside the ITEM

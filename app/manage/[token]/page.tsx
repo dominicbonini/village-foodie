@@ -4,6 +4,7 @@
 
 import { useState, useEffect, useLayoutEffect, useCallback, useMemo, use, useRef, Fragment, useReducer } from 'react'
 import { createPortal } from 'react-dom'
+import { attachSubTabScroller } from '@/lib/subtab-scroll'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
 import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_AUTO_REJECT_LABEL, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS, offlineAutoRejectLabel, OFFLINE_PROTECTION_PURPOSE } from '@/lib/copy/offlineProtection'
@@ -237,14 +238,114 @@ const MANAGE_SCROLLER_ID = 'manage-scroller'
  * asked for and below the 44px that guidance generally gives for a finger. These are pressed outdoors
  * on a phone, so if the taller pill is wanted back it is `min-h-10` on this line and nothing else.
  */
-const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 py-2 bg-slate-50 border-b border-slate-200 min-w-0 overflow-x-auto'
+/* ⚠️ `scroll-pl-4` MATCHES THE BAR'S OWN `px-4`, AND IT IS NOT COSMETIC. A `snap-start` pill aligns to
+ * the scrollport's BORDER edge, not its padding edge — so with snapping on and no scroll-padding the
+ * browser snapped the row on load, ate the bar's 16px gutter and left the first pill jammed against
+ * the screen edge (measured: `scrollLeft` 16 at rest, first pill at x=0, and the left-hand fade lit
+ * with nothing behind it). ⛔ MEASURED, NOT NOTICED: `scripts/subtab-row.cjs` is what found it. */
+/* ══ 🔴 `scrollbar-hide` — AND IT IS THE **APP** THAT NEEDED IT ═══════════════════════════════════
+ * ⛔ **DOMINIC, IN THE MOBILE APP:** *"theres a grey bar that also scrolls left and right that doesnt
+ * exist when i access the website direct on my phone."* The two surfaces disagree about what to paint
+ * over a sideways scroller: mobile Safari uses OVERLAY scrollbars that fade out when nothing is moving,
+ * so the website shows nothing — while the app is a Capacitor WKWebView, where the track can stay.
+ * 🔴 THE BAR ALREADY HAS A `border-b` DIRECTLY UNDER THE PILLS, so a track painted across it is a
+ * second horizontal line in the same two pixels, and that one moves.
+ * ⚠️ `.scrollbar-hide` IS THE UTILITY app/globals.css ALREADY HAS (the customer order page's category
+ * row uses it), and it carries all three spellings — `scrollbar-width`, `-ms-overflow-style` and
+ * `::-webkit-scrollbar`. ⛔ A SECOND SET OF RULES KEYED ON `[data-subtab-bar]` WOULD BE A SECOND
+ * DEFINITION of one thing, which is how the two come to disagree later.
+ * ⛔ IT HIDES THE SCROLLBAR, NOT THE SCROLLING: the row still scrolls, still snaps, and still brings
+ * the selected pill into view on open. */
+const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 py-2 bg-slate-50 border-b border-slate-200 min-w-0 overflow-x-auto scrollbar-hide snap-x snap-proximity scroll-pl-4 scroll-pr-4'
+/* ══ 🔴 §1 · ONE ROW THAT SCROLLS, AND **SAYS SO** (10 October 2026, second pass) ═══════════════════
+ *
+ * ⛔ **DOMINIC, ON AN iPHONE:** *"on a phone the Auto-replies section can't be seen."* Measured in
+ * WebKit at 390px: the row is **951px wide inside a 390px bar**. `w-max` makes the row as wide as its
+ * contents and `overflow-x-auto` on the bar lets it scroll — so the eight pills were *reachable* by
+ * swiping and **nothing on the page said so**. iOS Safari paints no persistent scrollbar, so a row that
+ * starts flush at the left edge looks like a row that simply ends after "Order settings".
+ * ⚠️ THAT SECTION IS **NOT NAMED BY ITS id HERE**, deliberately: `scripts/schedule-graphics-places.cjs`
+ * checks that the eight `id=` attributes appear in the page in the array's order, by their position in
+ * the raw source — so quoting one in a comment above the array invents a ninth, earlier occurrence and
+ * fails the check on correct code. It did, once, which is why this line exists.
+ *
+ * ══ 🔴 IT WAS `flex-wrap` FOR A DAY, AND THE WRAP IS WHAT CAME BACK ════════════════════════════════
+ * ⛔ WRAPPING MADE SETTINGS **THREE ROWS — 125px of sticky bar on an 844px screen**, 15% of the phone,
+ * permanently, on every scroll of every Settings page. Dominic saw it on the device and asked for the
+ * one-row scroller back. That is the trade the previous report named and accepted in the other
+ * direction; it is named again here so the next reader knows both sides were weighed twice.
+ * 🔴 WHAT MAKES THE SCROLLER SURVIVABLE THIS TIME IS THAT IT **ANNOUNCES ITSELF** — see `SubTabBar`:
+ * a fade at whichever edge has more pills behind it, the active pill scrolled into view on open, and
+ * snap points so a swipe lands on a pill rather than halfway through one. ⚠️ THE FADE IS THE PART THAT
+ * ANSWERS THE ORIGINAL BUG: a row that ends in a soft edge is a row that visibly continues.
+ * ⚠️ `w-max` IS WHAT MAKES THE ROW SCROLLABLE AT ALL — without it the flex row shrinks to the bar and
+ * the pills squash instead of overflowing. ⛔ AT 1100 AND 1728 NOTHING CHANGES: eight pills fit, there
+ * is no overflow, the fade stays off and the bar is the 49px it has always been. */
 const SUBTAB_ROW = 'flex gap-1.5 w-max'
 /* 🔴 THE TABS THAT OWN A SUB-TAB BAR. Read by the notification stack, which must render BELOW a bar
  * where there is one and at the top of the page where there is not. One list, so a fourth tab gaining
  * a bar cannot leave the stack above it — which is the whole failure this guards. */
+/**
+ * ══ 🔴 §1 · THE ONE BAR EVERY SUB-TAB ROW IS, AND THE THREE THINGS THAT MAKE IT OBVIOUS ════════════
+ *
+ * ⛔ **A ROW THAT SCROLLS AND DOES NOT SAY SO IS THE BUG THIS EXISTS TO FIX.** Four bars (Menu,
+ * Schedule, Social media, Settings) drew the same markup by hand, so any hint added to one would be
+ * missing from the other three the day it was written. One component, four call sites.
+ *
+ * It does two things:
+ *   1. 🔴 **THE ACTIVE PILL IS SCROLLED INTO VIEW WHEN THE PAGE OPENS**, so a bar whose current tab is
+ *      the eighth of eight does not open showing the first three. That is the reported bug: at 390px
+ *      'Auto-replies' sat 400px past the right edge and nothing brought it back.
+ *   2. ⚠️ **SNAP POINTS**, from `snap-x snap-proximity` on the bar and `snap-start` on each pill, with
+ *      `scroll-pl-4` so a snap aligns to the bar's padding edge rather than eating its gutter.
+ *
+ * ⚠️ **(1) LIVES IN `lib/subtab-scroll.ts`, NOT HERE, AND THAT IS SO IT CAN BE MEASURED.** The scroll
+ * arithmetic is the part that can be wrong, and this file imports half the product, so putting one of
+ * these bars in a browser by bundling it is not a check anybody would run twice.
+ * `scripts/subtab-row.cjs` drives that module directly against a real layout engine. ⛔ IT IS NOT A
+ * SECOND COPY: this component calls it and does nothing else of its own.
+ *
+ * ══ ⛔ THE EDGE FADES WERE HERE AND ARE GONE — 10 October 2026, ON REQUEST ═════════════════════════
+ * A soft gradient lit at whichever edge still had pills behind it, from two `sticky` spans inside the
+ * scroller. Dominic asked for it off. ⚠️ THE SPANS TOOK NO LAYOUT WIDTH (`-mr-10`/`-ml-10` cancelled
+ * their own `w-10`), so removing them restores the bar's markup exactly as it was — and the scroll
+ * listener and `ResizeObserver` that kept them painted went with them, because a listener that paints
+ * nothing still runs on every frame of every swipe.
+ *
+ * ⚠️ **A CALLBACK REF, NOT `useRef` + `useEffect`.** Three of the four bars are rendered conditionally
+ * on the active tab inside a component that stays mounted, so an effect with `[]` deps would run once
+ * while the bar did not exist and never again. A callback ref fires exactly when the node arrives and
+ * when it leaves.
+ */
+function SubTabBar({ label, className = '', barRef, children }: {
+  label: string
+  className?: string
+  /** 🔴 Settings' jump logic keeps its own handle on the bar — see `useSettingsJump`. */
+  barRef?: React.MutableRefObject<HTMLDivElement | null>
+  children: React.ReactNode
+}) {
+  const teardown = useRef<(() => void) | null>(null)
+  const attach = useCallback((bar: HTMLDivElement | null) => {
+    teardown.current?.()
+    teardown.current = null
+    if (barRef) barRef.current = bar
+    if (bar) teardown.current = attachSubTabScroller(bar)
+  }, [barRef])
+  return (
+    <div role="tablist" aria-label={label} data-subtab-bar
+      ref={attach} className={`${SUBTAB_BAR} ${className}`}>
+      <div className={SUBTAB_ROW}>{children}</div>
+    </div>
+  )
+}
+
 const TABS_WITH_SUBTABS: Tab[] = ['menu', 'schedule', 'social', 'settings']
+/* ⚠️ `snap-start` PAIRS WITH THE BAR'S `snap-x snap-proximity`: a swipe settles with a pill's left
+ * edge against the bar's left edge rather than halfway through one. ⛔ **PROXIMITY, NOT MANDATORY** —
+ * mandatory would fight `SubTabBar`'s scroll-the-active-pill-into-view on open and re-snap away from
+ * the position it just set, and it also makes a short deliberate nudge impossible. */
 const subtabBtn = (on: boolean) =>
-  `px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
+  `px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-colors snap-start ${
     on ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`
 
 const SETTINGS_SECTIONS: { id: string; label: string }[] = [
@@ -1302,8 +1403,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             one-long-page behaviour, which was explicitly to be left alone. Nothing here scrolls,
             spies, or reads a `#hash`. */}
         {activeTab === 'menu' && (
-          <div role="tablist" aria-label="Menu sections" data-subtab-bar className={`${SUBTAB_BAR} mb-4`}>
-            <div className={SUBTAB_ROW}>
+          <SubTabBar label="Menu sections" className="mb-4">
               {MENU_SECTIONS.map(sec => (
                 <button key={sec.id} role="tab" aria-selected={menuSection === sec.id}
                   onClick={() => setMenuSection(sec.id)}
@@ -1311,8 +1411,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                   {sec.label}
                 </button>
               ))}
-            </div>
-          </div>
+          </SubTabBar>
         )}
         {/* ══ 🔴 SOCIAL MEDIA'S THREE PILLS — THE SAME BAR AS MENU AND SCHEDULE (7 October 2026) ═════
             ⛔ THEY ARE HERE, NOT INSIDE `SocialPostsPane`. That component used to draw its OWN
@@ -1322,8 +1421,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             of the three looking different.
             ⚠️ THE PANE NO LONGER RENDERS A CONTROL AT ALL — see `data-social-area`'s removal there. */}
         {activeTab === 'social' && (
-          <div role="tablist" aria-label="Social media sections" data-subtab-bar className={`${SUBTAB_BAR} mb-4`}>
-            <div className={SUBTAB_ROW}>
+          <SubTabBar label="Social media sections" className="mb-4">
               {SOCIAL_SECTIONS.map(sec => (
                 /* ══ 🔴 THE PILL ASKS THE PANE, AND THE PANE MAY REFUSE (9 October 2026) ══════════
                    ⛔ IT CALLED `setSocialSection` DIRECTLY, so pressing a pill while a design editor
@@ -1339,8 +1437,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                   {sec.label}
                 </button>
               ))}
-            </div>
-          </div>
+          </SubTabBar>
         )}
         {/* 🔴 THE NOTIFICATION STACK, BELOW THE BAR — see `notices` above for why. */}
         {activeTab === 'menu' && notices}
@@ -9354,8 +9451,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         padded wrapper — which is what lets the `:has(> [data-subtab-bar]:first-child)` rule in
         app/globals.css sit it flush against the tab bar above. */}
     {isActive && (
-      <div role="tablist" aria-label="Schedule sections" data-subtab-bar className={`${SUBTAB_BAR} mb-4`}>
-        <div className={SUBTAB_ROW}>
+      <SubTabBar label="Schedule sections" className="mb-4">
           {/* 🔴 THE LIT PILL IS THE SECTION'S **PILL**, NOT THE SECTION. Three pills, four sections:
             * Designs lives inside Social posts, so `scheduleSectionPill('designs')` is `'posts'`.
             * ⛔ THIS TESTED `shownSection === sec.id` AND LEFT DESIGNS WITH NOTHING LIT — reported by
@@ -9368,8 +9464,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               {sec.label}
             </button>
           ))}
-        </div>
-      </div>
+      </SubTabBar>
     )}
     {/* 🔴 THE PAGE'S NOTIFICATION STACK, BELOW THE BAR — see `notices` at the page level. */}
     {isActive && notices}
@@ -11705,14 +11800,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           and "Get the app" cards, so the first thing on the page was two one-time prompts and the
           navigation was underneath them. Those two cards stay above section 1 — no tab points at
           them — but the bar is what the operator should meet first. */}
-      <div
-        ref={barRef}
-        role="tablist"
-        aria-label="Settings sections"
-        data-subtab-bar
-        className={SUBTAB_BAR}
-      >
-        <div className={SUBTAB_ROW}>
+      {/* ⚠️ `barRef` IS HANDED **THROUGH** `SubTabBar`, not held instead of it: the jump logic above
+          measures this bar's height and keeps the active pill in view as the operator scrolls the
+          page, which is this screen's own behaviour and not something the shared bar knows about.
+          The shared bar's own scroll-into-view runs once, when the node mounts. */}
+      <SubTabBar label="Settings sections" barRef={barRef}>
           {SETTINGS_SECTIONS.map(sec => (
             <button
               key={sec.id}
@@ -11725,8 +11817,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               {sec.label}
             </button>
           ))}
-        </div>
-      </div>
+      </SubTabBar>
 
       {/* 🔴 THE PAGE'S NOTIFICATION STACK, BELOW THE BAR — see `notices` at the page level for why
           it is not above it. A direct child of this `space-y-6` list, so each banner takes the list's

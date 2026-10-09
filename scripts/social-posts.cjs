@@ -263,8 +263,57 @@ head('3 · every box opens an existing flow — one modal, one drag surface')
    * 🔴 THE TABLE HAS NO ROW BUTTONS AT ALL: a row SELECTS, and the acting is in the pane beside it —
    * which is why there is no "same page" left to open. ⚠️ THE STATE IS STILL THE SERVER'S, and more
    * directly than before: the row draws the two slots' thumbnails, which only the server can sign. */
+  /* ══ 🔴 §3 (10 October 2026) · LOCATION SETTINGS IS **TWO SCREENS** ON A PHONE ═══════════════════
+   *
+   * ⛔ **DOMINIC, ON AN iPHONE.** Stacked, the pane sat under a sixty-row table: tapping a location
+   * scrolled the three picture boxes off the bottom, so the row appeared to do nothing.
+   * 🔴 THE CLAIMS ARE ABOUT THE THREE THINGS THAT CAN GO WRONG, and none of them is a rectangle:
+   *   • WHICH SCREEN — the list and the detail are both in the tree and CSS chooses, keyed on
+   *     `selectedId`. ⛔ A MEDIA-QUERY HOOK WOULD HAVE MEANT GUESSING ON THE SERVER, so the breakpoint
+   *     is in the class and the claim is about the class.
+   *   • THE WAY BACK — a screen you cannot leave with the gesture every other screen answers is a trap.
+   *   • 768, NOT 900 — the two-pane grid still starts at 900, so 768–899 keeps today's stacked
+   *     arrangement. The two numbers are different on purpose and this is where that is written down. */
+  t('🔴 §3 · on a phone the list and the location are two screens, chosen by `selectedId`',
+    /<div className=\{selectedId \? 'hidden md:block' : 'block'\} data-loc-list-screen>/.test(SOCIAL)
+    && /<div className=\{selectedId \? 'block' : 'hidden md:block'\} data-loc-detail-screen>/.test(SOCIAL)
+    /* ⛔ AND THE TWO-PANE GRID IS STILL 900, UNTOUCHED — which is what "tablet stays as it is" means. */
+    && /min-\[900px\]:grid-cols-\[minmax\(280px,1fr\)_minmax\(0,2\.6fr\)\]/.test(SOCIAL))
+  t('🔴 §3 · "‹ All locations" is phone-only, and the phone\'s own back gesture does the same thing',
+    /data-loc-back onClick=\{closeLocation\}/.test(SOCIAL)
+    && /md:hidden/.test(SOCIAL)
+    && /PHONE_ALL_LOCATIONS/.test(SOCIAL)
+    /* 🔴 ONE ENTRY PER OPEN, AND THE LINK **POPS** IT rather than clearing the state itself — so the
+     * link and the gesture leave the history in the same place. ⛔ CLEARING AND PUSHING WOULD STRAND AN
+     * ENTRY and the operator's second back press would appear to do nothing. */
+    && /window\.history\.back\(\)/.test(SOCIAL)
+    && /window\.addEventListener\('popstate', onPop\)/.test(SOCIAL)
+    && /const onPop = \(\) => setSelectedId\(null\)/.test(SOCIAL))
+  t('🔴 §3 · three compact cards below 768px, three boxes from 768px up — one layout or the other',
+    /<div className="mt-3 space-y-2 md:hidden" data-loc-phone-cards>/.test(SOCIAL)
+    && /<div className="mt-3 hidden grid-cols-1 gap-3 md:grid min-\[900px\]:grid-cols-3"/.test(SOCIAL)
+    /* ⚠️ THE CARD'S OWN INPUT ID CARRIES A PREFIX, because both layouts are in the tree and two
+     * `<label htmlFor>` pairs with one id would both open the desktop box's file picker. */
+    && /const inputId = `pic-phone-\$\{slotKey\}`/.test(SOCIAL)
+    /* ⚠️ AND THE THREE LINES ARE THE BRIEF'S OWN WORDS, from the copy module rather than inline. */
+    && /PHONE_PIC_EVENT_LINE/.test(SOCIAL) && /PHONE_PIC_WEEKLY_LINE/.test(SOCIAL)
+    && /PHONE_PIC_POSTER_LINE/.test(SOCIAL))
+  t('⚠️ §3 · the list keeps its search and its three tick columns, and gains a `›` on a phone only',
+    /data-loc-chevron>›<\/td>/.test(SOCIAL)
+    && /<th className="w-\[20px\] py-1 md:hidden" aria-hidden="true" \/>/.test(SOCIAL)
+    /* ⛔ AND THE EMPTY-STATE `colSpan` FOLLOWS THE COLUMN COUNT. A `colSpan` that lagged the header
+     * would pull a hairline across the table under the "no locations" line. */
+    && /<tr><td colSpan=\{5\}/.test(SOCIAL)
+    && /LOCATIONS_SEARCH_LABEL/.test(SOCIAL))
+
   t('⛔ a row selects and the pane acts — the server supplies both slots',
-    /onClick=\{\(\) => \{ setSelectedId\(pl\.id\); setMsg\(null\) \}\}/.test(SOCIAL)
+    /* ⚠️ §3 (10 October 2026): THE ROW CALLS `openLocation`, NOT `setSelectedId` DIRECTLY. On a phone
+     * the detail is its own SCREEN, so opening one also pushes a history entry — which is what makes
+     * the phone's back gesture return to the list. ⛔ THE CLAIM IS NOW BOTH HALVES: the row opens
+     * through that one function, and that function is the only place the push happens. */
+    /onClick=\{\(\) => openLocation\(pl\.id\)\}/.test(SOCIAL)
+    && /const openLocation = \(id: string\) => \{/.test(SOCIAL)
+    && /window\.history\.pushState\(\{ hgLocation: id \}, ''\)/.test(SOCIAL)
     /* ══ ⚠️ RE-AIMED AGAIN — THREE SLOTS, AND A ✓ OR A – RATHER THAN A THUMBNAIL ══════════════════
      * ⛔ THE "+1" BADGE LASTED HOURS. It marked a location with a weekly-only override, and the override
      * is gone — there is a picture per surface, so there is a COLUMN per surface instead.

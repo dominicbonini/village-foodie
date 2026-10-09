@@ -1434,9 +1434,17 @@ function runWiringSuite(lib) {
      * a pill with a background needs air that an underlined tab did not. Pinning the literal made a
      * LOOK change fail a POSITION check, which is the opposite of what this assertion is for. The
      * position-bearing tokens are named individually and are unchanged. */
-    /const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 [^']*bg-slate-50 border-b border-slate-200 min-w-0 overflow-x-auto'/.test(P)
-    && /data-subtab-bar\n        className=\{SUBTAB_BAR\}/.test(P)
-    && /ref=\{barRef\}/.test(P)
+    /* ⚠️ `overflow-x-auto` IS NO LONGER THE END OF THE STRING. It gained `snap-x snap-proximity
+     * scroll-pl-4 scroll-pr-4` on 10 October — the row is one sideways scroller again and those are
+     * what make a swipe land on a pill without eating the bar's own 16px gutter. The POSITION-bearing
+     * tokens this check is about are named individually and are unchanged. */
+    /const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 [^']*bg-slate-50 border-b border-slate-200 min-w-0 overflow-x-auto/.test(P)
+    /* ⚠️ THE MARKUP IS IN `SubTabBar` NOW — four bars that were four copies are four calls to one
+     * component. ⛔ `barRef` IS STILL THREADED THROUGH IT, because Settings' jump logic measures this
+     * bar's height and keeps the active pill in view as the page scrolls. */
+    && /<div role="tablist" aria-label=\{label\} data-subtab-bar/.test(P)
+    && /ref=\{attach\} className=\{`\$\{SUBTAB_BAR\} \$\{className\}`\}/.test(P)
+    && /<SubTabBar label="Settings sections" barRef=\{barRef\}>/.test(P)
     && /<main id=\{MANAGE_SCROLLER_ID\}/.test(P)
     // `<main>` must keep NO padding-top, or a sticky child pins 24px down
     && !/<main id=\{MANAGE_SCROLLER_ID\}[^>]*\bpt-/.test(P))
@@ -1457,14 +1465,37 @@ function runWiringSuite(lib) {
   t('⚠️ the active tab scrolls ITSELF into view on a phone, by the BAR\'s own scrollLeft',
     /data-settings-tab="\$\{activeId\}"/.test(P)
     && /bar\.scrollLeft = Math\.max\(0, left\)/.test(P))
-  t('⚠️ the jump bar scrolls sideways inside its row; the page does not',
-    /* ⚠️ `gap-1.5`, NOT `gap-4` (4 October 2026): the bars went back to PILLS, and the boards' own
-     * CSS is `gap:6px`. The behaviour this line asserts — the ROW scrolls, not the page — is
-     * unchanged, and so is `min-w-0 overflow-x-auto`.
-     * ⚠️ FOUR ROWS SINCE 7 OCTOBER, not three — Social media brought its own. A count is only a proof
-     * while it is the RIGHT count: at 3 it would have passed with the new bar's row broken. */
+  /* ══ 🔴 THE ROW **WRAPS** NOW, AND THAT IS §1 OF THE 10 OCTOBER PHONE FIXES ══════════════════════
+   * ⛔ IT WAS `w-max` + the bar's `overflow-x-auto`: the row grew to its contents and scrolled
+   * sideways. ⚠️ THE BEHAVIOUR THIS LINE USED TO ASSERT — "the ROW scrolls, not the page" — was true
+   * and was not enough: at 390px the row measured **951px inside a 390px bar**, so 'Auto-replies' sat
+   * 400px past the right edge with nothing on the page to say a swipe would reach it. iOS Safari paints
+   * no persistent scrollbar. 🔴 `flex-wrap` NEEDS NO BREAKPOINT: the pills wrap only where they do not
+   * fit, so at 1100 and 1728 the bar is 49px and the last pill ends at 935 — exactly as before.
+   * ⚠️ `min-w-0 overflow-x-auto` STAYS ON THE BAR as the belt, and the "page does not scroll sideways"
+   * half of the old claim is kept — it is the half that still has teeth. */
+  /* ══ 🔴 REVERSED 10 OCTOBER 2026, AND BOTH SIDES HAVE NOW BEEN WEIGHED TWICE ═══════════════════
+   * This asserted `flex-wrap` and `!w-max` — one day old. Wrapping removed the swipe and cost **125px
+   * of sticky bar on an 844px screen**, 15% of the phone, permanently; Dominic saw it on the device
+   * and asked for the one-row scroller back with the discoverability attached instead.
+   * 🔴 SO THE CLAIM IS NOW THE THREE THINGS THAT MAKE A SCROLLER SURVIVABLE: it is one row (`w-max`),
+   * it snaps, and `lib/subtab-scroll.ts` paints a fade at whichever edge still has pills behind it.
+   * ⚠️ `scripts/subtab-row.cjs` MEASURES ALL OF IT in both engines; this is the source half. */
+  t('🔴 the jump bar is ONE row that scrolls sideways, and says so',
     /min-w-0 overflow-x-auto/.test(P) && /const SUBTAB_ROW = 'flex gap-1\.5 w-max'/.test(P)
-    && (P.match(/className=\{SUBTAB_ROW\}/g) || []).length === 4)
+    /* ⚠️ ANCHORED ON THE CONSTANT, NOT ON THE CLASSES. `flex-wrap gap-1.5` on its own also matches an
+     * unrelated chip row 12,000 lines down this file, so the bare pattern failed on correct code. */
+    && !/const SUBTAB_ROW = 'flex flex-wrap/.test(P)
+    /* ⛔ THE THREE AFFORDANCES, EACH NAMED. A one-row scroller without them is the reported bug. */
+    && /snap-x snap-proximity scroll-pl-4 scroll-pr-4/.test(P)
+    && /snap-start/.test(P)
+    && /attachSubTabScroller/.test(P)
+    /* ⚠️ FOUR ROWS SINCE 7 OCTOBER, not three — Social media brought its own. A count is only a proof
+     * while it is the RIGHT count: at 3 it would have passed with the new bar's row broken.
+     * ⛔ ONE `className={SUBTAB_ROW}` NOW, because the four bars share one component — so what is
+     * counted is the four CALLS. */
+    && (P.match(/className=\{SUBTAB_ROW\}/g) || []).length === 1
+    && (P.match(/<SubTabBar /g) || []).length === 4)
 
   /* 🔴 THE WRAPPER'S OPENING TAG, WRITTEN OUT ONCE. It is matched exactly, so a change to how the top
    * padding is decided breaks these checks rather than letting them read a tag that no longer exists. */
@@ -1491,7 +1522,10 @@ function runWiringSuite(lib) {
   t('🔴 NOTHING IS RENDERED BETWEEN THE PADDED WRAPPER AND THE FIRST SUB-TAB BAR but the notices gate',
     (() => {
       const open = P.indexOf(PAD_OPEN)
-      const bar = P.indexOf('data-subtab-bar', open)
+      /* ⚠️ `<SubTabBar`, NOT `data-subtab-bar`: the attribute lives inside the shared component, which
+       * is declared far ABOVE this wrapper — so searching for it after the wrapper finds nothing and
+       * this check would fail on correct code. The first BAR after the wrapper is a call to it. */
+      const bar = P.indexOf('<SubTabBar', open)
       if (open < 0 || bar < 0) return false
       /* every JSX expression or element between the two, with blank lines dropped.
        * ⚠️ AND `{}` DROPPED TOO. `stripComments` empties a block comment but leaves the braces of a
@@ -1778,6 +1812,14 @@ function runWiringSuite(lib) {
       'onPrepChange={secs => updateCatField(cat, { prep_secs: secs })}',
       'onCountsChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}',
       '// is preserved. RPC writes stay HERE (updateCatField / toggleCatCapacity).',
+      /* ⚠️ THE REST OF THE FOUR BARS' MARKUP, which became `<SubTabBar …>` — see the `movedEdits`
+       * entry above, which is what proves the component they became really exists. */
+      'ref={barRef}',
+      'role="tablist"',
+      'aria-label="Settings sections"',
+      'data-subtab-bar',
+      'className={SUBTAB_BAR}',
+      '<div',
       '<div className="shrink-0 flex gap-2">',
       '<div className="min-w-0 flex-1 max-md:hidden">',
       '<div className="max-h-[4.75rem] overflow-hidden">',
@@ -1941,13 +1983,34 @@ function runWiringSuite(lib) {
         reason: 'the bar gained `py-2` — a filled pill needs air an underlined tab did not',
         nowIn: 'app/manage/[token]/page.tsx',
         now: "const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 py-2 bg-slate-50" },
+      /* ══ 🔴 THIS ENTRY HAS NOW BEEN REWRITTEN TWICE IN TWO DAYS, AND BOTH SIDES ARE RECORDED ═══════
+       * The gap went 4 → 1.5 to match the boards' pill CSS. Then on 10 October the row became
+       * `flex-wrap`, because `w-max` kept 'Auto-replies' 400px off the right edge of a 390px phone
+       * with nothing to say so. ⛔ WRAPPING COST 125px OF STICKY BAR on an 844px screen — 15% of the
+       * phone, permanently — and Dominic asked for the one-row scroller back the same day, with the
+       * discoverability attached instead: a fade at whichever edge has pills behind it, the active
+       * pill scrolled into view, and snap points. ⚠️ SO `w-max` IS BACK, and what changed is that the
+       * row now announces itself; see `lib/subtab-scroll.ts` and scripts/subtab-row.cjs. */
+      /* ══ 🔴 FOUR COPIES OF THE BAR'S MARKUP BECAME FOUR CALLS TO ONE COMPONENT — 10 October 2026 ══
+       * Menu, Schedule, Social media and Settings each wrote out the same `<div role="tablist" …>` and
+       * its inner row. ⛔ ANY HINT ADDED TO ONE WOULD HAVE BEEN MISSING FROM THE OTHER THREE the day
+       * it was written, which is the whole reason the fade lives in a component. ⚠️ THIS ENTRY IS THE
+       * COMPANION ASSERTION: the excuse below holds only while `SubTabBar` is really there. */
+      { was: '<div className={SUBTAB_ROW}>',
+        reason: 'the four bars became four calls to one `SubTabBar`, which is where the fade, the '
+          + 'scroll-into-view and the row now live',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "function SubTabBar({ label, className = '', barRef, children }" },
       { was: "const SUBTAB_ROW = 'flex gap-4 w-max'",
-        reason: "the boards' pill CSS is `gap:6px`",
+        reason: "the boards' pill CSS is `gap:6px`, and the row is one sideways scroller that SAYS SO "
+          + "since 10 October — a fade, the active pill in view, and snap points",
         nowIn: 'app/manage/[token]/page.tsx', now: "const SUBTAB_ROW = 'flex gap-1.5 w-max'" },
       { was: '`py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${',
         reason: 'the tab became a pill',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: '`px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${' },
+        /* ⚠️ `snap-start` ADDED 10 OCTOBER: it pairs with the bar's `snap-x snap-proximity` so a swipe
+         * settles with a pill's edge against the bar's, rather than halfway through one. */
+        now: '`px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-colors snap-start ${' },
       { was: "on ? 'border-orange-500 text-slate-900' : 'border-transparent text-slate-600",
         reason: 'the active pill is filled dark; the inactive one is filled grey',
         nowIn: 'app/manage/[token]/page.tsx',
@@ -2481,7 +2544,9 @@ function runWiringSuite(lib) {
    * it. Measured in both engines by scripts/schedule-places-render.cjs AT scrollTop 0. */
   t('🔴 THE JUMP BAR IS FLUSH AT THE TOP ON LOAD, not only after scrolling', (() => {
     const css = read('app/globals.css')
-    return /data-subtab-bar\n        className=\{SUBTAB_BAR\}/.test(P)
+    /* ⚠️ RE-ANCHORED 10 OCTOBER 2026 — the markup moved into `SubTabBar`. The claim is unchanged:
+     * `data-subtab-bar` is what both the JSX boolean below and the `:has()` belt key on. */
+    return /<div role="tablist" aria-label=\{label\} data-subtab-bar/.test(P)
       /* 🔴 THE MECHANISM IS A JSX BOOLEAN, NOT THE SELECTOR (4 October 2026, second attempt). The
        * `:has()` rule measured correct in both engines and was STILL reported as not working — the one
        * way both are true is a browser without `:has()` (Safari 15.4 / Chrome 105; this app runs in an
@@ -2503,11 +2568,13 @@ function runWiringSuite(lib) {
    * everywhere. ONE definition, so a restyle cannot leave four rows looking like four different
    * things. */
   t('🔴 MENU, SCHEDULE AND SOCIAL USE THE SHARED BAR, not their old pills', (() => {
-    const shared = (RAWP.match(/className=\{`\$\{SUBTAB_BAR\} mb-4`\}/g) || []).length
+    /* ⚠️ RE-ANCHORED 10 OCTOBER 2026: the four bars are four calls to one `SubTabBar`, so what is
+     * counted is the call rather than the class string it used to spell out. */
+    const shared = (RAWP.match(/<SubTabBar label="[^"]+" className="mb-4">/g) || []).length
     /* ⚠️ THREE SINCE 7 OCTOBER — Menu, Social media, Schedule. Settings' own bar is the fourth
      * `subtabBtn` caller but it is sticky and carries no `mb-4`, which is why the two counts differ. */
     return shared === 3
-      && /data-subtab-bar className=\{`\$\{SUBTAB_BAR\} mb-4`\}/.test(P)
+      && (P.match(/<SubTabBar /g) || []).length === 4
       && (P.match(/className=\{subtabBtn\(/g) || []).length === 4
       /* ⚠️ THE PILL CLASS IS CHECKED, NOT `bg-slate-900 text-white` — that one is still used
        * legitimately by the walkthrough's step chips, so asserting its absence would fail on code this
@@ -3158,19 +3225,30 @@ function runVariants() {
         'bg-transparent text-slate-400 hover:text-slate-600', 'W43'),
       src => /bg-slate-100 text-slate-700 hover:bg-slate-200/.test(src)],
 
+    /* ⚠️ RE-ANCHORED 10 OCTOBER 2026. The four bars were four copies of this markup; they are four
+     * calls to one `SubTabBar` now, so the attribute lives in that component. The CLAIM is unchanged —
+     * `data-subtab-bar` is what the `:has(…)` rule in app/globals.css keys on to sit the bar flush
+     * against the tab bar above, and without it the bar rests 24px down and snaps up on first scroll. */
     ['W44 🔴 the jump bar goes back to resting 24px down and snapping flush on first scroll',
-      changed(read(PAGE), '        data-subtab-bar\n        className={SUBTAB_BAR}',
-        '        className={SUBTAB_BAR}', 'W44'),
-      src => /data-subtab-bar\n        className=\{SUBTAB_BAR\}/.test(src)],
+      changed(read(PAGE), '<div role="tablist" aria-label={label} data-subtab-bar\n      ref={attach}',
+        '<div role="tablist" aria-label={label}\n      ref={attach}', 'W44'),
+      src => /role="tablist" aria-label=\{label\} data-subtab-bar/.test(src)],
+    /* ⚠️ RE-ANCHORED 10 OCTOBER 2026 for the same reason as W44, and the count moved with it: the
+     * bars are `<SubTabBar …>` calls, so what is counted is the component rather than the class. */
     ['W48 🔴 Menu and Schedule go back to pills, so the three rows look like two controls',
-      changed(read(PAGE), '          <div role="tablist" aria-label="Menu sections" data-subtab-bar className={`${SUBTAB_BAR} mb-4`}>',
+      changed(read(PAGE), '          <SubTabBar label="Menu sections" className="mb-4">',
         '          <div role="tablist" aria-label="Menu sections" className="min-w-0 overflow-x-auto -mx-1 px-1 pb-1 mb-4">', 'W48'),
       /* ⚠️ THREE, NOT TWO, SINCE 7 October 2026 — Menu · Social media · Schedule. The social tab got
        * its own bar when it stopped being a pill inside Schedule.
        * ⛔ THE COUNT IS WHY THIS VARIANT CAUGHT ITSELF: with the number left at 2, breaking Menu's bar
        * left exactly 2 behind and the broken variant PASSED. A count is only a proof while it is the
        * right count, which is the whole reason this file runs its variants. */
-      src => (src.match(/className=\{`\$\{SUBTAB_BAR\} mb-4`\}/g) || []).length === 3],
+      /* ⚠️ FOUR BARS, THREE OF THEM `mb-4` — Settings' is the fourth and sits flush under the tab
+       * bar with no margin of its own. ⛔ THE COUNT IS WHY THIS VARIANT CAUGHT ITSELF ONCE: with the
+       * number left at 2, breaking Menu's bar left exactly 2 behind and the broken variant PASSED. A
+       * count is only a proof while it is the right count. */
+      src => (src.match(/<SubTabBar label="[^"]+" className="mb-4">/g) || []).length === 3
+        && (src.match(/<SubTabBar /g) || []).length === 4],
     ['W49 🔴 the Settings section order is scrambled, so a tab jumps to the wrong part of the page',
       changed(read(PAGE), "  { id: 'order-settings', label: 'Order settings' },\n  { id: 'truck-settings', label: 'Truck settings' },\n",
         '', 'W49'),

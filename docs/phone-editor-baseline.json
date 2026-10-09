@@ -1,0 +1,7838 @@
+{
+ "webkit|week|768": {
+  "previewPost=true": [
+   444,
+   0,
+   131,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   84,
+   768,
+   1378,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   84,
+   768,
+   737,
+   "grid"
+  ],
+  "stage=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "stageImg=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "livePoster=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "mode=move": [
+   133,
+   231,
+   501,
+   517,
+   "block"
+  ],
+  "boxOutline=faint": [
+   133,
+   231,
+   501,
+   517,
+   "block"
+  ],
+  "boxLabel=true": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "dayCell=dayDate": [
+   133,
+   239,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=0": [
+   133,
+   239,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place": [
+   291,
+   239,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=0#1": [
+   291,
+   239,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times": [
+   503,
+   239,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=0#2": [
+   503,
+   239,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#1": [
+   133,
+   313,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=1": [
+   133,
+   313,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#1": [
+   291,
+   313,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=1#1": [
+   291,
+   313,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#1": [
+   503,
+   313,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=1#2": [
+   503,
+   313,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#2": [
+   133,
+   387,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=2": [
+   133,
+   387,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#2": [
+   291,
+   387,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=2#1": [
+   291,
+   387,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#2": [
+   503,
+   387,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=2#2": [
+   503,
+   387,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#3": [
+   133,
+   461,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=3": [
+   133,
+   461,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#3": [
+   291,
+   461,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=3#1": [
+   291,
+   461,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#3": [
+   503,
+   461,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=3#2": [
+   503,
+   461,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#4": [
+   133,
+   535,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=4": [
+   133,
+   535,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#4": [
+   291,
+   535,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=4#1": [
+   291,
+   535,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#4": [
+   503,
+   535,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=4#2": [
+   503,
+   535,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#5": [
+   133,
+   609,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=5": [
+   133,
+   609,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#5": [
+   291,
+   609,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=5#1": [
+   291,
+   609,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#5": [
+   503,
+   609,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=5#2": [
+   503,
+   609,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#6": [
+   133,
+   683,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=6": [
+   133,
+   683,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#6": [
+   291,
+   683,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=6#1": [
+   291,
+   683,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#6": [
+   503,
+   683,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=6#2": [
+   503,
+   683,
+   132,
+   58,
+   "block"
+  ],
+  "dayHandle=dayDate-place": [
+   279,
+   239,
+   18,
+   58,
+   "flex"
+  ],
+  "dayHandle=place-times": [
+   491,
+   239,
+   18,
+   58,
+   "flex"
+  ],
+  "mode=move#1": [
+   133,
+   147,
+   501,
+   57,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   133,
+   147,
+   501,
+   57,
+   "block"
+  ],
+  "boxTint=on": [
+   133,
+   147,
+   501,
+   57,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   835,
+   524,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   536,
+   827,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   572,
+   835,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   664,
+   827,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   0,
+   875,
+   768,
+   587,
+   "block"
+  ],
+  "settingsPanel=true": [
+   0,
+   875,
+   768,
+   587,
+   "block"
+  ],
+  "itemGrid=true": [
+   13,
+   888,
+   742,
+   139,
+   "block"
+  ],
+  "clickOne=true": [
+   652,
+   889,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   13,
+   911,
+   742,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   22,
+   935,
+   712,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   740,
+   926,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   31,
+   967,
+   16,
+   16,
+   "block"
+  ],
+  "item=heading": [
+   55,
+   960,
+   326,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   151,
+   970,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   366,
+   968,
+   6,
+   13,
+   "block"
+  ],
+  "item=days": [
+   429,
+   960,
+   326,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#2": [
+   740,
+   968,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   13,
+   995,
+   742,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   13,
+   1052,
+   742,
+   20,
+   "block"
+  ],
+  "look=true": [
+   13,
+   1099,
+   742,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   14,
+   1119,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   165,
+   1119,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   13,
+   1149,
+   742,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   13,
+   1177,
+   742,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   13,
+   1177,
+   742,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   13,
+   1222,
+   742,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   13,
+   1245,
+   742,
+   32,
+   "flex"
+  ],
+  "sizeHint=true": [
+   13,
+   1285,
+   742,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   13,
+   1309,
+   742,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   99,
+   1309,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   166,
+   1309,
+   77,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   247,
+   1309,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   13,
+   1341,
+   742,
+   55,
+   "block"
+  ],
+  "foldHead=true": [
+   13,
+   1354,
+   742,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   737,
+   1356,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   13,
+   1407,
+   742,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   13,
+   1407,
+   742,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   13,
+   1407,
+   742,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   737,
+   1409,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "webkit|week|1100": {
+  "previewPost=true": [
+   676,
+   0,
+   131,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   44,
+   1100,
+   614,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   44,
+   704,
+   576,
+   "grid"
+  ],
+  "stage=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "stageImg=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "livePoster=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "mode=move": [
+   158,
+   160,
+   389,
+   401,
+   "block"
+  ],
+  "boxOutline=faint": [
+   158,
+   160,
+   389,
+   401,
+   "block"
+  ],
+  "boxLabel=true": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "dayCell=dayDate": [
+   158,
+   167,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=0": [
+   158,
+   167,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place": [
+   280,
+   167,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=0#1": [
+   280,
+   167,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times": [
+   444,
+   167,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=0#2": [
+   444,
+   167,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#1": [
+   158,
+   224,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=1": [
+   158,
+   224,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#1": [
+   280,
+   224,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=1#1": [
+   280,
+   224,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#1": [
+   444,
+   224,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=1#2": [
+   444,
+   224,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#2": [
+   158,
+   282,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=2": [
+   158,
+   282,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#2": [
+   280,
+   282,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=2#1": [
+   280,
+   282,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#2": [
+   444,
+   282,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=2#2": [
+   444,
+   282,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#3": [
+   158,
+   339,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=3": [
+   158,
+   339,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#3": [
+   280,
+   339,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=3#1": [
+   280,
+   339,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#3": [
+   444,
+   339,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=3#2": [
+   444,
+   339,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#4": [
+   158,
+   396,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=4": [
+   158,
+   396,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#4": [
+   280,
+   396,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=4#1": [
+   280,
+   396,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#4": [
+   444,
+   396,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=4#2": [
+   444,
+   396,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#5": [
+   158,
+   453,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=5": [
+   158,
+   453,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#5": [
+   280,
+   453,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=5#1": [
+   280,
+   453,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#5": [
+   444,
+   453,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=5#2": [
+   444,
+   453,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#6": [
+   158,
+   511,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=6": [
+   158,
+   511,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#6": [
+   280,
+   511,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=6#1": [
+   280,
+   511,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#6": [
+   444,
+   511,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=6#2": [
+   444,
+   511,
+   102,
+   45,
+   "block"
+  ],
+  "dayHandle=dayDate-place": [
+   269,
+   167,
+   18,
+   45,
+   "flex"
+  ],
+  "dayHandle=place-times": [
+   433,
+   167,
+   18,
+   45,
+   "flex"
+  ],
+  "mode=move#1": [
+   158,
+   95,
+   389,
+   44,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   158,
+   95,
+   389,
+   44,
+   "block"
+  ],
+  "boxTint=on": [
+   158,
+   95,
+   389,
+   44,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   634,
+   460,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   472,
+   626,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   508,
+   634,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   600,
+   626,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   720,
+   44,
+   380,
+   605,
+   "block"
+  ],
+  "settingsPanel=true": [
+   720,
+   44,
+   380,
+   605,
+   "block"
+  ],
+  "itemGrid=true": [
+   733,
+   57,
+   354,
+   139,
+   "block"
+  ],
+  "clickOne=true": [
+   984,
+   58,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   733,
+   80,
+   354,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   742,
+   104,
+   324,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   1072,
+   95,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   751,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=heading": [
+   775,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   871,
+   139,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   892,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "item=days": [
+   955,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#2": [
+   1072,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   733,
+   164,
+   354,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   733,
+   221,
+   354,
+   20,
+   "block"
+  ],
+  "look=true": [
+   733,
+   268,
+   354,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   734,
+   288,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   885,
+   288,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   733,
+   318,
+   354,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   733,
+   346,
+   354,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   733,
+   346,
+   354,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   733,
+   391,
+   354,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   733,
+   414,
+   354,
+   32,
+   "flex"
+  ],
+  "sizeHint=true": [
+   733,
+   454,
+   354,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   733,
+   477,
+   354,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   819,
+   477,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   886,
+   477,
+   77,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   967,
+   477,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   733,
+   509,
+   354,
+   73,
+   "block"
+  ],
+  "foldHead=true": [
+   733,
+   522,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   1069,
+   524,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   733,
+   594,
+   354,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   733,
+   594,
+   354,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   733,
+   594,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   1069,
+   596,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "webkit|week|1728": {
+  "previewPost=true": [
+   1304,
+   0,
+   131,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   44,
+   1728,
+   758,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   44,
+   1332,
+   720,
+   "grid"
+  ],
+  "stage=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "stageImg=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "livePoster=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "mode=move": [
+   421,
+   188,
+   490,
+   505,
+   "block"
+  ],
+  "boxOutline=faint": [
+   421,
+   188,
+   490,
+   505,
+   "block"
+  ],
+  "boxLabel=true": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "dayCell=dayDate": [
+   421,
+   196,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=0": [
+   421,
+   196,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place": [
+   575,
+   196,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=0#1": [
+   575,
+   196,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times": [
+   782,
+   196,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=0#2": [
+   782,
+   196,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#1": [
+   421,
+   268,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=1": [
+   421,
+   268,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#1": [
+   575,
+   268,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=1#1": [
+   575,
+   268,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#1": [
+   782,
+   268,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=1#2": [
+   782,
+   268,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#2": [
+   421,
+   340,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=2": [
+   421,
+   340,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#2": [
+   575,
+   340,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=2#1": [
+   575,
+   340,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#2": [
+   782,
+   340,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=2#2": [
+   782,
+   340,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#3": [
+   421,
+   412,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=3": [
+   421,
+   412,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#3": [
+   575,
+   412,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=3#1": [
+   575,
+   412,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#3": [
+   782,
+   412,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=3#2": [
+   782,
+   412,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#4": [
+   421,
+   485,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=4": [
+   421,
+   485,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#4": [
+   575,
+   485,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=4#1": [
+   575,
+   485,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#4": [
+   782,
+   485,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=4#2": [
+   782,
+   485,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#5": [
+   421,
+   557,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=5": [
+   421,
+   557,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#5": [
+   575,
+   557,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=5#1": [
+   575,
+   557,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#5": [
+   782,
+   557,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=5#2": [
+   782,
+   557,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#6": [
+   421,
+   629,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=6": [
+   421,
+   629,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#6": [
+   575,
+   629,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=6#1": [
+   575,
+   629,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#6": [
+   782,
+   629,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=6#2": [
+   782,
+   629,
+   129,
+   56,
+   "block"
+  ],
+  "dayHandle=dayDate-place": [
+   564,
+   196,
+   18,
+   56,
+   "flex"
+  ],
+  "dayHandle=place-times": [
+   770,
+   196,
+   18,
+   56,
+   "flex"
+  ],
+  "mode=move#1": [
+   421,
+   105,
+   490,
+   56,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   421,
+   105,
+   490,
+   56,
+   "block"
+  ],
+  "boxTint=on": [
+   421,
+   105,
+   490,
+   56,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   778,
+   1088,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   1100,
+   770,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   1136,
+   778,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   1228,
+   770,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   1348,
+   44,
+   380,
+   605,
+   "block"
+  ],
+  "settingsPanel=true": [
+   1348,
+   44,
+   380,
+   605,
+   "block"
+  ],
+  "itemGrid=true": [
+   1361,
+   57,
+   354,
+   139,
+   "block"
+  ],
+  "clickOne=true": [
+   1612,
+   58,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   1361,
+   80,
+   354,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   1370,
+   104,
+   324,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   1700,
+   95,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   1379,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=heading": [
+   1403,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   1499,
+   139,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   1520,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "item=days": [
+   1583,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#2": [
+   1700,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   1361,
+   164,
+   354,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   1361,
+   221,
+   354,
+   20,
+   "block"
+  ],
+  "look=true": [
+   1361,
+   268,
+   354,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   1362,
+   288,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   1513,
+   288,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   1361,
+   318,
+   354,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   1361,
+   346,
+   354,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   1361,
+   346,
+   354,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   1361,
+   391,
+   354,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   1361,
+   414,
+   354,
+   32,
+   "flex"
+  ],
+  "sizeHint=true": [
+   1361,
+   454,
+   354,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   1361,
+   477,
+   354,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   1447,
+   477,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   1514,
+   477,
+   77,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   1595,
+   477,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   1361,
+   509,
+   354,
+   73,
+   "block"
+  ],
+  "foldHead=true": [
+   1361,
+   522,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   1697,
+   524,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   1361,
+   594,
+   354,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   1361,
+   594,
+   354,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   1361,
+   594,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   1697,
+   596,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "webkit|event|768": {
+  "previewPost=true": [
+   514,
+   0,
+   131,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   84,
+   768,
+   1448,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   84,
+   768,
+   737,
+   "grid"
+  ],
+  "stage=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "stageImg=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "livePoster=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "mode=move": [
+   139,
+   538,
+   490,
+   53,
+   "block"
+  ],
+  "boxOutline=selected": [
+   139,
+   538,
+   490,
+   53,
+   "block"
+  ],
+  "boxTint=on": [
+   139,
+   538,
+   490,
+   53,
+   "block"
+  ],
+  "boxLabel=true": [
+   141,
+   520,
+   32,
+   15,
+   "block"
+  ],
+  "mode=nw": [
+   129,
+   528,
+   24,
+   24,
+   "block"
+  ],
+  "handle=nw": [
+   129,
+   528,
+   24,
+   24,
+   "block"
+  ],
+  "mode=ne": [
+   615,
+   528,
+   24,
+   24,
+   "block"
+  ],
+  "handle=ne": [
+   615,
+   528,
+   24,
+   24,
+   "block"
+  ],
+  "mode=sw": [
+   129,
+   577,
+   24,
+   24,
+   "block"
+  ],
+  "handle=sw": [
+   129,
+   577,
+   24,
+   24,
+   "block"
+  ],
+  "mode=se": [
+   615,
+   577,
+   24,
+   24,
+   "block"
+  ],
+  "handle=se": [
+   615,
+   577,
+   24,
+   24,
+   "block"
+  ],
+  "mode=n": [
+   373,
+   536,
+   22,
+   8,
+   "block"
+  ],
+  "handle=n": [
+   373,
+   536,
+   22,
+   8,
+   "block"
+  ],
+  "mode=e": [
+   623,
+   554,
+   8,
+   22,
+   "block"
+  ],
+  "handle=e": [
+   623,
+   554,
+   8,
+   22,
+   "block"
+  ],
+  "mode=s": [
+   373,
+   585,
+   22,
+   8,
+   "block"
+  ],
+  "handle=s": [
+   373,
+   585,
+   22,
+   8,
+   "block"
+  ],
+  "mode=w": [
+   137,
+   554,
+   8,
+   22,
+   "block"
+  ],
+  "handle=w": [
+   137,
+   554,
+   8,
+   22,
+   "block"
+  ],
+  "mode=move#1": [
+   139,
+   606,
+   490,
+   53,
+   "block"
+  ],
+  "boxOutline=faint": [
+   139,
+   606,
+   490,
+   53,
+   "block"
+  ],
+  "boxTint=on#1": [
+   139,
+   606,
+   490,
+   53,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#2": [
+   139,
+   639,
+   490,
+   33,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   139,
+   639,
+   490,
+   33,
+   "block"
+  ],
+  "boxTint=on#2": [
+   139,
+   639,
+   490,
+   33,
+   "block"
+  ],
+  "boxLabel=true#2": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#3": [
+   139,
+   674,
+   490,
+   53,
+   "block"
+  ],
+  "boxOutline=faint#2": [
+   139,
+   674,
+   490,
+   53,
+   "block"
+  ],
+  "boxTint=on#3": [
+   139,
+   674,
+   490,
+   53,
+   "block"
+  ],
+  "boxLabel=true#3": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   835,
+   524,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   536,
+   827,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   572,
+   835,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   664,
+   827,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   0,
+   875,
+   768,
+   657,
+   "block"
+  ],
+  "settingsPanel=true": [
+   0,
+   875,
+   768,
+   657,
+   "block"
+  ],
+  "itemGrid=true": [
+   13,
+   888,
+   742,
+   209,
+   "block"
+  ],
+  "clickOne=true": [
+   652,
+   889,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   13,
+   911,
+   742,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   22,
+   935,
+   712,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   740,
+   926,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   31,
+   967,
+   16,
+   16,
+   "block"
+  ],
+  "item=date": [
+   55,
+   960,
+   326,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   96,
+   970,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   366,
+   968,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#1": [
+   405,
+   967,
+   16,
+   16,
+   "block"
+  ],
+  "item=location": [
+   429,
+   960,
+   326,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#1": [
+   479,
+   970,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#2": [
+   740,
+   968,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#2": [
+   31,
+   1002,
+   16,
+   16,
+   "block"
+  ],
+  "item=town": [
+   55,
+   995,
+   326,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#2": [
+   95,
+   1005,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#3": [
+   366,
+   1003,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#3": [
+   405,
+   1002,
+   16,
+   16,
+   "block"
+  ],
+  "item=time": [
+   429,
+   995,
+   326,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#3": [
+   471,
+   1005,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#4": [
+   740,
+   1003,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#4": [
+   15,
+   1037,
+   16,
+   16,
+   "block"
+  ],
+  "item=place-picture": [
+   55,
+   1030,
+   326,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#5": [
+   366,
+   1038,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   13,
+   1065,
+   742,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   13,
+   1122,
+   742,
+   20,
+   "block"
+  ],
+  "look=true": [
+   13,
+   1169,
+   742,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   14,
+   1189,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   165,
+   1189,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   13,
+   1219,
+   742,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   13,
+   1247,
+   742,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   13,
+   1247,
+   742,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   13,
+   1292,
+   742,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   13,
+   1315,
+   742,
+   32,
+   "flex"
+  ],
+  "sizeHint=true": [
+   13,
+   1355,
+   742,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   13,
+   1379,
+   742,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   99,
+   1379,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   166,
+   1379,
+   77,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   247,
+   1379,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   13,
+   1411,
+   742,
+   55,
+   "block"
+  ],
+  "foldHead=true": [
+   13,
+   1424,
+   742,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   737,
+   1426,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   13,
+   1477,
+   742,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   13,
+   1477,
+   742,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   13,
+   1477,
+   742,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   737,
+   1479,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "webkit|event|1100": {
+  "previewPost=true": [
+   676,
+   0,
+   131,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   44,
+   1100,
+   675,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   44,
+   704,
+   576,
+   "grid"
+  ],
+  "stage=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "stageImg=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "livePoster=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "mode=move": [
+   162,
+   399,
+   380,
+   41,
+   "block"
+  ],
+  "boxOutline=selected": [
+   162,
+   399,
+   380,
+   41,
+   "block"
+  ],
+  "boxTint=on": [
+   162,
+   399,
+   380,
+   41,
+   "block"
+  ],
+  "boxLabel=true": [
+   164,
+   381,
+   32,
+   15,
+   "block"
+  ],
+  "mode=nw": [
+   152,
+   389,
+   24,
+   24,
+   "block"
+  ],
+  "handle=nw": [
+   152,
+   389,
+   24,
+   24,
+   "block"
+  ],
+  "mode=ne": [
+   528,
+   389,
+   24,
+   24,
+   "block"
+  ],
+  "handle=ne": [
+   528,
+   389,
+   24,
+   24,
+   "block"
+  ],
+  "mode=sw": [
+   152,
+   426,
+   24,
+   24,
+   "block"
+  ],
+  "handle=sw": [
+   152,
+   426,
+   24,
+   24,
+   "block"
+  ],
+  "mode=se": [
+   528,
+   426,
+   24,
+   24,
+   "block"
+  ],
+  "handle=se": [
+   528,
+   426,
+   24,
+   24,
+   "block"
+  ],
+  "mode=n": [
+   341,
+   397,
+   22,
+   8,
+   "block"
+  ],
+  "handle=n": [
+   341,
+   397,
+   22,
+   8,
+   "block"
+  ],
+  "mode=e": [
+   536,
+   408,
+   8,
+   22,
+   "block"
+  ],
+  "handle=e": [
+   536,
+   408,
+   8,
+   22,
+   "block"
+  ],
+  "mode=s": [
+   341,
+   434,
+   22,
+   8,
+   "block"
+  ],
+  "handle=s": [
+   341,
+   434,
+   22,
+   8,
+   "block"
+  ],
+  "mode=w": [
+   160,
+   408,
+   8,
+   22,
+   "block"
+  ],
+  "handle=w": [
+   160,
+   408,
+   8,
+   22,
+   "block"
+  ],
+  "mode=move#1": [
+   162,
+   451,
+   380,
+   41,
+   "block"
+  ],
+  "boxOutline=faint": [
+   162,
+   451,
+   380,
+   41,
+   "block"
+  ],
+  "boxTint=on#1": [
+   162,
+   451,
+   380,
+   41,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#2": [
+   162,
+   477,
+   380,
+   26,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   162,
+   477,
+   380,
+   26,
+   "block"
+  ],
+  "boxTint=on#2": [
+   162,
+   477,
+   380,
+   26,
+   "block"
+  ],
+  "boxLabel=true#2": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#3": [
+   162,
+   504,
+   380,
+   41,
+   "block"
+  ],
+  "boxOutline=faint#2": [
+   162,
+   504,
+   380,
+   41,
+   "block"
+  ],
+  "boxTint=on#3": [
+   162,
+   504,
+   380,
+   41,
+   "block"
+  ],
+  "boxLabel=true#3": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   634,
+   460,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   472,
+   626,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   508,
+   634,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   600,
+   626,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   720,
+   44,
+   380,
+   675,
+   "block"
+  ],
+  "settingsPanel=true": [
+   720,
+   44,
+   380,
+   675,
+   "block"
+  ],
+  "itemGrid=true": [
+   733,
+   57,
+   354,
+   209,
+   "block"
+  ],
+  "clickOne=true": [
+   984,
+   58,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   733,
+   80,
+   354,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   742,
+   104,
+   324,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   1072,
+   95,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   751,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=date": [
+   775,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   816,
+   139,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   892,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#1": [
+   931,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=location": [
+   955,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#1": [
+   1005,
+   139,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#2": [
+   1072,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#2": [
+   751,
+   171,
+   16,
+   16,
+   "block"
+  ],
+  "item=town": [
+   775,
+   164,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#2": [
+   815,
+   174,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#3": [
+   892,
+   172,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#3": [
+   931,
+   171,
+   16,
+   16,
+   "block"
+  ],
+  "item=time": [
+   955,
+   164,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#3": [
+   997,
+   174,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#4": [
+   1072,
+   172,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#4": [
+   735,
+   206,
+   16,
+   16,
+   "block"
+  ],
+  "item=place-picture": [
+   775,
+   199,
+   132,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#5": [
+   892,
+   207,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   733,
+   234,
+   354,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   733,
+   291,
+   354,
+   20,
+   "block"
+  ],
+  "look=true": [
+   733,
+   338,
+   354,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   734,
+   358,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   885,
+   358,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   733,
+   388,
+   354,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   733,
+   416,
+   354,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   733,
+   416,
+   354,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   733,
+   461,
+   354,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   733,
+   484,
+   354,
+   32,
+   "flex"
+  ],
+  "sizeHint=true": [
+   733,
+   524,
+   354,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   733,
+   547,
+   354,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   819,
+   547,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   886,
+   547,
+   77,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   967,
+   547,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   733,
+   579,
+   354,
+   73,
+   "block"
+  ],
+  "foldHead=true": [
+   733,
+   592,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   1069,
+   594,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   733,
+   664,
+   354,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   733,
+   664,
+   354,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   733,
+   664,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   1069,
+   666,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "webkit|event|1728": {
+  "previewPost=true": [
+   1304,
+   0,
+   131,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   44,
+   1728,
+   758,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   44,
+   1332,
+   720,
+   "grid"
+  ],
+  "stage=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "stageImg=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "livePoster=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "mode=move": [
+   427,
+   488,
+   479,
+   52,
+   "block"
+  ],
+  "boxOutline=selected": [
+   427,
+   488,
+   479,
+   52,
+   "block"
+  ],
+  "boxTint=on": [
+   427,
+   488,
+   479,
+   52,
+   "block"
+  ],
+  "boxLabel=true": [
+   429,
+   470,
+   32,
+   15,
+   "block"
+  ],
+  "mode=nw": [
+   417,
+   478,
+   24,
+   24,
+   "block"
+  ],
+  "handle=nw": [
+   417,
+   478,
+   24,
+   24,
+   "block"
+  ],
+  "mode=ne": [
+   891,
+   478,
+   24,
+   24,
+   "block"
+  ],
+  "handle=ne": [
+   891,
+   478,
+   24,
+   24,
+   "block"
+  ],
+  "mode=sw": [
+   417,
+   526,
+   24,
+   24,
+   "block"
+  ],
+  "handle=sw": [
+   417,
+   526,
+   24,
+   24,
+   "block"
+  ],
+  "mode=se": [
+   891,
+   526,
+   24,
+   24,
+   "block"
+  ],
+  "handle=se": [
+   891,
+   526,
+   24,
+   24,
+   "block"
+  ],
+  "mode=n": [
+   655,
+   486,
+   22,
+   8,
+   "block"
+  ],
+  "handle=n": [
+   655,
+   486,
+   22,
+   8,
+   "block"
+  ],
+  "mode=e": [
+   899,
+   503,
+   8,
+   22,
+   "block"
+  ],
+  "handle=e": [
+   899,
+   503,
+   8,
+   22,
+   "block"
+  ],
+  "mode=s": [
+   655,
+   534,
+   22,
+   8,
+   "block"
+  ],
+  "handle=s": [
+   655,
+   534,
+   22,
+   8,
+   "block"
+  ],
+  "mode=w": [
+   425,
+   503,
+   8,
+   22,
+   "block"
+  ],
+  "handle=w": [
+   425,
+   503,
+   8,
+   22,
+   "block"
+  ],
+  "mode=move#1": [
+   427,
+   554,
+   479,
+   52,
+   "block"
+  ],
+  "boxOutline=faint": [
+   427,
+   554,
+   479,
+   52,
+   "block"
+  ],
+  "boxTint=on#1": [
+   427,
+   554,
+   479,
+   52,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#2": [
+   427,
+   587,
+   479,
+   32,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   427,
+   587,
+   479,
+   32,
+   "block"
+  ],
+  "boxTint=on#2": [
+   427,
+   587,
+   479,
+   32,
+   "block"
+  ],
+  "boxLabel=true#2": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#3": [
+   427,
+   621,
+   479,
+   52,
+   "block"
+  ],
+  "boxOutline=faint#2": [
+   427,
+   621,
+   479,
+   52,
+   "block"
+  ],
+  "boxTint=on#3": [
+   427,
+   621,
+   479,
+   52,
+   "block"
+  ],
+  "boxLabel=true#3": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   778,
+   1088,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   1100,
+   770,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   1136,
+   778,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   1228,
+   770,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   1348,
+   44,
+   380,
+   675,
+   "block"
+  ],
+  "settingsPanel=true": [
+   1348,
+   44,
+   380,
+   675,
+   "block"
+  ],
+  "itemGrid=true": [
+   1361,
+   57,
+   354,
+   209,
+   "block"
+  ],
+  "clickOne=true": [
+   1612,
+   58,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   1361,
+   80,
+   354,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   1370,
+   104,
+   324,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   1700,
+   95,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   1379,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=date": [
+   1403,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   1444,
+   139,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   1520,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#1": [
+   1559,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=location": [
+   1583,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#1": [
+   1633,
+   139,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#2": [
+   1700,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#2": [
+   1379,
+   171,
+   16,
+   16,
+   "block"
+  ],
+  "item=town": [
+   1403,
+   164,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#2": [
+   1443,
+   174,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#3": [
+   1520,
+   172,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#3": [
+   1559,
+   171,
+   16,
+   16,
+   "block"
+  ],
+  "item=time": [
+   1583,
+   164,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#3": [
+   1625,
+   174,
+   14,
+   10,
+   "block"
+  ],
+  "itemChevron=true#4": [
+   1700,
+   172,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#4": [
+   1363,
+   206,
+   16,
+   16,
+   "block"
+  ],
+  "item=place-picture": [
+   1403,
+   199,
+   132,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#5": [
+   1520,
+   207,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   1361,
+   234,
+   354,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   1361,
+   291,
+   354,
+   20,
+   "block"
+  ],
+  "look=true": [
+   1361,
+   338,
+   354,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   1362,
+   358,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   1513,
+   358,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   1361,
+   388,
+   354,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   1361,
+   416,
+   354,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   1361,
+   416,
+   354,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   1361,
+   461,
+   354,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   1361,
+   484,
+   354,
+   32,
+   "flex"
+  ],
+  "sizeHint=true": [
+   1361,
+   524,
+   354,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   1361,
+   547,
+   354,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   1447,
+   547,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   1514,
+   547,
+   77,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   1595,
+   547,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   1361,
+   579,
+   354,
+   73,
+   "block"
+  ],
+  "foldHead=true": [
+   1361,
+   592,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   1697,
+   594,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   1361,
+   664,
+   354,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   1361,
+   664,
+   354,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   1361,
+   664,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   1697,
+   666,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "chromium|week|768": {
+  "previewPost=true": [
+   446,
+   0,
+   129,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   84,
+   768,
+   1379,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   84,
+   768,
+   737,
+   "grid"
+  ],
+  "stage=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "stageImg=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "livePoster=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "mode=move": [
+   133,
+   231,
+   501,
+   517,
+   "block"
+  ],
+  "boxOutline=faint": [
+   133,
+   231,
+   501,
+   517,
+   "block"
+  ],
+  "boxLabel=true": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "dayCell=dayDate": [
+   133,
+   239,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=0": [
+   133,
+   239,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place": [
+   291,
+   239,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=0#1": [
+   291,
+   239,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times": [
+   503,
+   239,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=0#2": [
+   503,
+   239,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#1": [
+   133,
+   313,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=1": [
+   133,
+   313,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#1": [
+   291,
+   313,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=1#1": [
+   291,
+   313,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#1": [
+   503,
+   313,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=1#2": [
+   503,
+   313,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#2": [
+   133,
+   387,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=2": [
+   133,
+   387,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#2": [
+   291,
+   387,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=2#1": [
+   291,
+   387,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#2": [
+   503,
+   387,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=2#2": [
+   503,
+   387,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#3": [
+   133,
+   461,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=3": [
+   133,
+   461,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#3": [
+   291,
+   461,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=3#1": [
+   291,
+   461,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#3": [
+   503,
+   461,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=3#2": [
+   503,
+   461,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#4": [
+   133,
+   535,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=4": [
+   133,
+   535,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#4": [
+   291,
+   535,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=4#1": [
+   291,
+   535,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#4": [
+   503,
+   535,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=4#2": [
+   503,
+   535,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#5": [
+   133,
+   609,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=5": [
+   133,
+   609,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#5": [
+   291,
+   609,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=5#1": [
+   291,
+   609,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#5": [
+   503,
+   609,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=5#2": [
+   503,
+   609,
+   132,
+   58,
+   "block"
+  ],
+  "dayCell=dayDate#6": [
+   133,
+   683,
+   152,
+   58,
+   "block"
+  ],
+  "dayRow=6": [
+   133,
+   683,
+   152,
+   58,
+   "block"
+  ],
+  "dayCell=place#6": [
+   291,
+   683,
+   206,
+   58,
+   "block"
+  ],
+  "dayRow=6#1": [
+   291,
+   683,
+   206,
+   58,
+   "block"
+  ],
+  "dayCell=times#6": [
+   503,
+   683,
+   132,
+   58,
+   "block"
+  ],
+  "dayRow=6#2": [
+   503,
+   683,
+   132,
+   58,
+   "block"
+  ],
+  "dayHandle=dayDate-place": [
+   279,
+   239,
+   18,
+   58,
+   "flex"
+  ],
+  "dayHandle=place-times": [
+   491,
+   239,
+   18,
+   58,
+   "flex"
+  ],
+  "mode=move#1": [
+   133,
+   147,
+   501,
+   57,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   133,
+   147,
+   501,
+   57,
+   "block"
+  ],
+  "boxTint=on": [
+   133,
+   147,
+   501,
+   57,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   835,
+   524,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   536,
+   827,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   572,
+   835,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   664,
+   827,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   0,
+   875,
+   768,
+   588,
+   "block"
+  ],
+  "settingsPanel=true": [
+   0,
+   875,
+   768,
+   588,
+   "block"
+  ],
+  "itemGrid=true": [
+   13,
+   888,
+   742,
+   139,
+   "block"
+  ],
+  "clickOne=true": [
+   652,
+   889,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   13,
+   911,
+   742,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   22,
+   935,
+   712,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   740,
+   926,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   31,
+   967,
+   16,
+   16,
+   "block"
+  ],
+  "item=heading": [
+   55,
+   960,
+   326,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   151,
+   970,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   366,
+   968,
+   6,
+   13,
+   "block"
+  ],
+  "item=days": [
+   429,
+   960,
+   326,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#2": [
+   740,
+   968,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   13,
+   995,
+   742,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   13,
+   1052,
+   742,
+   20,
+   "block"
+  ],
+  "look=true": [
+   13,
+   1099,
+   742,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   14,
+   1119,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   165,
+   1119,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   13,
+   1149,
+   742,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   13,
+   1177,
+   742,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   13,
+   1177,
+   742,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   13,
+   1222,
+   742,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   13,
+   1245,
+   742,
+   33,
+   "flex"
+  ],
+  "sizeHint=true": [
+   13,
+   1286,
+   742,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   13,
+   1309,
+   742,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   99,
+   1309,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   166,
+   1309,
+   78,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   247,
+   1309,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   13,
+   1341,
+   742,
+   55,
+   "block"
+  ],
+  "foldHead=true": [
+   13,
+   1354,
+   742,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   737,
+   1356,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   13,
+   1408,
+   742,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   13,
+   1408,
+   742,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   13,
+   1408,
+   742,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   737,
+   1410,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "chromium|week|1100": {
+  "previewPost=true": [
+   678,
+   0,
+   129,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   44,
+   1100,
+   614,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   44,
+   704,
+   576,
+   "grid"
+  ],
+  "stage=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "stageImg=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "livePoster=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "mode=move": [
+   158,
+   160,
+   389,
+   401,
+   "block"
+  ],
+  "boxOutline=faint": [
+   158,
+   160,
+   389,
+   401,
+   "block"
+  ],
+  "boxLabel=true": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "dayCell=dayDate": [
+   158,
+   167,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=0": [
+   158,
+   167,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place": [
+   280,
+   167,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=0#1": [
+   280,
+   167,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times": [
+   444,
+   167,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=0#2": [
+   444,
+   167,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#1": [
+   158,
+   224,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=1": [
+   158,
+   224,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#1": [
+   280,
+   224,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=1#1": [
+   280,
+   224,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#1": [
+   444,
+   224,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=1#2": [
+   444,
+   224,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#2": [
+   158,
+   282,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=2": [
+   158,
+   282,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#2": [
+   280,
+   282,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=2#1": [
+   280,
+   282,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#2": [
+   444,
+   282,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=2#2": [
+   444,
+   282,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#3": [
+   158,
+   339,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=3": [
+   158,
+   339,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#3": [
+   280,
+   339,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=3#1": [
+   280,
+   339,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#3": [
+   444,
+   339,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=3#2": [
+   444,
+   339,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#4": [
+   158,
+   396,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=4": [
+   158,
+   396,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#4": [
+   280,
+   396,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=4#1": [
+   280,
+   396,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#4": [
+   444,
+   396,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=4#2": [
+   444,
+   396,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#5": [
+   158,
+   453,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=5": [
+   158,
+   453,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#5": [
+   280,
+   453,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=5#1": [
+   280,
+   453,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#5": [
+   444,
+   453,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=5#2": [
+   444,
+   453,
+   102,
+   45,
+   "block"
+  ],
+  "dayCell=dayDate#6": [
+   158,
+   511,
+   118,
+   45,
+   "block"
+  ],
+  "dayRow=6": [
+   158,
+   511,
+   118,
+   45,
+   "block"
+  ],
+  "dayCell=place#6": [
+   280,
+   511,
+   160,
+   45,
+   "block"
+  ],
+  "dayRow=6#1": [
+   280,
+   511,
+   160,
+   45,
+   "block"
+  ],
+  "dayCell=times#6": [
+   444,
+   511,
+   102,
+   45,
+   "block"
+  ],
+  "dayRow=6#2": [
+   444,
+   511,
+   102,
+   45,
+   "block"
+  ],
+  "dayHandle=dayDate-place": [
+   269,
+   167,
+   18,
+   45,
+   "flex"
+  ],
+  "dayHandle=place-times": [
+   433,
+   167,
+   18,
+   45,
+   "flex"
+  ],
+  "mode=move#1": [
+   158,
+   95,
+   389,
+   44,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   158,
+   95,
+   389,
+   44,
+   "block"
+  ],
+  "boxTint=on": [
+   158,
+   95,
+   389,
+   44,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   634,
+   460,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   472,
+   626,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   508,
+   634,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   600,
+   626,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   720,
+   44,
+   380,
+   605,
+   "block"
+  ],
+  "settingsPanel=true": [
+   720,
+   44,
+   380,
+   605,
+   "block"
+  ],
+  "itemGrid=true": [
+   733,
+   57,
+   354,
+   139,
+   "block"
+  ],
+  "clickOne=true": [
+   984,
+   58,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   733,
+   80,
+   354,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   742,
+   104,
+   324,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   1072,
+   95,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   751,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=heading": [
+   775,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   871,
+   139,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   892,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "item=days": [
+   955,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#2": [
+   1072,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   733,
+   164,
+   354,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   733,
+   221,
+   354,
+   20,
+   "block"
+  ],
+  "look=true": [
+   733,
+   268,
+   354,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   734,
+   288,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   885,
+   288,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   733,
+   318,
+   354,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   733,
+   346,
+   354,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   733,
+   346,
+   354,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   733,
+   391,
+   354,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   733,
+   414,
+   354,
+   33,
+   "flex"
+  ],
+  "sizeHint=true": [
+   733,
+   455,
+   354,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   733,
+   478,
+   354,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   819,
+   478,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   886,
+   478,
+   78,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   967,
+   478,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   733,
+   510,
+   354,
+   73,
+   "block"
+  ],
+  "foldHead=true": [
+   733,
+   523,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   1069,
+   525,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   733,
+   595,
+   354,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   733,
+   595,
+   354,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   733,
+   595,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   1069,
+   597,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "chromium|week|1728": {
+  "previewPost=true": [
+   1306,
+   0,
+   129,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   44,
+   1728,
+   758,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   44,
+   1332,
+   720,
+   "grid"
+  ],
+  "stage=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "stageImg=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "livePoster=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "mode=move": [
+   421,
+   188,
+   490,
+   505,
+   "block"
+  ],
+  "boxOutline=faint": [
+   421,
+   188,
+   490,
+   505,
+   "block"
+  ],
+  "boxLabel=true": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "dayCell=dayDate": [
+   421,
+   196,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=0": [
+   421,
+   196,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place": [
+   575,
+   196,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=0#1": [
+   575,
+   196,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times": [
+   782,
+   196,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=0#2": [
+   782,
+   196,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#1": [
+   421,
+   268,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=1": [
+   421,
+   268,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#1": [
+   575,
+   268,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=1#1": [
+   575,
+   268,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#1": [
+   782,
+   268,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=1#2": [
+   782,
+   268,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#2": [
+   421,
+   340,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=2": [
+   421,
+   340,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#2": [
+   575,
+   340,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=2#1": [
+   575,
+   340,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#2": [
+   782,
+   340,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=2#2": [
+   782,
+   340,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#3": [
+   421,
+   412,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=3": [
+   421,
+   412,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#3": [
+   575,
+   412,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=3#1": [
+   575,
+   412,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#3": [
+   782,
+   412,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=3#2": [
+   782,
+   412,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#4": [
+   421,
+   485,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=4": [
+   421,
+   485,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#4": [
+   575,
+   485,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=4#1": [
+   575,
+   485,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#4": [
+   782,
+   485,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=4#2": [
+   782,
+   485,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#5": [
+   421,
+   557,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=5": [
+   421,
+   557,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#5": [
+   575,
+   557,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=5#1": [
+   575,
+   557,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#5": [
+   782,
+   557,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=5#2": [
+   782,
+   557,
+   129,
+   56,
+   "block"
+  ],
+  "dayCell=dayDate#6": [
+   421,
+   629,
+   149,
+   56,
+   "block"
+  ],
+  "dayRow=6": [
+   421,
+   629,
+   149,
+   56,
+   "block"
+  ],
+  "dayCell=place#6": [
+   575,
+   629,
+   201,
+   56,
+   "block"
+  ],
+  "dayRow=6#1": [
+   575,
+   629,
+   201,
+   56,
+   "block"
+  ],
+  "dayCell=times#6": [
+   782,
+   629,
+   129,
+   56,
+   "block"
+  ],
+  "dayRow=6#2": [
+   782,
+   629,
+   129,
+   56,
+   "block"
+  ],
+  "dayHandle=dayDate-place": [
+   564,
+   196,
+   18,
+   56,
+   "flex"
+  ],
+  "dayHandle=place-times": [
+   770,
+   196,
+   18,
+   56,
+   "flex"
+  ],
+  "mode=move#1": [
+   421,
+   105,
+   490,
+   56,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   421,
+   105,
+   490,
+   56,
+   "block"
+  ],
+  "boxTint=on": [
+   421,
+   105,
+   490,
+   56,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   778,
+   1088,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   1100,
+   770,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   1136,
+   778,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   1228,
+   770,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   1348,
+   44,
+   380,
+   605,
+   "block"
+  ],
+  "settingsPanel=true": [
+   1348,
+   44,
+   380,
+   605,
+   "block"
+  ],
+  "itemGrid=true": [
+   1361,
+   57,
+   354,
+   139,
+   "block"
+  ],
+  "clickOne=true": [
+   1612,
+   58,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   1361,
+   80,
+   354,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   1370,
+   104,
+   324,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   1700,
+   95,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   1379,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=heading": [
+   1403,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   1499,
+   139,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   1520,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "item=days": [
+   1583,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#2": [
+   1700,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   1361,
+   164,
+   354,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   1361,
+   221,
+   354,
+   20,
+   "block"
+  ],
+  "look=true": [
+   1361,
+   268,
+   354,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   1362,
+   288,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   1513,
+   288,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   1361,
+   318,
+   354,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   1361,
+   346,
+   354,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   1361,
+   346,
+   354,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   1361,
+   391,
+   354,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   1361,
+   414,
+   354,
+   33,
+   "flex"
+  ],
+  "sizeHint=true": [
+   1361,
+   455,
+   354,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   1361,
+   478,
+   354,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   1447,
+   478,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   1514,
+   478,
+   78,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   1595,
+   478,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   1361,
+   510,
+   354,
+   73,
+   "block"
+  ],
+  "foldHead=true": [
+   1361,
+   523,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   1697,
+   525,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   1361,
+   595,
+   354,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   1361,
+   595,
+   354,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   1361,
+   595,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   1697,
+   597,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "chromium|event|768": {
+  "previewPost=true": [
+   516,
+   0,
+   129,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   84,
+   768,
+   1449,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   84,
+   768,
+   737,
+   "grid"
+  ],
+  "stage=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "stageImg=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "livePoster=true": [
+   99,
+   96,
+   570,
+   713,
+   "block"
+  ],
+  "mode=move": [
+   139,
+   538,
+   490,
+   53,
+   "block"
+  ],
+  "boxOutline=selected": [
+   139,
+   538,
+   490,
+   53,
+   "block"
+  ],
+  "boxTint=on": [
+   139,
+   538,
+   490,
+   53,
+   "block"
+  ],
+  "boxLabel=true": [
+   141,
+   520,
+   32,
+   15,
+   "block"
+  ],
+  "mode=nw": [
+   129,
+   528,
+   24,
+   24,
+   "block"
+  ],
+  "handle=nw": [
+   129,
+   528,
+   24,
+   24,
+   "block"
+  ],
+  "mode=ne": [
+   615,
+   528,
+   24,
+   24,
+   "block"
+  ],
+  "handle=ne": [
+   615,
+   528,
+   24,
+   24,
+   "block"
+  ],
+  "mode=sw": [
+   129,
+   577,
+   24,
+   24,
+   "block"
+  ],
+  "handle=sw": [
+   129,
+   577,
+   24,
+   24,
+   "block"
+  ],
+  "mode=se": [
+   615,
+   577,
+   24,
+   24,
+   "block"
+  ],
+  "handle=se": [
+   615,
+   577,
+   24,
+   24,
+   "block"
+  ],
+  "mode=n": [
+   373,
+   536,
+   22,
+   8,
+   "block"
+  ],
+  "handle=n": [
+   373,
+   536,
+   22,
+   8,
+   "block"
+  ],
+  "mode=e": [
+   623,
+   554,
+   8,
+   22,
+   "block"
+  ],
+  "handle=e": [
+   623,
+   554,
+   8,
+   22,
+   "block"
+  ],
+  "mode=s": [
+   373,
+   585,
+   22,
+   8,
+   "block"
+  ],
+  "handle=s": [
+   373,
+   585,
+   22,
+   8,
+   "block"
+  ],
+  "mode=w": [
+   137,
+   554,
+   8,
+   22,
+   "block"
+  ],
+  "handle=w": [
+   137,
+   554,
+   8,
+   22,
+   "block"
+  ],
+  "mode=move#1": [
+   139,
+   606,
+   490,
+   53,
+   "block"
+  ],
+  "boxOutline=faint": [
+   139,
+   606,
+   490,
+   53,
+   "block"
+  ],
+  "boxTint=on#1": [
+   139,
+   606,
+   490,
+   53,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#2": [
+   139,
+   639,
+   490,
+   33,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   139,
+   639,
+   490,
+   33,
+   "block"
+  ],
+  "boxTint=on#2": [
+   139,
+   639,
+   490,
+   33,
+   "block"
+  ],
+  "boxLabel=true#2": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#3": [
+   139,
+   674,
+   490,
+   53,
+   "block"
+  ],
+  "boxOutline=faint#2": [
+   139,
+   674,
+   490,
+   53,
+   "block"
+  ],
+  "boxTint=on#3": [
+   139,
+   674,
+   490,
+   53,
+   "block"
+  ],
+  "boxLabel=true#3": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   835,
+   524,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   536,
+   827,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   572,
+   835,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   664,
+   827,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   0,
+   875,
+   768,
+   658,
+   "block"
+  ],
+  "settingsPanel=true": [
+   0,
+   875,
+   768,
+   658,
+   "block"
+  ],
+  "itemGrid=true": [
+   13,
+   888,
+   742,
+   209,
+   "block"
+  ],
+  "clickOne=true": [
+   652,
+   889,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   13,
+   911,
+   742,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   22,
+   935,
+   712,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   740,
+   926,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   31,
+   967,
+   16,
+   16,
+   "block"
+  ],
+  "item=date": [
+   55,
+   960,
+   326,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   96,
+   970,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   366,
+   968,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#1": [
+   405,
+   967,
+   16,
+   16,
+   "block"
+  ],
+  "item=location": [
+   429,
+   960,
+   326,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#1": [
+   479,
+   970,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#2": [
+   740,
+   968,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#2": [
+   31,
+   1002,
+   16,
+   16,
+   "block"
+  ],
+  "item=town": [
+   55,
+   995,
+   326,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#2": [
+   95,
+   1005,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#3": [
+   366,
+   1003,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#3": [
+   405,
+   1002,
+   16,
+   16,
+   "block"
+  ],
+  "item=time": [
+   429,
+   995,
+   326,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#3": [
+   471,
+   1005,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#4": [
+   740,
+   1003,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#4": [
+   15,
+   1037,
+   16,
+   16,
+   "block"
+  ],
+  "item=place-picture": [
+   55,
+   1030,
+   326,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#5": [
+   366,
+   1038,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   13,
+   1065,
+   742,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   13,
+   1122,
+   742,
+   20,
+   "block"
+  ],
+  "look=true": [
+   13,
+   1169,
+   742,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   14,
+   1189,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   165,
+   1189,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   13,
+   1219,
+   742,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   13,
+   1247,
+   742,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   13,
+   1247,
+   742,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   13,
+   1292,
+   742,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   13,
+   1315,
+   742,
+   33,
+   "flex"
+  ],
+  "sizeHint=true": [
+   13,
+   1356,
+   742,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   13,
+   1379,
+   742,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   99,
+   1379,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   166,
+   1379,
+   78,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   247,
+   1379,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   13,
+   1411,
+   742,
+   55,
+   "block"
+  ],
+  "foldHead=true": [
+   13,
+   1424,
+   742,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   737,
+   1426,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   13,
+   1478,
+   742,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   13,
+   1478,
+   742,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   13,
+   1478,
+   742,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   737,
+   1480,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "chromium|event|1100": {
+  "previewPost=true": [
+   678,
+   0,
+   129,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   44,
+   1100,
+   675,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   44,
+   704,
+   576,
+   "grid"
+  ],
+  "stage=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "stageImg=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "livePoster=true": [
+   131,
+   56,
+   442,
+   553,
+   "block"
+  ],
+  "mode=move": [
+   162,
+   399,
+   380,
+   41,
+   "block"
+  ],
+  "boxOutline=selected": [
+   162,
+   399,
+   380,
+   41,
+   "block"
+  ],
+  "boxTint=on": [
+   162,
+   399,
+   380,
+   41,
+   "block"
+  ],
+  "boxLabel=true": [
+   164,
+   381,
+   32,
+   15,
+   "block"
+  ],
+  "mode=nw": [
+   152,
+   389,
+   24,
+   24,
+   "block"
+  ],
+  "handle=nw": [
+   152,
+   389,
+   24,
+   24,
+   "block"
+  ],
+  "mode=ne": [
+   528,
+   389,
+   24,
+   24,
+   "block"
+  ],
+  "handle=ne": [
+   528,
+   389,
+   24,
+   24,
+   "block"
+  ],
+  "mode=sw": [
+   152,
+   426,
+   24,
+   24,
+   "block"
+  ],
+  "handle=sw": [
+   152,
+   426,
+   24,
+   24,
+   "block"
+  ],
+  "mode=se": [
+   528,
+   426,
+   24,
+   24,
+   "block"
+  ],
+  "handle=se": [
+   528,
+   426,
+   24,
+   24,
+   "block"
+  ],
+  "mode=n": [
+   341,
+   397,
+   22,
+   8,
+   "block"
+  ],
+  "handle=n": [
+   341,
+   397,
+   22,
+   8,
+   "block"
+  ],
+  "mode=e": [
+   536,
+   408,
+   8,
+   22,
+   "block"
+  ],
+  "handle=e": [
+   536,
+   408,
+   8,
+   22,
+   "block"
+  ],
+  "mode=s": [
+   341,
+   434,
+   22,
+   8,
+   "block"
+  ],
+  "handle=s": [
+   341,
+   434,
+   22,
+   8,
+   "block"
+  ],
+  "mode=w": [
+   160,
+   408,
+   8,
+   22,
+   "block"
+  ],
+  "handle=w": [
+   160,
+   408,
+   8,
+   22,
+   "block"
+  ],
+  "mode=move#1": [
+   162,
+   451,
+   380,
+   41,
+   "block"
+  ],
+  "boxOutline=faint": [
+   162,
+   451,
+   380,
+   41,
+   "block"
+  ],
+  "boxTint=on#1": [
+   162,
+   451,
+   380,
+   41,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#2": [
+   162,
+   477,
+   380,
+   26,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   162,
+   477,
+   380,
+   26,
+   "block"
+  ],
+  "boxTint=on#2": [
+   162,
+   477,
+   380,
+   26,
+   "block"
+  ],
+  "boxLabel=true#2": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#3": [
+   162,
+   504,
+   380,
+   41,
+   "block"
+  ],
+  "boxOutline=faint#2": [
+   162,
+   504,
+   380,
+   41,
+   "block"
+  ],
+  "boxTint=on#3": [
+   162,
+   504,
+   380,
+   41,
+   "block"
+  ],
+  "boxLabel=true#3": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   634,
+   460,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   472,
+   626,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   508,
+   634,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   600,
+   626,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   720,
+   44,
+   380,
+   675,
+   "block"
+  ],
+  "settingsPanel=true": [
+   720,
+   44,
+   380,
+   675,
+   "block"
+  ],
+  "itemGrid=true": [
+   733,
+   57,
+   354,
+   209,
+   "block"
+  ],
+  "clickOne=true": [
+   984,
+   58,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   733,
+   80,
+   354,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   742,
+   104,
+   324,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   1072,
+   95,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   751,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=date": [
+   775,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   816,
+   139,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   892,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#1": [
+   931,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=location": [
+   955,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#1": [
+   1005,
+   139,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#2": [
+   1072,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#2": [
+   751,
+   171,
+   16,
+   16,
+   "block"
+  ],
+  "item=town": [
+   775,
+   164,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#2": [
+   815,
+   174,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#3": [
+   892,
+   172,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#3": [
+   931,
+   171,
+   16,
+   16,
+   "block"
+  ],
+  "item=time": [
+   955,
+   164,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#3": [
+   997,
+   174,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#4": [
+   1072,
+   172,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#4": [
+   735,
+   206,
+   16,
+   16,
+   "block"
+  ],
+  "item=place-picture": [
+   775,
+   199,
+   132,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#5": [
+   892,
+   207,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   733,
+   234,
+   354,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   733,
+   291,
+   354,
+   20,
+   "block"
+  ],
+  "look=true": [
+   733,
+   338,
+   354,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   734,
+   358,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   885,
+   358,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   733,
+   388,
+   354,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   733,
+   416,
+   354,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   733,
+   416,
+   354,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   733,
+   461,
+   354,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   733,
+   484,
+   354,
+   33,
+   "flex"
+  ],
+  "sizeHint=true": [
+   733,
+   525,
+   354,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   733,
+   548,
+   354,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   819,
+   548,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   886,
+   548,
+   78,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   967,
+   548,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   733,
+   580,
+   354,
+   73,
+   "block"
+  ],
+  "foldHead=true": [
+   733,
+   593,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   1069,
+   595,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   733,
+   665,
+   354,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   733,
+   665,
+   354,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   733,
+   665,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   1069,
+   667,
+   18,
+   18,
+   "block"
+  ]
+ },
+ "chromium|event|1728": {
+  "previewPost=true": [
+   1306,
+   0,
+   129,
+   32,
+   "flex"
+  ],
+  "editorGrid=true": [
+   0,
+   44,
+   1728,
+   758,
+   "grid"
+  ],
+  "stageArea=true": [
+   0,
+   44,
+   1332,
+   720,
+   "grid"
+  ],
+  "stage=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "stageImg=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "livePoster=true": [
+   388,
+   56,
+   557,
+   696,
+   "block"
+  ],
+  "mode=move": [
+   427,
+   488,
+   479,
+   52,
+   "block"
+  ],
+  "boxOutline=selected": [
+   427,
+   488,
+   479,
+   52,
+   "block"
+  ],
+  "boxTint=on": [
+   427,
+   488,
+   479,
+   52,
+   "block"
+  ],
+  "boxLabel=true": [
+   429,
+   470,
+   32,
+   15,
+   "block"
+  ],
+  "mode=nw": [
+   417,
+   478,
+   24,
+   24,
+   "block"
+  ],
+  "handle=nw": [
+   417,
+   478,
+   24,
+   24,
+   "block"
+  ],
+  "mode=ne": [
+   891,
+   478,
+   24,
+   24,
+   "block"
+  ],
+  "handle=ne": [
+   891,
+   478,
+   24,
+   24,
+   "block"
+  ],
+  "mode=sw": [
+   417,
+   526,
+   24,
+   24,
+   "block"
+  ],
+  "handle=sw": [
+   417,
+   526,
+   24,
+   24,
+   "block"
+  ],
+  "mode=se": [
+   891,
+   526,
+   24,
+   24,
+   "block"
+  ],
+  "handle=se": [
+   891,
+   526,
+   24,
+   24,
+   "block"
+  ],
+  "mode=n": [
+   655,
+   486,
+   22,
+   8,
+   "block"
+  ],
+  "handle=n": [
+   655,
+   486,
+   22,
+   8,
+   "block"
+  ],
+  "mode=e": [
+   899,
+   503,
+   8,
+   22,
+   "block"
+  ],
+  "handle=e": [
+   899,
+   503,
+   8,
+   22,
+   "block"
+  ],
+  "mode=s": [
+   655,
+   534,
+   22,
+   8,
+   "block"
+  ],
+  "handle=s": [
+   655,
+   534,
+   22,
+   8,
+   "block"
+  ],
+  "mode=w": [
+   425,
+   503,
+   8,
+   22,
+   "block"
+  ],
+  "handle=w": [
+   425,
+   503,
+   8,
+   22,
+   "block"
+  ],
+  "mode=move#1": [
+   427,
+   554,
+   479,
+   52,
+   "block"
+  ],
+  "boxOutline=faint": [
+   427,
+   554,
+   479,
+   52,
+   "block"
+  ],
+  "boxTint=on#1": [
+   427,
+   554,
+   479,
+   52,
+   "block"
+  ],
+  "boxLabel=true#1": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#2": [
+   427,
+   587,
+   479,
+   32,
+   "block"
+  ],
+  "boxOutline=faint#1": [
+   427,
+   587,
+   479,
+   32,
+   "block"
+  ],
+  "boxTint=on#2": [
+   427,
+   587,
+   479,
+   32,
+   "block"
+  ],
+  "boxLabel=true#2": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "mode=move#3": [
+   427,
+   621,
+   479,
+   52,
+   "block"
+  ],
+  "boxOutline=faint#2": [
+   427,
+   621,
+   479,
+   52,
+   "block"
+  ],
+  "boxTint=on#3": [
+   427,
+   621,
+   479,
+   52,
+   "block"
+  ],
+  "boxLabel=true#3": [
+   0,
+   0,
+   0,
+   0,
+   "none"
+  ],
+  "stageHint=true": [
+   0,
+   778,
+   1088,
+   16,
+   "block"
+  ],
+  "zoom=true": [
+   1100,
+   770,
+   232,
+   32,
+   "flex"
+  ],
+  "zoomReadout=true": [
+   1136,
+   778,
+   48,
+   16,
+   "block"
+  ],
+  "zoomFit=true": [
+   1228,
+   770,
+   104,
+   32,
+   "flex"
+  ],
+  "settingsCol=true": [
+   1348,
+   44,
+   380,
+   675,
+   "block"
+  ],
+  "settingsPanel=true": [
+   1348,
+   44,
+   380,
+   675,
+   "block"
+  ],
+  "itemGrid=true": [
+   1361,
+   57,
+   354,
+   209,
+   "block"
+  ],
+  "clickOne=true": [
+   1612,
+   58,
+   103,
+   15,
+   "block"
+  ],
+  "item=all-text": [
+   1361,
+   80,
+   354,
+   44,
+   "flex"
+  ],
+  "itemSub=true": [
+   1370,
+   104,
+   324,
+   13,
+   "block"
+  ],
+  "itemChevron=true": [
+   1700,
+   95,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true": [
+   1379,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=date": [
+   1403,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true": [
+   1444,
+   139,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#1": [
+   1520,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#1": [
+   1559,
+   136,
+   16,
+   16,
+   "block"
+  ],
+  "item=location": [
+   1583,
+   129,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#1": [
+   1633,
+   139,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#2": [
+   1700,
+   137,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#2": [
+   1379,
+   171,
+   16,
+   16,
+   "block"
+  ],
+  "item=town": [
+   1403,
+   164,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#2": [
+   1443,
+   174,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#3": [
+   1520,
+   172,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#3": [
+   1559,
+   171,
+   16,
+   16,
+   "block"
+  ],
+  "item=time": [
+   1583,
+   164,
+   132,
+   29,
+   "flex"
+  ],
+  "followGlyph=true#3": [
+   1625,
+   174,
+   13,
+   10,
+   "block"
+  ],
+  "itemChevron=true#4": [
+   1700,
+   172,
+   6,
+   13,
+   "block"
+  ],
+  "switchKnob=true#4": [
+   1363,
+   206,
+   16,
+   16,
+   "block"
+  ],
+  "item=place-picture": [
+   1403,
+   199,
+   132,
+   29,
+   "flex"
+  ],
+  "itemChevron=true#5": [
+   1520,
+   207,
+   6,
+   13,
+   "block"
+  ],
+  "addNote=true": [
+   1361,
+   234,
+   354,
+   32,
+   "inline-block"
+  ],
+  "settingsTitle=true": [
+   1361,
+   291,
+   354,
+   20,
+   "block"
+  ],
+  "look=true": [
+   1361,
+   338,
+   354,
+   67,
+   "block"
+  ],
+  "lookOpt=same": [
+   1362,
+   358,
+   151,
+   25,
+   "block"
+  ],
+  "lookOpt=own": [
+   1513,
+   358,
+   156,
+   25,
+   "block"
+  ],
+  "lookHint=true": [
+   1361,
+   388,
+   354,
+   18,
+   "block"
+  ],
+  "settingsSection=TEXT": [
+   1361,
+   416,
+   354,
+   164,
+   "block"
+  ],
+  "field=How the date is written": [
+   1361,
+   416,
+   354,
+   38,
+   "flex"
+  ],
+  "otherChoices=true": [
+   1361,
+   461,
+   354,
+   15,
+   "block"
+  ],
+  "field=Text size": [
+   1361,
+   484,
+   354,
+   33,
+   "flex"
+  ],
+  "sizeHint=true": [
+   1361,
+   525,
+   354,
+   15,
+   "block"
+  ],
+  "field=Line up the words": [
+   1361,
+   548,
+   354,
+   32,
+   "flex"
+  ],
+  "align=left": [
+   1447,
+   548,
+   63,
+   32,
+   "flex"
+  ],
+  "align=center": [
+   1514,
+   548,
+   78,
+   32,
+   "flex"
+  ],
+  "align=right": [
+   1595,
+   548,
+   72,
+   32,
+   "flex"
+  ],
+  "settingsSection=MORE OPTIONS": [
+   1361,
+   580,
+   354,
+   73,
+   "block"
+  ],
+  "foldHead=true": [
+   1361,
+   593,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed": [
+   1697,
+   595,
+   18,
+   18,
+   "block"
+  ],
+  "backgroundSection=true": [
+   1361,
+   665,
+   354,
+   42,
+   "block"
+  ],
+  "settingsSection=🖼 BACKGROUND PICTURE": [
+   1361,
+   665,
+   354,
+   42,
+   "block"
+  ],
+  "foldHead=true#1": [
+   1361,
+   665,
+   354,
+   22,
+   "flex"
+  ],
+  "foldArrow=closed#1": [
+   1697,
+   667,
+   18,
+   18,
+   "block"
+  ]
+ }
+}

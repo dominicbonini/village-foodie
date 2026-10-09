@@ -64,6 +64,29 @@ function appCss() {
   if (!/min-width:\s*900px/.test(css)) {
     throw new Error('the compiled CSS has no `min-[900px]` rule — the build predates this layout; run `npx next build`')
   }
+  /* ══ 🔴 AND EVERY **ARBITRARY** CLASS A CLAIM BELOW RESTS ON — 10 OCTOBER 2026 ═══════════════════
+   *
+   * ⛔ **THIS WAS ADDED BECAUSE THE TRAP CAUGHT ME TWICE IN TWO DAYS.** Tailwind emits only the
+   * utilities it finds in the source **at build time**, so a class written today is absent from
+   * yesterday's build — and an absent class does not fail, it lays out *differently*. Yesterday that
+   * was `origin-top-left` and the live poster scaled about its centre (docs/social-tab-7-report.md
+   * §2b). Today it was `h-[72px]`, and §3's thumbnails measured **72×20 and 72×4** — a claim failing on
+   * correct source, for forty minutes, because the build was older than the component.
+   * 🔴 THE GENERAL CHECK IS NOT POSSIBLE AND THE SPECIFIC ONE IS. "Every class the fixture uses" would
+   * mean parsing the lifted strings; what this list holds is the handful of ARBITRARY values whose
+   * absence changes a measured number rather than a colour. ⚠️ ADD TO IT when a claim starts depending
+   * on a new `[...]` class, and the next stale build says so in one line instead of in a wrong number. */
+  /* ⚠️ A **LITERAL** MATCH, NOT A REGEX, AND THAT IS THE POINT OF THE SECOND ATTEMPT. The compiled CSS
+   * escapes the brackets itself — the selector in the file is `.h-\[72px\]{…}` — so a regex has to
+   * escape the backslash AND the bracket, which I got wrong twice and which reported every class
+   * missing on a build that had them all. `includes` on the selector exactly as it appears in the file
+   * cannot be got wrong. */
+  const NEEDED = ['.h-\\[72px\\]', '.w-\\[72px\\]', '.h-\\[132px\\]', '.w-\\[20px\\]', '.max-h-\\[30rem\\]']
+  const missing = NEEDED.filter(k => !css.includes(k))
+  if (missing.length) {
+    throw new Error('the compiled CSS is older than the components — no '
+      + missing.join(', ') + '. Tailwind only emits classes it finds at build time; run `npx next build`')
+  }
   return css
 }
 
@@ -209,7 +232,16 @@ const C = () => ({
    * are flex columns now. ⚠️ `items-stretch` IS THE DEFAULT AND IS WHAT MAKES THE THREE BOXES ONE
    * HEIGHT — which, with the preview and the footer pinned to each box's foot, is what lines them up.
    * ⚠️ AND 900, NOT 640: three across needs half again as much room as two did. */
-  locBoxes: lift(SOCIAL, /<div className="(mt-3 grid grid-cols-1 gap-3 min-\[900px\]:grid-cols-3)"\n\s*data-loc-boxes>/, 'the three picture boxes'),
+  /* ⚠️ `hidden … md:grid` SINCE §3 (10 October 2026): below 768px the three boxes are replaced by three
+   * compact CARDS, and both are in the tree with CSS choosing. The desktop grid is otherwise unchanged,
+   * which is what the widths below still measure. */
+  locBoxes: lift(SOCIAL, /<div className="(mt-3 hidden grid-cols-1 gap-3 md:grid min-\[900px\]:grid-cols-3)"\n\s*data-loc-boxes>/, 'the three picture boxes'),
+  /** §3 · the phone card list's own wrapper, and one card, lifted so the fixture cannot drift. */
+  locPhoneCards: lift(SOCIAL, /<div className="(mt-3 space-y-2 md:hidden)" data-loc-phone-cards>/, 'the phone card list'),
+  phoneCard: lift(SOCIAL, /<div data-phone-pic-card=\{slotKey\}\n\s*className="([^"]+)">/, 'a phone picture card'),
+  phoneThumb: lift(SOCIAL, /className=\{`(flex h-\[72px\] w-\[72px\] shrink-0 items-center justify-center overflow-hidden rounded-lg) \$\{image/, 'the phone thumbnail'),
+  locListScreen: lift(SOCIAL, /<div className=\{selectedId \? '(hidden md:block)' : 'block'\} data-loc-list-screen>/, 'the list screen'),
+  locDetailScreen: lift(SOCIAL, /<div className=\{selectedId \? 'block' : '(hidden md:block)'\} data-loc-detail-screen>/, 'the detail screen'),
   /* ⚠️ THE STACKED BUTTON COLUMN inside a slot box, lifted for the same reason. Replace and Remove sat
    * in a `flex-wrap` ROW while the boxes were full width; at half a pane they wrapped at every
    * realistic size, so they are a column now. */
@@ -597,6 +629,32 @@ function locationsFixture(css, {
           * ⚠️ THE FIXTURE DRAWS ONE FILLED AND TWO EMPTY, because that is the case where an unequal
           * height would show — and the EMPTY weekly box carries the borrow link, which is the state
           * the link exists for. */''}
+      ${/* ══ 🔴 §3 · THE PHONE'S THREE COMPACT CARDS, DRAWN TOO ═══════════════════════════════════
+          * ⚠️ BOTH LAYOUTS ARE IN THE REAL PANE AND CSS CHOOSES, so a fixture that drew only the boxes
+          * would measure a screen nobody is served below 768px — and would measure it as three
+          * `display:none` elements, which is exactly how the first run after §3 reported "0px". */''}
+      <div class="${c.locPhoneCards}" data-loc-phone-cards>
+        ${[['event-photo', 'Picture for event posts', 'In your single event design’s picture space', true],
+          ['weekly', 'Picture for weekly posts', 'On this location’s line of your weekly post', false],
+          ['event', 'Location poster', 'Used instead of your single event design', false],
+        ].map(([id, title, line, has]) => `
+          <div data-phone-pic-card="${id}" class="${c.phoneCard}">
+            <div data-phone-thumb class="${c.phoneThumb} ${has
+              ? 'border border-slate-200 bg-slate-50'
+              : 'border-2 border-dashed border-slate-300 bg-slate-50'}">
+              ${has ? `<img src="${WIDE_PIC}" alt="" class="h-full w-full object-contain">` : ''}
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-bold leading-tight text-slate-900">${title}</p>
+              <p class="mt-0.5 text-[11px] leading-snug text-slate-500 line-clamp-2">${line}</p>
+              <div class="mt-1.5 flex flex-wrap items-center gap-2">
+                ${has
+                  ? `<button data-phone-remove class="shrink-0 rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700">Remove</button>`
+                  : `<label data-phone-upload class="inline-flex shrink-0 cursor-pointer items-center rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700">Upload</label>`}
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
       <div class="${boxesGrid}" data-loc-boxes>
         ${/* ══ 🔴 THE THREE REAL DESCRIPTIONS, AND THEIR DIFFERENT LENGTHS ARE THE WHOLE POINT ════════
             * ⛔ A FIXTURE WITH THREE EQUAL DESCRIPTIONS WOULD LINE UP WITHOUT SUBGRID and prove nothing.
@@ -721,6 +779,19 @@ const rects = () => {
     pictureBoxes: all('[data-picture-box]').map(el => ({ id: el.dataset.pictureBox, ...r(el) })),
     /* 🔴 THE PREVIEW AREAS, whose heights must be identical — that is what makes the boxes equal. */
     dropAreas: all('[data-drop-area]').map(r),
+    /* ══ 🔴 §3 · THE PHONE'S COMPACT CARDS ═══════════════════════════════════════════════════════
+     * ⚠️ READ WITH THEIR **COMPUTED `display`**, because the whole arrangement is "both are in the tree
+     * and CSS chooses". A claim that only measured rectangles could not tell a card that is shown from
+     * one that is `display:none` — and `getBoundingClientRect()` on a hidden element is all zeros,
+     * which compares equal to other zeros. That is how the first run after §3 passed a 0px preview. */
+    phoneCards: all('[data-phone-pic-card]').map(el => ({
+      id: el.dataset.phonePicCard, shown: getComputedStyle(el).display !== 'none', ...r(el),
+    })),
+    phoneThumbs: all('[data-phone-thumb]').map(r),
+    phoneCardList: (() => { const el = document.querySelector('[data-loc-phone-cards]')
+      return el ? { shown: getComputedStyle(el).display !== 'none', ...r(el) } : null })(),
+    boxesWrap: (() => { const el = document.querySelector('[data-loc-boxes]')
+      return el ? { shown: getComputedStyle(el).display !== 'none', ...r(el) } : null })(),
     /* ══ 🔴 §1 · THE FOUR ROWS OF EACH BOX, SO "THEY LINE UP" IS A MEASUREMENT ════════════════════════
      * ⛔ EQUAL BOX HEIGHTS ARE NOT THE CLAIM. `items-stretch` already gave us those, and the contents
      * still started at six different heights because the descriptions wrap to different numbers of
@@ -887,7 +958,13 @@ async function measure() {
    * overflow is a CONTENT-SIZED column, so it had to be checked where the boxes are WIDEST as well as
    * where they are narrowest — a fix that only worked at 1100 would look right on the machine it was
    * found on. ⛔ 390 STAYS: below 900 the three boxes stack, which is a different shape again. */
-  const WIDTHS = [[1100, 800, 'laptop window'], [1280, 900, 'desktop'], [1728, 1000, 'full window'], [390, 844, 'phone']]
+  /* ⚠️ §3 (10 October 2026) · 430 AND 768 JOINED THE SET. 430×932 is the brief's second phone and is
+   * where a 72px thumb plus a long title has the most room to still go wrong; **768 is the breakpoint
+   * itself**, and a breakpoint with no measurement ON it is a breakpoint nobody has checked — this
+   * repository has shipped four layout bugs past exactly that gap. ⛔ 768 MUST READ AS **TABLET**: the
+   * three boxes, stacked, exactly as they are today. */
+  const WIDTHS = [[1100, 800, 'laptop window'], [1280, 900, 'desktop'], [1728, 1000, 'full window'],
+    [768, 1024, 'tablet'], [430, 932, 'big phone'], [390, 844, 'phone']]
 
   /* ══ 🔴 EVERY SCREEN CARRIES ITS OWN HEADING AND DESCRIPTION, AT THE SAME SIZE ══════════════════
    * ⛔ THE SHARED "Social posts" HEADING IS GONE, so this is what replaced it — and the claim worth
@@ -1202,9 +1279,17 @@ async function measure() {
         const WK = r.pictureBoxes.find(b => b.id === 'weekly')
         const EV = r.pictureBoxes.find(b => b.id === 'event-photo')
         const PO = r.pictureBoxes.find(b => b.id === 'event')
-        t(r.pictureBoxes.length === 3
-          && r.pictureBoxes.every(b => b.right <= P.right + 1 && b.left >= P.left - 1),
-          `🔴 ${w} ${tag}: all three picture boxes are inside the pane`)
+        /* ══ 🔴 §3 (10 October 2026) · THE THREE **BOXES** EXIST ONLY FROM 768px UP ══════════════════
+         * ⛔ BELOW THAT THEY ARE `display: none` AND THE PHONE **CARDS** ARE WHAT IS THERE — which is
+         * why this claim and the two below it are guarded now, and why the first run after §3 reported
+         * three previews "0px" high. ⚠️ A `display:none` ELEMENT STILL ANSWERS `querySelectorAll`, so an
+         * unguarded measurement does not fail loudly: it measures zero and compares zeros. The guard is
+         * what makes the phone's own claims (further down) the ones that have to hold there. */
+        if (w >= 768) {
+          t(r.pictureBoxes.length === 3
+            && r.pictureBoxes.every(b => b.right <= P.right + 1 && b.left >= P.left - 1),
+            `🔴 ${w} ${tag}: all three picture boxes are inside the pane`)
+        }
         if (w >= 900) {
           /* ⚠️ EVENT · WEEKLY · POSTER SINCE 10 OCTOBER 2026 — the pane's boxes and the table's columns
            * moved together, so "the table's column order" is still the claim and the order it names has
@@ -1224,10 +1309,11 @@ async function measure() {
             `⚠️ ${w} ${tag}: …and all three are the same width (${ws.join('/')})`)
           t(Math.max(...hs) - Math.min(...hs) <= 1,
             `🔴 ${w} ${tag}: …and the same HEIGHT, filled or empty (${hs.join('/')})`)
-        } else {
-          /* ⚠️ STACKED, IN THE SAME ORDER THEY SIT IN ACROSS — event, weekly, poster (10 October 2026). */
+        } else if (w >= 768) {
+          /* ⚠️ STACKED, IN THE SAME ORDER THEY SIT IN ACROSS — event, weekly, poster (10 October 2026).
+           * ⚠️ 768–899 ONLY SINCE §3: below 768 there are no boxes to stack. */
           t(!!WK && !!EV && !!PO && WK.top >= EV.bottom && PO.top >= WK.bottom && r.locBoxCols === 1,
-            `🔴 ${w} ${tag}: the three boxes STACK below 900px (${r.locBoxCols} track)`)
+            `🔴 ${w} ${tag}: the three boxes STACK between 768 and 900 (${r.locBoxCols} track)`)
         }
 
         /* ══ 🔴 §1 · THE THREE BOXES LINE UP **ROW BY ROW**, NOT JUST EDGE TO EDGE ═══════════════════
@@ -1306,9 +1392,41 @@ async function measure() {
          * third, so an operator checking they had uploaded the right file was shown something that was
          * not quite it. ⚠️ ONE HEIGHT IS ALSO WHAT MAKES THE BOXES EQUAL, which is why it is measured
          * here rather than taken on trust from the class. */
-        const ph = [...new Set(r.dropAreas.map(d => d.height))]
-        t(r.dropAreas.length === 3 && ph.length === 1 && ph[0] >= 120,
-          `🔴 ${w} ${tag}: all three previews are the same height (${ph.join('/')}px)`)
+        if (w >= 768) {
+          const ph = [...new Set(r.dropAreas.map(d => d.height))]
+          t(r.dropAreas.length === 3 && ph.length === 1 && ph[0] >= 120,
+            `🔴 ${w} ${tag}: all three previews are the same height (${ph.join('/')}px)`)
+        }
+
+        /* ══ 🔴 §3 (10 October 2026) · ONE LAYOUT OR THE OTHER, NEVER BOTH, NEVER NEITHER ════════════
+         *
+         * ⛔ **THIS IS THE CLAIM THE ARRANGEMENT RESTS ON.** Both the compact cards and the three boxes
+         * are in the tree at every width; CSS decides. So the thing that can go wrong is not a
+         * rectangle — it is `display`, and two of them showing at once would put six picture controls on
+         * one screen while two of them doing nothing would leave none.
+         * 🔴 768px IS THE LINE, AND IT IS THE BRIEF'S. ⚠️ 768–899 KEEPS THE BOXES, stacked — *"tablet
+         * (768px and up) stay exactly as they are"* — which is why this is not the 900px the two-pane
+         * grid uses. The two numbers are different on purpose. */
+        t(!!r.phoneCardList && !!r.boxesWrap
+          && r.phoneCardList.shown === (w < 768) && r.boxesWrap.shown === (w >= 768),
+          `🔴 ${w} ${tag}: ${w < 768 ? 'the compact cards' : 'the three boxes'} are what is shown, and only one of the two`)
+        if (w < 768) {
+          /* ⚠️ THREE CARDS, IN THE BRIEF'S ORDER — event photo, weekly, poster — the same order as the
+           * boxes, so the two layouts cannot teach an operator two different orders. */
+          t(r.phoneCards.length === 3
+            && r.phoneCards.map(c => c.id).join(',') === 'event-photo,weekly,event',
+            `🔴 ${w} ${tag}: three cards, event · weekly · poster (${r.phoneCards.map(c => c.id).join(' · ')})`)
+          /* 🔴 72px, THE BRIEF'S NUMBER, AND SQUARE. ⚠️ Measured rather than read off a class: a thumb
+           * squeezed by a long title would still carry `h-[72px] w-[72px]` and be 48px wide. */
+          const sq = r.phoneThumbs.every(th => th.width === 72 && th.height === 72)
+          t(r.phoneThumbs.length === 3 && sq,
+            `🔴 ${w} ${tag}: …each with a 72px square thumbnail (${r.phoneThumbs.map(th => `${th.width}×${th.height}`).join(' ')})`)
+          /* ⛔ AND EVERY CARD IS INSIDE THE PANE. A 72px thumb plus a title plus a button is the one
+           * row on this screen that could overflow a 358px column. */
+          t(r.phoneCards.every(c => c.left >= P.left - 1 && c.right <= P.right + 1),
+            `🔴 ${w} ${tag}: …and every card fits the pane`)
+          t(r.docScrollW <= r.innerW, `🔴 ${w} ${tag}: …and the page does not scroll sideways`)
+        }
 
         /* ══ 🔴 THE BORROW LINK IS OFFERED ONLY WHERE IT MEANS SOMETHING ══════════════════════════════
          * ⚠️ THE FIXTURE'S WEEKLY BOX IS EMPTY AND ITS EVENT BOX IS FILLED, which is the one state the

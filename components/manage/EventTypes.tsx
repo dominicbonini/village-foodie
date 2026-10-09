@@ -59,6 +59,7 @@ import {
   PRICES_MENU_CELL, ITEM_PRICES_SHOW, ITEM_PRICES_HIDE,
   OFFLINE_WHEN_OFFLINE_LABEL, 
   PRICE_MODES_WITH_AMOUNT,
+  PRICE_ITEMS_HEADING, PRICE_ITEMS_OPEN, PRICE_ITEMS_CLOSE, ownPriceCount,
 } from '@/lib/copy/serviceSettings'
 /* The rack size Settings' own buzzer toggle writes when it is switched ON. Standard's buzzer switch
  * makes the same call, so it must use the same default rather than pick a number. */
@@ -1102,6 +1103,11 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                       type={t} standard={standard} editable={editable}
                       colour={colourFor(types.findIndex(x => x.id === t.id))}
                       pricing={pricingReady ? pricing[t.id] : undefined}
+                      /* 🔴 §2 · THE MENU AND THE PER-ITEM WRITE, so the phone card can show and edit the
+                       * item prices. ⚠️ `setTypeItemPrice` IS THE GRID'S OWN SETTER — the same
+                       * `set_type_item_price` action, not a phone-only path. */
+                      menu={menu}
+                      onSetItemPrice={(itemId, price) => setTypeItemPrice(t.id, itemId, price)}
                       onPatch={v => void patch(t.id, v)}
                       onPatchPricing={v => void patchPricing(t.id, v)}
                       onRename={() => { setRenaming(t.id); setRenameTo(t.name) }}
@@ -2132,18 +2138,48 @@ function StandardCard({ standard, van, editable, onStandard, onStandardVan, stan
 }
 
 /** One type on a phone. The same controls, stacked. */
-function TypeCard({ type, standard, editable, colour, pricing, onPatch, onPatchPricing, onRename, onDelete }: {
+function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, onPatchPricing, onSetItemPrice, onRename, onDelete }: {
   type: TypeRow
   standard: StandardValues
   editable: boolean
   colour: string
   /** This type's pricing, or undefined before 20261011 is applied (⇒ no price rows at all). */
   pricing: TypePricingRow | undefined
+  /**
+   * ══ 🔴 §2 · THE MENU, SO THE PHONE CARD CAN SHOW THE ITEM PRICES (10 October 2026) ═══════════════
+   *
+   * ⛔ **THIS CARD USED TO REFUSE TO SHOW THEM, AND IT WAS A DECISION RATHER THAN A BUG.** The note
+   * below the price rows said so in as many words: forty item rows across every type's column *"is
+   * unreadable at 390px"*, so the card printed `"N typed prices · set them on a bigger screen"` and
+   * sent the operator to a desktop or to the per-event dashboard sheet.
+   * 🔴 **DOMINIC REVERSED IT:** *"the list of items with their prices isn't visible on a phone … fix it
+   * so the items and prices show and can be edited on a phone. A stacked card per item is fine if a
+   * table can't fit."* ⚠️ THE OLD REASONING WAS ABOUT THE **GRID** — one row per dish across every
+   * type's columns — and it is still true of the grid. One type at a time, one row per dish, is a
+   * different shape and it fits.
+   */
+  menu: PricingMenu
   onPatch: (values: Record<string, unknown>) => void
   onPatchPricing: (values: Record<string, unknown>) => void
+  /** §2 · one item's typed price, or null for "the rule decides". ⚠️ The SAME action the grid sends. */
+  onSetItemPrice: (itemId: string, price: number | null) => void
   onRename: () => void
   onDelete: () => void
 }) {
+  /* ══ 🔴 §2 · THE ITEM LIST IS FOLDED, AND THE FOLD IS THIS CARD'S OWN STATE ══════════════════════
+   * ⚠️ NOT THE GRID'S `showItems`. That one belongs to the desktop grid and is shared by every type's
+   * column; this card shows ONE type, and an operator who unfolds the items on Festival has not asked
+   * to unfold them on Market. ⛔ A SHARED FLAG WOULD ALSO MEAN OPENING THE PHONE CARD CHANGED THE
+   * DESKTOP GRID the next time the window was widened. */
+  const [phoneItems, setPhoneItems] = useState(false)
+  /* 🔴 §2 · "Set each price myself" IS THE MODE THAT OWNS THE LIST. ⚠️ TESTED THROUGH
+   * `PRICE_MODES_WITH_AMOUNT`, the same list the grid's `ruleLive` uses and the one derived from
+   * `PRICE_MODE_CHOICES` itself — so a sixth mode cannot be added without deciding which side of this
+   * it falls on, and the two screens cannot answer the question differently. */
+  const setEach = !!pricing?.price_change_on && !PRICE_MODES_WITH_AMOUNT.includes(pricing.price_mode ?? '')
+  /** ⚠️ How many dishes are NOT following the rule — the one fact this card can state about them. */
+  const ownPrices = pricing ? Object.keys(pricing.typed).length : 0
+
   return (
     <div className="rounded-2xl border border-slate-200 p-4 space-y-2">
       <div className="flex items-center gap-2">
@@ -2179,39 +2215,142 @@ function TypeCard({ type, standard, editable, colour, pricing, onPatch, onPatchP
           </div>
           {pricing.price_change_on && (
             <>
-              <div className="py-1.5 flex items-center justify-between gap-2 pl-4">
-                <span className="text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_mode}</span>
-                <span className="w-[130px] shrink-0">
-                  <PriceModeSelect value={pricing.price_mode} disabled={!editable}
-                    label={`${PRICE_SETTING_LABELS.price_mode} for ${type.name}`}
-                    onChange={m => onPatchPricing({ price_mode: m, price_amount: pricing.price_amount })} />
-                </span>
+              {/* ══ 🔴 §2 · THE LABEL GOES **ABOVE** ITS CONTROL ON THIS CARD (10 October 2026) ══════
+                * ⛔ **DOMINIC: "the selects are cut off — 'Set each pric', 'Always rounc'."** The row
+                * was `label … control`, with the control pinned to `w-[130px]`. 130px holds a short
+                * value and nothing else: "Set each price myself" and "Always round up" are the two
+                * longest options either select has, and both were clipped mid-word — so the one
+                * control whose job is to say what the rule IS could not say it.
+                * 🔴 LABEL ABOVE, CONTROL FULL WIDTH. ⚠️ THE CONTROLS ALREADY CARRY `w-full`
+                * (`PRICE_CONTROL_CLASS`) — the 130px was the WRAPPER's, so removing the wrapper is the
+                * whole of the change. At 390px that is ~310px for the option text,
+                * which holds every option in both selects with room over. ⚠️ IT IS ALSO THE PATTERN
+                * THE REST OF THIS CARD ALREADY USES — see `SERVICE_ROWS` at the bottom, which has
+                * always put its label on its own line. The price rows were the odd ones out.
+                * ⚠️ A `<label>`, NOT A `<span>`: the control is named by `label=` for a screen reader
+                * either way, but the visible word is now a press target for the control too. */}
+              <div className="py-1.5 pl-4">
+                <span className="mb-1 block text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_mode}</span>
+                <PriceModeSelect value={pricing.price_mode} disabled={!editable}
+                  label={`${PRICE_SETTING_LABELS.price_mode} for ${type.name}`}
+                  onChange={m => onPatchPricing({ price_mode: m, price_amount: pricing.price_amount })} />
               </div>
-              <div className="py-1.5 flex items-center justify-between gap-2 pl-4">
-                <span className="text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_amount}</span>
-                <span className="w-[130px] shrink-0">
-                  <PriceAmountInput mode={pricing.price_mode} value={pricing.price_amount} disabled={!editable}
-                    label={`${PRICE_SETTING_LABELS.price_amount} for ${type.name}`}
-                    onCommit={v => onPatchPricing({ price_amount: v, price_mode: pricing.price_mode })} />
-                </span>
-              </div>
-              <div className="py-1.5 flex items-center justify-between gap-2 pl-4">
-                <span className="text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_rounding}</span>
-                <span className="w-[130px] shrink-0">
-                  {/* ⛔ NO FADE HERE EITHER (5 October 2026). The phone card carried the same faded
-                    * Rounding as the grid, for the same reason, and it goes for the same reason —
-                    * "nothing greyed or faded anywhere". A rule the grid obeys and the phone card
-                    * does not is a rule that lasts until somebody opens the phone card. */}
-                  <PriceRoundingSelect value={pricing.price_rounding} disabled={!editable}
-                    label={`${PRICE_SETTING_LABELS.price_rounding} for ${type.name}`}
-                    onChange={v => onPatchPricing({ price_rounding: v })} />
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 pl-4 pb-1">
-                {Object.keys(pricing.typed).length} typed price
-                {Object.keys(pricing.typed).length === 1 ? '' : 's'} · set them on a bigger screen, or
-                for one event on its dashboard.
-              </p>
+              {/* ══ 🔴 §2 · AMOUNT AND ROUNDING ARE HIDDEN FOR "Set each price myself" ═══════════════
+                * ⛔ THEY HAD NO EFFECT AND THIS CARD SHOWED THEM ANYWAY. `'none'` means typed prices
+                * only: `applyPriceRule` reads `setup.amount` **only** inside the four add/subtract
+                * branches, so in this mode the Amount box cannot change a single price — and
+                * `cleanPriceAmount` discards whatever is typed into it, because the mode's unit is
+                * `null`. Two controls on a phone card that do nothing.
+                * 🔴 THE DESKTOP GRID HAS HIDDEN THEM SINCE 5 OCTOBER (`ruleLive`); this card simply
+                * never got the rule. ⚠️ SAME SOURCE, `PRICE_MODES_WITH_AMOUNT`, so the two screens
+                * cannot disagree about which modes own an amount.
+                * ⚠️ THE STORED VALUES ARE NOT CLEARED, only hidden — switching back to "+ %" brings
+                * the operator's amount and rounding back, which is the promise the "Change prices"
+                * switch itself makes.
+                * 🔴 **ROUNDING IS NOT QUITE THE SAME CASE AS AMOUNT, AND THE REPORT SAYS SO.**
+                * `applyPriceRule` applies a stored rounding AFTER the rule whatever the mode, so a
+                * type switched from "+10%, nearest £1" to "Set each price myself" still rounds every
+                * untyped item to the pound. Hiding the control matches the desktop and the product's
+                * stated intent; the arithmetic is the half that disagrees, and changing it would
+                * change prices charged — which is a decision, not a tidy-up. See the report. */}
+              {PRICE_MODES_WITH_AMOUNT.includes(pricing.price_mode ?? '') && (
+                <>
+                  <div className="py-1.5 pl-4">
+                    <span className="mb-1 block text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_amount}</span>
+                    <PriceAmountInput mode={pricing.price_mode} value={pricing.price_amount} disabled={!editable}
+                      label={`${PRICE_SETTING_LABELS.price_amount} for ${type.name}`}
+                      onCommit={v => onPatchPricing({ price_amount: v, price_mode: pricing.price_mode })} />
+                  </div>
+                  <div className="py-1.5 pl-4">
+                    <span className="mb-1 block text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_rounding}</span>
+                    {/* ⛔ NO FADE HERE EITHER (5 October 2026). The phone card carried the same faded
+                      * Rounding as the grid, for the same reason, and it goes for the same reason —
+                      * "nothing greyed or faded anywhere". A rule the grid obeys and the phone card
+                      * does not is a rule that lasts until somebody opens the phone card. */}
+                    <PriceRoundingSelect value={pricing.price_rounding} disabled={!editable}
+                      label={`${PRICE_SETTING_LABELS.price_rounding} for ${type.name}`}
+                      onChange={v => onPatchPricing({ price_rounding: v })} />
+                  </div>
+                </>
+              )}
+              {/* ══ 🔴 §2 · THE ITEM PRICES — THE MODE DECIDES WHETHER THEY ARE FOLDED ═════════════
+                * ⛔ **DOMINIC DID NOT NOTICE THE CHIP AT ALL.** Forty dish prices sat behind a grey
+                * `Show 30 items ▾` badge beside a second grey line reading `"2 set by hand"`. It did
+                * not look like a control, it did not say what it would show, and the thing it hid was
+                * the only reason most operators open this card.
+                *
+                * 🔴 TWO SHAPES, AND THE MODE PICKS ONE:
+                *   • **"Set each price myself" ⇒ no fold and no button.** That mode IS the instruction
+                *     to set each price, so the list is the answer to a choice the operator has already
+                *     made. Asking them to press a button to reach it was the fold at its least
+                *     defensible. A heading sits over the list instead of a control.
+                *   • **Any other mode ⇒ a full-width outlined button.** There the rule already answers
+                *     "what will this cost", so the list is an optional second look — and the button
+                *     says what it opens, at the width of the card, where a badge said nothing.
+                * ⚠️ THE LIST ITSELF IS THE SAME LIST EITHER WAY, and so is the write: `<PriceCell>`,
+                * the component the grid and the dashboard sheet both use, sending the same
+                * `set_type_item_price`. ⛔ A SECOND PHONE-ONLY PRICE CONTROL WOULD BE A SECOND ANSWER
+                * to "what will this dish cost at a Festival", which is the one question this screen
+                * exists to answer.
+                * ⚠️ AND THE CATEGORY NAME IS STILL A BAND, so "Margherita" under "Pizzas" is not one of
+                * forty unlabelled names. */}
+              {setEach ? (
+                <p className="pl-4 pt-1 pb-0.5 text-xs font-bold text-slate-600" data-phone-items-heading>
+                  {PRICE_ITEMS_HEADING}
+                </p>
+              ) : (
+                <div className="pl-4 pb-1 pt-1">
+                  <button type="button" data-phone-items
+                    onClick={() => setPhoneItems(v => !v)}
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">
+                    {phoneItems ? PRICE_ITEMS_CLOSE : PRICE_ITEMS_OPEN}
+                  </button>
+                </div>
+              )}
+              {/* ⚠️ THE OVERRIDE COUNT, IN PLAIN WORDS AND ONLY WHEN THERE IS ONE. It was
+                * `"2 set by hand"` — jargon for the mechanism, where what an operator wants to know is
+                * that two dishes are not following the rule. ⛔ HIDDEN AT ZERO: "0 items have their own
+                * price" is a sentence about nothing, and no overrides is the normal state. */}
+              {ownPrices > 0 && (
+                <p className="pl-4 pb-1 text-[11px] text-slate-400" data-phone-own-count>
+                  {ownPriceCount(ownPrices)}
+                </p>
+              )}
+              {(setEach || phoneItems) && (
+                <div className="pl-4 pb-1" data-phone-item-list>
+                  {menu.categories.length === 0 && (
+                    <p className="py-1.5 text-[11px] text-slate-400">
+                      No menu items yet — add them in Menu › Items.
+                    </p>
+                  )}
+                  {menu.categories.map(c => (
+                    <div key={c.id}>
+                      <p className="pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                        {c.name}
+                      </p>
+                      {c.items.map(it => (
+                        /* ⚠️ A STACKED ROW, NOT A TABLE — the brief's own allowance. The name takes the
+                         * room it needs and wraps; the control is a fixed 130px block on the right, the
+                         * same width as the three rule controls above it, so the card has one right
+                         * edge rather than four. */
+                        <div key={it.id} data-phone-item={it.id}
+                          className="flex items-center justify-between gap-2 border-t border-slate-100 py-1.5">
+                          <span className="min-w-0 flex-1 text-[13px] leading-tight text-slate-700">{it.name}</span>
+                          <span className="w-[130px] shrink-0">
+                            <PriceCell menuPrice={it.price} setup={setupOf(pricing)} itemId={it.id}
+                              typed={pricing.typed[it.id] ?? null}
+                              disabled={!editable}
+                              showDiff
+                              label={`${it.name} for ${type.name}`}
+                              onType={v => onSetItemPrice(it.id, v)}
+                              onClear={() => onSetItemPrice(it.id, null)} />
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </>
