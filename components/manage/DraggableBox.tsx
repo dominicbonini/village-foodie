@@ -28,13 +28,24 @@ import type { BoxRect } from '@/lib/weekly-post/layout'
 
 /** Which centre lines the box is currently snapped to. `null` on either axis = not snapped. */
 export interface SnapGuides {
-  /** The vertical centre line, in native pixels, when the box is snapped across. */
+  /** The vertical line the box is snapped to, in native pixels. */
   v: number | null
-  /** The horizontal centre line, in native pixels, when the box is snapped up and down. */
+  /** The horizontal line the box is snapped to, in native pixels. */
   h: number | null
+  /**
+   * ══ 🔴 THE EQUAL-GAP MARKS — "the distance is the same" ═════════════════════════════════════════
+   * ⛔ **DOMINIC: "and also somehow if it can indicate when the distance is the same?"** A line says
+   * *lined up*; it cannot say *evenly spaced*. These are the two gaps, as rectangles in native pixels,
+   * drawn only while they MATCH — so the mark appearing is itself the answer.
+   * ⚠️ TWO AT A TIME AT MOST, and only for a box with a neighbour on both sides.
+   */
+  gaps: { x: number; y: number; w: number; h: number }[]
 }
 
-export const NO_GUIDES: SnapGuides = { v: null, h: null }
+export const NO_GUIDES: SnapGuides = { v: null, h: null, gaps: [] }
+
+/** One other box on the poster, in native pixels — what this box can line up WITH. */
+export interface PeerRect { x: number; y: number; w: number; h: number }
 
 /**
  * ══ 🔴 SNAP TO THE MIDDLE OF THE PICTURE ══════════════════════════════════════════════════════════
@@ -73,7 +84,7 @@ export interface DragInfo {
   factor: number
 }
 
-export function DraggableBox({ label, box, scale, active, bounds, onSelect, onChange, onGuides, locked, tint, onTap, minH = 8 }: {
+export function DraggableBox({ label, box, scale, active, bounds, onSelect, onChange, onGuides, locked, tint, onTap, peers, minH = 8 }: {
   label: string
   box: BoxRect
   scale: number
@@ -95,6 +106,17 @@ export function DraggableBox({ label, box, scale, active, bounds, onSelect, onCh
   onTap?: (nativeX: number, nativeY: number) => void
   /** Reported on every move so the stage can draw the thin guide. ⚠️ Cleared on release. */
   onGuides?: (g: SnapGuides) => void
+  /**
+   * ══ 🔴 THE OTHER BOXES, SO A DRAG CAN LINE UP WITH THEM ═════════════════════════════════════════
+   * ⛔ **DOMINIC: "there should be a line that lets you know when you're lined up. I'm getting a
+   * horizontal one but it should also be vertical … I'm trying to line up the venue box with the area
+   * box beneath it."** The only snap targets were the POSTER'S OWN CENTRE LINES, so a guide appeared
+   * when a box happened to be centred on the artwork and never when it lined up with another box —
+   * and two boxes stacked one above the other line up on a VERTICAL edge, the case that never fired.
+   * ⚠️ EMPTY IS THE OLD BEHAVIOUR EXACTLY: with no peers the only candidates are the poster's own
+   * edges and centre.
+   */
+  peers?: readonly PeerRect[]
   /** A place on Standard's positions: shown, not moved. */
   locked?: boolean
   /**
@@ -167,14 +189,70 @@ export function DraggableBox({ label, box, scale, active, bounds, onSelect, onCh
        * edges at once; pulling one of them to the centre line would move the OPPOSITE edge as a side
        * effect, so the box would appear to resize from the wrong corner. */
       const tol = SNAP_SCREEN_PX / Math.max(scale, 0.0001)
-      const cx = bounds.w / 2, cy = bounds.h / 2
-      const wantX = Math.round(cx - s.box.w / 2)
-      const wantY = Math.round(cy - s.box.h / 2)
-      const snappedX = Math.abs(x - wantX) <= tol
-      const snappedY = Math.abs(y - wantY) <= tol
-      if (snappedX) x = clamp(wantX, 0, bounds.w - s.box.w)
-      if (snappedY) y = clamp(wantY, 0, bounds.h - s.box.h)
-      onGuides?.({ v: snappedX ? cx : null, h: snappedY ? cy : null })
+      const bw = s.box.w, bh = s.box.h
+      const others = peers ?? []
+      /* ══ 🔴 WHAT A BOX CAN LINE UP WITH — THE POSTER, AND EVERY OTHER BOX ═══════════════════════
+       * ⚠️ THREE LINES PER PEER ON EACH AXIS: its two edges and its middle. Lining the Venue box up
+       * with the Area box beneath it is a LEFT-to-LEFT match, and centring one over the other is a
+       * middle-to-middle one — both are the same search, which is why they are one list. */
+      const vLines = [0, bounds.w / 2, bounds.w,
+        ...others.flatMap(p => [p.x, p.x + p.w / 2, p.x + p.w])]
+      const hLines = [0, bounds.h / 2, bounds.h,
+        ...others.flatMap(p => [p.y, p.y + p.h / 2, p.y + p.h])]
+      /* ⚠️ THE NEAREST CANDIDATE WINS, not the first. With several boxes near one another more than
+       * one line can be inside the tolerance, and snapping to whichever happened to be built first
+       * would pull the box past the one the operator was aiming at. */
+      const nearest = (at: number, size: number, lines: number[]) => {
+        let best: { pos: number; line: number } | null = null
+        for (const line of lines) {
+          for (const pos of [line, line - size / 2, line - size]) {
+            const d = Math.abs(at - pos)
+            if (d <= tol && (!best || d < Math.abs(at - best.pos))) best = { pos, line }
+          }
+        }
+        return best
+      }
+      const snapX = nearest(x, bw, vLines)
+      const snapY = nearest(y, bh, hLines)
+      if (snapX) x = clamp(Math.round(snapX.pos), 0, Math.max(0, bounds.w - bw))
+      if (snapY) y = clamp(Math.round(snapY.pos), 0, Math.max(0, bounds.h - bh))
+
+      /* ══ 🔴 "IS THE DISTANCE THE SAME?" — THE GAPS EITHER SIDE, WHEN THEY MATCH ═════════════════
+       * ⚠️ ONLY BETWEEN BOXES THAT ACTUALLY OVERLAP ON THE OTHER AXIS: a box three columns away is
+       * not "above" this one, and marking the gap to it would be marking a distance nobody can see.
+       * ⛔ AND ONLY WHEN BOTH GAPS ARE REAL — two touching boxes have a gap of zero, which is not a
+       * spacing an operator is trying to match. */
+      const gaps: { x: number; y: number; w: number; h: number }[] = []
+      const near = (list: PeerRect[], d: (p: PeerRect) => number) =>
+        list.filter(p => d(p) >= 1).sort((a, b) => d(a) - d(b))[0] ?? null
+      const sameAcross = others.filter(p => p.x < x + bw && p.x + p.w > x)
+      const above = near(sameAcross.filter(p => p.y + p.h <= y), p => y - (p.y + p.h))
+      const below = near(sameAcross.filter(p => p.y >= y + bh), p => p.y - (y + bh))
+      if (above && below) {
+        const gA = y - (above.y + above.h), gB = below.y - (y + bh)
+        if (Math.abs(gA - gB) <= tol) {
+          const mid = x + bw / 2
+          gaps.push({ x: mid - 1, y: above.y + above.h, w: 2, h: gA },
+            { x: mid - 1, y: y + bh, w: 2, h: gB })
+        }
+      }
+      const sameDown = others.filter(p => p.y < y + bh && p.y + p.h > y)
+      const leftOf = near(sameDown.filter(p => p.x + p.w <= x), p => x - (p.x + p.w))
+      const rightOf = near(sameDown.filter(p => p.x >= x + bw), p => p.x - (x + bw))
+      if (leftOf && rightOf) {
+        const gL = x - (leftOf.x + leftOf.w), gR = rightOf.x - (x + bw)
+        if (Math.abs(gL - gR) <= tol) {
+          const mid = y + bh / 2
+          gaps.push({ x: leftOf.x + leftOf.w, y: mid - 1, w: gL, h: 2 },
+            { x: x + bw, y: mid - 1, w: gR, h: 2 })
+        }
+      }
+      onGuides?.({ v: snapX ? snapX.line : null, h: snapY ? snapY.line : null, gaps })
+      /* ⚠️ §2 · AND A BOX WIDER THAN THE PICTURE IS BROUGHT TO ITS EDGE RATHER THAN PINNED AT 0. With
+       * `bounds.w - s.box.w` negative the clamps above answer 0 and leave it hanging off the right;
+       * `Math.max(0, …)` is the same answer for every box that fits and the honest one for the rest. */
+      x = clamp(x, 0, Math.max(0, bounds.w - s.box.w))
+      y = clamp(y, 0, Math.max(0, bounds.h - s.box.h))
       onChange({ x, y }, false, { kind: 'move', factor: 1 })
       return
     }
@@ -197,6 +275,25 @@ export function DraggableBox({ label, box, scale, active, bounds, onSelect, onCh
     if (s.mode === 'w') west()
     if (s.mode === 's') south()
     if (s.mode === 'n') north()
+    /* ══ 🔴 §2 · THE RESULT IS PULLED FULLY INSIDE THE PICTURE, NEVER REFUSED ═══════════════════════
+     *
+     * ⛔ **DOMINIC: "I reduced the Date box's width with a side handle; on release it jumped back."**
+     * The box was already running past the picture's right edge — §1's report — and the two faults are
+     * one: `bounds` was the PICTURE's size while every box coordinate is in the LAYOUT's, so for a box
+     * at `x` beyond `bounds.w` the ranges above invert. `east()` is `clamp(w + dx, MIN, bounds.w - x)`,
+     * and with `bounds.w - x` NEGATIVE that is `Math.max(MIN, negative)` — the width collapses to the
+     * floor whatever the operator dragged. §1 gives `bounds` the layout's own size, which is what makes
+     * the ranges sane again.
+     * 🔴 THIS IS THE SECOND HALF: A BOX THAT IS **ALREADY** OUTSIDE MUST COME BACK IN. Capping the size
+     * first and then the position means any gesture on such a box ends with it fully inside — the
+     * brief's *"pulled fully inside on its next move or resize, never reverted"* — instead of being
+     * held at a corner by a clamp it can never satisfy.
+     * ⚠️ THE ORDER MATTERS: size before position. Clamping the position first against an over-wide box
+     * leaves `bounds.w - w` negative and pins `x` to 0 with the box still hanging off the right. */
+    w = Math.min(w, bounds.w)
+    h = Math.min(h, bounds.h)
+    x = clamp(x, 0, Math.max(0, bounds.w - w))
+    y = clamp(y, 0, Math.max(0, bounds.h - h))
     onChange({ x, y, w, h }, false, {
       kind: isSide(s.mode) ? 'side' : 'corner',
       /* 🔴 AGAINST THE GESTURE'S START BOX. See `DragInfo`. ⚠️ A zero-height start box cannot happen —

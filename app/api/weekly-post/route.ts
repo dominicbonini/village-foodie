@@ -1123,8 +1123,8 @@ export async function POST(req: NextRequest) {
      *
      * ⚠️ **THE SAME TWO FUNCTIONS THE MAKE SCREEN USES**, with the same inputs: `weekCaptionValues` over
      * `buildWeekData`, through `fillCaptionTemplate`, with the truck's own saved template or the seed.
-     * ⛔ `showPrivate: false` — the weekly poster leaves private bookings out, so a caption that listed
-     * one would describe a poster that does not exist.
+     * ⛔ `showPrivate` FOLLOWS THE POSTER — see the call below. It was `false` on the reasoning that
+     * "the weekly poster leaves private bookings out"; it does not any more.
      */
     const weekTplForCaption = String(weekDesign?.caption_template ?? '').trim() || seedWeekTemplate(truck.name)
     const weeklyTimeStyle = readStoredLayout(
@@ -1138,7 +1138,12 @@ export async function POST(req: NextRequest) {
       const wk = buildWeekData(range, rows as never, (placeRows ?? []) as never, {
         timeStyle: weeklyTimeStyle,
         showCancelled: true,
-        showPrivate: false,
+        /* 🔴 `true` SINCE 10 OCTOBER, AND IT FOLLOWS THE POSTER. The note above read "the weekly poster
+         * leaves private bookings out, so a caption that listed one would describe a poster that does
+         * not exist" — the poster shows them now (see `WeeklyPostApp`'s own note), so a caption that
+         * left them out would be the same mismatch the other way round. ⚠️ THE CAPTION PRINTS THE SAME
+         * PUBLIC LABEL the poster does: `locationName` answers "Private event" and never the place. */
+        showPrivate: true,
         excludedEventIds: [],
       })
       return fillCaptionTemplate(weekTplForCaption, weekCaptionValues({

@@ -94,7 +94,7 @@ checks, 6 broken variants all caught, and the full sweep at 74 run · 74 passed 
 ### THE REPLACEMENT — THREE GUARDS, SHAPED SO THEY CANNOT DEADLOCK
 
 - **GUARD A — exclusion health**, measured over the **whole table** rather than past rows only, so an empty backlog cannot make it vacuously true. The FK half and the NAME half must each still match rows. 🧪 Refuses on all four break modes; the **only** guard that catches an FK-only break. `ALLOW_BACKLOG` cannot relax it.
-- **GUARD B — backlog AGE, not size** (30 days). Under daily operation candidates are a few days old; 🧪 a broken exclusion immediately exposes linked rows back to **2026-05-22, 115 days**. Absorbs an outage then clears itself.
+- ~~**GUARD B — backlog AGE, not size** (30 days). Absorbs an outage then clears itself.~~ 🔴 **[CORRECTED 9 OCTOBER 2026 — IT DEADLOCKED TOO, AND IT NEVER ABSORBED AN OUTAGE.]** It refused while **any** candidate was over 30 days old, and the age could not fall — the only thing that removes the row is the delete it was blocking. 🧪 One row did it: `Smash and grab food truck`, `event_date` **2026-05-22**, **`created_at` 5 October** — a scrape that picked up a historical listing. **GUARD B IS NOW THE SIZE OF THE OLD TAIL**: more than **25 rows** or **10 distinct dates** older than 30 days. §8.8.3a
 - **GUARD C — blast radius per DAY**, `max(60, 2 × the busiest upcoming day)`, measured on the **future** side that pruning never touches. Scale-free in the number of days, so a long backlog passes and a runaway date does not.
 
 ⚠️ **The name half is tested on its OWN matches, not on "rows the FK missed."** Those 🧪 23 rows exist only because some scraped rows never got a `discovery_truck_id`; if the scraper is ever fixed to set it everywhere that number legitimately becomes **0**, and a guard keyed on it would then refuse for ever — the same deadlock shape being removed.
@@ -1083,7 +1083,7 @@ V1.1 records `ignoreDuplicates: true` as *"retained deliberately, meaning a re-r
 | | tests | refuses when | relaxable? |
 |---|---|---|---|
 | **A** | **exclusion health**, over the **whole table** — not past rows only, so an empty backlog cannot make it vacuously true | the FK half **or** the name half matches **0** rows | 🔴 **never** |
-| **B** | **backlog AGE**, not size | the oldest candidate is more than **30 days** old | `ALLOW_BACKLOG` |
+| **B** | 🔴 **[CHANGED 9 Oct]** the **SIZE of the old tail** — candidates older than **30 days**, counted as rows and as distinct dates | more than **25 rows** or **10 distinct dates** are older than 30 days | `ALLOW_BACKLOG` |
 | **C** | **blast radius per DAY**: `max(60, 2 × busiest upcoming day)`, measured on the **future** side pruning never touches | any single `event_date` contributes more than that | `ALLOW_BACKLOG` |
 
 🧪 **All four break modes refuse, verified 14 September against the live database, `--dry-run` only:**
@@ -1111,6 +1111,56 @@ V1.1 records `ignoreDuplicates: true` as *"retained deliberately, meaning a re-r
 2. 🔴 **IT COULD ONLY RATCHET.** Every refusal left the backlog one day bigger, so the next run was further over the line. **A guard that cannot clear itself is a deadlock, not a safety guard.** Nothing short of a hand-set `ALLOW_BACKLOG` would ever have restarted it.
 
 ⚠️ **AND THE CEILING WAS PROXYING FOR THE WRONG QUESTION.** Its stated purpose was to catch a silently broken exclusion. 🧪 §8.8.1 shows it could not: the break that matters most produces **identical counts**. The replacement tests the exclusion directly and keeps the size checks only as a blast-radius brake.
+
+### 8.8.3a 🔴 AND THE REPLACEMENT DEADLOCKED TOO — the same fault in a slower form
+
+**§8.8.3 above replaced a guard that could only ratchet. Its replacement could only ratchet as well, and
+it took 25 days to show.**
+
+🧪 **9 October 2026, 03:30:** `🔴 REFUSED: the oldest candidate is dated 2026-05-22, 140 days ago`.
+🧪 `past 283 · kept 179 · candidates 104 · FK 159 · NAME 182` — **the exclusion was healthier than on
+14 September**, not broken.
+
+🔴 **THE WHOLE OLD TAIL WAS ONE ROW:**
+
+| event_date | truck_name | created_at | FK resolves to | linked? |
+|---|---|---|---|---|
+| 2026-05-22 | `Smash and grab food truck` | **2026-10-05** | `Smash and Grab` | **no** |
+
+⚠️ **A FRESHLY SCRAPED ROW CARRYING A FIVE-MONTH-OLD DATE.** It was created four days before the run, from
+a site listing a historical event. The moment it landed, "the oldest candidate" became 140 days and
+**Guard B refused every night from then on** — and could never have stopped, because the age only falls
+when the row is deleted and the guard was blocking the delete. 🧪 The backlog behind it grew to **7 dates
+and 104 rows**, none of which was the problem.
+
+⛔ **"ABSORBS AN OUTAGE OF UP TO 30 DAYS" WAS NEVER TRUE.** One past-dated row at any age jammed it,
+whatever the rest of the table looked like. The 30-day figure described the only case anyone had pictured.
+
+🔴 **THE FIX IS TO MEASURE A SIZE, BECAUSE A SIZE CAN BE REDUCED BY THE JOB ITSELF.** Guard B now refuses
+when the rows older than 30 days exceed **25 rows or 10 distinct dates**. One stale row is deleted and the
+tail is empty again; the thing the guard was for still refuses:
+
+```
+  live 9 Oct (1 stale + 103 recent)      pass   1 row,   1 date
+  broken exclusion (the four trucks)     REFUSE 179 rows, ~100 dates
+  a 45-day outage                        REFUSE 540 rows, 15 dates     ← ALLOW_BACKLOG, as before
+  normal daily run                       pass   0 rows,  0 dates
+  25 rows / 1 date · 26 rows / 1 date    pass · REFUSE
+  10 rows / 10 dates · 11 rows / 11 dates pass · REFUSE
+```
+
+### 8.8.3b 🔎 THE REFUSAL NOW PRINTS THE ROWS IT IS ABOUT
+
+The old message read *"either a long outage or rows that should have been excluded"* — **two cases needing
+opposite responses, and it never said which one it was looking at.** ⛔ Acting on it with the
+`ALLOW_BACKLOG` it suggested would have deleted the tail unexamined.
+
+It now prints every candidate older than 30 days with its `event_date`, `truck_name`, and 🔴 **what its
+`discovery_truck_id` resolves to in `discovery_trucks`** — which is the fact that separates the two cases.
+⚠️ `fk=miss name=miss` would say nothing: every row in that list is a candidate, so both halves missed it
+*by construction*. It also says whether the dates are **contiguous** (an outage) or **sparse** (stale or
+mis-excluded rows), and it prints the tail **before** an `ALLOW_BACKLOG` run deletes it — the last moment
+anyone can look.
 
 ### 8.8.4 `discovery_run_log` — V1.8's "no retention rule" is answered
 

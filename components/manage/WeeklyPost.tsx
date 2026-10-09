@@ -106,7 +106,7 @@ async function renderPng(token: string, body: Record<string, unknown>): Promise<
  */
 export function WeeklyPostApp({
   token, truckName, initialMode, initialWeek, initialDesignKind, hideKindSwitch, onBack,
-  onAddPlacePictures, onDirtyChange, onSaver,
+  onAddPlacePictures, onDirtyChange, onSaver, onPictureChanged,
 }: {
   token: string
   truckName: string
@@ -124,6 +124,18 @@ export function WeeklyPostApp({
    * the page's bar, outside this screen; without this they would switch tab out from under an unsaved
    * design with no warning at all. ⚠️ Threaded straight through to `DesignEditor`, which owns the
    * comparison — this screen only passes it on. */
+  /* ══ 🔴 THE PICTURE HAS CHANGED — TOLD AT ONCE, NOT ON THE WAY OUT (10 October 2026) ═════════════
+   * ⛔ **DOMINIC: "I changed the background image, went back to the designs page and it showed the old
+   * one still. It did update a little later."** Exactly that: replacing the picture updates THIS
+   * screen's state, and the Designs list that mounted it was never told. Pressing "‹ Designs" switches
+   * the view IMMEDIATELY and only then starts the reload, so the list paints its old signed URL and
+   * corrects itself when the request lands — the "little later".
+   * 🔴 SO THE PARENT IS TOLD THE MOMENT THE UPLOAD IS CONFIRMED. It reloads in the background while the
+   * operator is still looking at the editor, and by the time they go back the list is already right.
+   * ⚠️ IT IS NOT A SECOND SOURCE OF TRUTH: the parent re-reads the server, it is not handed a URL to
+   * cache. ⛔ AND THE RELOAD ON LEAVING STAYS — this makes the common case instant; that one is the
+   * belt for every other way the design can change. */
+  onPictureChanged?: () => void
   onDirtyChange?: (dirty: boolean) => void
   /* 🔴 §B10 · THE EDITOR'S OWN SAVE, HANDED UP so the leave dialog can offer "Save and leave".
    * ⚠️ Threaded straight through to `DesignEditor`, which owns the layout — this screen only passes it
@@ -152,7 +164,16 @@ export function WeeklyPostApp({
    * as the week choice already is, so one request answers both.
    * ⚠️ AND THE SERVER DECIDES. This flag is sent; it is `buildWeekData` that leaves the events out.
    * Nothing is fetched and then hidden in the browser. */
-  const [showPrivate, setShowPrivate] = useState(false)
+  /* ══ 🔴 PRIVATE BOOKINGS ARE ON THE POSTER BY DEFAULT (10 October 2026, Dominic) ═════════════════
+   * ⛔ **IT DEFAULTED TO OFF, AND AN OFF DAY IS NOT THE SAME AS A FREE ONE.** With a private booking
+   * left out, `buildWeekData` gives that date no entries at all, `isDayOff` is true, and the row prints
+   * the design's days-off text — so a day the truck is **booked** read as a day it was not trading.
+   * That is wrong information on a public post, which is worse than saying nothing.
+   * 🔴 DOMINIC: *"private events show as 'Not trading today', they should show on the weekly as Private
+   * Event."* ⚠️ NOTHING PRIVATE IS PUBLISHED BY THIS: `locationName` returns the one public label and
+   * returns it BEFORE the place is consulted, so the row carries the date and the times and no name,
+   * no town and no picture. The toggle stays, so a truck that would rather show nothing still can. */
+  const [showPrivate, setShowPrivate] = useState(true)
   /** Which design the setup screen is editing. Post screens are unaffected. */
   /* 🔴 "Single event" IS THE DEFAULT (5 October 2026). It is the post a truck makes most often — one
    * per pitch, every week — where the weekly poster is made once and then rarely touched. Opening on
@@ -243,10 +264,13 @@ export function WeeklyPostApp({
               onSaver={onSaver}
               hasLogo={hasLogo} placesWithout={placesWithout} onAddPlacePictures={onAddPlacePictures}
               onDone={() => { void load(week, showPrivate) }}
+              /* ⚠️ BOTH: this screen re-reads its own design, and the parent re-reads its list. Neither
+               * is a substitute for the other — the tile on Designs is the parent's. */
+              onPictureChanged={() => { void load(week, showPrivate); onPictureChanged?.() }}
               onCancel={onBack ?? (design ? () => setMode('post') : undefined)} />
           /* ⚠️ `EventSetupScreen` READS ITS OWN COUNTRY from `event_load`, so it is not passed one —
            * see its note. This screen's weekly half takes it from `load` above. */
-          : <EventSetupScreen token={token} onSaver={onSaver}
+          : <EventSetupScreen token={token} onSaver={onSaver} onPictureChanged={onPictureChanged}
               onCancel={onBack ?? (design ? () => setMode('post') : undefined)} />}
       </div>
     )
@@ -263,7 +287,7 @@ export function WeeklyPostApp({
 // THE SETUP SCREEN
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlacePictures, onDone, onCancel, onDirtyChange, onSaver }: {
+function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlacePictures, onDone, onCancel, onDirtyChange, onSaver, onPictureChanged }: {
   token: string
   design: LoadedDesign | null
   country: CountryCode
@@ -271,6 +295,8 @@ function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlac
   placesWithout: { without: number; total: number } | null
   onAddPlacePictures?: () => void
   onDone: () => void
+  /** 🔴 The picture has changed — see `WeeklyPostApp`'s note. Fired on a confirmed upload, not on save. */
+  onPictureChanged?: () => void
   onCancel?: () => void
   /** ⚠️ Threaded straight through to `DesignEditor`, which owns the comparison. */
   onDirtyChange?: (dirty: boolean) => void
@@ -391,6 +417,10 @@ function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlac
         setSize({ w: done.width, h: done.height })
         setLayout(done.layout)
         setBlankUrl(done.blankUrl)
+        /* 🔴 THE LIST THAT OPENED THIS SCREEN IS TOLD NOW, not when the operator leaves. See the note on
+         * `WeeklyPostApp.onPictureChanged`. ⚠️ AFTER THE STATE ABOVE, so this screen is already correct
+         * when the parent re-reads. */
+        onPictureChanged?.()
         if (done.resetLayout && shapeChanged && boxesMoved) setFlash(NEW_SHAPE_RESET)
       } else {
         setExampleUrl(done.exampleUrl)

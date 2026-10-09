@@ -243,8 +243,16 @@ head('1b · a section link carries its tab, and a trial default cannot override 
   /* ⚠️ THE "Text positions" LINK IS GONE AS A LINK (6 October 2026). The place design editor opens the
    * existing editor IN PLACE — `EventSetupScreen` focused on one place — so there is nothing to link
    * to. What survives from that bug is the rule, asserted below: no bare `?section=` anywhere. */
-  t('🔴 Social posts links into Events with the builder, not by hand',
-    /manageSectionHref\('events'\)/.test(SOCIAL))
+  /* ══ ⚠️ SOCIAL POSTS HAS NO SECTION LINK LEFT — 10 OCTOBER 2026 ══════════════════════════════════
+   * ⛔ IT WAS "See all upcoming events", under the single event half's picker, and Dominic asked for it
+   * to go in the same edit that made the picker a dropdown: the dropdown already names every upcoming
+   * event, so a link to the diary beneath it was a second way to the same list.
+   * 🔴 THE RULE THIS CHECK EXISTED FOR IS UNTOUCHED AND IS THE ONE BELOW: **no file hand-writes a
+   * section link**, proved over the whole tree. ⚠️ ASSERTED AS AN ABSENCE RATHER THAN DELETED, so
+   * re-adding a link here without the builder fails rather than passing quietly. */
+  t('⚠️ Social posts writes no section link at all, by hand or otherwise',
+    !/\?section=/.test(codeOf(SOCIAL))
+    && !/manageSectionHref\(/.test(codeOf(SOCIAL)))
   /* ⚠️ THE SINGLE-EVENT POST'S "Places" POINTER IS GONE (6 October 2026) — see §6. What replaced the
    * claim is stronger: NO file hand-writes a section link, which the sweep below proves over the whole
    * tree rather than over the one file that happened to have the bug. */

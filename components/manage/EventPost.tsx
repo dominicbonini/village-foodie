@@ -95,7 +95,10 @@ const api = async (token: string, body: Record<string, unknown>) => {
 /** ⚠️ Separate from `api` because the response is a PNG and carries its warnings in a header.
  *  ⚠️ IT RETURNS THE `blob` TOO (6 October 2026) — `PostShareBar` needs a `File` ready before the tap,
  *  and the blob is already here, so the `fetch(png)` that used to run inside the tap is gone. */
-async function renderPng(token: string, body: Record<string, unknown>) {
+/* ⚠️ EXPORTED SINCE 10 OCTOBER so the Create-a-post tiles can show the REAL post rather than the blank
+ * it is drawn on — see `EventPostTile` in SocialPosts.tsx. ⛔ ONE RENDER HELPER, NOT A SECOND COPY:
+ * the tile and the modal must not be able to disagree about what the post looks like. */
+export async function renderPng(token: string, body: Record<string, unknown>) {
   const r = await fetch('/api/weekly-post', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token, ...body }),
@@ -146,7 +149,7 @@ async function uploadTo(
  * @param onlyPlaceId   edit ONE place: the same, with `current` locked to that place. The page chrome
  *                      (the back link, the name, "Make post for …") belongs to the caller.
  */
-export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, onDirtyChange, onSaver }: {
+export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, onDirtyChange, onSaver, onPictureChanged }: {
   token: string
   onCancel?: () => void
   onlyStandard?: boolean
@@ -159,6 +162,13 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
   /* 🔴 §B10 · THE EDITOR'S SAVE, HANDED UP so the leave dialog can offer "Save and leave". ⚠️ Threaded
    * straight through to `DesignEditor`, exactly as `onDirtyChange` is. */
   onSaver?: (save: (() => void | Promise<void>) | null) => void
+  /* ══ 🔴 THE PICTURE HAS CHANGED — TOLD AT ONCE, NOT ON THE WAY OUT (10 October 2026) ═════════════
+   * ⛔ **DOMINIC: "I changed the background image, went back to the designs page and it showed the old
+   * one still. It did update a little later."** This screen reloads itself after an upload; the LIST
+   * that mounted it was never told, so pressing "‹ Designs" switched the view immediately and the old
+   * signed URL stayed on screen until the parent's own reload landed. ⚠️ Fired on a confirmed upload,
+   * after this screen's own `load()`, so the parent re-reads a server that is already correct. */
+  onPictureChanged?: () => void
 }) {
   const [loading, setLoading] = useState(true)
   const [standard, setStandard] = useState<EventDesign | null>(null)
@@ -383,6 +393,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
       }
       setCurrent(null)
       await load()
+      onPictureChanged?.()
     } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'The upload failed', bad: true }) }
     finally { setBusy(false) }
   }
@@ -396,6 +407,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
        * rather than letting the boxes appear to move on their own. */
       if (done.layout) setMsg({ text: 'Picture replaced.', bad: false })
       await load()
+      onPictureChanged?.()
     } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'The upload failed', bad: true }) }
     finally { setBusy(false) }
   }

@@ -34,7 +34,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
  * two shapes are `BTN_PRIMARY` and `BTN_OUTLINE` below and there are exactly two primaries. */
 import { Card, Input, Spinner } from '@/components/manage/primitives'
 /* 🔴 THE ONE TIME-RANGE FORMATTER. See the tombstone where this file had its own. */
-import { formatTimeRange } from '@/lib/time-utils'
 import { WeeklyPostApp } from '@/components/manage/WeeklyPost'
 import { MAX_UPLOAD_BYTES } from '@/lib/weekly-post/layout'
 /* ── 8 October 2026: where a location's picture is used, and the caption labels. */
@@ -62,10 +61,9 @@ import {
  * BOX instead, with the required size in it (`EVENT_BOX_POSTER_SHAPE`), because a truck needs the
  * size before they export a poster rather than after it is refused. The constant is still exported
  * and still drives `scripts/place-pictures.cjs`. */
-import { EventSetupScreen, EventPostModal } from '@/components/manage/EventPost'
+import { EventSetupScreen, EventPostModal, renderPng } from '@/components/manage/EventPost'
 import { FeatureGate } from '@/components/FeatureGate'
 import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
-import { manageSectionHref } from '@/lib/manage-links'
 import type { Plan } from '@/lib/features'
 /* ══ ⛔ ELEVEN COPY CONSTANTS LEFT THIS IMPORT — 7 October 2026 ════════════════════════════════════
  * They belonged to the pictures library page and to "Post for a place", both of which are gone:
@@ -107,8 +105,7 @@ import {
   /* ⛔ `CAPTION_SAVED_NOTE` AND `CAPTION_SAVED_TICK` ARE NO LONGER IMPORTED. The template editor is
    * Save / Cancel now rather than debounced autosave, so "Saved automatically" and its fading tick
    * describe behaviour the screen no longer has. Both stay exported as the record. */
-  NEXT_EVENT_HEADING_V4, PICK_ANOTHER_HEADING, CREATE_FOR_NEXT, CREATE_FOR_THIS,
-  SHOW_ALL_UPCOMING, HIDE_ALL_UPCOMING,
+  CREATE_FOR_NEXT, CREATE_FOR_THIS,
   CAPTION_HEADING, CAPTION_THIS_POST_NOTE, EDIT_TEMPLATE_LINK,
   TEMPLATE_PANEL_TITLE, TEMPLATE_PANEL_BLURB, TEMPLATE_PANEL_BLURB_WEEK,
   TEMPLATE_SAVE, TEMPLATE_CANCEL, TEMPLATE_PANEL_NOTE,
@@ -406,6 +403,107 @@ function EmptyBox({ title, onGo }: { title: string; onGo: () => void }) {
  * the taller half of the two boxes, on a screen where the design tiles are what an operator reads.
  * ⚠️ THE CONSTANTS STAY IN lib/copy/socialPosts.ts WITH THEIR OWN NOTE, unreferenced, because they are
  * the record of what the wording was. */
+/**
+ * ══ 🔴 THE TILE SHOWS THE **POST**, NOT THE BLANK IT IS DRAWN ON (10 October 2026) ════════════════
+ *
+ * ⛔ **DOMINIC: "the images should be populated with the selected or next event data."** The tile was
+ * the design's background picture — the blank, with no date, no venue and no time on it — so the one
+ * thing it could not show was the post the operator is about to make. Two events at the same location
+ * produced the same tile.
+ *
+ * 🔴 IT RENDERS THROUGH `renderPng`, THE SAME HELPER THE POST MODAL USES, with the same
+ * `event_render` action — so the tile and the post cannot disagree about what is being made.
+ * ⚠️ **CACHED PER EVENT AND CANCELLED ON CHANGE.** Picking along the list must not queue a render per
+ * keypress, and an answer that arrives after the operator has moved on must not overwrite the one they
+ * are looking at. ⛔ THE OBJECT URLS ARE REVOKED on unmount — a blob per event left behind is a leak on
+ * a screen an operator flicks through.
+ * ⚠️ THE BLANK IS THE PLACEHOLDER WHILE IT LOADS, not a spinner on its own: the shape and the artwork
+ * are already right, so the tile settles rather than appearing.
+ */
+/** ⚠️ A sentinel in the same map as the URLs — one lookup answers "done?" and "did it work?". */
+const FAILED = 'failed'
+
+function PostTile({ token, kind, eventId, week, fallbackUrl, w, h }: {
+  token: string
+  /** 🔴 Which post to draw. ⚠️ PRIMITIVES, NOT AN OBJECT: the effect's deps have to be stable, and an
+   *  object literal prop is a new identity on every render of the parent. */
+  kind: 'event' | 'week'
+  eventId?: string | null
+  week?: 'this' | 'next'
+  /** The design's own picture — shown until the post arrives, and if it cannot be made. */
+  fallbackUrl: string | null
+  w: number | null
+  h: number | null
+}) {
+  /** ⚠️ ONE MAP FOR BOTH KINDS, so the key has to name the kind as well as the thing. */
+  const key = kind === 'event' ? (eventId ? `e:${eventId}` : null) : `w:${week ?? 'this'}`
+  /* 🔴 eventId → the post's object URL, or `'failed'`. ⛔ **STATE, NOT A REF, AND BOTH HALVES OF THAT
+   * ARE THIS FILE'S LINT RULES RATHER THAN A PREFERENCE.** `react-hooks/set-state-in-effect` refuses a
+   * `setState` called synchronously inside an effect, so nothing may be set before the fetch; and the
+   * React Compiler refuses a ref READ during render, so the answer cannot be derived from one either.
+   * A map in state, written only after the await, satisfies both.
+   * ⚠️ KEYED BY EVENT, so flicking back to one already seen is instant and costs no second render. */
+  const [byKey, setByKey] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (!key || byKey[key]) return
+    let alive = true
+    ;(async () => {
+      try {
+        /* 🔴 NO `background` AND NO `layout` — which is the MODAL'S OWN CASE: the route's note calls
+         * it "sends neither, and gets exactly what `eventPostContext` resolved". ⛔ `'auto'` IS NOT A
+         * VALUE IT TAKES (`'event' | 'place' | 'default'`); sending one would force a background the
+         * operator never chose. The server's own resolution is what the grey line under this tile
+         * already describes. */
+        const r = kind === 'event'
+          ? await renderPng(token, { action: 'event_render', eventId })
+          /* ⚠️ THE WEEKLY POST NEEDS NO `layout` EITHER — the route falls back to the SAVED design and
+           * loads that week's real events, which is exactly the post the button below makes. */
+          /* ⚠️ `showPrivate: true` SO THE TILE IS THE POST THE BUTTON MAKES. The make-post screen
+           * defaults to showing them (see `WeeklyPostApp`), and a thumbnail that left them out would
+           * show a different week from the one about to be published. */
+          : await renderPng(token, { action: 'render', week: week ?? 'this', showPrivate: true })
+        /* ⚠️ A RENDER THAT LANDS AFTER THE OPERATOR HAS MOVED ON IS THROWN AWAY **AND REVOKED** — an
+         * orphaned blob is a leak on a screen people flick through. */
+        if (!alive) { URL.revokeObjectURL(r.url); return }
+        setByKey(m => ({ ...m, [key]: r.url }))
+      } catch {
+        /* ⚠️ A FAILED RENDER IS NOT AN ERROR ON THIS SCREEN. The tile falls back to the design's own
+         * picture, which is what it showed before this existed; the operator's way forward is the
+         * button below it, and the modal reports the real problem if there is one. ⛔ IT IS RECORDED,
+         * so a design that cannot render is not retried on every pass through this effect. */
+        if (alive) setByKey(m => ({ ...m, [key]: FAILED }))
+      }
+    })()
+    return () => { alive = false }
+  }, [token, kind, eventId, week, key, byKey])
+
+  /* ⛔ REVOKED ON UNMOUNT ONLY — revoking per change would free the URL the map is still handing out.
+   * ⚠️ THROUGH A REF WRITTEN BY AN EFFECT, because a cleanup that closed over `byEvent` would capture
+   * whichever version it was created with and leak every blob added after it. Reading a ref in a
+   * cleanup is not reading one during render. */
+  const latest = useRef<Record<string, string>>({})
+  useEffect(() => { latest.current = byKey }, [byKey])
+  useEffect(() => () => {
+    for (const u of Object.values(latest.current)) if (u !== FAILED) URL.revokeObjectURL(u)
+  }, [])
+
+  const entry = key ? byKey[key] : undefined
+  const url = entry && entry !== FAILED ? entry : null
+  const busy = !!key && entry === undefined
+
+  return (
+    <div className="relative" data-post-tile={kind}>
+      <DesignTile url={url ?? fallbackUrl} w={w} h={h} />
+      {busy && !url && (
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <Spinner />
+        </span>
+      )}
+    </div>
+  )
+}
+
 function DesignTile({ url, w, h }: { url: string | null; w: number | null; h: number | null }) {
   /* 🔴 A FIXED HEIGHT AND A DERIVED WIDTH, not `aspect-ratio` on a full-width box. Three boxes in a
    * row are different widths; a width-driven aspect ratio would make the three previews three
@@ -919,11 +1017,15 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
       initialMode="setup" initialDesignKind="week" hideKindSwitch onBack={back}
       onDirtyChange={setEditorDirty}
       onSaver={fn => { editorSave.current = fn }}
+      /* 🔴 THE DESIGNS LIST RE-READS THE MOMENT THE PICTURE CHANGES, not when the operator leaves —
+         see `WeeklyPostApp.onPictureChanged`. */
+      onPictureChanged={() => { void load() }}
       onAddPlacePictures={() => requestArea('locations')} />)}{leaveDialog}</>)
   }
   if (view.kind === 'event-design') {
     return (<>{gate(<EventSetupScreen token={token} onlyStandard onCancel={back}
-      onDirtyChange={setEditorDirty} onSaver={fn => { editorSave.current = fn }} />)}{leaveDialog}</>)
+      onDirtyChange={setEditorDirty} onSaver={fn => { editorSave.current = fn }}
+      onPictureChanged={() => { void load() }} />)}{leaveDialog}</>)
   }
   // ── THE BOXES ────────────────────────────────────────────────────────────────────────────────
   const places = data?.places ?? []
@@ -1015,6 +1117,7 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
               ) : (
                 <>
                   <NextEventHalf
+                    token={token}
                     events={data.upcoming}
                     photoSpace={data.standard.photoSpace === true}
                     standardUrl={data.standard.previewUrl}
@@ -1052,24 +1155,35 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
                 <>
                   {/* 🔴 THE DESIGN'S OWN THUMBNAIL, IN ITS OWN SHAPE. Same tile the Designs box draws,
                     * so an operator recognises what they are about to make. */}
+                  {/* 🔴 THE WEEK'S OWN POST, NOT THE BLANK — the same change as the single event half,
+                    * reported in the same breath: *"weekly post picture in create a post isn't showing
+                    * the events but single event is."* ⚠️ IT FOLLOWS THE "Which week" SELECT below it,
+                    * so picking next week redraws the tile with next week's events. */}
                   <div className="flex flex-col items-center">
-                    <DesignTile url={data.weekly.previewUrl} w={data.weekly.width} h={data.weekly.height} />
+                    <PostTile token={token} kind="week" week={week}
+                      fallbackUrl={data.weekly.previewUrl}
+                      w={data.weekly.width} h={data.weekly.height} />
                   </div>
-                  <label className="mt-3 block text-xs font-bold text-slate-600">Which week</label>
-                  <select value={week} onChange={e => setWeek(e.target.value as 'this' | 'next')}
+                  {/* ══ 🔴 THE GREY LINE SITS UNDER THE TILE IN **BOTH** HALVES (10 October 2026) ═══
+                    * ⛔ **DOMINIC: "the dropdowns for which event and which week aren't lined up."**
+                    * They were one line apart: the single event half carries "Using your standard
+                    * single event design" between its picture and its label, and this half carried its
+                    * own grey line AFTER the select — so one `<select>` sat a line lower than the
+                    * other. 🔴 ONE ORDER IN BOTH NOW: tile → grey line → label → select, so the two
+                    * controls are at the same height whatever either line says.
+                    * ⛔ NO "last made" — WE DO NOT STORE IT. A date nobody recorded would be a date an
+                    * operator plans around. 🔴 WHAT IT DOES SAY IS WHAT IS **LEFT OUT**: a week whose
+                    * numbers do not add up is the question this answers before it is asked. */}
+                  <p className="mt-2 text-center text-[11px] text-slate-400" data-week-events>
+                    {weekEventsLine(weekChoice?.events ?? 0, weekChoice?.privateEvents ?? 0)}
+                  </p>
+                  <label className="mt-3 block text-xs font-bold text-slate-600" htmlFor="which-week">Which week</label>
+                  <select id="which-week" value={week} onChange={e => setWeek(e.target.value as 'this' | 'next')}
                     data-week-select
                     className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
                     <option value="this">This week · {shortDate(data.weekly.thisWeek.start)} – {shortDate(data.weekly.thisWeek.end)}</option>
                     <option value="next">Next week · {shortDate(data.weekly.nextWeek.start)} – {shortDate(data.weekly.nextWeek.end)}</option>
                   </select>
-                  {/* ⛔ NO "last made" — WE DO NOT STORE IT. The brief says to leave it out rather than
-                    * invent one, and a date nobody recorded would be a date an operator plans around.
-                    * 🔴 WHAT IT DOES SAY IS WHAT IS **LEFT OUT**: a private booking is not posted
-                    * about at all, and a week whose numbers do not add up is the question this answers
-                    * before it is asked. See `weekEventsLine`. */}
-                  <p className="mt-1.5 text-[11px] text-slate-400" data-week-events>
-                    {weekEventsLine(weekChoice?.events ?? 0, weekChoice?.privateEvents ?? 0)}
-                  </p>
                   {/* 🔴 ONE OF THE TWO ORANGE BUTTONS ON THIS AREA, and it is only drawn when the
                     * design is ready — the empty state above is the other branch. */}
                   <div className="mt-auto pt-3">
@@ -1252,9 +1366,11 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
  * caption — and there is exactly one button that opens the modal.
  */
 function NextEventHalf({
-  events, photoSpace, standardUrl, standardW, standardH, placeImageUrl, onPost,
+  token, events, photoSpace, standardUrl, standardW, standardH, placeImageUrl, onPost,
   chosenId, onChoose,
 }: {
+  /** 🔴 For `EventPostTile`, which renders the chosen event's real post. */
+  token: string
   events: readonly PostEvent[]
   /** Whether the single event design has a photo space — it decides "photo" vs "poster" in the line. */
   photoSpace: boolean
@@ -1267,7 +1383,6 @@ function NextEventHalf({
   chosenId: string | null
   onChoose: (id: string) => void
 }) {
-  const [open, setOpen] = useState(false)
   /* 🔴 THE DEFAULT IS THE NEXT **PUBLIC** EVENT, not the next event. There is no post for a private
    * booking — the route refuses `event_post` for one — so a private event can never be the chosen one.
    * ⚠️ IT STILL APPEARS IN THE LIST BELOW, greyed, in its date position, because leaving it out would
@@ -1278,110 +1393,54 @@ function NextEventHalf({
    * first": once the operator has picked the third event, the first belongs back in the list — a
    * picker that could not take you back to where you started would be a one-way door. */
   const others = events.filter(e => e.id !== chosen?.id)
-  const firstThree = others.slice(0, 3)
-  const rest = others.slice(3)
 
   if (!chosen && others.length === 0) {
     return <p className="py-3 text-sm text-slate-400">{NO_UPCOMING_EVENTS}</p>
   }
 
-  /** One row in the picker. ⚠️ Date · venue · area, in that order, which is how a diary reads. */
-  const row = (ev: PostEvent) => (
-    <li key={ev.id}>
-      {/* ⛔ THE WHOLE ROW IS THE BUTTON, not a button at the end of it. A row that selects needs no
-        * second control, and the one it had opened the modal — skipping the caption box above it. */}
-      <button type="button" data-pick-event={ev.id} disabled={ev.isPrivate}
-        onClick={() => onChoose(ev.id)}
-        className={`flex w-full items-baseline gap-2 py-1.5 text-left ${ev.isPrivate
-          ? 'cursor-default' : 'hover:bg-slate-50'}`}>
-        <span className={`shrink-0 text-xs font-semibold ${ev.isPrivate ? 'text-slate-400' : 'text-slate-700'}`}>
-          {shortDate(ev.date)}
-        </span>
-        {/* ⛔ A PRIVATE EVENT KEEPS ITS DATE AND LOSES EVERYTHING ELSE. Its venue and area never left
-          * the server, so there is nothing here to hide. */}
-        <span className={`min-w-0 flex-1 truncate text-xs ${ev.isPrivate
-          ? 'italic text-slate-400' : 'text-slate-600'}`}>
-          {ev.isPrivate ? PRIVATE_EVENT_ROW : (ev.venue ?? '—')}
-        </span>
-        {!ev.isPrivate && ev.town && (
-          <span className="shrink-0 truncate text-xs text-slate-400">{ev.town}</span>
-        )}
-      </button>
-    </li>
-  )
-
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-next-event-half>
-      {chosen && (
-        <>
-          {/* ⚠️ THE HEADING DOES NOT CHANGE WHEN A DIFFERENT EVENT IS PICKED, and the BUTTON does. The
-            * heading names the section; the button names the action, and only one of those is about
-            * which event is chosen. */}
-          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">{NEXT_EVENT_HEADING_V4}</p>
-          <div className="mt-2 flex items-start gap-3">
-            {/* ⚠️ THE **LOCATION'S** PICTURE WHEN IT HAS ONE, ELSE THE STANDARD DESIGN'S PREVIEW. The
-              * tile is what the post will be drawn on, as far as a thumbnail can say so. */}
-            <DesignTile url={placeImageUrl(chosen.placeId) ?? standardUrl} w={standardW} h={standardH} />
-            <div className="min-w-0 flex-1">
-              {/* ══ 🔴 THE VENUE FIRST, LARGE AND BOLD — 21px ════════════════════════════════════════
-                * ⛔ IT WAS THE DATE IN 14px BOLD WITH THE VENUE THIRD IN GREY. An operator knows their
-                * events by WHERE they are; the date tells them which Kings Arms one, not which event.
-                * ⚠️ `truncate`, SO A LONG VENUE NAME GIVES WAY rather than wrapping under the tile and
-                * pushing the date out of the card. */}
-              <p className="truncate text-[21px] font-bold leading-tight text-slate-900" data-chosen-venue>
-                {chosen.venue ?? '—'}
-              </p>
-              {chosen.town && (
-                <p className="truncate text-sm text-slate-400" data-chosen-area>{chosen.town}</p>
-              )}
-              {/* ⚠️ DATE AND TIMES ON ONE LINE, semi-bold — one fact about when, not two. */}
-              <p className="mt-0.5 truncate text-sm font-semibold text-slate-700" data-chosen-when>
-                {shortDate(chosen.date)}
-                {formatTimeRange(chosen.startTime, chosen.endTime)
-                  ? ` · ${formatTimeRange(chosen.startTime, chosen.endTime)}`
-                  : ''}
-              </p>
-              {/* 🔴 THE GREY LINE NAMING THE IMAGE. ⚠️ THE **CLIENT** DOES NOT DECIDE photo-vs-poster:
-                * `imageSource` already says, from the server. `photoSpace` is only the fallback for a
-                * payload from before this field existed, so the line is never blank. */}
-              <p className="mt-1 text-[11px] text-slate-400" data-image-source>
-                {imageSourceLine(
-                  chosen.imageSource
-                    ?? (placeImageUrl(chosen.placeId) ? (photoSpace ? 'place-photo' : 'place-poster') : 'standard'),
-                  chosen.placeName ?? chosen.venue,
-                )}
-              </p>
-            </div>
-          </div>
-        </>
-      )}
-
-      {others.length > 0 && (
-        <div className="mt-3 border-t border-slate-100 pt-2" data-pick-block>
-          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">{PICK_ANOTHER_HEADING}</p>
-          <ul className="mt-0.5 divide-y divide-slate-100" data-pick-list>
-            {firstThree.map(row)}
-            {/* ⚠️ THE EXPANDED REST IS THE SAME `row`, in the same list, so an expanded picker is one
-              * list and not two with a divider between them. */}
-            {open && rest.map(row)}
-          </ul>
-          {rest.length > 0 && (
-            /* ⚠️ A `<button aria-expanded>`, NOT A `<details>`. The chevron has to be the product's own
-             * glyph at the product's own size, and a `<summary>` marker is the browser's. */
-            <button type="button" data-more-events aria-expanded={open}
-              onClick={() => setOpen(v => !v)}
-              className="mt-1.5 text-xs font-semibold text-slate-600 underline hover:no-underline">
-              {open ? HIDE_ALL_UPCOMING : SHOW_ALL_UPCOMING(rest.length)}
-            </button>
-          )}
-          <p className="mt-2">
-            <a href={manageSectionHref('events')}
-              className="text-xs font-semibold text-slate-600 underline hover:no-underline">
-              See all upcoming events
-            </a>
-          </p>
-        </div>
-      )}
+      {/* ══ 🔴 THE TILE, THEN ONE LINE, THEN A DROPDOWN — THE WEEKLY HALF'S SHAPE (10 October 2026) ═══
+        *
+        * ⛔ **WHAT WENT, AND DOMINIC ASKED FOR ALL OF IT:** the "YOUR NEXT EVENT" heading above the
+        * picture, the venue/area/date/times block beside it, and the expanding "or pick another event"
+        * list below. 🔴 THE PICTURE IS THE POST NOW (see `PostTile`), and the post already prints the
+        * venue, the date and the times — so the block beside it was the same facts a second time, in
+        * smaller type, next to a picture of them.
+        * ⚠️ AND THE TWO HALVES NOW MATCH: a centred tile, a grey line under it, a labelled `<select>`.
+        * ⛔ THE SELECT IS AT THE SAME HEIGHT IN BOTH, which is why the line under the tile is one line
+        * in each — two halves whose controls sit at different heights read as two unrelated cards. */}
+      <div className="flex flex-col items-center">
+        <PostTile token={token} kind="event" eventId={chosen?.id ?? null}
+          fallbackUrl={placeImageUrl(chosen?.placeId ?? null) ?? standardUrl}
+          w={standardW} h={standardH} />
+      </div>
+      {/* 🔴 THE GREY LINE NAMING THE IMAGE, MOVED UNDER THE TILE. ⚠️ THE **CLIENT** DOES NOT DECIDE
+        * photo-vs-poster: `imageSource` already says, from the server. `photoSpace` is only the
+        * fallback for a payload from before that field existed, so the line is never blank. */}
+      <p className="mt-2 text-center text-[11px] text-slate-400" data-image-source>
+        {chosen
+          ? imageSourceLine(
+            chosen.imageSource
+              ?? (placeImageUrl(chosen.placeId) ? (photoSpace ? 'place-photo' : 'place-poster') : 'standard'),
+            chosen.placeName ?? chosen.venue,
+          )
+          : ''}
+      </p>
+      {/* ⚠️ "Which event" TO THE WEEKLY HALF'S "Which week" — the same label shape, the same control,
+        * the same place on the card. ⛔ EVERY EVENT IS IN IT, privates included and `disabled`, because
+        * leaving them out would make the operator's own diary look wrong — the rule the old list had. */}
+      <label className="mt-3 block text-xs font-bold text-slate-600" htmlFor="which-event">Which event</label>
+      <select id="which-event" value={chosen?.id ?? ''} data-event-select
+        onChange={e => onChoose(e.target.value)}
+        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
+        {events.map(ev => (
+          <option key={ev.id} value={ev.id} disabled={ev.isPrivate}>
+            {shortDate(ev.date)} · {ev.isPrivate ? PRIVATE_EVENT_ROW : (ev.venue ?? '—')}
+            {!ev.isPrivate && ev.town ? ` · ${ev.town}` : ''}
+          </option>
+        ))}
+      </select>
 
       {/* ══ 🔴 THE BUTTON IS AT THE FOOT OF THE HALF, SO THE TWO ORANGE BUTTONS LINE UP ════════════
         * ⛔ IT SAT DIRECTLY UNDER THE CHOSEN EVENT, ABOVE "OR PICK ANOTHER EVENT" — and the weekly

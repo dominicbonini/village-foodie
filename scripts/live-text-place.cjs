@@ -92,17 +92,24 @@ const ENTRY = `
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { DesignEditor } from '@/components/manage/DesignEditor'
-import { defaultLayout } from '@/lib/weekly-post/layout'
+import { defaultLayout, defaultEventLayout } from '@/lib/weekly-post/layout'
 import { weekRange } from '@/lib/weekly-post/week'
-import { buildWeekData } from '@/lib/weekly-post/week-data'
+import { buildWeekData, entryFor } from '@/lib/weekly-post/week-data'
 
 const q = new URLSearchParams(location.search)
 const W = 1080, H = 1350
-/* ⛔ THE CONTROL. The blank is declared at twice the size the LAYOUT is in, which is the one way to
- * make the editor's box scale and the live tree's scale disagree from outside the component. */
-const bgMul = q.get('breakScale') === '1' ? 2 : 1
+/* 🔴 §1 · THE BACKGROUND'S SIZE IS SET INDEPENDENTLY OF THE LAYOUT'S, which is the whole point of this
+ * file now. ⛔ A DESIGN WHOSE PICTURE IS A DIFFERENT PIXEL SIZE FROM ITS CANVAS IS THE REPORTED BUG:
+ * the editor measured its canvas from the picture while every box coordinate and the live tree are in
+ * the LAYOUT's pixels. ?bg=2 is a 2160x2700 picture under a 1080x1350 design; ?bg=0.5 is 540x675.
+ * ⚠️ BOTH DIRECTIONS, because the two fail differently — a larger picture drew the words too small and
+ * toward the top-left (what Dominic saw), a smaller one draws them too large and off the bottom-right. */
+const bgMul = q.get('breakScale') === '1' ? 2 : Number(q.get('bg') || '1')
+/* ⚠️ ?kind=event MOUNTS THE SINGLE EVENT DESIGN — a different tree builder, a different box set, and
+ * the design Dominic reported. The weekly one is the default so every existing claim is unchanged. */
+const KIND = q.get('kind') === 'event' ? 'event' : 'week'
 
-const layout = defaultLayout(W, H)
+const layout = KIND === 'event' ? defaultEventLayout(W, H) : defaultLayout(W, H)
 const range = weekRange('this', '2026-09-30T12:00:00Z')
 const EVENTS = [
   { id: 'e1', event_date: range.days[0], start_time: '17:00', end_time: '20:00', venue_name: 'Lavenham Village Hall', town: 'Lavenham', status: 'confirmed' },
@@ -121,12 +128,12 @@ const BLANK = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcS
 
 createRoot(document.getElementById('root')).render(React.createElement(DesignEditor, {
   token: 'tok',
-  designName: 'Weekly post design',
+  designName: KIND === 'event' ? 'Single event post design' : 'Weekly post design',
   backLabel: '\\u2039 Designs',
   onBack: () => {},
   initialLayout: layout,
   country: 'GB',
-  background: { url: BLANK, width: W * bgMul, height: H * bgMul },
+  background: { url: BLANK, width: Math.round(W * bgMul), height: Math.round(H * bgMul) },
   onReplacePicture: () => {},
   pictureNote: 'note',
   previewOptions: [{ id: 'this', label: 'This week' }],
@@ -136,14 +143,34 @@ createRoot(document.getElementById('root')).render(React.createElement(DesignEdi
    * ever fetched and the stage shows the blank. The live words are therefore the ONLY words on it,
    * which is what makes "are they in the box?" answerable at all. */
   renderPreview: async () => null,
-  liveData: { kind: 'week', days: week.days, start: range.start, end: range.end, note: null },
+  liveData: KIND === 'event'
+    /* ⚠️ ONE ENTRY, BUILT BY THE RENDERER'S OWN \`entryFor\` — the same function the route uses, so the
+     * live words on the single event poster are the words the PNG would carry. */
+    ? { kind: 'event', entry: entryFor(EVENTS[0], [], '12h'), date: range.days[0], note: null }
+    : { kind: 'week', days: week.days, start: range.start, end: range.end, note: null },
   onSave: () => {},
   onCancel: () => {},
 }))
 `
 
 /** Bundle the real component for a browser. ⚠️ `nodePaths`, or `react` does not resolve from /tmp. */
-async function bundle(dir) {
+/**
+ * ══ ⛔ THE CONTROL IS BUILT BY PUTTING THE **OLD CODE** BACK, NOT BY BREAKING A NEW ONE ════════════
+ *
+ * 🔴 THE FIX WAS TO TAKE THE EDITOR'S CANVAS FROM THE **LAYOUT** RATHER THAN THE PICTURE. So the only
+ * honest control is the line as it stood: `const W = background.width || 1`. An esbuild plugin rewrites
+ * that one file on load — ⚠️ NOTHING IS COPIED AND NOTHING ON DISK IS TOUCHED, so the control cannot
+ * drift from the file it is a variant of.
+ * ⛔ AN ABSENT ANCHOR IS A FAILURE, NOT A SILENT NO-OP: a variant that cannot produce the symptom it
+ * names is not a variant, and this repository has been bitten by that three times.
+ */
+const OLD_CANVAS = {
+  file: path.join(REPO, 'components/manage/DesignEditor.tsx'),
+  from: 'const W = (layout.width > 0 ? layout.width : background.width) || 1\n  const H = (layout.height > 0 ? layout.height : background.height) || 1',
+  to: 'const W = background.width || 1\n  const H = background.height || 1',
+}
+
+async function bundle(dir, patch) {
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
   const entry = path.join(dir, 'entry.tsx')
   fs.writeFileSync(entry, ENTRY)
@@ -159,14 +186,30 @@ async function bundle(dir) {
     define: { 'process.env.NODE_ENV': '"production"' },
     alias: { '@': REPO },
     nodePaths: [path.join(REPO, 'node_modules')],
+    plugins: patch ? [{
+      name: 'old-canvas',
+      setup(build) {
+        build.onLoad({ filter: /DesignEditor\.tsx$/ }, (args) => {
+          if (args.path !== patch.file) return null
+          const src = fs.readFileSync(args.path, 'utf8')
+          if (!src.includes(patch.from)) {
+            throw new Error('the control cannot be built: the anchor has drifted out of '
+              + path.relative(REPO, args.path) + ' — re-aim it or delete it:\n    ' + patch.from.slice(0, 120))
+          }
+          return { contents: src.replace(patch.from, patch.to), loader: 'tsx' }
+        })
+      },
+    }] : [],
   })
   return fs.readFileSync(path.join(dir, 'bundle.js'), 'utf8')
 }
 
-const PAGE = (css) => `<!doctype html><html><head><meta charset="utf-8">
+/* ⚠️ `?old=1` LOADS THE CONTROL'S BUNDLE — the editor with its canvas taken from the picture again.
+ * The page is otherwise identical, so the two differ by exactly one line of product code. */
+const PAGE = (css, old) => `<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>${css}</style><style>html,body{margin:0;padding:0}</style></head>
-<body><div id="root"></div><script src="/bundle.js"></script></body></html>`
+<body><div id="root"></div><script src="${old ? '/bundle-old.js' : '/bundle.js'}"></script></body></html>`
 
 /**
  * ══ 🔴 THE MEASUREMENT ════════════════════════════════════════════════════════════════════════════
@@ -207,6 +250,10 @@ const MEASURE = `(() => {
     live: !!root,
     liveRoot: root ? r(root) : null,
     stage: stageEl ? r(stageEl) : null,
+    /* 🔴 §1 · THE PICTURE ITSELF. Moving the canvas off the picture's pixels must not leave the blank
+     * drawn at the wrong size — the renderer composites it over the whole poster, so the editor must
+     * too. */
+    stageImg: (() => { const i = document.querySelector('[data-stage-img]'); return i ? r(i) : null })(),
     boxes, cells, words,
     zoom: (document.querySelector('[data-zoom-readout]') || {}).textContent || null,
     /* 🔴 THE PROPERTY THE WHOLE BUG WAS, READ OFF THE LIVE LAYER ITSELF — not off a stylesheet, and
@@ -244,8 +291,12 @@ async function engines() {
   const css = appCss()
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hg-live-text-'))
   const js = await bundle(dir)
+  /* ⛔ THE SAME EDITOR WITH THE OLD CANVAS LINE PUT BACK — see `OLD_CANVAS`. Built here rather than on
+   * demand so a drifted anchor fails the run immediately, not thirty checks later. */
+  const jsOld = await bundle(fs.mkdtempSync(path.join(os.tmpdir(), 'hg-live-old-')), OLD_CANVAS)
   const ttf = fs.readFileSync(path.join(REPO, 'assets/fonts/weekly-post/oswald-400.ttf'))
-  console.log(`  ⚠️ the real DesignEditor, bundled for a browser (${Math.round(js.length / 1024)}KB)`)
+  console.log(`  ⚠️ the real DesignEditor, bundled for a browser (${Math.round(js.length / 1024)}KB)`
+    + ` · and the pre-fix build for the control (${Math.round(jsOld.length / 1024)}KB)`)
 
   /* ══ 🔴 A LOCAL SERVER, BECAUSE THE EDITOR FETCHES ITS FONTS WITH A **RELATIVE** URL ══════════════
    * ⛔ A `file://` PAGE CANNOT DO THAT, and stubbing `fetch` would mean measuring a page where the
@@ -258,6 +309,9 @@ async function engines() {
     if (u.pathname === '/bundle.js') {
       res.writeHead(200, { 'Content-Type': 'text/javascript' }); res.end(js); return
     }
+    if (u.pathname === '/bundle-old.js') {
+      res.writeHead(200, { 'Content-Type': 'text/javascript' }); res.end(jsOld); return
+    }
     if (u.pathname === '/api/weekly-post' && u.searchParams.get('font')) {
       fontRequests++
       res.writeHead(200, {
@@ -268,7 +322,8 @@ async function engines() {
       res.end(ttf); return
     }
     if (u.pathname === '/api/weekly-post') { res.writeHead(400); res.end('{}'); return }
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(PAGE(css))
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
+    res.end(PAGE(css, u.searchParams.get('old') === '1'))
   })
   await new Promise(r => server.listen(0, '127.0.0.1', r))
   const base = `http://127.0.0.1:${server.address().port}`
@@ -374,24 +429,92 @@ async function engines() {
       }
     }
 
-    /* ══ ⛔ THE CONTROL — THE SCALE, BROKEN FROM OUTSIDE THE COMPONENT ═══════════════════════════════
-     * 🔴 THE BLANK IS DECLARED AT TWICE THE SIZE THE LAYOUT IS IN. The editor converts box coordinates
-     * with `stageW / background.width`, so every outline halves — while the live tree is still in the
-     * layout's own pixels. **That is the reported bug, reproduced on purpose**, and the claim above
-     * must refuse it. ⚠️ NO PRODUCT CODE IS PATCHED to produce it, which is what makes it a control
-     * over the real conversion rather than over a line this harness wrote. */
-    await page.goto(`${base}/?breakScale=1`)
+    /* ══════════════════════════════════════════════════════════════════════════════════════════
+     * 🔴 §1 · THE SINGLE EVENT DESIGN, AND A PICTURE THAT IS NOT THE CANVAS
+     * ══════════════════════════════════════════════════════════════════════════════════════════
+     *
+     * ⛔ **THE REPORTED BUG.** On Pizza Kitchen's single event design the Date box was selected in the
+     * middle of the poster while its words were drawn small near the top-left, and "Powered by
+     * HatchGrab" was drawn tiny in the MIDDLE rather than at the bottom.
+     * 🔴 **THE CAUSE, AND IT IS A FACT ABOUT TWO NUMBERS.** Every box coordinate is stored in the
+     * LAYOUT's pixels and that is the canvas the renderer paints on; the editor measured its canvas
+     * from the BACKGROUND PICTURE. While the two agree nothing can go wrong — which is why the weekly
+     * design, made from its own picture, never showed it. ⚠️ THE FOUR FIXTURES BELOW ARE THE PROOF:
+     * the same designs with the picture declared at 2× and at 0.5× the canvas.
+     */
+    const POWERED = /Powered by/i
+    const SIZE_CASES = [
+      ['week', 1, 'the weekly design, picture and canvas the same size'],
+      ['event', 1, 'the single event design, picture and canvas the same size'],
+      ['event', 2, 'the single event design under a 2160×2700 picture (canvas 1080×1350)'],
+      ['event', 0.5, 'the single event design under a 540×675 picture (canvas 1080×1350)'],
+      ['week', 2, 'the weekly design under a 2160×2700 picture'],
+    ]
+    for (const [kind, bg, what] of SIZE_CASES) {
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await page.goto(`${base}/?kind=${kind}&bg=${bg}`)
+      await page.waitForSelector('[data-live-poster]', { timeout: 15000 }).catch(() => {})
+      await page.evaluate('document.fonts.ready')
+      await page.waitForTimeout(160)
+      const m = await page.evaluate(MEASURE)
+      if (!m.live) { t(false, `${eng.name} §1 ${what}: the live layer never mounted`); continue }
+      /* ⚠️ "Powered by HatchGrab" IS EXCLUDED FROM THIS ONE CLAIM AND ASSERTED SEPARATELY BELOW,
+       * because §3 is what makes it a box. Until then it is drawn free by the renderer and belongs to
+       * no outline, so counting it here would fail every case for the wrong reason. */
+      const strays = m.words.filter(w => !POWERED.test(w.text)).filter(w => !inside(w, [...m.boxes, ...m.cells]))
+      t(strays.length === 0,
+        `${eng.name} §1 ${what}: all ${m.words.length} live word(s) are inside their box`
+        + (strays.length ? ` — ${strays.slice(0, 3).map(w => `${JSON.stringify(w.text)} at ${w.x},${w.y}`).join(' · ')}` : ''))
+      /* 🔴 "Powered by HatchGrab" IS NAMED SEPARATELY, because it is the one the operator saw in the
+       * middle of the poster and because every other claim here would pass without it. */
+      /* ══ ⚠️ "Powered by HatchGrab" IS NOT A BOX YET — §3 IS WHAT MAKES IT ONE ═══════════════════
+       * 🔴 TODAY THE RENDERER DRAWS IT FREE, at a fixed spot, belonging to no outline — so "is it
+       * inside its box?" has no box to ask about and this harness has always excluded it. ⛔ THE
+       * EXCLUSION IS NAMED RATHER THAN SILENT, because it is exactly the claim §3 must turn on: once
+       * it is a draggable box, delete these two lines and let it fall under the claim above.
+       * ⚠️ WHAT IS ASSERTED MEANWHILE is that it is drawn at all and sits ON the poster — which is the
+       * most this file can honestly say about it today. */
+      const pb = m.words.filter(w => POWERED.test(w.text))
+      t(pb.length > 0 && pb.every(w => w.x >= m.stage.x - 1 && w.right <= m.stage.right + 1
+        && w.y >= m.stage.y - 1 && w.bottom <= m.stage.bottom + 1),
+        `${eng.name} §1 ${what}: …and "Powered by HatchGrab" is drawn on the poster `
+        + `(${pb.length} run(s)${pb.length ? `, at ${pb[0].x},${pb[0].y}` : ''}) — ⚠️ not yet a box; §3`)
+      /* ⚠️ AND THE PICTURE STILL FILLS THE POSTER. The canvas moving to the layout must not leave the
+       * blank drawn at the wrong size — the renderer composites it over the whole poster. */
+      t(!!m.stageImg && Math.abs(m.stageImg.w - m.stage.w) <= 2 && Math.abs(m.stageImg.h - m.stage.h) <= 2,
+        `${eng.name} §1 ${what}: …and the picture fills the poster `
+        + `(${m.stageImg && m.stageImg.w}×${m.stageImg && m.stageImg.h} vs ${m.stage.w}×${m.stage.h})`)
+    }
+
+    /* ══ ⛔ THE CONTROL — THE **OLD CODE**, AND THE SYMPTOM IT PRODUCED ══════════════════════════════
+     * 🔴 THE SAME EDITOR WITH ONE LINE PUT BACK: the canvas taken from the picture again. ⚠️ NOT A
+     * BROKEN NEW LINE — the line as it actually stood, so this measures the fix rather than a straw
+     * man. ⛔ AND IT ASSERTS THE REPORTED SYMPTOM, NOT MERELY "SOMETHING IS WRONG": the words must be
+     * SMALLER and pulled toward the TOP-LEFT, which is what a canvas wider than the layout does to
+     * `k = scale × designW / W`. */
+    await page.goto(`${base}/?kind=event&bg=0.5&old=1`)
     await page.waitForSelector('[data-live-poster]', { timeout: 15000 }).catch(() => {})
     await page.evaluate('document.fonts.ready')
-    await page.waitForTimeout(120)
+    await page.waitForTimeout(160)
     const bad = await page.evaluate(MEASURE)
-    const badStrays = bad.live
-      ? bad.words.filter(w => !/Powered by HatchGrab/.test(w.text))
-        .filter(w => !inside(w, [...bad.boxes, ...bad.cells]))
-      : []
+    const badStrays = bad.live ? bad.words.filter(w => !inside(w, [...bad.boxes, ...bad.cells])) : []
     t(bad.live && badStrays.length > 0,
-      `${eng.name} CONTROL: with the blank declared at twice the layout's size, `
+      `${eng.name} CONTROL: on the PRE-FIX code with a 540px picture under a 1080px canvas, `
       + `${badStrays.length} live word(s) fall outside every box — so "inside its box" is a measurement`)
+    /* 🔴 THE SYMPTOM, NAMED. The live layer is drawn at half the size it should be, so its words sit in
+     * the top-left quarter of the poster — "small, near the top-left", and "Powered by HatchGrab",
+     * which belongs at the bottom, lands in the middle. */
+    /* 🔴 AND THE SECOND HALF OF THE SYMPTOM, WHICH IS §2's REPORT. With the picture narrower than the
+     * canvas the editor drew every outline with `stageW / background.width` while the coordinates are
+     * in the LAYOUT's pixels, so the boxes come out too big and run off the poster — *"the box
+     * currently extends past the picture's right edge."* ⚠️ ONE CAUSE, TWO REPORTS. */
+    if (bad.live && bad.stage) {
+      const over = bad.boxes.filter(b2 => b2.right > bad.stage.right + 2)
+      t(over.length > 0,
+        `${eng.name} CONTROL: …and ${over.length} box outline(s) run past the poster's right edge `
+        + `(stage ends at ${bad.stage.right}, widest box at ${Math.max(...bad.boxes.map(b2 => b2.right))}) — `
+        + `which is §2's "the box extends past the picture's right edge", from the same cause`)
+    }
 
     /* ══ 🔴 EVERY WIDTH FROM 1000 TO 1728, AT EVERY ZOOM LEVEL ═══════════════════════════════════════
      *

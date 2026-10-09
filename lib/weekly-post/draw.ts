@@ -85,6 +85,15 @@ export const div = (style: Record<string, unknown>, children?: unknown): El =>
  * is the obvious bug here: the text would land in the wrong place on anything oversized, and only on
  * oversized blanks, so it would pass every test made with a 1080px one.
  */
+/**
+ * 🔴 HOW MUCH SMALLER THAN ITS CELL A DAY ROW'S LOCATION PICTURE IS DRAWN — Dominic's 15%.
+ *
+ * ⛔ IT EXISTS SO SEVEN ROWS OF PICTURES DO NOT TOUCH. A cell is the full height of its band, so at
+ * 0 the pictures form one unbroken column down the poster — over artwork whose own table rows are
+ * separated by gaps. ⚠️ A SHARE, NOT A PIXEL COUNT, so it holds at every poster size and row height.
+ */
+export const PICTURE_INSET = 0.15
+
 export function renderScale(width: number, height: number): number {
   const longest = Math.max(width, height)
   return longest > MAX_RENDER_SIDE ? MAX_RENDER_SIDE / longest : 1
@@ -522,13 +531,32 @@ function daysEls(
        * of the row, so it is the one the picture belongs beside. */
       if (!day.entries.length) continue
       const shape = days.pictureShape
+      /* ══ 🔴 THE PICTURE IS DRAWN INSIDE ITS CELL, NOT EDGE TO EDGE (10 October 2026) ═══════════════
+       * ⛔ **DOMINIC: "when location images are used they should be 15% smaller than the box … the
+       * tables it's overlaid on have gaps between, and I don't want the images on each row touching."**
+       * A row's cell runs the full height of its band, so seven pictures drawn at the cell's size form
+       * one unbroken column down the poster — against artwork whose own rows are separated.
+       * 🔴 `PICTURE_INSET` IS A SHARE OF THE CELL, NOT A PIXEL GAP, so it holds at every poster size and
+       * at every row height. ⚠️ CENTRED: half the shrink comes off each edge, so the picture stays where
+       * the operator put the cell rather than drifting to one corner.
+       * ⛔ IT IS THE DAY ROW'S PICTURE ONLY. The single event design's picture box is one the operator
+       * sized themselves on a canvas with nothing under it, and shrinking that would be moving their
+       * work; `placePictureEl` is therefore left alone and the inset is applied to the RECT here. */
+      const inset = {
+        x: rect.x + (rect.w * PICTURE_INSET) / 2,
+        y: rect.y + (rect.h * PICTURE_INSET) / 2,
+        w: rect.w * (1 - PICTURE_INSET),
+        h: rect.h * (1 - PICTURE_INSET),
+      }
       const pic = {
         ...l.placePicture,
-        ...rect,
+        ...inset,
         /* 🔴 THE SHAPE IS THE BLOCK'S, NOT THE LEGACY BOX'S `corners`. "Circle" is a radius of half
          * the side — the same rounded-corner path, so there is no fourth way to draw a picture. */
         corners: (shape === 'square' ? 'square' : 'rounded') as PlacePictureBox['corners'],
-        radius: shapeRadius(shape, rect.w, rect.h),
+        /* ⚠️ THE RADIUS FOLLOWS THE **DRAWN** SIZE, not the cell's — "Circle" is half the shorter side
+         * of what is actually painted, so an inset picture is still a circle and not a stadium. */
+        radius: shapeRadius(shape, inset.w, inset.h),
       }
       const el = placePictureEl(
         pic, pictureForEntry(day.entries[0], pictures), pictures?.logo ?? null, scale,

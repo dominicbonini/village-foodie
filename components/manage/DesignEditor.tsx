@@ -670,8 +670,39 @@ export function DesignEditor(props: DesignEditorProps) {
    * inside a pointer handler and must be correct on the NEXT event, not on the next render. */
   const gestureOpen = useRef(false)
 
-  const W = background.width || 1
-  const H = background.height || 1
+  /**
+   * ══ 🔴 §1 · THE CANVAS IS THE **LAYOUT'S**, NOT THE PICTURE'S ═══════════════════════════════════
+   *
+   * ⛔ **DOMINIC, ON THE SINGLE EVENT DESIGN:** *"the Date box is selected in the middle of the poster,
+   * but the date's words are drawn small near the top-left, and 'Powered by HatchGrab' is drawn tiny in
+   * the MIDDLE instead of at the bottom."*
+   *
+   * 🔴 **TWO CANVASES EXISTED AND NOTHING MADE THEM AGREE.** Every box coordinate is stored in the
+   * LAYOUT's pixels, and that is the canvas the renderer paints on: `weeklyTree` and `eventTree` both
+   * compute `W = round(layout.width × renderScale)`. This editor measured its canvas from the
+   * BACKGROUND PICTURE instead. While the two numbers are equal — which they are for every design made
+   * from its own picture — nothing can go wrong, and nothing did for the weekly design. The moment they
+   * differ, three things are wrong at once and they are wrong by the SAME ratio:
+   *   • `scale` converts layout pixels with the picture's width, so every box outline is misplaced;
+   *   • `LivePoster`'s `k = scale × designW / W` is handed the picture's width as `designW` while its
+   *     `W` comes from the tree (the layout's), so the live words are drawn at the wrong SIZE — smaller
+   *     when the picture is narrower than the layout, and pulled toward the origin, which is the
+   *     top-left. **That is the reported symptom exactly.**
+   *   • `fitW`'s aspect ratio is the picture's rather than the poster's.
+   *
+   * 🔴 **TAKING THE LAYOUT'S OWN CANVAS FIXES ALL THREE AT ONCE AND MAKES `LivePoster`'S ASSUMPTION
+   * TRUE BY CONSTRUCTION** — `designW` and the tree's `W` are then the same number divided by
+   * `renderScale`, which is what that component's header says it relies on.
+   * ⚠️ **IT MOVES NOTHING FOR ANY DESIGN WHOSE TWO SIZES ALREADY AGREE**, which is every design the
+   * desktop fingerprint, `phone-editor.cjs` and `live-text-place.cjs` are built from — they all mount
+   * a layout and a background of the same size, so `W` and `H` are unchanged to the pixel.
+   * ⚠️ THE BACKGROUND IS STILL WHAT IS DRAWN: the `<img>` fills the stage box, so a picture of a
+   * different pixel size is scaled onto the poster's canvas exactly as the renderer composites it.
+   * ⛔ THE FALLBACK IS THE PICTURE, NOT A CONSTANT. A layout with no usable size is a layout this
+   * editor cannot place boxes in at all, and the picture is the only other measurement on the screen.
+   */
+  const W = (layout.width > 0 ? layout.width : background.width) || 1
+  const H = (layout.height > 0 ? layout.height : background.height) || 1
   /* ⚠️ THE EDITOR SCALE NEVER REACHES STORAGE. Boxes are stored in the picture's own pixels; this is
    * the only place the on-screen size is known, and every drag converts back through it. A design made
    * on a phone therefore renders identically to one made on a desktop. */
@@ -857,6 +888,18 @@ export function DesignEditor(props: DesignEditorProps) {
 
   // ── EDITS ───────────────────────────────────────────────────────────────────────────────────────
   const items = useMemo(() => itemsOf(layout, country), [layout, country])
+  /* 🔴 §SNAP · THE RECTANGLE OF EVERY BOX THAT IS ACTUALLY DRAWN, for the alignment guides. ⚠️ THE
+   * SAME TWO FILTERS THE OUTLINES USE — not the full item list — so "what I can line up with" is
+   * exactly "what I can see". ⚠️ `useMemo`, because it is rebuilt on every pointer move otherwise and
+   * handed to eleven `DraggableBox`es as a new array each time. */
+  const peerRects = useMemo(() => items
+    .filter(i => i.key !== 'rows' && i.group !== 'part')
+    .map(i => {
+      const b = i.key === PLACE_PICTURE_KEY ? layout.placePicture : boxAt(layout, i.key)
+      return b && b.enabled ? { key: i.key, x: b.x, y: b.y, w: b.w, h: b.h } : null
+    })
+    .filter((r): r is { key: string; x: number; y: number; w: number; h: number } => r !== null),
+  [items, layout])
   /* 🔴 A SELECTED ITEM THAT NO LONGER EXISTS FALLS BACK TO THE DATE — **DERIVED, NOT SYNCHRONISED.**
    * Removing "Your own text" number 2 while it was selected would otherwise leave the toolbar bound to
    * `notes[1]` — `undefined` — and the whole toolbar would vanish with no explanation.
@@ -2104,6 +2147,15 @@ export function DesignEditor(props: DesignEditorProps) {
                   }} />
               )}
 
+              {/* ══ 🔴 EVERY DRAWN BOX, SO A DRAG CAN LINE UP WITH THE OTHERS ═══════════════════════
+                * ⛔ **DOMINIC: "there should be a line that lets you know when you're lined up … I'm
+                * trying to line up the venue box with the area box beneath it."** `DraggableBox` only
+                * ever had the POSTER's own centre lines to snap to, so the guide appeared when a box
+                * happened to be centred on the artwork and never when it lined up with another one.
+                * ⚠️ BUILT FROM THE SAME `items` THE OUTLINES ARE, and filtered by the same two rules,
+                * so a box that is on screen is a box you can line up with — and one that is not, is
+                * not. ⛔ THE DRAGGED BOX IS EXCLUDED AT THE CALL SITE, or it would line up with
+                * itself and snap at every position. */}
               {items.filter(i => i.key !== 'rows' && i.group !== 'part').map(it => {
                 /* ⚠️ THE PICTURE BOX IS A `BoxRect` AND NOT A `TextBox`, so it is fetched separately —
                  * `boxAt` returns text boxes, and widening it would have meant giving a picture a
@@ -2147,6 +2199,7 @@ export function DesignEditor(props: DesignEditorProps) {
                     tint={!isPic}
                     onSelect={() => pickOnPoster(it.key)}
                     onGuides={setGuides}
+                    peers={peerRects.filter(p => p.key !== it.key)}
                     onChange={(patch, done, info) => {
                       if (done) {
                         /* ⚠️ RE-SAMPLED ON RELEASE AND COMMITTED AS ONE STEP. The gesture already
@@ -2207,6 +2260,17 @@ export function DesignEditor(props: DesignEditorProps) {
                 <div className="pointer-events-none absolute left-0 right-0 h-px bg-pink-500" data-guide="h"
                   style={{ top: guides.h * scale }} />
               )}
+              {/* 🔴 THE EQUAL-GAP MARKS — "if it can indicate when the distance is the same". ⚠️ THEY
+                * ARE DRAWN ONLY WHILE THE TWO GAPS MATCH, so the marks appearing IS the answer; there
+                * is no state to read and nothing to interpret. ⛔ THE SAME PINK AS THE GUIDES, because
+                * they are the same thing being said about a different measurement. */}
+              {guides.gaps.map((g, i) => (
+                <div key={i} data-guide-gap className="pointer-events-none absolute bg-pink-500"
+                  style={{
+                    left: g.x * scale, top: g.y * scale,
+                    width: Math.max(1, g.w * scale), height: Math.max(1, g.h * scale),
+                  }} />
+              ))}
             </div>
           </div>
 

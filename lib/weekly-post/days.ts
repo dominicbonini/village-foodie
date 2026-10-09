@@ -420,9 +420,17 @@ export function dayBoundaries(days: DaysBlock, on: DayPartsOn, row = 0): DayBoun
   if (days.arrangement === 'oneLine') {
     const seq = cells.filter(c => c.key !== 'picture').sort((a, b) => a.x - b.x)
     for (let i = 0; i < seq.length - 1; i++) {
-      /* ⚠️ ONLY WHERE THE TWO ARE ACTUALLY ADJACENT — with the picture between them the gap belongs to
-       * the picture, and dragging it would resize two cells that are not touching. */
-      if (cells.some(c => c.key === 'picture' && c.x > seq[i].x && c.x < seq[i + 1].x)) continue
+      /* ══ 🔴 A HANDLE EVEN WHERE THE PICTURE SITS BETWEEN THE TWO (10 October 2026) ════════════════
+       * ⛔ **DOMINIC: "the additional column has been added but I'm unable to resize … the time width.
+       * I can only adjust the date and location column widths."** With the picture between Place and
+       * Time, this skipped that boundary — on the reasoning that *"dragging it would resize two cells
+       * that are not touching"*. 🔴 THE COST OF THAT RULE WAS A COLUMN THE OPERATOR COULD NOT RESIZE
+       * AT ALL: the only remaining handle was Date|Place, so Time's width was fixed for ever.
+       * ⚠️ THE DRAG IS HONEST ABOUT WHAT IT DOES — `moveBoundary` takes the two PART KEYS and moves
+       * weight from one to the other; it never needed them to be adjacent. The picture keeps its own
+       * width (its row's height) and is not involved.
+       * ⚠️ IT IS PLACED OVER THE PICTURE'S GAP, which is where the boundary between those two columns
+       * visually is. */
       out.push(between(seq[i], seq[i + 1]))
     }
     return out

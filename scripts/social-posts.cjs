@@ -107,8 +107,13 @@ head('1 · a private event is never offered a post, and carries no location')
    * button above the list opens the modal — so "buttonless" is true of every row and says nothing about
    * a private one. ⛔ WHAT MAKES A PRIVATE ROW DIFFERENT IS THAT IT CANNOT BE **CHOSEN**: `disabled` on
    * the row's own button, because choosing it would put an event with no post in the card above. */
-  t('⚠️ a private event still takes its place in the list, greyed and unchoosable',
-    /data-pick-event=\{ev\.id\} disabled=\{ev\.isPrivate\}/.test(SOCIAL)
+  /* ══ ⚠️ RE-ANCHORED 10 OCTOBER 2026 — THE PICKER IS A `<select>` NOW ══════════════════════════
+   * ⛔ IT WAS A LIST OF THREE ROWS WITH "show all upcoming" BEHIND A PRESS. Dominic asked for the same
+   * dropdown the weekly half has, so the two cards' controls line up. 🔴 THE CLAIM IS UNCHANGED: a
+   * private booking keeps its place in the order and cannot be chosen — leaving it out would make the
+   * operator's own diary look wrong, and offering it would offer a post the route refuses. */
+  t('⚠️ a private event still takes its place in the dropdown, greyed and unchoosable',
+    /<option key=\{ev\.id\} value=\{ev\.id\} disabled=\{ev\.isPrivate\}>/.test(SOCIAL)
     && /PRIVATE_EVENT_ROW/.test(SOCIAL)
     && /Private event · no post/.test(COPY)
     /* 🔴 AND IT IS DRAWN FROM THE **POSTABLE** LIST, so a private event can never be the chosen one —
@@ -493,8 +498,10 @@ head('3c · one empty state, identical in both halves')
    * the row IS the control. ⛔ `disabled` IS THE RIGHT SHAPE FOR THIS ONE: the row still has to appear,
    * in its date position, or an operator with six bookings who sees five goes looking for the sixth. */
   t('⛔ …while a private row cannot be chosen at all',
-    /data-pick-event=\{ev\.id\} disabled=\{ev\.isPrivate\}/.test(SOCIAL)
-    && /cursor-default' : 'hover:bg-slate-50'/.test(SOCIAL))
+    /<option key=\{ev\.id\} value=\{ev\.id\} disabled=\{ev\.isPrivate\}>/.test(SOCIAL)
+    /* ⚠️ AND THE CHOSEN ONE IS STILL DRAWN FROM THE **POSTABLE** LIST, so even a tampered `value`
+     * cannot make a private booking the chosen event. */
+    && /const postable = events\.filter\(e => !e\.isPrivate\)/.test(SOCIAL))
 }
 
 // 4 · THE GATE
@@ -586,15 +593,15 @@ head('4b · headings, buttons and tiles match the agreed design')
        * sub-headings; they are now "YOUR NEXT EVENT" above the right half's headline and the Location
        * settings table's column header row. Both are a LABEL ABOVE A GROUP, which is exactly the
        * treatment this note calls right for one — and there are still exactly two. */
-      /* ══ ⚠️ FIVE PERMITTED ROWS NOW, AND EVERY ONE IS A LABEL ABOVE A GROUP ════════════════════════
-       * It was two. §5 adds "OR PICK ANOTHER EVENT" above the event picker and "CAPTION" above the
-       * caption box, and the chosen-event heading is `NEXT_EVENT_HEADING_V4` ("YOUR NEXT EVENT").
+      /* ══ ⚠️ TWO PERMITTED ROWS NOW — 10 October 2026 ═══════════════════════════════════════════
+       * It was four. The single event half lost BOTH of its uppercase labels in the same edit: Dominic
+       * asked for the "YOUR NEXT EVENT" heading above the picture to go, and the picker it sat over —
+       * "OR PICK ANOTHER EVENT" and its list — became the same `<select>` the weekly half has, under a
+       * plain `Which event` label in sentence case, so the two cards' controls line up.
        * ⛔ THE RULE IS UNCHANGED AND IS WHAT THIS COUNTS: uppercase is for a label above a group and
        * nothing else — never for a card heading, which is `BOX_HEADING`'s job. ⚠️ THE COUNT IS PINNED
-       * so a sixth has to be argued for rather than appearing. */
-      && upper.length === 4
-      && /\{NEXT_EVENT_HEADING_V4\}/.test(upper.join('\n'))
-      && /\{PICK_ANOTHER_HEADING\}/.test(upper.join('\n'))
+       * so a third has to be argued for rather than appearing. */
+      && upper.length === 2
       && /\{CAPTION_HEADING\}/.test(upper.join('\n'))
       && upper.every(l => /text-\[10px\] font-bold uppercase tracking-wide text-slate-400/.test(l))
       && /\{COL_LOCATION\}/.test(code)
@@ -826,12 +833,16 @@ head('4b · headings, buttons and tiles match the agreed design')
     return !/DESIGN_BAR/.test(code)
       && !/data-design-bar/.test(code)
       && /data-image-source/.test(code)
-      && /\{imageSourceLine\(/.test(code)
+      /* ⚠️ NOT `{imageSourceLine(` — the line moved under the tile on 10 October and is now inside a
+       * `chosen ? … : ''`, so the call no longer follows the brace directly. The claim is that this
+       * screen names the design in WORDS through that function, not where the brace sits. */
+      && /imageSourceLine\(/.test(code)
       /* ⚠️ AND THE SOURCE IS THE **SERVER'S** ANSWER, resolved by the same rule the renderer applies —
        * the client's `photoSpace` is only a fallback for a payload from before the field existed. */
       /* ⚠️ `chosen.imageSource` SINCE §5 — the card is about the CHOSEN event, which is the next public
-       * one until the operator picks another from the list below it. */
-      && /chosen\.imageSource$/m.test(code)
+       * one until the operator picks another. ⛔ IT MOVED UNDER THE TILE on 10 October and is now inside
+       * a `chosen ? … : ''`, so the property sits mid-expression rather than at a line end. */
+      && /chosen\.imageSource/.test(code)
       && /imageSource: 'place-photo' \| 'place-poster' \| 'standard' \| 'none' =$/m.test(codeOf(ROUTE))
   })())
   /* 🔴 AND THE FOUR WORDINGS ARE **DRIVEN** — in `scripts/place-pictures.cjs` §1, which has the
@@ -853,9 +864,16 @@ head('4b · headings, buttons and tiles match the agreed design')
   /* ⛔ AND THE TIME FORMAT IS THE PRODUCT'S ONE FORMATTER. This file had its own — `17:00–20:00` with
    * no spaces — while everything else writes `17:00 – 20:00` through `formatTimeRange`, whose own note
    * says "use this everywhere a start–end pair is shown so no surface re-introduces seconds". */
-  t('⛔ times come from the shared formatter, not a second copy',
-    /import \{ formatTimeRange \} from '@\/lib\/time-utils'/.test(SOCIAL)
-    && !/function timeLabel/.test(codeOf(SOCIAL)))
+  /* ══ ⚠️ THE IMPORT WENT WITH THE BLOCK THAT USED IT — 10 October 2026 ═══════════════════════════
+   * ⛔ `formatTimeRange` FORMATTED THE DATE-AND-TIMES LINE BESIDE THE SINGLE EVENT TILE, and that whole
+   * block is gone: the tile is the POST now, and the post already prints the venue, the date and the
+   * times, so the line beside it was the same facts a second time in smaller type.
+   * 🔴 THE CLAIM THAT MATTERS SURVIVES AND IS WHAT IS ASSERTED: this file has no second time formatter
+   * of its own. ⚠️ AN IMPORT THAT IS NOT USED IS NOT A CLAIM — it is an unused import, and this
+   * repository's lint removes those. */
+  t('⛔ no second time formatter lives in this file',
+    !/function timeLabel/.test(codeOf(SOCIAL))
+    && !/toLocaleTimeString/.test(codeOf(SOCIAL)))
 
   /* ══ 🔴 THE BREAKPOINT IS 900px, AND IT IS THE SAME ONE ON BOTH GRIDS ════════════════════════════
    * ⛔ IT WAS `lg:` — 1024px. A 16in MacBook Pro in Safari with a normal window is 1000–1100px wide,
@@ -1046,13 +1064,21 @@ head('4d · centred tiles, "Used for", and one-line place rows')
    * thumbnail above "Which week", so an operator recognises what they are about to make — the same
    * tile, centred the same way. ⛔ THE RIGHT HALF'S TILE IS **NOT** CENTRED and must not be: it sits
    * beside the event's date and venue in a row, so centring it would break that row's alignment. */
+  /* ══ ⚠️ FOUR CENTRED TILES NOW, AND BOTH HALVES OF Create a post ARE AMONG THEM ══════════════════
+   * ⛔ IT WAS THREE, AND THE SINGLE EVENT HALF'S WAS THE ODD ONE OUT — it sat in a ROW beside the
+   * event's venue, date and times. Dominic asked for that block to go and for the two halves to match:
+   * *"remove the text 'your next event' … as well as the event details to the right of it. You can put
+   * 'Using your standard single event design' just below the image so both images are centred."*
+   * 🔴 SO THE CLAIM INVERTS: the right half's tile must now be centred like every other, and the row
+   * layout must be gone. ⚠️ BOTH TILES DRAW THE REAL POST (`PostTile`), so the count spans the two
+   * components — the claim is about the centring wrapper, not about what sits in it. */
   t('🔴 the picture and its badge are centred together, in every box that has one',
-    (codeOf(SOCIAL).match(/<div className="flex flex-col items-center">\s*\n\s*<DesignTile/g) || []).length === 3
-    /* ⚠️ AND THE RIGHT HALF'S IS IN A ROW, not a centred column — asserted so "three" cannot be made
-     * true by centring the one that should not be. */
-    /* ⚠️ `chosen`, NOT `next` — §5's card is about the CHOSEN event, which is the next public one until
-     * the operator picks another from the list below it. */
-    && /<div className="mt-2 flex items-start gap-3">\s*\n\s*\{\/\*[\s\S]{0,300}?\*\/\}\s*\n\s*<DesignTile url=\{placeImageUrl\(chosen\.placeId\) \?\? standardUrl\}/.test(SOCIAL))
+    (codeOf(SOCIAL).match(/<div className="flex flex-col items-center">\s*\n\s*(?:\{\/\*[\s\S]{0,400}?\*\/\}\s*\n\s*)?<(?:DesignTile|PostTile)/g) || []).length === 4
+    /* ⛔ AND THE OLD ROW IS GONE, asserted so "four centred" cannot be reached while the right half
+     * still draws its tile beside a block of text. */
+    && !/<div className="mt-2 flex items-start gap-3">/.test(SOCIAL)
+    /* ⚠️ THE GREY LINE NAMING THE IMAGE SURVIVED THE BLOCK IT WAS IN, and sits under the tile now. */
+    && /<p className="mt-2 text-center text-\[11px\] text-slate-400" data-image-source>/.test(SOCIAL))
   t('⚠️ …at a fixed 220px height, so two differently-shaped designs still line up',
     /const H = 220/.test(SOCIAL))
   /* ══ ⛔ THE TWO "Used for:" PANELS ARE GONE — 9 OCTOBER 2026, AND THE CLAIM IS INVERTED ════════════

@@ -403,9 +403,17 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     return built.days.flatMap(d => d.entries).every(e => e.eventId !== 'p1')
   })())
   const MAKE = codeOf(read('components/manage/WeeklyPost.tsx'))
-  t('🔴 the make screen has the toggle, off by default, next to "Show cancelled events"',
+  /* ══ 🔴 THE DEFAULT INVERTED ON 10 OCTOBER, AND THE REASON IS WHAT THE OLD ONE COST ══════════════
+   * ⛔ **DOMINIC: "private events show as 'Not trading today', they should show on the weekly as
+   * Private Event."** With the toggle off, `buildWeekData` leaves the booking out, that date gets no
+   * entries, `isDayOff` is true — and the row prints the design's days-off text. **So a day the truck
+   * was BOOKED read as a day it was not trading**, which is wrong information on a public post.
+   * ⚠️ NOTHING PRIVATE IS PUBLISHED BY THE NEW DEFAULT: `locationName` returns the one public label and
+   * returns it BEFORE the place is consulted, so the row carries a date and times and no name, no town
+   * and no picture. ⚠️ THE TOGGLE STAYS — a truck that would rather show nothing still can. */
+  t('🔴 the make screen has the toggle, ON by default, next to "Show cancelled events"',
     /Show private events/.test(MAKE)
-    && /useState\(false\)/.test(MAKE.slice(MAKE.indexOf('const [showPrivate'), MAKE.indexOf('const [showPrivate') + 200))
+    && /useState\(true\)/.test(MAKE.slice(MAKE.indexOf('const [showPrivate'), MAKE.indexOf('const [showPrivate') + 200))
     && MAKE.indexOf('Show cancelled events') < MAKE.indexOf('Show private events')
     // ⚠️ and it is sent with BOTH requests, so the picture and the caption agree
     && /renderPng\(token, \{ week, excluded, note, layout, showPrivate \}\)/.test(MAKE)
@@ -888,13 +896,30 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * on an orange outline said two things in one colour.
    * ⛔ THE SNAP ITSELF IS UNCHANGED and is asserted on the TOLERANCE, not on the colour: a guide that
    * drew without snapping, or snapped without drawing, would be the two halves disagreeing. */
-  t('🔴 §4 · the centre guides are pink, drawn only while snapped, and the snap is the same rule',
+  /* ══ 🔴 THE GUIDES LINE UP WITH THE OTHER BOXES NOW, NOT ONLY WITH THE POSTER ════════════════════
+   * ⛔ **DOMINIC: "there should be a line that lets you know when you're lined up. I'm getting a
+   * horizontal one but it should also be vertical … I'm trying to line up the venue box with the area
+   * box beneath it."** The only snap targets were the poster's own centre lines (`cx`, `cy`), so a
+   * guide appeared when a box happened to be centred on the artwork and NEVER when it lined up with
+   * another box — and two boxes stacked one above the other line up on a VERTICAL edge, the case that
+   * could not fire. 🔴 THE CANDIDATES ARE NOW THE POSTER'S EDGES AND CENTRE **PLUS** EVERY OTHER
+   * BOX'S two edges and middle, and the nearest one wins.
+   * ⚠️ THE PROPERTIES THIS CHECK WAS REALLY ABOUT ARE UNCHANGED AND STILL ASSERTED: the guides are
+   * pink, one decision feeds both the snap and the line, and they are cleared on release. */
+  t('🔴 §4 · the guides are pink, drawn only while snapped, and the snap is the same rule',
     /bg-pink-500" data-guide="v"/.test(ED)
     && /bg-pink-500" data-guide="h"/.test(ED)
     && !/bg-orange-400 pointer-events-none/.test(ED)
-    /* ⛔ ONE DECISION FEEDS BOTH THE SNAP AND THE GUIDE, in `DraggableBox`. */
-    && /const snappedX = Math\.abs\(x - wantX\) <= tol/.test(BITS_BOX)
-    && /onGuides\?\.\(\{ v: snappedX \? cx : null, h: snappedY \? cy : null \}\)/.test(BITS_BOX)
+    /* ⛔ ONE DECISION FEEDS BOTH THE SNAP AND THE GUIDE, in `DraggableBox` — the same `nearest()` call
+     * both moves the box and names the line that is drawn. */
+    && /const snapX = nearest\(x, bw, vLines\)/.test(BITS_BOX)
+    && /const snapY = nearest\(y, bh, hLines\)/.test(BITS_BOX)
+    && /onGuides\?\.\(\{ v: snapX \? snapX\.line : null, h: snapY \? snapY\.line : null, gaps \}\)/.test(BITS_BOX)
+    /* 🔴 AND THE PEERS REALLY ARE THE OTHER BOXES — the editor hands each one every drawn box but
+     * itself, or a box would line up with itself and snap at every position. */
+    && /peers=\{peerRects\.filter\(p => p\.key !== it\.key\)\}/.test(ED)
+    /* ⚠️ "the distance is the same" — the equal-gap marks, drawn only while the two gaps match. */
+    && /data-guide-gap/.test(ED)
     /* ⚠️ AND THEY ARE CLEARED ON RELEASE — `NO_GUIDES` in `end`. */
     && /onGuides\?\.\(NO_GUIDES\)/.test(BITS_BOX))
 
