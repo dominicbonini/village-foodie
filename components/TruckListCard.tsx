@@ -6,10 +6,13 @@ import { GREEN_SOLID, ORANGE_SOLID } from '@/lib/ui-tokens';
 import Link from 'next/link';
 import { getVenueSlug } from '@/lib/utils';
 import { isHatchGrab } from '@/lib/domain';
-import { formatTimeRange } from '@/lib/time-utils';
+import { formatTimeRange, formatYmd, DISCOVERY_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils';
 
 interface TruckListCardProps {
   event: VillageEvent;
+  /** The truck's time settings — passed where the card shows ONE truck's event (the order page, Manage's
+   *  preview). Absent on the public discovery pages, which keep the marketing country's (GB). */
+  time?: TimeSettings | null;
   slug: string;
   /** Suppress the Order/Pre-order CTA — used on the order page's selected-event header, where the
    *  customer is already ordering for this event (the button would deep-link back to itself). */
@@ -90,13 +93,14 @@ const renderTextWithLinks = (text: string) => {
     });
 };
 
-function formatStandardDate(dateStr: string) {
+function formatStandardDate(dateStr: string, ts: TimeSettings) {
     if (!dateStr) return '';
     const parts = dateStr.split('/');
     if (parts.length === 3) {
-        const d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-        if (!isNaN(d.getTime())) {
-            return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+        const [dd, mm, yyyy] = parts.map(p => parseInt(p));
+        if (!isNaN(dd) && !isNaN(mm) && !isNaN(yyyy)) {
+            // The truck's words and order (Phase 2B): GB "Fri 9 Oct", US "Fri, Oct 9".
+            return formatYmd(`${yyyy}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`, ts, { weekday: 'short', day: 'numeric', month: 'short' });
         }
     }
     return dateStr;
@@ -109,7 +113,8 @@ function isEventLive(status?: string): boolean {
   return status === 'open';
 }
 
-export default function TruckListCard({ event, slug, hideOrderButton, forceOrderButton, compact, cornerAction, assumeHatchGrab = false, openOrderInNewTab = false, plainVenueName = false, orderOrigin }: TruckListCardProps) {
+export default function TruckListCard({ event, slug, hideOrderButton, forceOrderButton, compact, cornerAction, assumeHatchGrab = false, openOrderInNewTab = false, plainVenueName = false, orderOrigin, time }: TruckListCardProps) {
+    const ts = time ?? DISCOVERY_TIME_SETTINGS
   const liveNow = isEventLive(event.status);
   // Secondary "area" line under the venue name: village (only if not already in the name) + the
   // event's postcode, de-emphasised. Null-safe — filter drops missing parts, so a null postcode
@@ -146,12 +151,12 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
             <div className={compact ? 'flex flex-col items-start gap-0.5 shrink-0 w-[112px]' : 'flex flex-row sm:flex-col items-center sm:items-start gap-2 sm:gap-0.5 shrink-0 sm:w-[140px]'}>
                 {/* Date in normal case (was ALL-CAPS) — softer; keeps the orange accent. */}
                 <span className="text-[13px] sm:text-sm font-bold text-orange-600 leading-none">
-                    {formatStandardDate(event.date)}
+                    {formatStandardDate(event.date, ts)}
                 </span>
                 {/* Time + INLINE "● Live" on ONE line (status-driven). Inline (not its own row) so a
                     live card is the SAME HEIGHT as a non-live card. Live condition + button flip unchanged. */}
                 <span className="flex items-center gap-2 text-[12px] font-bold text-slate-500 leading-none mt-0.5">
-                    <span>{formatTimeRange(event.startTime, event.endTime)}</span>
+                    <span>{formatTimeRange(event.startTime, event.endTime, ts)}</span>
                     {liveNow && (
                         <span className="inline-flex items-center gap-1 text-green-600">
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Live

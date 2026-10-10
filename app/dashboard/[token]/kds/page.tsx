@@ -4,6 +4,9 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Preferences } from '@capacitor/preferences'
 import { useParams, useSearchParams } from 'next/navigation'
 import { OrderCard } from '@/components/dashboard/OrderCard'
+// 🔴 The order's own currency (orders.currency + truck.money from /api/dashboard). Missing ⇒ the figure with
+// no symbol and a warning: the kitchen screen never breaks and never shows a £ nobody vouched for.
+import { formatMinorOrBare, orderMoney } from '@/lib/money-format'
 import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
 import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer } from '@/lib/buzzer'
 import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
@@ -32,7 +35,7 @@ import type { CatConfig } from '@/lib/prep-utils'
 import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { readSoundConfig, seedSoundConfig, effectiveSoundConfig, writeSoundConfig } from '@/lib/sound-prefs'
-import { formatTime, formatTimeRange, localTodayIso, pickDefaultEventByTime } from '@/lib/time-utils'
+import { formatTime, formatTimeRange, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, clockOfInstantInTz, formatInstantClock, timeSettingsOr, LEGACY_UK_TIME_SETTINGS } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_LIGHT, EVENT_STATUS_DOT } from '@/lib/event-display'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
@@ -128,6 +131,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   useEffect(() => { if (isNativeApp()) setLastScreen('kds') }, [])
 
   const [truck, setTruck] = useState<TruckData | null>(null)
+  // 🔴 THE TRUCK'S TIME (Phase 2B): its zone decides "now" and "today" on the kitchen screen (was the
+  // device's clock), and its style writes every time and date. Before the truck loads, GB's stand in.
+  const kdsTime = useMemo(() => (truck ? timeSettingsOr(truck.time, 'kds') : LEGACY_UK_TIME_SETTINGS), [truck])
+  const kdsTz = kdsTime.timeZone
   // Van-level "show cooking step" preference (Settings). Gates the cook view's "Start
   // cooking" button. Defaults off (matches the Settings toggle default) until loaded.
   const [showCookingStep, setShowCookingStep] = useState(false)
@@ -755,8 +762,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         // fire `action: 'open'` on TOMORROW's event the moment today's clock passed its start time. So the
         // date filter stays here, and it is now LOCAL — §7: never use toISOString() (UTC) to decide
         // whether an event date is "today". In BST the UTC string is still yesterday until 01:00.
-        const todayStr = localTodayIso()
-        const currentTime = new Date().toTimeString().slice(0, 5)
+        // The TRUCK's date and clock (Phase 2B) — from this response, so the first load is right too.
+        const loadTz = timeSettingsOr(data.truck?.time, 'kds').timeZone
+        const todayStr = getLocalDateInTz(loadTz)
+        const currentTime = clockOfInstantInTz(new Date(), loadTz)
         const stale = fetched.filter((e: TruckEvent) =>
           e.event_date === todayStr && e.status === 'confirmed' && e.auto_open === true && e.start_time <= currentTime
         )
@@ -1055,8 +1064,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     if (!events.length) return          // nothing to seed FROM yet — wait for the first successful fetch
     seededRef.current = true
     if (selectedEventId && events.some(e => e.id === selectedEventId)) return   // the URL seed resolved
-    setSelectedEventId(pickDefaultEventByTime(events)?.id ?? null)
-  }, [events, selectedEventId])
+    setSelectedEventId(pickDefaultEventByTime(events, kdsTz)?.id ?? null)
+  }, [events, selectedEventId, kdsTz])
 
   // ── 🔴 DEMO ONLY — RE-POINT WHEN THE HELD EVENT HAS BEEN DELETED UNDER US ────────────────────────
   // 🔴 `if (!isDemo) return` IS THE FIRST LINE AND IT IS THE WHOLE SAFETY ARGUMENT. For Pizzeria Gusto
@@ -1080,8 +1089,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     if (!isDemo) return
     if (!events.length) return
     if (selectedEventId && events.some(e => e.id === selectedEventId)) return
-    setSelectedEventId(pickDefaultEventByTime(events)?.id ?? null)
-  }, [isDemo, events, selectedEventId])
+    setSelectedEventId(pickDefaultEventByTime(events, kdsTz)?.id ?? null)
+  }, [isDemo, events, selectedEventId, kdsTz])
 
   // ── HEARTBEAT — THE SHARED EMITTER (lib/native/useHeartbeat) ────────────────────────────────────
   // 🔴 THREE DEFECTS CLOSED BY ONE CALL. This was an inline near-duplicate of the dashboard's effect
@@ -1589,10 +1598,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   // UNCHANGED — only the confirm SURFACE moved to the modal below.
   const finishEvent = (eventId: string) => {
     const ev = events.find(e => e.id === eventId)
-    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
+    const nowMins = getNowMinsInTz(kdsTz)
     const endMins = ev?.end_time ? (() => { const [h, m] = ev.end_time.split(':').map(Number); return (h || 0) * 60 + (m || 0) })() : null
     const finishingEarly = endMins != null && nowMins < endMins
-    setFinishConfirm({ eventId, early: finishingEarly, endTime: (ev?.end_time || '').slice(0, 5) })
+    setFinishConfirm({ eventId, early: finishingEarly, endTime: ev?.end_time ? formatTime(ev.end_time, kdsTime) : '' })
   }
   const doFinishEvent = async (eventId: string) => {
     setFinishConfirm(null)
@@ -1642,7 +1651,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       // NOT the automatic re-resolution the latch exists to prevent, and it cannot fire on a poll.
       const remaining = events.filter(e => e.id !== eventId)
       setEvents(remaining)
-      setSelectedEventId(pickDefaultEventByTime(remaining)?.id ?? null); setShowEventMenu(false); showKdsToast('Event cancelled')
+      setSelectedEventId(pickDefaultEventByTime(remaining, kdsTz)?.id ?? null); setShowEventMenu(false); showKdsToast('Event cancelled')
       fetchAllRef.current() // re-sync so the cancelled event drops out immediately
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
     finally { setEventCancelBusy(false); setEventCancelTarget(null) }
@@ -1921,7 +1930,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       {degradedSince && (
         <div className="shrink-0 bg-amber-500 text-white px-4 py-2 text-sm font-black text-center">
           ⚠️ Can&apos;t reach the server. Showing tickets from{' '}
-          {lastRefresh ? lastRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'earlier'}
+          {lastRefresh ? formatInstantClock(lastRefresh, kdsTime) : 'earlier'}
           . NEW ORDERS MAY BE MISSING.
         </div>
       )}
@@ -2578,7 +2587,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           orange identity strip wedged between two of those would break an ordering the operator is meant
           to be able to rely on. This is a persistent statement about the whole screen, so it sits
           directly under the header, where it was directly over it. */}
-      {isDemo && <DemoModeBanner action={<DemoGetStarted token={token} />} />}
+      {isDemo && <DemoModeBanner action={<DemoGetStarted token={token} phone={truck?.phone ?? null} />} />}
 
       {/* ── THE BANNER STACK — ONE CONTAINER, DIRECTLY UNDER THE HEADER ───────────────────────────
           🔴 THE WAKE-LOCK BAR USED TO RENDER HERE AND THE REST RENDERED FURTHER DOWN, so on a phone the
@@ -2687,7 +2696,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       {activeEvent?.status === 'confirmed' && !activeEvent.auto_open && (
         <div className="bg-white border-2 border-teal-500 m-3 rounded-2xl p-5 text-center flex-shrink-0">
           <div className="text-base font-semibold text-slate-900 mb-1">📍 {activeEvent.venue_name}</div>
-          <div className="text-sm text-slate-500 mb-3">Today · {formatTimeRange(activeEvent.start_time, activeEvent.end_time)}</div>
+          <div className="text-sm text-slate-500 mb-3">Today · {formatTimeRange(activeEvent.start_time, activeEvent.end_time, kdsTime)}</div>
           <button onClick={() => openEvent(activeEvent.id)}
             className="w-full bg-teal-600 text-white font-bold py-3 rounded-xl text-base hover:bg-teal-700 active:scale-[0.98] transition-all">
             Start Event
@@ -2723,10 +2732,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           <span className={`w-2 h-2 rounded-full flex-shrink-0 ${EVENT_STATUS_DOT[eventStatus.tone]}`} />
           <div className="flex-1 min-w-0">
             <span className="block text-sm font-medium text-slate-900 truncate">
-              📍 {fmtVenue(activeEvent.venue_name, activeEvent.town)} · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
+              📍 {fmtVenue(activeEvent.venue_name, activeEvent.town)} · {formatTime(activeEvent.start_time, kdsTime)}–{formatTime(activeEvent.end_time, kdsTime)}
             </span>
             {activeEvent.event_date && !isDemo && (
-              <span className="hidden sm:block text-xs font-medium text-slate-500 truncate mt-0.5">📅 {eventDateLabel(activeEvent.event_date)}</span>
+              <span className="hidden sm:block text-xs font-medium text-slate-500 truncate mt-0.5">📅 {eventDateLabel(activeEvent.event_date, kdsTime)}</span>
             )}
           </div>
           {/* ⚠️ THE SECOND COPY OF THIS CHAIN IS GONE. Words and branch order come from
@@ -2780,7 +2789,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           itself is deleted from both files — it had no callers left. */}
       {recentlyClosed && activeEvent && (
         <div className="mx-3 mt-2 mb-1 bg-slate-100 border border-slate-200 rounded-xl p-3 flex items-center justify-between flex-shrink-0">
-          <span className="text-sm text-slate-600">Event finished · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time)}</span>
+          <span className="text-sm text-slate-600">Event finished · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time, kdsTime)}</span>
         </div>
       )}
 
@@ -2907,7 +2916,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                       ? <span className="text-green-600">✓ paid</span>
                       : held
                       ? <span className="text-indigo-600">card held</span>
-                      : <span className="text-amber-600">£{(bal.balanceMinor / 100).toFixed(2)} due</span>}
+                      : <span className="text-amber-600">{formatMinorOrBare(bal.balanceMinor, orderMoney(o, truck?.money), 'kds done strip')} due</span>}
                   </div>
                 )
               })}
@@ -2970,6 +2979,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           offline, not the current event, and not loaded this session — so a kitchen tablet that has
           dropped its connection cannot switch to an event whose orders it does not hold. */}
       <EventPickerPanel
+        time={truck?.time}
         open={showEventPicker}
         isDemo={isDemo}
         events={events}
@@ -2999,6 +3009,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           exact asymmetry the old header button had via `(!isDemo || isPaused)` on a single toggle. */}
       {showEventMenu && activeEvent && (!isDemo || isPaused) && (
         <EventActionsModal
+          time={truck?.time}
           // ⚠️ THE FOUR EXTRA FIELDS ARE READ STRAIGHT OFF THE SAME `activeEvent` THE BAR RENDERS, so the
           //    menu and the bar above it can never describe two different events. The modal formats them
           //    with `fmtVenue`/`eventDateLabel`/`formatTimeRange` — no formatter was written for it.
@@ -3044,6 +3055,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           and the dashboard use. It replaced a window.confirm whose safe button read "Cancel". */}
       {eventCancelTarget && (
         <EventCancelModal
+          time={truck?.time}
           event={eventCancelTarget}
           affectedOrderCount={eventCancelCount}
           busy={eventCancelBusy}

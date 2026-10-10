@@ -34,6 +34,7 @@ import { resolveOnlineCardPayments } from '@/lib/payments/online-payments-switch
 import { describeAccountModeMismatch } from '@/lib/stripe/connect'
 import { attachPaymentIntent } from '@/lib/payments/order-drafts'
 import { stripeClient } from '@/lib/stripe/client'
+import { stripeCurrency } from '@/lib/payments/currency'
 
 export type AuthorizeResult =
   | {
@@ -63,7 +64,8 @@ export async function authorizeDraft(
     orderKey: string
     truckId: string
     amountMinor: number
-    currency?: string
+    /** 🔴 REQUIRED — the DRAFT's currency (order_drafts.currency, set from the truck). No default. */
+    currency: string
   },
 ): Promise<AuthorizeResult> {
   try {
@@ -116,7 +118,8 @@ export async function authorizeDraft(
     const intent = await stripe.paymentIntents.create(
       {
         amount: args.amountMinor,
-        currency: (args.currency ?? 'GBP').toLowerCase(),
+        // The draft's currency, lower-cased because that is how Stripe's API takes it. No 'GBP' fallback.
+        currency: stripeCurrency(args.currency, `authorisation for ${args.orderKey}`),
         // 🔴 THE LINE THE WHOLE DESIGN RESTS ON. A hold, not a charge. See the header.
         capture_method: 'manual',
         // 🔴 THE JOIN KEY. The webhook has only a PaymentIntent; this is how it finds the draft — and

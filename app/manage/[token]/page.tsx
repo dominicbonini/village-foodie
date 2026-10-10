@@ -6,16 +6,22 @@ import { useState, useEffect, useLayoutEffect, useCallback, useMemo, use, useRef
 import { createPortal } from 'react-dom'
 import { attachSubTabScroller } from '@/lib/subtab-scroll'
 import { useRouter } from 'next/navigation'
-import { PLAN_META, canAccess, maxVans } from '@/lib/features'
+import { PLAN_META, canAccess, maxVans, planMonthlyMinor } from '@/lib/features'
 import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_AUTO_REJECT_LABEL, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS, offlineAutoRejectLabel, OFFLINE_PROTECTION_PURPOSE } from '@/lib/copy/offlineProtection'
 import { DEFAULT_STOCK_SCOPE_NOTE } from '@/lib/copy/stock'
 import { minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules'
 import { useToasts, type ShowToast } from '@/lib/useToasts'
 import { ToastStack } from '@/components/ToastStack'
-import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
+import { isValidEmail } from '@/lib/contact-validation'
+import { isPlausiblePhone, phoneErrorMessage, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
 import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
+import { CountrySettingsProvider, useCountrySettings } from '@/components/CountrySettingsProvider'
+import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
+import { moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
+import { perMonthLabel, formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-format'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
+import { WhereYouTrade } from '@/components/manage/WhereYouTrade'
 // ── Moved here from the dashboard's Settings tab (V11.48). Both write TRUCK-WIDE columns, which is
 // this tab's scope and not the dashboard's. Their internals, API actions, gating and copy are unchanged.
 import CustomDomainSetup from '@/components/dashboard/CustomDomainSetup'
@@ -34,7 +40,7 @@ import { PaymentsTab } from '@/components/manage/PaymentsTab'
 //  SettingsTab, and lib/legal.ts for the surface list. If a link is ever added to this page, import the
 //  routes from lib/legal.ts — never type them inline.)
 import type { Plan, Feature } from '@/lib/features'
-import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
+import { planPrices, PLAN_DESCRIPTIONS, transactionRows, FEATURE_SECTIONS, footnotes, vanAddonMonthlyMinor } from '@/lib/plan-features'
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
 import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 // 🔴 THE REPLY CAP'S PER-CUSTOMER LIMIT, READ FROM THE MODULE THAT DECIDES IT rather than typed into the
@@ -78,7 +84,7 @@ import { AppLink } from '@/components/native/AppLink'   // internal-route anchor
 import { useDragDrop } from '@/lib/useDragDrop'
 import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
 import { ImageDropSlot } from '@/components/manage/ImageDropSlot'
-import { formatTime, getLocalDateInTz } from '@/lib/time-utils'
+import { formatTime, formatSlot, getLocalDateInTz, addDaysYmd, instantOfLocal, localDateOfInstant, clockOfInstantInTz, formatYmd, formatInstant, formatInstantClock, formatNumericDate, formatNumericDayMonth, formatShortOrdinalDate, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { matchCardEntries, mergeAllergensUnion, cardEntryKey, type CardEntry, type DishRef, type CardMatchResult } from '@/lib/allergen-card-match'
 import { isExcluded } from '@/lib/schedule-extract'
 import { detectEventConflicts } from '@/lib/event-conflicts'
@@ -159,7 +165,7 @@ import {
 } from '@/lib/manage-links'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null }
+interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -581,6 +587,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [showTrialReminder, setShowTrialReminder] = useState(false)
   const [userRole, setUserRole] = useState<UserRole>('owner')
   const [truck, setTruck] = useState<Truck | null>(null)
+  // 🔴 The truck's clock (Phase 2B). Null until the truck has loaded; then its own, or (a response from
+  // before this build) the UK's with a warning.
+  const mgTime: TimeSettings | null = truck ? timeSettingsOr(truck.time, 'manage') : null
+  const mgTz = mgTime?.timeZone ?? null
+  // The truck's own country settings, from the same authenticated /api/manage response (never read by the
+  // browser directly). Every price below the CountrySettingsProvider reads them. See the provider's header.
+  const [countrySettings, setCountrySettings] = useState<CountrySettings | null>(null)
   const [whatsappConnection, setWhatsappConnection] = useState<WhatsAppConnectionView | null>(null)
   const [whatsappUsage, setWhatsappUsage] = useState<{ used: number; limit: number; resetsOn: string; atLimit: boolean } | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
@@ -738,6 +751,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setTruck(data.truck)
+      setCountrySettings(data.countrySettings ?? null)
       // 🔴 FAIL TOWARD 'not_connected'. An older deployment (or a payload without the field) must offer
       // setup rather than imply a connection. Never default to anything that reads as connected.
       setWhatsappConnection(data.whatsappConnection ?? null)
@@ -809,21 +823,23 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // Schedule. ScheduleTab keeps it live via onPendingCount after approve/reject. Upcoming only
   // (end not passed), source=scraper, status=unconfirmed — mirrors the Schedule "Needs approval" list.
   useEffect(() => {
+    // On the TRUCK's clock (Phase 2B) — so it waits for the truck, which carries the zone.
+    if (!mgTz) return
     let cancelled = false
     fetch(`/api/events/manage?token=${token}`)
       .then(r => (r.ok ? r.json() : null))
       .then(d => {
         if (cancelled || !Array.isArray(d?.events)) return
-        const now = new Date()
+        const now = Date.now()
         const n = d.events.filter((e: any) =>
           e.status === 'unconfirmed' && e.source === 'scraper' &&
-          (e.end_time ? now < new Date(`${e.event_date}T${e.end_time}`) : new Date(`${e.event_date}T23:59`) >= now)
+          (e.end_time ? now < instantOfLocal(e.event_date, e.end_time, mgTz) : instantOfLocal(e.event_date, '23:59', mgTz) >= now)
         ).length
         setPendingApprovalCount(n)
       })
       .catch(() => {})
     return () => { cancelled = true }
-  }, [token])
+  }, [token, mgTz])
 
   // ── 🔴 STRIPE REQUIREMENTS, ON MOUNT — the Payments badge's only source ─────────────────────────
   // Mirrors the pending-approval fetch above: one request on load, state set when it lands, badge and
@@ -1085,13 +1101,22 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // current. Cleared by the next successful load, not by time and not by a tap.
   const staleBar = refreshFailedAt ? (
     <div className="bg-amber-500 text-white px-4 py-2 text-sm font-bold text-center">
-      Couldn&apos;t refresh. Showing what was saved{lastLoadedAt ? ` at ${lastLoadedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}. Changes you make are still saved.
+      Couldn&apos;t refresh. Showing what was saved{lastLoadedAt ? ` at ${formatInstantClock(lastLoadedAt, mgTime)}` : ''}. Changes you make are still saved.
     </div>
   ) : null
 
   if (!truck) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
       <p className="text-red-500 font-bold">Invalid or expired token</p>
+    </div>
+  )
+
+  // 🔴 NO SETTINGS, NO CONSOLE — rather than any price in a guessed currency. /api/manage returns them on
+  // every successful load and fails the load if it cannot, so this is a deploy-skew guard (an older API
+  // without the field), not a state a working deployment reaches.
+  if (!countrySettings) return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <p className="text-red-500 font-bold">Couldn&apos;t load this truck&apos;s country settings. Please refresh.</p>
     </div>
   )
 
@@ -1286,6 +1311,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // ⚠️ `?? false` — an ABSENT column (pre-migration) means "follow the global flag", i.e. today's
   // behaviour. Not `?? true`; that default belongs to the context, for a different question.
   return (
+    <CountrySettingsProvider settings={countrySettings}>
+    <TruckTimeContext.Provider value={truck.time ?? null}>
     <PricingPolicyProvider hidePricing={truck.hide_pricing ?? false}>
     <div className="bg-slate-50 h-dvh flex flex-col overflow-hidden">{/* App-shell (KDS flex pattern): fixed-viewport column, bars are shrink-0, only <main> scrolls — keeps the header+tabs locked in the iPad WKWebView where stacked position:sticky-against-body-scroll was unreliable. Matches the dashboard. */}
       {/* Header */}
@@ -1524,7 +1551,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
               <h2 className="text-xl font-black text-slate-900">You&apos;re on a free trial</h2>
               <p className="text-sm text-slate-500 mt-1">
                 Trial ends <span className="font-semibold text-orange-500">
-                  {truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at) : 'soon'}
+                  {truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at, mgTime!) : 'soon'}
                 </span>
               </p>
             </div>
@@ -1548,7 +1575,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                 {truck.trial_expires_at ? (
                   <>
                     You won&apos;t be charged anything during your trial, which runs until{' '}
-                    <strong>{formatTrialEndDate(truck.trial_expires_at)}</strong>.
+                    <strong>{formatTrialEndDate(truck.trial_expires_at, mgTime!)}</strong>.
                   </>
                 ) : (
                   <>You won&apos;t be charged anything while you&apos;re on trial.</>
@@ -1617,6 +1644,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 
     </div>
     </PricingPolicyProvider>
+    </TruckTimeContext.Provider>
+    </CountrySettingsProvider>
   )
 }
 
@@ -2663,6 +2692,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
    *  completion callback so the wizard can advance itself once they are saved. */
   onVerifySuccess: (events: unknown[], onSaved?: () => void) => void
 }) {
+  // 🔴 THE TRUCK'S MONEY FORMAT (the manage page's country settings) — every price on this tab.
+  const tabSettings = useCountrySettings()
+  const tabFmt = moneyFormatOf(tabSettings)
+  const tabAmount = (major: number) => formatMajor(major, tabFmt)
   // §54: an item's attached option groups, split required vs optional via the source-of-truth
   // minRequiredForGroup (is_required OR min_choices>=1). The manage-local ModifierGroup has no
   // `options`, so we spread {options:[]} for the helper (it only reads is_required/min_choices).
@@ -4028,7 +4061,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         const parts = (ev.event_date || '').split('/')
         const isoDate = parts.length === 3 ? `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}` : ev.event_date
         const { lat, lng } = (ev.town || ev.postcode)
-          ? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '')
+          ? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '', tabSettings.shortName || tabSettings.name)
           : { lat: null, lng: null }
         await api('upsert_event', {
           venue_name: ev.venue_name || '', town: ev.town || '', postcode: ev.postcode || '', address: ev.address || '',
@@ -4829,7 +4862,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     <div className="flex-1 min-w-0">
                       <div className="flex items-baseline gap-2">
                         <p className="font-bold text-slate-900 text-sm truncate">{item.name}</p>
-                        <span className="font-black text-orange-600 text-sm shrink-0">£{Number(item.price).toFixed(2)}</span>
+                        <span className="font-black text-orange-600 text-sm shrink-0">{tabAmount(Number(item.price))}</span>
                       </div>
                       {/* REQUIRED choices line (§54 rework) — its OWN row after the price (full-width on
                           mobile), OUTSIDE the tag row below. Lists each REQUIRED group's option names; a
@@ -4841,7 +4874,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                         if (req.length === 0) return null
                         const parts = req
                           .map(g => optionsForItemGroup(item.id, g)
-                            .map(o => o.name + (o.price_adjustment > 0 ? ` (+£${o.price_adjustment.toFixed(2)})` : ''))
+                            .map(o => o.name + (o.price_adjustment > 0 ? ` (+${tabAmount(o.price_adjustment)})` : ''))
                             .join(', '))
                           .filter(s => s.length > 0)
                         return parts.length ? <p className="text-[11px] text-teal-700 mt-0.5">{parts.join(' · ')}</p> : null
@@ -4936,7 +4969,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2">
                     <p className="font-bold text-slate-900 text-sm truncate">{item.name}</p>
-                    <span className="font-black text-orange-600 text-sm shrink-0">£{Number(item.price).toFixed(2)}</span>
+                    <span className="font-black text-orange-600 text-sm shrink-0">{tabAmount(Number(item.price))}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
@@ -5471,7 +5504,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                       title={locked ? 'A required group needs at least one option for each dish' : (on ? 'Offered — tap to hide on this dish' : 'Hidden — tap to offer on this dish')}
                                       onClick={() => toggleItemOption(itemId, g.id, o.id, on)}
                                       className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all ${on ? 'bg-green-50 text-green-700 border-green-300' : 'bg-white text-slate-600 border-slate-200 hover:border-green-400'} ${locked ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}`}>
-                                      {on ? '✓ ' : ''}{o.name}{o.price_adjustment > 0 ? ` +£${o.price_adjustment.toFixed(2)}` : ''}
+                                      {on ? '✓ ' : ''}{o.name}{o.price_adjustment > 0 ? ` +${tabAmount(o.price_adjustment)}` : ''}
                                     </button>
                                   )
                                 })}
@@ -5819,7 +5852,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                         {unresolvedPrices.length} item{unresolvedPrices.length === 1 ? '' : 's'} had no price we could read
                       </p>
                       <p className="text-xs text-amber-800 mt-0.5">
-                        Set a price for each, or mark it free — otherwise it would go live at £0. You can&apos;t
+                        Set a price for each, or mark it free — otherwise it would go live at {formatMajor(0, tabFmt, { trimWhole: true })}. You can&apos;t
                         continue until these are sorted.
                       </p>
                     </div>
@@ -5998,7 +6031,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                     </button>
                                   ) : (
                                     <div className="flex items-center gap-1">
-                                      <span className="text-sm text-slate-400">£</span>
+                                      <span className="text-sm text-slate-400">{currencySymbol(tabFmt)}</span>
                                       {/* value stays EMPTY for an unresolved item — never "0.00", which invites
                                           skimming past it as if it were correct. */}
                                       <input type="number" step="0.50" value={Number(item.price) > 0 ? item.price : ''} placeholder="0.00"
@@ -6073,10 +6106,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                               {/* LEFT — Grouped (customisable) */}
                               <button type="button" onClick={() => setGroupingChoice(c => ({ ...c, [row.key]: 'grouped' }))} className={boxCls(choice === 'grouped')}>
                                 <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">Grouped · one item, customer chooses</p>
-                                <p className="text-sm font-bold text-slate-900">{row.baseName} <span className="text-slate-500 font-medium">£{row.basePrice.toFixed(2)}</span></p>
+                                <p className="text-sm font-bold text-slate-900">{row.baseName} <span className="text-slate-500 font-medium">{tabAmount(row.basePrice)}</span></p>
                                 <div className="flex flex-wrap gap-1 mt-1.5">
                                   {row.options.map(o => (
-                                    <span key={o.name} className="text-[11px] px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-600">{o.name}{o.surcharge > 0 ? ` +£${o.surcharge.toFixed(2)}` : ''}</span>
+                                    <span key={o.name} className="text-[11px] px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-600">{o.name}{o.surcharge > 0 ? ` +${tabAmount(o.surcharge)}` : ''}</span>
                                   ))}
                                 </div>
                               </button>
@@ -6085,7 +6118,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                 <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">Separate menu items</p>
                                 <div className="flex flex-col gap-0.5 mt-0.5">
                                   {row.separateItems.map(s => (
-                                    <p key={s.name} className="text-xs text-slate-700 truncate">{s.name} <span className="text-slate-400">£{s.price.toFixed(2)}</span></p>
+                                    <p key={s.name} className="text-xs text-slate-700 truncate">{s.name} <span className="text-slate-400">{tabAmount(s.price)}</span></p>
                                   ))}
                                 </div>
                               </button>
@@ -7046,6 +7079,9 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
   categories: Category[]; bundles: Bundle[]; setBundles: React.Dispatch<React.SetStateAction<Bundle[]>>
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: ShowToast
 }) {
+  // 🔴 THE TRUCK'S MONEY FORMAT (the manage page's country settings) — every price on this tab.
+  const tabFmt = moneyFormatOf(useCountrySettings())
+  const tabAmount = (major: number) => formatMajor(major, tabFmt)
   const [editing, setEditing] = useState<Partial<Bundle> | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -7082,7 +7118,7 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
       </div>
 
       {bundles.length === 0 && (
-        <EmptyState icon="🎁" title="No deals yet" body='Create a bundle deal like "Lunch Deal — any pizza + drink + dip for £12"' />
+        <EmptyState icon="🎁" title="No deals yet" body={`Create a bundle deal like "Lunch Deal — any pizza + drink + dip for ${formatMajor(12, tabFmt, { trimWhole: true })}"`} />
       )}
 
       {bundles.map(bundle => {
@@ -7104,8 +7140,8 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
                 </div>
                 {bundle.description && <p className="text-slate-400 text-xs mt-0.5">{bundle.description}</p>}
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <span className="font-black text-orange-600">£{bundle.bundle_price.toFixed(2)}</span>
-                  {bundle.original_price && <span className="text-slate-400 text-xs line-through">£{bundle.original_price.toFixed(2)}</span>}
+                  <span className="font-black text-orange-600">{tabAmount(bundle.bundle_price)}</span>
+                  {bundle.original_price && <span className="text-slate-400 text-xs line-through">{tabAmount(bundle.original_price)}</span>}
                   {(bundle.start_time || bundle.end_time) && (
                     <span className="text-xs text-slate-400">{[bundle.start_time, bundle.end_time].filter(Boolean).join(' – ')}</span>
                   )}
@@ -7215,13 +7251,16 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
 async function geocodeLocation(
   venueName: string,
   town: string,
-  postcode: string
+  postcode: string,
+  /** 🔴 Phase 2D-2: the truck's country, as its short name ("UK", "US") — the route used to append 'UK' to
+   *  every lookup because this was never sent. A UK truck sends "UK", so its lookup is exactly as before. */
+  country: string | null,
 ): Promise<{ lat: number | null; lng: number | null }> {
   try {
     const res = await fetch('/api/manage/geocode', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ venueName, town, postcode }),
+      body: JSON.stringify({ venueName, town, postcode, country }),
     })
     const data = await res.json()
     return { lat: data.lat, lng: data.lng }
@@ -7230,7 +7269,8 @@ async function geocodeLocation(
   }
 }
 function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent['status']; event_date: string; end_time: string }) {
-  const isPast = end_time ? new Date() > new Date(`${event_date}T${end_time}`) : false
+  const tz = useTruckTime().timeZone
+  const isPast = end_time ? new Date().getTime() > instantOfLocal(event_date, end_time, tz) : false
   if (status === 'cancelled') return (
     <span className="text-xs font-semibold text-slate-400">Cancelled</span>
   )
@@ -7488,6 +7528,13 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   onClearPendingVerify?: () => void
   onPendingCount?: (n: number) => void
 }) {
+  // 🔴 THE TRUCK'S CLOCK AND STYLE (Phase 2B) — every "today", "past" and date or time on this tab.
+  const ts = useTruckTime()
+  const tz = ts.timeZone
+  // 🔴 THE TRUCK'S MONEY FORMAT (the manage page's country settings) — every price on this tab.
+  const tabSettings = useCountrySettings()
+  const tabFmt = moneyFormatOf(tabSettings)
+  const tabAmount = (major: number) => formatMajor(major, tabFmt)
   const [events, setEvents] = useState<TruckEvent[]>([])
   /* ── 🔴 PRIVATE EVENTS (20261014) ───────────────────────────────────────────────────────────────
    * `private_events` is a **Pro** key, deliberately split from `event_types` (Max) — see
@@ -7688,13 +7735,13 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   // (isPastEvent is defined later in render). Skipped while still loading (avoid a transient 0).
   useEffect(() => {
     if (!onPendingCount || loadingEvents) return
-    const now = new Date()
+    const now = Date.now()
     const n = events.filter(e =>
       e.status === 'unconfirmed' && e.source === 'scraper' &&
-      (e.end_time ? now < new Date(`${e.event_date}T${e.end_time}`) : new Date(`${e.event_date}T23:59`) >= now)
+      (e.end_time ? now < instantOfLocal(e.event_date, e.end_time, tz) : instantOfLocal(e.event_date, '23:59', tz) >= now)
     ).length
     onPendingCount(n)
-  }, [events, loadingEvents, onPendingCount])
+  }, [events, loadingEvents, onPendingCount, tz])
   useEffect(() => { if (isActive) api('get_vans').then(r => setVans((r.vans || []).map((v: any) => ({ id: v.id, name: v.name })))).catch(() => {}) }, [isActive])
   useEffect(() => {
     if (!isActive) return
@@ -7707,7 +7754,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
 
   useEffect(() => {
     if (!pendingVerifyEvents?.length) return
-    const _seedToday = new Date().toISOString().split('T')[0]
+    const _seedToday = getLocalDateInTz(tz) // the truck's today, not UTC's (Phase 2B)
     const evs = pendingVerifyEvents.map((e: any, i: number) => {
       const _p = (e.event_date || '').split('/')
       const _iso = _p.length === 3 ? `${_p[2]}-${_p[1].padStart(2,'0')}-${_p[0].padStart(2,'0')}` : ''
@@ -7948,8 +7995,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const placeShortDayLocal = (ymd: string | null): string => {
     if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return ''
     const [y, m, d] = ymd.split('-').map(Number)
-    return new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' })
-      .format(new Date(Date.UTC(y, m - 1, d)))
+    void y; void m; void d
+    return formatYmd(ymd, ts, { weekday: 'short', day: 'numeric', month: 'short' })
   }
 
   /** Which place an event resolves to — the shared rule, over the places the modal already has. */
@@ -8009,7 +8056,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const previewOneLine = editingEvent
     ? previewLine({
         form: editingEvent, vanName: previewVanName,
-        fmtDay: placeShortDayLocal, fmtTimes: timeRangeLabel,
+        fmtDay: placeShortDayLocal, fmtTimes: (a, b) => timeRangeLabel(a, b, ts),
       })
     : ''
 
@@ -8086,7 +8133,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       const { lat, lng } = await geocodeLocation(
         editingEvent.venue_name,
         editingEvent.town,
-        editingEvent.postcode
+        editingEvent.postcode,
+        tabSettings.shortName || tabSettings.name,
       )
       if (lat === null || lng === null) {
         console.warn('Geocoding returned null for event:', editingEvent.venue_name, editingEvent.postcode)
@@ -8182,7 +8230,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     const res = await fetch('/api/manage/process-schedule', { method: 'POST', body: fd })
     const data = await res.json()
     const raw = data.events || []
-    const _seedToday = new Date().toISOString().split('T')[0]
+    const _seedToday = getLocalDateInTz(tz) // the truck's today, not UTC's (Phase 2B)
     const evs = raw.map((e: any, i: number) => {
       const _p = (e.event_date || '').split('/')
       const _iso = _p.length === 3 ? `${_p[2]}-${_p[1].padStart(2,'0')}-${_p[0].padStart(2,'0')}` : ''
@@ -8215,7 +8263,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           : ev.event_date
 
         const { lat, lng } = (ev.town || ev.postcode)
-          ? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '')
+          ? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '', tabSettings.shortName || tabSettings.name)
           : { lat: null, lng: null }
 
         if (lat === null || lng === null) {
@@ -8431,10 +8479,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     // existing same-date confirmed/open events and is source-agnostic. See lib/event-conflicts.ts.
     // Complementary to the inbound-schedule scrape dedup (untouched).
     const conflicts = event.status === 'unconfirmed' ? detectEventConflicts(event, events) : []
-    const dateObj = new Date(event.event_date + 'T00:00:00')
-    const dayName = dateObj.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase()
-    const dayNum = dateObj.getDate()
-    const month = dateObj.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase()
+    // A calendar date in the truck's words (Phase 2B) — GB "FRI 9 OCT", US the same words in en-US.
+    const dayName = formatYmd(event.event_date, ts, { weekday: 'short' }).toUpperCase()
+    const dayNum = Number(event.event_date.slice(8, 10))
+    const month = formatYmd(event.event_date, ts, { month: 'short' }).toUpperCase()
 
     return (
       <Card key={event.id}>
@@ -8490,7 +8538,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               )}
               {/* Line 3: time (+ van / truck) */}
               <p className="text-sm font-semibold text-slate-700 mt-0.5">
-                {event.start_time && event.end_time && `${formatTime(event.start_time)}–${formatTime(event.end_time)}`}
+                {event.start_time && event.end_time && `${formatTime(event.start_time, ts)}–${formatTime(event.end_time, ts)}`}
                 {/* ⚠ Time needed — a pending event with no time can't go live; flag it so the operator fixes it. */}
                 {(!event.start_time || !event.end_time) && event.status === 'unconfirmed' && (
                   <span className="text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-bold">⚠ Time needed</span>
@@ -8678,8 +8726,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     <p>{c.message}</p>
                     <p className="text-xs text-amber-700 mt-0.5">
                       Already on your schedule: <strong>{c.event.venue_name || 'Unnamed venue'}</strong>
-                      {` · ${new Date(`${c.event.event_date}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`}
-                      {(c.event.start_time || c.event.end_time) ? ` · ${(c.event.start_time || '').slice(0, 5)}–${(c.event.end_time || '').slice(0, 5)}` : ''}
+                      {` · ${formatYmd(c.event.event_date, ts, { day: 'numeric', month: 'short' })}`}
+                      {(c.event.start_time || c.event.end_time) ? ` · ${formatSlot((c.event.start_time || '').slice(0, 5), ts)}–${formatSlot((c.event.end_time || '').slice(0, 5), ts)}` : ''}
                       {c.event.postcode ? ` · ${c.event.postcode}` : ''}
                       {` (${c.event.status})`}
                     </p>
@@ -8738,7 +8786,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-slate-700 truncate">{bundle.name}</span>
-                            <span className="text-xs text-slate-400">£{bundle.bundle_price.toFixed(2)}</span>
+                            <span className="text-xs text-slate-400">{tabAmount(bundle.bundle_price)}</span>
                             {bundle.stock_warning && <span className="text-xs text-amber-600">⚠️ Stock</span>}
                           </div>
                           {bundle.stock_warning && <p className="text-xs text-amber-600 mt-0.5">Hidden — {bundle.stock_warning}</p>}
@@ -8854,14 +8902,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     <div className="flex items-center justify-center py-12"><Spinner /></div>
   )
 
-  const now = new Date()
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  // isPastEvent uses new Date(`${event.event_date}T${event.end_time}`) — local time parse
-  // Do NOT use new Date(event.event_date) — that parses as UTC midnight and breaks
-  // today's date comparison in BST (and any UTC+ timezone)
+  const now = new Date().getTime()
+  // 🔴 ON THE TRUCK'S CLOCK (Phase 2B): an event is past when its end has passed in the truck's zone, or
+  // (no end) its date is before the truck's today. Was the device's clock, which agreed only for a device
+  // in the truck's zone.
   // DB status is never auto-written after event ends — all past detection is client-side
+  const todayYmd = getLocalDateInTz(tz)
   const isPastEvent = (e: TruckEvent) =>
-    e.end_time ? now > new Date(`${e.event_date}T${e.end_time}`) : new Date(e.event_date) < today
+    e.end_time ? now > instantOfLocal(e.event_date, e.end_time, tz) : e.event_date < todayYmd
   // Single-truck console: events are already token-scoped to this truck (events/manage). No truck filter.
   // ── VAN FILTER — CLIENT-SIDE, APPLIED ONCE, HERE (V9.6) ───────────────────────────────────────────
   // Filtering the ALREADY-FETCHED array rather than refetching: the events are all in memory, the filter
@@ -8897,7 +8945,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     const isEv = (e: any) => !e.event_date || !e.venue_name || !e.start_time
     const needsAttention = (e: any) => !e.event_date || !e.venue_name || !e.start_time || !e.end_time
 
-    const todayStr = new Date().toISOString().split('T')[0]
+    const todayStr = getLocalDateInTz(tz) // the truck's today, not UTC's (Phase 2B)
     const parseDDMMYYYY = (s: string): string => {
       if (!s) return ''
       const [d, m, y] = s.split('/')
@@ -8980,12 +9028,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     const getFriendlyDate = (ev: any) => {
       const p = (ev.event_date || '').split('/')
       if (p.length !== 3) return ev.event_date || ''
-      const d = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]))
-      const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-      const day = d.getDate()
-      const nth = (day > 3 && day < 21) ? 'th' : ['th','st','nd','rd','th','th','th','th','th','th'][day % 10]
-      return `${days[d.getDay()]} ${day}${nth} ${months[d.getMonth()]}`
+      return formatShortOrdinalDate(`${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`, ts)
     }
     const getDateVal = (ev: any) => {
       const p = (ev.event_date || '').split('/')
@@ -9033,7 +9076,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             const stateB = focusedEventIds.has(ev.id) && !stateC
             const dateLabel = getFriendlyDate(ev)
             const timeLabel = ev.start_time
-              ? `${formatTime(ev.start_time)}${ev.end_time ? `–${formatTime(ev.end_time)}` : ''}`
+              ? `${formatTime(ev.start_time, ts)}${ev.end_time ? `–${formatTime(ev.end_time, ts)}` : ''}`
               : null
             const dateVal = getDateVal(ev)
 
@@ -9734,7 +9777,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   <div className="relative">
                     <div onClick={() => { const el = document.getElementById('date-input-event') as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className={`w-full border rounded-xl px-3 py-2 text-sm cursor-pointer flex items-center justify-between bg-white ${formErrors.event_date ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}>
                       <span className={editingEvent.event_date ? 'text-slate-900 font-medium' : 'text-slate-400'}>
-                        {editingEvent.event_date ? (() => { const p = editingEvent.event_date.split('-'); if (p.length !== 3) return editingEvent.event_date; const d = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2])); const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const day = d.getDate(); const nth = (day > 3 && day < 21) ? 'th' : ['th','st','nd','rd','th','th','th','th','th','th'][day % 10]; return `${days[d.getDay()]} ${day}${nth} ${months[d.getMonth()]}` })() : 'Select date'}
+                        {editingEvent.event_date ? (() => { const p = editingEvent.event_date.split('-'); if (p.length !== 3) return editingEvent.event_date; return formatShortOrdinalDate(editingEvent.event_date, ts) })() : 'Select date'}
                       </span>
                       <span className="text-slate-400 text-xs">📅</span>
                     </div>
@@ -9911,7 +9954,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                           <p className="text-sm font-medium text-slate-800">{venue.venue_name}</p>
                           <p className="text-xs text-slate-400">
                             {[venue.town, venue.postcode].filter(Boolean).join(' · ')}
-                            {venue.start_time ? ` · ${formatTime(venue.start_time)}–${formatTime(venue.end_time || '')}` : ''}
+                            {venue.start_time ? ` · ${formatTime(venue.start_time, ts)}–${formatTime(venue.end_time || '', ts)}` : ''}
                           </p>
                         </button>
                           ))}
@@ -10047,7 +10090,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                             card and this card cannot print a date differently. */}
                         <p className="text-sm font-semibold text-slate-700 mt-1">
                           {[placeShortDayLocal(editingEvent.event_date || null),
-                            timeRangeLabel(editingEvent.start_time, editingEvent.end_time)]
+                            timeRangeLabel(editingEvent.start_time, editingEvent.end_time, ts)]
                             .filter(Boolean).join(' · ') || PREVIEW_PLACEHOLDERS.date}
                         </p>
                       </div>
@@ -10055,6 +10098,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       <TruckListCard
                         event={previewEvent}
                         slug={truck.slug ?? ''}
+                        time={ts}
                         compact
                         hideOrderButton
                         cornerAction={previewVanName
@@ -10150,6 +10194,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
 
       {showEventCancelModal && cancellingEvent && (
         <EventCancelModal
+          time={ts}
           event={cancellingEvent}
           affectedOrderCount={affectedOrderCount}
           onKeep={() => setShowEventCancelModal(false)}
@@ -10506,7 +10551,7 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
       </div>
 
       {/* ── THE AI FOOTNOTE ────────────────────────────────────────────────────────────────────────
-          🔴 WORDING TAKEN VERBATIM FROM THE LANDING PAGE, NOT WRITTEN HERE. Source: `FOOTNOTES` number
+          🔴 WORDING TAKEN VERBATIM FROM THE LANDING PAGE, NOT WRITTEN HERE. Source: `footnotes()` number
           '4' in lib/plan-features.ts, as it read at the time — "Auto-replies require a Business account
           on each platform. Replies are AI-generated and can occasionally be wrong — you can view every
           message and reply yourself at any time."
@@ -10522,7 +10567,7 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
           clause here would put an unbacked claim in front of the one person who could disprove it.
           🔴 IT NOW DIVERGES FURTHER, AND THAT IS ACCEPTED (decision, 20 August 2026). The separate
           "wording varies slightly each time" line was MERGED IN HERE — the two caveats were saying one
-          thing in two places. So this string is no longer a substring of FOOTNOTES '4'. It is DELIBERATELY
+          thing in two places. So this string is no longer a substring of footnotes() '4'. It is DELIBERATELY
           a plain literal: do not import that entry, do not slice it, and do not edit plan-features.ts to
           match — the shared string still carries the unverified viewing claim. Grep this sentence to find
           it; nothing links the two automatically.
@@ -11415,13 +11460,18 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
     }
   }
 
-  // £/month for each additional van beyond included count
-  // TODO: Wire to Stripe billing API when payments are integrated.
-  const VAN_ADDON_PRICE: Record<string, number> = { starter: 0, pro: 29, max: 49, trial: 0 }
   // Per-truck masking, same policy the Billing tab uses. Was a direct `maskPrice` import, which had no
   // truck context and would have shown a suppressed operator a real add-on price the moment the global
   // flag flipped.
   const vanPx = usePriceMask()
+  // ── THE PRICE OF EACH ADDITIONAL VAN BEYOND THE INCLUDED COUNT ──────────────────────────────────────
+  // 🔴 `VAN_ADDON_PRICE` — a map of RAW POUNDS ({ pro: 29, max: 49 }) invisible to a "£29" grep and read
+  // for logic, not only display — IS GONE (10 October 2026). An extra van costs the plan's own monthly
+  // price from the truck's country settings, which is what that map held. Minor units, like every price.
+  // TODO: Wire to Stripe billing API when payments are integrated.
+  const vanSettings = useCountrySettings()
+  const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)
+  const vanAddonLabel = (unit: 'mo' | 'month') => perMonthLabel(vanAddonMinor, moneyFormatOf(vanSettings), unit)
   const INCLUDED_VANS: Record<string, number> = { starter: 1, pro: 2, max: 999, trial: 999 }
 
   const handleAddVanClick = () => {
@@ -11430,7 +11480,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
     )
     if (!confirmed) return
     const included = INCLUDED_VANS[truck.plan] ?? 1
-    const addonPrice = VAN_ADDON_PRICE[truck.plan] ?? 0
+    const addonPrice = vanAddonMinor
     if (vans.length >= included) {
       if (addonPrice > 0) {
         setShowVanBillingModal(true)
@@ -11503,7 +11553,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
 
   // ── Contact Details: validation (shared with the customer order screen) + the WhatsApp tick ──
   const contactEmailErr = (form.contact_email || '').trim() !== '' && !isValidEmail(form.contact_email || '')
-  const contactPhoneErr = (form.contact_phone || '').trim() !== '' && !isValidUKPhone(form.contact_phone || '')
+  // 🔴 The truck's country decides (Phase 2C, lib/phone.ts) — its name and example come from its settings.
+  const phoneCopy: PhoneCopy = { phoneCountry: vanSettings.countryCode, short_name: vanSettings.shortName, phone_example: vanSettings.phoneExample, phoneCheck: vanSettings.phoneCheck }
+  const contactPhoneErr = (form.contact_phone || '').trim() !== '' && !isPlausiblePhone(form.contact_phone || '', phoneCopy.phoneCountry, phoneCopy.phoneCheck)
   // Customer-facing `whatsapp` = the phone number WHEN "this number is on WhatsApp" is ticked; else ''.
   // Cleared value is '' (NOT null) because trucks.whatsapp is NOT NULL with a '' default — writing null
   // 400s the settings save on untick. '' and null read identically (nothing reads this column for
@@ -12062,6 +12114,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           </div>
         </div>
       </Card>
+      {/* Where you trade (Phase 2D-1) — the signup step's answers, editable; the country is read-only. */}
+      <WhereYouTrade truck={truck} api={api} showToast={showToast} onTruckUpdate={onTruckUpdate} readOnly={userRole === 'staff'} />
       </section>
       {/* ══ SECTION: Contact ══ */}
       <section
@@ -12083,7 +12137,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         </div>
         <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} onBlur={() => saveFormField()} placeholder="hello@yourtruck.com" error={contactEmailErr ? 'Please enter a valid email (e.g. hello@yourtruck.com)' : undefined} />
         <p className="text-xs text-slate-400 -mt-1.5">Where you receive new-order notifications — and shown to customers on their confirmation when “Email” is the preferred method below.</p>
-        <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} onBlur={saveContactPhone} placeholder="07700 900123" error={contactPhoneErr ? 'Please enter a valid UK phone (e.g. 07700 900123)' : undefined} />
+        <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} onBlur={saveContactPhone} placeholder={phonePlaceholder(phoneCopy)} error={contactPhoneErr ? phoneErrorMessage('phone', phoneCopy) : undefined} />
         {/* "This number is on WhatsApp" — ties the customer-facing `whatsapp` to the phone (no double
             entry) and gates WhatsApp as a preferred method below. */}
         <label className="flex items-center gap-2 text-sm text-slate-600 -mt-1 cursor-pointer">
@@ -13305,7 +13359,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           scan time, so once this card's setup is finished the SAME PRINTED CODE starts sending customers
           to the operator's own address. Reading them in this order is what makes that obvious; separated,
           the two read as unrelated features and the operator assumes a new code is needed. */}
-      {!isDemoIdentifier(token) && truck && <CustomDomainSetup token={token} plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} truckName={truck.name} slug={truck.slug ?? null} website={truck.website ?? null} customDomain={truck.custom_domain ?? null} setupState={truck.custom_domain_setup_state ?? null} setupStartedAt={truck.custom_domain_setup_started_at ?? null} verifiedAt={truck.custom_domain_verified_at ?? null} confirmedAt={truck.custom_domain_confirmed_at ?? null} />}
+      {!isDemoIdentifier(token) && truck && <CustomDomainSetup token={token} plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} truckName={truck.name} slug={truck.slug ?? null} website={truck.website ?? null} customDomain={truck.custom_domain ?? null} setupState={truck.custom_domain_setup_state ?? null} setupStartedAt={truck.custom_domain_setup_started_at ?? null} verifiedAt={truck.custom_domain_verified_at ?? null} confirmedAt={truck.custom_domain_confirmed_at ?? null} time={truck.time ?? null} />}
       </section>
       {/* ══ SECTION: QR code ══ */}
       <section
@@ -14210,7 +14264,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 Your {truck.plan === 'pro' ? 'Pro' : 'Max'} plan includes{' '}
                 {truck.plan === 'pro' ? '2 trucks' : 'unlimited trucks'}.
                 Adding an additional truck costs{' '}
-                <strong>{vanPx(`£${VAN_ADDON_PRICE[truck.plan]}/month`)}</strong>{' '}
+                <strong>{vanPx(vanAddonLabel('month'))}</strong>{' '}
                 and will be added to your next billing cycle.
               </p>
               <div className="mt-3 bg-slate-50 rounded-xl px-4 py-3">
@@ -14231,7 +14285,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 onClick={() => { setShowVanBillingModal(false); setAddingVan(true) }}
                 className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm hover:bg-orange-700"
               >
-                Add truck — {vanPx(`£${VAN_ADDON_PRICE[truck.plan]}/mo`)}
+                Add truck — {vanPx(vanAddonLabel('mo'))}
               </button>
             </div>
           </div>
@@ -14377,8 +14431,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   )
 }
 
-const formatTrialEndDate = (dateStr: string) =>
-  new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+// 🔴 THE TRUCK'S CLOCK AND STYLE (Phase 2B): an instant's date in the truck's zone and locale — GB
+// "9 October 2026", US "October 9, 2026". Was the device's zone with a fixed 'en-GB'.
+const formatTrialEndDate = (dateStr: string, ts: TimeSettings) =>
+  formatInstant(dateStr, ts, { day: 'numeric', month: 'long', year: 'numeric' })
 
 // ── BillingTab ──────────────────────────────────────────────────
 // TODO: Replace upgrade modal with Stripe Checkout/Customer Portal when Stripe Connect billing is implemented
@@ -14391,9 +14447,21 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   // they are rather than moved, because relocating live billing state is not this task. Do not "tidy" these
   // two down to join them.
   const px = usePriceMask()
+  const billingTime = useTruckTime()
   // Footnote 2 does not MASK a value, it substitutes a whole different sentence, so it needs the raw
   // question rather than the masking function.
   const pricesVisible = usePricesVisible()
+  // 🔴 THE TRUCK'S OWN COUNTRY'S PRICES (10 October 2026). Every price in this tab reads from here — there
+  // is no '£29/mo' literal left in it. Above the `!truck` guard for the same hooks-order reason as above.
+  const cs = useCountrySettings()
+  const prices = planPrices(cs)
+  const money = moneyFormatOf(cs)
+  const proMo = perMonthLabel(planMonthlyMinor('pro', cs), money)
+  const maxMo = perMonthLabel(planMonthlyMinor('max', cs), money)
+  const proMonth = perMonthLabel(planMonthlyMinor('pro', cs), money, 'month')
+  const maxMonth = perMonthLabel(planMonthlyMinor('max', cs), money, 'month')
+  const feeRows = transactionRows(cs)
+  const notes = footnotes(cs)
   if (!truck) return null
   const currentPlan = truck.plan
   // ── Z1: WHICH COLUMNS THE MATRIX SHOWS ──────────────────────────────────────────────────────────
@@ -14422,8 +14490,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
     : (['starter', 'pro', 'max'] as const)
   const isCurrent = (p: 'trial' | 'starter' | 'pro' | 'max') =>
     p === truck.plan
-  const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+  const formatDate = (iso: string) => formatTrialEndDate(iso, billingTime)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [upgradeTarget, setUpgradeTarget] = useState<'pro' | 'max'>('max')
   const [showMatrix, setShowMatrix] = useState(false)
@@ -14468,7 +14535,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 wrap — not the numbers. `sm:text-xl` is untouched, so nothing changes from 640px up. */}
             <p className={`text-[13px] sm:text-xl font-bold mt-1 whitespace-nowrap ${
               isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
-            }`}>{px(p === 'trial' ? 'Free' : PLAN_PRICES[p])}</p>
+            }`}>{px(p === 'trial' ? 'Free' : prices[p])}</p>
             <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
               {/* ── 🔴 THE TRIAL COLUMN'S RULE LINES UP NOW, AND THE COMPENSATION DANCE IS GONE. ──────
                   This read `{p === 'trial' ? <span className="invisible">&nbsp;</span> : …}` — ONE
@@ -14477,7 +14544,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                   other is why the border-b-2 under Free trial still sat off the others' line: it only
                   balances if both wrap exactly as predicted, at every width and every font metric.
                   🔴 BOTH VARIABLES ARE REMOVED INSTEAD OF BALANCED. The price is now one line in EVERY
-                  column ("Free" for trial, matching the landing table's own PLAN_PRICE_LABEL, which
+                  column ("Free" for trial, matching the landing table's own planPriceLabels(), which
                   shows "Free" rather than "Free trial" for the same reason), and the placeholder is now
                   the SAME STRING as the real subtitle, merely invisible — so it wraps identically, at
                   any width, under any font. The four columns cannot disagree in height.
@@ -14496,7 +14563,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
           <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>
           {showTrialColumn && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
         </div>
-        {TRANSACTION_ROWS.map(row => (
+        {feeRows.map(row => (
           <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
             <div className="flex-1 pr-4">
               {/* ⚠️ NO pl-3 HERE EITHER. This carried the same `pl-3 sm:pl-0` the feature titles did —
@@ -14586,7 +14653,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
 
   const footnotesContent = (
     <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-1.5">
-      {FOOTNOTES.map(f => (
+      {notes.map(f => (
         <p key={f.number} className="text-xs text-slate-700">
           <sup>{f.number}</sup> {pricesVisible || f.number !== '2'
             ? f.text
@@ -14651,7 +14718,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               <p className="text-2xl font-bold text-slate-900 mt-1">
                 {PLAN_META[currentPlan]?.name ?? currentPlan}
               </p>
-              <p className="text-sm text-slate-700 mt-0.5">{px(PLAN_PRICES[currentPlan])}</p>
+              <p className="text-sm text-slate-700 mt-0.5">{px(prices[currentPlan])}</p>
               <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
               {truck.trial_expires_at && (
                 <p className="text-xs text-amber-600 mt-1">
@@ -14702,13 +14769,13 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                       onClick={() => openUpgrade('max')}
                       className="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl whitespace-nowrap hover:bg-orange-700 transition-colors"
                     >
-                      Upgrade to Max — {px('£49/mo')}
+                      Upgrade to Max — {px(maxMo)}
                     </button>
                     <button
                       onClick={() => openUpgrade('pro')}
                       className="w-full sm:w-auto px-4 py-2 border border-orange-300 text-orange-600 text-sm font-medium rounded-xl whitespace-nowrap hover:bg-orange-50 transition-colors"
                     >
-                      Choose Pro — {px('£29/mo')}
+                      Choose Pro — {px(proMo)}
                     </button>
                   </div>
                 )}
@@ -14745,7 +14812,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                       flagged in docs/trial-billing-copy-report.md). Copy must not run ahead of the build
                       in the direction that costs an operator money or access. */}
                   🔒 You won&apos;t be charged anything during your trial, which runs until{' '}
-                  {formatTrialEndDate(truck.trial_expires_at)}.
+                  {formatTrialEndDate(truck.trial_expires_at, billingTime)}.
                   Billing only ever starts when you choose a plan and enter your payment details.
                   Until then there&apos;s nothing to cancel and nothing to pay.
                 </p>
@@ -14781,7 +14848,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               <p className="text-2xl font-bold text-slate-900 mt-1">
                 {PLAN_META[currentPlan]?.name ?? currentPlan}
               </p>
-              <p className="text-sm text-slate-700 mt-0.5">{px(PLAN_PRICES[currentPlan])}</p>
+              <p className="text-sm text-slate-700 mt-0.5">{px(prices[currentPlan])}</p>
               <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
             </div>
             {/* 🔴 iOS (App Store 3.1.1/3.1.3): the ENTIRE panel is gated, heading included. Gating only the
@@ -14797,13 +14864,13 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                     onClick={() => openUpgrade('pro')}
                     className="flex-1 py-2.5 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl hover:bg-orange-50 transition-colors"
                   >
-                    Pro — {px('£29/mo')}
+                    Pro — {px(proMo)}
                   </button>
                   <button
                     onClick={() => openUpgrade('max')}
                     className="flex-1 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors"
                   >
-                    Max — {px('£49/mo')}
+                    Max — {px(maxMo)}
                   </button>
                 </div>
               </div>
@@ -14827,7 +14894,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 {plan === 'pro' ? 'Pro' : 'Max'}
               </p>
               <p className="text-sm text-slate-500 mt-0.5">
-                {px(plan === 'pro' ? '£29/mo' : '£49/mo')} per truck · renews automatically
+                {px(plan === 'pro' ? proMo : maxMo)} per truck · renews automatically
               </p>
             </div>
             <div className="mb-6">
@@ -14862,8 +14929,8 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               </h3>
               <p className="text-sm text-slate-500 mt-1">
                 {upgradeTarget === 'max'
-                  ? `${px('£49/month')} — High-volume operations & festivals`
-                  : `${px('£29/month')} — Busy trucks scaling pre-orders`
+                  ? `${px(maxMonth)} — High-volume operations & festivals`
+                  : `${px(proMonth)} — Busy trucks scaling pre-orders`
                 }
               </p>
             </div>
@@ -14873,7 +14940,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               </p>
             </div>
             <a
-              href={`mailto:${SUPPORT_EMAIL}?subject=Upgrade to ${upgradeTarget === 'max' ? 'Max' : 'Pro'} — ${truck.name}&body=Hi, I'd like to upgrade ${truck.name} to the ${upgradeTarget === 'max' ? `Max (${px('£49/mo')})` : `Pro (${px('£29/mo')})`} plan.`}
+              href={`mailto:${SUPPORT_EMAIL}?subject=Upgrade to ${upgradeTarget === 'max' ? 'Max' : 'Pro'} — ${truck.name}&body=Hi, I'd like to upgrade ${truck.name} to the ${upgradeTarget === 'max' ? `Max (${px(maxMo)})` : `Pro (${px(proMo)})`} plan.`}
               className="w-full py-3 bg-orange-600 text-white text-sm font-semibold rounded-xl text-center hover:bg-orange-700 transition-colors"
             >
               Email us to upgrade
@@ -14911,31 +14978,41 @@ interface ReportData {
 }
 interface RecentEvent { id: string; venue_name: string | null; event_date: string; status: string }
 
-function fmtGBP(n: number) { return `£${n.toFixed(2)}` }
+// 🔴 EVERY REPORT FIGURE IN ITS OWN CURRENCY (Phase 2A): an order's in orders.currency, totals across
+// orders in the truck's — both laid out in the truck's locale (the manage page's country settings). The CSV
+// keeps the format it always had: the symbol and two decimals, no separators ("£43.90").
+function fmtMoney(n: number, f: MoneyFormat) { return formatMajor(n, f) }
+/** An order's format: its own currency (orders.currency), in the truck's locale; the truck's if the row
+ *  pre-dates the column (it cannot be anything else — a truck's currency is fixed while it has orders). */
+function orderFormat(o: { currency?: string | null } | null | undefined, truckFmt: MoneyFormat): MoneyFormat {
+  return o?.currency ? { currency: o.currency, locale: truckFmt.locale } : truckFmt
+}
 
 type ExplodedItem = {
   orderId: string; dateStr: string; eventStr: string; timePlaced: string
   collectionTime: string; customerName: string; orderType: string; orderTotal: number
   itemLabel: string; qty: number; basePrice: number; modStr: string; noteStr: string; itemTotal: number
+  /** The order's money format — its own currency, the truck's locale. */
+  money: MoneyFormat
 }
 function explodeOrderItems(
   orders: any[],
   // V9.6: a RESOLVER, not the raw map — the caller now owns the id-then-date fallback so all three
   // label sites (this CSV, the orders CSV, the on-screen history) resolve venues identically.
   resolveEvent: (o: any) => { venue_name: string | null; town: string | null } | null
+,
+  truckFmt: MoneyFormat,
+  ts: TimeSettings,
 ): ExplodedItem[] {
   const rows: ExplodedItem[] = []
   for (const o of orders) {
+    // 🔴 WHEN IT WAS PLACED, ON THE TRUCK'S CLOCK AND IN ITS ORDER (Phase 2B) — was the device's.
     const createdAt = o.created_at ? new Date(o.created_at) : null
-    const dateStr = createdAt
-      ? `${String(createdAt.getDate()).padStart(2, '0')}/${String(createdAt.getMonth() + 1).padStart(2, '0')}/${createdAt.getFullYear()}`
-      : ''
-    const timePlaced = createdAt
-      ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
-      : ''
+    const dateStr = createdAt ? formatNumericDate(localDateOfInstant(createdAt, ts.timeZone), ts) : ''
+    const timePlaced = createdAt ? formatTime(clockOfInstantInTz(createdAt, ts.timeZone), ts) : ''
     const ev = resolveEvent(o)
     const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
-    const collectionTime = o.slot ? formatTime(o.slot) : 'ASAP'
+    const collectionTime = o.slot ? formatTime(o.slot, ts) : 'ASAP'
     const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'
     const orderType = o.customer_email ? 'Customer online' : 'Placed by truck'
     const dealItemMap: Record<string, string> = {}
@@ -14951,9 +15028,10 @@ function explodeOrderItems(
         itemLabel: dealName ? `🎁 ${item.name} (${dealName})` : item.name,
         qty,
         basePrice: (item.unit_price || 0) - modSum,
-        modStr: (item.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +£${m.price.toFixed(2)}`).join('; '),
+        modStr: (item.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +${fmtMoney(m.price, orderFormat(o, truckFmt))}`).join('; '),
         noteStr: item.specialInstructions || '',
         itemTotal: (item.unit_price || 0) * qty,
+        money: orderFormat(o, truckFmt),
       })
     }
   }
@@ -14964,16 +15042,23 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   const hasAdvanced = truck
     ? canAccess(truck.plan, 'advanced_reporting', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
     : false
-  const isoDate = (offset: number) => {
-    const d = new Date(); d.setDate(d.getDate() + offset); return d.toISOString().split('T')[0]
-  }
+  // 🔴 THE TRUCK'S CLOCK AND STYLE (Phase 2B). Its zone is the one rule's (trucks.timezone, else its
+  // country's default) — this read `trucks.timezone ?? 'Europe/London'` before.
+  const ts = useTruckTime()
+  // The default range counts the TRUCK's days. It was the device's date written out as a UTC date, which
+  // from 00:00 to 01:00 BST started the range a day early.
+  const isoDate = (offset: number) => addDaysYmd(getLocalDateInTz(ts.timeZone), offset)
   // Reports are past/present only — cap the date pickers at TRUCK-LOCAL today (not device-local, so a
   // near-midnight viewer in another tz can't pick the truck's "tomorrow"). max= blocks the picker UI; the
   // onChange clamp blocks keyboard-typed dates too.
-  const todayLocal = getLocalDateInTz((truck as any)?.timezone ?? 'Europe/London')
+  const todayLocal = getLocalDateInTz(ts.timeZone)
   const clampPast = (v: string) => (v && v > todayLocal ? todayLocal : v)
   const [filterMode, setFilterMode] = useState<'date' | 'event'>(hasAdvanced ? 'date' : 'event')
   const [itemView, setItemView] = useState<'orders' | 'items'>('orders')
+  // The truck's money format (the manage page's country settings) and each order's own.
+  const truckFmt = moneyFormatOf(useCountrySettings())
+  const money = (n: number) => fmtMoney(n, truckFmt)
+  const orderMoney = (o: { currency?: string | null } | null | undefined, n: number) => fmtMoney(n, orderFormat(o, truckFmt))
   // Mobile order-history: which order rows are tap-expanded (desktop shows the full table, no expand).
   const [expandedOrders, setExpandedOrders] = useState<Set<string | number>>(new Set())
   const toggleOrderExpand = (id: string | number) => setExpandedOrders(prev => {
@@ -15122,10 +15207,10 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     if (!orders.length || filterMode !== 'event' || !reportEventId) return null
     const ev = recentEvents.find(e => e.id === reportEventId)
     const dateStr = ev?.event_date
-      ? new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+      ? formatYmd(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
       : ''
     return [ev?.venue_name, dateStr].filter(Boolean).join(' · ')
-  }, [orders, filterMode, reportEventId, recentEvents]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [orders, filterMode, reportEventId, recentEvents, ts]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── VAN SCOPE IN THE FILENAME (V9.6) ─────────────────────────────────────────────────────────────
   // The on-screen chip states the scope, but a CSV outlives the session and gets emailed on, so the scope
@@ -15147,23 +15232,19 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Items', 'Deals', 'Modifiers', 'Notes', 'Total']
     const rows = orders.map((o: any) => {
       const createdAt = o.created_at ? new Date(o.created_at) : null
-      const dateStr = createdAt
-        ? `${String(createdAt.getDate()).padStart(2, '0')}/${String(createdAt.getMonth() + 1).padStart(2, '0')}/${createdAt.getFullYear()}`
-        : ''
-      const timePlaced = createdAt
-        ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
-        : ''
+      const dateStr = createdAt ? formatNumericDate(localDateOfInstant(createdAt, ts.timeZone), ts) : ''
+      const timePlaced = createdAt ? formatTime(clockOfInstantInTz(createdAt, ts.timeZone), ts) : ''
       const ev = resolveEvent(o)
       const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
-      const collectionTime = o.slot ? formatTime(o.slot) : 'ASAP'
+      const collectionTime = o.slot ? formatTime(o.slot, ts) : 'ASAP'
       const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'
       // customer_email IS NULL is the best available signal for operator-placed orders (no source column yet)
       const orderType = o.customer_email ? 'Customer online' : 'Placed by truck'
       const itemStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => `${i.quantity || 1}× ${i.name}`).join('; ')
       const dealStr = (Array.isArray(o.deals) ? o.deals : []).map((d: any) => d.name).join('; ')
-      const modStr  = (Array.isArray(o.items) ? o.items : []).flatMap((i: any) => (i.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +£${m.price.toFixed(2)}`)).join('; ')
+      const modStr  = (Array.isArray(o.items) ? o.items : []).flatMap((i: any) => (i.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +${orderMoney(o, m.price)}`)).join('; ')
       const noteStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => i.specialInstructions).filter(Boolean).join('; ')
-      return [o.id, dateStr, eventStr, timePlaced, collectionTime, customerName, orderType, itemStr, dealStr, modStr, noteStr, fmtGBP(o.total || 0)]
+      return [o.id, dateStr, eventStr, timePlaced, collectionTime, customerName, orderType, itemStr, dealStr, modStr, noteStr, orderMoney(o, o.total || 0)]
         .map(v => `"${String(v).replace(/"/g, '""')}"`)
     })
     const csv = [headers.map(h => `"${h}"`), ...rows].map(r => r.join(',')).join('\n')
@@ -15176,9 +15257,9 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   const exportItemsCSV = () => {
     if (!orders.length) return
     const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Item name', 'Qty', 'Unit price', 'Modifiers', 'Notes', 'Item total', 'Order total']
-    const rows = explodeOrderItems(orders, resolveEvent).map(r =>
+    const rows = explodeOrderItems(orders, resolveEvent, truckFmt, ts).map(r =>
       [r.orderId, r.dateStr, r.eventStr, r.timePlaced, r.collectionTime, r.customerName, r.orderType,
-       r.itemLabel, String(r.qty), fmtGBP(r.basePrice), r.modStr, r.noteStr, fmtGBP(r.itemTotal), fmtGBP(r.orderTotal)]
+       r.itemLabel, String(r.qty), fmtMoney(r.basePrice, r.money), r.modStr, r.noteStr, fmtMoney(r.itemTotal, r.money), fmtMoney(r.orderTotal, r.money)]
         .map(v => `"${String(v).replace(/"/g, '""')}"`)
     )
     const csv = [headers.map(h => `"${h}"`), ...rows].map(r => r.join(',')).join('\n')
@@ -15240,7 +15321,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
             <option value="">Select an event…</option>
             {recentEvents.map(ev => {
-              const evDate = new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+              const evDate = formatYmd(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
               return <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} · {evDate}</option>
             })}
           </select>
@@ -15304,7 +15385,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                   className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white w-[320px]">
                   <option value="">Select an event…</option>
                   {recentEvents.map(ev => {
-                    const evDate = new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+                    const evDate = formatYmd(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
                     return <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} · {evDate}</option>
                   })}
                 </select>
@@ -15367,7 +15448,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                 ⚠️ reportHeader (the venue · date line above) exists in EVENT mode only, so the totals line
                 is the one place present in both modes. */}
             <p className="text-base font-bold text-slate-900">
-              {orders.length} order{orders.length !== 1 ? 's' : ''} · {fmtGBP(revenueBreakdown.total)}
+              {orders.length} order{orders.length !== 1 ? 's' : ''} · {money(revenueBreakdown.total)}
               {vans.length > 1 && (
                 <span className="ml-2 align-middle inline-block text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-0.5">
                   {vanFilterLabel(vans, vanFilter)}
@@ -15387,24 +15468,24 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                   {revenueBreakdown.categories.map((c) => (
                     <div key={c.name} className="flex justify-between text-sm">
                       <span className="text-slate-600">{c.name}</span>
-                      <span className="font-medium text-slate-900">{fmtGBP(c.revenue)}</span>
+                      <span className="font-medium text-slate-900">{money(c.revenue)}</span>
                     </div>
                   ))}
                   {revenueBreakdown.dealRev > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-600">Deal revenue</span>
-                      <span className="font-medium text-slate-900">{fmtGBP(revenueBreakdown.dealRev)}</span>
+                      <span className="font-medium text-slate-900">{money(revenueBreakdown.dealRev)}</span>
                     </div>
                   )}
                   {revenueBreakdown.mods > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-600">Modifier upcharges</span>
-                      <span className="font-medium text-slate-900">{fmtGBP(revenueBreakdown.mods)}</span>
+                      <span className="font-medium text-slate-900">{money(revenueBreakdown.mods)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm font-semibold border-t border-slate-100 pt-2 mt-1">
                     <span className="text-slate-900">Total</span>
-                    <span className="text-slate-900">{fmtGBP(revenueBreakdown.total)}</span>
+                    <span className="text-slate-900">{money(revenueBreakdown.total)}</span>
                   </div>
                 </div>
               </div>
@@ -15429,7 +15510,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                           <td className="py-1.5 text-xs text-slate-300">{i + 1}</td>
                           <td className="py-1.5 text-slate-700 truncate">{item.name}</td>
                           <td className="py-1.5 text-right text-slate-400 tabular-nums">{item.qty}</td>
-                          <td className="py-1.5 text-right font-medium text-slate-900 tabular-nums">{fmtGBP(item.revenue)}</td>
+                          <td className="py-1.5 text-right font-medium text-slate-900 tabular-nums">{money(item.revenue)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -15448,7 +15529,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                           <span className="text-sm text-slate-700">{d.name}</span>
                           <span className="text-xs text-slate-400">{d.count}×</span>
                         </div>
-                        <span className="text-sm font-medium text-slate-900">{fmtGBP(d.revenue)}</span>
+                        <span className="text-sm font-medium text-slate-900">{money(d.revenue)}</span>
                       </div>
                     ))}
                   </div>
@@ -15478,7 +15559,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                               <td className="py-1.5 text-xs text-slate-300">{i + 1}</td>
                               <td className="py-1.5 text-slate-700 truncate">{m.name}</td>
                               <td className="py-1.5 text-right text-slate-400 tabular-nums">{m.count}</td>
-                              <td className="py-1.5 text-right font-medium text-slate-900 tabular-nums">{fmtGBP(m.revenue)}</td>
+                              <td className="py-1.5 text-right font-medium text-slate-900 tabular-nums">{money(m.revenue)}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -15518,13 +15599,10 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
               <div className="space-y-0.5">
                 {orders.map((o: any) => {
                   const createdAt = o.created_at ? new Date(o.created_at) : null
-                  const dd = createdAt ? String(createdAt.getDate()).padStart(2, '0') : ''
-                  const mm = createdAt ? String(createdAt.getMonth() + 1).padStart(2, '0') : ''
-                  const dateShort = createdAt ? `${dd}/${mm}` : ''                                                  // mobile
-                  const dateFull = createdAt ? `${dd}/${mm}/${String(createdAt.getFullYear()).slice(2)}` : ''       // desktop dd/mm/yy
-                  const timePlaced = createdAt
-                    ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
-                    : ''
+                  const placedYmd = createdAt ? localDateOfInstant(createdAt, ts.timeZone) : ''
+                  const dateShort = createdAt ? formatNumericDayMonth(placedYmd, ts) : ''                           // mobile
+                  const dateFull = createdAt ? formatNumericDate(placedYmd, ts, true) : ''                          // desktop dd/mm/yy (US mm/dd/yy)
+                  const timePlaced = createdAt ? formatTime(clockOfInstantInTz(createdAt, ts.timeZone), ts) : ''
                   const ev = resolveEvent(o)
                   const venueName = ev?.venue_name ?? null
                   const orderType = o.customer_email ? 'Online' : 'Walk-up'
@@ -15544,7 +15622,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                         <span className="font-medium text-slate-500 truncate">{orderType}</span>
                         <span className="text-slate-600 truncate min-w-0">{itemSummary}</span>
                         <span className="text-right text-slate-400 tabular-nums">{qtyTotal}</span>
-                        <span className="text-right font-medium text-slate-900 tabular-nums">{fmtGBP(o.total || 0)}</span>
+                        <span className="text-right font-medium text-slate-900 tabular-nums">{orderMoney(o, o.total || 0)}</span>
                       </div>
                       {/* Mobile: compact glance row (#N · dd/mm | total) + tap-to-expand. */}
                       <div className="sm:hidden text-xs">
@@ -15555,7 +15633,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                             <span className="font-mono font-semibold text-orange-500 flex-shrink-0">#{o.id}</span>
                             <span className="text-slate-500 truncate">{dateShort}</span>
                           </span>
-                          <span className="font-bold text-slate-900 flex-shrink-0">{fmtGBP(o.total || 0)}</span>
+                          <span className="font-bold text-slate-900 flex-shrink-0">{orderMoney(o, o.total || 0)}</span>
                         </button>
                         {isExpanded && (
                           <div className="pb-2.5 pl-5 space-y-1.5">
@@ -15572,7 +15650,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                                 return (
                                   <div key={idx} className="flex items-baseline justify-between gap-2">
                                     <span className="text-slate-700 min-w-0">{i.quantity || 1}× {i.name}{mods}</span>
-                                    <span className="text-slate-400 flex-shrink-0 tabular-nums">{fmtGBP(i.unit_price || 0)}</span>
+                                    <span className="text-slate-400 flex-shrink-0 tabular-nums">{orderMoney(o, i.unit_price || 0)}</span>
                                   </div>
                                 )
                               })}
@@ -15591,14 +15669,14 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
               // member items indented beneath (no per-item price). Non-deal items render flat. The CSV
               // export keeps the full per-item data (explodeOrderItems) — unaffected by this display grouping.
               type GRow = { key: string; kind: 'deal' | 'member' | 'item'; firstOfOrder: boolean
-                orderId?: any; dateFull?: string; time?: string; channel?: string; name: string; qty: number; total: number | null }
+                orderId?: any; dateFull?: string; time?: string; channel?: string; name: string; qty: number; total: number | null
+                /** The order's own format (its currency, the truck's locale). */
+                fmt?: MoneyFormat }
               const grouped: GRow[] = []
               for (const o of orders) {
                 const createdAt = o.created_at ? new Date(o.created_at) : null
-                const dd = createdAt ? String(createdAt.getDate()).padStart(2, '0') : ''
-                const mm = createdAt ? String(createdAt.getMonth() + 1).padStart(2, '0') : ''
-                const dateFull = createdAt ? `${dd}/${mm}/${String(createdAt.getFullYear()).slice(2)}` : ''
-                const time = createdAt ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`) : ''
+                const dateFull = createdAt ? formatNumericDate(localDateOfInstant(createdAt, ts.timeZone), ts, true) : ''
+                const time = createdAt ? formatTime(clockOfInstantInTz(createdAt, ts.timeZone), ts) : ''
                 const channel = o.customer_email ? 'Online' : 'Walk-up'
                 const items = Array.isArray(o.items) ? o.items : []
                 const deals = Array.isArray(o.deals) ? o.deals : []
@@ -15607,7 +15685,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                 let first = true
                 for (const d of deals) {
                   const memberNames = Object.values(d.slots || {}).filter(Boolean) as string[]
-                  grouped.push({ key: `${o.order_key}-deal-${d.name}`, kind: 'deal', firstOfOrder: first, orderId: o.id, dateFull, time, channel, name: `🎁 ${d.name}`, qty: 0, total: d.price || 0 })
+                  grouped.push({ key: `${o.order_key}-deal-${d.name}`, kind: 'deal', firstOfOrder: first, orderId: o.id, dateFull, time, channel, name: `🎁 ${d.name}`, qty: 0, total: d.price || 0, fmt: orderFormat(o, truckFmt) })
                   first = false
                   for (const item of items) {
                     if (memberNames.includes(item.name)) {
@@ -15617,7 +15695,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                 }
                 for (const item of items) {
                   if (dealMemberNames.has(item.name)) continue
-                  grouped.push({ key: `${o.order_key}-i-${item.name}`, kind: 'item', firstOfOrder: first, orderId: o.id, dateFull, time, channel, name: item.name, qty: item.quantity || 1, total: (item.unit_price || 0) * (item.quantity || 1) })
+                  grouped.push({ key: `${o.order_key}-i-${item.name}`, kind: 'item', firstOfOrder: first, orderId: o.id, dateFull, time, channel, name: item.name, qty: item.quantity || 1, total: (item.unit_price || 0) * (item.quantity || 1), fmt: orderFormat(o, truckFmt) })
                   first = false
                 }
               }
@@ -15633,7 +15711,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                         <span className="font-medium text-slate-500 truncate">{r.channel || ''}</span>
                         <span className={`truncate min-w-0 ${r.kind === 'member' ? 'pl-4 text-slate-500' : r.kind === 'deal' ? 'font-medium text-slate-800' : 'text-slate-700'}`}>{r.kind === 'member' ? '↳ ' : ''}{r.name}</span>
                         <span className="text-right text-slate-400 tabular-nums">{r.kind === 'deal' ? '' : r.qty}</span>
-                        <span className="text-right tabular-nums">{r.total === null ? <span className="text-slate-300">—</span> : <span className="font-medium text-slate-900">{fmtGBP(r.total)}</span>}</span>
+                        <span className="text-right tabular-nums">{r.total === null ? <span className="text-slate-300">—</span> : <span className="font-medium text-slate-900">{fmtMoney(r.total, r.fmt ?? truckFmt)}</span>}</span>
                       </div>
                     ))}
                   </div>
@@ -15642,7 +15720,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                     {grouped.map((r) => (
                       <div key={r.key} className={`flex items-center justify-between gap-2 py-2 text-xs ${r.kind === 'deal' ? 'bg-orange-50' : ''}`}>
                         <span className={`truncate min-w-0 ${r.kind === 'member' ? 'pl-4 text-slate-500' : r.kind === 'deal' ? 'font-medium text-slate-800' : 'text-slate-700'}`}>{r.kind === 'member' ? `↳ ${r.qty}× ${r.name}` : r.kind === 'deal' ? r.name : `${r.qty}× ${r.name}`}</span>
-                        <span className="flex-shrink-0 tabular-nums">{r.total === null ? <span className="text-slate-300">—</span> : <span className="font-medium text-slate-900">{fmtGBP(r.total)}</span>}</span>
+                        <span className="flex-shrink-0 tabular-nums">{r.total === null ? <span className="text-slate-300">—</span> : <span className="font-medium text-slate-900">{fmtMoney(r.total, r.fmt ?? truckFmt)}</span>}</span>
                       </div>
                     ))}
                   </div>

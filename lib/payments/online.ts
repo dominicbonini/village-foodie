@@ -92,7 +92,8 @@ export async function recordOnlineCardPayment(
     amountMinor: number
     paymentIntentId: string
     livemode: boolean
-    currency?: string
+    /** REQUIRED — the order's currency, or the Stripe object's. Normalised by the ledger writer. */
+    currency: string
   },
 ) {
   // 🔴 THE AMOUNT IS STRIPE'S, NOT OURS. `amount_received` on the PaymentIntent is what the customer
@@ -149,7 +150,8 @@ export async function recordOnlineCardRefund(
     /** The intent this refund is against. Recorded so a row can be traced back without a join. */
     paymentIntentId: string | null
     livemode: boolean
-    currency?: string
+    /** REQUIRED — the order's currency, or the Stripe object's. Normalised by the ledger writer. */
+    currency: string
   },
 ) {
   return recordPaymentEvent(supabase, {

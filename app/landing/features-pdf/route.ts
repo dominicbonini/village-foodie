@@ -23,7 +23,7 @@
 // uses `verifyAdmin`, the same canonical check app/landing/layout.tsx uses, so the two cannot diverge.
 // 🔴 IF THIS CHECK IS DELETED THE WHOLE PRICED FEATURE MATRIX BECOMES A PUBLIC DOWNLOAD. Nothing else
 // stands between this URL and the internet.
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { verifyAdmin } from '@/lib/auth/admin'
 // 🔴 THE DOCUMENT ITSELF MOVED TO lib/plans-pdf.ts ON 30 SEPTEMBER 2026, UNCHANGED, so outreach's
 // "Plans PDF" attach button generates the SAME file this route downloads. Everything this file kept
@@ -32,20 +32,26 @@ import { verifyAdmin } from '@/lib/auth/admin'
 // shared code could not simply be exported from here.
 import { generatePlansPdf } from '@/lib/plans-pdf'
 import { plansPdfFilename } from '@/lib/outreach-attachments'
+import { resolveVisitorCountry } from '@/lib/visitor-country'
 
 export const dynamic = 'force-dynamic'
 // Chromium cold-starts and renders. The established launcher in app/api/manage/verify-schedule-url
 // sits on the same budget; this does strictly less work than a scrape.
 export const maxDuration = 60
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   // 🔴 THE GATE. See the header: this is NOT inherited, it is the only thing there is.
   if (!(await verifyAdmin())) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
   try {
-    const pdf = await generatePlansPdf()
+    // Phase 2D-1: THE SAME COUNTRY THE MARKETING PAGES SHOW THIS VISITOR (lib/visitor-country.ts) —
+    // ?country → the hg_country cookie → x-vercel-ip-country → GB, switched-on only. The route is admin-only,
+    // so in practice it is the admin's own choice in the menu. (Outreach attaches by the prospect's own
+    // rules, not through this route.)
+    const visitor = await resolveVisitorCountry(req.nextUrl.searchParams.get('country'))
+    const pdf = await generatePlansPdf(visitor.settings.countryCode)
     return new NextResponse(new Uint8Array(pdf), {
       headers: {
         'Content-Type': 'application/pdf',

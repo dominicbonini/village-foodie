@@ -9,6 +9,8 @@ import { readEventTypesForTruck } from '@/lib/event-types/read'
 /* 🔴 PRIVATE EVENTS: this feed SHOWS them, redacted. See the note above the mapper. */
 import { readPrivateEventIds } from '@/lib/private-events/read'
 import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
+import { truckTimeSettings } from '@/lib/truck-time'
+import { getLocalDateInTz, addDaysYmd, formatOrdinalDate, type TimeSettings } from '@/lib/time-utils'
 
 export const revalidate = 0
 
@@ -17,19 +19,14 @@ function toddmmyyyy(isoDate: string): string {
   return `${d}/${m}/${y}`
 }
 
-function formatFriendly(isoDate: string): string {
-  const [y, m, d] = isoDate.split('-').map(Number)
-  const date = new Date(y, m - 1, d)
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1)
-  const check = new Date(date); check.setHours(0, 0, 0, 0)
-  const dayName = date.toLocaleDateString('en-GB', { weekday: 'long' })
-  const day = date.getDate()
-  const suffix = [11, 12, 13].includes(day) ? 'th' : (['st', 'nd', 'rd'][(day % 10) - 1] || 'th')
-  const month = date.toLocaleDateString('en-GB', { month: 'long' })
-  const base = `${dayName} ${day}${suffix} ${month}`
-  if (check.getTime() === today.getTime()) return `Today · ${base}`
-  if (check.getTime() === tomorrow.getTime()) return `Tomorrow · ${base}`
+/** "Today · Friday 9th October" / "Tomorrow · …" / "Wednesday 14th October" — on the TRUCK's clock and in
+ *  its country's order (Phase 2B). It was the server's clock: UTC on Vercel, so from 00:00 to 01:00 BST
+ *  today's event read "Tomorrow". GB wording is unchanged. */
+function formatFriendly(isoDate: string, ts: TimeSettings): string {
+  const today = getLocalDateInTz(ts.timeZone)
+  const base = formatOrdinalDate(isoDate, ts)
+  if (isoDate === today) return `Today · ${base}`
+  if (isoDate === addDaysYmd(today, 1)) return `Tomorrow · ${base}`
   return base
 }
 
@@ -39,19 +36,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'truck param required' }, { status: 400 })
   }
 
-  const today = new Date().toISOString().split('T')[0]
 
   // Try slug first, fall back to ID — same pattern as /api/menu/[truckId]
   let truckQuery = await supabase
     .from('trucks')
-    .select('id, name')
+    .select('id, name, timezone, country')
     .eq('slug', truckSlug)
     .single()
 
   if (truckQuery.error || !truckQuery.data) {
     truckQuery = await supabase
       .from('trucks')
-      .select('id, name')
+      .select('id, name, timezone, country')
       .eq('id', truckSlug)
       .single()
   }
@@ -71,6 +67,10 @@ export async function GET(req: NextRequest) {
   // TODO: add customer_note to this select and surface it on the customer order page
   // below the event details card. Saves to truck_events.customer_note.
   // See session notes May 2026.
+  // 🔴 THE TRUCK'S TODAY AND STYLE (Phase 2B) — was the UTC date and the server's clock.
+  const ts = await truckTimeSettings(truck)
+  const today = getLocalDateInTz(ts.timeZone)
+
   const { data: rows, error } = await supabase
     .from('truck_events')
     // status + opened_at expose the operator-STARTED signal so customer surfaces derive "live" from
@@ -137,7 +137,7 @@ export async function GET(req: NextRequest) {
       id:            e.id,
       date:          toddmmyyyy(e.event_date),
       date_iso:      e.event_date,
-      date_friendly: formatFriendly(e.event_date),
+      date_friendly: formatFriendly(e.event_date, ts),
       start_time:    e.start_time || '',
       end_time:      e.end_time || '',
       truck_name:    truck.name,
@@ -172,5 +172,8 @@ export async function GET(req: NextRequest) {
     truck_name:  truck.name,
     events,
     next_event:  events[0] || null,
+    // 🔴 The truck's zone and display settings (Phase 2B) — the order page's "ended" and 14-day checks
+    // run on the truck's clock, and its cards read in the truck's country's style.
+    time:        ts,
   })
 }

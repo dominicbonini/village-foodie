@@ -5,20 +5,10 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 )
 
-// Event LOCAL wall-clock is UK; the Deno runtime is UTC. Derive "now" in Europe/London so the
-// live-now window comparison is like-for-like (handles BST/GMT). Mirrors auto-event-scheduler.
-function londonNow(now: Date): { today: string; currentTime: string } {
-  const parts = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/London',
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
-  }).formatToParts(now)
-  const get = (t: string) => parts.find(p => p.type === t)?.value ?? ''
-  return {
-    today: `${get('year')}-${get('month')}-${get('day')}`,
-    currentTime: `${get('hour')}:${get('minute')}`, // HH:MM 00-23
-  }
-}
+// ══ 🔴 NO CLOCK DECIDES ANYTHING HERE (Phase 2B, 10 October 2026) ══════════════════════════════════════
+// The live-event gate is status-based (status='open'), and the pause expiry is an INSTANT (now + 2h), so no
+// truck's "today" or "now" enters a decision. The London wall-clock this file used to compute fed one log
+// line only, and is gone — no zone is named for a truck anywhere in this function.
 
 Deno.serve(async () => {
   const STALE_THRESHOLD_SECONDS = 30
@@ -26,7 +16,6 @@ Deno.serve(async () => {
   const now = new Date()
   const staleThreshold = new Date(now.getTime() - STALE_THRESHOLD_SECONDS * 1000).toISOString()
   const autoPauseUntil = new Date(now.getTime() + AUTO_PAUSE_DURATION_HOURS * 60 * 60 * 1000).toISOString()
-  const { today, currentTime } = londonNow(now)
 
   // Stale active vans (heartbeat older than the threshold, or never sent). NOT pre-filtered by
   // auto_pause_on_offline — effective offline-protection is decided PER live event below
@@ -45,9 +34,9 @@ Deno.serve(async () => {
     return new Response('error', { status: 500 })
   }
 
-  // DIAGNOSTIC: what this run sees — London now (for context only; the gate is status-based, NOT
-  // clock-based), the stale threshold, and every stale van it found with its last heartbeat.
-  console.log(`[heartbeat-monitor] run @ ${now.toISOString()} | London ${today} ${currentTime} | staleThreshold=${staleThreshold} | staleVans=${stalledVans?.length ?? 0}`)
+  // DIAGNOSTIC: what this run sees — the instant (UTC), the stale threshold, and every stale van it found
+  // with its last heartbeat. (The gate is status-based, NOT clock-based.)
+  console.log(`[heartbeat-monitor] run @ ${now.toISOString()} | staleThreshold=${staleThreshold} | staleVans=${stalledVans?.length ?? 0}`)
   for (const v of stalledVans ?? []) {
     console.log(`[heartbeat-monitor]   stale van ${v.id} (${v.name}) last_heartbeat_at=${v.last_heartbeat_at ?? 'never'}`)
   }

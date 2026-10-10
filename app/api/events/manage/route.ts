@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { truckTimeZone } from '@/lib/truck-time'
+import { getLocalDateInTz } from '@/lib/time-utils'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
@@ -15,7 +17,7 @@ export async function GET(req: NextRequest) {
 
   const { data: truck } = await supabase
     .from('trucks')
-    .select('id')
+    .select('id, timezone, country')
     .eq('dashboard_token', token)
     .single()
 
@@ -31,7 +33,8 @@ export async function GET(req: NextRequest) {
 
   if (status) query = query.eq('status', status)
   if (upcoming === 'true') {
-    const today = new Date().toISOString().split('T')[0]
+    // The truck's today (Phase 2B; the UTC date was yesterday from 00:00 to 01:00 BST).
+    const today = getLocalDateInTz(await truckTimeZone(truck))
     query = query.gte('event_date', today)
   }
 

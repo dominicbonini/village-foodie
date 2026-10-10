@@ -69,15 +69,15 @@ t('a sentence is not an email', D.normaliseEmail('email us at the page') === nul
 t('a double dot is refused', D.normaliseEmail('a..b@c.com') === null)
 
 t('+44 becomes 0 and groups as a mobile',
-  D.normaliseUkPhone('+44 7400 049108').mobile === '07400 049108')
-t('0044 becomes 0', D.normaliseUkPhone('0044 7400 049108').mobile === '07400 049108')
-t('a mobile is never written to the landline field', D.normaliseUkPhone('07400049108').landline === null)
-t('a London landline groups 3/4/4', D.normaliseUkPhone('020 7946 0018').landline === '020 7946 0018')
-t('a Cambridge landline groups 5/6', D.normaliseUkPhone('01223123456').landline === '01223 123456')
-t('a non-geographic 03 groups 4/3/4', D.normaliseUkPhone('0300 123 1234').landline === '0300 123 1234')
+  D.normaliseUkPhone('+44 7400 049108', 'GB').mobile === '07400 049108')
+t('0044 becomes 0', D.normaliseUkPhone('0044 7400 049108', 'GB').mobile === '07400 049108')
+t('a mobile is never written to the landline field', D.normaliseUkPhone('07400049108', 'GB').landline === null)
+t('a London landline groups 3/4/4', D.normaliseUkPhone('020 7946 0018', 'GB').landline === '020 7946 0018')
+t('a Cambridge landline groups 5/6', D.normaliseUkPhone('01223123456', 'GB').landline === '01223 123456')
+t('a non-geographic 03 groups 4/3/4', D.normaliseUkPhone('0300 123 1234', 'GB').landline === '0300 123 1234')
 t('🔴 a number too short to classify is DISCARDED, not half-normalised',
-  D.normaliseUkPhone('12345').mobile === null && D.normaliseUkPhone('12345').landline === null)
-t('a US number is refused', D.normaliseUkPhone('+1 415 555 2671').mobile === null)
+  D.normaliseUkPhone('12345', 'GB').mobile === null && D.normaliseUkPhone('12345', 'GB').landline === null)
+t('a US number is refused', D.normaliseUkPhone('+1 415 555 2671', 'GB').mobile === null)
 
 t('a website becomes a bare domain', D.bareDomain('https://www.3brosburgers.co.uk/menu') === '3brosburgers.co.uk')
 t('a scheme-less address works', D.bareDomain('3brosburgers.co.uk') === '3brosburgers.co.uk')
@@ -405,7 +405,37 @@ function fakeDb(opts = {}) {
     try { execFileSync('git', ['diff', '--quiet', 'HEAD', '--', f], { cwd: REPO, stdio: 'pipe' }); return true }
     catch { return false }
   }
-  t('🔴 the schedule extraction module is byte-identical to HEAD', gitClean('lib/admin/screenshot-events.ts'))
+  /* ══ PHASE 2D-2 PART A (schedules by country) — THE FIFTH NAMED BUILD ══════════════════════════════════
+   * It legitimately changed three files this section guards: the screenshot prompt takes the chosen country,
+   * the bridge matches and links within a country, and the operator importer takes truck context. Its lines
+   * are listed in scripts/fixtures/screenshot-truck-details-2d2-lines.json — each ADDED line must still be a
+   * whole line of the file and each REMOVED line must no longer be one — and its GB behaviour is proven
+   * byte-identical by scripts/schedules-country-parity.cjs. Every OTHER difference still fails. A line both
+   * removed and added is a re-indent (a block moved inside an `else`), not a change. */
+  const T2D2 = JSON.parse(read('scripts/fixtures/screenshot-truck-details-2d2-lines.json'))
+  const expired2d2 = f => {
+    const have = new Set(read(f).split('\n').map(l => l.trim())), e = T2D2[f] || { added: [], removed: [] }
+    const missing = e.added.filter(l => !have.has(l)), back = e.removed.filter(l => have.has(l))
+    if (missing.length || back.length) console.log('      ⛔ PHASE 2D-2 LINE ' + (missing.length ? 'MISSING: ' + missing[0] : 'RESURRECTED: ' + back[0]).slice(0, 160))
+    return !missing.length && !back.length
+  }
+  const lines2d2 = f => new Set(read(f).split('\n').map(l => l.trim()))
+  const named2d2 = (f, l) => { const e = T2D2[f] || { added: [], removed: [] }; return e.added.includes(l) || e.removed.includes(l) }
+  const diffSides = f => {
+    const diff = execFileSync('git', ['diff', '-U0', 'HEAD', '--', f], { cwd: REPO, encoding: 'utf8' }).split('\n')
+    // Only the `+++ ` / `--- ` file headers are skipped — a removed line whose own text starts with "-" is kept.
+    const side = c => diff.filter(l => l[0] === c && !/^(\+\+\+|---) /.test(l)).map(l => l.slice(1).trim())
+      .filter(l => l && !/^(\/\*|\*|\/\/)/.test(l) && /[A-Za-z0-9'"`]/.test(l))
+    return { plus: side('+'), minus: side('-') }
+  }
+  t('🔴 the schedule extraction module is unchanged apart from Phase 2D-2\'s named lines', (() => {
+    const f = 'lib/admin/screenshot-events.ts'
+    if (gitClean(f)) return true
+    const { plus, minus } = diffSides(f)
+    const bad = [...plus, ...minus].filter(l => !named2d2(f, l) && !(plus.includes(l) && minus.includes(l)))
+    if (bad.length) { console.log('      LINES CHANGED AND NOT ALLOWED: ' + bad.length); for (const l of bad.slice(0, 10)) console.log('        • ' + l.slice(0, 140)); return false }
+    return expired2d2(f)
+  })())
   /* ⚠️ NARROWED, NOT DROPPED (October 2026, event types stage 1-2). This read `gitClean(...)` — a
    * byte-identity guard against a FLOATING HEAD — and its meaning is "the screenshot/truck-details
    * work did not touch the scraped-event bridge". A later, unrelated build legitimately added ONE key
@@ -427,7 +457,7 @@ function fakeDb(opts = {}) {
    * byte-identity check cannot tell a legitimate later build apart from a change to the bridging
    * logic. Each entry is a claim with a test attached — the loop below fails if a tolerated line is
    * no longer in the file, so a revert or a rename turns the excuse back into a failure. */
-  t('🔴 /api/inbound-schedule is unchanged apart from two named later builds', (() => {
+  t('🔴 /api/inbound-schedule is unchanged apart from four named later builds', (() => {
     const f = 'app/api/inbound-schedule/route.ts'
     const TOLERATED = [
       // event types stage 1-2: a creation path records that IT wrote order_ready_override.
@@ -445,6 +475,18 @@ function fakeDb(opts = {}) {
        * guard exists to protect. The changed line is the one that builds a link in an email body. */
       "import { manageTabHref } from '@/lib/manage-links'",
       "const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}${manageTabHref('schedule', { token: truck.dashboard_token })}`",
+      /* ══ THE FOURTH BUILD: PHASE 2B, THE TRUCK'S CLOCK (10 October 2026) ═══════════════════════════════
+       * The email's "found events" list is filtered from the TRUCK's today (was the UTC date — yesterday
+       * from 00:00 to 01:00 BST) and its dates and times are written in the truck's style. ⛔ The bridge
+       * is untouched: no column written, no admission rule, no filter other than that "today". */
+      "import { truckTimeSettings } from '@/lib/truck-time'",
+      "import { getLocalDateInTz, formatYmd, formatTime } from '@/lib/time-utils'",
+      ".select('contact_email, name, dashboard_token, timezone, country')",
+      "const ts = await truckTimeSettings(truck)",
+      ".gte('event_date', getLocalDateInTz(ts.timeZone))",
+      "const fmtDate = (iso: string) => formatYmd(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })",
+      "const a = st ? formatTime(String(st), ts) : ''",
+      "const b = et ? formatTime(String(et), ts) : ''",
     ]
     /* ══ ⛔ AND A LINE THAT WAS **REPLACED** NEEDS ITS OLD FORM TOLERATING TOO ════════════════════
      * `git diff` reports a replacement as a `-` AND a `+`, and this check reads both — so the first
@@ -457,6 +499,14 @@ function fakeDb(opts = {}) {
      * now. */
     const TOLERATED_REMOVED = [
       "const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/manage/${truck.dashboard_token}?tab=schedule`",
+      // Phase 2B — the old forms of the lines above.
+      ".select('contact_email, name, dashboard_token')",
+      ".gte('event_date', new Date().toISOString().slice(0, 10))",
+      "const fmtDate = (iso: string) => {",
+      "const d = new Date(iso + 'T00:00:00')",
+      "return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })",
+      "const a = st ? String(st).slice(0, 5) : ''",
+      "const b = et ? String(et).slice(0, 5) : ''",
     ]
     if (gitClean(f)) return true
     let diff = ''
@@ -468,7 +518,12 @@ function fakeDb(opts = {}) {
       .filter(Boolean)
       /* comment lines are not behaviour */
       .filter(l => !/^(\/\*|\*|\/\/)/.test(l))
-    const unexplained = changed.filter(l => !TOLERATED.includes(l) && !TOLERATED_REMOVED.includes(l))
+    /* ⚠️ A LINE OF BARE PUNCTUATION IS NOT A LINE THIS GUARD PROTECTS (Phase 2B): a three-line helper became a
+     * one-liner, so its closing `}` went — and a `}` cannot be named as "removed" (the file is full of them)
+     * nor proves anything about the bridge. Anything with a letter, digit or quote is still checked. */
+    const sides = diffSides(f)
+    const unexplained = changed.filter(l => /[A-Za-z0-9'"`]/.test(l)).filter(l => !TOLERATED.includes(l) && !TOLERATED_REMOVED.includes(l))
+      .filter(l => !named2d2(f, l) && !(sides.plus.includes(l) && sides.minus.includes(l)))
     if (unexplained.length) {
       console.log('      LINES CHANGED AND NOT ALLOWED: ' + unexplained.length)
       for (const l of unexplained.slice(0, 10)) console.log('        • ' + l.slice(0, 140))
@@ -489,17 +544,72 @@ function fakeDb(opts = {}) {
       console.log('      ⛔ LINE CLAIMED AS REMOVED BUT STILL PRESENT: ' + resurrected.join(' | ').slice(0, 160))
       return false
     }
-    return true
+    return expired2d2(f)
   })())
-  t('🔴 lib/schedule-extract.ts (the operator path) is byte-identical to HEAD', gitClean('lib/schedule-extract.ts'))
+  /* ⚠️ NARROWED, NOT DROPPED (Phase 2B, 10 October 2026), the same way as the bridge above: the operator
+   * path's prompt now states the TRUCK's today (was the server's UTC date — Friday from 00:00 to 01:00 BST
+   * on a Saturday) in its words, and the function is handed the truck's settings. Every other difference
+   * still fails; each named line must be present (added) or gone (removed). The DD/MM/YYYY contract the
+   * model answers in is unchanged — it is one of the named lines. */
+  t('🔴 lib/schedule-extract.ts (the operator path) is unchanged apart from Phase 2B\'s named lines', (() => {
+    const f = 'lib/schedule-extract.ts'
+    if (gitClean(f)) return true
+    const ADDED = [
+      "import { getLocalDateInTz, addDaysYmd, formatYmd, type TimeSettings } from '@/lib/time-utils'",
+      'export function buildScheduleExtractionPrompt(inputText: string, ts: TimeSettings): string {',
+      'const todayYmd = getLocalDateInTz(ts.timeZone)',
+      "const todayStr = formatYmd(todayYmd, ts, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })",
+      'const currentYear = Number(todayYmd.slice(0, 4))',
+      'const ddmmyyyy = (ymd: string) => `${ymd.slice(8, 10)}/${ymd.slice(5, 7)}/${ymd.slice(0, 4)}`',
+      'const ymd = addDaysYmd(todayYmd, i)',
+      "const dayName = formatYmd(ymd, ts, { weekday: 'long' })",
+      'return `${dayName} = ${ddmmyyyy(ymd)}`',
+      'time: TimeSettings,',
+      '? [{ text: buildScheduleExtractionPrompt(content, time) }]',
+      "{ text: buildScheduleExtractionPrompt('', time) },",
+    ]
+    const REMOVED = [
+      'export function buildScheduleExtractionPrompt(inputText: string): string {',
+      'const today = new Date()',
+      "const todayStr = today.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })",
+      'const currentYear = today.getFullYear()',
+      'const d = new Date()', 'd.setDate(d.getDate() + i)',
+      "const dayName = d.toLocaleDateString('en-GB', { weekday: 'long' })",
+      "const dateStr = d.toLocaleDateString('en-GB')",
+      'return `${dayName} = ${dateStr}`',
+      '? [{ text: buildScheduleExtractionPrompt(content) }]',
+      "{ text: buildScheduleExtractionPrompt('') },",
+    ]
+    const diff = execFileSync('git', ['diff', '-U0', 'HEAD', '--', f], { cwd: REPO, encoding: 'utf8' })
+    const plus = [], minus = []
+    for (const l of diff.split('\n')) {
+      if (!/^[+-]/.test(l) || /^[+-][+-]/.test(l)) continue
+      const t = l.slice(1).trim()
+      if (!t || /^(\/\*|\*|\/\/)/.test(t)) continue
+      ;(l[0] === '+' ? plus : minus).push(t)
+    }
+    const now = read(f)
+    const bad = [...plus.filter(x => !ADDED.includes(x)), ...minus.filter(x => !REMOVED.includes(x))]
+      .filter(x => /[A-Za-z0-9'"`]/.test(x) && !named2d2(f, x) && !(plus.includes(x) && minus.includes(x)))
+    if (bad.length) { console.log('      LINES CHANGED AND NOT ALLOWED: ' + bad.length); for (const l of bad.slice(0, 10)) console.log('        • ' + l.slice(0, 140)); return false }
+    // A Phase 2B line that Phase 2D-2 has since changed is SUPERSEDED (named in the 2D-2 fixture) — it must be gone.
+    const superseded = T2D2[f]?.superseded ?? []
+    const missing = ADDED.filter(l => !now.includes(l) && !superseded.includes(l)), back = REMOVED.filter(l => now.includes(l) && !ADDED.includes(l))
+    if (superseded.some(l => lines2d2(f).has(l))) { console.log('      ⛔ A SUPERSEDED PHASE 2B LINE IS STILL PRESENT'); return false }
+    if (missing.length || back.length) { console.log('      ⛔ NAMED LINE ' + (missing.length ? 'MISSING: ' + missing[0] : 'RESURRECTED: ' + back[0])); return false }
+    return expired2d2(f)
+  })())
   t('the one contact writer is untouched', gitClean('lib/outreach-contact-log.ts'))
   t('the outreach_events writer is untouched', gitClean('lib/outreach-events.ts'))
 
   const ROUTE = read('app/api/admin/screenshot-events/route.ts')
-  t('the schedule POST body is still secret + toInboundEvents(kept, file.name)',
-    /secret: process\.env\.INBOUND_SCHEDULE_SECRET,\s*\n\s*events: toInboundEvents\(kept, file\.name\),/.test(ROUTE))
+  // Phase 2D-2: the POST moved into sendToBridge(), which adds the chosen country; the body is otherwise the same.
+  t('the schedule POST body is still secret + toInboundEvents(kept, <file name>) (+ the country, Phase 2D-2)',
+    /secret: process\.env\.INBOUND_SCHEDULE_SECRET,\s*\n\s*events: toInboundEvents\(kept, fileName\),\s*\n\s*country,/.test(ROUTE)
+    && /sendToBridge\(req, kept, file\.name, country\.code\)/.test(ROUTE))
   t('🔴 the schedule call is inside the shouldRunSchedule gate',
-    /if \(shouldRunSchedule\(kind\)\) \{[\s\S]*inbound-schedule/.test(ROUTE))
+    /if \(shouldRunSchedule\(kind\)\) \{[\s\S]*sendToBridge\(req, kept, file\.name/.test(ROUTE)
+    && ROUTE.indexOf('if (shouldRunSchedule(kind)) {') < ROUTE.indexOf('sendToBridge(req, kept, file.name'))
   t('the details path refuses to write without the social columns',
     /if \(!hasSocial\) \{[\s\S]*Nothing was written/.test(ROUTE))
   t('🔴 nothing in the route writes outreach_templates', !/outreach_templates/.test(ROUTE))

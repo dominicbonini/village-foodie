@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V15.6
+HatchGrab Engineering Reference Manual · V15.7
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 15.6**
+**Version 15.7**
 
 October 2026
 
@@ -22,9 +22,41 @@ adds a changelog block **must** also bump the running header at the top of this 
 each other, so one gets bumped and the other is forgotten. **Precedent (the reason this rule exists):** the
 front matter read **Version 11.55** while the header read V11.57 — three releases apart — because every
 delta from V11.56 onward updated the header alone. **Anyone reading the cover page was told the wrong
-version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
+version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V15\.|Version 15\." docs/reference-manual.md | head` — the front matter and the header must agree.
+
+**⚠️ STANDING RULE — NO AGENT PRINTS A SECRET, AND "just the names" IS NOT A SAFE SHORTCUT (V15.7).** No
+agent may `print`, `cat`, `grep`, `sed` or otherwise emit the contents of any `.env*` file, or any key,
+token or credential, into a transcript. To establish whether a variable is configured, report **"set" or
+"missing"** — never the value. **Precedent (the reason this rule exists):** on 9 October 2026 an agent ran
+`sed 's/=.*//'` over `.env.local` intending to list only variable NAMES. `GOOGLE_SHEETS_CREDENTIALS` holds
+multi-line JSON, so the line-wise strip left every continuation line intact and part of a Google
+service-account **private key** was printed into the transcript. ⛔ **THE COMMAND LOOKED SAFE AND WAS NOT**:
+the mistake was reasoning about a file format rather than refusing the file. The key was treated as
+compromised and rotated (new JSON key → `.env.local` and the Vercel Production environment → redeploy →
+delete the old key). ⚠️ **A FILE IS CHECKED FOR A NAME WITH A PARSER THAT EMITS NOTHING**, or it is not
+checked by an agent at all.
 
 # Changelog
+
+## V15.7 — 10 October 2026 — **SOCIAL MEDIA IS A TOP TAB AND OPEN BY PLAN**, THE PHONE GETS ITS OWN DESIGN EDITOR, LOCATION PICTURES BECOME THREE NAMED SLOTS, AND "Set each price myself" STOPS MOVING PRICES. STILL NOT DEPLOYED.
+
+- Applies the 9 October delta (`reference-manual-delta-2026-10-09-social-phone.md`), covering Social
+  media rounds 3–7 and launch prep, phone fixes 1 and 2, the phone design editor, the event-type price
+  lock, editor fixes 8, and the 9 October secret-exposure incident.
+- ✅ **NO NEW MIGRATION IN THIS ENTRY.** The nine migrations it depends on (`20261008` … `20261022`) are
+  already run in production; they are listed in §64.12a.
+- ⚠️ **TWO STATEMENTS IN THE DELTA WERE ALREADY OUT OF DATE WHEN IT WAS WRITTEN, AND ARE RECORDED HERE
+  AS THE CODE NOW STANDS, NOT AS THE DELTA PHRASED THEM** — see §64.12c and §65.4. The delta's own rule
+  is "replace superseded text rather than appending contradictions", and that applies to the delta too.
+
+| What | Where |
+|---|---|
+| 🔴 **SOCIAL MEDIA IS A TOP-LEVEL TAB, GATED BY ONE PLAN KEY** | `schedule_graphics` in `PRO_FEATURES`; `places_posts_preview` is gone from the code. `gated(truck)` runs on **both** the POST and the GET of `/api/weekly-post`, because the GET serves font files. §64.12a |
+| 🔴 **THREE NAMED LOCATION PICTURE SLOTS, AND THE COLUMN NAMES LIE** | `weekly_picture_id`, `event_photo_picture_id` and `event_picture_id` (which is the **poster**). Kept rather than renamed because a rename is a drop-and-add; the column comments are the record. §64.13 |
+| 🔴 **THE EDITOR DRAWS ON THE LAYOUT'S CANVAS, NOT THE PICTURE'S** | when the two differed, the words drew small and to the top-left, the outlines ran off the right edge, and a resize collapsed and snapped back — **one cause, three reports**. §75.2 |
+| 🔴 **A PHONE DESIGN EDITOR, BELOW 768px, WITH THE DESKTOP PROVEN UNCHANGED** | one `SettingsPanel` for both, through `only?: SettingsGroup`; the sheet is part of the layout, so the poster shrinks above it rather than hiding behind it. `docs/phone-editor-baseline.json` is the fingerprint — **commit it; never regenerate it to make a run pass**. §75.3 |
+| 🔴 **"Set each price myself" WRITES THE PRICES DOWN BEFORE IT TAKES THE RULE AWAY** | `applyPriceRule` applies a stored rounding whatever the mode, so clearing one would have dropped a £14.00 item to £12.50 on a settings save. §70.16 |
+| ⛔ **A GOOGLE SERVICE-ACCOUNT PRIVATE KEY WAS PRINTED INTO A TRANSCRIPT** | `sed` over `.env.local`; `GOOGLE_SHEETS_CREDENTIALS` is multi-line JSON. Key rotated. **New standing rule at the head of this manual.** |
 
 ## V15.6 — 10 October 2026 — **THE EDITOR DRAWS ITS OWN WORDS**, THE POSTER TREE LEAVES THE RENDERER, CLEARER BUTTONS, DELETE YOUR OWN TEXT, AND THREE PICTURE BOXES THAT LINE UP. STILL NOT DEPLOYED.
 
@@ -14392,6 +14424,25 @@ Truck name bold, operator first name muted below (currentUserName.split(' ')[0])
 
 slate-700 body, slate-500 secondary, slate-400 decorative only; orange reserved for current-plan/active highlights. Apply to any new operator surface.
 
+### Phone fixes — what a 390px screen forced (V15.7, 9–10 October 2026)
+
+All of these were reported by Dominic on an iPhone and measured at **390×844 and 430×932 in WebKit**,
+with 1100 and 1728 held unchanged.
+
+| Screen | What was wrong, and what it is now |
+|---|---|
+| **Settings sub-tabs** | the row scrolled and nothing said so — §65.6 |
+| **Location settings** | below 768px it is **two screens**: the list, then one location. "‹ All locations" **pushes a history entry**, so the phone's own back gesture returns to the list rather than leaving the tab. Three compact 72px cards. ⚠️ The phone card's file inputs use a **`pic-phone-` id prefix**, because two inputs with one id means the label opens the wrong picker |
+| **Event types card** (`TypeCard`) | labels sit **above** full-width selects — at `w-[130px]` the two longest options in the product clipped mid-word ("Set each pric", "Always rounc"), so the one control whose job is to say what the rule IS could not say it |
+| | "Set each price myself" shows **"Set the price of each item" immediately** — that mode *is* the instruction to set each price, so a fold in front of it was the fold at its least defensible |
+| | every other mode gets one **full-width outlined** "See or change each item's price ›" / "Hide item prices ⌃" — it replaced a grey badge an operator never noticed |
+| | **Amount and Rounding are hidden** in "Set each price myself"; the desktop grid had hidden them since 5 October and this card never got the rule |
+| | **"N items have their own price"** replaces "N set by hand" — and is hidden at 0, and hidden entirely in "Set each price myself", where every item has one |
+| | ⚠️ **All of it uses the same `PriceCell` and `set_type_item_price` as the desktop.** A second phone-only price control would be a second answer to "what will this dish cost" |
+| **Dashboard › Items — this event** | "✎ Edit prices" is a **compact outlined button on the title row** at every width. A full-width solid bar reads as the card's primary action, and the primary action here is the stock controls |
+| | headings are **PRICE · LIMIT · ON** — "ITEM LIMIT" is 10 characters in a 64px column and "AVAILABLE" 9 in a 48px one, and both overflowed into their neighbour. ⛔ **The column widths did not change**; they are the row cells' widths too |
+| | ⚠️ the controls carry full `aria-label`s — **"Available — <dish>"**, **"Item limit — <dish>"** — because shortening the only visible word to two letters is a cost the screen reader should not pay |
+
 
 # 24. Scraper workflow (V6, updated V6.2)
 
@@ -20023,6 +20074,96 @@ safety check.
 `lib/` for the same shape at the time of writing; `seedDemoOrders` was the only member found with **no**
 reader, but the sweep was not exhaustive across `app/`. Anything matching should be either wired to a
 consumer or have its comment demoted to what it actually is.
+
+## 35.aa 🔴 A TAILWIND CLASS IS ONLY AS PRESENT AS THE LAST BUILD THAT SCANNED FOR IT (V15.7)
+
+**The class.** Tailwind emits only the utilities it finds in the source **at build time**. ⛔ **AN ABSENT
+CLASS DOES NOT FAIL — IT LAYS OUT DIFFERENTLY**, which is the worst of both worlds: correct source, wrong
+screen, and nothing in the console.
+
+🧪 **Three instances in four days.** `origin-top-left` (used by exactly one file, created after the build
+— with no rule, `transform-origin` defaults to the element's **centre**, which threw a 1080×1350 poster's
+words into the wrong half of a 460×575 stage); `h-[72px]` (thumbnails measured 72×20 and 72×4 on correct
+source); and `md:p-0` / `md:inline-flex` (a fingerprint full of real-looking regressions that were nothing
+but a stale `.next/`).
+
+**THE RULE, in two halves:**
+- **LOAD-BEARING GEOMETRY DOES NOT GO IN A CLASS.** `transform-origin` is inline now, beside the
+  `transform` it governs.
+- **A BROWSER HARNESS REFUSES A BUILD THAT IS MISSING THE ARBITRARY CLASSES ITS CLAIMS REST ON**, by
+  name, matched **literally** — the compiled selector escapes its own brackets, so a regex built from the
+  source spelling reports every class missing. ⚠️ And the minifier strips attribute quotes, so
+  `[data-fade="both"]` is `[data-fade=both]` in the artefact.
+
+⚠️ **SWEEP STATUS — OPEN.** Three members found and fixed; the guard exists in `live-text-place.cjs`,
+`phone-editor.cjs`, `subtab-row.cjs` and `social-tab-render.cjs`. Not swept across every harness.
+
+## 35.ab 🔴 CASCADE ORDER BEATS READING ORDER (V15.7)
+
+🧪 **`md:` COMPILES AFTER `min-[1100px]:`** (measured: offsets 102,930 against 98,479 in the same
+stylesheet). So at 1100px both match and the **later** one wins — the opposite of what reading the class
+list suggests. Writing the editor grid's column count as a `md:` utility beat
+`min-[1100px]:grid-cols-[minmax(0,1fr)_380px]` and **dropped the settings panel below the poster at every
+desktop width**. ⚠️ A column count belongs in the base layer, which comes before every media query.
+
+🧪 **`hidden` LOSES TO `inline-flex` ON THE SAME ELEMENT** (`.hidden` at 41,906, `.inline-flex` at 41,985).
+`hidden md:inline-flex` on a button already carrying `TOOL_BTN` — which contains `inline-flex` — did
+nothing. ⛔ **IT TYPE-CHECKS, IT BUILDS, IT LINTS, AND IT IS WRONG; a screenshot is what found it.** Put
+the two display classes on a **wrapper that sets nothing else**, which is why the Cancel button beside it
+was correct the whole time.
+
+⚠️ **SWEEP STATUS — CLOSED for `hidden`.** `scripts/subtab-row.cjs` reads every `className` in
+`DesignEditor.tsx`, **expands the shared class constants**, and fails if `hidden` shares one with another
+display utility. 0 members outstanding at the time of writing.
+
+## 35.ac 🔴 A SOURCE-READING CHECK MUST READ THE CONSTRUCT, NEVER A STRING (V15.7)
+
+**Comments quoting a literal have broken checks repeatedly** — three times in this period alone:
+
+- a CSS-order guard searched the compiled sheet for the offending class name and **matched its own
+  comment about it** (Tailwind scans prose too, and had emitted the class *because* the comment mentioned it);
+- `places-tab.cjs` searched `SocialPosts.tsx` for `★ Main` and `PLACE_OWN_POSITIONS_LINK` to prove they
+  were **gone** — and found the **tombstone comments recording their removal**, reporting the deceased alive;
+- a page-order check anchored on `.from('event_types').update(patch)` from the top of a route and found a
+  **different save** that happens to use a local with the same name.
+
+**THE RULE.** Read `className=`, `import`, an attribute, a construct — or read the comment-stripped
+source (`codeOf`). ⚠️ And anchor a search **from the thing it is about**, not from the top of the file.
+
+## 35.ad 🔴 BROWSER TRUTH NEEDS A REAL LAYOUT ENGINE (V15.7)
+
+Four kinds of check were green while the screen was wrong: source readers, a tree-vs-PNG comparison, a
+mini-DOM mount with **no layout engine**, and a harness measuring the dev server's stylesheet.
+
+🔴 **SO `scripts/live-text-place.cjs` AND `scripts/phone-editor.cjs` BUNDLE THE REAL `DesignEditor` WITH
+esbuild AND MEASURE IT IN WEBKIT AND CHROMIUM**, over a tiny local server that answers the font GET with
+the committed Oswald file. ⛔ **EACH CARRIES A CONTROL THAT REPRODUCES THE OLD BUG** — `live-text-place`
+rebuilds the editor from the **pre-fix source** through an esbuild plugin, so the control is the code as
+it actually stood rather than a straw man.
+
+⚠️ **TWO MEASUREMENT TRAPS FOUND THE HARD WAY:**
+- **`getComputedStyle` ON A CHILD OF A `display:none` PARENT REPORTS THE CHILD'S OWN `display`.** Count
+  **`getClientRects().length`** instead — having layout boxes is the only honest answer to "is this on the
+  screen".
+- **REACT HAS NOT RE-RENDERED YET.** A `getBoundingClientRect` in the same synchronous block as a
+  dispatched `pointerup` reads the OLD position and reports "moved 0,0" on a drag that worked. The gesture
+  and the measurement are two evaluates with a wait between them.
+
+## 35.ae ⚠️ TWO HARNESSES FLAKE UNDER FULL-SWEEP LOAD (V15.7)
+
+`event-types-render.cjs` and `add-order-refresh-inputs.cjs` have each failed once inside a 98-harness
+sweep — **truncated output, `rc=1`, no failure message** — and passed standalone with every check green.
+⚠️ **RE-RUN STANDALONE BEFORE BELIEVING AN EMPTY-MESSAGE `rc=1`**, and record the flake rather than
+quietly re-running: a harness that fails only under load is still telling you something, even if what it
+is telling you is about the sweep.
+
+## 35.af ⛔ NO AGENT HAS A MANAGE TOKEN OR AN ADMIN SESSION FOR test-truck (V15.7)
+
+Editor work is proved with **mounted components and fixtures**; anything that needs a logged-in page is
+Dominic's to check. ⚠️ **AN AGENT THAT CANNOT REACH A SCREEN MUST SAY SO** rather than infer the screen
+from the source — and must not go looking for credentials to get there (§ the standing rule at the head
+of this manual).
+
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
 **All three recorded facts verified before changing anything:** no `.entitlements` file anywhere under `ios/` (`find` returns nothing); **no `CODE_SIGN_ENTITLEMENTS` in either build configuration**; and **no Push Notifications capability** — an enabled capability leaves a `SystemCapabilities` block and an entitlements key, and neither existed. §36's statement that the APNs path *"has been written, deployed and reasoned about, and has never been able to obtain a token"* was accurate, and the reason was this and only this.
@@ -26362,12 +26503,16 @@ Recorded so they are not briefed again.
 - **OBSERVED** — **Social media posts was marked live** in `lib/plan-features.ts` (`pro: true, max: true`,
   and trial follows Max) **on Dominic's explicit instruction**, after the consequence was put to him and
   he chose it over the two alternatives.
-  - 🔴 **IT IS A `true` CELL WITH NO `ROW_FEATURE_MAP` ENTRY, AND THAT IS WHY IT BUILDS.**
-    `canAccess(p, 'places_posts_preview')` is **false for every plan** — starter, pro, max, trial, tester
-    and demo — because the key is in no plan set and is held only through `trucks.feature_overrides`,
-    granted today to **one truck**. `findPlanParityViolations()` `continue`s past a row with no map entry,
-    so the `true` cells are never checked. ⛔ **Adding the obvious map entry would make the guard throw at
-    module load** and break four surfaces in dev.
+  - 🔴 **[SUPERSEDED BY V15.7 — THE ROW IS MAPPED AND ENFORCED NOW.]** It read: *"it is a `true` cell
+    with no `ROW_FEATURE_MAP` entry, and that is why it builds — `canAccess(p, 'places_posts_preview')`
+    is false for every plan, the key is in no plan set and is held only through `trucks.feature_overrides`
+    … adding the obvious map entry would make the guard throw at module load."* ⛔ **THAT WAS TRUE ONLY
+    WHILE THE FEATURE WAS BEHIND A ONE-TRUCK OVERRIDE.** At launch prep on 8 October the gate became one
+    real plan key: `schedule_graphics` is in `PRO_FEATURES`, so pro, max, trial, tester and demo hold it
+    and starter does not. The "Social media posts" row is `pro: true, max: true` **and is mapped in
+    `ROW_FEATURE_MAP`**, so `findPlanParityViolations()` enforces it rather than skipping it. ⚠️ `places_posts_preview`
+    **is gone from the code entirely**; the `trucks.feature_overrides` row on test-truck is left in place
+    and is inert — removing it would change nothing, so it is not worth a write. §64.12a.
   - ⚠️ **So the public pricing table advertises a feature no plan grants.** A recorded decision, not an
     oversight. The two ways to make it honest are written beside the row.
 
@@ -28547,7 +28692,7 @@ choosing a file is not a drag surface.**
 | **The flow** | the EXISTING one: `upload_url` → direct PUT → `confirm_upload` with `which: 'place'`, on /api/weekly-post. Same three calls `EventPost.tsx` makes, so the shape check against the standard design, the 10MB cap, the PNG/JPG rule and the storage path are all the server's existing ones |
 | ⛔ **The shape check is the SERVER's** | the only honest source for an aspect ratio is the real pixels of the stored object. The client's size and type tests are a courtesy that saves a doomed upload |
 | ⚠️ **The thumbnail needs a SIGNED url** | `sg_places` returns `event_bg_path`, a path — the bucket is private. The one action that already signs it is `event_load`, so that is what is called: once, only when the place HAS a picture, and again after an upload. The url is stored WITH its path and the shown url is derived by comparing the two, so removing the picture clears the thumbnail with no second `setState` |
-| ⚠️ **The route is gated on `schedule_graphics` (Max)** | a Pro truck holding the preview key sees this section and is refused on upload, with the route's own sentence — shown rather than hidden, because posts are a Max feature and this picture only exists for a post |
+| ⚠️ **The route is gated on `schedule_graphics`** | ⚠️ **[V15.7: THE PARENTHETICAL "(Max)" IS NO LONGER TRUE.]** `schedule_graphics` moved to `PRO_FEATURES` at launch prep, so **Pro and Max both hold it** and the refusal a Pro truck used to meet is gone. The gate itself is unchanged and is still the route's, not the screen's. §64.12a |
 
 ### Events here
 
@@ -28657,6 +28802,12 @@ row.
 - ⚠️ **"Show hidden" is per-open and never remembered** — somewhere to go and get one back, not a view.
 
 ## 64.12 Social posts — two areas, six boxes, and ONE read (V14.3 — 6 October 2026)
+
+> 🔴 **[V15.7 — THE SHAPE BELOW IS SUPERSEDED. READ §64.12a FIRST.]** This subsection records the
+> two-area segmented-control version. Social media is a **top-level tab with three sub-tabs** now, the
+> single event post comes before the weekly one everywhere, and the gate is one plan key. What survives
+> unchanged is the ONE READ (`social_overview`) and the loop it exists to prevent, which is why the rest
+> of this subsection is kept rather than deleted.
 
 **Make a post** (`?section=posts`, the default) · **Designs** (`?section=designs`). A segmented control
 at the top right; both in the URL, because "send me the designs screen" has to be a link somebody can
@@ -28872,6 +29023,107 @@ operator may need the weekly one or the event one, and Designs is where both are
   different about that EVENT, rather than about the truck.
 - ⚠️ **A private row still has NO button at all.** Disabled is for "not yet"; absent is for "never".
 
+## 64.12a Social media as it stands — a top tab, three sub-tabs, one plan key (V15.7 — 8–10 October 2026)
+
+**Product.** "💬 **Social media**" is a top-level Manage tab, directly after Schedule, with three
+sub-tabs: **Create a post · Designs · Location settings**. On all three the **single event post comes
+before the weekly post**, because it is the one a truck makes most often — one per pitch, several a
+week, against a weekly poster made once and rarely touched. ⚠️ **ALL THREE SCREENS AGREE ABOUT THAT
+ORDER**; two of them disagreeing would be worse than either order.
+
+⛔ **IT DOES NOT POST ANYTHING.** It fills the truck's own uploaded design with dates, places and times,
+ready for the truck to post by hand. Direct posting to Facebook or Instagram needs Meta Graph API app
+review and is a future "Auto-posting" piece.
+
+### The gate — one key, and both HTTP verbs
+
+| | |
+|---|---|
+| **The key** | `schedule_graphics`, now in `PRO_FEATURES` — so pro, max, trial, tester and demo hold it, and **starter does not**. An expired trial gets nothing, through the existing `canAccess` expired branch |
+| ⛔ **`places_posts_preview` IS GONE FROM THE CODE** | the `trucks.feature_overrides` row on test-truck is left in place and is **inert**. Removing it changes nothing, so it is not worth a write |
+| 🔴 **`gated(truck)` RUNS ON BOTH THE POST AND THE GET OF `/api/weekly-post`** | the GET serves **font files**, so a gate on the POST alone would leave a paid asset readable by any truck with a token |
+| **Gate sites** | the Social media tab and Schedule › Events' "Make post" button (`app/manage/[token]/page.tsx`); the `FeatureGate` in `SocialPosts.tsx`; `/api/weekly-post`; and `sg_place_usual_type` in `/api/manage` |
+| ⚠️ **Deliberately UNGATED** | the Add event place picker, Tidy up places, usual-type pre-selection, event types, private events and pricing. None of them is a post |
+| **The refusal copy** | one constant: "Social media posts are on Pro and Max" |
+| **Plan parity** | the features-table row "Social media posts" is `pro: true, max: true` **and mapped in `ROW_FEATURE_MAP`**, so `findPlanParityViolations()` enforces it. ⚠️ This is the change that closed the "`true` cell nothing checks" hole recorded in the V14.x entry above |
+
+⚠️ **WHO COULD SEE IT AT LAUNCH:** the 6 trial trucks (App Tester, Pizza Kitchen, Pizzeria Gusto, Real
+Thai Food, Tikka Tonic, Village Spice) plus the 8 demo-plan trucks. Only **Pizza Kitchen** had a saved
+weekly design, and it was already on the new model.
+
+### The migrations this feature stands on (all run in production)
+
+`20261008_event_post_place_layouts` · `20261015_places_tab` (creates `place_pictures` and its full
+unique index on `path`) · `20261016_place_usual_standard` · `20261017_post_fonts` (`truck_fonts`,
+`font_library_cache`, and the private bucket `post-fonts`) · `20261018_place_picture_library` ·
+`20261019_place_picture_slots` · `20261020_poster_picture_tag_captions` ·
+`20261021_weekly_only_picture` · `20261022_three_location_pictures`.
+
+⛔ **EACH ENDS WITH `notify pgrst, 'reload schema'`, AND IT IS NOT OPTIONAL.** PostgREST answers
+`PGRST205` for a table that exists but is not in its cache — the same trap §8.8 of the scraper manual
+records costing a whole run.
+
+## 64.12b Location pictures — three named slots, and the column names lie (V15.7)
+
+| Column on `truck_places` | What it means | Read by |
+|---|---|---|
+| `weekly_picture_id` | the picture for **weekly** posts | weekly posts only, **no fallback** |
+| `event_photo_picture_id` | the picture for **event** posts — the single event design's picture space | single event posts, when the design's Location picture switch is on |
+| `event_picture_id` | 🔴 the **location POSTER**: a whole poster that REPLACES the standard single event design (subject to the 1% shape rule) | single event posts |
+| `weekly_only_picture_id` | **DEAD.** Emptied by 20261022; its value moved into `weekly_picture_id` | nothing |
+| `picture_use` | **DEAD**, left populated | nothing |
+
+⛔ **THE COLUMN NAMES ARE HISTORICAL AND MISLEADING — `event_picture_id` IS THE POSTER, NOT THE PHOTO.**
+They are kept rather than renamed **because a rename is a drop-and-add**, and the risk of that against
+live rows is worse than the cost of the confusion. ⚠️ **THE COLUMN COMMENTS ARE THE RECORD**; read them
+before trusting a name.
+
+- **"Use the event post picture" / "Use the weekly post picture" point a slot at the SAME `place_pictures`
+  row.** There is no second upload and no file copy.
+- ⛔ **Remove clears the SLOT only.** A stored image is never deleted.
+- ⚠️ **20261022 USED THE PRESENCE OF A COLUMN COMMENT AS ITS "has this already run" GUARD**, so a re-run
+  cannot restore a picture an operator has removed.
+- **Single event order is unchanged:** this post's own image → the location poster → the standard design
+  (plus the event post picture in the picture space). ⛔ **A private event never gets a location image.**
+
+### The Location settings screen
+
+- a list with **LOCATION · EVENT · WEEKLY · POSTER** ✓/– columns;
+- three equal boxes that **bottom-align their picture and button rows** — flex columns, the description
+  `grow`, a fixed-height footer — so three descriptions of different lengths still line their controls up;
+- ⛔ **no file name is shown** (a `Screenshot 2026-10-05 at 11.11.21.png` tells an operator nothing);
+- poster copy: *"Got a ready-made poster for this location? Upload it and we'll use it instead of your
+  single event design."*
+- ⚠️ **Name and area are edited in ONE place** — Schedule › Events › Add event › Tidy up places, where the
+  field is now labelled **"Venue name"**. A second screen editing only the name is how the two come to
+  disagree, and the poster then prints a mismatch neither screen can show.
+
+## 64.12c Create a post, and the captions (V15.7)
+
+**The two halves read the same way**, which is what makes them one screen: a centred tile, one grey
+line under it, a labelled `<select>`, and the orange button pinned at the foot so the two line up.
+
+| | |
+|---|---|
+| 🔴 **THE TILE IS THE POST, NOT THE BLANK** | both halves render the real thing through `renderPng` — the single event half for the chosen event (`event_render`), the weekly half for the chosen week (`render`) — **the same helper the post modal uses**, so the tile and the post cannot disagree. ⚠️ Cached per event/week and cancelled on change; the design's own picture is the placeholder while it loads |
+| 🔴 **"Which event" IS A DROPDOWN** | ⚠️ **[THIS SUPERSEDES THE 9 OCTOBER DELTA, WHICH STILL DESCRIBED A LIST.]** It was a headline card plus "OR PICK ANOTHER EVENT — the next three, then Show all upcoming events". It is one `<select>` naming every upcoming event, matching "Which week" beside it. **"See all upcoming events" is gone**: the dropdown already names them |
+| ⛔ **A PRIVATE BOOKING KEEPS ITS PLACE IN THE DROPDOWN AND IS `disabled`** | leaving it out would make the operator's own diary look wrong; offering it would offer a post the route refuses. The chosen event is drawn from the **postable** list, so a tampered `value` cannot select one |
+| ⚠️ **The grey line under each tile** | the single event half: `imageSourceLine` — "Using your standard single event design", or the location's photo/poster. The weekly half: how many events are in the week, and what was left out |
+| ⛔ **"YOUR NEXT EVENT" AND THE DETAILS BESIDE THE TILE ARE GONE** | the tile IS the post now, and the post already prints the venue, the date and the times — so the block beside it was the same facts a second time in smaller type |
+
+**The caption box is plain editable text**, filled from the template for the chosen event. ⚠️ **Typing in
+it changes THIS POST ONLY and is never saved.** "✎ Edit template" opens the chip editor; Save writes
+`truck_post_designs.caption_template` and refreshes the box.
+
+- **Tokens:** `{venue}` and `{area}` are new; the legacy `{place}` still fills as before. `{day-date}`
+  already includes "on" (or reads "tonight" / "tomorrow").
+- **Default template:** `<Truck> at {venue}, {area} {day-date}, {times}.\n\nOrder ahead: {order-link} {location-tag}`
+- 🔴 **The weekly caption is filled SERVER-SIDE** through `buildWeekData` + `fillCaptionTemplate` +
+  `weekCaptionValues` — the same path as the Make screen, so the caption and the poster describe the
+  same week.
+- ⛔ **Chip delete / cut / paste is handled in `lib/weekly-post/caption-chips.ts`**, because WebKit does
+  not treat a non-editable span as one character and deleting a chip cleared the whole template.
+
 # 65. Navigation: sub-tabs, and Settings as one list (V13.8 — 3 October 2026, branch only)
 
 ## 65.1 The top tab bar
@@ -29041,6 +29293,37 @@ symptom — which is exactly why the second fix "changed nothing" and looked lik
 
 The event form's field writes `truck_events.van_id`, so it is labelled **Van**; the van filter reads "All
 vans" (this string reaches exported CSVs). Labels that genuinely mean a truck were not renamed.
+
+## 65.6 The sub-tab bar on a phone — ONE row that scrolls, and what was tried first (V15.7)
+
+**All four bars** — Menu, Schedule, Social media, Settings — are one `SubTabBar` component plus
+`lib/subtab-scroll.ts`. ⛔ **THEY WERE FOUR COPIES OF THE SAME MARKUP**, and any affordance added to one
+would have been missing from the other three the day it was written.
+
+🧪 **The measurement that started it:** Settings' eight pills come to **951px inside a 390px bar**, so
+'Auto-replies' sat **400px past the right edge** and 'Account deletion' 545px past it — reported as *"on a
+phone the Auto-replies section can't be seen."* It was not a plan check, not a breakpoint and not the
+native-app hide; all three were ruled out before anything was measured.
+
+| | |
+|---|---|
+| 🔴 **The selected pill is scrolled into view when the bar opens** | through the bar's **own `scrollLeft` only**. ⛔ Scrolling an ancestor to bring a pill into view is what caused the "needs a double-click" bug on Settings' jump effect — the jump scrolled the page to a section and this scrolled it back to the pill |
+| ⚠️ **Snap points** | `snap-x snap-proximity` with **`scroll-pl-4 scroll-pr-4`**. ⛔ Without the scroll padding a `snap-start` pill aligns to the scrollport's BORDER edge, so the browser snapped on load, ate the bar's 16px gutter and left the first pill against the screen |
+| ⛔ **`scrollbar-hide` on the bar** | the **app** paints a persistent grey track where mobile Safari uses an overlay one that fades, and the bar already has a `border-b` in the same two pixels. It uses the existing `.scrollbar-hide` utility rather than a second set of rules |
+
+⛔ **TWO THINGS WERE TRIED AND REVERSED, AND BOTH ARE RECORDED BECAUSE THE NEXT READER WILL BE TEMPTED
+BY THEM.**
+1. **Wrapping the pills** (`flex-wrap`) removed the swipe and cost **125px of sticky bar on an 844px
+   screen** — 15% of the phone, permanently, on every scroll of every Settings page. Reversed the same day.
+2. **Edge fades** — a soft gradient at whichever edge still hid pills — were built, measured, and then
+   **removed on request**. ⚠️ **[THIS SUPERSEDES THE 9 OCTOBER DELTA, WHICH STILL DESCRIBED THE FADE AS
+   PRESENT.]** Everything that existed to paint them went with them: the two sticky spans, the `data-fade`
+   attribute, the scroll listener and the `ResizeObserver` — **a listener that paints nothing still runs on
+   every frame of every swipe.** `app/globals.css` is untouched by the whole episode.
+
+⚠️ **THE GUARD THAT COULD ONLY RATCHET, TWICE.** Both the wrap and the fade were introduced as fixes and
+withdrawn within a day. What survived is the pair that cannot be argued with: **the selected pill is
+visible** and **a swipe lands on a pill**.
 
 ---
 
@@ -29876,6 +30159,47 @@ number an operator edits twenty times a service.
   Max gets Standard + Private + its own, Pro gets Standard + Private) with the three-sentence confirm,
   the "use it exactly" checkbox, and the two **privacy** confirms when the switch crosses that line.
 
+## 70.16 "Set each price myself" writes the prices down before it takes the rule away (V15.7 — 9 October 2026)
+
+**Dominic's rule.** Switching an event type to "Set each price myself" (`'none'`) **must not change any
+price**. Each item keeps the price it had a moment earlier; a price changes only when that item is edited.
+
+🔴 **THE FAULT THIS CLOSES, AND IT IS A MONEY ONE.** `applyPriceRule` applies a stored **rounding**
+whatever the mode — the rule branches are skipped for `'none'`, the rounding step after them is not. So a
+type on "+10%, nearest £1" switched to "Set each price myself" kept `price_rounding: 'nearest_1'`, **both
+screens hid the control** (rounding is not in `PRICE_MODES_WITH_AMOUNT`), and every untyped item went on
+being rounded to the pound with nothing saying so. ⛔ **CLEARING THE ROUNDING ON ITS OWN WOULD HAVE BEEN
+WORSE**: every price would have MOVED, silently, on a settings save — 🧪 a £14.00 item dropping to £12.50.
+
+**The order, in `set_type_pricing` (`app/api/event-types/route.ts`), with the decision and the arithmetic
+in `lib/event-pricing/lock-in.ts`:**
+
+1. read the type and its typed prices;
+2. `shouldLockIn`;
+3. load the menu;
+4. compute each untyped item's price with `applyPriceRule` under the **OLD** mode, amount and rounding;
+5. upsert those as typed prices — **`ignoreDuplicates`, so an existing typed price is never overwritten**;
+6. **ONLY THEN** clear the amount and set rounding to `'none'`.
+
+⛔ **IF THE READ OR THE WRITE FAILS, THE SAVE IS REFUSED (400) AND NOTHING CHANGES.** Clearing the rounding
+with no prices written down is the one outcome worse than either half.
+
+🔴 **WHEN IT RUNS — AND THE CLAUSE THAT MAKES IT SETTLE.** All three must hold: the type charges its own
+prices before **and** after; it ends the save in `'none'`; **and the old setup could actually move a
+price**. ⚠️ That third clause is what stops it running for ever: after one lock-in the type is `'none'`
+with rounding `'none'`, which moves nothing — **so a menu item added later keeps following its menu
+price** instead of being frozen by the next save of an unrelated setting. ⛔ Switching *out* of `'none'`
+must not lock in, or a typed price on every item would make the new rule dead on arrival.
+
+- ⚠️ **`applyPriceRule`'s ARITHMETIC IS UNCHANGED.** Types already sitting in `'none'` with a stored
+  rounding charge exactly what they charge today, **until their next save locks them in**. No migration
+  and no backfill: a type nobody saves is a type nothing happens to.
+- **REASONED consequence, accepted:** items locked in this way no longer follow later menu-price changes
+  for that event type. It follows from the rule as written, and the mode's own name says every price in it
+  is one somebody set.
+- 🔴 **ONE PRICE CHAIN EVERYWHERE:** `applyPriceRule` ← `priceForItem` ← `priceAtEvent` — the customer
+  menu, order submit, the dashboard column, the Event types grid and card, and the lock-in itself.
+
 # 71. Manage moves on `schedule-graphics` (V13.9 — 4 October 2026)
 
 ## 71.1 Menu › Kitchen capacity
@@ -30357,6 +30681,163 @@ Then, on the live site:
 4. **Pizzeria Gusto** → the order page loads and takes an order; the dashboard loads and shows today.
 5. **The landing page** → Pro says "Private events with their own ordering link"; Max says "Custom event
    types & pricing"; neither carries "Coming soon".
+
+---
+
+# 75. The design editor — one component, two screens, one drawing (V15.7 — 6–10 October 2026)
+
+`components/manage/DesignEditor.tsx` is the one editor behind the **weekly**, **single event** and
+**per-location** designs. It has no existing home in this manual, which is why it has a section of its own.
+
+## 75.1 One drawing for the editor and the renderer
+
+- `lib/weekly-post/draw.ts` builds the poster as a **pure element tree** (`weeklyTree`, `eventTree`).
+- `render.ts` hands that tree to **satori** for the PNG; `components/manage/LivePoster.tsx` mounts **the
+  same objects** as DOM — so the words move in the same frame as the box (🧪 ~0.26ms per rebuild, no
+  network request).
+- The **server PNG** is what "👁 Preview post", Create a post and sharing use.
+- Fonts reach the browser through `GET /api/weekly-post?font=<id>`, behind the token **and the plan gate**.
+  ⛔ **AN UPLOADED FONT (`u:` id) IS NEVER SERVED TO A BROWSER (403)** — it may be commercially licensed —
+  so uploaded families draw live in **Oswald**, with a note under the poster saying so. ⚠️ A preview
+  quietly in the wrong typeface is worse than a slow one, because an operator would believe it.
+- `liveFamily()` is the single alias for CSS family names (library ids contain colons).
+
+## 75.2 The canvas is the LAYOUT's, not the picture's
+
+🔴 **ONE CAUSE, THREE REPORTS.** Every box coordinate is stored in the **layout's** pixels, and the layout
+is the canvas the renderer paints on (`W = round(layout.width × renderScale)`). The editor measured its
+canvas from the **background picture**. While the two agree nothing can go wrong — which is why the weekly
+design never showed it. When they differ, three things break **by the same ratio**:
+
+- the live words are drawn **smaller and towards the top-left** (`LivePoster`'s `k = scale × designW / W`
+  relies on `designW` being the layout's width);
+- the **box outlines run off the right edge**;
+- a **resize collapses and snaps back**, because `DraggableBox`'s clamp ranges invert for a box at an `x`
+  beyond `bounds.w`.
+
+⚠️ The canvas is `layout.width/height`, falling back to the background's only when the layout has none.
+⛔ **IT MOVES NOTHING FOR ANY DESIGN WHOSE TWO SIZES ALREADY AGREE**, which is every design the desktop
+fingerprint and the harnesses are built from.
+
+- ⚠️ **`transform-origin` FOR THE LIVE LAYER IS INLINE** — see §35.aa.
+- ⚠️ **`DraggableBox` CAPS THE SIZE FIRST, THEN THE POSITION**, so a box already outside the picture is
+  pulled fully inside rather than held at a corner by a clamp it can never satisfy. Order matters:
+  clamping position first against an over-wide box pins `x` to 0 with the box still hanging off.
+
+## 75.3 The phone design editor (below 768px; the desktop proven unchanged)
+
+A **fixed shell**, top to bottom: the top bar (‹ with the same leave guard, Undo, 👁, Save), the poster
+**pinned and fitted**, a sideways-scrolling item bar, then a bottom sheet.
+
+- 🔴 **THE SHEET IS PART OF THE PAGE LAYOUT, NOT AN OVERLAY.** The poster **shrinks above it** rather than
+  hiding behind it — which is the brief's own wording, *"sized to the space left above the bottom bar or
+  above the open sheet"*. ⛔ A `fixed` sheet hid the poster's bottom half **and** covered the item bar, so
+  the selected button could not be the orange one.
+- **Tabs come from `SettingsPanel`'s `only?: SettingsGroup` prop** — ⛔ **ONE settings component for both
+  desktop and phone**, not a copy. With `only` undefined the desktop renders exactly as before, *by
+  construction*.
+- ⚠️ **EVERY TAB IN THE LIST DRAWS SOMETHING**, which is why the list is computed (`groupsFor`) and not
+  written down: a box that follows the shared style has no "Readable" tab, because the panel draws nothing
+  for it.
+- The sheet's height is clamped by **`POSTER_FLOOR = 380`** — expressed as *what is left for the poster*,
+  not as a share of the screen, because a percentage of a short screen leaves less than the same percentage
+  of a tall one.
+- 🔴 **`docs/phone-editor-baseline.json` IS THE DESKTOP FINGERPRINT** — every marked element's rectangle
+  and computed `display` at 768 / 1100 / 1728 × weekly / event × WebKit / Chromium, captured on the
+  **unchanged** editor. ⛔ **COMMIT IT; NEVER REGENERATE IT TO MAKE A RUN PASS.** Checked by
+  `scripts/phone-editor.cjs`.
+
+## 75.4 Interaction and layout
+
+- The editor uses the **full window width**; the poster is fitted to the **measured** grey area. Zoom is
+  `[−] % [+]` plus "Fit to screen", and zooming scrolls the grey area only — never the page.
+- On desktop, **one right-hand panel (380px)**: the ON YOUR POST grid (a › on every button), "Aa Style all
+  the writing", the selected item's settings, and a foldable "🖼 BACKGROUND PICTURE" always at the foot.
+- ⛔ **CLICKING A BLANK PART OF THE PICTURE DOES NOT CHANGE THE SELECTION.** Clicking any words selects
+  their box.
+- **Shared text style** is `layout.textStyle` (a `TextLook`). Each box either follows it or owns its style,
+  through the "Match the other writing | Style this one on its own" switch; "Use this style for all text"
+  makes every box follow. ⚠️ Old layouts derive the shared look from the first enabled box (Date first), so
+  they open identical. `resolveTextBox` is the one resolver, used by the renderer **and** the editor;
+  `lineSpacing` stays per box.
+- **Corner handles change the text size; side handles change the width.**
+- Your own text boxes can be deleted (red button, or Delete/Backspace when no input has focus; undo
+  restores). ⛔ **Built-in items are switched off, never deleted.**
+- Line spacing now actually draws (explicit `lineHeight` per run). `MAX_DARKEN` is **70**, one constant
+  shared by the validator, the renderer and the slider.
+- **Leaving with unsaved changes asks** — "Save your changes first?" with Save and leave / Leave without
+  saving / Keep editing. ⚠️ The dialog is **hoisted above the views' early returns**, and "‹ Designs" goes
+  through the same guard. ⛔ The dialog belongs to `SocialPosts`, not to the editor: the editor is handed an
+  `onBack` that is already guarded, which is why "the phone ‹ has the same guard" is a claim about *wiring*.
+- ⚠️ **Editor and settings copy is plain words throughout** — the design principle is that operators are
+  not tech-savvy.
+
+## 75.5 Alignment guides, and the gaps (V15.7 — 10 October)
+
+⛔ **THE ONLY SNAP TARGETS WERE THE POSTER'S OWN CENTRE LINES**, so a guide appeared when a box happened to
+be centred on the artwork and **never when it lined up with another box** — and two boxes stacked one above
+the other line up on a **vertical** edge, the case that could not fire.
+
+- Each box is handed **every other drawn box but itself**: three lines per peer on each axis (its two edges
+  and its middle), matched against the dragged box's left/centre/right and top/middle/bottom.
+- ⚠️ **THE NEAREST CANDIDATE WINS**, not the first — with several boxes near one another, snapping to
+  whichever was built first would pull the box past the one the operator was aiming at.
+- 🔴 **EQUAL-GAP MARKS**: when the gap above equals the gap below (or left equals right), two short pink
+  bars are drawn **only while they match**, so the marks appearing *is* the answer. ⚠️ Only between boxes
+  that overlap on the other axis — a box three columns away is not "above" this one.
+
+## 75.6 "The 7 days", and the location pictures in a row
+
+- `Layout.days` is **one block** `{x,y,w,h}`. The rows share its height equally; the parts (picture · day
+  and date · place · times) share each row's width **by weight**.
+- Quick layouts: **All on one line · Day on top · Big picture**. Picture shape: square / rounded / circle.
+- The ⋮⋮ reorder is **pointer-based**, so it works on an iPad.
+- **Days off**: an editable message (default "No trading today"), or leave the day out — which keeps the
+  day's slot and draws nothing in it.
+- 🔴 **`lib/weekly-post/days.ts` `dayCells` IS THE ONLY ROW-GEOMETRY FUNCTION**, used by the renderer **and**
+  the editor.
+- ⚠️ **A DESIGN WITHOUT `days` STILL RENDERS THROUGH THE LEGACY ROW LOOP, PIXEL FOR PIXEL.** It is converted
+  only when opened in the editor (`daysFromLegacy`) and stored on the next save.
+- 🔴 **`PICTURE_INSET = 0.15`** — a day row's location picture is drawn **15% smaller than its cell**,
+  centred. A cell is the full height of its band, so at 0 the pictures form one unbroken column down the
+  poster, over artwork whose own table rows are separated. ⚠️ A **share**, not a pixel count, so it holds at
+  every poster size; and the corner radius follows the **drawn** size, so a circle stays a circle.
+- ⚠️ **A HANDLE EXISTS EVEN WHERE THE PICTURE SITS BETWEEN TWO TEXT COLUMNS.** It was skipped, on the
+  reasoning that dragging it would resize two cells that are not touching — and the cost was a **column the
+  operator could not resize at all**. `moveBoundary` takes two part keys and never needed them adjacent.
+
+## 75.7 Open items carried forward
+
+**Editor fixes 8 §2 — half done:**
+- a save → reload check that a side-handle shrink (from both sides) sticks;
+- a short message when a box had to be pulled inside the picture.
+
+**Editor fixes 8 §3 — NOT STARTED: "Powered by HatchGrab" as a movable box.**
+- a bigger default (about **2.5%** of the picture's height), bottom centre;
+- draggable and resizable, **always fully inside the picture in the editor AND the renderer**, minimum
+  about **1.8%** of height;
+- ⛔ **cannot be deleted or switched off** — shown with a 🔒 in ON YOUR POST and on the phone bar;
+- always drawn **last**; old designs get the new default;
+- ⚠️ **turn on the inside-its-box harness claim for it** — `live-text-place.cjs` currently excludes it **by
+  name**, because it belongs to no outline today, and the exclusion is written where it is made.
+
+**Also open:**
+- **The times are not vertically centred in the rendered PNG** (they are correct in the editor). `boxEl`
+  already centres, and all cells on a line share one `y`/`h` — so the tree is right and the divergence is
+  between the two painters, DOM and satori. `scripts/live-poster.cjs` is where to measure it.
+- **The picture column's width under "All on one line"** cannot be resized, because there its width *is*
+  the row's height — which is what keeps it square. Making it draggable means giving it a weight and
+  dropping the square rule. **A decision, not a defect.**
+- Confirm the canvas mismatch with the read-only SQL in `docs/editor-fixes-8-report.md` §3.
+- **Curved (arched) text**: per-letter placement from font metrics, identical in the editor and the PNG.
+- **Phone editor**: consider shrinking the sheet to its tabs while a box is being dragged (🧪 the poster is
+  about 236px tall at 390×844 with the sheet open).
+- **Later:** a Meta auto-posting sub-tab; a "Make a post?" prompt after saving an event; crop-to-portrait on
+  landscape uploads; HatchGrab ready-made designs; a notice when a stored layout was repaired; proxying
+  Google Fonts previews through our own server.
+- **US readiness** review started 9 October 2026 in a separate chat. ⚠️ A truck's country is **not yet
+  recorded**; the post locale table (`lib/weekly-post/locale.ts`, `countryForTruck()`) already includes US
+  formats.
 
 ---
 

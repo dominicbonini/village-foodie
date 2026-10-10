@@ -15,6 +15,8 @@
 // intentions about `truck_places`. It describes no write to either source table, and the route that
 // applies these intentions touches neither.
 
+import { formatTime, type TimeSettings } from '@/lib/time-utils'
+
 // ── THE ROW SHAPES, AS NARROW AS THE WORK NEEDS ──────────────────────────────────────────────────
 // ⚠️ DELIBERATELY NOT the full table types. These are the columns the matching actually reads, so a
 // caller can pass an event row from any select that includes them, and a harness can build one by hand
@@ -405,8 +407,9 @@ export interface PlaceWhen {
  * ⚠️ 24-HOUR, AND TRIMMED TO HH:MM, to match the form's own time controls. `start_time` comes back as
  * '17:00:00'; showing the seconds beside a form that does not have them reads as a different value.
  */
-export function timeRangeLabel(start: string | null | undefined, end: string | null | undefined): string {
-  const t = (v: string | null | undefined) => (v ? String(v).slice(0, 5) : '')
+export function timeRangeLabel(start: string | null | undefined, end: string | null | undefined, ts: TimeSettings | null | undefined): string {
+  // 🔴 In the truck's style (Phase 2B): GB "17:00–20:00" exactly as before, US "5pm–8pm".
+  const t = (v: string | null | undefined) => (v ? formatTime(String(v), ts) : '')
   const a = t(start), b = t(end)
   if (!a && !b) return ''
   return b ? `${a}–${b}` : a
@@ -427,13 +430,13 @@ export function timeRangeLabel(start: string | null | undefined, end: string | n
  * ⚠️ "No events yet" ONLY WHEN THERE IS GENUINELY NEITHER. With bug 3 unfixed almost every place said
  * this, which is what made the line look broken rather than empty.
  */
-export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string): string {
+export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string, ts: TimeSettings | null | undefined): string {
   if (p.last_event_date) {
-    const t = timeRangeLabel(p.last_start_time, p.last_end_time)
+    const t = timeRangeLabel(p.last_start_time, p.last_end_time, ts)
     return `Last: ${fmtDay(p.last_event_date)}${t ? ` · ${t}` : ''}`
   }
   if (p.next_event_date) {
-    const t = timeRangeLabel(p.next_start_time, p.next_end_time)
+    const t = timeRangeLabel(p.next_start_time, p.next_end_time, ts)
     return `Next: ${fmtDay(p.next_event_date)}${t ? ` · ${t}` : ''}`
   }
   return 'No events yet'

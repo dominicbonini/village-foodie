@@ -43,6 +43,7 @@ import {
   TriStateBox, WhatsAppBox, useThumbLatch,
 } from '@/components/admin/outreach-shared'
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
+import { MARKETING_COUNTRY } from '@/lib/marketing-country'   // discovery and outreach are the marketing country's (Phase 2C)
 import { messageRowLabel } from '@/lib/outreach-timeline'
 import { RowLabelCell } from '@/components/admin/outreach-icons'   // pure — used only to build the wa.me link
 // 🔴 THE DERIVED STEP. Pure, no I/O, no stored state — see lib/outreach-step.ts. Imported here rather
@@ -598,7 +599,7 @@ export default function OutreachPanel() {
   const steps = useMemo(() => {
     const m = new Map<string, Step>()
     for (const p of pool) {
-      m.set(p.id, nextStep({ ...p, waPhone: phoneWhatsApp(p.phone, null).waPhone }, p.contacts))
+      m.set(p.id, nextStep({ ...p, waPhone: phoneWhatsApp(p.phone, null, MARKETING_COUNTRY).waPhone }, p.contacts))
     }
     return m
   }, [pool])
@@ -610,7 +611,7 @@ export default function OutreachPanel() {
   const channels = useMemo(() => {
     const m = new Map<string, 'email' | 'whatsapp' | null>()
     for (const p of pool) {
-      m.set(p.id, channelFor({ ...p, waPhone: phoneWhatsApp(p.phone, null).waPhone }))
+      m.set(p.id, channelFor({ ...p, waPhone: phoneWhatsApp(p.phone, null, MARKETING_COUNTRY).waPhone }))
     }
     return m
   }, [pool])

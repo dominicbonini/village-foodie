@@ -135,10 +135,12 @@ export type CreateResult = {
  */
 export async function createHiddenTruckWithProspect(
   db: TruckWriteDb, details: TruckDetails, historyLine: string,
+  /** Phase 2D-2: the screenshot's chosen country — stamped on the new truck (its prospect reads it there). */
+  country?: string,
 ): Promise<CreateResult> {
   const warnings: string[] = []
 
-  const truck = await db.insertTruck(hiddenTruckInsert(details))
+  const truck = await db.insertTruck(hiddenTruckInsert(details, country))
   if (truck.error || !truck.id) {
     return { ok: false, truckId: null, prospectId: null, warnings, error: truck.error ?? 'the truck row was not created' }
   }

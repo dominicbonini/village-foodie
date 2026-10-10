@@ -7,9 +7,16 @@
 // behaviour-neutral: every field below is the same expression the component computed, in the same order.
 // Characterised and mutation-tested before shipping — see docs/whatsapp-extraction-report.md.
 //
-// ⚠️ DO NOT "TIDY" THE NORMALISATION. `replace(/[^\d+]/g, '')` then strip '+', then a leading '0' → '44'.
-// That exact sequence is what the wa.me link and the 447-mobile test depend on; a "cleaner" libphonenumber
-// pass would change which trucks show a Message button on a trading day.
+// 🔴 THE wa.me NUMBER COMES FROM lib/phone.ts (Phase 2C, 10 October 2026), read in the caller's country.
+// It was `replace(/[^\d+]/g, '')`, strip '+', a leading '0' → '44'. For every real UK number in the ways
+// people write one, the result is byte-identical (scripts/phone-parity.cjs). It differs only where the old
+// sequence built a number WhatsApp cannot open — "+44 (0)7…" / "+44 07…" became "4407…", an extension was
+// folded into the digits, a "00…" string was prefixed with 44 — and there it is now the real number, or
+// '' when there is none. ⚠️ So a scraped "+44 (0)7…" mobile now counts as a 447 mobile and gets its Message
+// button, which it should always have had. The 447-mobile test itself is unchanged: these callers are the
+// discovery site and admin outreach, which are the marketing country's (GB) until they carry a country.
+
+import { phoneLinkDigits, type PhoneCountry } from '@/lib/phone'
 
 /** The three states the outreach hint renders, mirroring the three button configurations exactly:
  *  - 'advertises'            → a 447 mobile whose accepted_methods mention whatsapp  (live: Call + WhatsApp)
@@ -22,7 +29,7 @@ export type WhatsAppHint = 'advertises' | 'mobile_not_advertised' | 'none'
 export interface PhoneWhatsApp {
   /** Digits and '+' only — used for tel: and sms: links. */
   cleanPhone: string
-  /** The wa.me number: cleanPhone without '+', a leading 0 rewritten to 44. */
+  /** The wa.me number: country code + number as digits (lib/phone.ts), or '' when not a plausible number. */
   waPhone: string
   hasPhone: boolean
   /** True when waPhone starts with '447' (a UK mobile). */
@@ -35,11 +42,12 @@ export interface PhoneWhatsApp {
 export function phoneWhatsApp(
   phoneNumber: string | null | undefined,
   acceptedMethods: string | null | undefined,
+  /** The country a nationally written number is read in — the caller's, named explicitly. */
+  country: PhoneCountry,
 ): PhoneWhatsApp {
   const methodsStr = acceptedMethods ? acceptedMethods.toLowerCase() : ''
   const cleanPhone = phoneNumber ? phoneNumber.replace(/[^\d+]/g, '') : ''
-  let waPhone = cleanPhone.replace('+', '')
-  if (waPhone.startsWith('0')) waPhone = '44' + waPhone.slice(1)
+  const waPhone = phoneLinkDigits(phoneNumber, country) ?? ''
   const hasPhone = cleanPhone !== ''
   const isMobileNumber = waPhone.startsWith('447')
   const acceptsWhatsApp = methodsStr.includes('whatsapp')

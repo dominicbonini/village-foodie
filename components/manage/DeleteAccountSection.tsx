@@ -54,6 +54,8 @@ import { HATCHGRAB_SENDER } from '@/lib/email-config'
 // six existing session callers in app/manage/[token]/page.tsx.
 import { nativeAuthHeader } from '@/lib/native/session'
 import type { ShowToast } from '@/lib/useToasts'
+import { formatInstant, type TimeSettings } from '@/lib/time-utils'
+import { useTruckTime } from '@/components/TruckTimeContext'
 
 interface AccountSummary {
   ownerEmail: string | null
@@ -68,8 +70,9 @@ interface AccountSummary {
  *  fallback are a separate task waiting on a mailbox test. */
 const SUPPORT_EMAIL = HATCHGRAB_SENDER.replyTo
 
-const fmtDate = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'
+// 🔴 The truck's zone and words (Phase 2B): GB "9 October 2026", US "October 9, 2026".
+const fmtDate = (iso: string | null, ts: TimeSettings) =>
+  iso ? formatInstant(iso, ts, { day: 'numeric', month: 'long', year: 'numeric' }) : '—'
 
 /** The warning triangle beside "Danger zone" — it carries the destructive signal that the red container
  *  fill used to carry, at a fraction of the volume.
@@ -92,6 +95,7 @@ export function DeleteAccountSection({ truckName, showToast }: {
   /** The page's own toast helper — the canonical type, so a future signature change breaks here. */
   showToast: ShowToast
 }) {
+  const ts = useTruckTime()
   const [summary, setSummary] = useState<AccountSummary | null>(null)
   const [loadFailed, setLoadFailed] = useState(false)
   const [open, setOpen] = useState(false)
@@ -182,8 +186,8 @@ export function DeleteAccountSection({ truckName, showToast }: {
         <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-4">
           <p className="text-sm font-bold text-red-800">This account is scheduled for deletion</p>
           <p className="mt-1 text-sm text-slate-700">
-            Requested on <strong>{fmtDate(summary.requestedAt)}</strong>. It is due to be deleted on{' '}
-            <strong>{fmtDate(summary.dueAt)}</strong>.
+            Requested on <strong>{fmtDate(summary.requestedAt, ts)}</strong>. It is due to be deleted on{' '}
+            <strong>{fmtDate(summary.dueAt, ts)}</strong>.
           </p>
           <p className="mt-2 text-sm text-slate-700">
             Online ordering has stopped. Your dashboard stays available to read until then.

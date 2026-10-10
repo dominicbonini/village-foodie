@@ -24,6 +24,8 @@
 import { getOrderBalance, type LedgerRow } from '@/lib/payments/ledger'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import type { TicketOrder, TicketReprint } from '@/lib/printing/ticket'
+import { orderMoney } from '@/lib/money-format'
+import { formatSlot } from '@/lib/time-utils'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
 
 /** Every TicketOrder key becomes REQUIRED while keeping its original value type (which still includes
@@ -90,7 +92,8 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
     id: order.id,
     customer_name: order.customer_name,
     customer_phone: order.customer_phone,
-    collection_time,
+    // 🔴 PRINTED IN THE TRUCK'S STYLE (Phase 2B): GB "18:45" exactly as before, US "6:45pm".
+    collection_time: collection_time ? formatSlot(collection_time, truck?.time) : null,
     buzzer_number: order.buzzer_number ?? null,
 
     // ⚠️ modifiers' `allergens` / `dietary` are NOT carried — see the report. No surface renders them
@@ -126,6 +129,10 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
     truck_name: truck?.name,
     printedLabel,
     reprint: reprint ?? null,
+    // 🔴 THE ORDER'S OWN CURRENCY (orders.currency), with its country's locale from the truck payload. An
+    // optimistic offline order carries the truck's (see the dashboard's optimistic insert). Null ⇒ the
+    // ticket prints bare figures and warns — never a £ it cannot vouch for.
+    money: orderMoney(order, truck?.money),
   }
   return t
 }

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { truckTimeSettings } from '@/lib/truck-time'
+import { getLocalDateInTz, formatYmd, formatTime } from '@/lib/time-utils'
 import { manageTabHref } from '@/lib/manage-links'
 import { createClient } from '@supabase/supabase-js'
 import { sendConfirmationEmail } from '@/lib/email'
@@ -8,6 +10,8 @@ import { admitDiscoveryEvents, type TruckRow } from '@/lib/discovery-gate'
 import { getVanOrderReadyDefault } from '@/lib/van-utils'
 /* 🔴 PRIVATE EVENTS (20261014): the ONE place the "is it private?" decision lives. */
 import { scrapedPrivacyFields } from '@/lib/private-events/write'
+// Phase 2D-2: the batch's country, and the rule that nothing is matched, bridged or emailed across countries.
+import { normaliseCountry, inCountry, countryOf } from '@/lib/discovery-country'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -41,6 +45,12 @@ function toISODate(ddmmyyyy: string): string | null {
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const { secret, events } = body
+  // 🔴 PHASE 2D-2 — THE COUNTRY OF EVERY ROW IN THIS BATCH. Absent → GB (the Apps Script sends none; every
+  // current source is British). Trucks, venues and HatchGrab links are only ever looked for in it.
+  const country = normaliseCountry(body?.country)
+  // 🔴 AND, WHEN THE CALLER KNOWS IT, THE HATCHGRAB TRUCK ITSELF (scraper Pass B passes hgTruck.id). Used
+  // instead of matching the name — but only if that truck trades in this batch's country.
+  const givenTruckId = typeof body?.hatchgrab_truck_id === 'string' && body.hatchgrab_truck_id.trim() ? body.hatchgrab_truck_id.trim() : null
 
   if (!INBOUND_SECRET || secret !== INBOUND_SECRET) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
@@ -62,17 +72,18 @@ export async function POST(req: NextRequest) {
       event_notes: e.event_notes || null,
       source: e.source || null,
       ai_notes: e.ai_notes || null,
+      region: e.region || null,
     }))
     .filter(r => r.event_date && r.truck_name)
 
   // Fetch lookup tables once. The BRIDGE below still resolves each row's venue with `findVenue` for the
   // truck_events coordinates/postcode it stamps — that is the bridge's own, unchanged behaviour.
   const [{ data: allDiscoveryTrucks }, { data: allVenuesRaw }] = await Promise.all([
-    supabase.from('discovery_trucks').select('id, name, aliases'),
-    supabase.from('venues').select('id, name, village, latitude, longitude, postcode'),
+    supabase.from('discovery_trucks').select('id, name, aliases, country').eq('country', country),
+    supabase.from('venues').select('id, name, village, latitude, longitude, postcode, country').eq('country', country),
   ])
-  const allVenues = (allVenuesRaw ?? []) as VenueRow[]
-  const venueMatchByRow = new Map(rows.map(r => [r, findVenue(r.venue_name, r.village, allVenues)]))
+  const allVenues = inCountry((allVenuesRaw ?? []) as VenueRow[], country)
+  const venueMatchByRow = new Map(rows.map(r => [r, findVenue(r.venue_name, r.village, allVenues, country)]))
 
   // ── 🔴 THE DISCOVERY WRITE GOES THROUGH THE SHARED GATE. ───────────────────────────────────────
   // This replaces the enrichment + upsert that used to live here. What the gate adds: the name+aliases
@@ -86,7 +97,8 @@ export async function POST(req: NextRequest) {
   const gate = await admitDiscoveryEvents(supabase, rows.map(r => ({
     event_date: r.event_date!, start_time: r.start_time, end_time: r.end_time, truck_name: r.truck_name,
     venue_name: r.venue_name, village: r.village, event_notes: r.event_notes, source: r.source, ai_notes: r.ai_notes,
-  })), { lookups: { trucks: (allDiscoveryTrucks ?? []) as TruckRow[], venues: allVenues } })
+    ...(r.region ? { region: r.region } : {}),
+  })), { lookups: { trucks: inCountry((allDiscoveryTrucks ?? []) as TruckRow[], country), venues: allVenues }, country })
   const gateFailed = gate.outcomes.filter(o => o.wrote === 'failed')
   if (gateFailed.length > 0) {
     console.error('Inbound schedule write failed:', gateFailed.map(o => `${o.key}: ${o.error}`).join(' | '))
@@ -96,10 +108,21 @@ export async function POST(req: NextRequest) {
 
   // ── Bridge: promote events to truck_events for linked HatchGrab trucks ──
   // Fetch all discovery_trucks that have a hatchgrab_truck_id once, then match locally
-  const { data: linkedTrucks } = await supabase
+  const { data: linkedTrucksAny } = await supabase
     .from('discovery_trucks')
-    .select('hatchgrab_truck_id, name')
+    .select('hatchgrab_truck_id, name, country')
     .not('hatchgrab_truck_id', 'is', null)
+  // Only links made in this batch's country — a US name never reaches a UK operator through a UK link.
+  const linkedTrucks = inCountry(linkedTrucksAny ?? [], country)
+  // The HatchGrab trucks' own countries, read once: a link is used only when the truck trades here too.
+  const hgCountry = new Map<string, string>()
+  {
+    const ids = Array.from(new Set([...(linkedTrucks.map(t => t.hatchgrab_truck_id).filter(Boolean) as string[]), ...(givenTruckId ? [givenTruckId] : [])]))
+    if (ids.length) {
+      const { data: hg } = await supabase.from('trucks').select('id, country').in('id', ids)
+      for (const t of (hg ?? []) as { id: string; country?: string | null }[]) hgCountry.set(t.id, countryOf(t))
+    }
+  }
 
   let bridgedCount = 0
   const notifiedTruckIds = new Set<string>()
@@ -111,15 +134,21 @@ export async function POST(req: NextRequest) {
     if (!row.truck_name) continue
 
     // Normalised match: exact, or one name contains the other
-    const normIncoming = normName(row.truck_name)
-    const matched = (linkedTrucks || []).find(t => {
-      const normDb = normName(t.name)
-      return normDb === normIncoming ||
-        normDb.includes(normIncoming) ||
-        normIncoming.includes(normDb)
-    })
-    if (!matched?.hatchgrab_truck_id) continue
-    const truckId = matched.hatchgrab_truck_id
+    let truckId: string | null = null
+    if (givenTruckId) truckId = givenTruckId
+    else {
+      const normIncoming = normName(row.truck_name)
+      const matched = (linkedTrucks || []).find(t => {
+        const normDb = normName(t.name)
+        return normDb === normIncoming ||
+          normDb.includes(normIncoming) ||
+          normIncoming.includes(normDb)
+      })
+      truckId = matched?.hatchgrab_truck_id ?? null
+    }
+    if (!truckId) continue
+    // 🔴 NEVER ACROSS COUNTRIES: the HatchGrab truck must trade in this batch's country (trucks.country).
+    if (hgCountry.get(truckId) !== country) continue
 
     // Preference gate: skip truck_events write for manual-only trucks
     const { data: truckPref } = await supabase
@@ -251,10 +280,14 @@ export async function POST(req: NextRequest) {
       try {
         const { data: truck } = await supabase
           .from('trucks')
-          .select('contact_email, name, dashboard_token')
+          .select('contact_email, name, dashboard_token, timezone, country')
           .eq('id', truckId)
           .single()
         if (!truck?.contact_email) return
+        // 🔴 Belt and braces: a truck in another country is never emailed about this batch.
+        if (countryOf(truck) !== country) return
+        // 🔴 THE TRUCK'S CLOCK AND STYLE (Phase 2B): its today, and how its dates and times read.
+        const ts = await truckTimeSettings(truck)
 
         // Fetch the new unconfirmed events just written for this truck
         const { data: newEvents } = await supabase
@@ -263,7 +296,7 @@ export async function POST(req: NextRequest) {
           .eq('truck_id', truckId)
           .eq('status', 'unconfirmed')
           .eq('source', 'scraper')
-          .gte('event_date', new Date().toISOString().slice(0, 10))
+          .gte('event_date', getLocalDateInTz(ts.timeZone))
           .order('event_date', { ascending: true })
           .limit(20)
 
@@ -275,14 +308,11 @@ export async function POST(req: NextRequest) {
          * URL itself out of a template literal. */
         const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}${manageTabHref('schedule', { token: truck.dashboard_token })}`
 
-        const fmtDate = (iso: string) => {
-          const d = new Date(iso + 'T00:00:00')
-          return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-        }
-        // start–end as HH:MM; omit cleanly if either is missing.
+        const fmtDate = (iso: string) => formatYmd(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })
+        // start–end in the truck's style; omit cleanly if either is missing.
         const fmtTimeRange = (st?: string | null, et?: string | null) => {
-          const a = st ? String(st).slice(0, 5) : ''
-          const b = et ? String(et).slice(0, 5) : ''
+          const a = st ? formatTime(String(st), ts) : ''
+          const b = et ? formatTime(String(et), ts) : ''
           return a && b ? `${a}–${b}` : a || ''
         }
         const venueLine = (e: any) => `${e.venue_name || 'Unknown venue'}${e.town ? `, ${e.town}` : ''}`

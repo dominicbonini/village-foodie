@@ -25,6 +25,7 @@
 // exists — so Phase B lights it up by writing a real name to the same key, with no second code path.
 // ⚠️ The settings below are REAL and stay configurable: paper width and lead minutes are device values,
 // and the trigger mode is a truck column. Only the CONNECTION claim changed.
+import type { TimeSettings } from '@/lib/time-utils'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Preferences } from '@capacitor/preferences'
@@ -45,7 +46,9 @@ import type { PrintTriggerMode } from '@/lib/printing/printWatcher'
 // trucks.print_trigger_mode and arrives as a prop. Adding one back would recreate the drift this removed.
 const K = { printer: 'hg_printer_name', lead: 'hg_print_lead_mins', paper: 'hg_paper_width', enabled: 'hg_print_enabled' } as const
 
-export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode, onChangeMode, connected = false, statusDetail, waitingCount = 0 }: {
+export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode, onChangeMode, connected = false, statusDetail, waitingCount = 0, time }: {
+  /** 🔴 The truck's time settings (Phase 2B) — the test ticket's stamp is the truck's clock. */
+  time?: TimeSettings | null
   plan: Plan
   featureOverrides: Record<string, boolean> | null
   trialExpiresAt: string | null
@@ -407,7 +410,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                     // dedupe record, never marking anything printed.
                     setNetBusy('test'); setNetMsg(null)
                     try {
-                      const bytes = renderTestTicket({ truckName: netInfo?.truckName, paper })
+                      const bytes = renderTestTicket({ truckName: netInfo?.truckName, paper, time })
                       const res = await getPrinterTransport().sendBytes(bytes)
                       setNetOk(res.ok)
                       setNetMsg(res.ok ? 'Test ticket sent — check the printer.' : (res.error ?? 'The test ticket did not print.'))

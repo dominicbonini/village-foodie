@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   // Fetch truck name for welcome email
   const { data: truckData } = await supabase
     .from('trucks')
-    .select('name')
+    .select('name, country')
     .eq('id', truckId)
     .single()
   const truckName = truckData?.name || 'your truck'
@@ -94,7 +94,8 @@ export async function POST(req: NextRequest) {
   try {
     const shadowName = (truckData?.name || '').trim()
     if (shadowName) {
-      await supabase.from('discovery_trucks').update({ excluded: true }).ilike('name', shadowName)
+      // Phase 2D-2: only the shadow in the truck's OWN country — a same-named truck elsewhere is someone else.
+      await supabase.from('discovery_trucks').update({ excluded: true }).ilike('name', shadowName).eq('country', truckData?.country || 'GB')
     }
   } catch (e) {
     console.error('[create-operator] shadow-exclusion failed:', e)

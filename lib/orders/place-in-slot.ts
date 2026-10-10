@@ -130,6 +130,10 @@ export async function placeOrderInSlotLocked(
   // returned `reservation` is the exact record to store (computed from the SAME fresh read, under the
   // caller's lock). OFF ⇒ today's walk; `reservation` is P2's today's-split record for the same state.
   batchReservations: boolean = false,
+  /** The TRUCK's zone (lib/truck-time.ts) — "now" and "today" for the ASAP floor and the now-clamp.
+   *  ⚠️ Last and positional like the rest, after optional ones, so it cannot be a required TS parameter;
+   *  a call without it THROWS — no zone is ever assumed. */
+  timeZone: string = (() => { throw new Error('[place-in-slot] the truck\'s time zone is required') })(),
 ): Promise<{ finalSlot: string | null; booked: boolean; reservation?: StoredCookingReservation | null }> {
   // event_id scopes the production_slot_usage read/write so same-date events don't pool.
   {
@@ -153,7 +157,7 @@ export async function placeOrderInSlotLocked(
     // (Section 6/7 — first slot at/after the ASAP floor; not forked).
     const startSlot =
       requestedSlot ??
-      getAsapSlot(times.map(t => ({ collection_time: t.collection_time, available: true })), eventDate)?.collection_time ??
+      getAsapSlot(times.map(t => ({ collection_time: t.collection_time, available: true })), eventDate, timeZone)?.collection_time ??
       null
 
     // No schedule / unresolvable start (e.g. pub / no collection_times) → book at the
@@ -200,9 +204,9 @@ export async function placeOrderInSlotLocked(
       : timeToMins(startSlot)
     // NOW-CLAMP so the BOOKED slot is physically achievable (cooking can't start before now). Today
     // only — for a future-date event nowMins (mins-of-day) would mis-compare, so pass -Inf (no clamp).
-    // Event tz hardcoded 'Europe/London' (matches the engine default), replaced by trucks.timezone later.
-    const placeNowMins = eventDate === getLocalDateInTz('Europe/London')
-      ? getNowMinsInTz('Europe/London')
+    // The TRUCK's zone (Phase 2B; was a hard-coded London).
+    const placeNowMins = eventDate === getLocalDateInTz(timeZone)
+      ? getNowMinsInTz(timeZone)
       : Number.NEGATIVE_INFINITY
     const placement = earliestBackwardFitSlot(times, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins, capacityWindowMins ?? 5, placeNowMins, reservations, batchReservations)
     if (!placement || timeToMins(placement) > eventEndMins) {

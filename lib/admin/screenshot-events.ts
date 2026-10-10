@@ -76,7 +76,20 @@ export type ScreenshotEvent = {
   venue_name: string
   village: string
   postcode: string
+  /** Two-letter state, for a zip_state country (Phase 2D-2). Present only when the model gave one. */
+  state?: string
 }
+
+/** The country the admin chose, as the prompt needs it (Phase 2D-2) — from country_settings, never guessed. */
+export type ScreenshotCountry = {
+  code: string
+  name: string
+  addressFormat: 'postcode' | 'zip_state'
+  dateOrder: 'dmy' | 'mdy'
+}
+
+/** What the model says about the screenshot's own country (once per screenshot). */
+export type CountryVerdict = { country: string | null; confidence: 'high' | 'medium' | 'low' | null; reasons: string }
 
 export type DroppedEvent = { event: Partial<ScreenshotEvent>; reason: string }
 
@@ -90,7 +103,7 @@ export type DroppedEvent = { event: Partial<ScreenshotEvent>; reason: string }
  * than naming it (manual §14), so this prompt asks for it.
  * 🔴 ADDED, present in neither: `truck_name`. A venue screenshot names several trucks.
  */
-export function buildScreenshotPrompt(now: Date = new Date()): string {
+export function buildScreenshotPrompt(now: Date = new Date(), country?: ScreenshotCountry): string {
   const currentYear = now.getFullYear()
   const dateRef = Array.from({ length: 14 }, (_, i) => {
     const d = new Date(now.getTime() + i * 86400000)
@@ -100,9 +113,36 @@ export function buildScreenshotPrompt(now: Date = new Date()): string {
     return `${dayName} = ${dd}/${mm}/${d.getFullYear()}`
   }).join('\n')
 
+  // ── 🔴 PHASE 2D-2: THE CHOSEN COUNTRY. With no country the prompt is exactly what it always was. ──────────
+  // GB keeps every line below byte for byte and gains only TWO things (Dominic, Q1 option A): the one line
+  // naming the chosen country, and Country / CountryConfidence / CountryReasons in the JSON. A zip_state
+  // country swaps the location lines for city / state / ZIP ones; an mdy country adds one line saying how a
+  // numbers-only date reads. Output stays DD/MM/YYYY in every country — it is the data contract.
+  const zip = country?.addressFormat === 'zip_state'
+  const countryLine = country
+    ? `These screenshots are from ${country.name} (${country.code}), as the person uploading them says. In "Country" give the two-letter code of the country this screenshot itself shows — from its prices, place names, phone numbers and the way dates are written — with "CountryConfidence" high, medium or low, and "CountryReasons" in a few short words (e.g. "prices in $, 'Austin, TX', dates like 10/12").
+`
+    : ''
+  const mdyLine = country?.dateOrder === 'mdy'
+    ? `- Dates written with numbers only are MONTH first in ${country.name}: "10/12" is 12 October, never 10 December.
+`
+    : ''
+  const locationLines = zip
+    ? `- Extract ONLY the venue name into "Venue Name" — never include the city, state or ZIP code in it.
+- Put the city or town in "Village", the two-letter state in "State" (e.g. "TX"), and the ZIP code, if one is shown, in "Postcode".
+- ZIP codes look like "78701". If no ZIP code is shown, use "".`
+    : `- Extract ONLY the pub/venue name into "Venue Name" — never include the village, town or postcode in it.
+- Put the town or village in "Village", and the postcode, if one is shown, in "Postcode".
+- UK postcodes look like "CB25 0BA", "CO10 7BQ", "PE28 2SB". If no postcode is shown, use "".`
+  const eventShape = zip
+    ? `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "City", "State": "TX", "Postcode": "78701" }`
+    : `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town", "Postcode": "CB25 0BA" }`
+  const countryFields = country ? `  "Country": "${country.code}", "CountryConfidence": "high|medium|low", "CountryReasons": "short words",
+` : ''
+
   return `CRITICAL CONTEXT: Today is ${now.toDateString()}.
 Extract the food truck schedule from this image.
-
+${countryLine}
 THIS WEEK AND NEXT WEEK DATE REFERENCE — use ONLY these exact dates when you see a day name:
 ${dateRef}
 
@@ -112,18 +152,16 @@ CRITICAL DATE RULES:
 - If a date is written explicitly (e.g. '3rd June') convert it to DD/MM/YYYY using the year ${currentYear}.
 - If no time is listed, use empty string "". Never use "00:00".
 - IMPORTANT: If a venue or day shows as 'Closed', 'N/A', 'TBA', 'TBC', 'No event', 'No service', 'None', 'Unavailable' or similar — skip it entirely. Do not include it in the output.
-
+${mdyLine}
 TRUCK AND VENUE RULES:
 - Each row names a FOOD TRUCK and the VENUE it is parked at. Put the trader in "Truck Name" and the pitch in "Venue Name".
-- Extract ONLY the pub/venue name into "Venue Name" — never include the village, town or postcode in it.
-- Put the town or village in "Village", and the postcode, if one is shown, in "Postcode".
-- UK postcodes look like "CB25 0BA", "CO10 7BQ", "PE28 2SB". If no postcode is shown, use "".
+${locationLines}
 
 Date format MUST be "DD/MM/YYYY". Times MUST be "HH:MM".
 
 JSON FORMAT ONLY — no markdown, no explanation:
 {
-  "events": [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town", "Postcode": "CB25 0BA" }]
+${countryFields}  "events": [${eventShape}]
 }`
 }
 
@@ -147,7 +185,32 @@ export function parseScreenshotEvents(raw: string): Partial<ScreenshotEvent>[] {
     venue_name: String(e?.['Venue Name'] ?? e?.venue_name ?? '').trim(),
     village: String(e?.['Village'] ?? e?.village ?? '').trim(),
     postcode: String(e?.['Postcode'] ?? e?.postcode ?? '').toUpperCase().trim(),
+    // Only when the model gave one, so a GB row's shape is exactly what it was.
+    ...(() => { const st = String(e?.['State'] ?? e?.state ?? '').toUpperCase().trim(); return /^[A-Z]{2}$/.test(st) ? { state: st } : {} })(),
   }))
+}
+
+/** The model's verdict on the screenshot's own country (Phase 2D-2). Unreadable or absent → no verdict,
+ *  which is never a hold. */
+export function parseCountryVerdict(raw: string): CountryVerdict {
+  const none: CountryVerdict = { country: null, confidence: null, reasons: '' }
+  let p: unknown
+  try { p = JSON.parse(cleanModelJson(raw)) } catch { return none }
+  if (!p || typeof p !== 'object' || Array.isArray(p)) return none
+  const parsed = p as Record<string, unknown>
+  const code = String(parsed.Country ?? '').trim().toUpperCase()
+  const conf = String(parsed.CountryConfidence ?? '').trim().toLowerCase()
+  const reasons = String(parsed.CountryReasons ?? '').replace(/\s+/g, ' ').trim().slice(0, 200)
+  return {
+    country: /^[A-Z]{2}$/.test(code) ? code : null,
+    confidence: conf === 'high' || conf === 'medium' || conf === 'low' ? conf : null,
+    reasons,
+  }
+}
+
+/** 🔴 THE HOLD RULE: a CONFIDENT mismatch only. Low confidence, no answer, or the same country goes through. */
+export function shouldHoldForCountry(chosen: string, v: CountryVerdict): boolean {
+  return !!v.country && v.country !== chosen.toUpperCase() && (v.confidence === 'high' || v.confidence === 'medium')
 }
 
 /**
@@ -174,6 +237,7 @@ export function filterScreenshotEvents(
     kept.push({
       event_date: e.event_date!, start_time: e.start_time ?? '', end_time: e.end_time ?? '',
       truck_name: e.truck_name!, venue_name: e.venue_name!, village: e.village ?? '', postcode: e.postcode ?? '',
+      ...(e.state ? { state: e.state } : {}),
     })
   }
   return { kept, dropped }
@@ -198,6 +262,8 @@ export function toInboundEvents(kept: ScreenshotEvent[], fileLabel: string) {
     venue_name: e.venue_name,
     village: e.village || null,
     postcode: e.postcode || null,
+    // The state, for a US venue this event creates (venues.region). Only when there is one.
+    ...(e.state ? { region: e.state } : {}),
     event_notes: null,
     source: 'Admin Screenshot',
     ai_notes: `[🖼️ Admin upload: ${fileLabel}]${e.postcode ? ` | ${e.postcode}` : ''}`,

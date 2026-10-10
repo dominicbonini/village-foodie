@@ -193,7 +193,7 @@ async function offGrid(root, tag, slot) {
   const P = compile(root, ['lib/orders/place-in-slot.ts'], tag).req('lib/orders/place-in-slot.js')
   globalThis.__pisCalls = []
   let res, err = null
-  try { res = await P.placeOrderInSlotLocked('test-truck', '2026-09-17', 'ev-fixture', slot, [{ name: 'Burger', quantity: 8 }], { Burger: 'burgers' }, BURG, '18:00:00', '21:00:00', 15, 15, null, 5, null) } catch (e) { err = e.message }
+  try { res = await P.placeOrderInSlotLocked('test-truck', '2026-09-17', 'ev-fixture', slot, [{ name: 'Burger', quantity: 8 }], { Burger: 'burgers' }, BURG, '18:00:00', '21:00:00', 15, 15, null, 5, null, false, 'Europe/London') } catch (e) { err = e.message } // Phase 2B: the zone is required (the GB truck's); \`false\` is the parameter's own default
   return { res, err, calls: [...globalThis.__pisCalls] }
 }
 ;(async () => {

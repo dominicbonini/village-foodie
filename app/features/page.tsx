@@ -38,6 +38,8 @@ import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the chrome's CTA
 import { FeatureComparison } from '@/components/landing/FeatureComparison'
+// 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
+import { resolveVisitorCountry } from '@/lib/visitor-country'
 import '../landing/landing.css'
 
 export const dynamic = 'force-dynamic'
@@ -109,12 +111,16 @@ const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'],
 // parent's box, so the nav's containing block must be the page.
 const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`
 
-export default async function FeaturesPage() {
+export default async function FeaturesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   // ── 🔴 THE BRAND GATE. THIS PAGE DOES NOT EXIST ON VILLAGE FOODIE. See the header note.
   // ⚠️ FIRST, AND IT NEEDS ONLY A HEADER — a visitor on the wrong brand never costs a round trip.
   if (!(await onHatchGrab())) {
     notFound()
   }
+  // After the host check, so the non-HatchGrab 404 costs no read. Loud: a missing row throws.
+  // Phase 2D-1: the visitor's country (lib/visitor-country.ts), on the server.
+  const visitor = await resolveVisitorCountry((await searchParams)?.country)
+  const settings = visitor.settings
 
   return (
     <DemoModalProvider>
@@ -126,10 +132,10 @@ export default async function FeaturesPage() {
             hatchgrab host, and /landing is a real route that 308s to the root on this one.
             🔴 THIS IS WHAT STEP 2c ASKS FOR: on the landing, Pricing stays `#pricing`; here it becomes
             `/landing#pricing`. One prop, both behaviours, no second nav. */}
-        <LandingNav landingHref="/landing" />
+        <LandingNav landingHref="/landing" country={visitor.menu} />
 
         {/* The moved section — heading, subline, table, footnotes 1–5. */}
-        <FeatureComparison />
+        <FeatureComparison settings={settings} />
 
         {/* ══ ⛔ THE "See prices and plans →" LINK AND ITS SECTION ARE GONE — 6 October 2026 ══════════
             Removed on request. 🔴 THE WHOLE `<section>` WENT, NOT JUST THE `<p>`: every bare
@@ -142,7 +148,7 @@ export default async function FeaturesPage() {
             ⚠️ THE WAY BACK IS STILL THERE — the nav's own "Pricing" link resolves to /landing#pricing
             on this route, via the `landingHref` prop above, and the footer carries one too. */}
 
-        <LandingFooter landingHref="/landing" />
+        <LandingFooter landingHref="/landing" country={visitor.menu} />
       </div>
 
       {/* Mounted ONCE — the nav's CTA drives this one instance. It portals to document.body, so it is

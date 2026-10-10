@@ -264,3 +264,15 @@ export const domainInstructionsRatelimit = new Ratelimit({
   analytics: true,
   prefix: 'vf_rl_domain_instructions',
 })
+
+// PLACES tier — /api/places/suggest and /api/places/details (Phase 2D-1): the town box at signup and in
+// Manage › Where you trade. Each request is a PAID Google Places call, and the signup step runs before an
+// account exists, so these routes are public. 60 a minute per IP covers a person typing a town name several
+// times over (the box waits for a pause before asking); a script hammering it is turned away. On a limit
+// the routes answer "no suggestions" and the box takes free text — signup is never blocked by it.
+export const placesRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(60, '1 m'),
+  analytics: true,
+  prefix: 'vf_rl_places',
+})

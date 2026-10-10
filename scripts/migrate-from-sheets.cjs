@@ -87,7 +87,7 @@ async function migrateTrucks(sheets) {
   for (const truck of trucks) {
     const { error } = await supabase
       .from('discovery_trucks')
-      .upsert(truck, { onConflict: 'name' });
+      .upsert({ ...truck, country: 'GB' }, { onConflict: 'country,name' });   // Phase 2D-2: the country-scoped key
     if (error) { console.error(`  ❌ ${truck.name}: ${error.message}`); failed++; }
     else inserted++;
   }
@@ -120,7 +120,7 @@ async function migrateVenues(sheets) {
   for (const venue of venues) {
     const { error } = await supabase
       .from('venues')
-      .upsert(venue, { onConflict: 'name' });
+      .upsert({ ...venue, country: 'GB' }, { onConflict: 'country,name,village' });   // Phase 2D-2 (was 'name', which no unique key ever matched)
     if (error) { console.error(`  ❌ ${venue.name}: ${error.message}`); failed++; }
     else inserted++;
   }

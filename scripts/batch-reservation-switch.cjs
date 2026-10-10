@@ -54,7 +54,9 @@ console.log('\n── it is NOT a plan feature ───────────
   for (const f of ['app/api/slots/[truckId]/route.ts', 'app/api/dashboard/route.ts', 'app/api/orders/submit/route.ts', 'lib/payments/promote-draft.ts', 'app/api/dashboard/action/route.ts'])
     check(/resolveBatchReservations\(truck/.test(fs.readFileSync(path.join(REPO, f), 'utf8')), `${f} resolves it from the truck row it already reads`)
   const slots = fs.readFileSync(path.join(REPO, 'app/api/slots/[truckId]/route.ts'), 'utf8')
-  check(/const cols = 'id, collection_interval_mins, slot_duration_mins, plan, feature_overrides'/.test(slots), '/api/slots names plan + feature_overrides — EXISTING columns, so no surface can 42703 on them')
+  // Phase 2B added `timezone, country` (the truck's clock) — also columns that exist live (20261010_01 records
+  // them as already there), so the 42703 argument holds for the whole list.
+  check(/const cols = 'id, collection_interval_mins, slot_duration_mins, plan, feature_overrides, timezone, country'/.test(slots), '/api/slots names plan + feature_overrides (+ Phase 2B timezone, country) — EXISTING columns, so no surface can 42703 on them')
 }
 console.log(`\n${fails ? '🔴 ' + fails + ' FAILED' : '✅ the switch resolves as decided; Gusto is OFF'}`)
 process.exit(fails ? 1 : 0)

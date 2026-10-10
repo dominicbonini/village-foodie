@@ -45,6 +45,8 @@ import {
   type LogRow, type ScreenshotOutcome,
 } from '@/lib/admin/screenshot-log'
 import type { TruckDetails } from '@/lib/admin/truck-details'
+// Phase 2D-2: "These screenshots are from" — required, kept for the session, reset after 30 idle minutes.
+import ScreenshotCountryPicker, { useScreenshotCountry, countryWithArticle, type PickerCountry } from '@/components/admin/ScreenshotCountryPicker'
 
 type Dropped = { event: Record<string, string>; reason: string }
 type Candidate = { prospect_id: string; truck_id: string; name: string | null }
@@ -60,6 +62,11 @@ type FileResult = {
   details: TruckDetails | null
   error: string | null
   warnings: string[]
+  /** 'held_country' only: the screenshot looks like another country; nothing has been written. */
+  held?: {
+    chosen: string; chosenName: string; detected: string; detectedName: string; detectedKnown: boolean
+    confidence: 'high' | 'medium'; reasons: string; events: Record<string, string>[]
+  } | null
 }
 type Item = {
   id: string
@@ -71,6 +78,8 @@ type Item = {
   error: string | null
   /** Set once a "Needs a look" row has been decided, so its buttons go away. */
   decided: string | null
+  /** 🔴 The country chosen WHEN THIS FILE WAS QUEUED — changing the picker mid-batch does not relabel it. */
+  country: string
 }
 
 /** 🔴 EVERY CHIP'S COLOURS ARE WRITTEN OUT, NOT BUILT. Tailwind only ships classes it can see as text. */
@@ -81,10 +90,11 @@ const CHIP_CLASS: Record<ScreenshotOutcome, string> = {
   nothing_new: 'bg-slate-100 text-slate-600',
   needs_a_look: 'bg-amber-100 text-amber-800',
   failed: 'bg-red-100 text-red-700',
+  held_country: 'bg-amber-100 text-amber-800',
 }
 
 const FILTERS: ('all' | ScreenshotOutcome)[] = [
-  'all', 'schedule', 'updated', 'new_truck', 'nothing_new', 'needs_a_look', 'failed',
+  'all', 'schedule', 'held_country', 'updated', 'new_truck', 'nothing_new', 'needs_a_look', 'failed',
 ]
 const FILTER_LABEL: Record<'all' | ScreenshotOutcome, string> = { all: 'All', ...OUTCOME_CHIP }
 
@@ -104,6 +114,9 @@ export default function ScreenshotsPanel() {
   const [hasLog, setHasLog] = useState(true)
   const [lastProcessedAt, setLastProcessedAt] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | ScreenshotOutcome>('all')
+  const [countries, setCountries] = useState<PickerCountry[]>([])
+  const pick = useScreenshotCountry()
+  const countryName = (code: string | null) => countries.find(c => c.code === code)?.name ?? code ?? ''
   const runningRef = useRef(false)
   /** 🔴 RESET TO 0 ON EVERY SUCCESS. Three in a row is an outage; three in a day is not. */
   const consecutiveRef = useRef(0)
@@ -116,6 +129,7 @@ export default function ScreenshotsPanel() {
       setLogRows(Array.isArray(data?.rows) ? data.rows : [])
       setMigrationNotes(Array.isArray(data?.migrationNotes) ? data.migrationNotes : [])
       setHasLog(data?.hasLog !== false)
+      if (Array.isArray(data?.countries)) setCountries(data.countries)
       const newest = (data?.rows ?? [])[0]
       if (newest?.created_at) setLastProcessedAt(newest.created_at)
     } catch { /* the log is a convenience; its absence must not break the tab */ }
@@ -123,17 +137,22 @@ export default function ScreenshotsPanel() {
 
   useEffect(() => { void loadLog() }, [loadLog])
 
+  // 🔴 THE ONE GUARD: drop, pick and paste all come through here, and none is accepted until a country is
+  // chosen (Phase 2D-2). Each file is stamped with the country at this moment.
   const add = useCallback((incoming: FileList | File[] | null) => {
+    if (!pick.code) return
     const list = Array.from(incoming ?? []).filter(f => f.size > 0 && f.type.startsWith('image/'))
     if (!list.length) return
     setFatal(null)
+    const country = pick.code
+    pick.touch()
     setItems(prev => [...prev, ...list.map(f => ({
       // crypto.randomUUID is available in every browser this ships to and in the iOS WKWebView.
       id: crypto.randomUUID(), file: f, name: f.name || 'pasted image',
       previewUrl: URL.createObjectURL(f),
-      status: 'queued' as const, result: null, error: null, decided: null,
+      status: 'queued' as const, result: null, error: null, decided: null, country,
     }))])
-  }, [])
+  }, [pick])
 
   const remove = useCallback((id: string) => {
     setItems(prev => {
@@ -166,6 +185,7 @@ export default function ScreenshotsPanel() {
         fd.append('files', next.file, next.name)
         fd.append('waiting', String(Math.max(0, waiting)))
         fd.append('consecutiveNonContent', String(consecutiveRef.current))
+        fd.append('country', next.country)
         const res = await fetch('/api/admin/screenshot-events', {
           method: 'POST', headers: { ...await nativeAuthHeader() }, body: fd,
         })
@@ -235,12 +255,13 @@ export default function ScreenshotsPanel() {
   const decide = useCallback(async (item: Item, action: 'same_truck' | 'add_as_new', prospectId?: string) => {
     const details = item.result?.details
     if (!details) return
+    pick.touch()
     setItems(prev => prev.map(i => i.id === item.id ? { ...i, decided: 'working' } : i))
     try {
       const res = await fetch('/api/admin/screenshot-events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
-        body: JSON.stringify({ action, details, prospectId, fileName: item.name, fileSize: item.file.size }),
+        body: JSON.stringify({ action, details, prospectId, fileName: item.name, fileSize: item.file.size, country: item.country }),
       })
       const data = await res.json().catch(() => ({}))
       setItems(prev => prev.map(i => i.id === item.id
@@ -253,7 +274,37 @@ export default function ScreenshotsPanel() {
       const msg = e instanceof Error ? e.message : 'Failed'
       setItems(prev => prev.map(i => i.id === item.id ? { ...i, decided: null, error: msg } : i))
     }
-  }, [loadLog])
+  }, [loadLog, pick])
+
+  // ── "Check country" (Phase 2D-2): Add as {detected} / Keep as {chosen} re-submit the returned events with
+  // that country. Nothing was stored meanwhile; Dismiss writes nothing at all.
+  const confirmCountry = useCallback(async (item: Item, country: string) => {
+    const held = item.result?.held
+    if (!held) return
+    pick.touch()
+    setItems(prev => prev.map(i => i.id === item.id ? { ...i, decided: 'working' } : i))
+    try {
+      const res = await fetch('/api/admin/screenshot-events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
+        body: JSON.stringify({ action: 'country_confirm', country, events: held.events, fileName: item.name, fileSize: item.file.size }),
+      })
+      const data = await res.json().catch(() => ({}))
+      setItems(prev => prev.map(i => i.id === item.id
+        ? res.ok
+          ? { ...i, decided: data?.summary ?? 'done', result: i.result ? { ...i.result, outcome: 'schedule', summary: data?.summary ?? i.result.summary, dropped: Array.isArray(data?.dropped) ? data.dropped : i.result.dropped } : i.result }
+          : { ...i, decided: null, error: data?.error ?? `Request failed (${res.status})` }
+        : i))
+      void loadLog()
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed'
+      setItems(prev => prev.map(i => i.id === item.id ? { ...i, decided: null, error: msg } : i))
+    }
+  }, [loadLog, pick])
+  const dismissHeld = useCallback((item: Item) => {
+    pick.touch()
+    setItems(prev => prev.map(i => i.id === item.id ? { ...i, decided: 'Dismissed — nothing added' } : i))
+  }, [pick])
 
   /** Thumbnails for log rows, keyed by file name — the log holds no image, this session does. */
   const previews = useMemo(() => {
@@ -279,6 +330,10 @@ export default function ScreenshotsPanel() {
         <p className="mt-1 text-xs text-slate-500">
           Reading happens in this browser tab — if you close it or navigate away, the queue stops.
         </p>
+
+        {/* ── "These screenshots are from" — required before anything can be added (Phase 2D-2). ── */}
+        <ScreenshotCountryPicker countries={countries} code={pick.code} resetsAt={pick.resetsAt}
+          onChoose={code => pick.choose(code)} />
 
         {/* ── THE OUTAGE BANNER ────────────────────────────────────────────────────────────────────── */}
         {banner && (
@@ -307,11 +362,14 @@ export default function ScreenshotsPanel() {
             ⚠️ dragOver needs preventDefault on BOTH dragover and drop or the browser navigates to the
             dropped file instead of handing it over. */}
         <label
-          onDragOver={e => { e.preventDefault(); setDragOver(true) }}
+          data-drop-zone={pick.code ? 'open' : 'closed'}
+          aria-disabled={!pick.code}
+          onDragOver={e => { e.preventDefault(); if (pick.code) setDragOver(true) }}
           onDragLeave={() => setDragOver(false)}
           onDrop={e => { e.preventDefault(); setDragOver(false); add(e.dataTransfer.files) }}
-          className={`mt-5 block cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-colors ${
-            dragOver ? 'border-orange-500 bg-orange-50' : 'border-slate-300 bg-white hover:border-orange-400'
+          className={`mt-5 block rounded-xl border-2 border-dashed p-8 text-center transition-colors ${
+            !pick.code ? 'cursor-not-allowed border-slate-200 bg-slate-50'
+              : dragOver ? 'cursor-pointer border-orange-500 bg-orange-50' : 'cursor-pointer border-slate-300 bg-white hover:border-orange-400'
           }`}
         >
           {/*
@@ -331,13 +389,31 @@ export default function ScreenshotsPanel() {
             type="file"
             accept="image/*"
             multiple
+            disabled={!pick.code}
             className="hidden"
             onChange={e => { add(e.target.files); e.currentTarget.value = '' }}
           />
-          <p className="text-sm font-bold text-slate-700">Drop schedules or truck details here</p>
-          <p className="mt-1 text-xs text-slate-500">
-            as many as you like at once · or tap to choose · ⌘V to paste
-          </p>
+          {/* 🔴 CLOSED UNTIL A COUNTRY IS CHOSEN (Phase 2D-2): greyed, the input disabled, and add() refuses anyway. */}
+          {!pick.code ? (
+            <>
+              <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" className="mx-auto text-slate-300">
+                <rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                <circle cx="8.5" cy="9.5" r="1.6" fill="currentColor" />
+                <path d="M4 17l5-5 4 4 3-3 4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+              </svg>
+              <p className="mt-2 text-sm font-bold text-slate-400">Choose a country first</p>
+              <p className="mt-1 text-xs text-slate-400">Then drop, paste or pick screenshots here</p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-slate-700">
+                Drop, paste or pick screenshots from <strong>{countryWithArticle(countryName(pick.code))}</strong>
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                as many as you like at once · or tap to choose · ⌘V to paste
+              </p>
+            </>
+          )}
         </label>
 
         {fatal && <p className="mt-4 text-sm text-red-600 font-semibold">{fatal}</p>}
@@ -398,8 +474,9 @@ export default function ScreenshotsPanel() {
           const outcome: ScreenshotOutcome = item.status === 'error' ? 'failed' : (r?.outcome ?? 'failed')
           if (filter !== 'all' && outcome !== filter) return null
           return (
-            <div key={item.id} className={`mt-3 rounded-xl border p-3 ${
-              outcome === 'needs_a_look' ? 'border-amber-200 bg-amber-50' : 'border-slate-200 bg-white'
+            <div key={item.id} data-outcome={outcome} className={`mt-3 rounded-xl p-3 ${
+              outcome === 'held_country' && !item.decided ? 'border-2 border-[#d97706] bg-[#fffbeb]'
+                : outcome === 'needs_a_look' ? 'border border-amber-200 bg-amber-50' : 'border border-slate-200 bg-white'
             }`}>
               <div className="flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -407,16 +484,16 @@ export default function ScreenshotsPanel() {
                 <span className="w-44 shrink-0 truncate text-sm font-bold">
                   {r?.prospectId
                     ? <a href={prospectPath(r.prospectId)} className="text-orange-700 hover:underline">{r.details?.name || item.name}</a>
-                    : (r?.details?.name || item.name)}
+                    : (r?.details?.name || (outcome === 'held_country' ? r?.held?.events?.[0]?.truck_name : null) || item.name)}
                 </span>
                 <span className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-bold ${CHIP_CLASS[outcome]}`}>
                   {OUTCOME_CHIP[outcome]}
                 </span>
                 <span
                   className="min-w-0 flex-1 truncate text-sm text-slate-600"
-                  title={item.decided && item.decided !== 'working' ? item.decided : (r?.summary ?? item.error ?? '')}
+                  title={item.decided && item.decided !== 'working' ? item.decided : (outcome === 'held_country' ? item.name : (r?.summary ?? item.error ?? ''))}
                 >
-                  {item.decided && item.decided !== 'working' ? item.decided : (r?.summary ?? item.error ?? '')}
+                  {item.decided && item.decided !== 'working' ? item.decided : (outcome === 'held_country' ? item.name : (r?.summary ?? item.error ?? ''))}
                 </span>
                 <button
                   onClick={() => remove(item.id)}
@@ -441,7 +518,42 @@ export default function ScreenshotsPanel() {
                   >Add as new</button>
                 </div>
               )}
+              {/* 🔴 "CHECK COUNTRY" (Phase 2D-2): nothing is written until Add or Keep is pressed. */}
+              {outcome === 'held_country' && r?.held && !item.decided && (
+                <div className="mt-2 pl-14" data-held>
+                  <p className="text-sm text-amber-900">
+                    This looks like {countryWithArticle(r.held.detectedName)}, not {countryWithArticle(r.held.chosenName)}
+                    {r.held.reasons ? `: ${r.held.reasons}` : ''}. Nothing has been added yet.
+                  </p>
+                  <p className="mt-2 text-xs font-bold text-slate-700">{r.held.events.length} event{r.held.events.length === 1 ? '' : 's'} found:</p>
+                  <ul className="mt-1 space-y-0.5">
+                    {r.held.events.slice(0, 3).map((e, j) => (
+                      <li key={j} className="text-xs text-slate-600">
+                        {e.event_date}{e.start_time ? ` ${e.start_time}` : ''} · {e.venue_name || '(no venue)'}{e.village ? `, ${e.village}` : ''}{e.state ? `, ${e.state}` : ''}
+                      </li>
+                    ))}
+                    {r.held.events.length > 3 && <li className="text-xs text-slate-400">and {r.held.events.length - 3} more</li>}
+                  </ul>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {r.held.detectedKnown && (
+                      <button onClick={() => confirmCountry(item, r.held!.detected)}
+                        className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white hover:bg-slate-700"
+                      >Add as {r.held.detectedName}</button>
+                    )}
+                    <button onClick={() => confirmCountry(item, r.held!.chosen)}
+                      className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-slate-500"
+                    >Keep as {r.held.chosenName}</button>
+                    <button onClick={() => dismissHeld(item)}
+                      className="px-2 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800"
+                    >Dismiss</button>
+                  </div>
+                  {!r.held.detectedKnown && (
+                    <p className="mt-2 text-xs text-slate-500">{r.held.detectedName} isn’t one of our countries yet, so these can’t be added as {r.held.detectedName}.</p>
+                  )}
+                </div>
+              )}
               {item.decided === 'working' && <p className="mt-2 pl-14 text-xs text-slate-500">Saving…</p>}
+
 
               {/* The schedule half's detail, unchanged in meaning: every drop is shown WITH ITS REASON. */}
               {r && r.dropped.length > 0 && (

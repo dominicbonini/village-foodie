@@ -20,6 +20,7 @@
 // (the order-ready step) is RE-EXPORTED from it below, so it still has exactly one definition.
 
 import { SETTING_COPY } from '@/lib/settings-copy'
+import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
 
 /**
  * The five service settings an event type can set, keyed by their `SERVICE_ROWS` id.
@@ -201,7 +202,7 @@ export const PRICE_SETTING_LABELS = {
   price_change_on: 'Change prices',
   /** The across-the-board rule's mode. */
   price_mode: 'Price change',
-  /** The rule's amount. The box's suffix is `amountUnitFor(mode)` — '%' or '£'. */
+  /** The rule's amount. The box's suffix is `amountUnitFor(mode, symbol)` — '%' or the truck's currency symbol. */
   price_amount: 'Amount',
   /** Applied after the rule, never to a typed price. */
   price_rounding: 'Rounding',
@@ -225,10 +226,14 @@ export const PRICE_SETTING_LABELS = {
  * ⚠️ AND IT IS LAST IN THE LIST NOW, after the four arithmetic modes — it is the odd one out (it is
  * the absence of a rule rather than a kind of rule), and the four that behave alike belong together.
  */
-export const PRICE_MODE_CHOICES = [
-  { value: 'add_gbp', label: '+ £' },
+// ⚠️ THE VALUES ARE THE NEW, CURRENCY-NEUTRAL NAMES (10 October 2026): `add_amount` / `sub_amount`
+// replaced `add_gbp` / `sub_gbp` — see lib/event-pricing/price.ts LEGACY_PRICE_MODE_ALIASES. And the
+// LABELS carry the TRUCK'S currency symbol ("+ £" in the UK, "+ $" in the US), not a typed £.
+export const PRICE_MODE_VALUES = ['add_amount', 'add_pct', 'sub_amount', 'sub_pct', 'none'] as const
+export const priceModeChoices = (currencySymbol: string) => [
+  { value: 'add_amount', label: `+ ${currencySymbol}` },
   { value: 'add_pct', label: '+ %' },
-  { value: 'sub_gbp', label: '− £' },
+  { value: 'sub_amount', label: `− ${currencySymbol}` },
   { value: 'sub_pct', label: '− %' },
   { value: 'none', label: 'Set each price myself' },
 ] as const
@@ -241,12 +246,13 @@ export const PRICE_MODE_CHOICES = [
  * deciding which side of this it falls on.
  */
 export const PRICE_MODES_WITH_AMOUNT: readonly string[] =
-  PRICE_MODE_CHOICES.filter(c => c.value !== 'none').map(c => c.value)
+  PRICE_MODE_VALUES.filter(v => v !== 'none')
 
 /** The three roundings. ⚠️ 'None' here means no rounding, which IS the absence of the step. */
-export const PRICE_ROUNDING_CHOICES = [
+// The whole-unit rounding names the truck's currency ("Nearest £1", "Nearest $1").
+export const priceRoundingChoices = (currencySymbol: string) => [
   { value: 'none', label: 'None' },
-  { value: 'nearest_1', label: 'Nearest £1' },
+  { value: 'nearest_1', label: `Nearest ${currencySymbol}1` },
   { value: 'up_1', label: 'Always round up' },
 ] as const
 
@@ -387,9 +393,11 @@ export const EVENT_PRICE_COLUMN_LABEL = 'Price'
  *
  * @param fallbackPounds what this item would cost here WITHOUT the event's own price
  * @param typeName       the event type's name when the fallback is ITS price, else null for the menu
+ * @param money          the TRUCK's money format (/api/dashboard's truck.money) — not a typed £. Missing
+ *                       (an offline snapshot from before 10 October 2026) ⇒ the figure with no symbol.
  */
-export const eventPriceOwnNote = (fallbackPounds: number, typeName?: string | null): string =>
-  `${typeName ?? 'menu'} £${fallbackPounds.toFixed(2)} · this event`
+export const eventPriceOwnNote = (fallbackPounds: number, typeName: string | null | undefined, money: MoneyFormat | null | undefined): string =>
+  `${typeName ?? 'menu'} ${formatMajorOrBare(fallbackPounds, money, 'event price note')} · this event`
 
 /* ══ 🔴 THE PRICE COLUMN IS READ-ONLY UNTIL "✎ Edit prices" (5 October 2026, Dominic) ═════════════
  * ⛔ IT WAS AN OPEN INPUT BESIDE Item limit, AND THAT WAS THE DEFECT. Prices change rarely and are

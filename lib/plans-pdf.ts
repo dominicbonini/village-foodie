@@ -16,16 +16,18 @@
 // anything that is not a handler, so "just export buildHtml from the route" is not an option —
 // which is the mechanical reason this is a lib and not a smaller change.
 import {
-  FEATURE_SECTIONS, TRANSACTION_ROWS, FOOTNOTES, PLAN_ALLOWANCES,
+  FEATURE_SECTIONS, transactionRows, footnotes, planAllowances,
   type FeatureValue,
 } from '@/lib/plan-features'
+import type { CountrySettings } from '@/lib/country-settings-types'
+import { getCountrySettings } from '@/lib/country-settings'
 import { PLAN_META } from '@/lib/features'
 import { HATCHGRAB_NAVY_HEX, HATCHGRAB_ORANGE_HEX, HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { maskPrice, PRICING_PUBLISHED } from '@/lib/pricing'
 import {
-  TABLE_PLANS, type TablePlan, PLAN_SUB, PLAN_PRICE_LABEL,
+  TABLE_PLANS, type TablePlan, PLAN_SUB, planPriceLabels,
   trialFeatureValue, visibleRows, rowName, rowDetail, cellLabel,
 } from '@/lib/landing-table'
 
@@ -110,17 +112,19 @@ function cellHtml(value: FeatureValue): string {
   return `<td class="c ${cls}">${label === '✓' ? TICK : esc(label)}</td>`
 }
 
-export function buildPlansPdfHtml(): string {
+/** The document's HTML for ONE country's prices. Pure apart from reading the wordmark file. */
+export function buildPlansPdfHtml(s: CountrySettings): string {
   const wordmark = wordmarkDataUri()
+  const priceLabel = planPriceLabels(s)
   const heads = TABLE_PLANS.map((p: TablePlan) => {
-    const price = PRICE_MODE === 'omit' ? '' : `<div class="th-price">${esc(px(PLAN_PRICE_LABEL[p]))}</div>`
+    const price = PRICE_MODE === 'omit' ? '' : `<div class="th-price">${esc(px(priceLabel[p]))}</div>`
     const sub = PRICE_MODE === 'omit' || !PLAN_SUB[p] ? '' : `<div class="th-sub">${esc(PLAN_SUB[p])}</div>`
     return `<th class="c"><div class="th-plan">${esc(PLAN_META[p].name)}</div>${price}${sub}</th>`
   }).join('')
 
   const fees = PRICE_MODE === 'omit' ? '' : `
     <tr class="grp"><td colspan="${TABLE_PLANS.length + 1}">Fees</td></tr>
-    ${TRANSACTION_ROWS.map(row => `
+    ${transactionRows(s).map(row => `
       <tr>
         <td class="f"><span class="f-name">${esc(row.name)}${row.footnote ? `<sup>${esc(row.footnote)}</sup>` : ''}</span></td>
         ${TABLE_PLANS.map(p => `<td class="c val">${esc(px(row.cells[p]))}</td>`).join('')}
@@ -142,10 +146,10 @@ export function buildPlansPdfHtml(): string {
   // lives, and footnote 4 is what makes the auto-reply rows honest. See the report's §7.
   const allowances = PRICE_MODE === 'omit' ? '' : `
     <div class="allow"><h3>Online order allowance</h3><ul>
-      ${(['starter', 'pro', 'max'] as const).map(p => `<li><b>${esc(PLAN_META[p].name)}</b> — ${esc(px(PLAN_ALLOWANCES[p]))}</li>`).join('')}
+      ${(['starter', 'pro', 'max'] as const).map(p => `<li><b>${esc(PLAN_META[p].name)}</b> — ${esc(px(planAllowances(s)[p]))}</li>`).join('')}
     </ul></div>`
 
-  const notes = FOOTNOTES.map(f => `<p><sup>${esc(f.number)}</sup> ${esc(f.text)}</p>`).join('')
+  const notes = footnotes(s).map(f => `<p><sup>${esc(f.number)}</sup> ${esc(f.text)}</p>`).join('')
 
   const priceNote = PRICE_MODE === 'follow-flag' && !PRICING_PUBLISHED
     ? `<p class="tbc">Prices shown as “TBC” are not yet published.</p>` : ''
@@ -273,14 +277,21 @@ export async function launchPdfBrowser() {
  * ⚠️ THE BROWSER IS ALWAYS CLOSED. A leaked Chromium on a serverless container is a container that
  * runs out of memory for the next request rather than for this one.
  */
-export async function generatePlansPdf(): Promise<Buffer> {
+/**
+ * The PDF for ONE country. 🔴 THE COUNTRY IS A REQUIRED ARGUMENT, NOT A DEFAULT: both callers pass 'GB'
+ * explicitly today (the admin download and the outreach attachment), each saying why at the call site.
+ * A default here would be the silent GB fallback lib/country-settings.ts exists to refuse.
+ */
+export async function generatePlansPdf(country: string): Promise<Buffer> {
+  // Read BEFORE the browser launches, so an unknown country fails fast and costs no Chromium.
+  const settings = await getCountrySettings(country)
   let browser: unknown = null
   try {
     browser = await launchPdfBrowser()
     const b = browser as { newPage: () => Promise<{ setContent: (h: string, o: object) => Promise<void>; pdf: (o: object) => Promise<Uint8Array> }> }
     const page = await b.newPage()
     // ⚠️ setContent, NOT a navigation to our own URL — the note the route carried, kept with the code.
-    await page.setContent(buildPlansPdfHtml(), { waitUntil: 'load' })
+    await page.setContent(buildPlansPdfHtml(settings), { waitUntil: 'load' })
     const pdf = await page.pdf({ format: 'A4', printBackground: true, preferCSSPageSize: true })
     return Buffer.from(pdf)
   } finally {

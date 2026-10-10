@@ -27,6 +27,8 @@ import { createClient } from '@supabase/supabase-js'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
+import { moneyFormatForTruck } from '@/lib/money-server'
+import { truckTimeSettings } from '@/lib/truck-time'
 import { fetchUpcomingTruckEvents } from '@/lib/whatsapp/upcoming-events'
 
 // Worst case is two sequential Gemini calls: the classifier at GEMINI_TIMEOUT_MS plus either the tier-3
@@ -108,7 +110,7 @@ export async function POST(req: NextRequest) {
   // read anywhere in this file -- see the header note about the service-role menu read.
   const { data: truck } = await supabase
     .from('trucks')
-    .select('id, name, slug, truck_emoji')
+    .select('id, name, slug, truck_emoji, currency, country, timezone')
     .eq('dashboard_token', token)
     .single()
 
@@ -152,7 +154,8 @@ export async function POST(req: NextRequest) {
 
   // The SAME schedule window the live webhook grounds its answers on -- one shared definition, not a
   // third copy. See lib/whatsapp/upcoming-events.ts.
-  const events = await fetchUpcomingTruckEvents(supabase, truck.id)
+  const truckTime = await truckTimeSettings(truck)
+  const events = await fetchUpcomingTruckEvents(supabase, truck.id, truckTime.timeZone)
 
   const hgUrl = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
   const orderUrl = truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : ''
@@ -161,6 +164,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const { reply, classification } = await generateWhatsAppReply({
+      money:           await moneyFormatForTruck(truck),
+      time:            truckTime,
       truckName:       truck.name,
       truckEmoji:      truck.truck_emoji ?? '',
       truckId:         truck.id,

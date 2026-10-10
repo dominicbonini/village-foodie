@@ -46,7 +46,13 @@ const Module = require('module')
 const realResolve = Module._resolveFilename
 Module._resolveFilename = function (request, ...rest) {
   if (request.startsWith('@/')) return realResolve.call(this, path.join(out, request.slice(2)), ...rest)
-  return realResolve.call(this, request, ...rest)
+  try { return realResolve.call(this, request, ...rest) }
+  catch (e) {
+    // A package import from the compiled tree (OS temp dir, no node_modules beside it) resolves from the
+    // repo's own node_modules — libphonenumber-js, which lib/email.ts reaches through lib/phone.ts (Phase 2C).
+    if (/^[./]/.test(request)) throw e
+    return require.resolve(request, { paths: [REPO] })
+  }
 }
 
 const M = require(path.join(out, 'lib/whatsapp/meta-admin.js'))

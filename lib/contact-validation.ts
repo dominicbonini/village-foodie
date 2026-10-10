@@ -7,13 +7,5 @@ export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email || '').trim())
 }
 
-/**
- * Plausible UK phone — permissive (matches the customer order screen). Strips spaces/dashes/brackets,
- * then accepts a 0 / +44 / 44 prefix followed by 9–11 digits. Empty ⇒ false.
- * NOTE: this is the customer-screen rule (permissive, 9–11 digits incl. +44 forms), NOT a strict
- * "exactly 11 digits" rule — kept identical on both surfaces on purpose. See the Settings flag.
- */
-export function isValidUKPhone(phone: string): boolean {
-  const digits = (phone || '').replace(/[^\d+]/g, '')
-  return /^(\+?44|0)\d{9,11}$/.test(digits)
-}
+// ⛔ isValidUKPhone IS GONE (Phase 2C, 10 October 2026). Phone numbers are checked by lib/phone.ts
+// `isPlausiblePhone(number, truck's country)` — one rule for every country — on every surface that used it.

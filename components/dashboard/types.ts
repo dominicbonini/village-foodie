@@ -1,7 +1,10 @@
 // components/dashboard/types.ts
 // Shared types for the truck dashboard
 
+import type { PhoneCopy } from '@/lib/phone'
 import type { Plan } from '@/lib/features'
+import type { TruckMoney } from '@/lib/money-format'
+import type { TimeSettings } from '@/lib/time-utils'
 
 export interface OrderItem {
   name: string
@@ -37,6 +40,11 @@ export interface Order {
   event_id: string | null
   van_id: string | null
   status: OrderStatus
+  /** ISO 4217 — orders.currency, snapshotted at insert (20261010). Every amount on this order is shown in
+   *  it. Optional only because an optimistic offline order is built on the device (it copies the truck's). */
+  currency?: string | null
+  /** orders.country — whose locale the amounts are laid out in. */
+  country?: string | null
   items: OrderItem[]
   deals: { name: string; price?: number; slots: Record<string, string>; slotModifiers?: Record<string, { name: string; price: number }[]>; slotNotes?: Record<string, string> }[] | null
   total: number
@@ -112,6 +120,20 @@ export interface SoundConfig { new_orders: NewOrdersSound; order_due: boolean }
 export const DEFAULT_SOUND_CONFIG: SoundConfig = { new_orders: 'needs_confirming', order_due: false }
 
 export interface TruckData {
+  /** ISO 4217, upper case — trucks.currency, carried by /api/dashboard's spread-and-redact projection. */
+  currency?: string
+  /** trucks.country. */
+  country?: string
+  /** 🔴 THE MONEY FORMAT, from /api/dashboard: the truck's {currency, locale} plus the locale of every
+   *  country its orders came from. Kept in the offline truck snapshot with the rest of this object. Every
+   *  amount on the dashboard, the KDS and a printed ticket is formatted from it (orderMoney). */
+  money?: TruckMoney | null
+  /** 🔴 THE TRUCK'S TIME (Phase 2B), from /api/dashboard: its zone and how its times and dates read.
+   *  Kept in the native offline snapshot. Null/absent only on a snapshot saved before this build — the
+   *  screens then use the UK's settings (lib/time-utils timeSettingsOr), as every older truck is UK. */
+  time?: TimeSettings | null
+  /** 🔴 The truck's phone copy (Phase 2C) — { phoneCountry, short_name, phone_example }, from /api/dashboard. */
+  phone?: PhoneCopy | null
   id: string
   name: string
   mode: string

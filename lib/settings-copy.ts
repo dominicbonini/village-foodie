@@ -138,3 +138,20 @@ export const SETTING_COPY = {
     countLabel: 'How many buzzers do you have?',
   },
 } as const
+
+// ── PHASE 2D-1: WHERE A TRUCK TRADES ─────────────────────────────────────────────────────────────────────
+// 🔴 ONE SOURCE FOR BOTH SURFACES: the signup step "Where's your truck based?" (components/setup/WhereBasedStep)
+// and Manage › Settings › Where you trade read these, so the two cannot word the same setting differently.
+// The step asks QUESTIONS and Settings shows LABELS, so each field has both — written once, here.
+export const WHERE_YOU_TRADE_COPY = {
+  stepHeading: 'Where’s your truck based?',
+  stepIntro: 'This sets your currency, prices, time zone and phone format. The country can’t be changed later, because it’s tied to your card payments.',
+  settingsHeading: 'Where you trade',
+  country: { label: 'Country', help: '' },
+  countryGuessed: 'We guessed this from where you are. Change it if it’s wrong.',
+  countryLocked: 'Your country can’t be changed',
+  town: { label: 'Town or city', help: '' },
+  townQuestion: 'Town or city you’re based in',
+  timezone: { label: 'Time zone', help: '' },
+  continueButton: 'Continue',
+} as const

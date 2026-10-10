@@ -2,6 +2,7 @@
 // SINGLE SOURCE OF TRUTH for prep time / ready time calculations
 // Used by: truck dashboard (client), slots API (server), customer order form (client)
 
+import { clockOfInstantInTz, instantOfLocal } from '@/lib/time-utils'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { readVanCategorySettings, resolveCategories } from '@/lib/van-category-settings'
 
@@ -58,17 +59,17 @@ export interface CatConfig {
     return Math.max(30, maxSecs) + waitSecs
   }
   
+  /** "HH:MM" on the TRUCK's clock when this basket would be ready (Phase 2B: was the device's clock). */
   export function calcReadyTime(
     items: PrepItem[],
     waitSecs: number,
-    menuItems?: PrepMenuItem[],
-    customConfigs?: Record<string, CatConfig>
+    menuItems: PrepMenuItem[] | undefined,
+    customConfigs: Record<string, CatConfig> | undefined,
+    tz: string,
   ): string {
     if (!items.length) return ''
     const totalSecs = calcReadySecs(items, waitSecs, menuItems, customConfigs)
-    const t = new Date()
-    t.setSeconds(t.getSeconds() + totalSecs)
-    return `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`
+    return clockOfInstantInTz(Date.now() + totalSecs * 1000, tz)
   }
   
   export function calcMinsFromNow(
@@ -241,8 +242,9 @@ export interface CatConfig {
    *     AddOrderPanel via calcQueuePushSecs; the live queue isn't in scope here,
    *     so the floor is event start, which is what governs before service.)
    *
-   * All dates built with new Date(y, mo-1, d, h, m) local time (Manual s.7) —
-   * never new Date('YYYY-MM-DD…'), which Safari parses as UTC and shifts the day.
+   * 🔴 THE TRUCK'S WALL CLOCK (Phase 2B): event_date + slot are read in the truck's zone (instantOfLocal),
+   * not the device's — a tablet set to another zone still counts down to the right minute. (Never
+   * new Date('YYYY-MM-DD…'), which Safari parses as UTC and shifts the day.)
    *
    * Returns null only when there is no slot AND no usable event start to anchor to
    * (callers fall back to ticket age in that case).
@@ -250,12 +252,13 @@ export interface CatConfig {
   export function resolveCollectionTime(
     order: { slot: string | null; event_date: string | null },
     event: { event_date: string | null; start_time: string | null } | null,
+    tz: string,
   ): Date | null {
     const toLocal = (dateStr: string, timeStr: string): Date | null => {
       const [y, mo, d] = dateStr.split('-').map(Number)
       const [h, m] = timeStr.split(':').map(Number)
       if ([y, mo, d, h, m].some(n => Number.isNaN(n))) return null
-      return new Date(y, mo - 1, d, h, m, 0, 0)
+      return new Date(instantOfLocal(dateStr, `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`, tz))
     }
 
     // order.slot is now ALWAYS populated for new orders (submit persists the resolved boundary), so

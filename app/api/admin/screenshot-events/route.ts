@@ -31,8 +31,12 @@ import { sendConfirmationEmail } from '@/lib/email'
 import { addNote } from '@/lib/outreach-events'
 import {
   buildScreenshotPrompt, parseScreenshotEvents, filterScreenshotEvents, toInboundEvents,
-  type DroppedEvent,
+  parseCountryVerdict, shouldHoldForCountry,
+  type DroppedEvent, type ScreenshotCountry, type ScreenshotEvent,
 } from '@/lib/admin/screenshot-events'
+// Phase 2D-2: the country the admin chose ("These screenshots are from"), read from its settings row.
+import { getCountrySettings, listCountrySettingsCached } from '@/lib/country-settings'
+import { flagDataUri } from '@/lib/flags'
 import {
   buildClassifyPrompt, parseClassification, shouldRunSchedule, shouldRunTruckDetails,
   buildTruckDetailsPrompt, parseTruckDetails, detailsAreEmpty, matchProspect, planFill, planIsEmpty,
@@ -230,8 +234,10 @@ const db: TruckWriteDb = {
  * returns error 42703 for the WHOLE query, which would empty the candidate list and turn every screenshot
  * into a new truck. That is precisely the shape of the bug this repo already fixed once on the send path.
  */
-async function matchRows(hasSocial: boolean): Promise<{ rows: MatchRow[]; error: string | null }> {
-  const truckCols = ['id', 'name', 'contact_email', 'phone', 'mobile', 'website']
+async function matchRows(hasSocial: boolean, country: string): Promise<{ rows: MatchRow[]; error: string | null }> {
+  // 🔴 PHASE 2D-2: only prospects whose truck is in the chosen country are candidates — a US screenshot that
+  // carries only a name equal to a UK prospect's can never be merged into it.
+  const truckCols = ['id', 'name', 'contact_email', 'phone', 'mobile', 'website', 'country']
   if (hasSocial) truckCols.push('facebook_url', 'instagram_url')
   const { data, error } = await supabase
     .from('outreach_prospects')
@@ -245,12 +251,14 @@ async function matchRows(hasSocial: boolean): Promise<{ rows: MatchRow[]; error:
       id?: string; name?: string | null; contact_email?: string | null; phone?: string | null
       mobile?: string | null; website?: string | null
       facebook_url?: string | null; instagram_url?: string | null
+      country?: string | null
     } | null
   }
   const rows: MatchRow[] = []
   for (const p of (data ?? []) as unknown as Embedded[]) {
     const t = p.truck
     if (!t?.id) continue
+    if ((t.country || 'GB').toUpperCase() !== country) continue
     rows.push({
       prospect_id: p.id, truck_id: t.id, name: t.name ?? null,
       contact_email: t.contact_email ?? null, phone: t.phone ?? null, mobile: t.mobile ?? null,
@@ -282,6 +290,19 @@ type FileResult = {
   details: TruckDetails | null
   error: string | null
   warnings: string[]
+  /** Set only for 'held_country' (Phase 2D-2): what the model saw, and the events to re-submit. NOTHING has
+   *  been written; the browser sends these back with the country the admin decides on. */
+  held?: HeldCountry | null
+}
+
+type HeldCountry = {
+  chosen: string; chosenName: string
+  detected: string; detectedName: string
+  /** Whether the detected country is one of ours (country_settings) — only then can it be "Add as". */
+  detectedKnown: boolean
+  confidence: 'high' | 'medium'
+  reasons: string
+  events: Partial<ScreenshotEvent>[]
 }
 
 const emptyResult = (fileName: string): FileResult => ({
@@ -290,14 +311,61 @@ const emptyResult = (fileName: string): FileResult => ({
   prospectId: null, truckId: null, candidates: null, details: null, error: null, warnings: [],
 })
 
+/* ─────────────────────────── THE CHOSEN COUNTRY (Phase 2D-2) ─────────────────────────── */
+
+/** A country the admin may choose: any row in country_settings, switched on or not. null if unknown. */
+async function chosenCountry(code: unknown): Promise<ScreenshotCountry | null> {
+  const c = typeof code === 'string' ? code.trim().toUpperCase() : ''
+  if (!/^[A-Z]{2}$/.test(c)) return null
+  try {
+    const s = await getCountrySettings(c)
+    return { code: s.countryCode, name: s.name, addressFormat: s.addressFormat, dateOrder: s.dateOrder }
+  } catch { return null }
+}
+
+/** The country's own exclusion terms (discovery_exclusion_terms.country) — a UK term never silences a US truck. */
+async function exclusionTermKeys(country: string): Promise<{ keys: string[]; error: string | null }> {
+  const { data, error } = await supabase
+    .from('discovery_exclusion_terms').select('term_key').eq('country', country).limit(10000)
+  if (error) return { keys: [], error: error.message }
+  return { keys: (data ?? []).map(r => r.term_key).filter(Boolean) as string[], error: null }
+}
+
+/** Hand kept events to the bridge, in `country`. Throws on a refusal, exactly as before. */
+async function sendToBridge(req: NextRequest, kept: ScreenshotEvent[], fileName: string, country: string) {
+  const origin = process.env.HATCHGRAB_API_URL || new URL(req.url).origin
+  const res = await fetch(`${origin}/api/inbound-schedule`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      secret: process.env.INBOUND_SCHEDULE_SECRET,
+      events: toInboundEvents(kept, fileName),
+      country,
+    }),
+  })
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(`inbound-schedule returned ${res.status}: ${body?.error ?? ''}`)
+  return { written: (body?.inserted ?? null) as number | null, bridged: (body?.bridged ?? null) as number | null }
+}
+
+const regionName = (code: string) => {
+  try { return new Intl.DisplayNames(['en-GB'], { type: 'region' }).of(code) ?? code } catch { return code }
+}
+
 /* ─────────────────────────── GET: the log ─────────────────────────── */
 
 export async function GET(req: NextRequest) {
   if (!await verifyAdmin(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   const [hasLog, hasSocial] = await Promise.all([logTableReady(), socialColumnsReady()])
   const rows = await recentLog(hasLog)
+  // Phase 2D-2: the picker's choices — EVERY country we have settings for, switched on or not, with its flag.
+  let countries: { code: string; name: string; flag: string | null }[] = []
+  try {
+    countries = (await listCountrySettingsCached()).map(c => ({ code: c.countryCode, name: c.name, flag: flagDataUri(c.countryCode) }))
+  } catch (e) {
+    console.error('[screenshot-events] country list failed:', e instanceof Error ? e.message : String(e))
+  }
   return NextResponse.json({
-    ok: true, hasLog, hasSocial, rows,
+    ok: true, hasLog, hasSocial, rows, countries,
     migrationNotes: [
       ...(hasLog ? [] : [MIGRATION_LOG]),
       ...(hasSocial ? [] : [MIGRATION_SOCIAL]),
@@ -324,6 +392,12 @@ export async function POST(req: NextRequest) {
   // The browser owns the queue, so only the browser knows these two.
   const waiting = Number(form.get('waiting') ?? '') || null
   const consecutive = Number(form.get('consecutiveNonContent') ?? '') || 0
+  // 🔴 PHASE 2D-2 — THE COUNTRY IS REQUIRED. The panel stamps each file with the country chosen when it was
+  // queued; a request without one (or with a code that is not ours) reads nothing.
+  const country = await chosenCountry(form.get('country'))
+  if (!country) {
+    return NextResponse.json({ error: 'Choose the country these screenshots are from first.' }, { status: 400 })
+  }
 
   const [hasLog, hasSocial] = await Promise.all([logTableReady(), socialColumnsReady()])
 
@@ -332,16 +406,14 @@ export async function POST(req: NextRequest) {
   // normalizeVenue/venuesFuzzyMatch is the scraper's own rule.
   // ⚠️ A read failure here is FATAL for the batch rather than silently proceeding with an empty set — an
   // empty exclusion list does not fail, it quietly admits quiz nights and TBC as trucks.
-  const { data: termRows, error: termErr } = await supabase
-    .from('discovery_exclusion_terms').select('term_key').limit(10000)
+  const { keys: termKeys, error: termErr } = await exclusionTermKeys(country.code)
   if (termErr) {
-    const reason = `The exclusion list could not be read, so nothing can be extracted safely: ${termErr.message}`
+    const reason = `The exclusion list could not be read, so nothing can be extracted safely: ${termErr}`
     const alertedAt = await alertIfDue(hasLog, reason, waiting)
     return NextResponse.json({ error: reason, paused: true, banner: reason, alerted: !!alertedAt }, { status: 500 })
   }
-  const termKeys = (termRows ?? []).map(r => r.term_key).filter(Boolean) as string[]
 
-  const schedulePrompt = buildScreenshotPrompt(new Date())
+  const schedulePrompt = buildScreenshotPrompt(new Date(), country)
   const results: FileResult[] = []
   let paused = false
   let banner: string | null = null
@@ -359,51 +431,61 @@ export async function POST(req: NextRequest) {
       const kind = parseClassification(await callGemini(base64, mime, buildClassifyPrompt()))
       result.kind = kind
 
-      // ── 2. SCHEDULE — only for 'schedule' or 'both', and otherwise untouched from the first version ──
+      // ── 2. SCHEDULE — only for 'schedule' or 'both' ───────────────────────────────────────────────
+      let held = false
       if (shouldRunSchedule(kind)) {
         const raw = await callGemini(base64, mime, schedulePrompt)
         const parsed = parseScreenshotEvents(raw)
         result.extracted = parsed.length
-        const { kept, dropped } = filterScreenshotEvents(parsed, termKeys)
-        result.kept = kept.length
-        result.dropped = dropped
-        if (kept.length > 0) {
-          const origin = process.env.HATCHGRAB_API_URL || new URL(req.url).origin
-          const res = await fetch(`${origin}/api/inbound-schedule`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              secret: process.env.INBOUND_SCHEDULE_SECRET,
-              events: toInboundEvents(kept, file.name),
-            }),
-          })
-          const body = await res.json().catch(() => ({}))
-          if (!res.ok) throw new Error(`inbound-schedule returned ${res.status}: ${body?.error ?? ''}`)
-          result.written = body?.inserted ?? null
-          result.bridged = body?.bridged ?? null
-        } else {
+        // 🔴 PHASE 2D-2 — A CONFIDENT "THIS IS ANOTHER COUNTRY" HOLDS THE SCREENSHOT AND WRITES NOTHING:
+        // no gate, no bridge, no prospect. The extracted events go back to the browser, which re-submits them
+        // with the country the admin decides on. Low confidence, no answer or the same country go through.
+        const verdict = parseCountryVerdict(raw)
+        if (shouldHoldForCountry(country.code, verdict)) {
+          held = true
+          const detected = verdict.country!
+          const known = await chosenCountry(detected)
+          const detectedName = known?.name ?? regionName(detected)
+          result.outcome = 'held_country'
+          result.summary = `Looks like ${detectedName}, not ${country.name} — nothing added yet`
           result.written = 0
+          result.held = {
+            chosen: country.code, chosenName: country.name, detected, detectedName, detectedKnown: !!known,
+            confidence: verdict.confidence as 'high' | 'medium', reasons: verdict.reasons, events: parsed,
+          }
+        } else {
+          const { kept, dropped } = filterScreenshotEvents(parsed, termKeys)
+          result.kept = kept.length
+          result.dropped = dropped
+          if (kept.length > 0) {
+            const sent = await sendToBridge(req, kept, file.name, country.code)
+            result.written = sent.written
+            result.bridged = sent.bridged
+          } else {
+            result.written = 0
+          }
+          result.outcome = 'schedule'
+          result.summary = `${result.written ?? 0} events added`
         }
-        result.outcome = 'schedule'
-        result.summary = `${result.written ?? 0} events added`
       }
 
-      // ── 3. TRUCK DETAILS ────────────────────────────────────────────────────────────────────────
-      if (shouldRunTruckDetails(kind)) {
+      // ── 3. TRUCK DETAILS (never while the schedule is held — nothing is written until the admin decides) ──
+      if (shouldRunTruckDetails(kind) && !held) {
         if (!hasSocial) {
           // 🔴 WRITES NOTHING. Not a partial fill without the social columns: a run that fills email now
           // and the Facebook link "later" has no later — the screenshot is gone.
           throw new Error(`This screenshot has truck details, but the facebook_url/instagram_url columns do not exist yet — ${MIGRATION_SOCIAL}. Nothing was written.`)
         }
-        const details = parseTruckDetails(await callGemini(base64, mime, buildTruckDetailsPrompt()))
+        const details = parseTruckDetails(await callGemini(base64, mime, buildTruckDetailsPrompt()), country.code)
         result.details = details
 
         if (detailsAreEmpty(details)) {
           result.outcome = 'nothing_new'
           result.summary = 'No contact details could be read from this screenshot'
         } else {
-          const { rows, error: mErr } = await matchRows(hasSocial)
+          const { rows, error: mErr } = await matchRows(hasSocial, country.code)
           if (mErr) throw new Error(`The prospect list could not be read: ${mErr}`)
-          const match = matchProspect(details, rows)
+          const match = matchProspect(details, rows, country.code)
 
           if (match.kind === 'definite') {
             const plan = planFill(details, {
@@ -432,7 +514,7 @@ export async function POST(req: NextRequest) {
             result.candidates = match.candidates.map(c => ({ prospect_id: c.prospect_id, truck_id: c.truck_id, name: c.name }))
           } else {
             const summary = newTruckSummary(details)
-            const created = await createHiddenTruckWithProspect(db, details, `Added from a screenshot — ${summary}`)
+            const created = await createHiddenTruckWithProspect(db, details, `Added from a screenshot — ${summary}`, country.code)
             if (!created.ok) throw new Error(`The new truck could not be created: ${created.error}`)
             result.outcome = 'new_truck'
             result.summary = summary
@@ -452,6 +534,7 @@ export async function POST(req: NextRequest) {
         fileName: file.name, fileSize: file.size, kind, outcome: result.outcome, summary: result.summary,
         prospectId: result.prospectId, truckId: result.truckId,
         eventsWritten: shouldRunSchedule(kind) ? (result.written ?? 0) : null,
+        // (a held row's summary names both countries, so the log line says why nothing was added)
         error: null, alertedAt: null,
       }
     } catch (err) {
@@ -501,8 +584,17 @@ export async function POST(req: NextRequest) {
  */
 async function decide(req: NextRequest) {
   const body = await req.json().catch(() => null) as
-    { action?: string; details?: unknown; prospectId?: string; truckId?: string; fileName?: string; fileSize?: number } | null
+    { action?: string; details?: unknown; prospectId?: string; truckId?: string; fileName?: string; fileSize?: number
+      country?: string; events?: unknown } | null
   if (!body) return NextResponse.json({ error: 'Unreadable request' }, { status: 400 })
+
+  // ── 🔴 PHASE 2D-2: "Add as {detected}" / "Keep as {chosen}" on a held row. FIRST, before the social-column
+  // probe below: that probe answers 409 for every action when the facebook/instagram migration is missing,
+  // and re-submitting a schedule needs neither column (audit §2.2).
+  if (body.action === 'country_confirm') return confirmCountry(req, body)
+
+  const country = await chosenCountry(body.country)
+  if (!country) return NextResponse.json({ error: 'Choose the country these screenshots are from first.' }, { status: 400 })
 
   const hasSocial = await socialColumnsReady()
   if (!hasSocial) return NextResponse.json({ error: `${MIGRATION_SOCIAL}. Nothing was written.` }, { status: 409 })
@@ -521,13 +613,13 @@ async function decide(req: NextRequest) {
     facebook: sent.facebook_url ?? '',
     instagram: sent.instagram_url ?? '',
     area: sent.area ?? '',
-  }))
+  }), country.code)
   // ⚠️ A mobile and a landline cannot both survive the round trip above — `phone` takes one string. Both
   // are carried explicitly so a prospect that showed two numbers does not silently lose one.
   const reDetails: TruckDetails = {
     ...details,
-    mobile: details.mobile ?? parseTruckDetails(JSON.stringify({ phone: sent.mobile ?? '' })).mobile,
-    phone: details.phone ?? parseTruckDetails(JSON.stringify({ phone: sent.phone ?? '' })).phone,
+    mobile: details.mobile ?? parseTruckDetails(JSON.stringify({ phone: sent.mobile ?? '' }), country.code).mobile,
+    phone: details.phone ?? parseTruckDetails(JSON.stringify({ phone: sent.phone ?? '' }), country.code).phone,
   }
 
   const fileName = String(body.fileName ?? 'decision')
@@ -535,7 +627,7 @@ async function decide(req: NextRequest) {
 
   if (body.action === 'add_as_new') {
     const summary = newTruckSummary(reDetails)
-    const created = await createHiddenTruckWithProspect(db, reDetails, `Added from a screenshot — ${summary}`)
+    const created = await createHiddenTruckWithProspect(db, reDetails, `Added from a screenshot — ${summary}`, country.code)
     if (!created.ok) return NextResponse.json({ error: created.error }, { status: 500 })
     await writeLog(hasLog, {
       fileName, fileSize, kind: 'truck_details', outcome: 'new_truck', summary,
@@ -546,7 +638,7 @@ async function decide(req: NextRequest) {
 
   if (body.action === 'same_truck') {
     if (!body.prospectId) return NextResponse.json({ error: 'No prospect was chosen' }, { status: 400 })
-    const { rows, error } = await matchRows(hasSocial)
+    const { rows, error } = await matchRows(hasSocial, country.code)
     if (error) return NextResponse.json({ error: `The prospect list could not be read: ${error}` }, { status: 500 })
     const row = rows.find(r => r.prospect_id === body.prospectId)
     if (!row) return NextResponse.json({ error: 'That prospect could not be found' }, { status: 404 })
@@ -575,4 +667,34 @@ async function decide(req: NextRequest) {
   }
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+}
+
+/* ─────────────────────────── "Check country" DECISIONS (Phase 2D-2) ─────────────────────────── */
+
+/**
+ * "Add as {detected}" or "Keep as {chosen}" on a held row: the events the route returned are sent back with the
+ * country the admin settled on, and only now go to the bridge — filtered again by THAT country's exclusion
+ * terms, and re-read through the same parser, because they come from the browser.
+ */
+async function confirmCountry(req: NextRequest, body: { country?: string; events?: unknown; fileName?: string; fileSize?: number }) {
+  const country = await chosenCountry(body.country)
+  if (!country) return NextResponse.json({ error: 'That country is not one of ours, so these events cannot be added as it.' }, { status: 400 })
+  const events = parseScreenshotEvents(JSON.stringify({ events: Array.isArray(body.events) ? body.events : [] }))
+  const { keys, error: termErr } = await exclusionTermKeys(country.code)
+  if (termErr) return NextResponse.json({ error: `The exclusion list could not be read, so nothing was added: ${termErr}` }, { status: 500 })
+  const { kept, dropped } = filterScreenshotEvents(events, keys)
+  const fileName = String(body.fileName ?? 'decision')
+  const fileSize = Number.isFinite(body.fileSize) ? Number(body.fileSize) : null
+  let written: number | null = 0, bridged: number | null = 0
+  try {
+    if (kept.length > 0) ({ written, bridged } = await sendToBridge(req, kept, fileName, country.code))
+  } catch (e) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 })
+  }
+  const summary = `${written ?? 0} events added · as ${country.name}`
+  await writeLog(await logTableReady(), {
+    fileName, fileSize, kind: 'schedule', outcome: 'schedule', summary,
+    prospectId: null, truckId: null, eventsWritten: written ?? 0, error: null, alertedAt: null,
+  })
+  return NextResponse.json({ ok: true, outcome: 'schedule', summary, written, bridged, kept: kept.length, dropped })
 }

@@ -21,6 +21,7 @@
 
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
+const GB = require('./_country-settings-gb.cjs').gbFromSeed()
 
 let fails = 0
 const ok = [], bad = []
@@ -33,11 +34,19 @@ const stripComments = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t
 // answers are set by patching `useState` defaults in a COPY of the file — the repo's own file is never
 // touched. ⚠️ EVERY PATCH IS CHECKED FOR APPLYING: a `String.replace` that finds nothing returns the
 // same string and would silently measure the default state.
-function renderWith(patches, tag) {
+function renderWith(patches, tag, opts = {}) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `cmp-${tag}-`))
   for (const d of ['app/compare', 'components/landing']) fs.mkdirSync(path.join(tmp, d), { recursive: true })
   fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
   let src = read('app/compare/CostComparison.tsx')
+  // 🔴 THE FEE BOXES START EMPTY NOW (decided 10 October 2026 — no competitor prefill). Every case written
+  // against the old 4.5% + 20p default therefore TYPES it — the same figures, entered by the operator
+  // instead of put there by the page — unless the case types its own rate. `opts.untyped` measures the
+  // real default: both boxes empty.
+  if (!opts.untyped) {
+    if (!patches.some(([a]) => a === PCT_ANCHOR)) patches = [...patches, [PCT_ANCHOR, "const [feePctRaw, setFeePctRaw] = useState('4.5')"]]
+    if (!patches.some(([a]) => a === PENCE_ANCHOR)) patches = [...patches, [PENCE_ANCHOR, "const [feePenceRaw, setFeePenceRaw] = useState('20')"]]
+  }
   for (const [a, b] of patches) {
     if (!src.includes(a)) { console.log(`🔴 ${tag}: PATCH DID NOT APPLY — anchor drifted: ${a.slice(0, 60)}`); process.exit(1) }
     src = src.replace(a, b)
@@ -51,7 +60,10 @@ function renderWith(patches, tag) {
   try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(c.out, 'node_modules')) } catch { /* already */ }
   const React = require(path.join(REPO, 'node_modules/react'))
   const { renderToStaticMarkup } = require(path.join(REPO, 'node_modules/react-dom/server'))
-  const html = renderToStaticMarkup(React.createElement(c.req('app/compare/CostComparison.js').default))
+  // 🔴 THE GB SETTINGS, AS THE SERVER PAGE PASSES THEM (10 October 2026 — the plan, card and overage
+  // figures and the competitor prefill come from country_settings now). Parsed from the seed that was run.
+  const html = renderToStaticMarkup(React.createElement(c.req('app/compare/CostComparison.js').default, { settings: opts.settings ?? GB }))
+  if (opts.raw) return html
   return html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n')
     .replace(/&pound;/g, '£').replace(/&amp;/g, '&').replace(/&apos;|&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ')
     .split('\n').map(s => s.trim()).filter(Boolean).join('\n')
@@ -62,7 +74,10 @@ const STAFF = n => ["useState<1 | 2 | null>(null)", `useState<1 | 2 | null>(${n}
 const DAYS = n => ['useState(4)\n  const [trucks', `useState(${n})\n  const [trucks`]
 const TRUCKS = n => ['const [trucks, setTrucks] = useState(1)', `const [trucks, setTrucks] = useState(${n})`]
 const GMV = n => ['useState(2500)', `useState(${n})`]
-const PCT = v => ["useState('4.5')", `useState('${v}')`]
+// The fee boxes are `useState('')` — empty, no prefill. PCT types a rate into the first box.
+const PCT_ANCHOR = "const [feePctRaw, setFeePctRaw] = useState('')"
+const PENCE_ANCHOR = "const [feePenceRaw, setFeePenceRaw] = useState('')"
+const PCT = v => [PCT_ANCHOR, `const [feePctRaw, setFeePctRaw] = useState('${v}')`]
 const FREE = v => ["useState('1')", `useState('${v}')`]
 const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it costs ↓)/, '$1')
 
@@ -250,12 +265,44 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
     /\(monthly \* 12\) \/ 52 \/ d/.test(SRC) && !/\/ 4 \/ days/.test(SRC))
   t('🔴 the coffee threshold is one named constant', /const COFFEE_MAX_PER_DAY = 3\.0/.test(SRC)
     && (SRC.match(/COFFEE_MAX_PER_DAY/g) || []).length >= 3)
+  // 🔴 10 October 2026: the figures come from the MARKETING COUNTRY'S SETTINGS (country_settings), through
+  // the same plan-features / features functions every other surface uses — still no literal here.
   t('🔴 every price still comes from the pricing modules — no new literal',
-    /PLAN_MONTHLY_PENCE/.test(SRC) && /allowancePenceFor\('pro'\)/.test(SRC)
-    && /PLATFORM_FEE_OVER_ALLOWANCE\.pct/.test(SRC) && /CARD_FEES\.online/.test(SRC))
-  t('🔴 the competitor prefill is still a literal and NOT wired to CARD_FEES',
-    /useState\('4\.5'\)/.test(SRC) && /useState\('20'\)/.test(SRC))
-  t('🔴 the formatter-based zero test survives', /return gbp\(n\) === gbp\(0\)/.test(SRC))
+    /planMonthlyMinor\('pro', s\)/.test(SRC) && /allowanceMinorFor\('pro', s\)/.test(SRC)
+    && /platformFeeOverAllowance\(s\)\.pct/.test(SRC) && /cardFees\(s\)\.online/.test(SRC)
+    && !/£29|£49|£1,500|£2,000|0\.99|2900|4900|150000|200000/.test(SRC))
+  // 🔴 NO COMPETITOR PREFILL (decided 10 October 2026): nothing reads the retired competitor columns, the
+  // boxes start empty, and the page names no other provider.
+  t('🔴 there is no competitor prefill — the competitor columns are read nowhere and the boxes start empty',
+    !/competitor(Name|Pct|FixedMinor)|prefill\./.test(SRC)
+    && SRC.includes(PCT_ANCHOR) && SRC.includes(PENCE_ANCHOR) && !/Hatches/.test(read('app/compare/CostComparison.tsx')))
+  t('🔴 …rendered: both fee boxes are EMPTY and carry the neutral placeholders', (() => {
+    const h = renderWith([SYS('yes'), STAFF(1)], 'pf-empty', { raw: true, untyped: true })
+    const boxes = [...h.matchAll(/<input[^>]*inputMode="(?:decimal|numeric)"[^>]*>/g)].map(m => m[0])
+      .filter(b => /aria-label="(Percentage fee|Pence per order)"/.test(b))
+    return boxes.length === 2 && boxes.every(b => /value=""/.test(b))
+      && /placeholder="Your rate"/.test(boxes.join('')) && /placeholder="Your fee"/.test(boxes.join(''))
+  })())
+  // Phase 2A: the helper is bound to the marketing country's money format; the test is the same one.
+  t('🔴 the formatter-based zero test survives', /return gbpIn\(f, n\) === gbpIn\(f, 0\)/.test(SRC))
+  // ── 🔴 THE "Yes" PATH SHOWS NO RESULT UNTIL A RATE IS TYPED (Phase 2A, decided) ─────────────────────
+  const GATE = 'Enter what you pay now to see your saving.'
+  t('🔴 Yes path, nothing typed: the prompt stands in for the result — no saving, no year lines', (() => {
+    const txt = renderWith([SYS('yes'), STAFF(1)], 'gate-empty', { untyped: true })
+    return txt.includes(GATE) && !/Right now you pay|With HatchGrab\n|Year one|a week|a trading day|Save /.test(txt)
+  })())
+  t('🔴 Yes path, a rate typed: the result is back and the prompt is gone', (() => {
+    const txt = renderWith([SYS('yes'), STAFF(1), PCT('2.5')], 'gate-typed', { untyped: true })
+    return !txt.includes(GATE) && txt.includes('Right now you pay')
+  })())
+  t('🔴 Yes path, only the per-order fee typed: that is a rate too — the result shows', (() => {
+    const txt = renderWith([SYS('yes'), STAFF(1), [PENCE_ANCHOR, "const [feePenceRaw, setFeePenceRaw] = useState('20')"]], 'gate-pence', { untyped: true })
+    return !txt.includes(GATE) && txt.includes('Right now you pay')
+  })())
+  t('🔴 No path: the prompt never appears (there is nothing to type there)', (() => {
+    const txt = renderWith([SYS('no'), STAFF(1)], 'gate-no', { untyped: true })
+    return !txt.includes(GATE)
+  })())
   t('🔴 the effective-rate line is still absent', !/effTheirs|effOurs/.test(SRC))
   t('🔴 BOTH GATES AND THE SERVER/CLIENT SPLIT ARE UNTOUCHED — this file is still a client component',
     SRC.startsWith("'use client'") && !/verifyAdmin/.test(SRC))
@@ -283,7 +330,7 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
         '<p className="mt-2 text-xl font-bold text-slate-700">a trading day</p><p>{money(m.oursPerTruck / m.orders)} per order</p>']],
       txt => (resultsOf(txt).match(/per order/g) || []).length !== 1],
     ['V4 🔴 amounts under £1 render as £0.80 instead of 80p',
-      [['  if (Math.abs(safe) < 1) return `${Math.round(Math.abs(safe) * 100)}p`', '  // removed']],
+      [['  if (Math.abs(safe) < 1) return smallFeeLabel(Math.round(Math.abs(safe) * 10 ** minorDigits(f.currency)), f)', '  // removed']],
       txt => !/80p\nmore a trading day/.test(txt), [SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT('2.5')]],
     ['V5 🔴 the dearer path goes back to the "% more in your first year" line',
       [['                {dearer ? (', '                {false ? (']],

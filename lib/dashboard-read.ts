@@ -21,6 +21,8 @@
 // Extracted from the page so the rules can be tested without mounting a 4,500-line component; proven by
 // scripts/ready-press-one-press.cjs.
 
+import { formatInstantClock, type TimeSettings } from '@/lib/time-utils'
+
 /** What a read slot holds while a read is running. `superseded` is set by the call that abORTS it. */
 export type ReadSlot = { controller: AbortController; superseded: boolean }
 
@@ -101,9 +103,10 @@ export function nextDegraded(prev: Degraded, failure: ReadFailure, now: Date): D
  * connection. If the connection is fine and the backend is failing, that sentence sends them to fix the
  * wrong thing, and they cannot tell the difference from the hatch.
  */
-export function degradedBanner(d: Degraded, lastRefresh: Date): string | null {
+export function degradedBanner(d: Degraded, lastRefresh: Date, ts: TimeSettings | null | undefined): string | null {
   if (!d) return null
-  const at = lastRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  // The truck's clock and style (Phase 2B; was the device's locale and zone): GB "15:20", US "3:20pm".
+  const at = formatInstantClock(lastRefresh, ts)
   if (d.kind === 'server-error') {
     const code = typeof d.status === 'number' ? ` (error ${d.status})` : ''
     return `The server couldn't load orders${code}. Showing orders from ${at}. New orders may be missing.`

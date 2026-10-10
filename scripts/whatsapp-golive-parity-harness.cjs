@@ -45,6 +45,7 @@ try {
   process.exit(1)
 }
 
+const GB = require('./_country-settings-gb.cjs').gbFromSeed()
 const PF = 'lib/plan-features.js'
 const WL = 'lib/whatsapp-live.js'
 
@@ -65,6 +66,9 @@ Module._resolveFilename = function (req, ...rest) {
 }
 const pf = require(path.join(dir, 'lib/plan-features.js'))
 const wl = require(path.join(dir, 'lib/whatsapp-live.js'))
+// footnotes() takes a country's settings since 10 October 2026 (1 and 2 quote card fees). Footnotes 4 and
+// 6, which this harness reads, carry no price, so any country gives the same text — GB, from the seed.
+const notes = pf.footnotes(${JSON.stringify(GB)})
 const row = []
 for (const s of pf.FEATURE_SECTIONS) for (const r of s.rows) {
   if (r.name === 'WhatsApp auto-replies' || r.name === 'Messenger & Instagram auto-replies') {
@@ -75,10 +79,10 @@ process.stdout.write(JSON.stringify({
   flag: wl.WHATSAPP_LIVE,
   violations: pf.findPlanParityViolations(),
   rows: row,
-  footnotes: pf.FOOTNOTES.map(f => f.number),
-  footnote4: (pf.FOOTNOTES.find(f => f.number === '4') || {}).text || null,
+  footnotes: notes.map(f => f.number),
+  footnote4: (notes.find(f => f.number === '4') || {}).text || null,
   // 🔴 null MEANS ABSENT, which is the expected state — footnote 6 was retired on 16 September 2026.
-  footnote6: (pf.FOOTNOTES.find(f => f.number === '6') || {}).text || null,
+  footnote6: (notes.find(f => f.number === '6') || {}).text || null,
 }))
 `)
 

@@ -3,6 +3,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, sendRefundEmail, cancellationPaymentSentence, notifyCustomer } from '@/lib/email'
+import { moneyFormatForOrder, moneyFormatForTruck } from '@/lib/money-server'
+import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
+import { getLocalDateInTz } from '@/lib/time-utils'
+import { formatMajor } from '@/lib/money-format'
 // 🔴 THE ONE RESOLVER EVERY EMAIL IN THIS FILE ASKS. Four sites here used to print "Pay at the truck on
 // collection" unconditionally — to customers whose card was held, and to customers already charged.
 // None of them works the answer out for itself; they all call this. See lib/payments/email-payment-state.
@@ -194,6 +198,9 @@ async function deliverReadyEmail(order: any, truck: any) {
   // ⚠️ NO CAPTURE RESULT EXISTS HERE. Ready happens long after any confirmation, so this reads.
   const paymentState = await resolveEmailPaymentState(supabase, order.order_key)
   const { subject, html, text } = formatConfirmationEmail({
+    money: await moneyFormatForOrder(order),
+    time: await truckTimeSettings(truck),
+    phoneCountry: truck.country,
     variant: 'ready',
     paymentState,
     orderId: order.id,
@@ -332,6 +339,9 @@ export async function POST(req: NextRequest) {
           : eventQuery.eq('event_date', order.event_date).neq('status', 'cancelled')
         const { data: eventRow } = await eventQuery.maybeSingle()
         const { subject, html, text } = formatConfirmationEmail({
+          money: await moneyFormatForOrder(order),
+          time: await truckTimeSettings(truck),
+          phoneCountry: truck.country,
           orderId: order.id,
           orderKey: order.order_key,
           customerName: order.customer_name,
@@ -427,6 +437,7 @@ export async function POST(req: NextRequest) {
         const refundedMinor = typeof body.refunded_minor === 'number' && body.refunded_minor > 0
           ? Math.round(body.refunded_minor) : null
         const cancelMoney = cancellationPaymentSentence({
+          money: await moneyFormatForOrder(order),
           truckName: truck.name,
           paymentState: cancelPaymentState,
           refundedMinor,
@@ -1043,7 +1054,11 @@ export async function POST(req: NextRequest) {
         // and that link is now honest, because 'modified' can be cancelled again (orders/cancel/route.ts).
         // ⚠️ Venue is passed as null: the hand-built template showed none, so nothing is lost, and looking
         // it up would add a query to the edit path for a field this email has never carried.
+        const editMoney = await moneyFormatForOrder(order)
         const { html, text } = formatConfirmationEmail({
+          money: editMoney,
+          time: await truckTimeSettings(truck),
+          phoneCountry: truck.country,
           orderId: order.id,
           orderKey,
           customerName: order.customer_name,
@@ -1089,7 +1104,7 @@ export async function POST(req: NextRequest) {
         const oldTotal = Number(order.total)
         const totalMoved = Number.isFinite(oldTotal) && Math.abs(oldTotal - newTotal) >= 0.005
         const subject = totalMoved
-          ? `Order #${order.id} updated - now £${newTotal.toFixed(2)} (was £${oldTotal.toFixed(2)})`
+          ? `Order #${order.id} updated - now ${formatMajor(newTotal, editMoney)} (was ${formatMajor(oldTotal, editMoney)})`
           : `Order #${order.id} updated`
 
         // Send via the shared, HatchGrab-branded, Brevo-verified sender (same path as the
@@ -1146,7 +1161,7 @@ export async function POST(req: NextRequest) {
       // cannot be corrected. The webhook settles it later and the operator sees the pending sentence.
       if (outcome.status === 'refunded' && body.refund_context !== 'cancellation') {
         const { data: refundedOrder } = await supabase
-          .from('orders').select('id, customer_name, customer_email').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+          .from('orders').select('id, customer_name, customer_email, currency, country').eq('order_key', orderKey).eq('truck_id', truck.id).single()
         if (refundedOrder?.customer_email && !isDemoIdentifier(truck.id)) {
           // The CHARGED total, so the email can tell a full refund from a partial one without guessing.
           const rows = await readLedger(supabase, orderKey)
@@ -1155,6 +1170,7 @@ export async function POST(req: NextRequest) {
             .reduce((sum, r) => sum + r.amount_minor, 0)
           try {
             await sendRefundEmail({
+              money: await moneyFormatForOrder(refundedOrder),
               to: refundedOrder.customer_email,
               customerName: refundedOrder.customer_name || 'there',
               orderId: String(refundedOrder.id),
@@ -1221,7 +1237,8 @@ export async function POST(req: NextRequest) {
     // ── UPDATE EVENT TIMES ────────────────────────────────────────────────────
     if (action === 'update_event') {
       const { event_id, start_time, end_time, event_date } = body
-      const date = event_date || new Date().toISOString().split('T')[0]
+      // The truck's today (Phase 2B; the UTC date was yesterday from 00:00 to 01:00 BST).
+      const date = event_date || getLocalDateInTz(await truckTimeZone(truck))
       if (event_id) {
         // LIVE-TIME GATE: never leave a LIVE event (confirmed/open) timeless. A draft may still be cleared.
         const { data: cur } = await supabase.from('truck_events').select('status').eq('id', event_id).eq('truck_id', truck.id).single()
@@ -1367,7 +1384,7 @@ export async function POST(req: NextRequest) {
         console.error('[manual] required-modifier guard error — proceeding (fail-safe):', err)
       }
 
-      const eventDate = passedEventDate || new Date().toISOString().split('T')[0]
+      const eventDate = passedEventDate || getLocalDateInTz(await truckTimeZone(truck))
       // Resolve event_id: prefer the explicit ID from the panel; fall back to a
       // truck_id + event_date lookup ONLY when exactly one event matches that date
       // (same-day multi-event would be ambiguous — leave null and let the display
@@ -1830,9 +1847,15 @@ export async function POST(req: NextRequest) {
         modifiers: i.modifiers,
         specialInstructions: i.specialInstructions,
       }))
+      // The order was created a moment ago in THIS request, from this truck: the 20261010 trigger copied
+      // trucks.currency onto it at insert, so the truck's format IS the order's.
+      const walkUpMoney = await moneyFormatForTruck(truck)
 
       if (customerEmail) {
         const { subject, html, text } = formatConfirmationEmail({
+          money: walkUpMoney,
+          time: await truckTimeSettings(truck),
+          phoneCountry: truck.country,
           orderId: newOrderId,
           orderKey: manualOrderKey,
           truckName: truck.name,
@@ -1867,6 +1890,8 @@ export async function POST(req: NextRequest) {
         // customer confirmation. The customer email above is unchanged. Gated by the
         // "Email me new orders" toggle (trucks.truck_order_email_enabled, default true).
         const { subject, html, text } = formatNewOrderEmail({
+          money: walkUpMoney,
+          time: await truckTimeSettings(truck),
           orderId: newOrderId,
           customerName: customerName || 'Walk-up',
           customerPhone: customerPhone || null,
@@ -2159,7 +2184,7 @@ export async function POST(req: NextRequest) {
       // discarded and this branch returns `{ success: true, newSlot }` unconditionally, so a filtered
       // write would report SUCCESS for an order that never moved — while the booking, the capture and
       // the email still ran. That is the silent-no-op trap the cross-truck cancel hole hid behind.
-      const { data: ord } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      const { data: ord } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt,currency,country').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!ord?.slot) return NextResponse.json({ error: 'No slot' }, { status: 400 })
       const [h, m] = ord.slot.split(':').map(Number)
       const newTotal = h * 60 + m + mins
@@ -2206,6 +2231,9 @@ export async function POST(req: NextRequest) {
           .neq('status', 'cancelled')
           .maybeSingle()
         const { html, text } = formatConfirmationEmail({
+          money: await moneyFormatForOrder(ord),
+          time: await truckTimeSettings(truck),
+          phoneCountry: truck.country,
           orderId: ord.id,
           orderKey,
           customerName: ord.customer_name,
@@ -2817,7 +2845,7 @@ export async function POST(req: NextRequest) {
 
     // ── GET EVENTS ────────────────────────────────────────────────────────────
     if (action === 'get_events') {
-      const today = new Date().toISOString().split('T')[0]
+      const today = getLocalDateInTz(await truckTimeZone(truck))
       const { data: events } = await supabase
         .from('truck_events')
         .select('id, event_date, start_time, end_time, venue_name')

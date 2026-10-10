@@ -33,6 +33,10 @@ const path = require('path')
 const fs = require('fs')
 const { compile } = require('./_slot-interval-compile.cjs')
 const REPO = path.resolve(__dirname, '..')
+// Phase 2B (10 October 2026): the week and caption words are on the TRUCK's clock and week, passed in — no
+// default zone any more. The GB row's values: the truck every check here is about.
+const GB_TZ = 'Europe/London'
+const GB_WEEK = { timeZone: GB_TZ, weekStart: 'monday' }
 
 const LIB = [
   'lib/weekly-post/week.ts', 'lib/weekly-post/format.ts', 'lib/weekly-post/locale.ts',
@@ -125,7 +129,7 @@ const URI = 'data:image/png;base64,' + makePng(PNG_W, PNG_H).toString('base64')
 
 /** One week of real-shaped data: a trading day, a stacked day, a cancelled one and a day off. */
 function mkWeek(extra = {}) {
-  const range = W.weekRange('this', '2026-10-12T12:00:00Z')
+  const range = W.weekRange('this', '2026-10-12T12:00:00Z', GB_WEEK)
   const events = [
     { id: 'e1', event_date: range.days[0], start_time: '17:00', end_time: '21:00', venue_name: 'The Kings Arms', town: 'Lavenham', status: 'confirmed' },
     { id: 'e2', event_date: range.days[2], start_time: '12:00', end_time: '14:00', venue_name: 'Great Waldingfield Recreation Ground', town: 'Great Waldingfield', status: 'confirmed' },
@@ -361,7 +365,7 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
   // ══ 4 · PRIVATE EVENTS ══════════════════════════════════════════════════════════════════════
   head('4 · PRIVATE EVENTS ON THE WEEKLY POST')
   const priv = {
-    id: 'p1', event_date: W.weekRange('this', '2026-10-12T12:00:00Z').days[1],
+    id: 'p1', event_date: W.weekRange('this', '2026-10-12T12:00:00Z', GB_WEEK).days[1],
     start_time: '18:00', end_time: '23:00',
     venue_name: 'Hartest Village Hall', town: 'Hartest', status: 'confirmed', is_private: true,
   }
@@ -398,7 +402,7 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     && (ROUTE.match(/showPrivate,/g) || []).length >= 3
     && /if \(ev\.is_private === true && opts\.showPrivate !== true\) continue/.test(codeOf(read('lib/weekly-post/week-data.ts'))))
   t('⛔ …and `=== true`, so a truthy string from a hand-made payload cannot publish a booking', (() => {
-    const w = W.weekRange('this', '2026-10-12T12:00:00Z')
+    const w = W.weekRange('this', '2026-10-12T12:00:00Z', GB_WEEK)
     const built = D.buildWeekData(w, [priv], [], { timeStyle: '12h', showCancelled: true, showPrivate: 'yes' })
     return built.days.flatMap(d => d.entries).every(e => e.eventId !== 'p1')
   })())

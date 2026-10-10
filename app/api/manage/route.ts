@@ -21,8 +21,11 @@ import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { generateSlots } from '@/lib/slots'   // EXTRACTED from this file — now shared with the demo provisioner
 import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
-import { hasValidEventTimes, getLocalDateInTz } from '@/lib/time-utils'
+import { hasValidEventTimes, getLocalDateInTz, addDaysYmd, instantOfLocal } from '@/lib/time-utils'
+import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
 import { canAccess } from '@/lib/features'
+import { countrySettingsForTruck } from '@/lib/country-settings'
+import { checkTradeArea } from '@/lib/trade-area'
 /* ⚠️ THE ONE PLAN SENTENCE FOR SOCIAL MEDIA, shared with the screen and with `/api/weekly-post` — see
  * the header of `lib/copy/weeklyPost.ts` for why it is not written out twice. */
 import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
@@ -320,7 +323,7 @@ export async function GET(req: NextRequest) {
     supabase.from('bundles_db').select('*').eq('truck_id', truck.id).order('sort_order'),
     supabase.from('discount_codes_db').select('*').eq('truck_id', truck.id),
     supabase.from('truck_events').select('*').eq('truck_id', truck.id)
-      .gte('event_date', new Date().toISOString().split('T')[0])
+      .gte('event_date', getLocalDateInTz(await truckTimeZone(truck)))   // the truck's today (Phase 2B)
       .order('event_date'),
     // Upsell rules — folded into the initial parallel load (was a SEPARATE deferred get_upsell_rules POST
     // that fired on tab-open, so the Upsells section lagged ~2s behind the instant Custom-Extras/Deals).
@@ -404,7 +407,7 @@ export async function GET(req: NextRequest) {
     const limit = (truck.whatsapp_monthly_reply_limit as number | null) ?? DEFAULT_MONTHLY_REPLY_LIMIT
     const u = await readMonthlyUsage({
       truckId: truck.id,
-      timezone: (truck.timezone as string | null) ?? null,
+      timeZone: await truckTimeZone(truck),
       limit,
       count: async (truckId, sinceIso) => {
         const { count } = await supabase
@@ -421,8 +424,27 @@ export async function GET(req: NextRequest) {
     console.warn('[manage] whatsapp usage read failed — row still renders', e instanceof Error ? e.message : e)
   }
 
+  // ── 🔴 THE TRUCK'S OWN COUNTRY SETTINGS — every price and fee Billing, Payments, the van add-on and
+  // FeatureGate quote. public.country_settings is service-role only (V12.1), so the browser never reads it:
+  // it rides in this authenticated response instead. ⚠️ FATAL, UNLIKE THE USAGE READ ABOVE. A truck whose
+  // settings cannot be read has no currency to show a price in, and guessing GB is the silent fallback
+  // lib/country-settings.ts refuses. trucks.country has a foreign key to the table, so a missing row is
+  // not a state the data can reach; a failed read fails the console loudly rather than render wrong prices.
+  let countrySettings
+  try {
+    countrySettings = await countrySettingsForTruck(truck as { country?: string | null })
+  } catch (e) {
+    console.error('[manage] country settings read failed', e instanceof Error ? e.message : e)
+    return NextResponse.json({ error: 'Could not load this truck’s country settings. Try again in a moment.' }, { status: 500 })
+  }
+
+  // 🔴 THE TRUCK'S CLOCK AND HOW ITS TIMES AND DATES LOOK (Phase 2B) — one rule, lib/truck-time.ts. Same
+  // fatality as the settings above: they come from the same row.
+  const time = await truckTimeSettings(truck as { timezone?: string | null; country?: string | null })
+
   return NextResponse.json({
-    truck: { ...truck, logo },
+    truck: { ...truck, logo, time },
+    countrySettings,
     whatsappConnection,
     whatsappUsage,
     categories: categories || [],
@@ -501,7 +523,7 @@ export async function POST(req: NextRequest) {
   const staffBlockedActions = [
     'upsert_event', 'upsert_item', 'upsert_category', 'delete_item', 'delete_category', 'bulk_delete_items',
     'upsert_subcategory', 'delete_subcategory',
-    'update_truck', 'update_settings', 'add_van', 'rename_van', 'delete_van',
+    'update_truck', 'update_settings', 'update_trade_area', 'add_van', 'rename_van', 'delete_van',
     'invite_team_member', 'remove_team_member', 'upsert_bundle', 'delete_bundle',
     'upsert_modifier_group', 'delete_modifier_group', 'upsert_modifier_option', 'delete_modifier_option',
     'set_item_modifier_group', 'set_item_modifier_groups_bulk', 'set_item_group_excluded_options', 'set_item_preorder_bulk',
@@ -1214,6 +1236,12 @@ export async function POST(req: NextRequest) {
 
   if (action === 'update_event_deal') {
     const { eventId, bundleId, active } = body
+    // 🔴 THE EVENT MUST BE THIS TRUCK'S (audit D32). This wrote to any event id it was given; it now reads the
+    // event scoped to the token's truck first, the way private_link does, and refuses with the same answer.
+    const { data: ownEvent, error: evErr } = await supabase
+      .from('truck_events').select('id').eq('id', String(eventId ?? '')).eq('truck_id', truck.id).maybeSingle()
+    if (evErr) return NextResponse.json({ error: evErr.message }, { status: 400 })
+    if (!ownEvent) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
     const { error } = await supabase
       .from('event_deals')
       .upsert({ event_id: eventId, bundle_id: bundleId, active, overridden: true }, { onConflict: 'event_id,bundle_id' })
@@ -1834,6 +1862,24 @@ export async function POST(req: NextRequest) {
       source: resolveActorSource(req, body),
     })
     return NextResponse.json({ success: true })
+  }
+
+  // ── Settings › Where you trade (Phase 2D-1) ─────────────────────────────────────────────────────────
+  // 🔴 ITS OWN ACTION, NOT update_settings: the town and the zone are checked TOGETHER against the truck's own
+  // country (zone in its list, a town given) by lib/trade-area.ts — the check signup runs — and written
+  // together; only the columns that check returns are written (a stray travel_radius_km is ignored). The COUNTRY is never written here: it is tied to the truck's
+  // card payments and cannot change. A zone the country does not offer is refused in words.
+  if (action === 'update_trade_area') {
+    const cs = await countrySettingsForTruck(truck)
+    const r = checkTradeArea(body, cs)
+    if (!r.ok) return NextResponse.json({ error: r.error }, { status: 400 })
+    const { data, error } = await supabase.from('trucks').update(r.values).eq('id', truck.id).select().single()
+    if (error) {
+      console.error('[update_trade_area] write failed:', error.message)
+      return NextResponse.json({ error: "Couldn't save settings — please try again." }, { status: 400 })
+    }
+    // The zone may have moved, so the truck's clock settings go back with it (as the GET builds them).
+    return NextResponse.json({ truck: { ...data, time: await truckTimeSettings(data as { timezone?: string | null; country?: string | null }) } })
   }
 
   if (action === 'update_settings') {
@@ -2974,16 +3020,22 @@ export async function POST(req: NextRequest) {
       eventsQuery = eventsQuery.eq('event_date', dateFrom)
     }
 
-    const waFrom = dateFrom ?? new Date().toISOString().split('T')[0]
+    const waTz   = await truckTimeZone(truck)
+    const waFrom = dateFrom ?? getLocalDateInTz(waTz)
     const waTo   = dateTo   ?? waFrom
+    // 🔴 THE TRUCK'S DAYS (Phase 2B, 10 October 2026): from waFrom's midnight to the midnight after waTo, on
+    // the truck's clock. It was `${day}T00:00:00`..`${day}T23:59:59` with no zone, which Postgres reads as UTC
+    // days — an hour off all through BST — and it also lost a reply logged in a day's final second.
+    const waStart = new Date(instantOfLocal(waFrom, '00:00', waTz)).toISOString()
+    const waEnd   = new Date(instantOfLocal(addDaysYmd(waTo, 1), '00:00', waTz)).toISOString()
     const [{ data: orders }, { data: waLogs }, { data: eventRows }] = await Promise.all([
       query,
       supabase
         .from('whatsapp_logs')
         .select('classification, possible_miss')
         .eq('truck_id', truck.id)
-        .gte('created_at', `${waFrom}T00:00:00`)
-        .lte('created_at', `${waTo}T23:59:59`),
+        .gte('created_at', waStart)
+        .lt('created_at', waEnd),
       eventsQuery,
     ])
 
@@ -3099,10 +3151,10 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'get_recent_events') {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    const thirtyDaysAgo = addDaysYmd(getLocalDateInTz(await truckTimeZone(truck)), -30)
     // Reports are about past/present activity — NO future events. Upper-bound at truck-local today (server
     // filter so the limit(20) budget is spent on real past events, not crowded out by future ones).
-    const todayLocal = getLocalDateInTz((truck as any).timezone ?? 'Europe/London')
+    const todayLocal = getLocalDateInTz(await truckTimeZone(truck))
     const { data: events } = await supabase
       .from('truck_events')
       .select('id, venue_name, event_date, status')
@@ -3263,7 +3315,7 @@ export async function POST(req: NextRequest) {
 
     // ⚠️ THE TRUCK'S OWN TODAY, not the server's. The same helper every other date-sensitive read in
     // this route uses; a UTC "today" shows tomorrow's pitch as next from 00:00 UK time in winter.
-    const todayLocal = getLocalDateInTz((truck as { timezone?: string | null }).timezone ?? 'Europe/London')
+    const todayLocal = getLocalDateInTz(await truckTimeZone(truck))
     // 🔴 GROUPED THROUGH `placeForEvent`, SO A MERGED PLACE'S EVENTS LAND ON ITS TARGET. That is what
     // makes "B gains A's events" true for Next, Last and the count without rewriting a single event row.
     const { byPlace } = groupEventsByPlace(events, places)

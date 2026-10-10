@@ -54,6 +54,7 @@
 // The server-only functions below are simply never called there.
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { toMinor, fromMinor } from '@/lib/order-repricing'
+import { ledgerCurrency } from '@/lib/payments/currency'
 
 export type PaymentKind = 'charge' | 'refund'
 export type PaymentChannel = 'online' | 'in_person_stripe' | 'in_person_other'
@@ -462,14 +463,15 @@ async function annotateTestAccountRows(supabase: SupabaseClient, rows: LedgerRow
   )
 }
 
-async function readOrder(supabase: SupabaseClient, orderKey: string): Promise<BalanceableOrder> {
+async function readOrder(supabase: SupabaseClient, orderKey: string): Promise<BalanceableOrder & { currency?: string | null }> {
   const { data, error } = await supabase
     .from('orders')
-    .select('total, total_minor')
+    // `currency` (20261010_07): an in-person collection is booked in the ORDER's currency, not the truck's.
+    .select('total, total_minor, currency')
     .eq('order_key', orderKey)
     .single()
   if (error || !data) throw new Error(`[ledger] could not read order ${orderKey}: ${error?.message ?? 'not found'}`)
-  return data as BalanceableOrder
+  return data as BalanceableOrder & { currency?: string | null }
 }
 
 /**
@@ -546,7 +548,10 @@ export async function recordPaymentEvent(
     note?: string | null
     idempotencyKey?: string | null
     createdBy?: string | null
-    currency?: string
+    /** 🔴 REQUIRED, NO DEFAULT (10 October 2026). The currency of the ORDER this money belongs to —
+     *  orders.currency, the draft's, or the Stripe object's — upper-cased and validated by ledgerCurrency.
+     *  It used to default to 'GBP', and the synchronous refund path wrote Stripe's lower-case 'gbp'. */
+    currency: string
     method?: PaymentMethod | null
     /** ── 🔴 REQUIRED. NO DEFAULT. NOT OPTIONAL. THIS IS DELIBERATE. ───────────────────────────────
      *  The database column carries `default true`, which is what makes the migration safe to apply
@@ -569,6 +574,8 @@ export async function recordPaymentEvent(
   if (!Number.isInteger(event.amountMinor) || event.amountMinor <= 0) {
     throw new Error(`[ledger] amount_minor must be a positive integer (got ${event.amountMinor}) — kind carries the sign`)
   }
+  // Before the insert, so a missing currency writes nothing rather than a row in a guessed one.
+  const currency = ledgerCurrency(event.currency, `ledger row for ${event.orderKey}`)
 
   const { error } = await supabase.from('order_payments').insert({
     order_key: event.orderKey,
@@ -576,7 +583,7 @@ export async function recordPaymentEvent(
     kind: event.kind,
     channel: event.channel,
     amount_minor: event.amountMinor,
-    currency: event.currency ?? 'GBP',
+    currency,
     state: event.state ?? 'succeeded',
     external_ref: event.externalRef ?? null,
     note: event.note ?? null,
@@ -644,6 +651,9 @@ export async function recordCollectionPayment(
     note: 'Mark paid & done — taken at the hatch',
     createdBy: opts.createdBy ?? null,
     method: opts.method ?? null,
+    // The ORDER's currency (orders.currency, snapshotted from the truck at insert) — never the truck's
+    // current one, and never a literal.
+    currency: order.currency as string,
     // 🔴 HARDCODED TRUE, AND CORRECTLY SO — NOT A PLACEHOLDER. This function books an IN-PERSON
     // collection: an operator standing at a hatch, having physically taken cash or run a card through
     // their own PDQ. There is no test mode for cash. No configuration, no key and no environment can
@@ -772,6 +782,8 @@ export async function reverseCollectionPayment(
     state: 'succeeded',
     note: 'Reversal of "Mark paid & done" (undo) — original payment had an external reference',
     createdBy: opts.createdBy ?? null,
+    // Inherited from the row being reversed, like livemode below: a reversal is in the money it reverses.
+    currency: row.currency as string,
     // Inherited from the row being reversed, never assumed. A compensating refund must sit on the same
     // side of the live/test line as the charge it cancels — a live refund against a test charge would
     // subtract money that was never taken, and a test refund against a live charge would leave the real

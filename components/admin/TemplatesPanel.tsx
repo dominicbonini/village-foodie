@@ -25,6 +25,7 @@ import {
 // task. It is imported for one reason: `nextStep` needs `waPhone` to decide a prospect's channel, and
 // OutreachPanel already builds it exactly this way. A second derivation here would be a second answer.
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
+import { MARKETING_COUNTRY } from '@/lib/marketing-country'   // discovery and outreach are the marketing country's (Phase 2C)
 import SequenceGrid from '@/components/admin/SequenceGrid'
 import { TEMPLATES_VIEW_KEY } from '@/lib/outreach-queue'
 import { docFromTemplateText, docPlainText, type DocLine } from '@/lib/outreach-doc'
@@ -447,7 +448,7 @@ export default function TemplatesPanel() {
     for (const p of prospects) {
       // ⚠️ `waPhone` from the SHARED `phoneWhatsApp`, built exactly as OutreachPanel builds it — the
       // same call, so the two cannot disagree about who is reachable on WhatsApp.
-      m.set(p.id, nextStep({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null).waPhone }, p.contacts ?? []))
+      m.set(p.id, nextStep({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null, MARKETING_COUNTRY).waPhone }, p.contacts ?? []))
     }
     return m
   }, [prospects])
@@ -884,7 +885,7 @@ export default function TemplatesPanel() {
         // about a truck. It is also where `effectiveLeadType` reaches the `?lead_*` conditions.
         ctx: contextFromProspect(p),
         // ⚠️ `waPhone` BUILT EXACTLY AS `steps` BUILDS IT, from the shared `phoneWhatsApp`.
-        ch: channelFor({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null).waPhone }),
+        ch: channelFor({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null, MARKETING_COUNTRY).waPhone }),
       }))
       .filter(x => x.ch !== null),
     [prospects])

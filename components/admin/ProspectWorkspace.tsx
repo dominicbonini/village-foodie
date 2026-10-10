@@ -49,6 +49,7 @@ import {
   isKind, REPLY_KIND, type LadderKind,
 } from '@/lib/outreach'
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
+import { MARKETING_COUNTRY } from '@/lib/marketing-country'   // discovery and outreach are the marketing country's (Phase 2C)
 import { replyRecipientFor } from '@/lib/outreach-reply-rules'
 import { PAGE_HEADER_ID } from '@/components/admin/EmailReadingPanel'
 import { getLocalDateInTz } from '@/lib/time-utils'
@@ -284,7 +285,7 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
   // ── THE DERIVED STEP AND THE FOCUS LINE ────────────────────────────────────────────────────────
   // 🔴 ONE `nextStep` CALL, and `channelFor` for contactability (§57.2: every stopped step carries
   // `channel: null`, so reading the step would call a reachable truck unreachable).
-  const waPhone = prospect ? phoneWhatsApp(prospect.phone, null).waPhone : null
+  const waPhone = prospect ? phoneWhatsApp(prospect.phone, null, MARKETING_COUNTRY).waPhone : null
   const step: Step | null = useMemo(
     () => (prospect ? nextStep({ ...prospect, waPhone }, prospect.contacts) : null),
     [prospect, waPhone])

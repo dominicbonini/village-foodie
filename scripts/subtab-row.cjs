@@ -138,8 +138,26 @@ function cardFixture(css, { mode, open = false, owns = 2 }) {
 
   /* ⚠️ THE OPTION TEXT IS THE POINT OF THIS FIXTURE: "Set each price myself" and "Always round up" are
    * the two longest options either select has, and both were clipped mid-word at 130px. */
-  const MODES = [['add_gbp', '+ £'], ['add_pct', '+ %'], ['sub_gbp', '− £'], ['sub_pct', '− %'], ['none', 'Set each price myself']]
-  const ROUNDS = [['none', 'None'], ['nearest_1', 'Nearest £1'], ['up_1', 'Always round up']]
+  /* 🔴 LIFTED, NOT TYPED (10 October 2026). The two option lists became functions of the truck's currency
+   * symbol in lib/copy/serviceSettings.ts, and the mode VALUES became the currency-neutral add_amount /
+   * sub_amount. So they are read out of that file — with the GB symbol substituted, because the widest
+   * option text is what this fixture measures — and every mode value is checked against the widened
+   * CHECK in 20261010_08: a value the database would refuse cannot become a fixture. */
+  const choicesOf = (re, what) => {
+    const block = lift(COPY, re, what)
+    const out = [...block.matchAll(/\{ value: '([a-z0-9_]+)', label: (`[^`]*`|'[^']*') \}/g)]
+      .map(m => [m[1], m[2].slice(1, -1).replace('${currencySymbol}', '£')])
+    if (out.length < 3) throw new Error(`the fixture cannot be built: only ${out.length} ${what} found in lib/copy/serviceSettings.ts`)
+    return out
+  }
+  const MODES = choicesOf(/export const priceModeChoices = \(currencySymbol: string\) => \[([\s\S]*?)\] as const/, 'price-mode choices')
+  const ROUNDS = choicesOf(/export const priceRoundingChoices = \(currencySymbol: string\) => \[([\s\S]*?)\] as const/, 'rounding choices')
+  const WIDENED = read('supabase/migrations/20261010_08_price_mode_currency_neutral.sql')
+  const refused = MODES.map(([v]) => v).filter(v => !new RegExp(`event_types_price_mode_check[\\s\\S]*?'${v}'`).test(WIDENED))
+  if (refused.length) throw new Error(`the fixture cannot be built: ${refused.join(', ')} not accepted by the widened CHECK in 20261010_08`)
+  if (!MODES.some(([v]) => v === 'add_amount') || MODES.some(([v]) => v === 'add_gbp')) {
+    throw new Error('the fixture cannot be built: the mode list is not the new currency-neutral one')
+  }
   const sel = (id, opts, value) => `<select id="${id}" class="${control} w-full">${opts.map(([v, l]) => `<option value="${v}"${v === value ? ' selected' : ''}>${l}</option>`).join('')}</select>`
   const rule = mode !== 'none'
   const listOpen = mode === 'none' || open

@@ -23,6 +23,10 @@ const fs = require('fs')
 const { compile } = require('./_slot-interval-compile.cjs')
 const { decodePng, diffBounds } = require('./_png-decode.cjs')
 const REPO = path.resolve(__dirname, '..')
+// Phase 2B (10 October 2026): the week and the caption words are on the TRUCK's clock and week, passed in —
+// there is no default zone any more. These are the GB row's values, the truck every check below is about.
+const GB_TZ = 'Europe/London'
+const GB_WEEK = { timeZone: GB_TZ, weekStart: 'monday' }
 
 const LIB = [
   'lib/weekly-post/week.ts', 'lib/weekly-post/format.ts', 'lib/weekly-post/week-data.ts',
@@ -114,12 +118,12 @@ head('1 · THE WEEK — Monday to Sunday, Europe/London')
   const { weekRange, defaultWeekChoice, weekdayOf, mondayOf, addDays } = M.week
 
   t('🔴 a week is Monday → Sunday, seven days, in order', (() => {
-    const w = weekRange('this', '2026-09-30T12:00:00Z')      // a Wednesday
+    const w = weekRange('this', '2026-09-30T12:00:00Z', GB_WEEK)      // a Wednesday
     return w.start === '2026-09-28' && w.end === '2026-10-04' && w.days.length === 7
       && J(w.days) === J(['2026-09-28', '2026-09-29', '2026-09-30', '2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04'])
   })())
   t('🔴 Monday belongs to its OWN week, not the one before', (() => {
-    const w = weekRange('this', '2026-09-28T00:30:00Z')
+    const w = weekRange('this', '2026-09-28T00:30:00Z', GB_WEEK)
     return w.start === '2026-09-28'
   })())
   /* ⚠️ 20:00 UTC, NOT 23:30. 2026-10-04 is a Sunday in BST, so 23:30 UTC is already 00:30 on MONDAY
@@ -127,11 +131,11 @@ head('1 · THE WEEK — Monday to Sunday, Europe/London')
    * the wrong thing and the library was right — recorded because it is the same trap the feature
    * itself exists to avoid. */
   t('🔴 Sunday belongs to the week that STARTED on Monday', (() => {
-    const w = weekRange('this', '2026-10-04T20:00:00Z')
+    const w = weekRange('this', '2026-10-04T20:00:00Z', GB_WEEK)
     return w.start === '2026-09-28' && w.end === '2026-10-04'
   })())
   t('⚠️ next week is this week + 7, never "today + 7"', (() => {
-    const w = weekRange('next', '2026-09-30T12:00:00Z')
+    const w = weekRange('next', '2026-09-30T12:00:00Z', GB_WEEK)
     return w.start === '2026-10-05' && w.end === '2026-10-11'
   })())
 
@@ -141,26 +145,26 @@ head('1 · THE WEEK — Monday to Sunday, Europe/London')
    * Saturday 24th at 23:00 and produces a six-day week with Sunday missing — on the one poster of the
    * year where a missing Sunday is least likely to be noticed before it is posted. */
   t('🔴 THE BST→GMT WEEK (25 Oct 2026) IS STILL SEVEN DAYS, ending on the Sunday', (() => {
-    const w = weekRange('this', '2026-10-21T12:00:00Z')
+    const w = weekRange('this', '2026-10-21T12:00:00Z', GB_WEEK)
     return w.start === '2026-10-19' && w.end === '2026-10-25' && w.days.length === 7
       && w.days[6] === '2026-10-25' && new Set(w.days).size === 7
   })())
   t('🔴 …and asked ON the clock-change Sunday, it is that same week', (() => {
-    const before = weekRange('this', '2026-10-25T00:30:00Z')   // 01:30 BST
-    const after = weekRange('this', '2026-10-25T12:00:00Z')    // 12:00 GMT
+    const before = weekRange('this', '2026-10-25T00:30:00Z', GB_WEEK)   // 01:30 BST
+    const after = weekRange('this', '2026-10-25T12:00:00Z', GB_WEEK)    // 12:00 GMT
     return before.start === '2026-10-19' && J(before) === J(after)
   })())
   t('🔴 …and the GMT→BST change (29 Mar 2026) is a seven-day week too', (() => {
-    const w = weekRange('this', '2026-03-29T12:00:00Z')
+    const w = weekRange('this', '2026-03-29T12:00:00Z', GB_WEEK)
     return w.start === '2026-03-23' && w.end === '2026-03-29' && w.days.length === 7
   })())
   t('⚠️ a leap day sits in its own week without breaking the run', (() => {
-    const w = weekRange('this', '2028-02-29T12:00:00Z')
+    const w = weekRange('this', '2028-02-29T12:00:00Z', GB_WEEK)
     return w.days.includes('2028-02-29') && w.days.length === 7 && new Set(w.days).size === 7
   })())
   t('⚠️ London is ahead of UTC in summer: 23:30 UTC on a Sunday is already MONDAY there', (() => {
     // 2026-07-05 is a Sunday; 23:30 UTC = 00:30 BST on Monday the 6th
-    return weekRange('this', '2026-07-05T23:30:00Z').start === '2026-07-06'
+    return weekRange('this', '2026-07-05T23:30:00Z', GB_WEEK).start === '2026-07-06'
   })())
 
   // ── the default ──────────────────────────────────────────────────────────────────────────────
@@ -169,10 +173,10 @@ head('1 · THE WEEK — Monday to Sunday, Europe/London')
   const expect = { '2026-09-28': 'this', '2026-09-29': 'this', '2026-09-30': 'this', '2026-10-01': 'this',
     '2026-10-02': 'next', '2026-10-03': 'next', '2026-10-04': 'next' }
   t('🔴 THE PICKER DEFAULTS: Mon–Thu → this week, Fri/Sat/Sun → next',
-    Object.entries(expect).every(([d, want]) => defaultWeekChoice(`${d}T12:00:00Z`) === want))
+    Object.entries(expect).every(([d, want]) => defaultWeekChoice(`${d}T12:00:00Z`, GB_WEEK) === want))
   t('🔴 …and the switch is at Friday 00:00 exactly, not at some hour of it', (() => {
-    const thuLate = defaultWeekChoice('2026-10-01T22:59:00Z')   // 23:59 BST Thursday
-    const friStart = defaultWeekChoice('2026-10-01T23:05:00Z')  // 00:05 BST Friday
+    const thuLate = defaultWeekChoice('2026-10-01T22:59:00Z', GB_WEEK)   // 23:59 BST Thursday
+    const friStart = defaultWeekChoice('2026-10-01T23:05:00Z', GB_WEEK)  // 00:05 BST Friday
     return thuLate === 'this' && friStart === 'next'
   })())
   t('⚠️ weekdayOf is Monday-first (not Date.getDay()\'s Sunday-first)',
@@ -307,7 +311,7 @@ head('2 · ORDINALS, DATES AND TIMES')
 head('3 · THE WEEK\'S DATA')
 {
   const { buildWeekData, tradingStatusOf, locationName, townLine } = M.data
-  const range = M.week.weekRange('this', '2026-09-30T12:00:00Z')
+  const range = M.week.weekRange('this', '2026-09-30T12:00:00Z', GB_WEEK)
   const ev = (over) => ({ id: 'x', event_date: range.days[0], start_time: '17:00', end_time: '20:00',
     venue_name: 'Lavenham Village Hall', town: 'Lavenham', status: 'confirmed', ...over })
   const opts = { timeStyle: '12h', showCancelled: true }
@@ -519,39 +523,39 @@ head('5 · "KEEP TEXT READABLE"')
 head('6 · THE CAPTION AND THE PER-EVENT POSTS')
 {
   const { whenWord, whenPhrase, eventPostText, weekCaption, shortDate } = M.caption
-  const range = M.week.weekRange('this', '2026-10-12T09:00:00Z')      // w/c Mon 12 Oct 2026
+  const range = M.week.weekRange('this', '2026-10-12T09:00:00Z', GB_WEEK)      // w/c Mon 12 Oct 2026
   const entry = (over) => ({ eventId: 'e1', name: 'Lavenham Village Hall', town: null, time: '5pm – 8pm',
     status: 'trading', startTime: '17:00', endTime: '20:00', ...over })
 
   /* 🔴 RELATIVE TO WHEN IT IS COPIED. The operator opens this on Sunday to plan and comes back on
    * Wednesday to post Wednesday's — "tonight" baked in on Sunday would be a lie by then. */
   t('🔴 TONIGHT when the event is today and starts at 17:00 or later',
-    whenWord('2026-10-13', '17:00', '2026-10-13T10:00:00Z') === 'tonight')
+    whenWord('2026-10-13', '17:00', '2026-10-13T10:00:00Z', GB_TZ) === 'tonight')
   t('🔴 TODAY when it is today but starts earlier',
-    whenWord('2026-10-13', '11:00', '2026-10-13T08:00:00Z') === 'today')
+    whenWord('2026-10-13', '11:00', '2026-10-13T08:00:00Z', GB_TZ) === 'today')
   t('⚠️ …and 16:59 is still "today" while 17:00 is "tonight" — the boundary is exact',
-    whenWord('2026-10-13', '16:59', '2026-10-13T08:00:00Z') === 'today'
-    && whenWord('2026-10-13', '17:00', '2026-10-13T08:00:00Z') === 'tonight')
+    whenWord('2026-10-13', '16:59', '2026-10-13T08:00:00Z', GB_TZ) === 'today'
+    && whenWord('2026-10-13', '17:00', '2026-10-13T08:00:00Z', GB_TZ) === 'tonight')
   t('🔴 TOMORROW for the next day, with no evening variant',
-    whenWord('2026-10-14', '19:00', '2026-10-13T10:00:00Z') === 'tomorrow'
-    && whenPhrase('2026-10-14', '19:00', '2026-10-13T10:00:00Z') === 'tomorrow')
+    whenWord('2026-10-14', '19:00', '2026-10-13T10:00:00Z', GB_TZ) === 'tomorrow'
+    && whenPhrase('2026-10-14', '19:00', '2026-10-13T10:00:00Z', 'GB', GB_TZ) === 'tomorrow')
   t('🔴 A DATE for anything further out, formatted "Tue 13 Oct"',
-    whenWord('2026-10-20', '17:00', '2026-10-13T10:00:00Z') === 'dated'
-    && whenPhrase('2026-10-20', '17:00', '2026-10-13T10:00:00Z') === 'on Tue 20 Oct'
+    whenWord('2026-10-20', '17:00', '2026-10-13T10:00:00Z', GB_TZ) === 'dated'
+    && whenPhrase('2026-10-20', '17:00', '2026-10-13T10:00:00Z', 'GB', GB_TZ) === 'on Tue 20 Oct'
     && shortDate('2026-10-13') === 'Tue 13 Oct')
   t('⚠️ the same event is worded differently on different days — the point of taking `now`', (() => {
-    const sun = whenPhrase('2026-10-14', '17:00', '2026-10-11T10:00:00Z')
-    const tue = whenPhrase('2026-10-14', '17:00', '2026-10-13T10:00:00Z')
-    const wed = whenPhrase('2026-10-14', '17:00', '2026-10-14T10:00:00Z')
+    const sun = whenPhrase('2026-10-14', '17:00', '2026-10-11T10:00:00Z', 'GB', GB_TZ)
+    const tue = whenPhrase('2026-10-14', '17:00', '2026-10-13T10:00:00Z', 'GB', GB_TZ)
+    const wed = whenPhrase('2026-10-14', '17:00', '2026-10-14T10:00:00Z', 'GB', GB_TZ)
     return sun === 'on Wed 14 Oct' && tue === 'tomorrow' && wed === 'tonight'
   })())
   t('⚠️ "today" is a London date, not a 24-hour window', (() => {
     // 23:30 UTC on 13 Oct is 00:30 BST on the 14th — so the 14th is "today", not "tomorrow"
-    return whenWord('2026-10-14', '11:00', '2026-10-13T23:30:00Z') === 'today'
+    return whenWord('2026-10-14', '11:00', '2026-10-13T23:30:00Z', GB_TZ) === 'today'
   })())
 
   t('🔴 a per-event post carries the place, the wording, the times AND the ordering link', (() => {
-    const s = eventPostText({ truckName: 'Village Spice', entry: entry({}), date: '2026-10-13',
+    const s = eventPostText({ timeZone: GB_TZ, country: 'GB',  truckName: 'Village Spice', entry: entry({}), date: '2026-10-13',
       orderUrl: 'https://www.hatchgrab.com/order/village-spice', timeStyle: '12h', now: '2026-10-13T09:00:00Z' })
     return s.includes('Village Spice') && s.includes('Lavenham Village Hall') && s.includes('tonight')
       && s.includes('5pm – 8pm') && s.includes('https://www.hatchgrab.com/order/village-spice')
@@ -559,17 +563,17 @@ head('6 · THE CAPTION AND THE PER-EVENT POSTS')
   /* 🔴 A CANCELLED EVENT GETS AN APOLOGY AND NO LINK. Sending customers to order from an event that is
    * not happening is the one thing this text must never do. */
   t('🔴 A CANCELLED EVENT APOLOGISES AND CARRIES NO ORDERING LINK', (() => {
-    const s = eventPostText({ truckName: 'Village Spice', entry: entry({ status: 'cancelled' }), date: '2026-10-13',
+    const s = eventPostText({ timeZone: GB_TZ, country: 'GB',  truckName: 'Village Spice', entry: entry({ status: 'cancelled' }), date: '2026-10-13',
       orderUrl: 'https://www.hatchgrab.com/order/village-spice', timeStyle: '12h', now: '2026-10-13T09:00:00Z' })
     return /sorry/i.test(s) && !s.includes('hatchgrab.com') && !/order ahead/i.test(s)
   })())
   t('⚠️ the link sits on its own line, so Facebook and Instagram linkify it', (() => {
-    const s = eventPostText({ truckName: 'V', entry: entry({}), date: '2026-10-13',
+    const s = eventPostText({ timeZone: GB_TZ, country: 'GB',  truckName: 'V', entry: entry({}), date: '2026-10-13',
       orderUrl: 'https://x.test/order', timeStyle: '12h', now: '2026-10-13T09:00:00Z' })
     return s.split('\n').some(l => l.trim() === 'Order ahead: https://x.test/order')
   })())
   t('⚠️ no ordering link ⇒ no "Order ahead" line at all, rather than a broken one', (() => {
-    const s = eventPostText({ truckName: 'V', entry: entry({}), date: '2026-10-13', orderUrl: null, timeStyle: '12h', now: '2026-10-13T09:00:00Z' })
+    const s = eventPostText({ timeZone: GB_TZ, country: 'GB',  truckName: 'V', entry: entry({}), date: '2026-10-13', orderUrl: null, timeStyle: '12h', now: '2026-10-13T09:00:00Z' })
     return !/order ahead/i.test(s)
   })())
 
@@ -1096,7 +1100,7 @@ async function blank(w, h, style) {
   return { buf, uri: 'data:image/png;base64,' + buf.toString('base64') }
 }
 
-const range = M.week.weekRange('this', '2026-09-30T12:00:00Z')
+const range = M.week.weekRange('this', '2026-09-30T12:00:00Z', GB_WEEK)
 const EVENTS = [
   { id: 'e1', event_date: range.days[0], start_time: '17:00', end_time: '20:00', venue_name: 'Lavenham Village Hall', town: 'Lavenham', status: 'confirmed' },
   { id: 'e2', event_date: range.days[2], start_time: '17:30', end_time: '20:00', venue_name: 'Great Waldingfield Recreation Ground and Playing Field', town: 'Great Waldingfield', status: 'confirmed' },
@@ -2093,7 +2097,7 @@ async function variants(ctx) {
     let detected = true
     if (p) {
       const V = build(p)
-      const w = V.week.weekRange('this', '2026-09-30T12:00:00Z')
+      const w = V.week.weekRange('this', '2026-09-30T12:00:00Z', GB_WEEK)
       detected = !(w.start === '2026-09-28' && w.end === '2026-10-04')
     }
     must('V2 🔴 the weekday numbering reverts to Sunday-first — every week starts on the wrong day', detected)
@@ -2102,10 +2106,11 @@ async function variants(ctx) {
   // V3 — the default switches on the wrong day
   {
     const p = patch('lib/weekly-post/week.ts',
-      'return weekdayOf(todayInWeekTz(now)) >= 4 ? \'next\' : \'this\'',
-      'return weekdayOf(todayInWeekTz(now)) >= 5 ? \'next\' : \'this\'')
+      // Re-anchored (Phase 2B): the threshold reads the day INTO the truck's week now.
+      'return intoWeek >= 4 ? \'next\' : \'this\'',
+      'return intoWeek >= 5 ? \'next\' : \'this\'')
     let detected = true
-    if (p) { const V = build(p); detected = V.week.defaultWeekChoice('2026-10-02T12:00:00Z') !== 'next' }
+    if (p) { const V = build(p); detected = V.week.defaultWeekChoice('2026-10-02T12:00:00Z', GB_WEEK) !== 'next' }
     must('V3 🔴 the picker stops defaulting to next week on a Friday', detected)
   }
   // V4 — cancelled becomes a day off
@@ -2115,7 +2120,7 @@ async function variants(ctx) {
     let detected = true
     if (p) {
       const V = build(p)
-      const r = V.week.weekRange('this', '2026-09-30T12:00:00Z')
+      const r = V.week.weekRange('this', '2026-09-30T12:00:00Z', GB_WEEK)
       const w = V.data.buildWeekData(r, [{ id: 'c', event_date: r.days[0], start_time: '12:00', end_time: '14:00', venue_name: 'X', status: 'cancelled' }], [], { timeStyle: '12h', showCancelled: true })
       detected = w.days[0].entries[0].status !== 'cancelled'
     }
@@ -2221,7 +2226,7 @@ async function variants(ctx) {
   {
     const p = patch('lib/weekly-post/caption.ts', 'export const EVENING_FROM_HOUR = 17', 'export const EVENING_FROM_HOUR = 12')
     let detected = true
-    if (p) { const V = build(p); detected = V.caption.whenWord('2026-10-13', '13:00', '2026-10-13T08:00:00Z') !== 'today' }
+    if (p) { const V = build(p); detected = V.caption.whenWord('2026-10-13', '13:00', '2026-10-13T08:00:00Z', GB_TZ) !== 'today' }
     must('V12 🔴 a lunchtime event is posted as "tonight"', detected)
   }
   // V13 — a cancelled event keeps the ordering link
@@ -2231,7 +2236,7 @@ async function variants(ctx) {
     let detected = true
     if (p) {
       const V = build(p)
-      const s = V.caption.eventPostText({
+      const s = V.caption.eventPostText({ timeZone: GB_TZ, country: 'GB', 
         truckName: 'V', date: '2026-10-13', orderUrl: 'https://x.test/order', timeStyle: '12h', now: '2026-10-13T09:00:00Z',
         entry: { eventId: 'e', name: 'X', town: null, time: '', status: 'cancelled', startTime: '17:00', endTime: '20:00' },
       })

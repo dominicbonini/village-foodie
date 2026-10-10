@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { extractScheduleEvents } from '@/lib/schedule-extract'
+// Phase 2D-2: the truck's name, base, country and recent towns, and its country's location lines.
+import { scheduleContextForTruck } from '@/lib/schedule-context'
+import { truckTimeSettings } from '@/lib/truck-time'
 
 // Vercel Pro limit is 60s. Puppeteer + Gemini can take 45-55s on slow sites.
 // If timeouts recur at scale, move to a background job (GitHub Actions / queue)
@@ -30,7 +33,7 @@ function isUnreachableNavError(msg: string | null): boolean {
 async function getTruck(token: string) {
   const { data } = await supabase
     .from('trucks')
-    .select('id')
+    .select('id, name, timezone, country, base_place_name, base_region')
     .eq('dashboard_token', token)
     .single()
   return data
@@ -214,7 +217,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ found: false, events: [], reason: 'no_content' })
     }
 
-    const events = await extractScheduleEvents(betterContent.text)
+    const events = await extractScheduleEvents(betterContent.text, await truckTimeSettings(truck), { context: await scheduleContextForTruck(supabase, truck) })
 
     console.log(`[verify] Gemini returned ${events.length} events`)
 

@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
-import { formatTime } from '@/lib/time-utils'
+import { formatTime, formatYmd, getLocalDateInTz, addDaysYmd, type TimeSettings } from '@/lib/time-utils'
+import { formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-format'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -51,9 +52,16 @@ interface ClassifierParams {
   // (the operator-facing preview) it is a spinner that never resolves, and the caller cannot reach
   // callGemini's own parameter from outside. See docs/whatsapp-simulator-seam-report.md 5.a.
   timeoutMs?: number
+  /** 🔴 THE TRUCK'S MONEY FORMAT (lib/money-server moneyFormatForTruck) — every price a reply quotes,
+   *  and the symbol the price check looks for. Required: a reply must never quote a guessed £. */
+  money: MoneyFormat
+  /** 🔴 THE TRUCK'S TIME (lib/truck-time.ts truckTimeSettings) — its "today" for the DATE REFERENCE (was
+   *  the server's UTC date: from 00:00 to 01:00 BST it told the AI today was yesterday) and how dates and
+   *  times read in the reply. Required. */
+  time: TimeSettings
 }
 
-function formatEventForPrompt(event: TruckEvent, todayStr: string): string {
+function formatEventForPrompt(event: TruckEvent, todayStr: string, ts: TimeSettings): string {
   const eventDate = new Date(event.event_date + 'T12:00:00')
   const today = new Date(todayStr + 'T12:00:00')
   const diffDays = Math.round((eventDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
@@ -63,11 +71,9 @@ function formatEventForPrompt(event: TruckEvent, todayStr: string): string {
   else if (diffDays === 1) relativeLabel = ' (TOMORROW)'
   else if (diffDays === 2) relativeLabel = ' (IN 2 DAYS)'
 
-  const friendlyDate = eventDate.toLocaleDateString('en-GB', {
-    weekday: 'long', day: 'numeric', month: 'long'
-  })
-  const start = formatTime(event.start_time || '')
-  const end = formatTime(event.end_time || '')
+  const friendlyDate = formatYmd(event.event_date, ts, { weekday: 'long', day: 'numeric', month: 'long' })
+  const start = formatTime(event.start_time || '', ts)
+  const end = formatTime(event.end_time || '', ts)
   const time = start && end ? `${start}–${end}` : start || 'time TBC'
   const location = [event.venue_name, event.town, event.postcode].filter(Boolean).join(', ')
   const confirmed = event.status === 'confirmed' || event.status === 'open'
@@ -144,7 +150,7 @@ export interface WhatsAppReplyResult {
 }
 
 export async function generateWhatsAppReply(params: ClassifierParams): Promise<WhatsAppReplyResult> {
-  const { truckName, truckEmoji, truckId, customerMessage, events, scheduleUrl, orderUrl, isFollowUp = false, timeoutMs } = params
+  const { truckName, truckEmoji, truckId, customerMessage, events, scheduleUrl, orderUrl, isFollowUp = false, timeoutMs, money } = params
 
   // Greeting toggle, computed ONCE and threaded everywhere (no scattered conditionals).
   // greetingPrefix → literal replies (menuFallback, deterministicReply, allergenRedirect,
@@ -249,7 +255,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
 
       const parts = Object.entries(byCategory).map(([cat, prices]) => {
         const min = prices.length ? Math.min(...prices) : null
-        return min !== null ? `${cat} from £${min.toFixed(2)}` : cat
+        return min !== null ? `${cat} from ${formatMajor(min, money)}` : cat
       })
 
       const menuSummary =
@@ -281,7 +287,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
         const menuPayload = items.map(i => ({
           name: i.name,
           category: (i.menu_categories as any)?.name || 'Other',
-          price: typeof i.price === 'number' ? `£${i.price.toFixed(2)}` : null,
+          price: typeof i.price === 'number' ? formatMajor(i.price, money) : null,
           // PRESENCE-only tags (operator declarations). Default [] when absent — but a MISSING tag
           // means "not entered", NOT "free of" / "not vegetarian"; the prompt forbids absence claims.
           dietary: (i.dietary_info as string[]) || [],
@@ -315,14 +321,16 @@ Rules (follow exactly — same discipline as "never make up events"):
         // 3) LLM CALL — reuse callGemini, low temp, 8s AbortController timeout.
         const llmReply = await callGemini(menuAnswerPrompt, 0.2, 8000)
 
-        // 4) PRICE VALIDATION — every £ figure in the reply must exist in the payload's price
-        //    set (compared numerically so £12, £12.5 and £12.50 all normalise to 12.00/12.50).
-        //    Any stray figure ⇒ treat the whole reply as a hallucination. Cheap, no extra call.
+        // 4) PRICE VALIDATION — every figure in the reply carrying the TRUCK's symbol (£, $) must exist in
+        //    the payload's price set (compared numerically so £12, £12.5 and £12.50 all normalise to
+        //    12.00/12.50 — a comparison key, not a display string). Any stray figure ⇒ treat the whole
+        //    reply as a hallucination. Cheap, no extra call.
         const allowedPrices = new Set(
           items.filter(i => typeof i.price === 'number').map(i => (i.price as number).toFixed(2))
         )
-        const quotedPrices = (llmReply.match(/£\s?\d+(?:\.\d{1,2})?/g) ?? []).map(p =>
-          parseFloat(p.replace(/[£\s]/g, '')).toFixed(2)
+        const sym = currencySymbol(money).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        const quotedPrices = (llmReply.match(new RegExp(`${sym}\\s?\\d+(?:\\.\\d{1,2})?`, 'g')) ?? []).map(p =>
+          parseFloat(p.replace(new RegExp(`${sym}|\\s`, 'g'), '')).toFixed(2)
         )
         const pricesValid = quotedPrices.every(p => allowedPrices.has(p))
 
@@ -371,20 +379,17 @@ Rules (follow exactly — same discipline as "never make up events"):
   }
 
   // ── SPECIFIC_QUERY ─────────────────────────────────────────────────────────
-  const today = new Date()
-  const todayStr = today.toISOString().split('T')[0]
-  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  // 🔴 THE TRUCK'S TODAY (Phase 2B), and its country's words for the dates.
+  const todayStr = getLocalDateInTz(params.time.timeZone)
 
   const dateMapping = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(today)
-    d.setDate(d.getDate() + i)
-    const dateStr = d.toISOString().split('T')[0]
-    const label = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : dayNames[d.getDay()]
-    const friendly = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
+    const dateStr = addDaysYmd(todayStr, i)
+    const label = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : formatYmd(dateStr, params.time, { weekday: 'long' })
+    const friendly = formatYmd(dateStr, params.time, { day: 'numeric', month: 'long' })
     return `${label} = ${dateStr} (${friendly})`
   }).join('\n')
 
-  const formattedEvents = events.map(e => formatEventForPrompt(e, todayStr))
+  const formattedEvents = events.map(e => formatEventForPrompt(e, todayStr, params.time))
 
   const replyPrompt = `You are the owner of ${truckName} ${truckEmoji}, a food truck. Reply warmly to this WhatsApp message.
 

@@ -63,6 +63,9 @@ import {
 } from '@/lib/copy/serviceSettings'
 /* The rack size Settings' own buzzer toggle writes when it is switched ON. Standard's buzzer switch
  * makes the same call, so it must use the same default rather than pick a number. */
+import { useCountrySettings } from '@/components/CountrySettingsProvider'
+import { moneyFormatOf } from '@/lib/country-settings-types'
+import { currencySymbol, formatMajor, type MoneyFormat } from '@/lib/money-format'
 import { BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
 /* ⚠️ THE SAME `normaliseInterval` SETTINGS USES, so Standard's dropdown cannot send a value its own
  * save path would 400 on. */
@@ -383,6 +386,15 @@ const Dot = ({ colour }: { colour: string }) => (
   <span className="inline-block w-2.5 h-2.5 rounded-full shrink-0" style={{ background: colour }} aria-hidden="true" />
 )
 
+/** The truck's currency symbol ("£", "$"), for the price-rule labels — read from the manage page's provider. */
+function useTruckCurrencySymbol(): string {
+  return currencySymbol(moneyFormatOf(useCountrySettings()))
+}
+
+/** The truck's money format ({currency, locale}) — every price figure on this screen. Same provider. */
+function useTruckMoney(): MoneyFormat {
+  return moneyFormatOf(useCountrySettings())
+}
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // 1 · THE MODAL (TypesModal board)
@@ -432,6 +444,10 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
    */
   manageApi?: (action: string, extra?: Record<string, unknown>) => Promise<unknown>
 }) {
+  // The TRUCK's currency symbol for the price-rule labels ("+ £", "Nearest £1") — from the manage page's
+  // CountrySettingsProvider, never a typed £ (10 October 2026).
+  const currencySym = useTruckCurrencySymbol()
+  const truckMoney = useTruckMoney()
   const [loading, setLoading] = useState(true)
   const [types, setTypes] = useState<TypeRow[]>([])
   /** 🔴 Pro — the Private column and its link/QR row. */
@@ -1431,7 +1447,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                             <span className={r.k === 'price-item'
                               ? 'text-[13px] text-slate-700 tabular-nums'
                               : 'text-[13px] text-slate-600'}>
-                              {r.k === 'price-item' ? `£${r.item.price.toFixed(2)}` : PRICES_MENU_CELL}
+                              {r.k === 'price-item' ? formatMajor(r.item.price, truckMoney) : PRICES_MENU_CELL}
                             </span>
                           </div>
                         )]
@@ -1567,7 +1583,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                         return (
                           <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
                             {on && r.which === 'mode' && (
-                              <PriceModeSelect value={pr!.price_mode} disabled={!editable} height={GRID_CONTROL_H}
+                              <PriceModeSelect currencySymbol={currencySym} value={pr!.price_mode} disabled={!editable} height={GRID_CONTROL_H}
                                 label={`${PRICE_SETTING_LABELS.price_mode} for ${t.name}`}
                                 /* ⚠️ THE MODE AND THE AMOUNT ARE SENT TOGETHER, so the route validates
                                  * the stored amount against the NEW unit — "10" meant as £10 must not
@@ -1576,12 +1592,12 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                                 onChange={m => patchPricing(t.id, { price_mode: m, price_amount: pr!.price_amount })} />
                             )}
                             {ruleLive && r.which === 'amount' && (
-                              <PriceAmountInput mode={pr!.price_mode} value={pr!.price_amount} disabled={!editable} height={GRID_CONTROL_H}
+                              <PriceAmountInput currencySymbol={currencySym} mode={pr!.price_mode} value={pr!.price_amount} disabled={!editable} height={GRID_CONTROL_H}
                                 label={`${PRICE_SETTING_LABELS.price_amount} for ${t.name}`}
                                 onCommit={v => patchPricing(t.id, { price_amount: v, price_mode: pr!.price_mode })} />
                             )}
                             {ruleLive && r.which === 'rounding' && (
-                              <PriceRoundingSelect value={pr!.price_rounding} disabled={!editable} height={GRID_CONTROL_H}
+                              <PriceRoundingSelect currencySymbol={currencySym} value={pr!.price_rounding} disabled={!editable} height={GRID_CONTROL_H}
                                 /* ══ ⛔ THE FADE IS GONE (5 October 2026) ═══════════════════════════
                                  * It was faded while the value was still `'none'`, on the argument
                                  * that a crisp "None" would read as a choice the operator had made
@@ -1606,7 +1622,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                             {/* 🔴 THE PRICE SHOWN IS `priceForItem` — THE FUNCTION THE SUBMIT ROUTE
                               * CHARGES WITH (inside <PriceCell>). An off type shows the MENU price in
                               * grey and is not pressable: `grey` is the fact, not a disabled control. */}
-                            <PriceCell menuPrice={r.item.price} setup={setup} itemId={r.item.id}
+                            <PriceCell money={truckMoney} menuPrice={r.item.price} setup={setup} itemId={r.item.id}
                               typed={on ? pr!.typed[r.item.id] ?? null : null}
                               grey={!on} disabled={!editable} height={GRID_TYPED_H}
                               /* 🔴 THE DIFFERENCE IS A **TYPE COLUMN** THING ONLY (5 October 2026).
@@ -2166,6 +2182,8 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
   onRename: () => void
   onDelete: () => void
 }) {
+  const currencySym = useTruckCurrencySymbol()
+  const truckMoney = useTruckMoney()
   /* ══ 🔴 §2 · THE ITEM LIST IS FOLDED, AND THE FOLD IS THIS CARD'S OWN STATE ══════════════════════
    * ⚠️ NOT THE GRID'S `showItems`. That one belongs to the desktop grid and is shared by every type's
    * column; this card shows ONE type, and an operator who unfolds the items on Festival has not asked
@@ -2231,7 +2249,7 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
                 * either way, but the visible word is now a press target for the control too. */}
               <div className="py-1.5 pl-4">
                 <span className="mb-1 block text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_mode}</span>
-                <PriceModeSelect value={pricing.price_mode} disabled={!editable}
+                <PriceModeSelect currencySymbol={currencySym} value={pricing.price_mode} disabled={!editable}
                   label={`${PRICE_SETTING_LABELS.price_mode} for ${type.name}`}
                   onChange={m => onPatchPricing({ price_mode: m, price_amount: pricing.price_amount })} />
               </div>
@@ -2257,7 +2275,7 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
                 <>
                   <div className="py-1.5 pl-4">
                     <span className="mb-1 block text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_amount}</span>
-                    <PriceAmountInput mode={pricing.price_mode} value={pricing.price_amount} disabled={!editable}
+                    <PriceAmountInput currencySymbol={currencySym} mode={pricing.price_mode} value={pricing.price_amount} disabled={!editable}
                       label={`${PRICE_SETTING_LABELS.price_amount} for ${type.name}`}
                       onCommit={v => onPatchPricing({ price_amount: v, price_mode: pricing.price_mode })} />
                   </div>
@@ -2267,7 +2285,7 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
                       * Rounding as the grid, for the same reason, and it goes for the same reason —
                       * "nothing greyed or faded anywhere". A rule the grid obeys and the phone card
                       * does not is a rule that lasts until somebody opens the phone card. */}
-                    <PriceRoundingSelect value={pricing.price_rounding} disabled={!editable}
+                    <PriceRoundingSelect currencySymbol={currencySym} value={pricing.price_rounding} disabled={!editable}
                       label={`${PRICE_SETTING_LABELS.price_rounding} for ${type.name}`}
                       onChange={v => onPatchPricing({ price_rounding: v })} />
                   </div>
@@ -2342,7 +2360,7 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
                           className="flex items-center justify-between gap-2 border-t border-slate-100 py-1.5">
                           <span className="min-w-0 flex-1 text-[13px] leading-tight text-slate-700">{it.name}</span>
                           <span className="w-[130px] shrink-0">
-                            <PriceCell menuPrice={it.price} setup={setupOf(pricing)} itemId={it.id}
+                            <PriceCell money={truckMoney} menuPrice={it.price} setup={setupOf(pricing)} itemId={it.id}
                               typed={pricing.typed[it.id] ?? null}
                               disabled={!editable}
                               showDiff

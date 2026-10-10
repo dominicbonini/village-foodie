@@ -47,10 +47,14 @@ import { createPortal } from 'react-dom'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { emojiForCuisine } from '@/lib/cuisines'
 import { CuisinePicker, resolveCuisines, type CuisineSlot } from '@/components/shared/CuisinePicker'
-// I4: the SAME validator Manage Settings uses (app/manage/[token]/page.tsx) and the same one
-// /api/setup now runs server-side — one rule, three surfaces, so a number accepted here cannot be
-// rejected there.
-import { isValidUKPhone } from '@/lib/contact-validation'
+// I4: the SAME phone check Manage Settings uses (app/manage/[token]/page.tsx) and the same one
+// /api/setup runs server-side — one rule, three surfaces, so a number accepted here cannot be rejected
+// there. Phase 2C: lib/phone.ts, in the country of the truck this demo runs on (GB, as every demo and
+// every signup is until the signup country question exists — /api/setup checks in that same country).
+import { isPlausiblePhone, phoneErrorMessage, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
+// Phase 2D-1: the wizard's FIRST step, "Where's your truck based?" — shared with /setup.
+import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
+import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'
 
 /** THE signup offer, stated once. Every demo surface that makes the offer imports this rather than
  *  retyping it — the DEMO MODE banner already drifted into three copies of itself once, and an offer
@@ -131,9 +135,12 @@ const DEMO_COPY_SHARED = {
 
 type DemoCopyVariant = keyof typeof DEMO_COPY
 
-export function DemoGetStarted({ token, slug, label, className, isAdmin = false, extractionSource = null }: {
+export function DemoGetStarted({ token, slug, label, className, isAdmin = false, extractionSource = null, phone = null }: {
   token?: string
   slug?: string
+  /** 🔴 The phone box's country, name and example — the host page's truck payload `phone` (Phase 2C).
+   *  Null (a pre-2C payload): the box names no country or example and /api/setup checks the number. */
+  phone?: PhoneCopy | null
   /** Admin session (operators.is_admin), resolved from /api/auth/me by the host surface — NOT a claim this
    *  component makes or verifies. Opens the setup path while public signup is off, so the flow can be
    *  tested on production without a build-time env flip that would expose it to everyone. See canSetup.
@@ -202,8 +209,24 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // BOTH steps sit under ONE stepper entry ("Your details"), like the import wizard's reviewStep 1+2 under
   // "Menu". Every field is held in CLIENT STATE only — NOTHING is written server-side until step 2 submits,
   // so a bail-out from step 1 costs nothing. We never navigate until the whole chain succeeds.
-  type Step = 'landing' | 'truck' | 'details'
+  //   'based'   → (Phase 2D-1, first)  "Where's your truck based?": country · town · travel · zone
+  type Step = 'landing' | 'based' | 'truck' | 'details'
   const [step, setStep] = useState<Step>('landing')
+  // 🔴 THE COUNTRY DECIDES THE PHONE. The step comes before the phone field, so the phone check and its
+  // wording follow the chosen country (its copy rides in the countries list) — never the demo truck's.
+  const signupCountries = useSignupCountries(step !== 'landing')
+  // The answer starts as the pre-fill (derived, not copied into state) until the operator changes something.
+  const [baseChoice, setBase] = useState<BaseAnswer | null>(null)
+  const base = baseChoice ?? (signupCountries.data ? initialBaseAnswer(signupCountries.data.countries, signupCountries.data.guess.code) : null)
+  const [baseErrors, setBaseErrors] = useState<BaseErrors>({})
+  const chosenCountry = signupCountries.data?.countries.find(c => c.code === base?.country) ?? null
+  const signupPhone: PhoneCopy | null = chosenCountry?.phone ?? phone
+  const validateBasedStep = (): boolean => {
+    if (!base || !signupCountries.data) return false
+    const errs = baseAnswerErrors(base, signupCountries.data.countries)
+    setBaseErrors(errs)
+    return Object.keys(errs).length === 0
+  }
   // ── V1: TWO FIELDS, NOT ONE STRING ────────────────────────────────────────────────────────────────
   // 🔴 THE ALTERNATIVE — splitting one field on whitespace — IS NOT AVAILABLE AND SHOULD NOT BE ADDED.
   // "van der Berg" yields first="van"; "Mary Jane Watson" yields last="Jane Watson" or "Watson"
@@ -425,12 +448,12 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // I4 — PHONE IS NOW REQUIRED. It reaches customers in every transactional email and on the public
   // discovery feed, so a truck without one degrades those silently. Two rules, deliberately separate:
   // EMPTY is its own message (the field just moved from optional, so "invalid" would be misleading), and
-  // MALFORMED reuses isValidUKPhone — the permissive check Settings already applies. Both run in the same
+  // MALFORMED reuses isPlausiblePhone — the permissive check Settings already applies. Both run in the same
   // pass as the other three, so the operator sees everything wrong at once rather than one at a time.
   const validateDetailsStep = (): boolean => {
     const errs: typeof fieldErrors = {}
     if (!contactPhone.trim()) errs.phone = 'Add a phone number — customers and we both use it to reach you.'
-    else if (!isValidUKPhone(contactPhone)) errs.phone = 'Enter a valid UK phone number (e.g. 07700 900123).'
+    else if (signupPhone && !isPlausiblePhone(contactPhone, signupPhone.phoneCountry, signupPhone.phoneCheck)) errs.phone = phoneErrorMessage('phone_number', signupPhone)
     if (!email.includes('@')) errs.email = 'Enter a valid email address.'
     if (password.length < 8) errs.password = 'Password must be at least 8 characters.'
     if (!termsAccepted) errs.terms = 'Please accept the terms to continue.'
@@ -538,6 +561,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
           name: truckName.trim(),
           contact_phone: contactPhone.trim(),
           phone_is_whatsapp: phoneIsWhatsapp,
+          ...(base ? baseAnswerBody(base) : {}),
         }),
       })
       const data = await res.json().catch(() => ({}))
@@ -660,7 +684,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   const showConfirmation = savedUntil !== null && justSaved
   // The two identity steps share the import wizard's chrome (border header/footer, left h3, stepper); the
   // landing + confirmation views keep the lightweight centred capture chrome.
-  const inWizard = step === 'truck' || step === 'details'
+  const inWizard = step === 'based' || step === 'truck' || step === 'details'
   // In-progress once creation has started (any stage past 'pending'): the details form is replaced by the
   // progress list, and the ‹ back control is suppressed so the flow can't be rewound mid-creation.
   const inProgress = stages.account !== 'pending'
@@ -714,11 +738,11 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                     started (can't rewind mid-write, and the account/truck may already exist). */}
                 {!busy && !inProgress && (
                   <button type="button" aria-label="Back"
-                    onClick={() => setStep(step === 'details' ? 'truck' : 'landing')}
+                    onClick={() => setStep(step === 'details' ? 'truck' : step === 'truck' ? 'based' : 'landing')}
                     className="absolute top-4 left-4 text-slate-400 hover:text-slate-600 text-2xl leading-none">‹</button>
                 )}
                 <div className="flex items-start justify-between gap-3 pl-6">
-                  <h3 className="font-black text-slate-900">{step === 'truck' ? 'About your truck' : 'Finish setting up'}</h3>
+                  <h3 className="font-black text-slate-900">{step === 'based' ? WHERE_YOU_TRADE_COPY.stepHeading : step === 'truck' ? 'About your truck' : 'Finish setting up'}</h3>
                   {!busy && (
                     <button type="button" onClick={closeModal} aria-label="Close"
                       className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0">×</button>
@@ -791,6 +815,14 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                   )}
                   {error && <p className="text-sm text-amber-700">{error}</p>}
                 </div>
+              ) : step === 'based' ? (
+                // "Where's your truck based?" (Phase 2D-1) — client state only, like the truck step.
+                signupCountries.data && base ? (
+                  <WhereBasedStep countries={signupCountries.data.countries} guessedCode={signupCountries.data.guess.fromLocation ? signupCountries.data.guess.code : null}
+                    value={base} errors={baseErrors} onChange={a => { setBase(a); setBaseErrors({}) }} />
+                ) : (
+                  <p className="text-sm text-slate-500">{signupCountries.error ?? 'Loading…'}</p>
+                )
               ) : step === 'truck' ? (
                 // STEP 1 "About your truck" — client state only; nothing is written until step 2 submits.
                 <div className="space-y-4">
@@ -979,7 +1011,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                     <label htmlFor="demo-phone" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Phone</label>
                     <input
                       id="demo-phone" type="tel" autoComplete="tel" value={contactPhone}
-                      onChange={e => { setContactPhone(e.target.value); clearFieldErr('phone') }} placeholder="07700 900123"
+                      onChange={e => { setContactPhone(e.target.value); clearFieldErr('phone') }} placeholder={phonePlaceholder(signupPhone)}
                       className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.phone ? 'border-red-400' : 'border-slate-200'}`} />
                     {fieldErrors.phone && <p className="text-xs text-red-600 mt-1">{fieldErrors.phone}</p>}
                     <label className="flex items-center gap-2 mt-2 text-sm text-slate-600 cursor-pointer">
@@ -1162,6 +1194,11 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                   className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl text-sm hover:bg-slate-800">
                   {DEMO_COPY_SHARED.backToDemoButton}
                 </button>
+              ) : step === 'based' ? (
+                <button type="button" onClick={() => { if (validateBasedStep()) { setError(null); setStep('truck') } }} disabled={busy || !base}
+                  className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
+                  {WHERE_YOU_TRADE_COPY.continueButton}
+                </button>
               ) : step === 'truck' ? (
                 // STEP 1 → advance to "Your details". Validates step 1 on click (all at once); NO server write.
                 <button type="button" onClick={() => { if (validateTruckStep()) { setError(null); setStep('details') } }} disabled={busy}
@@ -1189,7 +1226,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                 // LANDING (canSetup) — enter the wizard at STEP 1 ("Your truck"). The email captured here carries
                 // into the wizard. "Just email me a link" stays HERE, on the landing view only (§1).
                 <div className="space-y-2">
-                  <button type="button" onClick={() => { setError(null); setStep('truck') }} disabled={!email.includes('@')}
+                  <button type="button" onClick={() => { setError(null); setStep('based') }} disabled={!email.includes('@')}
                     className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
                     {DEMO_COPY_SHARED.enterSetupButton}
                   </button>

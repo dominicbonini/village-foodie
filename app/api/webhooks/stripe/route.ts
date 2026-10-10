@@ -497,7 +497,8 @@ export async function POST(req: NextRequest) {
     // row that owns it. This also proves the order still exists before writing money against it.
     const { data: order } = await supabase
       .from('orders')
-      .select('order_key, truck_id')
+      // `currency` (20261010_07): the ledger row's fallback if the intent somehow carries none.
+      .select('order_key, truck_id, currency')
       .eq('order_key', orderKey)
       .maybeSingle()
 
@@ -537,7 +538,8 @@ export async function POST(req: NextRequest) {
         amountMinor: amountReceived,
         paymentIntentId: piId,
         livemode,
-        currency: typeof pi?.currency === 'string' ? pi.currency.toUpperCase() : undefined,
+        // The intent's own currency; the ORDER's as the fallback — never a literal. The writer upper-cases.
+        currency: typeof pi?.currency === 'string' ? pi.currency.toUpperCase() : (order.currency as string),
       })
       console.log(
         `[webhook/stripe] online payment ${inserted ? 'RECORDED' : 'DUPLICATE (no-op)'} order=${orderKey} ` +
@@ -775,7 +777,8 @@ export async function POST(req: NextRequest) {
           refundId,
           paymentIntentId: piId,
           livemode,
-          currency: typeof r.currency === 'string' ? r.currency.toUpperCase() : undefined,
+          // The refund's own currency; the CHARGE row it reverses as the fallback — never a literal.
+          currency: typeof r.currency === 'string' ? r.currency.toUpperCase() : (chargeRow.currency as string),
         })
         if (inserted) written++
         console.log(

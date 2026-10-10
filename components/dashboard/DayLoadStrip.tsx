@@ -14,7 +14,7 @@
 //            count was removed (it read as "current_orders/max_orders" = oven units / kitchen
 //            capacity, which is confusing in a tiny cell).
 
-import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { getNowMinsInTz, getLocalDateInTz, formatSlot, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import type { Slot } from './types'
 
 const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
@@ -25,14 +25,15 @@ const TONE: Record<'green' | 'amber' | 'red', { dot: string; text: string }> = {
   red: { dot: 'bg-red-500', text: 'text-red-700' },
 }
 
-export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London', breachedSlots }: {
+export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots }: {
   /** The dashboard's existing full-day slot series (already carries tone + counts). */
   slots: Slot[]
   /** Active event's date — drives the cross-day guard (only floor by "now" when the event is today). */
   eventDate: string | null
   /** 'sidebar' = desktop vertical list; 'strip' = mobile horizontal scroll. */
   variant: 'sidebar' | 'strip'
-  tz?: string
+  /** The truck's time settings (truck.time) — its clock decides "now", its style writes each time. */
+  time: TimeSettings | null | undefined
   /** Collection times that are STRICTLY OVER a ceiling -- `capacityBreaches.map(b => b.collection_time)`
    *  from /api/dashboard, i.e. the breach detector's OWN OUTPUT rather than a second rule computed here.
    *  lib/capacity-breach.ts tests `remainingTotal < -EPS`; `tone === 'red'` cannot answer this because it
@@ -43,6 +44,8 @@ export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London', 
 }) {
   // Cross-day guard mirrors the engine: only exclude past slots when the event IS today; a
   // pre-order event (future date) shows its whole day. nowMins is event-local minute-of-day.
+  const ts = timeSettingsOr(time, 'day load strip')
+  const tz = ts.timeZone
   const isToday = !!eventDate && eventDate === getLocalDateInTz(tz)
   const nowMins = getNowMinsInTz(tz)
   const upcoming = slots
@@ -63,7 +66,7 @@ export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London', 
             const tone = (s.tone ?? 'green') as 'green' | 'amber' | 'red'
             return (
               <div key={s.collection_time} className="flex-shrink-0 flex flex-col items-center gap-1 bg-white border border-slate-200 rounded-lg px-1.5 py-1 min-w-[42px]">
-                <span className="text-[11px] font-bold text-slate-600 tabular-nums">{s.collection_time}</span>
+                <span className="text-[11px] font-bold text-slate-600 tabular-nums">{formatSlot(s.collection_time, ts)}</span>
                 <span className={`w-2.5 h-2.5 rounded-full ${TONE[tone].dot}`} />
                 {/* THE OVER-CAPACITY MARKER. It sits BESIDE the dot and replaces nothing: the dot is
                     still the tone, the time is still the time. The marker only says that the load behind
@@ -110,7 +113,7 @@ export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London', 
           const tone = (s.tone ?? 'green') as 'green' | 'amber' | 'red'
           return (
             <div key={s.collection_time} className="flex items-center gap-2 py-1 px-1 rounded-lg hover:bg-slate-50">
-              <span className="text-xs font-bold text-slate-600 tabular-nums w-10 flex-shrink-0">{s.collection_time}</span>
+              <span className="text-xs font-bold text-slate-600 tabular-nums w-10 flex-shrink-0">{formatSlot(s.collection_time, ts)}</span>
               <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${TONE[tone].dot}`} />
               {/* Same marker, same rule, same accessible name as the mobile strip above -- one component,
                   two variants, and the wording lives in exactly one place. */}

@@ -1,5 +1,6 @@
 import { recordLabelsFor } from './dns'
 import type { DnsProvider, ProviderSteps } from './dns'
+import { formatInstant, type TimeSettings } from '@/lib/time-utils'
 
 /**
  * ── THE RECORD SCREEN'S WORDS, AND THE EMAIL'S. ONE SOURCE. ─────────────────────────────────────
@@ -175,10 +176,11 @@ ${truckName}`
  * simply wait, indefinitely, believing it is coming. This state is the only thing that turns a silent
  * stall into a sentence.
  */
-export function notificationCopy(args: { address: string; startedAt: string | null }):
+export function notificationCopy(args: { address: string; startedAt: string | null; time: TimeSettings | null | undefined }):
   { waiting: { title: string; body: string }; ready: { title: string; body: string } } {
+  // The truck's zone and words (Phase 2B): GB "9 October", US "October 9".
   const since = args.startedAt
-    ? new Date(args.startedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
+    ? formatInstant(args.startedAt, args.time, { day: 'numeric', month: 'long' })
     : null
   return {
     /**
@@ -452,9 +454,10 @@ export function confirmProblemMailto(args: {
   truckName: string
   address: string
   verifiedAt: string | null
+  time: TimeSettings | null | undefined
 }): string {
   const live = args.verifiedAt
-    ? new Date(args.verifiedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+    ? formatInstant(args.verifiedAt, args.time, { day: 'numeric', month: 'long', year: 'numeric' })
     : null
   const body = [
     `${args.truckName}`,

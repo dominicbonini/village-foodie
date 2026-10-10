@@ -9,10 +9,19 @@ import { provisionTruck } from '@/lib/provision-truck'
 import { createSlug } from '@/lib/utils'
 import { DEMO_PREFIX } from '@/lib/demo'
 import { linkDiscoveryRowForSelfServe } from '@/lib/self-serve-discovery-link'
-// I4: the SAME validator Manage Settings and the signup modal use — one rule, so a number the client
-// accepts can never be rejected here.
-import { isValidUKPhone } from '@/lib/contact-validation'
+// I4: the SAME phone check Manage Settings and the signup modal use (lib/phone.ts, Phase 2C) — one rule,
+// so a number the client accepts can never be rejected here.
+import { isPlausiblePhone, phoneErrorMessage } from '@/lib/phone'
+import { phoneCopyOf } from '@/lib/phone-copy'
 import { resolveOperatorTruck } from '@/lib/resolve-operator-truck'
+import { getCountrySettings } from '@/lib/country-settings'
+import type { CountrySettings } from '@/lib/country-settings-types'
+import { checkSignupCountry, checkTradeArea } from '@/lib/trade-area'
+
+// 🔴 THE COUNTRY IS THE OPERATOR'S ANSWER (Phase 2D-1) — "Where's your truck based?", the wizard's first step.
+// The fixed signup country ('GB') is gone. The chosen country must be switched on (country_settings.enabled) and its zone
+// one of the country's own; the truck is provisioned in it, its phone is checked by its rule, and refused in
+// its words. All of it is checked HERE, server-side, whatever the browser sent.
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -64,16 +73,30 @@ export async function POST(req: NextRequest) {
     // route is reached ONLY by an operator who has no truck yet: Pizzeria Gusto and Real Thai Food
     // have never called it and cannot.
     //
-    // DELIBERATELY PERMISSIVE — isValidUKPhone strips everything but digits and '+' before testing
-    // /^(\+?44|0)\d{9,11}$/, so 07123456789, +447123456789, 447123456789 and any spaced or punctuated
-    // form of those all pass. A signup blocked by a fussy regex costs far more than a loosely
-    // formatted number in a column, so this checks shape, not correctness.
+    // DELIBERATELY PERMISSIVE — lib/phone.ts `isPlausiblePhone` (Phase 2C): a number of a plausible length
+    // for the signup country, or for its own country when it starts with +, in any spacing or punctuation.
+    // A signup blocked by a fussy check costs far more than a loosely formatted number in a column, so
+    // this checks length, not correctness.
     const contactPhone = String(body.contact_phone ?? '').trim()
     if (!contactPhone) {
       return NextResponse.json({ ok: false, error: 'A contact phone number is required.' }, { status: 400 })
     }
-    if (!isValidUKPhone(contactPhone)) {
-      return NextResponse.json({ ok: false, error: 'Enter a valid UK phone number (e.g. 07700 900123).' }, { status: 400 })
+    // ── Phase 2D-1: THE COUNTRY AND WHERE THE TRUCK TRADES — before the phone, which is checked by it ──────
+    const countryCode = String(body.country ?? '').trim().toUpperCase()
+    let countryRow: CountrySettings | null = null
+    if (/^[A-Z]{2}$/.test(countryCode)) { try { countryRow = await getCountrySettings(countryCode) } catch { countryRow = null } }
+    const countryError = checkSignupCountry(countryCode, countryRow)
+    if (countryError || !countryRow) return NextResponse.json({ ok: false, error: countryError }, { status: 400 })
+    const trade = checkTradeArea({
+      timezone: body.timezone, base_place_id: body.base_place_id, base_place_name: body.base_place_name,
+      base_region: body.base_region, base_lat: body.base_lat, base_lng: body.base_lng,
+    }, countryRow)
+    if (!trade.ok) return NextResponse.json({ ok: false, error: trade.error }, { status: 400 })
+
+    // The chosen country's own phone check (country_settings.phone_check) decides, and its words refuse.
+    const signupPhone = phoneCopyOf(countryRow)
+    if (!isPlausiblePhone(contactPhone, signupPhone.phoneCountry, signupPhone.phoneCheck)) {
+      return NextResponse.json({ ok: false, error: phoneErrorMessage('phone_number', signupPhone) }, { status: 400 })
     }
 
     // Idempotence: a double-submit (or a retry after a flaky response) must not mint a second truck.
@@ -87,6 +110,11 @@ export async function POST(req: NextRequest) {
     try {
       const result = await provisionTruck(supabase, {
         kind: 'operator',
+        // 🔴 THE CHOSEN COUNTRY, ZONE AND TRADE AREA (Phase 2D-1) — provisionTruck checks them again, as the
+        // writer, and takes the currency from the country's settings.
+        country: countryRow.countryCode,
+        timezone: trade.values.timezone,
+        tradeArea: { ...trade.values },
         name,
         slug: safeSlug(name),
         contactEmail,
@@ -112,7 +140,7 @@ export async function POST(req: NextRequest) {
       // which is the same reasoning that kept it out of ProvisionProfile then: nothing in provisioning
       // *decides* a phone number, so it is per-call data, not a profile field. P2/P3 need it during
       // the insert (whatsapp and preferred_contact_method are derived from it), so one writer is now
-      // better than two. Still stored verbatim — isValidUKPhone does not normalise.
+      // better than two. Still stored verbatim — the phone check does not normalise.
       await supabase.from('trucks')
         .update({ operator_id: operator.id, setup_step: 'menu' })
         .eq('id', result.truck.id)
@@ -193,6 +221,8 @@ export async function GET(req: NextRequest) {
     // E2: this was the SECOND hand-written copy of the rule its own comment above says it shares with
     // verify-signup. Both now call the one helper, so they cannot drift. Response shape unchanged.
     const truck = await resolveOperatorTruck(supabase, operator.id)
+    // Phase 2C: + the signup country's phone copy, which the page words its phone box from.
+    // (The phone copy that rode here in Phase 2C now comes per country from /api/setup/countries.)
     return NextResponse.json({ ok: true, truck: truck ? { dashboard_token: truck.dashboard_token } : null })
   }
 

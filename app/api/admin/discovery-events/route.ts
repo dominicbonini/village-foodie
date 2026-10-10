@@ -58,7 +58,7 @@ const EDITABLE = ['truck_name', 'venue_name', 'village', 'start_time', 'end_time
 type EditableCol = typeof EDITABLE[number]
 const isEditable = (k: string): k is EditableCol => (EDITABLE as readonly string[]).includes(k)
 
-const SELECT = 'id, event_date, start_time, end_time, truck_name, venue_name, village, event_notes, source, ai_notes, discovery_truck_id, venue_id, created_at'
+const SELECT = 'id, event_date, start_time, end_time, truck_name, venue_name, village, event_notes, source, ai_notes, discovery_truck_id, venue_id, created_at, country'
 // The admin table SHOWS superseded rows, marked — it is where a duplicate is inspected, so it must not hide
 // them. Tolerant of the migration not being applied: on a superseded_by error the plain SELECT is used.
 const SELECT_WITH_SUPERSEDED = SELECT + ', superseded_by, superseded_reason, superseded_meta, superseded_at'
@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
     let scopedTruckName: string | null = null
     if (truckId) {
       const { data: t, error: e2 } = await supabase
-        .from('discovery_trucks').select('name, aliases').eq('id', truckId).maybeSingle()
+        .from('discovery_trucks').select('name, aliases, country').eq('id', truckId).maybeSingle()
       if (e2) throw e2
       if (!t) return NextResponse.json({ error: 'No such truck' }, { status: 404 })
       scopedTruckName = t.name ?? null
@@ -123,30 +123,37 @@ export async function GET(req: NextRequest) {
       // would otherwise fall through the filter and the popup would list all 903 rows while looking like
       // a working filter. `eventMatchesKeys` returns false for an empty set, and this is the assertion
       // that says so out loud.
-      const keep = rows.filter(r => eventMatchesKeys(r.truck_name, scopedKeys!))
+      // Phase 2D-2: the truck's own country only — a same-named truck's events elsewhere are not its schedule.
+      const scopedCountry = (t.country || 'GB').toUpperCase()
+      const keep = rows.filter(r => (r.country || 'GB').toUpperCase() === scopedCountry && eventMatchesKeys(r.truck_name, scopedKeys!))
       rows.length = 0
       rows.push(...keep)
     }
 
     // The known-truck key set, built once: every name and every alias, under the mirror normaliser.
     const { data: trucks, error: tErr } = await supabase
-      .from('discovery_trucks').select('name, aliases').limit(10000)
+      .from('discovery_trucks').select('name, aliases, country').limit(10000)
     if (tErr) throw tErr
-    const keys: string[] = []
+    // 🔴 PHASE 2D-2: one key set PER COUNTRY — an event is an orphan unless a truck in its own country names it.
+    const keysByCountry = new Map<string, string[]>()
     for (const t of trucks ?? []) {
+      const c = ((t as { country?: string | null }).country || 'GB').toUpperCase()
+      const keys = keysByCountry.get(c) ?? []
       const n = normalizeVenue(t.name ?? ''); if (n) keys.push(n)
       for (const a of (t.aliases ?? []) as string[]) { const k = normalizeVenue(a ?? ''); if (k) keys.push(k) }
+      keysByCountry.set(c, keys)
     }
     // ⚠️ Same shape as the scraper's matcher: equal, within one edit, or either containing the other.
-    const isOrphan = (name: string | null): boolean => {
+    const isOrphan = (name: string | null, country: string | null): boolean => {
       const k = normalizeVenue(name ?? '')
       if (!k) return false                       // no name at all is a different defect, not an orphan
+      const keys = keysByCountry.get((country || 'GB').toUpperCase()) ?? []
       return !keys.some(s => venuesFuzzyMatch(s, k) || s.includes(k) || k.includes(s))
     }
 
     const out = rows.map(r => ({
       ...r,
-      isOrphan: isOrphan(r.truck_name),
+      isOrphan: isOrphan(r.truck_name, r.country ?? null),
       unlinkedVenue: r.venue_id == null,        // 🔴 DERIVED, never stored, never written
     }))
     return NextResponse.json({

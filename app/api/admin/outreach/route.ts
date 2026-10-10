@@ -19,6 +19,7 @@ import {
   type OutreachStage,
 } from '@/lib/outreach'
 import { phoneWhatsApp, type WhatsAppHint } from '@/lib/whatsapp-hint'
+import { MARKETING_COUNTRY } from '@/lib/marketing-country'   // discovery and outreach are the marketing country's (Phase 2C)
 // 🔴 OPTION A: which row owns a prospect's logo. Pure, shared, and the ONLY place that decision is made.
 import { resolveLogoTarget, needsTruckConfirmation, type LogoTruckRow } from '@/lib/outreach-logo-target'
 /** The truck columns this route needs: the decision fields plus the logo it is going to read or write. */
@@ -67,12 +68,12 @@ async function buildScheduleIndex(): Promise<Map<string, Schedule>> {
   const todayYMD = new Date().toISOString().slice(0, 10)
   // One bulk read of the events we need — name + date only. Paged to defeat PostgREST's 1000-row default
   // cap so a growing event table never silently truncates the schedule (737 today, but do not assume).
-  const events: { truck_name: string | null; event_date: string | null; venue_name: string | null }[] = []
+  const events: { truck_name: string | null; event_date: string | null; venue_name: string | null; country?: string | null }[] = []
   const PAGE = 1000
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await supabase
       .from('discovery_events')
-      .select('truck_name, event_date, venue_name')
+      .select('truck_name, event_date, venue_name, country')
       .range(from, from + PAGE - 1)
     if (error) throw error
     if (!data || data.length === 0) break
@@ -82,8 +83,10 @@ async function buildScheduleIndex(): Promise<Map<string, Schedule>> {
   // name (normalised) → aggregate
   const idx = new Map<string, Schedule>()
   for (const e of events) {
-    const key = norm(e.truck_name)
-    if (!key) continue
+    // 🔴 PHASE 2D-2: keyed by COUNTRY and name — a UK prospect's "next event" is never a same-named US truck's.
+    const n = norm(e.truck_name)
+    if (!n) continue
+    const key = `${(e.country || 'GB').toUpperCase()}|${n}`
     const cur = idx.get(key) ?? { futureCount: 0, lastEventDate: null, nextEventDate: null, nextEventVenue: null }
     if (e.event_date) {
       // 🔴 TWO DIFFERENT PREDICATES ON PURPOSE — READ BOTH BEFORE CHANGING EITHER.
@@ -116,14 +119,17 @@ function scheduleFor(
   idx: Map<string, Schedule>,
   name: string | null,
   aliases: string[] | null,
+  /** Phase 2D-2: the truck's country — only its own country's events count. */
+  country: string | null,
 ): Schedule {
+  const c = (country || 'GB').toUpperCase()
   const keys = scheduleKeys(name, aliases)   // the shared rule; was these three lines inline
   let futureCount = 0
   let lastEventDate: string | null = null
   let nextEventDate: string | null = null
   let nextEventVenue: string | null = null
   for (const k of keys) {
-    const s = idx.get(k)
+    const s = idx.get(`${c}|${k}`)
     if (!s) continue
     futureCount += s.futureCount
     if (s.lastEventDate && (!lastEventDate || s.lastEventDate > lastEventDate)) lastEventDate = s.lastEventDate
@@ -151,7 +157,7 @@ export async function GET(req: NextRequest) {
     // NOT an inference from row VALUES. Applying the migration and reloading flips a flag on the next load.
     const TRUCK_EMBED = `truck:discovery_trucks!outreach_prospects_discovery_truck_id_fkey (
           id, name, aliases, contact_email, phone, mobile, accepted_methods, order_url, excluded, logo_url, photo_url, website, schedule_url,
-          show_on_vf, hatchgrab_truck_id
+          show_on_vf, hatchgrab_truck_id, country
         )`
     const BASE_COLS = `id, discovery_truck_id, stage, platform, hu_map, hu_ordering, whatsapp_number, whatsapp_confirmed,
         next_action_at, notes, created_at, updated_at`
@@ -332,7 +338,7 @@ export async function GET(req: NextRequest) {
 
     const rows = await Promise.all((prospects ?? []).map(async (p: any) => {
       const truck = Array.isArray(p.truck) ? p.truck[0] : p.truck
-      const sched = scheduleFor(schedIdx, truck?.name ?? null, truck?.aliases ?? null)
+      const sched = scheduleFor(schedIdx, truck?.name ?? null, truck?.aliases ?? null, truck?.country ?? null)
       const contacts = contactsByProspect.get(p.id) ?? []
       const outboundCount = contacts.filter((c: any) => c.direction === 'outbound').length
       const lastContactedAt = contacts.length ? contacts[0].contacted_at : null // newest-first
@@ -393,7 +399,7 @@ export async function GET(req: NextRequest) {
         // button uses (lib/whatsapp-hint.ts), so the two can never disagree. Three states, never two: an
         // absent tag on a mobile is 'mobile_not_advertised', not 'no WhatsApp'. `phone` (not `mobile`) per
         // the diagnosis. NOTHING is written back — this is display only.
-        whatsappHint: phoneWhatsApp(truck?.phone ?? null, truck?.accepted_methods ?? null).hint as WhatsAppHint,
+        whatsappHint: phoneWhatsApp(truck?.phone ?? null, truck?.accepted_methods ?? null, MARKETING_COUNTRY).hint as WhatsAppHint,
         stage: p.stage as OutreachStage,
         platform: p.platform,
         hu_map: p.hu_map,

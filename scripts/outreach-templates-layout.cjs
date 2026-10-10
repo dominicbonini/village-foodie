@@ -390,7 +390,8 @@ function runCensus(over = {}) {
 
   // ── 🔴 THE COUNTS COME FROM THE GRID'S OWN DERIVATIONS ───────────────────────────────────────
   t('🔴 contactable is `channelFor` — the predicate that gates the work queue, not a copy',
-    /channelFor\(\{ \.\.\.p, waPhone: phoneWhatsApp\(p\.phone \?\? null, null\)\.waPhone \}\)/.test(TAB)
+    // Phase 2C: phoneWhatsApp now names the country a national number is read in (the marketing country here)
+    /channelFor\(\{ \.\.\.p, waPhone: phoneWhatsApp\(p\.phone \?\? null, null, MARKETING_COUNTRY\)\.waPhone \}\)/.test(TAB)
     && /\.filter\(x => x\.ch !== null\)/.test(TAB))
   t('🔴 …a truck\'s type is `effectiveLeadType` — the grid\'s own call, frozen value first',
     /b\.lead_type === effectiveLeadType\(x\.p\)/.test(TAB)
@@ -601,7 +602,8 @@ function runCensus(over = {}) {
         + " only: 'Only if they have an upcoming event', shownTo: 'trucks with an upcoming event' }]}"), 'V18') }],
     ['V19 🔴 "contactable" is re-implemented in the panel instead of asking `channelFor`',
       { TAB: changed(TAB_SRC, TAB_SRC.replace(
-        'channelFor({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null).waPhone })',
+        // re-anchored (Phase 2C): phoneWhatsApp now names the country a national number is read in
+        'channelFor({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null, MARKETING_COUNTRY).waPhone })',
         "(p.contact_email ? 'email' : null)"), 'V19') }],
     ['V20 🔴 the count stops asking the resolver and tests the date itself',
       { TAB: changed(TAB_SRC, TAB_SRC.replace('conditionHolds(l.cond, x.ctx)', '!!x.ctx.nextEventDate'), 'V20') }],

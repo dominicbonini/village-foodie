@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { extractScheduleEvents } from '@/lib/schedule-extract'
+import { truckTimeSettings } from '@/lib/truck-time'
+// Phase 2D-2: the truck's name, base, country and recent towns, and its country's location lines.
+import { scheduleContextForTruck } from '@/lib/schedule-context'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,7 +22,7 @@ export async function POST(req: NextRequest) {
 
   const { data: truck } = await supabase
     .from('trucks')
-    .select('id')
+    .select('id, name, timezone, country, base_place_name, base_region')
     .eq('dashboard_token', token)
     .single()
 
@@ -29,12 +32,13 @@ export async function POST(req: NextRequest) {
 
   try {
     let events
+    const context = await scheduleContextForTruck(supabase, truck)
     if (file && file.size > 0) {
       const buffer = await file.arrayBuffer()
       const base64 = Buffer.from(buffer).toString('base64')
-      events = await extractScheduleEvents({ mimeType: file.type, base64 })
+      events = await extractScheduleEvents({ mimeType: file.type, base64 }, await truckTimeSettings(truck), { context })
     } else {
-      events = await extractScheduleEvents(text ?? '')
+      events = await extractScheduleEvents(text ?? '', await truckTimeSettings(truck), { context })
     }
     return NextResponse.json({ events })
   } catch (err) {

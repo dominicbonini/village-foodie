@@ -11,22 +11,30 @@ import { useRouter } from 'next/navigation'
 import { PLAN_META, type Plan, type Feature } from '@/lib/features'
 import { safeHref } from '@/lib/safe-href'
 import { STOPPED_AFTER_MS, STOPPED_AFTER_LABEL, CHECK_CRON_EXPRESSION, CADENCE_DERIVED } from '@/lib/custom-domain/cadence'
-import { PLAN_PRICES, FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS } from '@/lib/plan-features'
+import { planPrices, FEATURE_SECTIONS, footnotes, transactionRows, platformFeeLabel } from '@/lib/plan-features'
+import type { CountrySettings } from '@/lib/country-settings-types'
+// 🔴 The plan matrix shows the PUBLIC pages' country (named once — the visitor picker comes later); one
+// truck's modal shows THAT truck's country. Both arrive in the authenticated /api/admin response.
+import { MARKETING_COUNTRY } from '@/lib/marketing-country'
 import AppHeader from '@/components/shared/AppHeader'
 import { CopyButton } from '@/components/dashboard/CopyButton'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { operatorSignOut } from '@/lib/native/signOut'
 import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
 import { createSlug } from '@/lib/utils'   // slug preview in the create-truck modal — SAME fn provision-truck derives with
-import { formatTimeRange } from '@/lib/time-utils'   // canonical event-time rendering (never raw — no seconds)
+import { formatTimeRange, DISCOVERY_TIME_SETTINGS } from '@/lib/time-utils'   // canonical event-time rendering (never raw — no seconds)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import OutreachPanel from '@/components/admin/OutreachPanel'   // the outreach console, rendered as a tab
 import DiscoveryEventsPanel from '@/components/admin/DiscoveryEventsPanel' // discovery_events viewer/amender
 import TemplatesPanel from '@/components/admin/TemplatesPanel' // outreach message templates (DB-backed)
 import ScreenshotsPanel from '@/components/admin/ScreenshotsPanel' // the screenshot uploader, rendered as a tab
+import CountriesTab from '@/components/admin/CountriesTab'           // per-country prices, fees and formats
+import { useSignupCountries } from '@/components/setup/WhereBasedStep'  // switched-on countries (create-truck)
 
 interface AdminTruck {
   id: string
+  /** ISO country, from /api/admin's select — keys this truck's own country settings. */
+  country?: string
   name: string
   slug: string | null
   dashboard_token: string | null
@@ -88,6 +96,8 @@ interface NewTruckForm {
   contactEmail: string
   cuisineType: string
   vanName: string
+  /** Phase 2D-1 — '' until chosen; the select shows (and submit sends) the location guess until then. */
+  country: string
 }
 
 const NEW_TRUCK_DEFAULTS: NewTruckForm = {
@@ -98,6 +108,7 @@ const NEW_TRUCK_DEFAULTS: NewTruckForm = {
   contactEmail: '',
   cuisineType: '',
   vanName: 'Van 1',
+  country: '',
 }
 
 // The endpoint's error shape. `code` distinguishes 400 validation/reserved-prefix from 409
@@ -230,6 +241,8 @@ const ADMIN_TABS = {
   events:      { icon: '📅', label: 'Events' },
   screenshots: { icon: '🖼️', label: 'Screenshots' },
   templates:   { icon: '✉️', label: 'Templates' },
+  // Prices, card fees and formats per country — public.country_settings (components/admin/CountriesTab.tsx).
+  countries:   { icon: '🌍', label: 'Countries' },
 } as const
 type AdminTab = keyof typeof ADMIN_TABS
 
@@ -239,6 +252,8 @@ export default function AdminPage() {
   const [denied, setDenied] = useState(false)
   const [operatorName, setOperatorName] = useState<string | null>(null)
   const [trucks, setTrucks] = useState<AdminTruck[]>([])
+  // Country settings keyed by code — the marketing country plus every truck's own — from /api/admin.
+  const [countrySettings, setCountrySettings] = useState<Record<string, CountrySettings>>({})
   // J3: operator_id → the code they typed at signup. Its own map rather than a field on AdminTruck,
   // because the value lives on OPERATORS: one operator may run several trucks on one deal, and every
   // truck of theirs should show the same code without it being duplicated per row.
@@ -253,6 +268,9 @@ export default function AdminPage() {
   // is mounted below when this is selected, so it fetches on first selection rather than on every /admin
   // visit. ⚠️ It is rendered OUTSIDE the max-w-6xl body wrapper — see the render site for why.
   const [adminTab, setAdminTab] = useState<AdminTab>('trucks')
+  // Has the Countries tab been opened yet? Set on selection, never cleared — see its render site.
+  const [countriesSeen, setCountriesSeen] = useState(false)
+  if (adminTab === 'countries' && !countriesSeen) setCountriesSeen(true)
 
   // ── ?tab= SEEDS THE OPENING TAB, so /admin/outreach's redirect lands on the outreach tab rather than
   // on Trucks. 🔴 READ FROM window.location IN AN EFFECT, NOT useSearchParams(): useSearchParams forces
@@ -289,6 +307,9 @@ export default function AdminPage() {
   const [newTruckLoading, setNewTruckLoading] = useState(false)
   const [newTruckError, setNewTruckError] = useState<NewTruckError | null>(null)
   const [newTruckResult, setNewTruckResult] = useState<CreateTruckResponse | null>(null)
+  // Switched-on countries only (the same list signup offers), fetched when the modal first opens.
+  const createCountries = useSignupCountries(showNewTruck)
+  const newTruckCountry = newTruck.country || createCountries.data?.guess.code || ''
   // ── PROMOTE-FROM-DISCOVERY ──────────────────────────────────────────────────────────────────────
   // The discovery row this create is promoting, or null for a blank create. Held OUTSIDE NewTruckForm
   // deliberately: it is not a form field, nothing renders it as an input, and keeping it separate is
@@ -395,6 +416,7 @@ export default function AdminPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setTrucks(data.trucks)
+      setCountrySettings(data.countrySettings ?? {})
       // J3: `operators` is absent on an older API build and [] before the migration — both fall through
       // to an empty map, so the column simply shows nothing rather than throwing.
       setPromoCodes(Object.fromEntries(
@@ -565,7 +587,7 @@ export default function AdminPage() {
 
   // A demo truck's name is generated internally (and never shown to the visitor), so it's required only
   // for an operator truck — mirroring profile.nameRequired in lib/provision-truck.ts.
-  const newTruckNameOk = newTruck.kind === 'demo' || !!newTruck.name.trim()
+  const newTruckNameOk = (newTruck.kind === 'demo' || !!newTruck.name.trim()) && !!newTruckCountry
 
   const submitNewTruck = async () => {
     if (!newTruckNameOk) return
@@ -584,6 +606,7 @@ export default function AdminPage() {
           ...(newTruck.contactEmail.trim() ? { contactEmail: newTruck.contactEmail.trim() } : {}),
           ...(newTruck.cuisineType.trim() ? { cuisineType: newTruck.cuisineType.trim() } : {}),
           visibility: newTruck.visibility,
+          country: newTruckCountry,
           // ⚠️ NO kitchen_capacity. The route now always passes an explicit null to the module, so
           // capacity is deliberately unset at creation and chosen in Manage -> Settings once the
           // operator knows their kitchen. Only the van's NAME is still ours to send.
@@ -821,6 +844,16 @@ export default function AdminPage() {
   const isTrialPreset1 = !!modalExpiryYMD && modalExpiryYMD === presetYMD(1)
   const isTrialPreset3 = !!modalExpiryYMD && modalExpiryYMD === presetYMD(3)
 
+  // ── THE PLAN MATRIX'S PRICES: the marketing country's (GB), from settings — no literal left here. ──────
+  // ⚠️ '…' until /api/admin has answered. Never a guessed figure: the matrix is the reference an admin
+  // quotes from, and a placeholder that looks like a price is worse than one that obviously is not.
+  const matrixSettings = countrySettings[MARKETING_COUNTRY] as CountrySettings | undefined
+  const matrixPrices = matrixSettings ? planPrices(matrixSettings) : null
+  const matrixFeeRows = matrixSettings ? transactionRows(matrixSettings) : []
+  const matrixNotes = matrixSettings ? footnotes(matrixSettings) : []
+  // The truck being edited is quoted in ITS OWN country's platform fee, not the matrix's.
+  const editingSettings = editingTruck?.country ? countrySettings[editingTruck.country] as CountrySettings | undefined : undefined
+
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader truckName="Admin" truckLogoUrl={null} subtitle="Platform admin">
@@ -872,6 +905,13 @@ export default function AdminPage() {
             result over the next visit. The three tabs it sits with are hidden-not-unmounted because
             they hold fetched lists worth keeping; this holds a form. */}
         {adminTab === 'screenshots' && <ScreenshotsPanel />}
+
+        {/* ── COUNTRIES ──────────────────────────────────────────────────────────────────────────
+            Mounted on the FIRST visit and then HIDDEN rather than unmounted, so an unsaved edit survives a
+            look at another tab — the opposite of the screenshot uploader above, because this holds typed
+            prices worth keeping, not a one-off form. It fetches on mount, so an admin who never opens it
+            costs nothing. */}
+        {countriesSeen && <div className={adminTab === 'countries' ? '' : 'hidden'}><CountriesTab /></div>}
 
         {/* Features tab */}
         {/* ── CUSTOM DOMAINS ────────────────────────────────────────────────────────────────────
@@ -998,7 +1038,7 @@ export default function AdminPage() {
                     <th key={p} className="px-3 py-3 text-slate-500 font-bold text-center">
                       <span className="block">{PLAN_META[p].name}</span>
                       <span className="block text-[10px] font-normal text-slate-400">
-                        {p === 'tester' ? 'Lifetime discount' : PLAN_PRICES[p]}
+                        {p === 'tester' ? 'Lifetime discount' : (matrixPrices?.[p] ?? '…')}
                       </span>
                     </th>
                   ))}
@@ -1014,19 +1054,19 @@ export default function AdminPage() {
                 {/* ── ⚠️ THE FEE ROWS COME FROM TRANSACTION_ROWS NOW. THE LAST COPY IS GONE. ─────────
                     These two rows were written out by hand: "Walk-up orders" was the literal string 0%
                     in every column, and "Online orders" was
-                        {(p === 'starter' || p === 'trial' || p === 'tester') ? 'Pay at Hatch' : '0.99% + card fee'}
+                        {(p === 'starter' || p === 'trial' || p === 'tester') ? 'Pay at Hatch' : '<the platform fee> + card fee'}
                     which disagreed with the landing page and Billing in four separate ways — see
                     docs/admin-plan-table-report.md. Chief among them: `trial` and `tester` were told
                     "Pay at Hatch" although both carry MAX's feature set including online payments, and
                     `demo` fell through to the paid branch purely because its name was absent from that
-                    list, so the one prospect-sandbox plan was the internal plan shown a 0.99% fee.
+                    list, so the one prospect-sandbox plan was the internal plan shown the platform fee.
                     ⚠️ NO MASKING, DELIBERATELY, AND UNCHANGED. This screen never imported lib/pricing and
-                    still does not: the prices in the header above are real, and so are these. TRANSACTION_ROWS
+                    still does not: the prices in the header above are real, and so are these. transactionRows()
                     holds plain strings — masking is each surface's own decision, which is why Billing wraps
                     them in px() and the landing page and this screen do not.
                     ⚠️ ADMIN'S OWN TREATMENT IS KEPT: the same <td> classes, the same footnote <sup>
                     styling the feature rows below already use. Only the structure and the values are shared. */}
-                {TRANSACTION_ROWS.map(row => (
+                {matrixFeeRows.map(row => (
                   <tr key={row.name} className="border-t border-slate-100">
                     <td className="px-4 py-2 text-slate-700">
                       {row.name}
@@ -1072,7 +1112,7 @@ export default function AdminPage() {
               </tbody>
             </table>
             <div className="px-4 py-4 border-t border-slate-100 flex flex-col gap-1.5">
-              {FOOTNOTES.map(f => (
+              {matrixNotes.map(f => (
                 <p key={f.number} className="text-xs text-slate-500">
                   <sup>{f.number}</sup> {f.text}
                 </p>
@@ -1498,7 +1538,7 @@ export default function AdminPage() {
                   />
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400">0.99% transaction fee still applies at standard rate</p>
+              <p className="text-[10px] text-slate-400">{editingSettings ? platformFeeLabel(editingSettings) : '…'} transaction fee still applies at standard rate</p>
             </div>
 
             {/* Feature overrides */}
@@ -1918,7 +1958,7 @@ export default function AdminPage() {
                   <div className="flex justify-between gap-2">
                     <span className="text-slate-500">event</span>
                     <span className="font-mono text-slate-800">
-                      {demoResult.event.event_date} {formatTimeRange(demoResult.event.start_time, demoResult.event.end_time)}
+                      {demoResult.event.event_date} {formatTimeRange(demoResult.event.start_time, demoResult.event.end_time, DISCOVERY_TIME_SETTINGS)}
                     </span>
                   </div>
                   <div className="flex justify-between gap-2">
@@ -2142,6 +2182,18 @@ export default function AdminPage() {
                     placeholder={newTruck.kind === 'demo' ? 'Auto-generated if blank' : 'Real Thai Food'}
                     className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
+                </div>
+
+                {/* Country — switched-on countries only. Sets the truck's country, currency and default
+                    time zone (provisionTruck reads them from that country's settings). */}
+                <div>
+                  <label htmlFor="new-truck-country" className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Country</label>
+                  <select id="new-truck-country" value={newTruckCountry}
+                    onChange={e => setNewTruck(p => ({ ...p, country: e.target.value }))}
+                    className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    {!createCountries.data && <option value="">{createCountries.error ?? 'Loading…'}</option>}
+                    {createCountries.data?.countries.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
+                  </select>
                 </div>
 
                 {/* Slug — operator only; a demo's slug is always random */}

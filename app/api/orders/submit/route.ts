@@ -25,11 +25,16 @@ import { validateModifierSelection, hasUnsatisfiableRequiredGroup, selectedCount
 import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
 // ⚠️ `getNowMinsInTz` LEFT WITH THE AUTO-ACCEPT TERMS — it was read only by the pre-order deadline
 // check, which now lives in lib/orders/auto-accept. The open-window gate below still needs the date one.
-import { getLocalDateInTz } from '@/lib/time-utils'
+import { getLocalDateInTz, formatSlot, formatNumericDate, type TimeSettings } from '@/lib/time-utils'
 import { isPreorderOpenYet, type PreorderConfig } from '@/lib/preorder'
 import { decideAutoAccept } from '@/lib/orders/auto-accept'
 import { canAccess, resolveBatchReservations } from '@/lib/features'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
+// 🔴 THE ORDER WAS PLACED IN THIS REQUEST, FROM THIS TRUCK: place_order_atomic's insert fires the 20261010
+// trigger that copies trucks.currency/country onto the row, so the truck's format IS the order's.
+import { moneyFormatForTruck } from '@/lib/money-server'
+import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
+import { formatMajor, type MoneyFormat } from '@/lib/money-format'
 import { isDemoIdentifier } from '@/lib/demo'
 import { enforceStockLimits } from '@/lib/stock-availability'
 import { sendOrderPendingPush } from '@/lib/apns'
@@ -119,12 +124,16 @@ function formatWhatsAppOrder(params: {
   discountAmt: number
   total: number
   notes: string | null
+  /** The ORDER's currency and locale (lib/money-server) — required, so a future caller cannot omit it. */
+  money: MoneyFormat
+  /** The truck's time settings (Phase 2B) — the collection time and date in its style. */
+  time: TimeSettings
 }): string {
   const divider = '─────────────────────────────'
   const lines: string[] = [
     `*NEW ORDER — #${params.orderId}*`,
     `${params.truckName}`,
-    params.slot ? `Collection: ${params.slot}` : `Date: ${params.eventDate}`,
+    params.slot ? `Collection: ${formatSlot(params.slot, params.time)}` : `Date: ${formatNumericDate(params.eventDate, params.time)}`,
     '',
     `*${params.customerName}*`,
     `📞 ${params.customerPhone}`,
@@ -133,8 +142,8 @@ function formatWhatsAppOrder(params: {
   ]
 
   params.items.forEach(item => {
-    const lineTotal = (item.unit_price * item.quantity).toFixed(2)
-    lines.push(`  ${item.quantity}× ${item.name.padEnd(20)} £${lineTotal}`)
+    const lineTotal = formatMajor(item.unit_price * item.quantity, params.money)
+    lines.push(`  ${item.quantity}× ${item.name.padEnd(20)} ${lineTotal}`)
   })
 
   if (params.deals.length > 0) {
@@ -150,10 +159,10 @@ function formatWhatsAppOrder(params: {
   lines.push(divider)
 
   if (params.discountCode && params.discountAmt > 0) {
-    lines.push(`  Code ${params.discountCode}`.padEnd(28) + `-£${params.discountAmt.toFixed(2)}`)
+    lines.push(`  Code ${params.discountCode}`.padEnd(28) + `-${formatMajor(params.discountAmt, params.money)}`)
   }
 
-  lines.push(`  *TOTAL${' '.repeat(22)}£${params.total.toFixed(2)}*`)
+  lines.push(`  *TOTAL${' '.repeat(22)}${formatMajor(params.total, params.money)}*`)
 
   if (params.notes) {
     lines.push('')
@@ -283,6 +292,9 @@ export async function POST(req: NextRequest) {
 
     // Demo trucks are exempt from the hidden-truck gate below and never send email — see both comments.
     const isDemoTruck = isDemoIdentifier(truck.id)
+    // 🔴 THE TRUCK'S CLOCK (Phase 2B): trucks.timezone, else its country's default. Every "today" and
+    // "now" below is this truck's — the UTC date (Vercel's) was yesterday from 00:00 to 01:00 BST.
+    const truckTz = await truckTimeZone(truck)
 
     // HIDDEN-TRUCK GATE. Discovery gating (show_on_vf/show_on_hg/excluded) only governs the MAP — the
     // customer menu and events APIs resolve any truck by slug/id with no visibility filter, and this route
@@ -324,7 +336,7 @@ export async function POST(req: NextRequest) {
         .maybeSingle()
       pauseEvent = data
     } else {
-      const pauseCheckDate = eventDate ?? new Date().toISOString().split('T')[0]
+      const pauseCheckDate = eventDate ?? getLocalDateInTz(truckTz)
       const { data } = await supabase
         .from('truck_events')
         .select('van_id, status, paused_until, online_paused_until')
@@ -506,7 +518,7 @@ export async function POST(req: NextRequest) {
     // ⚠️ WHERE NO CANDIDATE CHANGES A PRICE THE ORDER PROCEEDS AT MENU PRICES, which is every truck
     // today and is why this guard costs them nothing. In the last 90 days no order had a null
     // event_id at all.
-    const pricingEventDate = eventDate ?? new Date().toISOString().split('T')[0]
+    const pricingEventDate = eventDate ?? getLocalDateInTz(truckTz)
     let pricingEventId: string | null = null
     let pricingCandidates: string[] = []
     if (eventId) {
@@ -677,7 +689,7 @@ export async function POST(req: NextRequest) {
     // to (truck_id, event_date) when no id was sent — and then take the earliest by
     // start_time via limit(1) so 2+ same-date events no longer collapse to null
     // (Section 5). van_id is selected so the order can be associated with the van.
-    const orderEventDate = eventDate ?? new Date().toISOString().split('T')[0]
+    const orderEventDate = eventDate ?? getLocalDateInTz(truckTz)
 
     // PRE-ORDER OPEN-WINDOW HARD GATE (V8.3): reject BEFORE booking if any line's pre-order-tagged item
     // hasn't OPENED yet (now < open). Server-enforced (not just menu-hidden) — the SAME isPreorderOpenYet
@@ -687,7 +699,7 @@ export async function POST(req: NextRequest) {
       const poFeatureOn = canAccess(truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
       const poActive = poFeatureOn && (truck as any).preorders_enabled !== false
       if (poActive) {
-        const poNowDate = getLocalDateInTz((truck as any).timezone || 'Europe/London')
+        const poNowDate = getLocalDateInTz(truckTz)
         const openYet = isPreorderOpenYet((truck as any).preorder_open_rule, orderEventDate, poNowDate)
         if (!openYet && orderLines.some(l => (menuItems || []).find((m: any) => m.name === l.name)?.preorder_enabled === true)) {
           return NextResponse.json({ error: 'Pre-orders for this event aren’t open yet — please check back when they open.', preorder_not_open: true }, { status: 403 })
@@ -958,6 +970,9 @@ export async function POST(req: NextRequest) {
         discountAmt:   serverDiscountAmt,
         total:         serverTotal,
         totalMinor:    serverTotalMinor,
+        // 🔴 THE TRUCK'S CURRENCY (trucks.currency — `select('*')` above), the one the hold is authorised
+        // in. Was omitted, so every draft took the writer's 'GBP' default.
+        currency:      truck.currency,
       })
 
       // ── 🔴 THERE IS NO FALL-THROUGH. A CARD ORDER THAT CANNOT BE AUTHORISED FAILS. ──────────────
@@ -981,6 +996,8 @@ export async function POST(req: NextRequest) {
         orderKey:    draftKey,
         truckId:     resolvedTruckId,
         amountMinor: serverTotalMinor,
+        // The DRAFT's currency — what was just written, not re-read from the truck.
+        currency:    created.row.currency,
       })
 
       if (!auth.ok) {
@@ -1111,6 +1128,7 @@ export async function POST(req: NextRequest) {
           // NO excludeOrderKey: no order exists pre-resolve now (insert + book are atomic in the RPC).
           undefined,
           batchReservationsOn,
+          truckTz,
         )
         claimReservation = claim.reservation ?? null
         if (claim.booked && claim.finalSlot) {
@@ -1153,6 +1171,7 @@ export async function POST(req: NextRequest) {
             notes,
             items,
             deals,
+            timeZone: truckTz,
           })
         }
         // !claim.booked -> event full / lock contended -> finalSlot stays requestedSlot (or ASAP/null),
@@ -1349,6 +1368,8 @@ export async function POST(req: NextRequest) {
       // DEMO: never send. See the customer-email guard below for the full reasoning.
       if (truckEmail && !isDemoTruck && (truck as any).truck_order_email_enabled !== false) {
         const { subject, html, text } = formatNewOrderEmail({
+          money: await moneyFormatForTruck(truck),
+          time: await truckTimeSettings(truck),
           orderId,
           customerName,
           customerPhone,
@@ -1390,6 +1411,9 @@ export async function POST(req: NextRequest) {
       // while the stored row kept the client's. That split is gone: the row and the email now read the
       // same repriced array, so they cannot disagree.)
       const { subject, html, text } = formatConfirmationEmail({
+        money:        await moneyFormatForTruck(truck),
+        time: await truckTimeSettings(truck),
+        phoneCountry: truck.country,
         orderId,
         orderKey:     order.order_key,
         truckName:    truck.name,

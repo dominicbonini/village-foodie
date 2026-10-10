@@ -364,6 +364,8 @@ export function eventCaptionValues(input: {
    * same discipline `caption.ts` keeps, and for the same reason: an operator opens the screen on
    * Sunday to plan the week and comes back on Wednesday to post Wednesday's. */
   now: Date | string
+  /** The truck's zone — what "tonight" / "tomorrow" mean (Phase 2B). */
+  timeZone: string
 }): CaptionValues {
   const country = input.country ?? DEFAULT_COUNTRY
   const where = input.town && !input.placeName.includes(input.town)
@@ -385,7 +387,7 @@ export function eventCaptionValues(input: {
      * edits it" forbids. ⚠️ AND IT INCLUDES THE WORD "on" when the phrase is a date, because that is
      * part of the phrase: a template reading "at {place} {day-date}" must not need the truck to type
      * "on" and then lose it the week the event is tonight. */
-    'day-date': whenPhrase(input.date, input.startTime, input.now, country),
+    'day-date': whenPhrase(input.date, input.startTime, input.now, country, input.timeZone),
     times: from && to ? `${from} – ${to}` : from || to,
     'order-link': input.orderUrl ?? '',
     'location-tag': String(input.socialTag ?? '').trim() || '',

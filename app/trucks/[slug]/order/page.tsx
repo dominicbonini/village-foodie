@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, use } from 'react';
 import { soldOutRefusalMessage } from '@/lib/payments/sold-out-copy';
-import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
+import { isValidEmail } from '@/lib/contact-validation'
+import { isPlausiblePhone, phoneErrorMessage, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
 import { isDemoIdentifier, displayTruckName } from '@/lib/demo'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
@@ -24,11 +25,13 @@ import { getAsapSlot, isSlotPast } from '@/lib/slot-utils';
 import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot, type EngineReservation } from '@/lib/slot-availability';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
-import { formatTime, localTodayIso, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils';
+import { formatTime, formatSlot, getNowMinsInTz, getLocalDateInTz, instantOfLocal, addDaysYmd, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils';
 import { preorderOpenDate, formatPreorderOpenLabel } from '@/lib/preorder';
 import { isModifierAvailable } from '@/lib/modifier-utils';
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules';
 import { clockGridMinutes } from '@/lib/slot-generation'
+import { formatMajorOrBare, formatMinorOrBare, type MoneyFormat } from '@/lib/money-format'
+import { MoneyProvider } from '@/components/MoneyContext'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -51,8 +54,14 @@ interface Bundle {
 interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; active: boolean }
 interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean; allergens?: string[]; dietary?: string[]; stock_count?: number | null }
 interface ModifierGroup { id: string; name: string; hide_name?: boolean; options: ModifierOption[]; is_required?: boolean; min_choices?: number; max_choices?: number }
-interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[]; subcategories?: Array<{ id: string; name: string; sort_order?: number }> }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
+interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[]; subcategories?: Array<{ id: string; name: string; sort_order?: number }> }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[] }
 interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | 'account_closing' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; ordering_available?: boolean; allergensVerified?: boolean; preorder_open_rule?: string | null;
+  /** 🔴 The truck's zone and how its times and dates look (Phase 2B) — from /api/menu. */
+  time?: TimeSettings | null;
+  /** 🔴 The phone box's country, name and example (Phase 2C) — from /api/menu, never the settings row. */
+  phone?: PhoneCopy | null;
+  /** 🔴 THE TRUCK'S MONEY FORMAT, from /api/menu — every price on this page. Missing ⇒ no symbol. */
+  money?: MoneyFormat | null
   /** 🔴 Whether to OFFER a card option, from /api/menu. Absent/false ⇒ Pay-at-Hatch, silently, exactly
    *  as before. A RENDERING HINT ONLY — lib/payments/authorize re-reads readiness server-side. */
   card_payments_ready?: boolean }
@@ -91,17 +100,17 @@ interface AppliedDeal { bundle: Bundle; slots: Record<string, string>; itemsTake
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function getBundleAvailabilityMessage(b: Bundle): string | null {
+function getBundleAvailabilityMessage(b: Bundle, ts: TimeSettings): string | null {
   if (!b.start_time && !b.end_time) return null
-  const now = new Date()
-  const cur = now.getHours() * 60 + now.getMinutes()
+  // 🔴 THE TRUCK'S CLOCK (Phase 2B) — a deal's hours are the truck's, not the customer's device's.
+  const cur = getNowMinsInTz(ts.timeZone)
   if (b.start_time) {
     const [h, m] = b.start_time.split(':').map(Number)
-    if (cur < h * 60 + m) return `Available from ${formatTime(b.start_time)}`
+    if (cur < h * 60 + m) return `Available from ${formatTime(b.start_time, ts)}`
   }
   if (b.end_time) {
     const [h, m] = b.end_time.split(':').map(Number)
-    if (cur > h * 60 + m) return `Available until ${formatTime(b.end_time)} — no longer available`
+    if (cur > h * 60 + m) return `Available until ${formatTime(b.end_time, ts)} — no longer available`
   }
   return null
 }
@@ -348,6 +357,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const chipBarTop = stickyTop + statusBannerH
 
   const [truck, setTruck] = useState<TruckData | null>(null)
+  // Every price on this page is the TRUCK's (nothing here is an order yet) — /api/menu's truck.money.
+  const amount = (major: number) => formatMajorOrBare(major, truck?.money, 'order page')
+  const amountMinor = (minor: number) => formatMinorOrBare(minor, truck?.money, 'order page')
   // CUSTOMER-FACING name — the stored name minus any trailing "(code)". A demo truck is stored as
   // "Demo Kitchen (ce1kh2)" so concurrent demos stay tellable apart in admin and in the DB; the code is
   // meaningless to a customer and reads as a serial number on a business. Display only — nothing here
@@ -680,9 +692,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [modalNotes, setModalNotes] = useState('')
   // Upsells STAGED in the modal (like modalMods) — selected names, committed on "Add to basket".
   const [modalUpsells, setModalUpsells] = useState<string[]>([])
-  const [discountInput, setDiscountInput] = useState('')
+  // 🔴 NO DISCOUNT CODES REACH THIS PAGE (audit D31): /api/menu no longer sends them, and there is no code
+  // box. A code would be typed and sent as text only; the server looks it up and prices it on submit.
+  // `appliedCode` stays (always null today) so the basket's "Code:" line and the submit field keep their shape.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- nothing sets it until a code box exists
   const [appliedCode, setAppliedCode] = useState<DiscountCode | null>(null)
-  const [discountError, setDiscountError] = useState('')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -690,8 +704,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [slotMinute, setSlotMinute] = useState('')
   const [availableSlots, setAvailableSlots] = useState<{collection_time:string;available:boolean;remaining:number;is_past:boolean;too_soon:boolean;is_grace:boolean}[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
-  // Event timezone from /api/slots (default 'Europe/London'); now/ASAP/past all derive in this tz.
-  const [eventTz, setEventTz] = useState('Europe/London')
+  // ── 🔴 THE TRUCK'S CLOCK (Phase 2B) ──────────────────────────────────────────────────────────────
+  // Its zone and display settings arrive with /api/menu (`truck.time`) and /api/events (`time`); /api/slots
+  // sends the zone too. now / today / ASAP / past all derive in it, never the customer's device clock.
+  // ⚠️ Until the first of those responses lands nothing time-dependent is on screen (the page is loading),
+  // so the UK's settings stand in for that moment only, silently. A loaded truck with no settings can only
+  // be a response from before this build, and `timeSettingsOr` says so in the console.
+  const [eventsTime, setEventsTime] = useState<TimeSettings | null>(null)
+  const [slotsTz, setSlotsTz] = useState<string | null>(null)
+  const pageTs: TimeSettings = truck
+    ? timeSettingsOr(truck.time ?? eventsTime, 'order page')
+    : (eventsTime ?? LEGACY_UK_TIME_SETTINGS)
+  const eventTz = slotsTz ?? pageTs.timeZone
   // Live clock tick (every 30s) so ASAP + the selectable list RE-DERIVE as time passes — never
   // cached at fetch. `asapSlot` is now a useMemo (below), NOT useState (the staleness bug).
   const [nowTick, setNowTick] = useState(0)
@@ -792,13 +816,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       setQueueByCat(data.queueByCat || {})
       setServerCatConfigs(data.catConfigs || {})
       setCapacityInputs(data.capacityInputs ?? null)
-      if (data.tz) setEventTz(data.tz) // event timezone for live ASAP/isSlotPast (default London)
+      if (data.tz) setSlotsTz(data.tz) // the truck's zone for live ASAP/isSlotPast
       // asapSlot is no longer cached here — it's derived live from availableSlots + the tick (below).
     } catch { setAvailableSlots([]) }
     finally { setLoadingSlots(false) }
   }
 
-  const eventDateIso = event?.date_iso ?? new Date().toISOString().split('T')[0]
+  const eventDateIso = event?.date_iso ?? getLocalDateInTz(eventTz) // the truck's today, not UTC's (Phase 2B)
 
   // Live clock tick — re-derive ASAP + the selectable list every 30s WITHOUT refetching, so a page
   // left open never shows a stale/past ASAP. (The fix for: ASAP cached at load = 10:00 at 10:04.)
@@ -970,15 +994,19 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           if (!res.ok) throw new Error(`HTTP ${res.status}`)
           const data = await res.json()
           if (cancelled) return
+          if (data.time) setEventsTime(data.time)
           if (data.events && data.events.length > 0) {
-            const now = new Date()
-            const cutoff = new Date()
-            cutoff.setDate(cutoff.getDate() + 14)
+            // 🔴 ON THE TRUCK'S CLOCK (Phase 2B): an event has ended when its end has passed in the
+            // truck's zone, and the 14-day window counts the truck's days — not the device's.
+            const listTz = (data.time as TimeSettings | undefined)?.timeZone ?? timeSettingsOr(null, 'order page events').timeZone
+            const nowMs = Date.now()
+            const lastDay = addDaysYmd(getLocalDateInTz(listTz), 14)
             const upcoming = data.events.filter((e: EventData) => {
-              // Exclude events whose end time has passed — local time parse per engineering manual
-              if (e.date_iso && e.end_time && now >= new Date(`${e.date_iso}T${e.end_time}`)) return false
+              // Exclude events whose end time has passed
+              if (e.date_iso && e.end_time && nowMs >= instantOfLocal(e.date_iso, e.end_time, listTz)) return false
               const [d, m, y] = e.date.split('/').map(Number)
-              return new Date(y, m-1, d) <= cutoff
+              const ymd = e.date_iso ?? `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+              return ymd <= lastDay
             })
             if (upcoming.length > 0) {
               setEvents(upcoming)
@@ -1513,7 +1541,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         <div key={i}>
           <div className="flex justify-between text-xs">
             <span className="font-semibold uppercase tracking-wide text-slate-500">🎁 {deal.bundle.name}</span>
-            <span className="text-slate-700 font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
+            <span className="text-slate-700 font-medium">{amount(deal.bundle.bundle_price)}</span>
           </div>
           {Object.keys(deal.slots).sort().map(slotKey => {
             const itemName = deal.slots[slotKey]
@@ -1526,7 +1554,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 {mods.map(m => (
                   <div key={m.name} className="flex justify-between pl-6 text-[10px] text-slate-400">
                     <span>{m.name}</span>
-                    {m.price > 0 && <span>+£{m.price.toFixed(2)}</span>}
+                    {m.price > 0 && <span>+{amount(m.price)}</span>}
                   </div>
                 ))}
                 {note && <div className="pl-6 text-[10px] text-slate-400 italic">📝 {note}</div>}
@@ -1573,11 +1601,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       {discountAmt > 0 && (
         <div className="flex justify-between text-xs">
           <span className="text-green-600">Code: {appliedCode?.code}</span>
-          <span className="text-green-600 font-medium">-£{discountAmt.toFixed(2)}</span>
+          <span className="text-green-600 font-medium">-{amount(discountAmt)}</span>
         </div>
       )}
       <div className="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
-        <span>Total</span><span>£{total.toFixed(2)}</span>
+        <span>Total</span><span>{amount(total)}</span>
       </div>
     </div>
   )
@@ -1774,22 +1802,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     }
   }, [customerAsapTime]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const applyCode = () => {
-    if (!menu) return
-    const found = menu.codes.find(c => c.code === discountInput.trim().toUpperCase())
-    if (found) { setAppliedCode(found); setDiscountError('') }
-    else { setAppliedCode(null); setDiscountError('Code not recognised') }
-  }
-
   // ── Submit ──────────────────────────────────────────────────────────────────
   // Light, permissive contact-format validation (Part B). Email stays REQUIRED; phone stays
   // OPTIONAL (we don't send SMS, so requiring it is friction for data we can't act on). We only
   // block on a CLEARLY-invalid format — err toward accepting edge cases, no double-entry.
   //  - email: plausible x@y.z (one @, a dot in the domain). Empty ⇒ invalid (it's required).
-  //  - phone: empty is fine; if given, strip spaces/dashes/brackets then accept a UK-ish number
-  //    (0… or +44/44… followed by 9–11 digits). Permissive on purpose.
+  //  - phone: empty is fine; if given, it must be a plausible length for the TRUCK's country, or for its
+  //    own country when it starts with + (a visiting customer) — lib/phone.ts, Phase 2C. Permissive on
+  //    purpose. With no phone copy (a pre-2C response) the box is not policed, as it is optional.
+  const pagePhone = truck?.phone ?? null
   const emailValid = isValidEmail(email)
-  const phoneValid = phone.trim() === '' || isValidUKPhone(phone)
+  const phoneValid = phone.trim() === '' || !pagePhone || isPlausiblePhone(phone, pagePhone.phoneCountry, pagePhone.phoneCheck)
   // Inline-error visibility: only nag once the field has invalid CONTENT (never on empty).
   const emailError = email.trim() !== '' && !emailValid
   const phoneError = phone.trim() !== '' && !phoneValid
@@ -2305,6 +2328,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         // False by construction: a customer who arrived here from Stripe did start a card payment, so
         // the "we couldn't start the card payment" notice cannot be true for them.
         cardFallbackNotice={false}
+        money={confirmOrder.money ?? null}
+        time={confirmOrder.time ?? null}
       />
     )
   }
@@ -2384,6 +2409,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       paymentStatus="unpaid"
       email={email}
       cardFallbackNotice={cardFallbackNotice}
+      money={truck?.money ?? null}
+      time={pageTs}
     />
   )
 
@@ -2393,10 +2420,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // Block ordering after event end time (only applies to today's event)
   const isEventClosed = (() => {
     if (!event?.end_time || !event?.date_iso) return false
-    const todayIso = localTodayIso() // local date (s.7) — don't mark a future event "closed"
+    // 🔴 THE TRUCK'S today and now (Phase 2B), not the device's — don't mark a future event "closed"
+    const todayIso = getLocalDateInTz(eventTz)
     if (event.date_iso !== todayIso) return false
     const [endH, endM] = event.end_time.split(':').map(Number)
-    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
+    const nowMins = getNowMinsInTz(eventTz)
     return nowMins > endH * 60 + endM
   })()
 
@@ -2438,7 +2466,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   )
 
   return (
-    <Shell>
+    // 🔴 THE TRUCK'S CURRENCY — nothing here is an order yet (/api/menu's truck.money). The basket's
+    // leaves (OrderLineItem, DealsModal) read it from this provider.
+    <MoneyProvider fmt={truck?.money}><Shell>
       <Hdr slug={slug} truck={truck} scrolled={isScrolled} bannerRef={demoBannerRef} />
 
       {/* Time-not-set banner — a null-time event can't be ordered against (engine needs the times). Shown
@@ -2480,7 +2510,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 ? 'This demo service has ended — that’s the event window running out, exactly as a real one would. Open your demo dashboard again and choose "Start a new service" to set up a fresh one. Your menu stays as it is.'
                 : eventEnded && !isEventClosed
                 ? 'This event has ended — no more orders are being taken.'
-                : `Online ordering for this event ended at ${formatTime(event?.end_time || '')}. We hope to see you next time!`}
+                : `Online ordering for this event ended at ${formatTime(event?.end_time || '', pageTs)}. We hope to see you next time!`}
             </p>
           </div>
         </div>
@@ -2608,6 +2638,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 <TruckListCard
                   event={eventToVillage(event, truckName)}
                   slug={slug}
+                  time={pageTs}
                   hideOrderButton
                   compact
                   cornerAction={events.length > 1 && (
@@ -2626,11 +2657,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     // V8.3 calendar: "Pre-orders open [date]" under the card when this event's open is still
                     // in the FUTURE (rule + event date, derived — no new data). Don't fork TruckListCard.
                     const poOpenDate = preorderOpenDate(truck?.preorder_open_rule, e.date_iso)
-                    const poNotOpenYet = poOpenDate != null && localTodayIso() < poOpenDate
+                    const poNotOpenYet = poOpenDate != null && getLocalDateInTz(pageTs.timeZone) < poOpenDate
                     const poLabel = poNotOpenYet ? formatPreorderOpenLabel(truck?.preorder_open_rule, e.date_iso) : null
                     return (
                       <div key={e.id}>
-                        <TruckListCard event={eventToVillage(e, truckName)} slug={slug} forceOrderButton />
+                        <TruckListCard event={eventToVillage(e, truckName)} slug={slug} time={pageTs} forceOrderButton />
                         {poLabel && <p className="text-[11px] text-amber-700 font-semibold text-center mt-1 mb-2">⏳ {poLabel}</p>}
                       </div>
                     )
@@ -2668,7 +2699,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           <div className="flex items-center gap-2 flex-wrap">
                             <p className="font-black text-slate-900 text-sm">{bundle.name}</p>
                             {saving !== null && saving > 0 && (
-                              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{saving.toFixed(2)}</span>
+                              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save {amount(saving)}</span>
                             )}
                             {applied > 0 && (
                               <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">✓ {applied} applied</span>
@@ -2676,7 +2707,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           </div>
                           <p className="text-slate-500 text-xs mt-0.5">{bundle.description}</p>
                         </div>
-                        <p className="font-black text-orange-600 text-lg shrink-0">£{bundle.bundle_price.toFixed(2)}</p>
+                        <p className="font-black text-orange-600 text-lg shrink-0">{amount(bundle.bundle_price)}</p>
                       </div>
                       <button onClick={() => !isOrderingBlocked && addDeal(bundle)} disabled={isOrderingBlocked}
                         className={`w-full font-bold text-sm py-2 rounded-xl transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
@@ -2709,7 +2740,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                       : 'Your deal'}
                                   </p>
                                   {dynSaving !== null && dynSaving > 0 && (
-                                    <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{dynSaving.toFixed(2)}</span>
+                                    <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save {amount(dynSaving)}</span>
                                   )}
                                 </div>
                                 <p className="text-xs text-slate-600 mt-0.5 truncate">{itemsSummary}</p>
@@ -3087,7 +3118,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                       "or": between two emphasised alternatives it reads as a divider, not
                                       as the comma of a list of ingredients. */}
                                   {i > 0 && <span className="text-slate-400 font-normal">·</span>}
-                                  <span>{opt.name}{opt.price_adjustment > 0 ? ` +£${opt.price_adjustment.toFixed(2)}` : ''}</span>
+                                  <span>{opt.name}{opt.price_adjustment > 0 ? ` +${amount(opt.price_adjustment)}` : ''}</span>
                                   <OptionStockBadge remaining={opt.stock_count ?? null} />
                                 </span>
                               ))}
@@ -3150,7 +3181,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         ⚠️ A left-aligned price gives a clean edge down the list (vs a ragged
                         right-aligned price beside variable-length names). */}
                     <div className="flex items-center justify-between gap-2 mt-2 min-w-0">
-                      <span className={`font-bold text-sm ${isSoldOut ? 'text-slate-400' : 'text-slate-700'}`}>£{item.price.toFixed(2)}</span>
+                      <span className={`font-bold text-sm ${isSoldOut ? 'text-slate-400' : 'text-slate-700'}`}>{amount(item.price)}</span>
                       <div className="flex items-center gap-2 shrink-0">
                         {isSoldOut ? (
                           <span className="text-xs text-slate-400 font-medium px-3 py-1.5">Sold out</span>
@@ -3221,7 +3252,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <div className="pl-2 pb-2 space-y-1 -mt-2">
                         {itemVariants.map(v => {
                           const modSum = v.modifiers.reduce((s, m) => s + m.price, 0)
-                          const modLabel = formatModifiers(v.modifiers)
+                          const modLabel = formatModifiers(v.modifiers, truck?.money)
                           const subLabel = [modLabel, v.specialInstructions].filter(Boolean).join(' · ')
                           // Option shared-pool gate (D2): disable "+" if one more of this variant's
                           // options would exceed the basket-wide pool (in addition to the item gate).
@@ -3255,7 +3286,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                   THIS line so extras AND note are editable. Pencil on every variant row. */}
                               <div className="flex-1 min-w-0">
                                 {v.modifiers.map(m => (
-                                  <p key={m.name} className="text-sm text-slate-700 break-words">{m.name}{m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</p>
+                                  <p key={m.name} className="text-sm text-slate-700 break-words">{m.name}{m.price > 0 ? ` +${amount(m.price)}` : ''}</p>
                                 ))}
                                 {v.specialInstructions && <p className="text-sm italic text-slate-400 break-words">📝 {v.specialInstructions}</p>}
                                 {/* (Removed) the 'Add note' / 'Customise' placeholder that used to fill this
@@ -3268,7 +3299,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                 disabled={isOrderingBlocked} aria-label="Edit"
                                 className="shrink-0 min-w-[2.75rem] min-h-[2.75rem] flex items-center justify-center text-slate-400 active:scale-95 disabled:opacity-40">✏️</button>
                               {optBlockedName && <span className="text-[10px] font-bold text-orange-600 shrink-0">{buildOptionStockByName((menu?.items as any[]) || [])[optBlockedName]} {optBlockedName} left</span>}
-                              <span className="text-xs font-bold text-slate-700 shrink-0">£{((item.price + modSum) * v.quantity).toFixed(2)}</span>
+                              <span className="text-xs font-bold text-slate-700 shrink-0">{amount((item.price + modSum) * v.quantity)}</span>
                             </div>
                           )
                         })}
@@ -3410,7 +3441,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         ← Back to my order
                       </button>
                     ) : <span className="text-sm font-bold text-slate-400">Authorising…</span>}
-                    <span className="text-lg font-black text-slate-900 tabular-nums">£{(payment.totalPence / 100).toFixed(2)}</span>
+                    <span className="text-lg font-black text-slate-900 tabular-nums">{amountMinor(payment.totalPence)}</span>
                   </div>
 
                   {/* Skeleton while Stripe.js loads and the Element builds. Driven by `elementReady` —
@@ -3445,8 +3476,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     className="w-full bg-orange-600 text-white font-black py-4 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-4">
                     {payStage === 'authorising' ? 'Authorising…'
                       : !elementReady ? 'Preparing…'
-                      : payStage === 'failed' ? `Try again · £${(payment.totalPence / 100).toFixed(2)}`
-                      : `Pay £${(payment.totalPence / 100).toFixed(2)}`}
+                      : payStage === 'failed' ? `Try again · ${amountMinor(payment.totalPence)}`
+                      : `Pay ${amountMinor(payment.totalPence)}`}
                   </button>
                   <p className="text-[11px] text-slate-400 text-center mt-3 leading-relaxed">
                     Your card is held, not charged, until {truck?.name ?? 'the truck'} confirms your order.
@@ -3475,7 +3506,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       {(() => { const n = totalItems + appliedDeals.length; return `${n} item${n !== 1 ? 's' : ''}` })()}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <span className="font-black text-slate-900 text-sm">£{total.toFixed(2)}</span>
+                      <span className="font-black text-slate-900 text-sm">{amount(total)}</span>
                       <svg className={`w-4 h-4 text-slate-400 transition-transform ${sheetSummaryExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                       </svg>
@@ -3531,7 +3562,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             an item is added. Display-only; the ASAP value/computation is unchanged. */}
                         {(hasItems || !asapTime) && (
                           <span className={`text-xs mt-0.5 ${isSelected ? 'text-orange-100' : 'text-orange-400'}`}>
-                            {asapTime ? `Around ${formatTime(asapTime)}` : 'Unavailable'}
+                            {asapTime ? `Around ${formatTime(asapTime, pageTs)}` : 'Unavailable'}
                           </span>
                         )}
                       </button>
@@ -3599,7 +3630,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                   })
                                   .map(slot => (
                                     <option key={slot.collection_time} value={slot.collection_time}>
-                                      {slot.collection_time}
+                                      {formatSlot(slot.collection_time, pageTs)}
                                     </option>
                                   ))
                               : availableHours.flatMap(h =>
@@ -3611,7 +3642,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                     })
                                     .map(m => {
                                       const time = `${h}:${m}`
-                                      return <option key={time} value={time}>{time}</option>
+                                      return <option key={time} value={time}>{formatSlot(time, pageTs)}</option>
                                     })
                                 )
                             }
@@ -3632,7 +3663,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
                 {/* Confirmation */}
                 {selectedSlot
-                  ? <p className="text-green-600 text-xs font-bold mt-2">✓ Collection time: {selectedSlot}</p>
+                  ? <p className="text-green-600 text-xs font-bold mt-2">✓ Collection time: {formatSlot(selectedSlot, pageTs)}</p>
                   : <p className="text-slate-400 text-xs mt-2">Select ASAP or choose a specific time</p>
                 }
               </>
@@ -3655,7 +3686,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             )}
             <Fld label="Name" required><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Sarah" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
             <Fld label="Email" required note={isDemo ? 'not used in the demo' : 'confirmation sent here'}><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="e.g. sarah@email.com" className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${emailError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{emailError && <p className="text-red-500 text-xs mt-1">Please enter a valid email (e.g. sarah@email.com)</p>}</Fld>
-            <Fld label="Phone number" note="optional"><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="e.g. 07700 900123" className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${phoneError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{phoneError && <p className="text-red-500 text-xs mt-1">Please enter a valid UK mobile (e.g. 07700 900123)</p>}</Fld>
+            <Fld label="Phone number" note="optional"><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder={phonePlaceholder(pagePhone, 'e.g. ')} className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${phoneError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{phoneError && <p className="text-red-500 text-xs mt-1">{phoneErrorMessage('mobile', pagePhone)}</p>}</Fld>
             <Fld label="Special instructions" note="optional"><textarea
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
@@ -3777,7 +3808,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   {(() => { const n = totalItems + appliedDeals.length; return `${n} item${n !== 1 ? 's' : ''}` })()}
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-slate-900 text-sm">£{total.toFixed(2)}</span>
+                  <span className="font-black text-slate-900 text-sm">{amount(total)}</span>
                   <svg className={`w-4 h-4 text-slate-400 transition-transform ${summaryExpanded ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
@@ -3867,7 +3898,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                 selected ? 'bg-orange-600 border-orange-600 text-white' : lock ? 'bg-slate-50 border-slate-200 text-slate-400 line-through cursor-not-allowed opacity-60' : `bg-white text-slate-700 hover:border-orange-300 ${isUnmet ? 'border-amber-300' : 'border-slate-200'}`
                               }`}>
                               <span>{opt.name}</span>
-                              {opt.price_adjustment > 0 && <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
+                              {opt.price_adjustment > 0 && <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+{amount(opt.price_adjustment)}</span>}
                               {/* "N left" / sold-out (basket-aware) — shared badge, same thresholds as item stock. */}
                               <OptionStockBadge remaining={rem} />
                               {/* Allergen chip removed from selection (V7.8 §31) — a single named ingredient is
@@ -3897,7 +3928,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                               selected ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
                             }`}>
                             <span>{selected ? '✓ ' : ''}{u.name}</span>
-                            <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+£{u.price.toFixed(2)}</span>
+                            <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+{amount(u.price)}</span>
                           </button>
                         )
                       })}
@@ -3917,11 +3948,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
                 {modalUnmetGroupIds.length > 0
                   ? 'Choose required options'
-                  : `${itemModal.editCartKey ? 'Save' : 'Add to basket'} · £${(
+                  : `${itemModal.editCartKey ? 'Save' : 'Add to basket'} · ${amount(
                       itemModal.item.price
                       + modalMods.reduce((s, m) => s + m.price, 0)
                       + (itemModal.editCartKey ? 0 : itemModal.upsells.filter(u => modalUpsells.includes(u.name)).reduce((s, u) => s + u.price, 0))
-                    ).toFixed(2)}`}
+                    )}`}
               </button>
             </div>
           </div>
@@ -4007,7 +4038,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         </div>
       )}
 
-    </Shell>
+    </Shell></MoneyProvider>
   )
 }
 
@@ -4061,7 +4092,7 @@ export interface ConfirmationDeal {
 function OrderConfirmation({
   slug, truck, truckName, orderId, autoAccepted,
   confirmedSlot, requestedSlot, slotChanged, asapEstimate, preferredSlot,
-  lines, deals, total, paymentStatus, email, cardFallbackNotice,
+  lines, deals, total, paymentStatus, email, cardFallbackNotice, money, time,
 }: {
   slug: string
   truck: TruckData | null
@@ -4081,17 +4112,25 @@ function OrderConfirmation({
   paymentStatus: string | null
   email: string | null
   cardFallbackNotice: boolean
+  /** 🔴 THE ORDER'S currency and locale — from /api/orders/[id] for a receipt, the truck's for an order
+   *  placed a moment ago (the 20261010 trigger copied it onto the row). Null ⇒ figures with no symbol. */
+  money: MoneyFormat | null | undefined
+  /** 🔴 The truck's time settings (Phase 2B) — how the collection time reads (GB "18:30", US "6:30pm"). */
+  time: TimeSettings | null | undefined
 }) {
+  const amount = (major: number) => formatMajorOrBare(major, money, 'order confirmation')
+  const ts = timeSettingsOr(time, 'order confirmation')
+  const at = (slot: string | null) => formatSlot(slot, ts)
   // ASAP silently bumped: the customer chose ASAP (no chosen slot, so server slotChanged=false), but the
   // booked slot differs from the "Around HH:MM" estimate they saw. Compare via formatTime so a
   // seconds/format mismatch doesn't false-trigger. MOVED HERE WITH THE MARKUP IT DRIVES — it was computed
   // in the page body and read only here, so it belongs to this component, not to the page.
   const asapMoved =
     !!asapEstimate && !!confirmedSlot &&
-    formatTime(asapEstimate) !== formatTime(confirmedSlot)
+    formatTime(asapEstimate, ts) !== formatTime(confirmedSlot, ts)
 
   return (
-    <Shell><Hdr slug={slug} truck={truck} scrolled={false} showBack={false} />
+    <MoneyProvider fmt={money}><Shell><Hdr slug={slug} truck={truck} scrolled={false} showBack={false} />
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-sm w-full text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
@@ -4113,17 +4152,17 @@ function OrderConfirmation({
                   // Time-moved: collection time is the prominent headline; the reason is small supporting
                   // text. Subtle amber (not error) — it's a confirmed order at a slightly different time.
                   <>
-                    <p className="font-black text-amber-900 text-base">Ready at {confirmedSlot}</p>
-                    <p className="text-amber-700 text-xs mt-0.5">Your {requestedSlot} slot was just taken — this is the next available time.</p>
+                    <p className="font-black text-amber-900 text-base">Ready at {at(confirmedSlot)}</p>
+                    <p className="text-amber-700 text-xs mt-0.5">Your {at(requestedSlot)} slot was just taken — this is the next available time.</p>
                   </>
                 ) : asapMoved ? (
                   <>
-                    <p className="font-black text-amber-900 text-base">Ready at {confirmedSlot}</p>
-                    <p className="text-amber-700 text-xs mt-0.5">Slightly later than the {formatTime(asapEstimate!)} we estimated.</p>
+                    <p className="font-black text-amber-900 text-base">Ready at {at(confirmedSlot)}</p>
+                    <p className="text-amber-700 text-xs mt-0.5">Slightly later than the {formatTime(asapEstimate!, ts)} we estimated.</p>
                   </>
                 ) : (
                   <>
-                    <p className="font-bold text-green-800 mb-0.5">Collection time: {confirmedSlot}</p>
+                    <p className="font-bold text-green-800 mb-0.5">Collection time: {at(confirmedSlot)}</p>
                     <p className="text-green-700 text-xs">See you at the hatch!</p>
                   </>
                 )}
@@ -4132,9 +4171,9 @@ function OrderConfirmation({
               <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 mb-4 text-sm text-left">
                 {/* Preferred (pending) collection time is the prominent headline; the moved reason +
                     "truck will confirm" are smaller supporting lines. Reads as confirmed-at-a-time, not error. */}
-                <p className="font-black text-orange-800 text-base">Preferred collection: {asapMoved ? confirmedSlot : (preferredSlot || confirmedSlot)}</p>
+                <p className="font-black text-orange-800 text-base">Preferred collection: {at(asapMoved ? confirmedSlot : (preferredSlot || confirmedSlot))}</p>
                 {asapMoved && (
-                  <p className="text-orange-600 text-xs mt-0.5">Slightly later than the {formatTime(asapEstimate!)} we estimated.</p>
+                  <p className="text-orange-600 text-xs mt-0.5">Slightly later than the {formatTime(asapEstimate!, ts)} we estimated.</p>
                 )}
                 <p className="text-orange-600 text-xs mt-0.5">{truckName} will confirm your collection time when they accept your order.</p>
               </div>
@@ -4159,9 +4198,9 @@ function OrderConfirmation({
                 <div className="flex justify-between text-xs">
                   <span className="text-slate-600">
                     🎁 {deal.name}
-                    {deal.saving > 0 && <span className="ml-1.5 text-green-600 font-medium">save £{deal.saving.toFixed(2)}</span>}
+                    {deal.saving > 0 && <span className="ml-1.5 text-green-600 font-medium">save {amount(deal.saving)}</span>}
                   </span>
-                  <span className="font-medium text-slate-700">£{deal.bundlePrice.toFixed(2)}</span>
+                  <span className="font-medium text-slate-700">{amount(deal.bundlePrice)}</span>
                 </div>
                 {Object.keys(deal.slots).sort().map(slotKey => {
                   const itemName = deal.slots[slotKey]
@@ -4174,7 +4213,7 @@ function OrderConfirmation({
                       {mods.map(m => (
                         <div key={m.name} className="flex justify-between pl-6 text-xs text-slate-400">
                           <span>{m.name}</span>
-                          {m.price > 0 && <span>+£{m.price.toFixed(2)}</span>}
+                          {m.price > 0 && <span>+{amount(m.price)}</span>}
                         </div>
                       ))}
                       {note && <div className="pl-6 text-xs text-slate-400 italic">📝 {note}</div>}
@@ -4185,7 +4224,7 @@ function OrderConfirmation({
             ))}
             <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
               <span className="font-black text-slate-900">Total</span>
-              <span className="font-black text-slate-900">£{total.toFixed(2)}</span>
+              <span className="font-black text-slate-900">{amount(total)}</span>
             </div>
           </div>
 
@@ -4236,7 +4275,7 @@ function OrderConfirmation({
           </a>
         </div>
       </div>
-    </Shell>
+    </Shell></MoneyProvider>
   )
 }
 
@@ -4348,7 +4387,7 @@ function Hdr({ slug, truck, scrolled, showBack = true, bannerRef }: { slug: stri
     </header>
     {/* Shared with the dashboard and the KDS — components/DemoModeBanner.tsx. Sticky under the 60px header
         (this page isn't a flex shell), so it stays visible while scrolling a long menu. */}
-    {isDemo && <DemoModeBanner innerRef={bannerRef} className="sticky top-[60px] z-40 shadow-sm" action={<DemoGetStarted slug={slug} />} />}
+    {isDemo && <DemoModeBanner innerRef={bannerRef} className="sticky top-[60px] z-40 shadow-sm" action={<DemoGetStarted slug={slug} phone={truck?.phone ?? null} />} />}
     </>
   )
 }

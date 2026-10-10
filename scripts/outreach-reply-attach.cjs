@@ -445,13 +445,17 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
     const LIB = readStripped('lib/plans-pdf.ts')
     check(/export function buildPlansPdfHtml/.test(LIB) && /export async function generatePlansPdf/.test(LIB),
       '…exporting the HTML builder and the PDF itself')
-    check(/FEATURE_SECTIONS|TRANSACTION_ROWS/.test(LIB),
+    check(/FEATURE_SECTIONS|transactionRows/.test(LIB),
       '🔴 …still generated from lib/plan-features.ts, never from a copy of the markup')
     const ROUTE = readStripped('app/landing/features-pdf/route.ts')
-    check(/generatePlansPdf\(\)/.test(ROUTE), "Admin's download button uses it…")
+    // 10 October 2026: the generator takes a COUNTRY, and both callers pass 'GB' explicitly (prospects have
+    // no country yet) — so the check names the argument rather than an empty call.
+    // Phase 2D-1: the download prints the country the marketing pages show this admin (lib/visitor-country.ts —
+    // ?country, the hg_country cookie, the request's country, else GB). Outreach's attach stays GB, below.
+    check(/generatePlansPdf\(visitor\.settings\.countryCode\)/.test(ROUTE) && /resolveVisitorCountry\(/.test(ROUTE), "Admin's download button uses it, for the admin's chosen country…")
     check(/verifyAdmin\(\)/.test(ROUTE), '…and still has the gate that is the only thing between it and the internet')
     const ATT = readStripped('app/api/admin/outreach/attachments/route.ts')
-    check(/generatePlansPdf\(\)/.test(ATT), '🔴 …and so does the attach button — ONE generator, two callers')
+    check(/generatePlansPdf\('GB'\)/.test(ATT), '🔴 …and so does the attach button — ONE generator, two callers, both GB')
     check(/plansPdfFilename\(\)/.test(ATT) && /plansPdfFilename\(\)/.test(ROUTE),
       'both name the file the same way, from one function')
     const d = new Date('2026-09-30T12:00:00Z')

@@ -27,7 +27,7 @@ import type { ReactNode } from 'react'
 // for a start-to-finish pair (lib/time-utils). A second formatter here is how the menu's header comes
 // to read a date differently from the bar that opened it.
 import { fmtVenue, eventDateLabel } from '@/lib/event-display'
-import { formatTimeRange } from '@/lib/time-utils'
+import { formatTimeRange, type TimeSettings } from '@/lib/time-utils'
 
 export function EventActionsModal({
   event,
@@ -46,7 +46,10 @@ export function EventActionsModal({
   onFinishEvent,
   onCancelEvent,
   onClose,
+  time,
 }: {
+  /** The truck's time settings (truck.time) — "today", and how the date and times read. */
+  time: TimeSettings | null | undefined
   /** The event this menu acts on. The CALLER gates the mount.
    *  ⚠️ THE FOUR DETAIL FIELDS ARE OPTIONAL, AND THE HEADER DEGRADES FIELD BY FIELD. A caller that
    *  passes none renders exactly the venue name it rendered before this change — no empty line, no
@@ -116,9 +119,9 @@ export function EventActionsModal({
             <h3 className="font-black text-slate-900 truncate">{fmtVenue(event.venue_name, event.town) || event.venue_name}</h3>
             {(event.event_date || event.start_time || event.end_time) && (
               <p className="text-xs font-medium text-slate-500 mt-0.5">
-                {event.event_date ? eventDateLabel(event.event_date) : ''}
+                {event.event_date ? eventDateLabel(event.event_date, time) : ''}
                 {event.event_date && (event.start_time || event.end_time) ? ', ' : ''}
-                {formatTimeRange(event.start_time, event.end_time)}
+                {formatTimeRange(event.start_time, event.end_time, time)}
               </p>
             )}
           </div>

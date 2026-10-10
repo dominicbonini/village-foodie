@@ -134,7 +134,7 @@ export async function captureOnConfirmation(
       .from('order_drafts')
       // ⚠️ `total_minor` JOINED THE LIST for the balance guard at step 2b: it is the amount the hold is
       // for, and therefore the amount a capture would take.
-      .select('order_key, truck_id, payment_intent_id, authorization_cancelled_at, total_minor')
+      .select('order_key, truck_id, payment_intent_id, authorization_cancelled_at, total_minor, currency')
       .eq('order_key', args.orderKey)
       .maybeSingle()
 
@@ -352,6 +352,9 @@ export async function captureOnConfirmation(
         // and that is exactly what has now happened: the key guard is gone, an `sk_live_` key makes this
         // `true`, and every captured row starts counting as live money with no change to this line.
         livemode: !process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_'),
+        // The DRAFT's currency — the one the hold was authorised in (lib/payments/authorize.ts reads the
+        // same column). Was absent here, so every captured row took the writer's old 'GBP' default.
+        currency: draft.currency as string,
       })
       console.log(
         `[capture] ${inserted ? 'CAPTURED' : 'captured (ledger row already present)'} order_key=${args.orderKey} ` +

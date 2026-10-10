@@ -18,6 +18,8 @@
 // confirmation copy therefore has to say so — an operator who believes they can undo it in Settings will
 // discover otherwise at the worst moment.
 import { NextRequest, NextResponse } from 'next/server'
+import { truckTimeZone } from '@/lib/truck-time'
+import { getLocalDateInTz } from '@/lib/time-utils'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { HATCHGRAB_SENDER } from '@/lib/email-config'
@@ -89,23 +91,23 @@ export async function GET(req: NextRequest) {
   const operator = await resolveOperator(req)
   if (!operator) return NextResponse.json({ error: 'Only the account owner can view this.' }, { status: 403 })
 
-  const { data: trucks } = await supabase.from('trucks').select('id, name').eq('operator_id', operator.id)
-  const truckIds = (trucks ?? []).map(t => t.id as string)
+  const { data: trucks } = await supabase.from('trucks').select('id, name, timezone, country').eq('operator_id', operator.id)
 
   // ⚠️ "UPCOMING" = not yet finished AND not in the past. Terminal statuses (collected/rejected/cancelled)
   // are excluded because they need no fulfilling; `event_date >= today` excludes history. Deliberately
   // generous at the boundary — an order earlier today still counts, because the point is to warn, and
   // under-counting an obligation is the harmful direction.
-  const today = new Date().toISOString().slice(0, 10)
+  // 🔴 "today" IS EACH TRUCK'S OWN (Phase 2B; was the UTC date — yesterday from 00:00 to 01:00 BST). An
+  // account's trucks can sit in different zones, so it is asked per truck and summed.
   let upcomingOrders = 0
-  if (truckIds.length) {
+  for (const t of trucks ?? []) {
     const { count } = await supabase
       .from('orders')
       .select('*', { count: 'exact', head: true })
-      .in('truck_id', truckIds)
+      .eq('truck_id', t.id as string)
       .in('status', ['pending', 'confirmed', 'modified', 'cooking', 'ready'])
-      .gte('event_date', today)
-    upcomingOrders = count ?? 0
+      .gte('event_date', getLocalDateInTz(await truckTimeZone(t)))
+    upcomingOrders += count ?? 0
   }
 
   return NextResponse.json({

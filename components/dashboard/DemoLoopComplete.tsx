@@ -41,6 +41,7 @@
 // window, and either heuristic would then point at the wrong card. The diff cannot — a seeded order
 // that lands in the same tick appears as a SECOND fresh key, which is detectable (see `ambiguous`).
 
+import type { PhoneCopy } from '@/lib/phone'
 import { useState, useEffect } from 'react'
 import { demoBaselineKey, demoWelcomeSeen, boardWasReplaced, resetDemoBoardFlags } from '@/lib/demo-board-build'
 import { DemoGetStarted, SIGNUP_OFFER } from '@/components/DemoGetStarted'
@@ -59,8 +60,10 @@ const SCROLL_SETTLE_FALLBACK_MS = 900
 const FLASH_MS = 2000
 const FLASH_CLEAR_MS = FLASH_MS + 250
 
-export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight, isAdmin = false, extractionSource = null }: {
+export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight, isAdmin = false, extractionSource = null, phone = null }: {
   token: string
+  /** Passed straight through to DemoGetStarted's phone box (Phase 2C) — the truck payload's `phone`. */
+  phone?: PhoneCopy | null
   /** Passed straight through to DemoGetStarted's canSetup — see that component. Defaults false. */
   isAdmin?: boolean
   /** Passed straight through to DemoGetStarted's copy variant. Without it the modal opened from THIS card
@@ -231,6 +234,7 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
             rather than the banner's pill), which legitimately differs per surface; the WORDS do not. */}
         <DemoGetStarted
           token={token}
+          phone={phone}
           isAdmin={isAdmin}
           extractionSource={extractionSource}
           className="bg-orange-600 hover:bg-orange-700 text-white text-sm font-black px-5 py-2.5 rounded-xl shadow-sm"

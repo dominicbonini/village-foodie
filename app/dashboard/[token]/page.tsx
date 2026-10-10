@@ -58,6 +58,12 @@ import {
   EVENT_PRICE_EDIT, EVENT_PRICE_CANCEL, EVENT_PRICE_SAVE,
   EVENT_PRICE_EDIT_NOTE, EVENT_PRICE_LIVE_NOTE,
 } from '@/lib/copy/serviceSettings'
+// 🔴 EVERY AMOUNT ON THIS SCREEN, IN ITS OWN CURRENCY (Phase 2A). An order's figures are in ITS currency
+// (orders.currency, orderMoney); the menu, the Add Order panel and the event-price note in the TRUCK's —
+// both from /api/dashboard's truck.money, which the offline snapshot keeps. ⚠️ A truck object with no
+// `money` (a snapshot saved before this build) shows figures with NO symbol and warns — never a guessed £.
+import { formatMajorOrBare, formatMinorOrBare, editableAmount, orderMoney } from '@/lib/money-format'
+import { MoneyProvider } from '@/components/MoneyContext'
 import { resolveOfflineWithType, offlineIsHandChange } from '@/lib/event-types/resolve'
 import { readSoundConfig, writeSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
 
@@ -124,7 +130,7 @@ import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory, collect
 import { intervalExample } from '@/lib/slot-generation'
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
-import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
+import { formatTime, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, instantOfLocal, clockOfInstantInTz, formatInstantClock, formatSlot, timeSettingsOr, LEGACY_UK_TIME_SETTINGS } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_DARK } from '@/lib/event-display'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
@@ -189,12 +195,14 @@ function makeCartKey(itemName: string, mods: { name: string }[], notes?: string)
 // so removing a past event's snapshot is safe. GATED ON ONLINE — never touch the cache offline (it may be the
 // only copy of the CURRENT event's data). Touches the CACHE ONLY — NEVER Preferences / the outbox (un-synced
 // ops for a past event must still drain). Past-date only ⇒ today's/future events' cache is preserved.
-async function pruneStaleEventCache(): Promise<void> {
+async function pruneStaleEventCache(tz: string): Promise<void> {
   try {
     if (typeof caches === 'undefined') return
     if (typeof navigator !== 'undefined' && !navigator.onLine) return   // offline → don't evict the offline snapshot
     const cache = await caches.open('vf-data-v1')
-    const todayIso = new Date().toISOString().split('T')[0]
+    // The TRUCK's today (Phase 2B; was the UTC date — which, in a US evening, is already tomorrow and
+    // would have purged today's live event).
+    const todayIso = getLocalDateInTz(tz)
     for (const req of await cache.keys()) {
       try {
         const d = new URL(req.url).searchParams.get('date')   // /api/dashboard?…&date=YYYY-MM-DD (per-event)
@@ -252,6 +260,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[requiresPin,setRequiresPin]=useState(false)
   const[authenticated,setAuthenticated]=useState(false)
   const[truck,setTruck]=useState<TruckData|null>(null)
+  // 🔴 THE TRUCK'S TIME (Phase 2B): its zone decides "now" and "today" everywhere on this screen (was the
+  // device's clock, or a fixed London), and its style writes every time and date. Before the truck has
+  // loaded nothing time-dependent renders; GB's settings stand in silently until then.
+  const dashTime=useMemo(()=>truck?timeSettingsOr(truck.time,'dashboard'):LEGACY_UK_TIME_SETTINGS,[truck])
+  const dashTz=dashTime.timeZone
   const[orders,setOrders]=useState<Order[]>([])
   // 🔴 THE ORDERS, READABLE FROM A CALLBACK THAT OUTLIVES ITS RENDER. `openOrderFromPush` awaits a
   // refetch and then has to read the RESULT — the `orders` it closed over is by then a render old. Written
@@ -977,7 +990,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // orders of the viewed event. resolvedEvent + stockEvent both read this one value.
   const selectedOrDefaultEvent:TruckEvent|null=selectedEventId
     ?(upcomingEvents.find(e=>e.id===selectedEventId)??null)
-    :pickDefaultEventByTime(upcomingEvents)
+    :pickDefaultEventByTime(upcomingEvents,dashTz)
   // SINGLE live signal — same rule as the "● Live" indicator (activeEvent.status==='open'), the
   // customer page, TruckListCard, and the heartbeat-monitor: live = the resolved active event is
   // status==='open'. Derived from selectedOrDefaultEvent (the canonical resolution; activeEvent
@@ -995,7 +1008,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const pauseReason:'manual'|'offline'|null=manualPaused?'manual':offlinePausedDisplay?'offline':null
   // ASAP date = the SELECTED/active event's own date (not "the live event"), so a future
   // event's ASAP is its first real slot, never now-floored against a different event's date.
-  const asapSlot=getAsapSlot(slots,selectedOrDefaultEvent?.event_date)
+  const asapSlot=getAsapSlot(slots,selectedOrDefaultEvent?.event_date,dashTz)
   const availableDeals = truckMenu?.bundles ?? []
   // Auto-decay: effective remaining extra wait based on elapsed time since it was set
   const waitMinutes=useMemo(()=>{
@@ -1293,13 +1306,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           console.warn('[fetchAll] events fetch failed:',eventsRes.status,'— keeping existing events')
         }else{
           const eventsData=await eventsRes.json()
-          const todayStr=localTodayIso() // LOCAL date (s.7) — UTC toISOString rolls at UTC midnight
+          // The truck's date and clock (Phase 2B) — from THIS response, so the first load is right too.
+          const loadTz=timeSettingsOr(data.truck?.time,'dashboard').timeZone
+          const todayStr=getLocalDateInTz(loadTz)
           const fetched=(eventsData.events??[]).filter((e:TruckEvent)=>e.event_date===todayStr)
           setTodayEvents(fetched)
           setUpcomingEvents(eventsData.events??[])
           // SUCCESS ONLY — inside the `eventsRes.ok` branch, never in the warn-and-keep branch above.
           setEventsLoaded(true)
-          const currentTime=new Date().toTimeString().slice(0,5)
+          const currentTime=clockOfInstantInTz(new Date(),loadTz)
           const stale=fetched.filter((e:TruckEvent)=>e.status==='confirmed'&&e.auto_open===true&&e.start_time<=currentTime)
           for(const ev of stale){
             await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId:ev.id,payload:{}})})
@@ -1357,7 +1372,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   // COLD-LAUNCH cleanup: purge the SW read-cache for ENDED events (past date). Cache-only, online-only,
   // never the outbox. Runs once on mount; a failure is a silent no-op (helper is fully guarded).
-  useEffect(()=>{void pruneStaleEventCache()},[])
+  // Once, as soon as the truck (and so its zone) is known — "past" is a date on the truck's clock.
+  const prunedRef=useRef(false)
+  useEffect(()=>{if(!truck||prunedRef.current)return;prunedRef.current=true;void pruneStaleEventCache(timeSettingsOr(truck.time,'dashboard').timeZone)},[truck])
 
   // LOCAL offline/paused notification (iPad-only, reachability-driven, debounced, Settings-gated). Message
   // depends on whether auto-pause is on (effectiveOfflineProtection = event override ?? van default).
@@ -1390,25 +1407,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       console.warn('[auto-select] ?event= names an event not belonging to this truck (or deleted/past/cancelled) — ignoring:',fromUrl)
     }
     const now=new Date()
-    const todayStr=localTodayIso() // LOCAL date (s.7) — UTC midnight must not misclassify "today"
+    const todayStr=getLocalDateInTz(dashTz) // the TRUCK's date and clock (Phase 2B)
+    const at=(date:string,time:string)=>new Date(instantOfLocal(date,time,dashTz))
     // Priority 1: currently open event (started, not ended)
     const openEvent=upcomingEvents.find(e=>{
       if(e.event_date!==todayStr||!e.start_time||!e.end_time) return false
-      return now>=new Date(`${e.event_date}T${e.start_time}`)&&now<=new Date(`${e.event_date}T${e.end_time}`)
+      return now>=at(e.event_date,e.start_time)&&now<=at(e.event_date,e.end_time)
     })
     if(openEvent){console.log('[auto-select] priority 1 open:',openEvent.id);setSelectedEventId(openEvent.id);return}
     // Priority 2: upcoming event today (not started yet)
     const upcomingToday=upcomingEvents.find(e=>{
       if(e.event_date!==todayStr||!e.start_time) return false
-      return now<new Date(`${e.event_date}T${e.start_time}`)
+      return now<at(e.event_date,e.start_time)
     })
     if(upcomingToday){console.log('[auto-select] priority 2 today:',upcomingToday.id);setSelectedEventId(upcomingToday.id);return}
     // Priority 3: next upcoming event (any date)
     const nextEvent=[...upcomingEvents]
-      .filter(e=>e.start_time&&new Date(`${e.event_date}T${e.start_time}`)>now)
-      .sort((a,b)=>new Date(`${a.event_date}T${a.start_time}`).getTime()-new Date(`${b.event_date}T${b.start_time}`).getTime())[0]
+      .filter(e=>e.start_time&&at(e.event_date,e.start_time!)>now)
+      .sort((a,b)=>at(a.event_date,a.start_time!).getTime()-at(b.event_date,b.start_time!).getTime())[0]
     if(nextEvent){console.log('[auto-select] priority 3 next:',nextEvent.id,nextEvent.event_date);setSelectedEventId(nextEvent.id)}
-  },[upcomingEvents,selectedEventId])
+  },[upcomingEvents,selectedEventId,dashTz])
   // ── KEEP ?event= AND ?tab= IN STEP WITH THE VIEW (V9.6) ─────────────────────────────────────────
   // 🔴 ONE EFFECT WRITES BOTH PARAMS. Do NOT add a second replaceState effect for a future param.
   // Two effects each doing `new URL(window.location.href)` → mutate → replaceState in the same commit
@@ -2552,7 +2570,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'refund',order_key:orderKey,amount_minor:amountMinor,reason,note,refund_context:context??null})})
       const data=await res.json().catch(()=>({}))
-      const money=`£${(amountMinor/100).toFixed(2)}`
+      const refunded=orders.find(o=>o.order_key===orderKey)
+      const money=formatMinorOrBare(amountMinor,orderMoney(refunded,truck?.money),'refund message')
       if(!res.ok) return {ok:false,settled:false,message:typeof data?.error==='string'?data.error:'That refund could not be sent.'}
       fetchAll(undefined,false,true)
       // 🔴 "SENT" IS NOT "REFUNDED", AND THE PENDING CASE SAYS SO. Stripe accepts a refund on a direct
@@ -2641,7 +2660,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   // Fetch the edited order's slots from the SHARED /api/slots path, keyed to the
   // order's own event_id + date — identical to the Add Order panel's fetchManualSlots.
-  // The route resolves the event window from event_id and floors against localTodayIso(),
+  // The route resolves the event window from event_id and floors against the truck's today,
   // so a future-dated order shows its full in-window list (no today wall-clock floor).
   const fetchEditSlots=async(order:Order)=>{
     if(!truck?.id){setEditSlots([]);setEditCapacityInputs(null);setEditServerCatConfigs({});return}
@@ -2860,10 +2879,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // UNCHANGED — only the confirm SURFACE moved from native confirm to the modal below.
   const finishEvent=(eventId:string)=>{
     const ev=todayEvents.find(e=>e.id===eventId)??upcomingEvents.find(e=>e.id===eventId)
-    const nowMins=new Date().getHours()*60+new Date().getMinutes()
+    const nowMins=getNowMinsInTz(dashTz)
     const endMins=ev?.end_time?(()=>{const[h,m]=ev.end_time.split(':').map(Number);return (h||0)*60+(m||0)})():null
     const finishingEarly=endMins!=null && nowMins<endMins
-    setFinishConfirm({eventId,early:finishingEarly,endTime:ev?.end_time?formatTime(ev.end_time):''})
+    setFinishConfirm({eventId,early:finishingEarly,endTime:ev?.end_time?formatTime(ev.end_time,dashTime):''})
   }
   const doFinishEvent=async(eventId:string)=>{
     setFinishConfirm(null)
@@ -3345,7 +3364,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // wipes a board because it starts in four minutes would be wrong regardless of reachability.)
   const demoBoardLive=!!(activeEvent&&activeEvent.status!=='closed'&&!(
     activeEvent.event_date&&activeEvent.end_time&&
-    Date.now()>new Date(`${activeEvent.event_date}T${activeEvent.end_time}`).getTime()
+    Date.now()>instantOfLocal(activeEvent.event_date,activeEvent.end_time,dashTz)
   ))
   // Venue-local comparison via the event's own date + end_time, matching how every other surface reads
   // these columns — they are wall-clock, not UTC.
@@ -3550,7 +3569,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // order's due alert, on the one surface an operator relies on to hear about lateness.
         if(o.status!=='pending'&&o.status!=='confirmed'&&o.status!=='modified'){ prevUrgencyRef.current.delete(o.order_key); continue }
         seen.add(o.order_key)
-        const slotDt=resolveCollectionTime(o,activeEvent)
+        const slotDt=resolveCollectionTime(o,activeEvent,dashTz)
         const lead=cookAmberLeadMins(getOrderCookSecs(o.items,itemCategoryMap,catConfigs))
         const u=getCombinedUrgency(slotDt,o.created_at,lead)
         const prev=prevUrgencyRef.current.get(o.order_key)
@@ -3564,7 +3583,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     scan()
     const id=setInterval(scan,15000)
     return()=>clearInterval(id)
-  },[orders,authenticated,soundEnabled,soundCfg,activeEvent,catConfigs,itemCategoryMap])
+  },[orders,authenticated,soundEnabled,soundCfg,activeEvent,catConfigs,itemCategoryMap,dashTz])
 
   // OFFLINE-AWARE capacity for the day-load strip (Piece 1). ONLINE / no optimistic orders → returns the
   // server `slots` UNCHANGED (deviceQueuedOrders is ONLY ever populated by an OFFLINE create, so online this
@@ -3669,6 +3688,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     return{offlineConsumedByItem:byItem,offlineConsumedByCat:byCat}
   },[deviceQueuedOrders,orders,statusOverlay,stockEventId,itemCategoryMap])
 
+  // Amount helpers for the render below: the menu in the TRUCK's format, an order in ITS own.
+  const truckAmount=(major:number)=>formatMajorOrBare(major,truck?.money,'dashboard menu')
+  const amountFor=(o:Order|null|undefined)=>(major:number)=>formatMajorOrBare(major,orderMoney(o,truck?.money),'dashboard order')
   if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
   // 🔴 NON-NAVIGATING INSIDE THE NATIVE SHELL (2.1 completeness, 14 August 2026) — SAME MECHANISM AS
   //    components/shared/AppHeader.tsx:86-115, deliberately not a second approach.
@@ -3762,8 +3784,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // timed orders instead of always sorting last. order_key is the stable
   // tiebreaker only — never the ordering key (Manual s.18a).
   const sortByTimeThenId=(a:Order,b:Order)=>{
-    const aDt=resolveCollectionTime(a,activeEvent)?.getTime()??Number.POSITIVE_INFINITY
-    const bDt=resolveCollectionTime(b,activeEvent)?.getTime()??Number.POSITIVE_INFINITY
+    const aDt=resolveCollectionTime(a,activeEvent,dashTz)?.getTime()??Number.POSITIVE_INFINITY
+    const bDt=resolveCollectionTime(b,activeEvent,dashTz)?.getTime()??Number.POSITIVE_INFINITY
     if(aDt!==bDt) return aDt-bDt
     // Same collection time → first PLACED wins (creation order), not the random order_key UUID —
     // otherwise a later order could jump ahead of an earlier one at the same time (looks like a bug).
@@ -3822,7 +3844,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const editRepriceActive=!!editReprice&&editReprice.signature===editBasketSignature(editItems.filter(i=>i.quantity>0),editDeals)
 
   // Relative event-date label for the header — "Today/Tomorrow/{Weekday} {D}th {Month}". "today" is
-  // resolved in the EVENT tz (Europe/London) via getLocalDateInTz, NOT device-local / toISOString, so a
+  // resolved in the TRUCK's zone (truck.time, Phase 2B) via getLocalDateInTz, NOT device-local / toISOString, so a
   // future pre-order event reads correctly. event_date is a pure calendar date ('YYYY-MM-DD'); we format
   // its parts under timeZone:'UTC' so the weekday/month never shift.
   // (fmtVenue + eventDateLabel moved to lib/event-display.ts — fmtVenue existed byte-identically here
@@ -3891,7 +3913,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           ⚠️ It never says anything is "saved". Nothing here is saved by rendering it. */}
       {degraded&&!error&&(
         <div className="shrink-0 bg-amber-500 text-white px-4 py-2 text-sm font-bold text-center">
-          {degradedBanner(degraded,lastRefresh)}
+          {degradedBanner(degraded,lastRefresh,dashTime)}
         </div>
       )}
       {/* 🔴 THE MENU IS FROM THIS DEVICE, NOT THE SERVER — its own bar, separate from the degraded
@@ -3909,7 +3931,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       )}
       {menuSnapshotAt&&!error&&(
         <div className="shrink-0 bg-amber-600 text-white px-4 py-2 text-sm font-bold text-center">
-          Menu saved on this tablet at {menuSnapshotAt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}. Check prices before taking payment.
+          Menu saved on this tablet at {formatInstantClock(menuSnapshotAt,dashTime)}. Check prices before taking payment.
         </div>
       )}
       {/* App-lock overlay (per-device biometric/passcode) — covers the screen until unlocked. No-op on web
@@ -4142,15 +4164,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       {privateName
                         ?<>{privateName} — <span className="text-purple-300 font-bold">{PRIVATE_PUBLIC_NAME}</span></>
                         :<span className="text-purple-300 font-bold">{PRIVATE_PUBLIC_NAME}</span>}
-                      {' · '}{formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
+                      {' · '}{formatTime(activeEvent.start_time,dashTime)}–{formatTime(activeEvent.end_time,dashTime)}
                     </>):(<>
-                      📍 {fmtVenue(activeEvent.venue_name,activeEvent.town)} · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
+                      📍 {fmtVenue(activeEvent.venue_name,activeEvent.town)} · {formatTime(activeEvent.start_time,dashTime)}–{formatTime(activeEvent.end_time,dashTime)}
                     </>)}
                   </span>
                   {/* FIX 8 — DEMO hides the date. The demo event is always "today" by construction, so the
                       line carries no information and just dates the screenshot. */}
                   {activeEvent.event_date&&!isDemo&&(
-                    <span className="hidden sm:block text-xs font-medium text-slate-400 truncate mt-0.5">📅 {eventDateLabel(activeEvent.event_date)}</span>
+                    <span className="hidden sm:block text-xs font-medium text-slate-400 truncate mt-0.5">📅 {eventDateLabel(activeEvent.event_date,dashTime)}</span>
                   )}
                 </div>
                 {/* "Change" button removed — event-switching lives in Manage event ▾ → "📅 Change event"
@@ -4246,7 +4268,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* DEMO MODE — persistent app-shell strip, on EVERY tab. Deliberately calm rather than alarming:
           this is a prospect exploring the product, not an operator being warned. Moved below the chrome
           with the stack; its copy, condition and action are untouched. */}
-      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin} extractionSource={demoSession?.extraction_source??null}/>}/>}
+      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin} extractionSource={demoSession?.extraction_source??null} phone={truck?.phone??null}/>}/>}
       {/* Keep-screen-on prompt — full-width bar in the app-shell (visible on the service screen, not
           buried). Shows only when the pref is on but the lock isn't held; the operator's first tap
           dismisses AND acquires it. Moved below the chrome with the stack; conditions untouched. */}
@@ -4348,6 +4370,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               {isDemo&&!demoServiceEnded&&(
                 <DemoLoopComplete
                   token={token}
+                  phone={truck?.phone??null}
                   orderKeys={orders.map(o=>o.order_key)}
                   orders={orders}
                   loaded={!loading&&!!truck}
@@ -4384,7 +4407,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 because a single flex child with that class simply starts at the left edge. */}
             {recentlyClosed&&activeEvent&&(
               <div className="bg-slate-100 border border-slate-200 rounded-xl p-4 mb-4 flex items-center justify-between">
-                <span className="text-sm text-slate-600">Event finished · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time)}</span>
+                <span className="text-sm text-slate-600">Event finished · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time,dashTime)}</span>
               </div>
             )}
             {/* Mobile controls row REMOVED to reclaim vertical space (was: inline Add-extra-wait + Prep).
@@ -4432,13 +4455,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             </div>
             <div className="lg:hidden">
-              <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="strip" breachedSlots={breachedSlotTimes} />
+              <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="strip" time={truck?.time} breachedSlots={breachedSlotTimes} />
             </div>
             {/* "To make" aggregate box removed (2026-06) — a cook-per-order truck doesn't work from a
                 day-wide item total. getAllDayCounts is retained (still used by the completed-order
                 summary line and the KDS all-day counts). */}
             {showPrepList&&(()=>{
-              const todayStr=localTodayIso() // LOCAL date (s.7) — pairs with local order-time batching
+              const todayStr=getLocalDateInTz(dashTz) // the TRUCK's date (Phase 2B) — pairs with its clock below
               // "Start by" = collection slot − cook time, with NO extra grace buffer (the old +2min
               // padding made it read 11:53 for an 11:55 start, which confused operators). Removed.
               const BUFFER_SECS=0
@@ -4494,12 +4517,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 // 11:30 today, or future-event orders hit "Prep needed now" hours early
                 const [slotH,slotM]=slot.split(':').map(Number)
                 const orderEventDate=slotOrders[0].event_date
-                const slotDt=orderEventDate
-                  ?(()=>{const[y,mo,d]=orderEventDate.split('-').map(Number);return new Date(y,mo-1,d,slotH,slotM,0,0)})()
-                  :(()=>{const t=new Date();t.setHours(slotH,slotM,0,0);return t})()
+                const hm=`${String(slotH).padStart(2,'0')}:${String(slotM).padStart(2,'0')}`
+                const slotDt=new Date(instantOfLocal(orderEventDate||todayStr,hm,dashTz))
                 const startDt=new Date(slotDt.getTime()-totalSecs*1000)
                 const minsUntilStart=Math.floor((startDt.getTime()-Date.now())/60000)
-                const startStr=`${String(startDt.getHours()).padStart(2,'0')}:${String(startDt.getMinutes()).padStart(2,'0')}`
+                const startStr=clockOfInstantInTz(startDt,dashTz)
 
                 if(minsUntilStart<=2){
                   // Due now or within 2 mins — add to current batch
@@ -4549,7 +4571,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   const totalSecs=maxSecs+BUFFER_SECS
                   const odate=o.event_date
                   const eventStartMs=(odate&&asapEventStart)
-                    ?(()=>{const[y,mo,d]=odate.split('-').map(Number);const[sh,sm]=asapEventStart.split(':').map(Number);return new Date(y,mo-1,d,sh,sm,0,0).getTime()})()
+                    ?instantOfLocal(odate,asapEventStart.slice(0,5),dashTz)
                     :null
                   if(eventStartMs===null){
                     // No event start time (walk-up / no schedule): preserve prior behaviour
@@ -4562,7 +4584,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   if(minsUntilStart<=2){
                     currentBatch.push(o)
                   } else {
-                    const fmt=(ms:number)=>{const dt=new Date(ms);return`${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`}
+                    const fmt=(ms:number)=>clockOfInstantInTz(ms,dashTz)
                     upcomingBatches.push({id:o.order_key,slot:`ASAP ~${fmt(startMs+totalSecs*1000)}`,startBy:fmt(startMs),minsUntil:minsUntilStart,items:Object.values(displayItems),orderNotes})
                   }
                 })
@@ -4696,7 +4718,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             {b.items.map(item=>`${item.qty}× ${item.label}`).join(', ')}{b.orderNotes.length>0&&` · 📝 ${b.orderNotes.join(' · ')}`}
                           </span>
                           <span className="text-amber-600 font-black ml-2 shrink-0">
-                            Start by {b.startBy} · {b.minsUntil>=120?`in ${Math.round(b.minsUntil/60)}h`:`${b.minsUntil}min`}
+                            Start by {formatSlot(b.startBy,dashTime)} · {b.minsUntil>=120?`in ${Math.round(b.minsUntil/60)}h`:`${b.minsUntil}min`}
                           </span>
                         </div>
                       ))}
@@ -4794,13 +4816,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             "Record payment" repair beside it is untouched. */}
                         {(()=>{const bal=getOrderBalance(o as never,payments[o.order_key]??[])
                           if(bal.paidMinor<=0&&bal.status!=='refunded'&&bal.status!=='part_refunded')return null
-                          const label=bal.status==='refunded'?'REFUNDED':bal.status==='part_refunded'?`£${(bal.balanceMinor/100).toFixed(2)} REFUNDED`:'PAID'
+                          const label=bal.status==='refunded'?'REFUNDED':bal.status==='part_refunded'?`${formatMinorOrBare(bal.balanceMinor,orderMoney(o,truck?.money),'completed row')} REFUNDED`:'PAID'
                           const tone=bal.status==='refunded'||bal.status==='part_refunded'?'bg-slate-200 text-slate-700':'bg-green-100 text-green-700'
                           return (
                             <button onClick={()=>setPayModalOrder(o.order_key)} title="Tap to refund or correct this payment"
                               className={`text-[10px] font-black px-1.5 py-0.5 rounded-full whitespace-nowrap ${tone}`}>{label}</button>
                           )})()}
-                        <span className="font-black text-slate-600 text-sm">£{Number(o.total).toFixed(2)}</span>
+                        <span className="font-black text-slate-600 text-sm">{formatMajorOrBare(Number(o.total),orderMoney(o,truck?.money),'completed row')}</span>
                       </div>
                     </div>
                   )})}
@@ -4813,6 +4835,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   const rows=payments[o.order_key]??[]
                   const bal=getOrderBalance(o as never,rows)
                   return (
+                    // The modal reads the ORDER's format, as it does inside the card.
+                    <MoneyProvider fmt={orderMoney(o,truck?.money)}>
                     <PaymentActionsModal open onClose={()=>setPayModalOrder(null)}
                       orderId={String(o.id)} orderKey={o.order_key} paidMinor={bal.paidMinor}
                       cardChargeMinor={rows.filter((r:any)=>r.kind==='charge'&&r.channel==='online').reduce((s:number,r:any)=>s+r.amount_minor,0)}
@@ -4825,6 +4849,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       /* 🔴 Same reachability state the offline banner uses (onReachabilityChange →
                          setIsOffline), so this modal recovers on reconnect without a reload. */
                       offline={isOffline}/>
+                    </MoneyProvider>
                   )})()}
               </div>
             )}
@@ -4832,7 +4857,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="text-center py-16">
                 <p className="text-4xl mb-3">{truck?.truck_emoji || '🍕'}</p>
                 <p className="text-slate-500 font-medium">{boardUnavailable?'Couldn\u2019t load today\u2019s orders.':orders.length===0?'No orders yet today':'All orders complete!'}</p>
-                <p className="text-slate-300 text-xs mt-3">Updated {lastRefresh.toLocaleTimeString()}</p>
+                <p className="text-slate-300 text-xs mt-3">Updated {formatInstantClock(lastRefresh,dashTime,true)}</p>
               </div>
             )}
               </div>
@@ -4844,7 +4869,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   keeping. The panel is now simply a bounded flex sibling: pinned by structure, not by
                   position. NO hardcoded offset was introduced to replace it, and none is needed. */}
               <aside className="hidden lg:flex lg:flex-col lg:w-48 lg:flex-shrink-0 lg:min-h-0">
-                <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" breachedSlots={breachedSlotTimes} />
+                <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" time={truck?.time} breachedSlots={breachedSlotTimes} />
               </aside>
               </div>
               </>
@@ -5705,7 +5730,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 app/manage/[token]/page.tsx (SettingsTab, above the danger zone) and §46 of the manual.
                 🔴 DO NOT RE-ADD THEM HERE. A truck-wide setting on the per-event screen is the exact
                 confusion the scope rule exists to prevent. */}
-            {!isDemo&&truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode} connected={printing.status.connected} statusDetail={printing.status.detail} waitingCount={printing.waitingCount}/>}
+            {!isDemo&&truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode} connected={printing.status.connected} statusDetail={printing.status.detail} waitingCount={printing.waitingCount} time={truck.time}/>}
             {!isDemo&&<NotificationSettings token={token}/>}
           </div>
         )}
@@ -5933,7 +5958,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                       — that is not "this event only", and labelling it so would tell
                                       the operator a festival-wide price was a one-off. */}
                                   {priceOwn&&(
-                                    <p className="text-[11px] text-blue-500 mt-0.5">{eventPriceOwnNote(fallbackPrice,eventTypeName)}</p>
+                                    <p className="text-[11px] text-blue-500 mt-0.5">{eventPriceOwnNote(fallbackPrice,eventTypeName,truck?.money)}</p>
                                   )}
                                 </div>
                                 {/* ══ 🔴 THE PRICE COLUMN — WHAT CUSTOMERS PAY AT THIS EVENT ════════════
@@ -5958,8 +5983,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     <div className="relative w-20">
                                       <input type="text" inputMode="decimal" disabled={!priceEditable}
                                         aria-label={`Price for ${item.name} at this event`}
-                                        value={(itemId?priceDrafts[itemId]:undefined) ?? shownPrice.toFixed(2)}
-                                        onFocus={()=>{ if(itemId)setPriceDrafts(d=>({...d,[itemId]:shownPrice.toFixed(2)})) }}
+                                        value={(itemId?priceDrafts[itemId]:undefined) ?? editableAmount(shownPrice,truck?.money)}
+                                        onFocus={()=>{ if(itemId)setPriceDrafts(d=>({...d,[itemId]:editableAmount(shownPrice,truck?.money)})) }}
                                         onChange={e=>{if(itemId)setPriceDrafts(d=>({...d,[itemId]:e.target.value}))}}
                                         onKeyDown={e=>{
                                           if(e.key==='Enter')e.currentTarget.blur()
@@ -6001,7 +6026,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                        NOTHING TO TAB INTO AND NOTHING TO CHANGE BY ACCIDENT, which is
                                        the whole point of the two modes. */
                                     <p data-event-price className={`w-20 text-right text-sm font-bold tabular-nums ${priceOwn?'text-blue-700':'text-slate-800'}`}>
-                                      £{shownPrice.toFixed(2)}
+                                      {truckAmount(shownPrice)}
                                     </p>
                                   )}
                                 </div>
@@ -6094,7 +6119,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             <div key={opt.id} className={`flex items-center gap-2 p-2 rounded-xl border ${!isOptOn?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <p className={`font-bold text-sm ${!isOptOn?'text-red-500':'text-slate-800'}`}>{opt.name}{opt.price_adjustment!==0&&<span className="text-slate-600 font-normal ml-1.5">{opt.price_adjustment>0?`+£${opt.price_adjustment.toFixed(2)}`:`-£${Math.abs(opt.price_adjustment).toFixed(2)}`}</span>}</p>
+                                  <p className={`font-bold text-sm ${!isOptOn?'text-red-500':'text-slate-800'}`}>{opt.name}{opt.price_adjustment!==0&&<span className="text-slate-600 font-normal ml-1.5">{opt.price_adjustment>0?`+${truckAmount(opt.price_adjustment)}`:`-${truckAmount(Math.abs(opt.price_adjustment))}`}</span>}</p>
                                   {!isOptOn&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">SOLD OUT</span>}
                                   {isOptOn&&optCount!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${optCount<=3?'text-red-600 bg-red-100':optCount<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{optCount} left</span>}
                                 </div>
@@ -6159,6 +6184,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           and the KDS use. It replaced a window.confirm whose safe button read "Cancel". */}
       {eventCancelTarget&&(
         <EventCancelModal
+          time={truck?.time}
           event={eventCancelTarget}
           affectedOrderCount={eventCancelCount}
           busy={eventCancelBusy}
@@ -6315,7 +6341,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
             <div>
               <h3 className="text-lg font-semibold text-slate-900">Cancel order #{cancellingOrder.id}?</h3>
-              <p className="text-sm text-slate-500 mt-1">{cancellingOrder.customer_name} · £{cancellingOrder.total.toFixed(2)}</p>
+              <p className="text-sm text-slate-500 mt-1">{cancellingOrder.customer_name} · {amountFor(cancellingOrder)(cancellingOrder.total)}</p>
             </div>
             {/* ── 🔴 WHAT HAPPENS TO THE MONEY, STATED BEFORE THE OPERATOR PRESSES ANYTHING. ────────
                 Four different things can be true of a cancelled order's money and only one of them is a
@@ -6330,7 +6356,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               const refundable=Math.max(0,cardMinor-refundedAlready)
               const cashMinor=rows.filter((r:any)=>r.kind==='charge'&&r.channel!=='online').reduce((t:number,r:any)=>t+r.amount_minor,0)
               const held=heldAuthorisations.has(cancellingOrder.order_key)
-              const money=(m:number)=>`£${(m/100).toFixed(2)}`
+              const money=(m:number)=>formatMinorOrBare(m,orderMoney(cancellingOrder,truck?.money),'cancel order')
               if(refundable>0)return(
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
                   <p className="text-sm font-semibold text-amber-900">Cancel this order and refund {money(refundable)} to the customer&apos;s card?</p>
@@ -6403,7 +6429,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <RejectOrderModal
           orderId={rejectingOrder.id}
           customerName={rejectingOrder.customer_name}
-          totalLabel={` · £${rejectingOrder.total.toFixed(2)}`}
+          totalLabel={` · ${amountFor(rejectingOrder)(rejectingOrder.total)}`}
           onConfirm={confirmRejectOrder}
           onDismiss={resetRejectModal}
         />
@@ -6434,7 +6460,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                           <button key={item.name} onClick={()=>openEditItemModal(item)}
                             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all ${totalInEdit>0?'bg-orange-600 border-orange-600 text-white':'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'}`}>
                             {totalInEdit>0&&<span className="text-orange-200">{totalInEdit}×</span>}
-                            {item.name}<span className={totalInEdit>0?'text-orange-200':'text-slate-600'}> £{item.price.toFixed(2)}</span>
+                            {item.name}<span className={totalInEdit>0?'text-orange-200':'text-slate-600'}> {amountFor(editingOrder)(item.price)}</span>
                           </button>
                         )
                       })}
@@ -6457,10 +6483,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         <span className="w-4 text-center font-black text-sm">{item.quantity}</span>
                         <button onClick={()=>setEditItems(prev=>prev.map(i=>i.cartKey===item.cartKey?{...i,quantity:i.quantity+1}:i))} className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-orange-100 hover:text-orange-600 text-sm">+</button>
                       </div>
-                      <span className="text-slate-500 text-xs w-12 text-right">£{(item.unit_price*item.quantity).toFixed(2)}</span>
+                      <span className="text-slate-500 text-xs w-12 text-right">{amountFor(editingOrder)(item.unit_price*item.quantity)}</span>
                     </div>
                     {(item.modifiers||[]).map(m=>(
-                      <p key={m.name} className="text-xs text-slate-600 pl-3 leading-tight">+ {m.name}{m.price>0?` +£${m.price.toFixed(2)}`:''}</p>
+                      <p key={m.name} className="text-xs text-slate-600 pl-3 leading-tight">+ {m.name}{m.price>0?` +${amountFor(editingOrder)(m.price)}`:''}</p>
                     ))}
                     {item.specialInstructions&&<p className="text-xs text-slate-600 italic pl-3 leading-tight">📝 {item.specialInstructions}</p>}
                   </div>
@@ -6482,14 +6508,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             if(!mods.length&&!note)return null
                             return(
                               <div key={cat} className="pl-3">
-                                {mods.map(m=><p key={m.name} className="text-xs text-slate-600 leading-tight">↳ {itemName}: + {m.name}{m.price>0?` +£${m.price.toFixed(2)}`:''}</p>)}
+                                {mods.map(m=><p key={m.name} className="text-xs text-slate-600 leading-tight">↳ {itemName}: + {m.name}{m.price>0?` +${amountFor(editingOrder)(m.price)}`:''}</p>)}
                                 {note&&<p className="text-xs text-slate-600 italic leading-tight">↳ {itemName}: 📝 {note}</p>}
                               </div>
                             )
                           })}
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-xs text-slate-500">£{(bundlePrice+modExtra).toFixed(2)}</span>
+                          <span className="text-xs text-slate-500">{amountFor(editingOrder)(bundlePrice+modExtra)}</span>
                           <button onClick={()=>setEditDeals(prev=>prev.filter((_,i)=>i!==di))} className="w-5 h-5 rounded-full bg-red-100 text-red-500 hover:bg-red-200 text-xs font-bold flex items-center justify-center">×</button>
                         </div>
                       </div>
@@ -6499,16 +6525,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <div className="pt-2 border-t border-slate-200 space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Original</span>
-                    <span className="text-slate-600">£{Number(editingOrder.total).toFixed(2)}</span>
+                    <span className="text-slate-600">{amountFor(editingOrder)(Number(editingOrder.total))}</span>
                   </div>
                   <div className="flex justify-between text-sm font-bold">
                     <span className="text-slate-600">New total</span>
-                    <span className="text-slate-900">£{editTotal.toFixed(2)}</span>
+                    <span className="text-slate-900">{amountFor(editingOrder)(editTotal)}</span>
                   </div>
                   {editTotal!==Number(editingOrder.total)&&(
                     <div className={`flex justify-between text-sm font-black rounded-lg px-2 py-1.5 ${editTotal>Number(editingOrder.total)?'bg-orange-50 text-orange-600':'bg-green-50 text-green-600'}`}>
                       <span>{editTotal>Number(editingOrder.total)?'Extra to collect':'Reduction'}</span>
-                      <span>{editTotal>Number(editingOrder.total)?'+':'-'}£{Math.abs(editTotal-Number(editingOrder.total)).toFixed(2)}</span>
+                      <span>{editTotal>Number(editingOrder.total)?'+':'-'}{amountFor(editingOrder)(Math.abs(editTotal-Number(editingOrder.total)))}</span>
                     </div>
                   )}
                 </div>
@@ -6585,19 +6611,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <div className="space-y-0.5">
                   {editReprice!.unresolved.map((u,i)=>(
                     <p key={`${u.name}-${i}`} className="text-xs text-amber-800">
-                      {u.kind==='deal'?'🎁 ':''}{u.name}{u.on?` (on ${u.on})`:''} — kept at <strong>£{u.advisoryPrice.toFixed(2)}</strong>
+                      {u.kind==='deal'?'🎁 ':''}{u.name}{u.on?` (on ${u.on})`:''} — kept at <strong>{amountFor(editingOrder)(u.advisoryPrice)}</strong>
                     </p>
                   ))}
                 </div>
                 <div className="flex justify-between text-sm font-black text-amber-900 mt-2 pt-2 border-t border-amber-200">
-                  <span>Order total</span><span>£{editReprice!.total.toFixed(2)}</span>
+                  <span>Order total</span><span>{amountFor(editingOrder)(editReprice!.total)}</span>
                 </div>
               </div>
             )}
             <div className="flex gap-2">
               <button onClick={()=>setEditingOrder(null)} className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Cancel</button>
               <button onClick={()=>submitEdit(editRepriceActive?editReprice!.total:undefined)} disabled={!!actionLoading?.startsWith('edit')||!isOrderNonEmpty(editItems,editDeals)} className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-50">
-                {actionLoading?.startsWith('edit')?'Saving...':editRepriceActive?`Save at £${editReprice!.total.toFixed(2)}`:'Save changes'}
+                {actionLoading?.startsWith('edit')?'Saving...':editRepriceActive?`Save at ${amountFor(editingOrder)(editReprice!.total)}`:'Save changes'}
               </button>
             </div>
           </div>
@@ -6605,6 +6631,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       )}
 
       {showEditDealModal&&(
+        // A deal added to an EXISTING order is priced in that order's currency.
+        <MoneyProvider fmt={orderMoney(editingOrder,truck?.money)}>
         <DealsModal
           bundles={availableDeals}
           menuItems={truckMenu?.items||[]}
@@ -6620,6 +6648,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           }}
           onClose={()=>setShowEditDealModal(false)}
         />
+        </MoneyProvider>
       )}
 
       {/* Edit item modifier modal */}
@@ -6629,7 +6658,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="flex justify-between items-center mb-3">
               <div>
                 <p className="font-black text-slate-900">{editItemModal.item.name}</p>
-                <p className="text-sm text-slate-600">£{editItemModal.item.price.toFixed(2)}{editModalMods.reduce((s,m)=>s+m.price,0)>0?` + £${editModalMods.reduce((s,m)=>s+m.price,0).toFixed(2)}`:''}</p>
+                <p className="text-sm text-slate-600">{amountFor(editingOrder)(editItemModal.item.price)}{editModalMods.reduce((s,m)=>s+m.price,0)>0?` + ${amountFor(editingOrder)(editModalMods.reduce((s,m)=>s+m.price,0))}`:''}</p>
               </div>
               <button onClick={closeEditItemModal} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
             </div>
@@ -6643,7 +6672,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       <button key={opt.id} type="button" onClick={()=>setEditModalMods(prev=>sel?prev.filter(m=>m.name!==opt.name):[...prev,{name:opt.name,price:opt.price_adjustment}])}
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium transition-all ${sel?'border-orange-500 bg-orange-500 text-white':'border-slate-200 bg-white text-slate-700 hover:border-orange-300'}`}>
                         <span>{opt.name}</span>
-                        {opt.price_adjustment>0&&<span className={sel?'text-orange-200':'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
+                        {opt.price_adjustment>0&&<span className={sel?'text-orange-200':'text-orange-500'}>+{amountFor(editingOrder)(opt.price_adjustment)}</span>}
                       </button>
                     )
                   })}
@@ -6698,6 +6727,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           `onResume` is passed, so recovery stays reachable and only the trap is removed. */}
       {showEventMenu&&activeEvent&&!isDemo&&(
         <EventActionsModal
+          time={truck?.time}
           event={{id:activeEvent.id,venue_name:activeEvent.venue_name,status:activeEvent.status,town:activeEvent.town,event_date:activeEvent.event_date,start_time:activeEvent.start_time,end_time:activeEvent.end_time}}
           noteValue={eventNoteInput}
           onNoteChange={setEventNoteInput}

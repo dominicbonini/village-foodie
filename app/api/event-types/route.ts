@@ -30,6 +30,7 @@ import { canAccess } from '@/lib/features'
  * rather than answering it twice. Recorded in docs/event-types-stage1-report.md. */
 import { normalizeVenue } from '@/lib/venue-signature'
 import { getLocalDateInTz } from '@/lib/time-utils'
+import { truckTimeZone } from '@/lib/truck-time'
 import {
   SERVICE_KEYS, MAX_TYPE_NAME, blankTypeValues, type ServiceKey,
   EVENT_OVERRIDE_COLUMNS,
@@ -58,7 +59,7 @@ import { shouldLockIn, lockedInPrices, oldSetupOf } from '@/lib/event-pricing/lo
  * open-coded conversion is all it takes for a money value to be out by two orders of magnitude with
  * nothing to catch it"). scripts/event-pricing.cjs refuses one in this file, and it caught this. */
 import {
-  cleanPriceAmount, cleanTypedPrice, isPriceMode, isPriceRounding, priceAtEvent, toPounds,
+  cleanPriceAmount, cleanTypedPrice, normalisePriceMode, isPriceRounding, priceAtEvent, toPounds,
   type PriceMode,
 } from '@/lib/event-pricing/price'
 /* 🔴 THE ONE DEFINITION OF "WHICH PLACE IS THIS EVENT AT", IMPORTED NOT RE-WRITTEN — the same
@@ -208,7 +209,8 @@ async function loadPricingPayload(truckId: string) {
     pricing: Object.fromEntries(
       [...typePricing.byTypeId.entries()].map(([id, t]) => [id, {
         price_change_on: t.price_change_on === true,
-        price_mode: isPriceMode(t.price_mode) ? t.price_mode : 'none',
+        // Old names (add_gbp / sub_gbp) are READ as the new ones, so the screens only ever see the new.
+        price_mode: normalisePriceMode(t.price_mode) ?? 'none',
         price_amount: t.price_amount === null || t.price_amount === undefined ? null : Number(t.price_amount),
         price_rounding: isPriceRounding(t.price_rounding) ? t.price_rounding : 'none',
         typed: typePricing.typedByTypeId.get(id) ?? {},
@@ -243,7 +245,9 @@ function cleanPricingPatch(body: Record<string, unknown>): Record<string, unknow
   const patch: Record<string, unknown> = {}
   let mode: PriceMode | null = null
   if ('price_mode' in body) {
-    mode = isPriceMode(body.price_mode) ? body.price_mode : 'none'
+    // 🔴 WRITES THE NEW NAME. An older client still sending 'add_gbp' / 'sub_gbp' is stored as
+    // 'add_amount' / 'sub_amount' (lib/event-pricing/price.ts LEGACY_PRICE_MODE_ALIASES).
+    mode = normalisePriceMode(body.price_mode) ?? 'none'
     patch.price_mode = mode
   }
   if ('price_rounding' in body) {
@@ -531,7 +535,8 @@ export async function POST(req: NextRequest) {
   // ── LOAD ────────────────────────────────────────────────────────────────────────────────────────
   if (action === 'load') {
     const { ok, types } = await readTypesForTruck(supabase, truck.id)
-    const counts = await countUpcomingByType(supabase, truck.id, getLocalDateInTz())
+    // "Upcoming" from the TRUCK's today (Phase 2B; was a fixed London).
+    const counts = await countUpcomingByType(supabase, truck.id, getLocalDateInTz(await truckTimeZone(truck as { country?: string | null; timezone?: string | null })))
 
     /* ══ 🔴 THE BUILT-IN PRIVATE TYPE, ENSURED ON LOAD (20261014, decision 1) ═══════════════════════
      * "Every truck's Event types grid shows Standard and Private by default." The row is created

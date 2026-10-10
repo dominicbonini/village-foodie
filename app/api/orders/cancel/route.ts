@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendCancellationEmail } from '@/lib/email'
+import { moneyFormatForOrder } from '@/lib/money-server'
+import { truckTimeZone } from '@/lib/truck-time'
+import { instantOfLocal } from '@/lib/time-utils'
 // RELEASE ONLY. It cannot capture and it refuses an order whose money was already taken; see the module.
 import { releaseHoldForTerminalOrder } from '@/lib/payments/release-hold'
 import { resolveEmailPaymentState } from '@/lib/payments/email-payment-state'
@@ -32,7 +35,9 @@ export async function POST(req: NextRequest) {
         trucks!truck_id (
           name,
           allow_customer_cancellation,
-          cancellation_cutoff_mins
+          cancellation_cutoff_mins,
+          timezone,
+          country
         ),
         truck_events!event_id (
           end_time
@@ -77,8 +82,12 @@ export async function POST(req: NextRequest) {
       const event = (order as any).truck_events
       const effectiveSlot = order.slot || event?.end_time || null
       if (effectiveSlot) {
-        const slotTime = new Date(`${order.event_date}T${effectiveSlot}`)
-        const cutoffTime = new Date(slotTime.getTime() - truck.cancellation_cutoff_mins * 60 * 1000)
+        // 🔴 THE SLOT IS THE TRUCK'S WALL CLOCK (Phase 2B, 10 October 2026). It was parsed as UTC on the
+        // server (`new Date(\`${date}T${slot}\`)`), so a UK truck's cutoff fell an hour LATE all through BST
+        // and a New York truck's four hours EARLY. Now the truck's zone, by the one rule — the same instant
+        // the receipt page computes for its Cancel button.
+        const slotTime = instantOfLocal(order.event_date, effectiveSlot, await truckTimeZone(truck))
+        const cutoffTime = new Date(slotTime - truck.cancellation_cutoff_mins * 60 * 1000)
         if (new Date() > cutoffTime) {
           return NextResponse.json(
             { error: `Orders can no longer be cancelled within ${truck.cancellation_cutoff_mins} minutes of collection` },
@@ -140,6 +149,7 @@ export async function POST(req: NextRequest) {
     // Send cancellation email to customer
     if (order.customer_email) {
       await sendCancellationEmail({
+        money: await moneyFormatForOrder(order),
         to: order.customer_email,
         customerName: order.customer_name || 'there',
         orderId: order.id,

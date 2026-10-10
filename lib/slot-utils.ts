@@ -10,9 +10,9 @@ export interface SlotBase {
   is_grace?: boolean
 }
 
-// tz defaults to 'Europe/London' (current default; replaced by trucks.timezone later). "now"/"today"
-// run in the EVENT's timezone, so device/server tz can't shift the result.
-export function getAsapSlot<T extends SlotBase>(slots: T[], eventDate?: string, tz: string = 'Europe/London'): T | null {
+// `tz` is the TRUCK's zone (lib/truck-time.ts; TimeSettings.timeZone in a browser) — required, no default.
+// "now"/"today" run in it, so neither the device's nor the server's zone can shift the result.
+export function getAsapSlot<T extends SlotBase>(slots: T[], eventDate: string | undefined, tz: string): T | null {
   // The earliest slot that is (a) not genuinely past — live, event tz, via the SAME isSlotPast the
   // picker uses (handles future/prior day too) — AND (b) server-available. After V7.1, `available`
   // folds the SINGLE prep-based readiness floor (earliestCollectionMins) + capacity, with NO flat +5
@@ -27,7 +27,7 @@ export function getAsapSlot<T extends SlotBase>(slots: T[], eventDate?: string, 
 // INVARIANT: no slot where slotMins < getNowMinsInTz(eventTz) on the event's date may be displayed
 // or selectable on ANY surface. eventDate guards future/prior days (a future event's morning slots
 // are NOT "past"); omit it to treat the slot as today's.
-export function isSlotPast(slot: { collection_time: string }, tz: string = 'Europe/London', eventDate?: string): boolean {
+export function isSlotPast(slot: { collection_time: string }, tz: string, eventDate?: string): boolean {
   if (eventDate) {
     const today = getLocalDateInTz(tz)
     if (eventDate > today) return false  // future day — never past

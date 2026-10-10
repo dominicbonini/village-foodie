@@ -9,6 +9,7 @@ import { getProductionSlotUnits, readCookingReservations } from '@/lib/slot-book
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { truckTimeZone } from '@/lib/truck-time'
 import { normaliseInterval, resolveIntervalsFor } from '@/lib/slot-interval'
 import { resolveCategoriesForVan } from '@/lib/van-category-settings'
 import { resolveBatchReservations } from '@/lib/features'
@@ -21,14 +22,14 @@ const supabase = createClient(
 export const revalidate = 0
 
 /** Normalise dd/mm/yyyy or yyyy-mm-dd to yyyy-mm-dd for Supabase. */
-function normalizeEventDate(raw: string): string {
+function normalizeEventDate(raw: string, todayInTruckTz: string): string {
   if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw
   const m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
   if (m) {
     const [, d, mo, y] = m
     return `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}`
   }
-  return new Date().toISOString().split('T')[0]
+  return todayInTruckTz
 }
 
 interface TruckRow {
@@ -37,6 +38,8 @@ interface TruckRow {
   extra_wait_started_at: string | null
   collection_interval_mins: number | null
   slot_duration_mins: number | null
+  timezone: string | null
+  country: string | null
 }
 
 // ── 🔴 WHO IS ASKING: OPERATOR OR CUSTOMER? ──────────────────────────────────────────────────────────
@@ -60,7 +63,7 @@ async function resolveTruck(truckIdOrSlug: string): Promise<TruckRow | null> {
   // interval for an event whose van cannot be resolved, and it carries the legacy
   // "interval 0 ⇒ fall back to the collection_times table" contract. It is simply no longer editable.
   // P3: plan + feature_overrides are EXISTING columns (named here for the batch-reservations switch).
-  const cols = 'id, collection_interval_mins, slot_duration_mins, plan, feature_overrides' // extra-wait is now event-scoped
+  const cols = 'id, collection_interval_mins, slot_duration_mins, plan, feature_overrides, timezone, country' // extra-wait is now event-scoped
   const bySlug = await supabase.from('trucks').select(cols).eq('slug', truckIdOrSlug).single()
   if (bySlug.data) return bySlug.data as unknown as TruckRow
   const byId = await supabase.from('trucks').select(cols).eq('id', truckIdOrSlug).single()
@@ -75,8 +78,6 @@ function effectiveExtraWaitMins(mins: number, startedAt: string | null): number 
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ truckId: string }> }) {
   const { truckId: truckIdParam } = await params
-  const rawDate = req.nextUrl.searchParams.get('date') || new Date().toISOString().split('T')[0]
-  const date = normalizeEventDate(rawDate)
   const paramStart = req.nextUrl.searchParams.get('start') || null
   const paramEnd   = req.nextUrl.searchParams.get('end')   || null
   const eventIdParam = req.nextUrl.searchParams.get('event_id')
@@ -87,6 +88,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
   }
   const truckId = truck.id
+  // 🔴 THE TRUCK'S CLOCK (Phase 2B): trucks.timezone, else its country's default — was a fixed London for
+  // "now" and the UTC date for a request that names no date (yesterday, 00:00–01:00 BST).
+  const eventTz = await truckTimeZone(truck)
+  const rawDate = req.nextUrl.searchParams.get('date') || getLocalDateInTz(eventTz)
+  const date = normalizeEventDate(rawDate, getLocalDateInTz(eventTz))
 
   // Resolve THE event for this slot view (re-key fix): prefer the explicit event_id the
   // customer page passes (event.id). Fall back to the sole non-cancelled event on the
@@ -237,11 +243,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   }
 
   // ── Calculate minimum ready time ─────────────────────────────────────────
-  // EVENT timezone (hardcoded 'Europe/London' for now — replaced by trucks.timezone later). now/today
-  // run in this tz, NOT the server's (UTC on Vercel) — otherwise in BST the server is an hour behind
-  // and wrongly marks a just-passed slot as still available. The client reads `tz` from the response
-  // and derives `isSlotPast` live in the same tz, so server + every client agree.
-  const eventTz = 'Europe/London'
+  // The TRUCK's zone (resolved above). now/today run in it, NOT the server's (UTC on Vercel) — otherwise
+  // in BST the server is an hour behind and wrongly marks a just-passed slot as still available. The client
+  // reads `tz` from the response and derives `isSlotPast` live in the same tz, so server + clients agree.
   const today = getLocalDateInTz(eventTz)
   const nowMins = getNowMinsInTz(eventTz)
 

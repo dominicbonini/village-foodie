@@ -13,6 +13,7 @@
 // only surfaces as a worse import weeks later.
 
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { currencySymbol, type MoneyFormat } from '@/lib/money-format'
 
 export const STANDARD_CATEGORIES = [
   'Starters', 'Mains', 'Burgers', 'Pizza', 'Wraps & Sandwiches',
@@ -62,9 +63,12 @@ export class MenuExtractionError extends Error {
  */
 export async function extractMenu(
   supabase: SupabaseClient,
-  truck: { id: string; name: string },
+  /** 🔴 `money` is the TRUCK's format (lib/money-server moneyFormatForTruck): the prompt's worked examples
+   *  are written in its symbol, so a US menu is described in dollars. GB text is unchanged. */
+  truck: { id: string; name: string; money: MoneyFormat },
   input: { file?: File | null; text?: string | null },
 ): Promise<MenuExtraction> {
+  const S = currencySymbol(truck.money)
   const file = input.file ?? null
   const text = input.text ?? null
 
@@ -161,17 +165,17 @@ MODIFIER GROUPS (options/variants) — each item MAY carry an optional "modifier
     dishes, keep them SEPARATE. E.g. "Green Curry" vs "Red Curry" differ by curry-TYPE (not protein)
     → TWO dishes. "Margherita Pizza" vs "Pepperoni Pizza" differ by topping → TWO dishes.
   - WORKED EXAMPLES:
-    • "Tom Yum Prawn £9.50 / Tom Yum Chicken £9.50" → ONE item "Tom Yum" + protein group
-      [Prawn £0, Chicken £0]. (Equal price still collapses — protein token differs.)
-    • "Pad Thai Beef £9 / Pad Thai Prawn £10.50 / Pad Thai Chicken £9" → ONE item "Pad Thai" + protein
-      group [Beef £0, Chicken £0, Prawn £1.50].
+    • "Tom Yum Prawn ${S}9.50 / Tom Yum Chicken ${S}9.50" → ONE item "Tom Yum" + protein group
+      [Prawn ${S}0, Chicken ${S}0]. (Equal price still collapses — protein token differs.)
+    • "Pad Thai Beef ${S}9 / Pad Thai Prawn ${S}10.50 / Pad Thai Chicken ${S}9" → ONE item "Pad Thai" + protein
+      group [Beef ${S}0, Chicken ${S}0, Prawn ${S}1.50].
     • "Green Curry Chicken / Red Curry Chicken" → TWO dishes (the differing token Green/Red is a
       curry-TYPE, not a protein — keep separate).
-  - "similar price" (when used as a soft signal elsewhere) means within £1; but per the deterministic
+  - "similar price" (when used as a soft signal elsewhere) means within ${S}1; but per the deterministic
     rule above, price equality is NOT required to collapse a protein/size variant. Over-grouping a
     protein/size axis is cheap (the operator can split later); under-grouping is worse — so lean in.
 - EXPLICIT GROUPS: when the menu STATES a choice ("choice of protein: chicken/beef/prawn",
-  "add extras (£1.50): cheese, bacon"), extract it as a modifierGroup directly. These are NOT
+  "add extras (${S}1.50): cheese, bacon"), extract it as a modifierGroup directly. These are NOT
   inferred — set "_inferredFromVariants": false.
 - Each option is { "name", "price", "allergens"?, "dietary"? }. The price is the up-charge above the
   item's base price (0 for no extra charge).

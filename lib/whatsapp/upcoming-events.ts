@@ -27,6 +27,7 @@
 // decision. A preview tool that silently disagreed with the live path about what day it is would be
 // worse than one that reproduces the defect faithfully. Fix both together or neither.
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { getLocalDateInTz } from '@/lib/time-utils'
 /* 🔴 PRIVATE EVENTS NEVER GROUND THE MODEL ON A VENUE. See the call below. */
 import { redactPrivateRows } from '@/lib/private-events/read'
 
@@ -70,8 +71,11 @@ export const UPCOMING_EVENT_LIMIT = 10
 export async function fetchUpcomingTruckEvents(
   supabase: SupabaseClient,
   truckId: string,
+  /** The truck's zone (lib/truck-time.ts). "Upcoming" starts at the truck's today — Phase 2B; it was the
+   *  UTC date, which included yesterday's events from 00:00 to 01:00 BST. */
+  timeZone: string,
 ): Promise<UpcomingTruckEvent[]> {
-  const today = new Date().toISOString().split('T')[0]   // UTC -- see the header note
+  const today = getLocalDateInTz(timeZone)
 
   const { data, error } = await supabase
     .from('truck_events')

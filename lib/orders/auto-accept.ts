@@ -61,6 +61,8 @@ export function decideAutoAccept(args: {
   items: unknown
   /** The raw deals array — read for `slotNotes` only. */
   deals: unknown
+  /** The TRUCK's zone (lib/truck-time.ts) — "now" and "today" for the pre-order deadline. */
+  timeZone: string
 }): boolean {
   const { truck, orderLines, autoAcceptByName, preorderByName, eventDate, eventStartMins, offlineNoAutoAcceptUntil, notes, items, deals } = args
 
@@ -73,8 +75,8 @@ export function decideAutoAccept(args: {
   // deadline forces the order pending — the SAME effect as auto_accept=false, via the SAME
   // helper Stage 3 uses for the menu sold-out (display ⟷ enforcement can't diverge). Event-tz
   // now (NEVER device-local); plan-gated server-side (a downgraded truck's config is inert).
-  // tz defaults to 'Europe/London' (the documented current state until per-truck tz lands).
-  const preorderTz = truck.timezone || 'Europe/London'
+  // The TRUCK's zone, resolved by the caller from trucks.timezone else its country's default (Phase 2B).
+  const preorderTz = args.timeZone
   const preorderFeatureOn = canAccess(
     truck.plan as never, 'advance_preordering', (truck.feature_overrides ?? {}) as never, truck.trial_expires_at ?? null
   )

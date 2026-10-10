@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendEventCancellationEmail } from '@/lib/email'
+import { truckTimeSettings } from '@/lib/truck-time'
 import { getSoleActiveVanId } from '@/lib/van-utils'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { hasValidEventTimes } from '@/lib/time-utils'
@@ -18,7 +19,7 @@ const supabase = createClient(
 async function getTruck(token: string) {
   const { data } = await supabase
     .from('trucks')
-    .select('id, name, plan, feature_overrides, trial_expires_at')
+    .select('id, name, plan, feature_overrides, trial_expires_at, timezone, country')
     .eq('dashboard_token', token)
     .single()
   return data
@@ -308,9 +309,12 @@ export async function POST(req: NextRequest) {
 
       cancelledOrders = affectedOrders.length
 
+      // The truck's time settings — the email's date in its country's words (Phase 2B).
+      const truckTime = await truckTimeSettings(truck)
       for (const order of affectedOrders) {
         if (order.customer_email) {
           await sendEventCancellationEmail({
+            time: truckTime,
             to: order.customer_email,
             customerName: order.customer_name,
             orderId: order.id,

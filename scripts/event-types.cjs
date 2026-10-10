@@ -51,8 +51,12 @@ const LIB_NOW = [
    * with the rows handed to it. `lib/schedule-graphics/places.ts` is compiled beside it because that
    * is where the REAL `placeForEvent` lives and the whole point is to use it, not a look-alike. */
   'lib/schedule-graphics/places.ts',
+  // places.ts imports this since Phase 2B (10 October 2026): its time range is in the truck's style.
+  'lib/time-utils.ts',
   'lib/slot-interval-core.ts', 'lib/slot-interval.ts',
   'lib/buzzer.ts', 'lib/payments/paid-step.ts', 'lib/features.ts',
+  // lib/features.ts imports these two since 10 October 2026 (plan prices come from country_settings).
+  'lib/country-settings-types.ts', 'lib/money-format.ts',
   /* The offline vocabulary. A leaf with no imports, and the OWNER of the two mode values — so a
    * check on the resolver's mode chain is a check against the same constants the screens render. */
   'lib/copy/offlineProtection.ts',
@@ -375,16 +379,31 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
       'lib/order-repricing.ts': 'schedule-graphics',
       'lib/order-calculations.ts': 'schedule-graphics',
     }
+    /* ⚠️ PHASE 2A (10 October 2026) CHANGED ONE THING IN order-calculations.ts, AND IT IS DISPLAY:
+     * `formatModifiers` prints in the basket's currency instead of a typed £ (and imports the formatter
+     * to do it). The calculator itself must still be byte-identical, so that one function and that one
+     * import are taken out of BOTH sides before comparing — and the replacement is asserted below. */
+    /* ⚠️ AND AUDIT D34 (docs/audit-fixes-report.md) CHANGED ONE LINE OF THE CALCULATOR, ON PURPOSE: a fixed
+     * discount is capped at the subtotal. It is put back to its old form here so the rest of the calculator is
+     * still compared byte for byte; scripts/audit-fixes.cjs proves the cap and that every other total is unmoved. */
+    const sansDisplay = (f, src) => f !== 'lib/order-calculations.ts' ? src : src
+      .replace(/^import \{ formatMajorOrBare, type MoneyFormat \} from '@\/lib\/money-format'\n\n/m, '')
+      .replace(/\/\*\* Format modifier names[\s\S]*?\n\}\n/, '')
+      .replace(/        \/\/ Fixed amount discount — never more than the subtotal \(audit D34\)[^\n]*\n        \/\/ zero, but the STORED[^\n]*\n        discountAmt = Math\.min\(discountCode\.value, subtotal\)/,
+        '        // Fixed amount discount\n        discountAmt = discountCode.value')
     const strayed = []
     for (const f of ENGINE_UNMOVED) {
-      const now = fs.readFileSync(path.join(REPO, f), 'utf8')
+      const now = sansDisplay(f, fs.readFileSync(path.join(REPO, f), 'utf8'))
       const matches = Object.entries(PARENTS)
-        .filter(([, ref]) => gitShow(ref, f) === now).map(([name]) => name)
+        .filter(([, ref]) => sansDisplay(f, gitShow(ref, f)) === now).map(([name]) => name)
       if (!matches.includes(EXPECTED_PARENT[f])) strayed.push(`${f} (matches: ${matches.join(',') || 'NEITHER PARENT'})`)
     }
     t('🔴 THE PRICING ENGINE HAS NOT MOVED — order-repricing (loadPriceBook + repriceOrder), the calculator and the paid step are byte-identical to a named parent',
       strayed.length === 0)
     if (strayed.length) console.log('      strayed: ' + J(strayed))
+    t('⚠️ …and the one display edit taken out above is the money sweep\'s: formatModifiers prints through the formatter',
+      /export function formatModifiers\(modifiers: \{ name: string; price: number \}\[\], fmt: MoneyFormat \| null \| undefined\): string \{\n  return modifiers\.map\(m => m\.price > 0 \? `\$\{m\.name\} \+\$\{formatMajorOrBare\(m\.price, fmt, 'modifier list'\)\}` : m\.name\)\.join\(', '\)\n\}/
+        .test(fs.readFileSync(path.join(REPO, 'lib/order-calculations.ts'), 'utf8')))
     /* ⚠️ AND THE PREMISE: the two parents really do differ on at least one of the files above, or
      * "matches schedule-graphics" would be free. */
     t('⚠️ …and the two parents genuinely differ somewhere in the engine, so that assertion is not free',
@@ -2230,10 +2249,11 @@ head('5b · THE MODAL AND THE CARD')
    * an operator edits twenty times a service.
    * 🔴 ASSERTED AS BOTH STATES AND THE BOUNDARY BETWEEN THEM, because "read-only" is only true if
    * there is nothing to focus: the normal state is a `<p>`, not a disabled input. */
-  t('🔴 NORMAL STATE: the price is plain right-aligned text with £, not a box and not focusable', (() => {
+  t('🔴 NORMAL STATE: the price is plain right-aligned text in the truck\'s currency, not a box and not focusable', (() => {
     const page = codeOf(dashPage)
     return /<p data-event-price className=\{`w-20 text-right text-sm font-bold tabular-nums/.test(page)
-      && /£\{shownPrice\.toFixed\(2\)\}/.test(page)
+      // Phase 2A: the figure is the TRUCK's currency through the one formatter, never a typed £.
+      && /\{truckAmount\(shownPrice\)\}/.test(page)
       /* ⛔ THE INPUT EXISTS ONLY INSIDE THE EDIT ARM, and the claim is STRUCTURAL: within the price
        * column's own wrapper, the input comes first and the `<p>` is the else arm.
        * ⚠️ SLICED FROM THE WRAPPER, NOT FROM THE FIRST `{priceEditing?(` IN THE FILE — that one is the
@@ -2288,7 +2308,10 @@ head('5b · THE MODAL AND THE CARD')
       && /setPricePending\(p=>\(\{\.\.\.p,\[itemId\]:null\}\)\)/.test(page)
       /* 🔴 THE LINE UNDER THE NAME NAMES THE **FALLBACK** AND THE TYPE, not the menu price always:
        * an event price that departs from a Festival rule departs from the FESTIVAL price. */
-      && /\{eventPriceOwnNote\(fallbackPrice,eventTypeName\)\}/.test(page)
+      // 10 October 2026: the note carries the TRUCK's currency symbol, never a typed £ — and a truck with
+      // no currency (an old offline snapshot) gets no symbol rather than a guessed one.
+      // Phase 2A: it takes the truck's whole money format (symbol AND locale), from /api/dashboard.
+      && /\{eventPriceOwnNote\(fallbackPrice,eventTypeName,truck\?\.money\)\}/.test(page)
       && /const fallbackPrice=\(itemId\?eventFallback\[itemId\]:undefined\)\?\?item\.price/.test(page)
   })())
   /* ══ 🔴 NOTHING SAVES UNTIL SAVE, AND CANCEL MAKES NO REQUEST ════════════════════════════════════
@@ -2448,7 +2471,57 @@ head('5b · THE MODAL AND THE CARD')
        * below asserts the two new headings are really there. */
       /^<span className="w-16 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">Item limit<\/span>$/,
       /^<span className="w-12 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">Available<\/span>$/,
+      /* ⚠️ PHASE 2A — THE MONEY SWEEP (10 October 2026). Every line that printed a hand-typed `£…toFixed(2)`
+       * left, and its twin through lib/money-format arrived (the order's currency for an order, the
+       * truck's for the menu). Accounted, not waived: the companion assertion below fails if any line on
+       * the page still types a £, and scripts/money-sweep-parity.cjs proves the UK text byte-identical. */
+      /£.*toFixed\(2\)|toFixed\(2\).*£/,
+      /* ══ ⚠️ PHASE 2B — THE TRUCK'S CLOCK (10 October 2026). EDITS, NOT LOSSES, AND PROVED BELOW. ══════
+       * Every "now" / "today" on the page moved from the device's (or UTC's) clock to the truck's zone,
+       * and every time it prints moved to the truck's style. Each line here left in that form and
+       * arrived in a new one; the companion assertion under this list fails if any new form is missing. */
+      /^import \{ formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz \} from '@\/lib\/time-utils'$/,
+      /^async function pruneStaleEventCache\(\): Promise<void> \{$/, /^useEffect\(\(\)=>\{void pruneStaleEventCache\(\)\},\[\]\)$/,
+      /^const todayIso = new Date\(\)\.toISOString\(\)\.split\('T'\)\[0\]$/,
+      /^:pickDefaultEventByTime\(upcomingEvents\)$/, /^const asapSlot=getAsapSlot\(slots,selectedOrDefaultEvent\?\.event_date\)$/,
+      /^const todayStr=localTodayIso\(\) \/\/ LOCAL date \(s\.7\)/, /^const currentTime=new Date\(\)\.toTimeString\(\)\.slice\(0,5\)$/,
+      /new Date\(`\$\{\w+\.event_date\}T\$\{\w+\.(start|end)_time\}`\)/, /^\},\[upcomingEvents,selectedEventId\]\)$/,
+      /^const nowMins=new Date\(\)\.getHours\(\)\*60\+new Date\(\)\.getMinutes\(\)$/,
+      /^setFinishConfirm\(\{eventId,early:finishingEarly,endTime:ev\?\.end_time\?formatTime\(ev\.end_time\):''\}\)$/,
+      /resolveCollectionTime\([oab],activeEvent\)(\?\.getTime|$)/,
+      /^\},\[orders,authenticated,soundEnabled,soundCfg,activeEvent,catConfigs,itemCategoryMap\]\)$/,
+      /^\{degradedBanner\(degraded,lastRefresh\)\}$/, /^Menu saved on this tablet at \{menuSnapshotAt\.toLocaleTimeString\(\[\]/,
+      /formatTime\(activeEvent\.(start|end)_time\)/, /eventDateLabel\(activeEvent\.event_date\)\}<\/span>$/,
+      /^<DayLoadStrip slots=\{displaySlots\} eventDate=\{activeEvent\?\.event_date \?\? null\} variant="(strip|sidebar)" breachedSlots=\{breachedSlotTimes\} \/>$/,
+      /^const slotDt=orderEventDate$/, /new Date\(y,mo-1,d,/, /^:\(\(\)=>\{const t=new Date\(\);t\.setHours\(slotH,slotM,0,0\);return t\}\)\(\)$/,
+      /String\(\w+\.getHours\(\)\)\.padStart\(2,'0'\)\}:\$\{String\(\w+\.getMinutes\(\)\)/,
+      /^Start by \{b\.startBy\} · /,
+      /^\{!isDemo&&truck&&<PrintingSettings .*waitingCount=\{printing\.waitingCount\}\/>\}$/,
+      /* ⚠️ PHASE 2C — the demo's signup box now takes the truck's phone copy. The one line that left is the
+       * banner's DemoGetStarted mount; its replacement (`phone={truck?.phone??null}`) is asserted below. */
+      /^\{isDemo&&<DemoModeBanner action=\{<DemoGetStarted token=\{token\} isAdmin=\{isAdmin\} extractionSource=\{demoSession\?\.extraction_source\?\?null\}\/>\}\/>\}$/,
     ]
+    t('⚠️ …and the Phase 2C phone copy reaches both demo signup mounts', (() => {
+      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')).replace(/\s+/g, '')
+      return /<DemoGetStartedtoken=\{token\}isAdmin=\{isAdmin\}extractionSource=\{demoSession\?\.extraction_source\?\?null\}phone=\{truck\?\.phone\?\?null\}\/>/.test(pg)
+        && /<DemoLoopCompletetoken=\{token\}phone=\{truck\?\.phone\?\?null\}/.test(pg)
+    })())
+    t('⚠️ …and every Phase 2B edit is present in its truck-clock form', (() => {
+      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
+      const flat = pg.replace(/\s+/g, '')
+      return !/localTodayIso|toTimeString\(\)|\.getHours\(\)|toLocaleTimeString\(/.test(pg)
+        && /pruneStaleEventCache\(timeSettingsOr\(truck\.time,'dashboard'\)\.timeZone\)/.test(flat)
+        && /pickDefaultEventByTime\(upcomingEvents,dashTz\)/.test(flat)
+        && /getAsapSlot\(slots,selectedOrDefaultEvent\?\.event_date,dashTz\)/.test(flat)
+        && /constnowMins=getNowMinsInTz\(dashTz\)/.test(flat)
+        && (flat.match(/resolveCollectionTime\([oab],activeEvent,dashTz\)/g) || []).length === 3
+        && /degradedBanner\(degraded,lastRefresh,dashTime\)/.test(flat)
+        && /formatInstantClock\(menuSnapshotAt,dashTime\)/.test(flat)
+        && /eventDateLabel\(activeEvent\.event_date,dashTime\)/.test(flat)
+        && (flat.match(/<DayLoadStrip[^>]*time=\{truck\?\.time\}/g) || []).length === 2
+        && /waitingCount=\{printing\.waitingCount\}time=\{truck\.time\}/.test(flat)
+        && /instantOfLocal\(activeEvent\.event_date,activeEvent\.end_time,dashTz\)/.test(flat)
+    })())
     /* 🔴 THE COMPANION CHECK FOR THE ONE ACCOUNTED EDIT. An entry on that list excuses a lost line
      * only while its replacement exists; without this, deleting the call outright would read as
      * "explained". This is the `movedEdits` pattern scripts/schedule-graphics-places.cjs uses. */
@@ -2456,6 +2529,9 @@ head('5b · THE MODAL AND THE CARD')
     /* 🔴 FOUR ACCOUNTED EDITS NOW, AND EVERY ONE IS PROVED PRESENT IN ITS NEW FORM. An entry on the
      * ALLOWED list excuses a lost line only while its replacement exists; without this, deleting a
      * call outright would read as "explained". */
+    t('⚠️ …and the money sweep left no hand-typed £ on the page — every amount is the formatter\'s', (() => {
+      return !nowPage.split('\n').some(l => /£/.test(l)) && /formatMajorOrBare\(/.test(nowPage) && /orderMoney\(/.test(nowPage)
+    })())
     t('⚠️ …and every ACCOUNTED EDIT really is present in its new form', (() => {
       const flat = nowPage.replace(/\s+/g, '')
       return /resolvePaidStep\(truck,activeEvent,eventType,vanTakesCash\)/.test(flat)

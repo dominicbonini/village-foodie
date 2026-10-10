@@ -109,9 +109,9 @@ export function buildSlotAvailability(params: {
    * here, what happens" — from one engine. Omit (customer path) for queue-only.
    */
   basketByCat?: QtyByCat
-  /** Event timezone for the "today"/is_past comparison. Default 'Europe/London'. The caller must
+  /** The TRUCK's zone (lib/truck-time.ts) for the "today"/is_past comparison — required. The caller must
    *  pass `nowMins` computed in the SAME tz (getNowMinsInTz(tz)) so the two agree. */
-  tz?: string
+  tz: string
   /**
    * 🔴 THE DISPLAYED GRID'S INTERVAL (5/10/15/20/30). DISPLAY ONLY — it changes which windows the
    * no-basket DOT reads (coverDotWindows), never the fit. Default 5 ⇒ the original single-window read,
@@ -132,7 +132,7 @@ export function buildSlotAvailability(params: {
   const capWindow = Math.max(1, Math.round(capacityWindowMins ?? 5))
   // "today" in the EVENT timezone — must agree with the tz-computed nowMins passed in. UTC would
   // roll over at UTC midnight and mis-flag a future event's slots as is_past.
-  const today = getLocalDateInTz(tz ?? 'Europe/London')
+  const today = getLocalDateInTz(tz)
   const basket = basketByCat ?? {}
   const hasBasket = Object.keys(basket).length > 0
 

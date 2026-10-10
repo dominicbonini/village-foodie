@@ -19,9 +19,11 @@
 //   3. INVERT WIDTH. `GS B` inverts the character cells actually printed — the black is ragged-right. A
 //      block-level `bg-black` filled the whole container instead, overstating every emphasised block as a
 //      solid full-width bar. Now an inline span, so the black hugs the glyphs exactly as it will on paper.
-//   4. CHARACTERS. The printer cannot render anything outside printable ASCII except '£'. "José" previewed
-//      perfectly and prints "Jos?". Now passed through printableText() — THE SAME FUNCTION strBytes() is
-//      built on, so the preview cannot drift from the byte stream.
+//   4. CHARACTERS. The printer gets plain ASCII and '£' only. Since audit D38 (docs/audit-fixes-report.md)
+//      the text is folded to plain letters first — "José" prints "Jose", "Jalapeños" "Jalapenos" — and only
+//      what has no plain-letter form (an emoji) becomes '?'. Passed through printableText() — THE SAME
+//      FUNCTION strBytes() is built on — so the preview cannot drift from the byte stream; the lines it gets
+//      are already cleaned before layout, so the preview's columns match the paper's too.
 //
 // ⚠️ STILL NOT FAITHFUL, and not fixable in a browser: thermal contrast, actual print density, paper
 // feed/line pitch, and how inverted text physically looks coming off a print head. Nothing here has been

@@ -14,6 +14,8 @@ export type VenueRow = {
   latitude: number | null
   longitude: number | null
   postcode: string | null
+  /** ISO country (20261010_15). Absent on a row read without it — counted as GB, the column default. */
+  country?: string | null
 }
 
 export type VenueMatch = {
@@ -181,8 +183,14 @@ function pickBest(cands: VenueRow[], scrapedName: string, eventVillage: string |
 export function findVenue(
   venueName: string | null,
   village: string | null,
-  allVenues: VenueRow[],
+  allVenuesAnyCountry: VenueRow[],
+  /** 🔴 PHASE 2D-2: ONLY VENUES IN THIS COUNTRY ARE CANDIDATES — a US "Red Lion, Cambridge" never matches the
+   *  UK one. A row without a country is GB (the column default), so a caller that never selected the column
+   *  — the offline UK backfills — sees exactly what it saw before. */
+  country: string = 'GB',
 ): VenueMatch {
+  const want = country.toUpperCase()
+  const allVenues = (allVenuesAnyCountry ?? []).filter(v => (v.country || 'GB').toUpperCase() === want)
   if (!allVenues || allVenues.length === 0 || !venueName) return { venue: null, confidence: 'none' }
   const sTok = new Set(toks(venueName))
   const normScraped = normName(venueName)

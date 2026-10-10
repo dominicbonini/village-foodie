@@ -22,6 +22,9 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 import { readLedger, type OrderBalance, readOrderBalance } from '@/lib/payments/ledger'
 import { recordOnlineCardRefund } from '@/lib/payments/online'
+import { ledgerCurrency } from '@/lib/payments/currency'
+import { moneyFormatForOrder } from '@/lib/money-server'
+import { formatMinorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { stripeAccountForTruck } from '@/lib/payments/authorize'
 import { logAction } from '@/lib/audit/actionAudit'
 import type { ResolvedActor } from '@/lib/audit/actor'
@@ -99,6 +102,19 @@ async function refundableFor(
  * 🔴 IT CANNOT THROW PAST THE GUARDS. Everything a caller needs to say to an operator is a return value,
  * so a route can render a refusal without inspecting an exception.
  */
+/** The order's money format for a sentence about it. DISPLAY ONLY — read after every decision is made.
+ *  A failure is logged loudly and the sentence carries the bare figure, never a guessed £. */
+async function orderFormatFor(supabase: SupabaseClient, orderKey: string): Promise<MoneyFormat | null> {
+  try {
+    const { data, error } = await supabase.from('orders').select('currency, country').eq('order_key', orderKey).maybeSingle()
+    if (error || !data) throw new Error(error?.message ?? 'order not found')
+    return await moneyFormatForOrder(data)
+  } catch (e) {
+    console.error(`[refund] 🔴 no money format for order_key=${orderKey} — the message shows a bare figure:`, e instanceof Error ? e.message : e)
+    return null
+  }
+}
+
 export async function refundOrder(
   supabase: SupabaseClient,
   args: {
@@ -149,7 +165,7 @@ export async function refundOrder(
       status: 'refused', reason: 'exceeds_remaining', remainingMinor: refundable.remainingMinor,
       detail: refundable.remainingMinor === 0
         ? 'This order has already been fully refunded.'
-        : `Only £${(refundable.remainingMinor / 100).toFixed(2)} is left to refund on this order.`,
+        : `Only ${formatMinorOrBare(refundable.remainingMinor, await orderFormatFor(supabase, args.orderKey), 'refund refusal')} is left to refund on this order.`,
     }
   }
 
@@ -250,7 +266,12 @@ export async function refundOrder(
       // livemode of its own to copy here. With the key guard removed, an `sk_live_` key makes this `true`
       // and the refund row counts as live money without an edit to this line.
       livemode: !process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_'),
-      currency: refund.currency ?? undefined,
+      // 🔴 UPPER-CASED (10 October 2026). Stripe returns 'gbp'; this line stored it as received, and that is
+      // the one lower-case row in order_payments (docs/country-settings-sql-report.md §3.5) — it then won
+      // the idempotency key, so the webhook's upper-cased copy was dropped. ledgerCurrency also enforces
+      // this inside the writer; doing it here too keeps the source honest. The refund's own currency (Stripe
+      // always sets it) — never a literal.
+      currency: ledgerCurrency(refund.currency, `refund ${refund.id}`),
     })
   } catch (ledgerErr) {
     // 🔴 THE MONEY HAS GONE BACK AND WE FAILED TO RECORD IT. Loud, and RECOVERABLE WITHOUT US: Stripe's

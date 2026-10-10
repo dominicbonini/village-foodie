@@ -68,7 +68,8 @@ const DASH_ACTION = 'app/api/dashboard/action/route.ts'
 /** Every TS file the suites need compiled. ⚠️ The variant loop copies the unpatched ones verbatim. */
 const LIB_FILES = [LIB, PREVIEW_LIB]
 /** Files the compiled ones IMPORT. `@/types` is mapped to the root, so it has to be there. */
-const LIB_DEPS = ['types.ts']
+// `lib/time-utils.ts` since Phase 2B (10 October 2026): places.ts writes its times in the truck's style.
+const LIB_DEPS = ['types.ts', 'lib/time-utils.ts']
 
 function buildLib(root, tag) {
   const { out, req } = compile(root, LIB_FILES, tag)
@@ -1173,8 +1174,9 @@ function runWiringSuite(lib) {
   t('⛔ Card 2 — "Events here" — is gone from the detail pane',
     !/Events here/.test(codeOnly(U)) && !/traded_last_year === 1/.test(codeOnly(U)))
   t('🔴 …and the list row still shows Next-or-Last, from the shared builder',
-    /placeSubLine\(p\)/.test(U)
-    && /export const placeSubLine = \(p: Place\): string => placeWhenLine\(p, shortDay\)/.test(U))
+    // Phase 2B: the line is in the truck's words, so it is handed the truck's time settings.
+    /placeSubLine\(p, ts\)/.test(U)
+    && /export const placeSubLine = \(p: Place, ts: TimeSettings \| null \| undefined\): string => placeWhenLine\(p, ymd => shortDay\(ymd, ts\), ts\)/.test(U))
   /* 🔴 THE BREAKPOINT IS `md` (768px) NOW, NOT `lg`. Measured: at 820px (iPad portrait) the 380px
    * list sits beside the form with no horizontal scroll, so an iPad gets the two-pane layout the
    * mockup asks for. See scripts/schedule-places-render.cjs and the report. */
@@ -2419,6 +2421,118 @@ function runWiringSuite(lib) {
         reason: 'it gained `data-venue-suggestions` and a taller cap — three groups, not one list',
         nowIn: 'app/manage/[token]/page.tsx',
         now: 'data-venue-suggestions' },
+      /* ══ 🔴 COUNTRY SETTINGS (10 October 2026) — every price in Billing and the van add-on now comes
+       * from the truck's own country_settings row; the raw £29/£49 literals and VAN_ADDON_PRICE are
+       * gone. Proved byte-identical for GB by scripts/country-settings-parity.cjs. */
+      { was: 'import { PLAN_META, canAccess, maxVans } from \'@/lib/features\'',
+        reason: 'planMonthlyMinor joined the import — plan prices come from the truck\'s country settings',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'import { PLAN_META, canAccess, maxVans, planMonthlyMinor } from \'@/lib/features\'' },
+      { was: 'import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from \'@/lib/plan-features\'',
+        reason: 'the price constants became functions of the settings',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'import { planPrices, PLAN_DESCRIPTIONS, transactionRows, FEATURE_SECTIONS, footnotes, vanAddonMonthlyMinor } from \'@/lib/plan-features\'' },
+      { was: 'const VAN_ADDON_PRICE: Record<string, number> = { starter: 0, pro: 29, max: 49, trial: 0 }',
+        reason: 'the raw-pounds van map is DELETED; an extra van costs the plan\'s monthly price from settings',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)' },
+      { was: 'const addonPrice = VAN_ADDON_PRICE[truck.plan] ?? 0',
+        reason: '…read from the settings-derived minor amount',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'const addonPrice = vanAddonMinor' },
+      { was: '<strong>{vanPx(`£${VAN_ADDON_PRICE[truck.plan]}/month`)}</strong>{\' \'}',
+        reason: '…and labelled by the formatter, still through vanPx',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '<strong>{vanPx(vanAddonLabel(\'month\'))}</strong>' },
+      { was: 'Add truck — {vanPx(`£${VAN_ADDON_PRICE[truck.plan]}/mo`)}',
+        reason: '…both labels',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'Add truck — {vanPx(vanAddonLabel(\'mo\'))}' },
+      { was: '}`}>{px(p === \'trial\' ? \'Free\' : PLAN_PRICES[p])}</p>',
+        reason: 'Billing\'s column price from the truck\'s settings, still through px',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '{px(p === \'trial\' ? \'Free\' : prices[p])}' },
+      { was: '{TRANSACTION_ROWS.map(row => (',
+        reason: 'the fee rows from transactionRows(settings)',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '{feeRows.map(row => (' },
+      { was: '{FOOTNOTES.map(f => (',
+        reason: 'the footnotes from footnotes(settings) — numbering and the \'2\' mask unchanged',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '{notes.map(f => (' },
+      { was: '<p className="text-sm text-slate-700 mt-0.5">{px(PLAN_PRICES[currentPlan])}</p>',
+        reason: 'the current plan\'s price from settings',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '<p className="text-sm text-slate-700 mt-0.5">{px(prices[currentPlan])}</p>' },
+      { was: 'Upgrade to Max — {px(\'£49/mo\')}',
+        reason: 'raw £49 literal removed',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'Upgrade to Max — {px(maxMo)}' },
+      { was: 'Choose Pro — {px(\'£29/mo\')}',
+        reason: 'raw £29 literal removed',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'Choose Pro — {px(proMo)}' },
+      { was: 'Pro — {px(\'£29/mo\')}',
+        reason: 'raw £29 literal removed',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'Pro — {px(proMo)}' },
+      { was: 'Max — {px(\'£49/mo\')}',
+        reason: 'raw £49 literal removed',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'Max — {px(maxMo)}' },
+      { was: '{px(plan === \'pro\' ? \'£29/mo\' : \'£49/mo\')} per truck · renews automatically',
+        reason: 'raw literals removed',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '{px(plan === \'pro\' ? proMo : maxMo)} per truck · renews automatically' },
+      { was: '? `${px(\'£49/month\')} — High-volume operations & festivals`',
+        reason: 'raw literal removed',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '? `${px(maxMonth)} — High-volume operations & festivals`' },
+      { was: ': `${px(\'£29/month\')} — Busy trucks scaling pre-orders`',
+        reason: 'raw literal removed',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: ': `${px(proMonth)} — Busy trucks scaling pre-orders`' },
+      { was: '`Max (${px(\'£49/mo\')})` : `Pro (${px(\'£29/mo\')})`',
+        reason: 'the mailto body\'s two literals removed',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: '`Max (${px(maxMo)})` : `Pro (${px(proMo)})`' },
+      /* Phase 2A — Reports' item rows now carry their ORDER's money format (its own currency). */
+      { was: 'channel?: string; name: string; qty: number; total: number | null }',
+        reason: 'money sweep: each Reports row carries its order\'s format',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'channel?: string; name: string; qty: number; total: number | null\n' },
+      { was: "name: `🎁 ${d.name}`, qty: 0, total: d.price || 0 })",
+        reason: 'money sweep: each Reports row carries its order\'s format',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: "name: `🎁 ${d.name}`, qty: 0, total: d.price || 0, fmt: orderFormat(o, truckFmt) })" },
+      { was: 'total: (item.unit_price || 0) * (item.quantity || 1) })',
+        reason: 'money sweep: each Reports row carries its order\'s format',
+        nowIn: 'app/manage/[token]/page.tsx',
+        now: 'total: (item.unit_price || 0) * (item.quantity || 1), fmt: orderFormat(o, truckFmt) })' },
+    ]
+    const PHASE_2B_LEFT = [
+      /^import \{ formatTime, getLocalDateInTz \} from '@\/lib\/time-utils'$/, /^interface Truck \{ custom_domain\?/,
+      /^const now = new Date\(\)$/, /new Date\(`\$\{[\w.]+\}T/, /toLocaleTimeString\(\[\]/, /toLocaleDateString\('en-GB'/,
+      /formatTrialEndDate\(truck\.trial_expires_at\)/, /^const formatTrialEndDate = \(dateStr: string\) =>$/, /^const formatDate = \(iso: string\) =>$/,
+      /new Intl\.DateTimeFormat\('en-GB', \{ timeZone: 'UTC', weekday: 'short'/, /^\.format\(new Date\(Date\.UTC\(y, m - 1, d\)\)\)$/,
+      /^fmtDay: placeShortDayLocal, fmtTimes: timeRangeLabel,$/, /toISOString\(\)\.split\('T'\)\[0\]/,
+      /^const dateObj = new Date\(event\.event_date \+ 'T00:00:00'\)$/, /^const dayNum = dateObj\.getDate\(\)$/,
+      /formatTime\((event|ev|venue)\.(start|end)_time( \|\| '')?\)/, /^\{\(c\.event\.start_time \|\| c\.event\.end_time\) \? ` · \$\{\(c\.event\.start_time/,
+      /^const today = new Date\(\); today\.setHours\(0, 0, 0, 0\)$/,
+      /^const d = new Date\(parseInt\(p\[2\]\)/, /^const days = \['Sun'/, /^const months = \['Jan'/, /^const day = d\.getDate\(\)$/,
+      /^const nth = \(day > 3 && day < 21\)/, /^return `\$\{days\[d\.getDay\(\)\]\} \$\{day\}\$\{nth\}/,
+      /^\{editingEvent\.event_date \? \(\(\) => \{ const p = editingEvent\.event_date\.split\('-'\); if \(p\.length !== 3\) return editingEvent\.event_date; const d = new Date/,
+      /^\{!isDemoIdentifier\(token\) && truck && <CustomDomainSetup .*confirmedAt=\{truck\.custom_domain_confirmed_at \?\? null\} \/>\}$/,
+      /^const (dateStr|timePlaced) = createdAt$/, /String\(createdAt\.get(Date|Hours|Month)\(\)/,
+      /^const collectionTime = o\.slot \? formatTime\(o\.slot\) : 'ASAP'$/, /^const isoDate = \(offset: number\) => \{$/,
+      /^const todayLocal = getLocalDateInTz\(\(truck as any\)\?\.timezone \?\? 'Europe\/London'\)$/,
+      /^\}, \[orders, filterMode, reportEventId, recentEvents\]\)$/, /^const dateShort = createdAt \? `\$\{dd\}\/\$\{mm\}` : ''$/,
+      /^const dateFull = createdAt \? `\$\{dd\}\/\$\{mm\}\/\$\{String\(createdAt\.getFullYear\(\)\)\.slice\(2\)\}` : ''$/,
+      /* ⚠️ PHASE 2C — the contact phone is checked and worded from the truck's country (lib/phone.ts). The
+       * three lines that left are its UK-only forms; the companion check below asserts their replacements. */
+      /^import \{ isValidEmail, isValidUKPhone \} from '@\/lib\/contact-validation'$/,
+      /^const contactPhoneErr = \(form\.contact_phone \|\| ''\)\.trim\(\) !== '' && !isValidUKPhone\(form\.contact_phone \|\| ''\)$/,
+      /^<Input label="Phone" required type="tel" .*placeholder="07700 900123" error=\{contactPhoneErr \? 'Please enter a valid UK phone \(e\.g\. 07700 900123\)' : undefined\} \/>$/,
     ]
     const unexplained = gone.filter(l => {
       if (!l) return false
@@ -2432,6 +2546,23 @@ function runWiringSuite(lib) {
        * would be real code and is not matched by anything else here, but nothing in this file has one,
        * and widening this to "anything brace-like" is how a guard stops guarding. */
       if (l === '{}') return false
+      /* ⚠️ PHASE 2A — THE MONEY SWEEP (10 October 2026). Every line that typed a £ (or called the private
+       * `fmtGBP`) left, and its twin through lib/money-format arrived, in the order's or the truck's
+       * currency. Accounted, not waived: below, the page must hold NO hand-typed £ and no `fmtGBP` in
+       * code, and scripts/money-sweep-parity.cjs proves the UK text of every one byte-identical. */
+      if (/£|fmtGBP\(|^const rows = explodeOrderItems\(orders, resolveEvent\)\.map\(r =>$/.test(l)) return false
+      /* ⚠️ PHASE 2B — THE TRUCK'S CLOCK (10 October 2026). Every line that read the device's or UTC's clock,
+       * or wrote a date or time in a fixed en-GB / dd/mm form, left; its twin through lib/time-utils arrived,
+       * on the truck's zone and in its country's style. Accounted, not waived: the companion check below
+       * requires the page to hold none of the old forms and every one of the new, and
+       * scripts/time-dates-parity.cjs proves the UK text of Schedule, Reports and both CSVs. */
+      if (PHASE_2B_LEFT.some(re => re.test(l))) return false
+      /* ⚠️ PHASE 2D-2 — THE GEOCODER IS SENT THE TRUCK'S COUNTRY (10 October 2026). `geocodeLocation` gained a
+       * `country` argument and its three calls pass `tabSettings.shortName || tabSettings.name`; these are the
+       * five old forms. Accounted, not waived: the companion check below requires all three new calls, and
+       * scripts/schedules-country-parity.cjs proves a UK truck's geocode prompt byte-identical. */
+      if (["? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '')", 'postcode: string',
+        'body: JSON.stringify({ venueName, town, postcode }),', 'editingEvent.postcode'].includes(l)) return false
       if (allowed.includes(l)) return false
       if (movedTo.has(norm(l))) return false
       if (movedEdits.some(m => l.includes(m.was))) return false
@@ -2460,9 +2591,33 @@ function runWiringSuite(lib) {
         return false
       }
     }
+    // The money sweep's companion: no hand-typed £ and no fmtGBP survive anywhere in the page's code.
+    if (now.some(line => /£|fmtGBP/.test(line))) {
+      console.log('      \u26d4 THE MONEY SWEEP IS CLAIMED ABOVE BUT A HAND-TYPED £ OR fmtGBP IS STILL IN THE PAGE')
+      return false
+    }
+    // Phase 2B's companion: none of the old clock / en-GB forms survive in the page's code, and the new ones are there.
+    {
+      const code = now.join('\n')
+      const oldForms = /toLocaleDateString\('en-GB'|toLocaleTimeString\(|\.getHours\(\)|toISOString\(\)\.split\('T'\)\[0\]|new Date\(`\$\{[\w.]+\}T|'Europe\/London'|const days = \['Sun'/
+      const newForms = [/isPlausiblePhone\(form\.contact_phone \|\| '', phoneCopy\.phoneCountry, phoneCopy\.phoneCheck\)/, /placeholder=\{phonePlaceholder\(phoneCopy\)\} error=\{contactPhoneErr \? phoneErrorMessage\('phone', phoneCopy\) : undefined\}/,
+        /const ts = useTruckTime\(\)/, /<TruckTimeContext\.Provider value=\{truck\.time \?\? null\}>/, /formatShortOrdinalDate\(/,
+        /formatNumericDate\(localDateOfInstant\(createdAt, ts\.timeZone\), ts\)/, /formatTrialEndDate\(truck\.trial_expires_at, mgTime!\)/,
+        /time=\{truck\.time \?\? null\} \/>\}/, /const isoDate = \(offset: number\) => addDaysYmd\(getLocalDateInTz\(ts\.timeZone\), offset\)/]
+      if (oldForms.test(code) || !newForms.every(re => re.test(code))) {
+        console.log(`      \u26d4 PHASE 2B IS CLAIMED ABOVE BUT ${oldForms.test(code) ? 'AN OLD CLOCK / en-GB FORM IS STILL IN THE PAGE: ' + (code.match(oldForms) || [''])[0] : 'A NEW FORM IS MISSING: ' + newForms.find(re => !re.test(code))}`)
+        return false
+      }
+    }
+    // Phase 2D-2's companion: the three geocoder calls send the truck's country, and the client sends it on.
+    if ((RAWP.match(/tabSettings\.shortName \|\| tabSettings\.name/g) || []).length !== 3
+      || !RAWP.includes('body: JSON.stringify({ venueName, town, postcode, country }),')) {
+      console.log('      \u26d4 PHASE 2D-2 IS CLAIMED ABOVE BUT THE GEOCODER CALLS DO NOT ALL SEND THE COUNTRY')
+      return false
+    }
     if (unexplained.length) {
       console.log('      LINES LOST: ' + unexplained.length)
-      for (const l of unexplained.slice(0, 20)) console.log("        • " + l.slice(0, 160))
+      for (const l of unexplained.slice(0, 40)) console.log("        • " + l.slice(0, 260))
     }
     return unexplained.length === 0
   })())
@@ -2940,9 +3095,11 @@ function runVariants() {
       changed(LIB_SRC, "    return `Last: ${fmtDay(p.last_event_date)}${t ? ` \u00b7 ${t}` : ''}`",
         "    return `Last: ${fmtDay(p.last_event_date)}`", 'W5d'),
       P => !P.placeWhenLine({ last_event_date: '2026-10-06', last_start_time: '17:00:00', last_end_time: '20:00:00' }, d => d).includes('17:00')],
+    /* ⚠️ RE-ANCHORED (Phase 2B, 10 October 2026): placeWhenLine and timeRangeLabel take the truck's time
+     * settings now. Same variant, same meaning. */
     ['W5e 🔴 …and goes back to preferring Next over Last',
-      changed(LIB_SRC, "export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string): string {\n  if (p.last_event_date) {",
-        "export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string): string {\n  if (p.next_event_date) {\n    const tn = timeRangeLabel(p.next_start_time, p.next_end_time)\n    return `Next: ${fmtDay(p.next_event_date)}${tn ? ` \u00b7 ${tn}` : ''}`\n  }\n  if (p.last_event_date) {", 'W5e'),
+      changed(LIB_SRC, "export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string, ts: TimeSettings | null | undefined): string {\n  if (p.last_event_date) {",
+        "export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string, ts: TimeSettings | null | undefined): string {\n  if (p.next_event_date) {\n    const tn = timeRangeLabel(p.next_start_time, p.next_end_time, ts)\n    return `Next: ${fmtDay(p.next_event_date)}${tn ? ` \u00b7 ${tn}` : ''}`\n  }\n  if (p.last_event_date) {", 'W5e'),
       P => P.placeWhenLine({ last_event_date: '2026-10-06', next_event_date: '2026-10-20' }, d => d).startsWith('Next')],
 
     /* ⚠️ RE-ANCHORED (3 October 2026): the line now carries the retired-row guard

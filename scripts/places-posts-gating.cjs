@@ -397,7 +397,8 @@ head('5 · the Add/Edit preview shows a private event as a private event')
     && !/postcode/.test(branch) && !/\baddress\b/.test(branch))
   t('🔴 …but it DOES show the date, the times and the van chip',
     /placeShortDayLocal\(editingEvent\.event_date \|\| null\)/.test(branch)
-    && /timeRangeLabel\(editingEvent\.start_time, editingEvent\.end_time\)/.test(branch)
+    // Phase 2B (10 October 2026): the times are in the truck's style, so the call carries its settings.
+    && /timeRangeLabel\(editingEvent\.start_time, editingEvent\.end_time, ts\)/.test(branch)
     && /previewVanName/.test(branch))
   /* ⚠️ THE WORDS ARE THE PUBLIC SURFACES' OWN CONSTANT, so the operator's preview and a customer's
    * card cannot be two different pairs of words. */

@@ -21,6 +21,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { provisionTruck, ProvisionError } from '@/lib/provision-truck'
 import { extractMenu, MenuExtractionError, type MenuExtraction } from '@/lib/menu-extract'
+import { moneyFormatForTruck } from '@/lib/money-server'
 import { commitMenu, type CommitMenuResult } from '@/lib/menu-commit'
 import { buildDemoAssumptions } from '@/lib/demo-assumptions'
 import type { DemoKitchen } from '@/lib/demo-kitchen'
@@ -141,6 +142,8 @@ export async function provisionDemo(
     try {
       const provisioned = await provisionTruck(supabase, {
         kind: 'demo',
+        // 🔴 'GB', EXPLICITLY — demos are UK until the visitor's country picker exists.
+        country: 'GB',
         // OUTREACH: the prospect's real name. Undefined (not null) on the anonymous path so the option is
         // ABSENT and provisionTruck's `Demo Kitchen (xxxxxx)` default applies exactly as before.
         ...(input.name && input.name.trim() ? { name: input.name.trim() } : {}),
@@ -388,7 +391,7 @@ async function buildMenu(
   input: ProvisionDemoInput,
   warnings: string[],
 ): Promise<MenuOutcome> {
-  const { data: truckRow } = await supabase.from('trucks').select('id, name').eq('id', truckId).single()
+  const { data: truckRow } = await supabase.from('trucks').select('id, name, currency, country').eq('id', truckId).single()
   const truck = { id: truckId, name: (truckRow?.name as string) ?? 'Demo Kitchen' }
 
   const hasUpload = !!(input.file || (input.text && input.text.trim()))
@@ -396,7 +399,8 @@ async function buildMenu(
   if (hasUpload) {
     let extraction: MenuExtraction | null = null
     try {
-      extraction = await extractMenu(supabase, truck, { file: input.file, text: input.text })
+      // The prompt's examples are written in the TRUCK's currency symbol (Phase 2A).
+      extraction = await extractMenu(supabase, { ...truck, money: await moneyFormatForTruck(truckRow ?? {}) }, { file: input.file, text: input.text })
     } catch (err) {
       warnings.push(`Extraction failed: ${err instanceof MenuExtractionError ? err.message : 'unknown'}`)
     }

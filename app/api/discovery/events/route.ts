@@ -5,6 +5,11 @@ import { isHatchGrabHost } from '@/lib/brand'
 import { formatImageUrl } from '@/lib/image-utils'
 /* ⛔ PRIVATE EVENTS NEVER REACH THIS FEED. See the note at the operator-events leg. */
 import { readPrivateEventIds } from '@/lib/private-events/read'
+/* 🔴 PHASE 2D-2 — VILLAGE FOODIE IS UK-ONLY. Every discovery read below is limited to its market
+ * (VILLAGE_FOODIE_COUNTRY, 'GB'): scraped events, the trucks list and the orphan-name fallback. A US row —
+ * written hidden anyway (lib/discovery-country.ts) — can therefore never reach this feed, the truck pages or
+ * the venue pages, which all read it. On the Village Foodie host, operator events are limited the same way. */
+import { VILLAGE_FOODIE_COUNTRY, countryOf } from '@/lib/discovery-country'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -90,7 +95,7 @@ export async function GET(req: NextRequest) {
     // logged, so applying the migration late costs nothing but the hiding. Fail-closed on any OTHER
     // error is unchanged below.
     const evQuery = (withSuperseded: boolean) => {
-      let q = supabase.from('discovery_events').select(EV_SELECT).eq(showCol, true).gte('event_date', today)
+      let q = supabase.from('discovery_events').select(EV_SELECT).eq('country', VILLAGE_FOODIE_COUNTRY).eq(showCol, true).gte('event_date', today)
       if (withSuperseded) q = q.is('superseded_by', null)
       return q.order('event_date', { ascending: true }).order('start_time', { ascending: true, nullsFirst: false }).limit(1000)
     }
@@ -108,6 +113,7 @@ export async function GET(req: NextRequest) {
       supabase
         .from('discovery_trucks')
         .select(TR_SELECT)
+        .eq('country', VILLAGE_FOODIE_COUNTRY)
         .eq(showCol, true)
         .order('name'),
     ])
@@ -140,6 +146,7 @@ export async function GET(req: NextRequest) {
     const { data: allDisc } = await supabase
       .from('discovery_trucks')
       .select('name, logo_url, photo_url, cuisine, phone, order_url, accepted_methods, website, menu_url, notes, show_on_vf, show_on_hg, excluded')
+      .eq('country', VILLAGE_FOODIE_COUNTRY)
     for (const t of allDisc || []) {
       const k = normalize(t.name || '')
       if (!k) continue
@@ -233,6 +240,7 @@ export async function GET(req: NextRequest) {
           phone_is_whatsapp,
           slug,
           active,
+          country,
           excluded,
           show_on_vf,
           show_on_hg,
@@ -291,6 +299,8 @@ export async function GET(req: NextRequest) {
           const truck = e.trucks as any
           if (!truck) return false
           if (!truck.active) return false
+          // Village Foodie is UK-only: an operator truck from another country is not on its map.
+          if (!isHG && countryOf(truck) !== VILLAGE_FOODIE_COUNTRY) return false
           if (truck.excluded) return false   // master hide
           // Gate by the truck's OWN per-site boolean (NOT NULL, no missing-link default → no leak).
           if (!truck[showCol]) return false

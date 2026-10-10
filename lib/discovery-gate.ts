@@ -41,6 +41,8 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { findVenue, normName, type VenueRow } from '@/lib/venue-matcher'
 import { normalizeVenue } from '@/lib/venue-signature'
 import { scheduleKeys, eventMatchesKeys } from '@/lib/schedule-match'
+// Phase 2D-2: every comparison below stays inside ONE country (lib/discovery-country.ts).
+import { countryOf, inCountry, discoveryVisibility, DISCOVERY_DEFAULT_COUNTRY } from '@/lib/discovery-country'
 
 export const DUP_DISTANCE_M = 500
 export const R5_ANCHOR_MAX_KM = 15
@@ -69,13 +71,15 @@ export type IncomingEvent = {
   event_notes?: string | null
   source?: string | null
   ai_notes?: string | null
+  /** County or two-letter state, when the source gave one — stored on a venue this row creates (20261010_15). */
+  region?: string | null
 }
 
-export type TruckRow = { id: string; name: string; aliases: string[] | null }
+export type TruckRow = { id: string; name: string; aliases: string[] | null; country?: string | null }
 type ExistingEvent = {
   id: string; event_date: string; start_time: string | null; truck_name: string; venue_name: string | null
   village: string | null; source: string | null; venue_id: string | null; discovery_truck_id: string | null
-  created_at: string; superseded_by?: string | null
+  created_at: string; superseded_by?: string | null; country?: string | null
 }
 
 export type Outcome = {
@@ -84,7 +88,10 @@ export type Outcome = {
   venue: { id: string | null; name: string | null; how: 'high' | 'r5-accepted' | 'r5-rejected' | 'created' | 'none'; reason: string }
   /** `supersedes` is the LOSER's id when the incoming row won; when the incoming row is the OLDER of the two it loses instead, and this carries the winner's id (dry run: `SELF-by-<winner>`). */
   duplicate: null | { supersedes: string; rule: DupRule; metres: number | null; postcode: string | null; timeGapMin: number | null; otherSource: string | null }
-  wrote: 'inserted-or-updated' | 'failed'
+  /** 'skipped': a row with the same date, truck name and venue name already exists in ANOTHER country.
+   *  discovery_events is unique on those three columns alone, so writing would overwrite that row — it is
+   *  left untouched and this one is not written (Phase 2D-2; see the report). */
+  wrote: 'inserted-or-updated' | 'failed' | 'skipped'
   error?: string
 }
 
@@ -196,17 +203,26 @@ export function duplicateVerdict(
 export async function admitDiscoveryEvents(
   supabase: SupabaseClient,
   incoming: IncomingEvent[],
-  opts: { dryRun?: boolean; lookups?: { trucks: TruckRow[]; venues: VenueRow[] } } = {},
+  opts: {
+    dryRun?: boolean
+    lookups?: { trucks: TruckRow[]; venues: VenueRow[] }
+    /** 🔴 PHASE 2D-2: the country of EVERY row in this batch. Trucks, venues and duplicates are looked for in
+     *  this country only; venues and events are written with it. Absent → GB, the column default. */
+    country?: string
+  } = {},
 ): Promise<{ outcomes: Outcome[]; created: number; superseded: number; markFailed: number; rejectedByR5: number }> {
   const dry = !!opts.dryRun
+  const country = (opts.country || DISCOVERY_DEFAULT_COUNTRY).toUpperCase()
   let trucks = opts.lookups?.trucks, venues = opts.lookups?.venues
   if (!trucks || !venues) {
     const [{ data: t }, { data: v }] = await Promise.all([
-      supabase.from('discovery_trucks').select('id, name, aliases'),
-      supabase.from('venues').select('id, name, village, latitude, longitude, postcode'),
+      supabase.from('discovery_trucks').select('id, name, aliases, country').eq('country', country),
+      supabase.from('venues').select('id, name, village, latitude, longitude, postcode, country').eq('country', country),
     ])
     trucks = (t ?? []) as TruckRow[]; venues = (v ?? []) as VenueRow[]
   }
+  // A caller's lookups may hold every country; only this batch's country is ever a candidate.
+  trucks = inCountry(trucks, country); venues = inCountry(venues, country)
   const truckKeys = trucks.map(t => ({ t, keys: scheduleKeys(t.name, t.aliases) }))
   const anchors = villageAnchors(venues)
   const outcomes: Outcome[] = []
@@ -217,12 +233,15 @@ export async function admitDiscoveryEvents(
   // Same-day rows carry `superseded_by` so an already-marked row is never chosen as a counterpart and
   // never resurrected. ⚠️ Tolerant of the column not existing yet (migration 20260911): on a 42703 the
   // select is retried without it and every row is treated as unmarked.
-  const BASE_COLS = 'id, event_date, start_time, truck_name, venue_name, village, source, venue_id, discovery_truck_id, created_at'
+  const BASE_COLS = 'id, event_date, start_time, truck_name, venue_name, village, source, venue_id, discovery_truck_id, created_at, country'
   let sameDay: ExistingEvent[] = []
+  // Every country's rows for these dates — needed to see a same-key row in another country (below).
+  let sameDayAny: ExistingEvent[] = []
   if (dates.length) {
     let r: { data: unknown; error: { message?: string } | null } = await supabase.from('discovery_events').select(BASE_COLS + ', superseded_by').in('event_date', dates)
     if (r.error && /superseded_by/.test(r.error.message || '')) r = await supabase.from('discovery_events').select(BASE_COLS).in('event_date', dates)
-    sameDay = ((r.data as unknown[] | null) ?? []) as ExistingEvent[]
+    sameDayAny = ((r.data as unknown[] | null) ?? []) as ExistingEvent[]
+    sameDay = sameDayAny.filter(ex => countryOf(ex) === country)
   }
   const venueById = new Map(venues.map(v => [v.id, v]))
 
@@ -238,7 +257,7 @@ export async function admitDiscoveryEvents(
 
     // 2 ── venue: match → R5 → (create)
     let venue: VenueRow | null = null
-    const match = findVenue(row.venue_name ?? null, row.village ?? null, venues)
+    const match = findVenue(row.venue_name ?? null, row.village ?? null, venues, country)
     if (match.venue) {
       const r5 = r5Accept(row, match.venue, match.confidence, anchors)
       if (r5.ok) { venue = match.venue; out.venue = { id: venue.id, name: venue.name, how: match.confidence === 'high' ? 'high' : 'r5-accepted', reason: r5.reason } }
@@ -246,9 +265,9 @@ export async function admitDiscoveryEvents(
     } else if (row.venue_name && row.village && !dry) {
       // no candidate at all → create on (name, village), no coordinates (the scraper's own shape)
       const { data: nv, error: cErr } = await supabase.from('venues')
-        .upsert({ name: row.venue_name, village: row.village, latitude: null, longitude: null, postcode: null }, { onConflict: 'name,village', ignoreDuplicates: false })
+        .upsert({ name: row.venue_name, village: row.village, latitude: null, longitude: null, postcode: null, country, ...(row.region ? { region: row.region } : {}) }, { onConflict: 'country,name,village', ignoreDuplicates: false })
         .select('id, name, village, latitude, longitude, postcode').single()
-      if (!cErr && nv) { venue = nv as VenueRow; venues.push(venue); venueById.set(venue.id, venue); created++; out.venue = { id: venue.id, name: venue.name, how: 'created', reason: 'no candidate; created on (name, village), no coordinates' } }
+      if (!cErr && nv) { venue = nv as VenueRow; venues.push(venue); venueById.set(venue.id, venue); created++; out.venue = { id: venue.id, name: venue.name, how: 'created', reason: 'no candidate; created on (country, name, village), no coordinates' } }
       else out.venue = { id: null, name: row.venue_name, how: 'none', reason: `create failed: ${cErr?.message ?? 'unknown'}` }
     } else if (row.venue_name && row.village && dry) {
       out.venue = { id: null, name: row.venue_name, how: 'created', reason: 'DRY RUN: would create on (name, village)' }
@@ -262,6 +281,16 @@ export async function admitDiscoveryEvents(
     // newest by construction; the older of the two is the loser, whichever direction that is.
     // A row already superseded is skipped as a counterpart, and a self row already superseded STAYS
     // superseded — a re-scrape never resurrects a duplicate.
+    // 🔴 THE SAME KEY IN ANOTHER COUNTRY. The event upsert is keyed on (date, truck name, venue name) with no
+    // country, so writing would overwrite that country's row. Leave it alone; this row is not written.
+    const foreign = sameDayAny.find(ex => `${ex.event_date}|${ex.truck_name}|${ex.venue_name ?? ''}` === key && countryOf(ex) !== country)
+    if (foreign && !dry) {
+      out.wrote = 'skipped'
+      out.error = `an event with the same date, truck and venue already exists in ${countryOf(foreign)} — not overwritten`
+      outcomes.push(out)
+      continue
+    }
+
     const myTruckKey = normalizeVenue(row.truck_name)
     const selfRow = sameDay.find(ex => `${ex.event_date}|${ex.truck_name}|${ex.venue_name ?? ''}` === key) ?? null
     const selfCreatedAt = selfRow?.created_at ?? '9999-12-31T00:00:00Z'      // a new key is newer than anything stored
@@ -286,7 +315,8 @@ export async function admitDiscoveryEvents(
       event_date: row.event_date, start_time: row.start_time || null, end_time: row.end_time || null,
       truck_name: row.truck_name, venue_name: row.venue_name || null, village: row.village || null,
       event_notes: row.event_notes || null, source: row.source || null, ai_notes: row.ai_notes || null,
-      visibility: 'public', show_on_vf: true, show_on_hg: true,
+      // Only Village Foodie's own market is ever public; every other country's row feeds outreach only.
+      visibility: 'public', ...discoveryVisibility(country), country,
       discovery_truck_id: out.truck.id, venue_id: venue?.id ?? null,
     }, { onConflict: 'event_date,truck_name,venue_name', ignoreDuplicates: false }).select('id').single()
     if (wErr || !ins) { out.wrote = 'failed'; out.error = wErr?.message ?? 'no id returned'; outcomes.push(out); continue }

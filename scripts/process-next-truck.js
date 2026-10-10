@@ -113,8 +113,9 @@ ${menuText.slice(0, 80000)}`;
 async function storeTruck(truckName, basketUrl) {
   const { error } = await sb
     .from('discovery_trucks')
-    .upsert({ name: truckName, menu_url: basketUrl, order_url: basketUrl },
-             { onConflict: 'name', ignoreDuplicates: false });
+    // Phase 2D-2: a British source; the country-scoped key (the global 'name' key is dropped by 20261010_16).
+    .upsert({ name: truckName, menu_url: basketUrl, order_url: basketUrl, country: 'GB' },
+             { onConflict: 'country,name', ignoreDuplicates: false });
   if (error) throw new Error(`DB upsert failed: ${error.message}`);
 }
 

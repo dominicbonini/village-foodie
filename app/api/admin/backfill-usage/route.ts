@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
-import { localTodayIso } from '@/lib/time-utils'
+import { addDaysYmd } from '@/lib/time-utils'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -27,7 +27,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   }
 
-  const today = localTodayIso()
+  // EVERY TRUCK'S TODAY, WHEREVER IT IS (Phase 2B): this sweeps all trucks at once, so it starts from the
+  // day before the UTC date — no truck's today is earlier than that. Rebuilding one extra past day is a
+  // no-op (the rebuild recomputes from live orders), where missing a truck's today would not be.
+  const today = addDaysYmd(new Date().toISOString().slice(0, 10), -1)
 
   // Every upcoming non-cancelled event. rebuildProductionSlotUsage is date-scoped, so we
   // only need each unique (truck_id, event_date) once — it rebuilds all events on the date.

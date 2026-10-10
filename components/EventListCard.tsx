@@ -13,9 +13,10 @@ import {
     getDistanceKm,
     venueGroupKey,
   } from '@/lib/utils';
-import { formatTime, formatTimeRange } from '@/lib/time-utils';
+import { formatTime, formatTimeRange, DISCOVERY_TIME_SETTINGS } from '@/lib/time-utils';
 import { isHatchGrab } from '@/lib/domain';
 import { phoneWhatsApp } from '@/lib/whatsapp-hint';   // the SHARED derivation — same source the outreach page reads
+import { MARKETING_COUNTRY } from '@/lib/marketing-country'   // discovery and outreach are the marketing country's (Phase 2C)
 
 interface EventListCardProps {
   events: VillageEvent[]; 
@@ -73,7 +74,7 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
         menuText = `\n\nCheck out the menu: ${cleanMenuUrl}`; 
       }
 
-      const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${ev.truckName} is at ${venueDisplay} ${dateSentence} from ${formatTime(ev.startTime)} to ${formatTime(ev.endTime)}.${menuText}\n\nFound on ${displayUrl} 🚚`;
+      const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${ev.truckName} is at ${venueDisplay} ${dateSentence} from ${formatTime(ev.startTime, DISCOVERY_TIME_SETTINGS)} to ${formatTime(ev.endTime, DISCOVERY_TIME_SETTINGS)}.${menuText}\n\nFound on ${displayUrl} 🚚`;
       const shareData = { title: `${ev.truckName} at ${venueDisplay}`, text: shareText };
 
       try {
@@ -110,7 +111,7 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
   // disagree with these buttons. Behaviour-neutral: characterised over 150 cases + mutation-tested before
   // shipping (docs/whatsapp-extraction-report.md).
   const { cleanPhone, waPhone, hasPhone, isMobileNumber, acceptsWhatsApp } =
-    phoneWhatsApp(primaryEvent.phoneNumber, primaryEvent.acceptedMethods);
+    phoneWhatsApp(primaryEvent.phoneNumber, primaryEvent.acceptedMethods, MARKETING_COUNTRY);
 
   const cleanVenuePhone = primaryEvent.venuePhone ? primaryEvent.venuePhone.replace(/[^\d+]/g, '') : '';
   const hasVenuePhone = cleanVenuePhone !== '';
@@ -279,7 +280,7 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
                                 
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                                     <span className="text-[11px] font-bold text-slate-800 leading-none whitespace-nowrap">
-                                        {formatTimeRange(ev.startTime, ev.endTime)}
+                                        {formatTimeRange(ev.startTime, ev.endTime, DISCOVERY_TIME_SETTINGS)}
                                     </span>
                                     
                                     {!isVenuePage && (

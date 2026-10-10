@@ -132,8 +132,10 @@ function threw(fn, rows, settlements) {
   t('⚠️ the matcher itself is untouched — resolveVenueFrom still returns a NAME',
     /confirmedVenue = resolveVenueFrom\(venueMatchRows, normVenue, eventTextToSearch, eventPostcode\)/.test(S)
     && /if \(bestMatch && highestScore > 0\) confirmedVenue = bestMatch;/.test(S))
+  // Phase 2D-2: the prompts moved, unchanged, to scripts/scraper-prompts.js — they are read there now.
+  const P = read('scripts/scraper-prompts.js')
   t('🔴 the two VILLAGE prompt rules still permit an empty string and forbid repeating the venue',
-    (S.match(/use "" \(an empty string\) — do NOT repeat the venue name and do NOT guess/g) || []).length === 2)
+    (P.match(/use "" \(an empty string\) — do NOT repeat the venue name and do NOT guess/g) || []).length === 2)
 
   // ── 🔴 BROKEN VARIANTS: the checks above must be shown catching these ──────────────────────────
   //
@@ -165,10 +167,10 @@ function threw(fn, rows, settlements) {
       return { applied: true, caught }
     }],
     ['W3 🔴 a VILLAGE prompt rule loses its empty-string escape clause', () => {
-      const broken = S.replace(
+      const broken = P.replace(
         '6. VILLAGE: Extract the town, village, or city into a separate "village" field. If the town or village truly cannot be determined from the text, use "" (an empty string) — do NOT repeat the venue name and do NOT guess.',
         '6. VILLAGE (MANDATORY): Always extract the town, village, or city into a separate "village" field.')
-      if (broken === S) return { applied: false }
+      if (broken === P) return { applied: false }
       const caught = (broken.match(/use "" \(an empty string\) — do NOT repeat the venue name and do NOT guess/g) || []).length !== 2
       return { applied: true, caught }
     }],

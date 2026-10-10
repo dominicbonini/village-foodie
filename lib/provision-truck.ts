@@ -20,6 +20,8 @@ import { DEMO_PREFIX } from '@/lib/demo'
 // ONE cuisine->emoji map, shared with the signup wizard. Imported rather than reimplemented so the two
 // surfaces cannot disagree about what an "Indian" truck's emoji is.
 import { emojiForCuisine } from '@/lib/cuisines'
+import { getCountrySettings } from '@/lib/country-settings'
+import { checkTradeArea, TRADE_AREA_ERRORS, type TradeAreaValues } from '@/lib/trade-area'
 
 // ── Reserved prefix ──────────────────────────────────────────────────────────────────────────────────
 // proxy.ts grants `/dashboard/demo-*` an exception from the session gate, so for a demo the TOKEN ALONE is
@@ -251,6 +253,14 @@ export interface ProvisionVanOptions {
 
 export interface ProvisionTruckOptions {
   kind: ProvisionKind
+  /**
+   * 🔴 REQUIRED — ISO 3166 country, upper case (10 October 2026). The truck's country, currency and
+   * timezone are written EXPLICITLY from that country's public.country_settings row (its `currency` and
+   * `default_timezone`), never left to the column defaults ('GB' / 'GBP' / NULL). Every caller passes 'GB'
+   * today; the signup country question comes later. ⚠️ A REQUIRED parameter, not a defaulted one, so a
+   * new caller cannot silently create a GB truck by forgetting it.
+   */
+  country: string
   name?: string
   slug?: string
   plan?: Plan
@@ -270,6 +280,12 @@ export interface ProvisionTruckOptions {
   phoneIsWhatsapp?: boolean
   cuisineType?: string | null
   van?: ProvisionVanOptions | false
+  /** Phase 2D-1 — the truck's zone. Must be one of its country's `timezones`; absent → the country's default. */
+  timezone?: string | null
+  /** Phase 2D-1 — "Where's your truck based?": base town (+ point when picked) and travel distance, as the
+   *  stored column names. Checked HERE with lib/trade-area.ts (the writer validates); absent → those columns
+   *  are not written at all, so admin and demo creates are exactly as before. */
+  tradeArea?: Record<string, unknown> | null
 }
 
 export interface ProvisionResult {
@@ -380,6 +396,31 @@ export async function provisionTruck(
   const contactPhone = (opts.contactPhone ?? '').trim() || null
   const phoneIsWhatsapp = opts.phoneIsWhatsapp === true
 
+  // ── 🔴 THE COUNTRY, FROM ITS SETTINGS ROW — LOUD. ────────────────────────────────────────────────
+  // getCountrySettings throws on an unknown country rather than defaulting to GB. A country that exists
+  // but is not `enabled` (the column's meaning: "can trucks sign up from here") is refused too — the US
+  // row exists with its plan prices undecided, and a truck created there would have no price to show.
+  let countrySettings: Awaited<ReturnType<typeof getCountrySettings>>
+  try {
+    countrySettings = await getCountrySettings(opts.country)
+  } catch (e) {
+    throw new ProvisionError('validation', e instanceof Error ? e.message : `Unknown country "${opts.country}"`)
+  }
+  if (!countrySettings.enabled) {
+    // Plain words (Phase 2D-1) — the same sentence signup shows (lib/trade-area.ts).
+    throw new ProvisionError('validation', TRADE_AREA_ERRORS.countryOff(countrySettings.name))
+  }
+  // ── Phase 2D-1: THE ZONE AND WHERE THE TRUCK TRADES, checked against the same settings row ─────────────
+  let tradeArea: TradeAreaValues | null = null
+  if (opts.tradeArea) {
+    const checked = checkTradeArea({ ...opts.tradeArea, timezone: opts.timezone ?? opts.tradeArea.timezone }, countrySettings)
+    if (!checked.ok) throw new ProvisionError('validation', checked.error)
+    tradeArea = checked.values
+  } else if (opts.timezone && !countrySettings.timezones.includes(opts.timezone)) {
+    throw new ProvisionError('validation', TRADE_AREA_ERRORS.zone(countrySettings.name))
+  }
+  const truckTimezone = tradeArea?.timezone ?? opts.timezone ?? countrySettings.defaultTimezone
+
   const visibility = opts.visibility ?? 'hidden'
   const visibilityCols = visibility === 'public' ? PUBLIC_VISIBILITY : HIDDEN_VISIBILITY
   if (visibility === 'public') {
@@ -433,6 +474,16 @@ export async function provisionTruck(
         sheet_id: '',
         active: true,
         plan,
+        // 🔴 WRITTEN EXPLICITLY FROM THE COUNTRY'S SETTINGS, never left to the column defaults.
+        country: countrySettings.countryCode,
+        currency: countrySettings.currency,
+        timezone: truckTimezone,
+        // Phase 2D-1 — written ONLY when given (a signup), so a create without them is byte-for-byte as before
+        // and never names a column that a database without 20261010_13 does not have.
+        ...(tradeArea ? {
+          base_place_id: tradeArea.base_place_id, base_place_name: tradeArea.base_place_name, base_region: tradeArea.base_region,
+          base_lat: tradeArea.base_lat, base_lng: tradeArea.base_lng,
+        } : {}),
         // 🔴 STAYS NULL, and now MEANS something: "trial not started". Nomination — the operator
         // choosing which event starts it — is what sets a date, and does not exist yet. canAccess
         // reads NULL as not-started and grants the trial set; a PAST date still denies.

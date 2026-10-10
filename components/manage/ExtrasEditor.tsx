@@ -17,6 +17,11 @@ import { useState, Fragment } from 'react'
 import { minRequiredForGroup } from '@/lib/modifier-rules'
 import { DEFAULT_STOCK_SCOPE_NOTE } from '@/lib/copy/stock'
 import { Card, Badge, EmptyState, Input, Btn, AllergenToggles, DietaryToggles } from './primitives'
+// 🔴 THE TRUCK'S MONEY FORMAT — every figure here, the worked examples included. This editor is rendered
+// only inside the manage page's CountrySettingsProvider (Modifiers tab).
+import { useCountrySettings } from '@/components/CountrySettingsProvider'
+import { moneyFormatOf } from '@/lib/country-settings-types'
+import { formatMajor, currencySymbol } from '@/lib/money-format'
 
 export interface ExtrasEditorGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 export interface ExtrasEditorOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number; allergens?: string[]; dietary_info?: string[]; available?: boolean; stock_count?: number | null }
@@ -52,11 +57,13 @@ export interface ExtrasEditorProps {
 export default function ExtrasEditor({
   groups, options, items, categories, assignments, showToast,
   title = 'Custom Extras',
-  description = 'Add paid or free options customers can choose when ordering — e.g. Extra Cheese +£1.50, No Onion £0',
+  description,
   note = 'Create a group of options and assign it to a menu category. All items in that category will offer those options when customers order.',
   addLabel = '+ Add customisation',
   onCreateGroup, onUpdateGroup, onDeleteGroup, onSaveOption, onDeleteOption, onToggleAssign, onToggleOption,
 }: ExtrasEditorProps) {
+  const fmt = moneyFormatOf(useCountrySettings())
+  const amount = (major: number) => formatMajor(major, fmt)
   // ── Ephemeral UI state (owned here; never leaks to the caller) ────────────────
   const [newGroupName, setNewGroupName] = useState('')
   const [showNewGroup, setShowNewGroup] = useState(false)
@@ -138,7 +145,7 @@ export default function ExtrasEditor({
       <div className="flex items-center justify-between mt-10 mb-4">
         <div>
           <h2 className="font-black text-slate-900 text-lg">{title}</h2>
-          <p className="text-slate-400 text-sm mt-0.5">{description}</p>
+          <p className="text-slate-400 text-sm mt-0.5">{description ?? `Add paid or free options customers can choose when ordering — e.g. Extra Cheese +${amount(1.5)}, No Onion ${formatMajor(0, fmt, { trimWhole: true })}`}</p>
         </div>
         {canAddGroup && <Btn label={addLabel} onClick={() => { setShowNewGroup(true); setNewGroupName('') }} />}
       </div>
@@ -146,7 +153,7 @@ export default function ExtrasEditor({
 
       <div className="space-y-4">
       {groups.length === 0 && (
-        <EmptyState icon="⚙️" title="No custom extras yet" body='Create a group like "Pizza extras" and add options like "Extra Cheese +£1.00"' />
+        <EmptyState icon="⚙️" title="No custom extras yet" body={`Create a group like "Pizza extras" and add options like "Extra Cheese +${amount(1)}"`} />
       )}
 
       {groups.map(group => {
@@ -265,7 +272,7 @@ export default function ExtrasEditor({
                       {/* Sold-out / stock at-a-glance (D1/D2). Sold out = manual (available=false) OR stock 0. */}
                       {(opt.available === false || opt.stock_count === 0) && <span className="text-[10px] font-bold bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full">Sold out</span>}
                       {opt.available !== false && opt.stock_count != null && opt.stock_count > 0 && <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">{opt.stock_count} left</span>}
-                      <span className="text-sm font-bold text-orange-600">{opt.price_adjustment > 0 ? `+£${opt.price_adjustment.toFixed(2)}` : opt.price_adjustment < 0 ? `-£${Math.abs(opt.price_adjustment).toFixed(2)}` : 'Free'}</span>
+                      <span className="text-sm font-bold text-orange-600">{opt.price_adjustment > 0 ? `+${amount(opt.price_adjustment)}` : opt.price_adjustment < 0 ? `-${amount(Math.abs(opt.price_adjustment))}` : 'Free'}</span>
                       {canSaveOption && <button onClick={() => { setEditingOption(opt); setPriceInput(opt.price_adjustment ? String(opt.price_adjustment) : '') }} className="text-slate-300 hover:text-orange-500 text-xs px-1.5 py-0.5 rounded hover:bg-orange-50">✏️</button>}
                       {canDeleteOption && <button onClick={() => onDeleteOption?.(opt)} className="text-slate-300 hover:text-red-500 text-xs px-1.5 py-0.5 rounded hover:bg-red-50">🗑️</button>}
                     </div>
@@ -377,7 +384,7 @@ export default function ExtrasEditor({
                                 <th className="text-center font-bold text-slate-400 uppercase tracking-wide pb-1.5 px-2">Include</th>
                                 {opts.map(o => (
                                   <th key={o.id} className="text-center font-bold text-slate-600 pb-1.5 px-1 leading-tight">
-                                    {o.name}{o.price_adjustment > 0 && <span className="text-orange-500"> +£{o.price_adjustment.toFixed(2)}</span>}
+                                    {o.name}{o.price_adjustment > 0 && <span className="text-orange-500"> +{amount(o.price_adjustment)}</span>}
                                   </th>
                                 ))}
                               </tr>
@@ -500,7 +507,7 @@ export default function ExtrasEditor({
                     <option value="remove">Remove</option>
                   </select>
                 </div>
-                <Input label="Price adjustment (£)" type="text" inputMode="decimal" value={priceInput} onChange={setPriceInput} placeholder="0" hint="0 = free" />
+                <Input label={`Price adjustment (${currencySymbol(fmt)})`} type="text" inputMode="decimal" value={priceInput} onChange={setPriceInput} placeholder="0" hint="0 = free" />
               </div>
 
               {/* Sold-out + stock (Stage D1). Sold out → available=false → option hides for

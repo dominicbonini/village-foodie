@@ -11,6 +11,7 @@
 // shared Brevo sender reputation every real truck's confirmations depend on.
 
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { demoTruckZone } from '@/lib/provision-demo-event'
 import { generateSlots } from '@/lib/slots'
 import { toMinor } from '@/lib/order-repricing'
 // 🔴 THE POST-CONDITION'S MACHINERY, ALL OF IT IMPORTED, NONE OF IT REIMPLEMENTED.
@@ -483,7 +484,8 @@ export async function seedDemoOrders(
   const reservationsOn = resolveBatchReservations(truckRow as { plan?: string | null; feature_overrides?: Record<string, unknown> | null } | null)
 
   const startPlusMins = toMinsLocal(args.startTime) + FIRST_COLLECTION_OFFSET_MINS
-  const nowMins = args.now ? venueNowMins(args.now, args.tz ?? 'Europe/London') : null
+  // The demo truck's zone by the one rule (Phase 2B; was a fixed London) unless the caller names one.
+  const nowMins = args.now ? venueNowMins(args.now, args.tz ?? await demoTruckZone(supabase, args.truckId)) : null
   const floorMins = nowMins != null ? Math.max(startPlusMins, nowMins + FIRST_COLLECTION_OFFSET_MINS) : startPlusMins
   // Clock-anchored: the first time is the first MULTIPLE OF THE INTERVAL FROM MIDNIGHT at or after the
   // floor, and every later one steps by the interval — the same rule generateCollectionTimes applies.

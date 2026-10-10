@@ -1,4 +1,6 @@
-import { PLAN_META, canAccess, type Plan, type Feature } from '@/lib/features'
+import { PLAN_META, canAccess, planPrice, planMonthlyMinor, type Plan, type Feature } from '@/lib/features'
+import { requirePlanPrice, moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
+import { pctLabel, feeLabel, smallFeeLabel, formatWholeAmount } from '@/lib/money-format'
 export type { Plan }
 
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
@@ -39,168 +41,151 @@ export interface FeatureSection {
   rows: FeatureRow[]
 }
 
-// Prices + positioning blurbs are DERIVED from the single source (lib/features.ts PLAN_META). Do NOT
-// re-hardcode them here — the two used to be separate literals and had already drifted (starter/pro wording,
-// tester/demo price). Deriving makes that class of drift impossible.
-export const PLAN_PRICES: Record<Plan, string> =
-  Object.fromEntries((Object.keys(PLAN_META) as Plan[]).map(p => [p, PLAN_META[p].price])) as Record<Plan, string>
+// ══════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 EVERY PRICE AND FEE BELOW IS A FUNCTION OF ONE COUNTRY'S SETTINGS (10 October 2026)
+// ══════════════════════════════════════════════════════════════════════════════════════════════════
+// PLAN_PRICES, PLAN_ONLINE_ALLOWANCE, PLATFORM_FEE_OVER_ALLOWANCE, CARD_FEES, their labels,
+// PLAN_ALLOWANCES and TRANSACTION_ROWS were module constants holding the UK figures. They are now the GB
+// row of public.country_settings (20261010_03, every value mapped from those constants), and each export
+// below takes a CountrySettings object — the truck's own country on an operator surface, the marketing
+// country on a public one. scripts/country-settings-parity.cjs proves the GB output byte-identical to the
+// old constants on every rendered surface, with ONE accepted wording change (footnote 1, below).
+//
+// ⚠️ THE RULES THESE CONSTANTS CARRIED STILL HOLD, AND STILL LIVE HERE:
+//   • every display string is DERIVED from a number — change a number in the table, never a sentence;
+//   • the platform fee is OURS and the card fees are STRIPE'S — they look alike and are opposites, so
+//     they stay separate functions (the manual: "two numbers that are equal today and semantically
+//     opposite must not be de-duplicated");
+//   • 'Free', 'Free trial', 'Unlimited', '—', '0%' and 'Pay at Hatch' are WORDS describing a model, not
+//     amounts; lib/pricing.ts's NON_SECRET_PRICE matches them by EXACT STRING to exempt them from the
+//     pre-launch mask. The capital H in 'Pay at Hatch' is load-bearing (it read 'Pay at hatch' until
+//     2 September 2026 and was masked as a price for as long as it did).
+//   • an undecided (NULL) price THROWS — requirePlanPrice — rather than borrowing another country's.
+
+/** Display prices for every plan, from the settings. 'Free', 'Free trial', 'Lifetime', 'Demo' are words. */
+export function planPrices(s: CountrySettings): Record<Plan, string> {
+  return Object.fromEntries((Object.keys(PLAN_META) as Plan[]).map(p => [p, planPrice(p, s)])) as Record<Plan, string>
+}
 
 export const PLAN_DESCRIPTIONS: Record<Plan, string> =
   Object.fromEntries((Object.keys(PLAN_META) as Plan[]).map(p => [p, PLAN_META[p].description])) as Record<Plan, string>
 
-// ── 🔴 THE ONLINE-ORDER ALLOWANCE AND THE PLATFORM FEE, AS NUMBERS (23 August 2026) ─────────────────
-// These are the values CARD_FEES' own comment names as the mistake it exists not to repeat: "the
-// £1,500 / £2,000 allowances were defined ONLY INSIDE display strings, so lib/payments cannot read a
-// number and therefore cannot apply an allowance at all." That is now fixed at the definition. Every
-// string below is DERIVED; change a NUMBER, never a sentence.
-//
-// ⚠️ PENCE, INTEGER — the same convention as CARD_FEES.pence and `orders.total_minor` (§16: "the
-// authoritative charge amount in pence"). An allowance is compared against order value, which is
-// already pence, so anything else would need a conversion at every comparison site.
-//
-// 🔴 A DISCRIMINATED UNION, NOT A NULLABLE NUMBER, AND THAT IS THE POINT OF TASK 3. "No allowance"
-// (starter) and "no ceiling" (trial) are DIFFERENT facts, and both would collapse to a falsy value if
-// this were `number | null`. The manual records the cost of exactly that shape: a NULL trial expiry read
-// as "expired" would have switched the product off for every self-serve signup, and was only correct
-// once the code stopped asking `if (!trialExpiresAt)`. A consumer of this cannot write `if (!allowance)`
-// — TypeScript makes them name which case they mean.
+// ── THE ONLINE-ORDER ALLOWANCE AND THE PLATFORM FEE ────────────────────────────────────────────────
+// 🔴 A DISCRIMINATED UNION, NOT A NULLABLE NUMBER. "No allowance" (starter) and "no ceiling" (trial) are
+// DIFFERENT facts and both would collapse to a falsy value if this were `number | null` — the shape of
+// the NULL-trial-expiry bug the manual records. A consumer cannot write `if (!allowance)`.
+// ⚠️ MINOR UNITS of the settings' currency (it was `pence` while every row was GBP).
 export type OnlineAllowance =
-  | { kind: 'amount'; pence: number }   // a real ceiling, then PLATFORM_FEE_OVER_ALLOWANCE applies
+  | { kind: 'amount'; minor: number }   // a real ceiling, then the platform fee applies above it
   | { kind: 'none' }                    // no online-order allowance at all (Pay at Hatch)
   | { kind: 'unlimited' }               // uncapped; no platform fee to apply
 
 // ⚠️ THE FOUR TIERS TRANSACTION_ROWS DOCUMENTS, AND NO MORE. `tester` and `demo` have NO published
-// commercial position — no column in the fee table, no allowance sentence, nothing to derive from — so
-// they are deliberately absent rather than guessed at. Adding them means deciding what they are sold as,
-// which is a commercial decision and not a refactor. See the report.
-export const PLAN_ONLINE_ALLOWANCE: Record<'trial' | 'starter' | 'pro' | 'max', OnlineAllowance> = {
-  trial:   { kind: 'unlimited' },
-  starter: { kind: 'none' },
-  pro:     { kind: 'amount', pence: 150000 },
-  max:     { kind: 'amount', pence: 200000 },
-}
-
-/** HatchGrab's own fee on online-order value ABOVE the plan allowance. 🔴 OURS, unlike CARD_FEES,
- *  which are Stripe's — do not merge the two constants for looking similar. */
-export const PLATFORM_FEE_OVER_ALLOWANCE = { pct: 0.99 } as const
-
-/** "0.99%" — the ONLY place the platform fee becomes a string. Mirrors feeLabel()'s treatment of pct:
- *  the number is interpolated as written, so 1.0 would render "1%" exactly as feeLabel already does. */
-export function pctLabel(fee: { pct: number }): string {
-  return `${fee.pct}%`
-}
-
-/** "£1,500" — grouped thousands. ⚠️ DELIBERATELY NOT toLocaleString: this string is compared
- *  byte-for-byte against the pre-refactor value, and locale/ICU availability differs between the build
- *  host and the browser. Manual grouping is deterministic everywhere. */
-export function allowanceAmountLabel(pence: number): string {
-  return '£' + String(Math.round(pence / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
-
-export const PLATFORM_FEE_LABEL = pctLabel(PLATFORM_FEE_OVER_ALLOWANCE)
-
-/** The allowance in pence for a tier that has one. 🔴 EXISTS SO NOTHING BELOW RE-STATES A NUMBER —
- *  every derived string reads through this, so PLAN_ONLINE_ALLOWANCE stays the only place the amounts
- *  are written. It THROWS rather than falling back: if a future edit makes one of these tiers 'none' or
- *  'unlimited', this fails loudly at module load instead of rendering "£NaN" on the pricing table. */
-export function allowancePenceFor(tier: 'pro' | 'max'): number {
-  const a = PLAN_ONLINE_ALLOWANCE[tier]
-  if (a.kind !== 'amount') {
-    throw new Error(`[plan-features] PLAN_ONLINE_ALLOWANCE.${tier} is '${a.kind}', but a display string expects an amount.`)
+// commercial position, so they are absent rather than guessed at — a compile error, not undefined.
+export function planOnlineAllowance(s: CountrySettings): Record<'trial' | 'starter' | 'pro' | 'max', OnlineAllowance> {
+  return {
+    trial:   { kind: 'unlimited' },
+    starter: { kind: 'none' },
+    pro:     { kind: 'amount', minor: requirePlanPrice(s, 'proAllowanceMinor') },
+    max:     { kind: 'amount', minor: requirePlanPrice(s, 'maxAllowanceMinor') },
   }
-  return a.pence
 }
 
-// Included online-order allowance per plan (the £1,500 / £2,000 headline). Additive — Admin/Billing ignore
-// it until they choose to render it; the landing table shows it under the price.
-// ⚠️ DERIVED from PLAN_ONLINE_ALLOWANCE + PLATFORM_FEE_OVER_ALLOWANCE. `starter` stays a literal because
-// 'Pay at Hatch' is a description of a MODEL, not a formatted amount, and lib/pricing.ts exempts it from
-// the pre-launch mask via NON_SECRET_PRICE.
-// 🔴 THE CAPITAL H IS LOAD-BEARING AND THIS LINE READ 'Pay at hatch' UNTIL 2 SEPTEMBER 2026.
-// NON_SECRET_PRICE is a Set matched by EXACT STRING, and 'Pay at hatch' !== 'Pay at Hatch'. So the value
-// this comment claimed was exempt was NOT exempt: every masked surface printed "TBC" for Starter's
-// allowance — a plan whose whole point is that it costs nothing. The comment above asserted the match
-// rather than checking it, and was wrong for as long as the line existed.
-// ⚠️ CAPITAL H IS THE CANONICAL SPELLING. Every other occurrence in the codebase already used it —
-// TRANSACTION_ROWS (:170), the protected row label (:185, :401), lib/features.ts:194, both Admin sites,
-// both Manage sites and the landing's own prose. This line was the single outlier.
-// ⚠️ NOTHING COMPARES THIS VALUE. Its only readers render it (app/landing/page.tsx:321 and the PDF
-// route), so the change is display-only — and the display now matches the term used everywhere else.
-export const PLAN_ALLOWANCES: Record<'starter' | 'pro' | 'max', string> = {
-  starter: 'Pay at Hatch',
-  pro: `First ${allowanceAmountLabel(allowancePenceFor('pro'))} of online orders included, then ${PLATFORM_FEE_LABEL}`,
-  max: `First ${allowanceAmountLabel(allowancePenceFor('max'))} of online orders included, then ${PLATFORM_FEE_LABEL}`,
+/** HatchGrab's own fee on online-order value ABOVE the plan allowance. 🔴 OURS, unlike cardFees(),
+ *  which are Stripe's — do not merge the two for looking similar. */
+export function platformFeeOverAllowance(s: CountrySettings): { pct: number } {
+  return { pct: requirePlanPrice(s, 'platformFeePct') }
 }
 
-// ── CARD PROCESSING FEES — ONE DEFINITION, STRUCTURED (V11.4) ─────────────────────────────────────────
+/** "0.99%" — the ONLY place the platform fee becomes a string. */
+export function platformFeeLabel(s: CountrySettings): string {
+  return pctLabel(platformFeeOverAllowance(s).pct, moneyFormatOf(s))
+}
+
+/** "£1,500" — an allowance amount, whole units. */
+export function allowanceAmountLabel(minor: number, s: CountrySettings): string {
+  return formatWholeAmount(minor, moneyFormatOf(s))
+}
+
+/** The allowance for a tier that has one. 🔴 Exists so nothing restates a number: every derived string
+ *  reads through this. It THROWS rather than falling back if a tier ever stops being an amount. */
+export function allowanceMinorFor(tier: 'pro' | 'max', s: CountrySettings): number {
+  const a = planOnlineAllowance(s)[tier]
+  if (a.kind !== 'amount') {
+    throw new Error(`[plan-features] the ${tier} allowance is '${a.kind}', but a display string expects an amount.`)
+  }
+  return a.minor
+}
+
+/** The headline allowance sentence per plan. `starter` is the word 'Pay at Hatch' (a model, not an
+ *  amount — NON_SECRET_PRICE exempts it by exact string). */
+export function planAllowances(s: CountrySettings): Record<'starter' | 'pro' | 'max', string> {
+  const fee = platformFeeLabel(s)
+  return {
+    starter: 'Pay at Hatch',
+    pro: `First ${allowanceAmountLabel(allowanceMinorFor('pro', s), s)} of online orders included, then ${fee}`,
+    max: `First ${allowanceAmountLabel(allowanceMinorFor('max', s), s)} of online orders included, then ${fee}`,
+  }
+}
+
+/** An extra van costs the plan's own monthly price (decided 10 October 2026 — it equals the values the
+ *  page's raw `VAN_ADDON_PRICE` map held). Starter and trial carry no add-on price: 0. */
+export function vanAddonMonthlyMinor(plan: Plan, s: CountrySettings): number {
+  return plan === 'pro' || plan === 'max' ? planMonthlyMinor(plan, s) : 0
+}
+
+// ── CARD PROCESSING FEES ────────────────────────────────────────────────────────────────────────────
 // 🔴 THESE ARE STRIPE'S FEES, NOT OURS. HatchGrab does not set them, cannot guarantee them, and a truck's
 // actual rate is confirmed by Stripe during their own onboarding. Never render these as fixed or as ours.
-//
-// ⚠️ STRUCTURED VALUES, NOT DISPLAY STRINGS, AND THAT IS THE WHOLE POINT. The £1,500 / £2,000 allowances
-// were defined only INSIDE display strings, so lib/payments cannot read a number and therefore cannot apply
-// an allowance at all. Do not repeat that here: when Stripe Connect and Terminal are built, the payments
-// code needs `pct` and `pence` as numbers. Every display string below is DERIVED — add a new surface by
-// calling feeLabel(), never by writing "1.4% + 10p" again.
-//
-// PROVENANCE: verified 6 August 2026 from multiple SECONDARY sources, NOT from stripe.com directly — which
-// is why every rendered string carries a hedge ("currently" / "~"). If these are ever confirmed against
-// Stripe's own published rates, say so here; until then the hedging is load-bearing, not decoration.
-export const CARD_FEES = {
-  /** Online payments, standard UK-issued cards. */
-  online: { pct: 1.5, pence: 20 },
-  /** In-person payments, UK/EEA-issued cards. ⚠️ Cards issued outside the UK/EEA cost MORE — say so
-   *  wherever this is rendered; quoting the domestic rate alone would be a claim that is untrue for some
-   *  customers. */
-  inPerson: { pct: 1.4, pence: 10 },
-  /** ADDITIONAL per-authorisation charge for contactless taken on a phone or tablet with no dedicated
-   *  reader (Tap to Pay). ⚠️ MUST be stated separately — folding it into the headline in-person rate would
-   *  understate the cost for exactly the trucks most likely to use it. */
-  tapToPaySurchargePence: 10,
-} as const
-
-/** "1.4% + 10p" — the ONLY place a card fee becomes a string. */
-export function feeLabel(fee: { pct: number; pence: number }): string {
-  return `${fee.pct}% + ${fee.pence}p`
+// PROVENANCE (GB): verified 6 August 2026 from multiple SECONDARY sources, NOT from stripe.com — which is
+// why every rendered string carries a hedge ("currently" / "~"). The hedging is load-bearing.
+// ⚠️ The in-person rate applies to a narrower set of cards than the domestic online rate, and cards
+// issued elsewhere cost MORE — say so wherever it is rendered. The Tap to Pay charge is ADDITIONAL and
+// must be stated separately, never folded into the headline in-person rate.
+export function cardFees(s: CountrySettings): {
+  online: { pct: number; fixedMinor: number }
+  inPerson: { pct: number; fixedMinor: number }
+  tapToPayFixedMinor: number
+} {
+  return {
+    online: { pct: s.cardFeeOnlinePct, fixedMinor: s.cardFeeOnlineFixedMinor },
+    inPerson: { pct: s.cardFeeInPersonPct, fixedMinor: s.cardFeeInPersonFixedMinor },
+    tapToPayFixedMinor: s.tapToPayFixedMinor,
+  }
 }
 
-export const CARD_FEE_ONLINE_LABEL = feeLabel(CARD_FEES.online)
-export const CARD_FEE_IN_PERSON_LABEL = feeLabel(CARD_FEES.inPerson)
-export const TAP_TO_PAY_SURCHARGE_LABEL = `${CARD_FEES.tapToPaySurchargePence}p`
+/** "1.5% + 20p" */
+export const cardFeeOnlineLabel = (s: CountrySettings): string => feeLabel(cardFees(s).online, moneyFormatOf(s))
+/** "1.4% + 10p" */
+export const cardFeeInPersonLabel = (s: CountrySettings): string => feeLabel(cardFees(s).inPerson, moneyFormatOf(s))
+/** "10p" */
+export const tapToPaySurchargeLabel = (s: CountrySettings): string => smallFeeLabel(cardFees(s).tapToPayFixedMinor, moneyFormatOf(s))
 
-// ── 🔴 THE FEE TABLE. ONE DEFINITION, READ BY THE LANDING PAGE AND BY MANAGE > BILLING. ──────────────
-// ⚠️ THIS EXPORT USED TO BE TWO ROWS WITH NO TRIAL COLUMN, AND THE LANDING PAGE KEPT ITS OWN THREE-ROW
-// COPY (`LANDING_FEE_ROWS`) BESIDE IT. The comment on that copy said so outright — "the shared
-// TRANSACTION_ROWS is NOT modified; Manage > Billing / Admin keep their own version" — and that
-// duplication was the actual defect: the two surfaces made DIFFERENT CLAIMS about what a trial truck
-// gets, and no amount of fixing the rendering could have kept them together. The landing page's shape
-// won because it was the correct one; this is now the only place these values exist.
-//
-// 🔴 THREE ROWS, NOT TWO, AND THE SPLIT IS WHY. Collapsing the allowance and the fee into one cell
-// ("£1,500 free, then 0.99% + card fee") produced a cell that wrapped to four lines in a 56px column.
-// One short fact per cell fits one line at 390px on both surfaces.
-//
-// ⚠️ `trial` IS A REAL COLUMN NOW. Manage used to render `row.values.starter` for the trial column
-// because there was no trial data to read — which made Billing tell a trial operator they were on
-// "Pay at Hatch" when a trial carries MAX's feature set (lib/features.ts: `TRIAL_FEATURES =
-// [...MAX_FEATURES]`), including online payments. Manage's own trial banner already said the truth:
-// "Full Max features + Pay at Hatch ordering — completely free* / *Standard card processing fees apply
-// on online orders". Unlimited, free, Stripe's fees still apply — which is exactly what these cells say.
-//
-// ⚠️ `—` AND `Unlimited` CARRY NO PRICE. lib/pricing.ts treats them as non-sensitive, like `0%` and
-// `Pay at Hatch`, so the pre-launch mask leaves them alone; `£1,500`, `£2,000` and `0.99%` are still
-// masked to "TBC" until pricing is published.
-export const TRANSACTION_ROWS: {
+// ── 🔴 WHICH CARDS THE QUOTED RATES ARE FOR (decided 10 October 2026) ─────────────────────────────────
+// ONLINE sentences say "standard " + the label, so the UK still reads "standard UK cards" exactly.
+// IN-PERSON sentences say the label alone, so "UK and EEA cards" became "UK cards" — the ONE accepted
+// visible change for UK trucks in the move to country_settings.
+export const cardRegionOnline = (s: CountrySettings): string => `standard ${s.cardFeeRegionLabel}`
+export const cardRegionInPerson = (s: CountrySettings): string => s.cardFeeRegionLabel
+
+// ── 🔴 THE FEE TABLE. ONE DEFINITION, READ BY THE LANDING, THE FEATURES TABLE, BILLING, ADMIN, THE PDF ──
+// THREE ROWS, NOT TWO: collapsing the allowance and the fee into one cell wrapped to four lines in a 56px
+// column. `trial` IS A REAL COLUMN — a trial carries MAX's feature set, so Billing must not borrow
+// STARTER's cells for it (that is how Billing once told a trial operator they were on "Pay at Hatch").
+// ⚠️ 'Unlimited', '—', 'Free', 'Pay at Hatch' and '0%' stay literal: words, not amounts, exempt from
+// the pre-launch mask by exact string.
+export function transactionRows(s: CountrySettings): {
   name: string
   footnote?: string
   cells: Record<'trial' | 'starter' | 'pro' | 'max', string>
-}[] = [
-  { name: 'Walk-up orders',         footnote: '1', cells: { trial: '0%',        starter: '0%',           pro: '0%',     max: '0%'     } },
-  // ⚠️ THE FOUR NUMERIC CELLS ARE DERIVED (23 August 2026). 'Unlimited', '—', 'Free' and 'Pay at Hatch'
-  // stay literal: they are words describing a MODEL, not formatted amounts, and lib/pricing.ts matches
-  // on those exact strings in NON_SECRET_PRICE to exempt them from the pre-launch mask.
-  { name: 'Online orders included', footnote: '2', cells: { trial: 'Unlimited', starter: '—',            pro: allowanceAmountLabel(allowancePenceFor('pro')), max: allowanceAmountLabel(allowancePenceFor('max')) } },
-  { name: 'Fee after that',         footnote: '2', cells: { trial: 'Free',      starter: 'Pay at Hatch', pro: PLATFORM_FEE_LABEL,  max: PLATFORM_FEE_LABEL  } },
-]
+}[] {
+  const fee = platformFeeLabel(s)
+  return [
+    { name: 'Walk-up orders',         footnote: '1', cells: { trial: '0%',        starter: '0%',           pro: '0%', max: '0%' } },
+    { name: 'Online orders included', footnote: '2', cells: { trial: 'Unlimited', starter: '—',            pro: allowanceAmountLabel(allowanceMinorFor('pro', s), s), max: allowanceAmountLabel(allowanceMinorFor('max', s), s) } },
+    { name: 'Fee after that',         footnote: '2', cells: { trial: 'Free',      starter: 'Pay at Hatch', pro: fee, max: fee } },
+  ]
+}
 
 export const FEATURE_SECTIONS: FeatureSection[] = [
   {
@@ -391,7 +376,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // 2026). This row briefly pointed at a WhatsApp-only footnote 6 while live, because a row carries
       // exactly ONE footnote (`FeatureRow.footnote?: string`) and the shared footnote 4 could not carry
       // Meta's charges without claiming billing for the Messenger & Instagram row below it. That is
-      // resolved by making footnote 4's TEXT conditional instead of the row's NUMBER: see FOOTNOTES.
+      // resolved by making footnote 4's TEXT conditional instead of the row's NUMBER: see footnotes().
       // 🟢 SO THE ONLY THING THE FLAG CHANGES HERE IS THE CELLS. Both branches are otherwise identical,
       // which is deliberate — it is now impossible for the marker and the footnote to disagree.
       // 🔴 BEHIND THE SINGLE SWITCH (lib/whatsapp-live.ts). OFF is byte-identical to what production
@@ -601,119 +586,126 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
   },
 ]
 
-export const FOOTNOTES: { number: string; text: string }[] = [
-  {
-    number: '1',
-    // 🔴 THIS FOOTNOTE IS THE ONE PLACE THE WALK-UP DETAIL LIVES. The lede and the pricing asterisk point
-    // at it and stop. Every fact here — the in-person rate, the UK/EEA limit, the tap surcharge and
-    // "coming soon" — appears EXACTLY ONCE across the whole surface, and this is that once.
-    // ⚠️ "is coming soon", NOT "is" — Stripe Connect and Terminal are BOTH UNBUILT. The manual records
-    // advertising an unbuilt capability as an error already made once (kitchen printing).
-    // ⚠️ Cut deliberately and NOT to be reinstated: "Stripe's fees are Stripe's, not ours" ("Stripe's own
-    // charge" already says whose they are), "your actual rate is confirmed by Stripe", "more for cards
-    // issued elsewhere" ("on UK and EEA cards" already limits the claim), and "Cash is always free"
-    // (nobody thinks cash carries a platform fee). Each was a second statement of something already said.
-    // ⚠️ ALSO CUT, AND NOT TO BE RESTORED (72 words -> 59):
-    //   • "however you take the money" — the next two sentences enumerate exactly that.
-    //   • "(Zettle, Square, etc.)" — examples of a thing every operator already owns.
-    //   • "still 0% from us" — the opening sentence already says 0% on every plan, and repeating it
-    //     invites the reader to go looking for the catch.
-    // 🔴 "without a dedicated reader" IS NOT CUTTABLE. Removing it makes the tap surcharge read as though
-    // it ALWAYS applies, overstating the cost for every truck that owns a reader. That is a false claim,
-    // not a long one. This has now been re-established twice; do not revisit it.
-    text: `Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your `
-      + `provider's standard fees apply. Card payments through HatchGrab via Stripe are coming soon — `
-      + `Stripe's own charge, currently around ${CARD_FEE_IN_PERSON_LABEL} on UK and EEA cards, plus `
-      + `${TAP_TO_PAY_SURCHARGE_LABEL} per authorisation if you tap on a phone or tablet without a `
-      + `dedicated reader.`,
-  },
-  {
-    number: '2',
-    text: `Online payments powered by Stripe Connect. Subject to ${PLATFORM_FEE_LABEL} HatchGrab platform fee plus Stripe `
-      + `card processing fees (~${CARD_FEE_ONLINE_LABEL} per transaction on standard UK cards).`,
-  },
-  {
-    number: '3',
-    // ⚠️ "An Apple iPad is recommended for the best experience." WAS REMOVED AND MUST NOT BE RESTORED.
-    // It was a PREFERENCE STATED AS A FINDING. The full order flow has never been run on real hardware on
-    // either platform, so there is no basis for preferring one — and on current evidence ANDROID is the
-    // better-validated of the two: FCM push works and a token has landed, while iOS push has never
-    // registered a token at all (§36). It also reads as second-class to a truck that already owns an
-    // Android tablet, for no commercial gain.
-    //
-    // 🔴 DO NOT ADD "coming soon" HERE. The native apps are in the PRESENT TENSE deliberately: the landing
-    // page describes the product AT LAUNCH, and neither app ships before both are ready. This is a
-    // STANDING EDITORIAL RULE for the landing copy, not an oversight. (It is the opposite of footnote 1,
-    // where "coming soon" is correct because Stripe walk-ups are a LATER addition to a shipped product.)
-    // ⚠️ "Device not supplied", NOT "Tablet not supplied", AND THE CHANGE IS FORCED BY THE ROW ABOVE.
-    // With iPhone named, a footnote framed entirely around tablets would list a phone app and then say
-    // the fallback runs "on any tablet" — which invites the reader to ask why a phone app is in a tablet
-    // footnote. The caveat is about not supplying HARDWARE; it was never about tablets specifically.
-    // 🟢 "with Android coming soon" REMOVED 5 September 2026 — the Android app is live on Google Play.
-    // Both apps are shipped, so both are present tense, which is what the standing rule above requires.
-    text: 'Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser.',
-  },
-  {
-    // 🔴 THE FINAL CLAUSE WAS REMOVED 4 September 2026 AND MUST NOT COME BACK. It read
-    // "— you can view every message and reply yourself at any time", and BOTH halves were false:
-    // `whatsapp_logs` stores `message_in`/`response_sent` and NO surface renders either (verified by
-    // search: the only reads are a Reports count on classification flags and the greeting timestamp
-    // check), and "reply yourself" needs coexistence, which is unbuilt. It was the sharpest false claim
-    // in the product's pricing copy, and it rendered to prospects, operators and admin alike.
-    // ⚠️ IT DELIBERATELY DOES NOT POINT AT THE SETTINGS PREVIEW. The preview sits INSIDE the
-    // `!isNativeApp()` wrapper that hides the whole Auto-replies card (app/manage/[token]/page.tsx:9642
-    // opens it, :9834 closes it, the preview is at :9719), so it does not exist for an iPad or Android
-    // operator — and this footnote renders to them on the Billing tab.
-    // ⚠️ THIS FOOTNOTE SERVES **BOTH** AUTO-REPLY ROWS AGAIN (16 September 2026). WhatsApp briefly had
-    // its own footnote 6; that split is undone and 6 is gone. See the note on the text below for why one
-    // footnote can now carry both rows when it previously could not.
-    number: '4',
-    // ── 🔴 ONE FOOTNOTE, TWO ROWS, AND THE TEXT MOVES WITH THE FLAG. ────────────────────────────────
-    // A row carries exactly ONE footnote (`FeatureRow.footnote?: string`), so a shared footnote must be
-    // true of EVERY row pointing at it. That is what forced the split in the first place: while WhatsApp
-    // was live and this text was static, putting Meta's charges here would have claimed billing for the
-    // Messenger & Instagram row, which is unbuilt and bills nothing.
-    // 🟢 WHAT CHANGED IS THE CONDITION, NOT THE RULE. The billing sentences appear only when
-    // WHATSAPP_LIVE is true — which is exactly when a row pointing here can actually be billed — and the
-    // opening clause was already platform-neutral ("a Business account on each platform"), so it stays
-    // true of both rows in both states. The ONE claim that is WhatsApp-specific is the billing, and it
-    // is now the only part that is conditional.
-    // ⚠️ IT IS STILL SLIGHTLY OVER-BROAD WHEN LIVE, AND THAT IS ACCEPTED AND RECORDED. A reader of the
-    // Messenger & Instagram row sees a footnote naming WhatsApp billing. It names WhatsApp explicitly
-    // rather than saying "the platform bills you", so it cannot be read as a claim ABOUT Messenger or
-    // Instagram — and those rows say "Coming soon", so nothing is promised about them anyway.
-    // 🔴 OFF-BRANCH IS BYTE-IDENTICAL TO THE PREVIOUS STATIC STRING. Do not "simplify" it into the
-    // template literal: with the flag off this footnote must claim nothing about charges at all.
-    text: WHATSAPP_LIVE
-      // 🔴 EVERY WORD OPERATOR-SUPPLIED AND EXACT. Do not tidy it, reorder the clauses or "improve" the
-      // punctuation — the semicolon in "Correct at <date>; Meta may change" is deliberate, and so is
-      // "check with Meta" rather than a link: this string is printed into the features PDF as well as
-      // the page, and a PDF cannot be clicked.
-      // 🔴 NOTHING IN IT IS A LITERAL. Both dates and the allowance are interpolated, because the same
-      // three constants render the Settings billing summary — and the one thing worse than a stale date
-      // on a pricing surface is two surfaces carrying DIFFERENT stale dates.
-      ? `Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From ${META_FREE_ALLOWANCE_FROM} the first ${formatLimit(META_FREE_REPLIES_PER_MONTH)} a month are free. Correct at ${META_PRICING_CHECKED_ON}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong.`
-      : 'Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.',
-  },
-  {
-    number: '5',
-    // PLATFORM-NEUTRAL, deliberately. It said "the HatchGrab iPad app"; it does NOT now say "iPad and
-    // Android", because printing is not the same kind of claim as a build target. The recommended
-    // backend ('mfi' — Star/Epson via Apple's External Accessory framework, lib/printing/transport.ts:6)
-    // is iOS-only by construction, and the cross-platform path ('ble') is documented there as the budget
-    // fallback with limited/no paper-out status. Naming Android here would underwrite that. "The
-    // HatchGrab kitchen app" stays true whichever backend lands first.
-    text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers listed in our help centre.',
-  },
-  // 🔴 THERE IS NO FOOTNOTE 6, AND THE NUMBERING STOPS AT 5 IN BOTH FLAG STATES (16 September 2026).
-  // It existed only while WHATSAPP_LIVE was true and carried the WhatsApp billing text; that text has
-  // moved into footnote 4, which both auto-reply rows now share.
-  // 🔴 NUMBERING IS LOAD-BEARING — DO NOT RENUMBER OR REORDER THIS ARRAY TO "TIDY UP". `hide_pricing`
-  // masks the pricing footnote by the magic string `f.number !== '2'` (docs/reference-manual.md §44);
-  // renumbering would silently unmask it with no error, no type failure and no test. Removing 6 is safe
-  // precisely because it was LAST and CONDITIONAL: 1-5 do not move, in either state.
-  // ⚠️ 6 IS NOW FREE AGAIN. If a future footnote needs a number, append 6 — do not insert.
-]
+// 🔴 A FUNCTION OF THE SETTINGS, BECAUSE FOOTNOTES 1 AND 2 QUOTE FEES. 3–5 are fixed text. The array's
+// ORDER AND NUMBERING ARE UNCHANGED — the manage page masks footnote 2 by the literal '2' (see the note at
+// the end of this list), so the numbers are part of the contract, not decoration.
+export function footnotes(s: CountrySettings): { number: string; text: string }[] {
+  return [
+    {
+      number: '1',
+      // 🔴 THIS FOOTNOTE IS THE ONE PLACE THE WALK-UP DETAIL LIVES. The lede and the pricing asterisk point
+      // at it and stop. Every fact here — the in-person rate, the UK/EEA limit, the tap surcharge and
+      // "coming soon" — appears EXACTLY ONCE across the whole surface, and this is that once.
+      // ⚠️ "is coming soon", NOT "is" — Stripe Connect and Terminal are BOTH UNBUILT. The manual records
+      // advertising an unbuilt capability as an error already made once (kitchen printing).
+      // ⚠️ Cut deliberately and NOT to be reinstated: "Stripe's fees are Stripe's, not ours" ("Stripe's own
+      // charge" already says whose they are), "your actual rate is confirmed by Stripe", "more for cards
+      // issued elsewhere" ("on UK and EEA cards" already limits the claim), and "Cash is always free"
+      // (nobody thinks cash carries a platform fee). Each was a second statement of something already said.
+      // ⚠️ ALSO CUT, AND NOT TO BE RESTORED (72 words -> 59):
+      //   • "however you take the money" — the next two sentences enumerate exactly that.
+      //   • "(Zettle, Square, etc.)" — examples of a thing every operator already owns.
+      //   • "still 0% from us" — the opening sentence already says 0% on every plan, and repeating it
+      //     invites the reader to go looking for the catch.
+      // 🔴 "without a dedicated reader" IS NOT CUTTABLE. Removing it makes the tap surcharge read as though
+      // it ALWAYS applies, overstating the cost for every truck that owns a reader. That is a false claim,
+      // not a long one. This has now been re-established twice; do not revisit it.
+      // 🔴 10 OCTOBER 2026: "on UK and EEA cards" → "on " + the region label ("UK cards"). The ONE accepted
+      // visible change of the country_settings move; every other word is as it was.
+      text: `Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your `
+        + `provider's standard fees apply. Card payments through HatchGrab via Stripe are coming soon — `
+        + `Stripe's own charge, currently around ${cardFeeInPersonLabel(s)} on ${cardRegionInPerson(s)}, plus `
+        + `${tapToPaySurchargeLabel(s)} per authorisation if you tap on a phone or tablet without a `
+        + `dedicated reader.`,
+    },
+    {
+      number: '2',
+      text: `Online payments powered by Stripe Connect. Subject to ${platformFeeLabel(s)} HatchGrab platform fee plus Stripe `
+        + `card processing fees (~${cardFeeOnlineLabel(s)} per transaction on ${cardRegionOnline(s)}).`,
+    },
+    {
+      number: '3',
+      // ⚠️ "An Apple iPad is recommended for the best experience." WAS REMOVED AND MUST NOT BE RESTORED.
+      // It was a PREFERENCE STATED AS A FINDING. The full order flow has never been run on real hardware on
+      // either platform, so there is no basis for preferring one — and on current evidence ANDROID is the
+      // better-validated of the two: FCM push works and a token has landed, while iOS push has never
+      // registered a token at all (§36). It also reads as second-class to a truck that already owns an
+      // Android tablet, for no commercial gain.
+      //
+      // 🔴 DO NOT ADD "coming soon" HERE. The native apps are in the PRESENT TENSE deliberately: the landing
+      // page describes the product AT LAUNCH, and neither app ships before both are ready. This is a
+      // STANDING EDITORIAL RULE for the landing copy, not an oversight. (It is the opposite of footnote 1,
+      // where "coming soon" is correct because Stripe walk-ups are a LATER addition to a shipped product.)
+      // ⚠️ "Device not supplied", NOT "Tablet not supplied", AND THE CHANGE IS FORCED BY THE ROW ABOVE.
+      // With iPhone named, a footnote framed entirely around tablets would list a phone app and then say
+      // the fallback runs "on any tablet" — which invites the reader to ask why a phone app is in a tablet
+      // footnote. The caveat is about not supplying HARDWARE; it was never about tablets specifically.
+      // 🟢 "with Android coming soon" REMOVED 5 September 2026 — the Android app is live on Google Play.
+      // Both apps are shipped, so both are present tense, which is what the standing rule above requires.
+      text: 'Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser.',
+    },
+    {
+      // 🔴 THE FINAL CLAUSE WAS REMOVED 4 September 2026 AND MUST NOT COME BACK. It read
+      // "— you can view every message and reply yourself at any time", and BOTH halves were false:
+      // `whatsapp_logs` stores `message_in`/`response_sent` and NO surface renders either (verified by
+      // search: the only reads are a Reports count on classification flags and the greeting timestamp
+      // check), and "reply yourself" needs coexistence, which is unbuilt. It was the sharpest false claim
+      // in the product's pricing copy, and it rendered to prospects, operators and admin alike.
+      // ⚠️ IT DELIBERATELY DOES NOT POINT AT THE SETTINGS PREVIEW. The preview sits INSIDE the
+      // `!isNativeApp()` wrapper that hides the whole Auto-replies card (app/manage/[token]/page.tsx:9642
+      // opens it, :9834 closes it, the preview is at :9719), so it does not exist for an iPad or Android
+      // operator — and this footnote renders to them on the Billing tab.
+      // ⚠️ THIS FOOTNOTE SERVES **BOTH** AUTO-REPLY ROWS AGAIN (16 September 2026). WhatsApp briefly had
+      // its own footnote 6; that split is undone and 6 is gone. See the note on the text below for why one
+      // footnote can now carry both rows when it previously could not.
+      number: '4',
+      // ── 🔴 ONE FOOTNOTE, TWO ROWS, AND THE TEXT MOVES WITH THE FLAG. ────────────────────────────────
+      // A row carries exactly ONE footnote (`FeatureRow.footnote?: string`), so a shared footnote must be
+      // true of EVERY row pointing at it. That is what forced the split in the first place: while WhatsApp
+      // was live and this text was static, putting Meta's charges here would have claimed billing for the
+      // Messenger & Instagram row, which is unbuilt and bills nothing.
+      // 🟢 WHAT CHANGED IS THE CONDITION, NOT THE RULE. The billing sentences appear only when
+      // WHATSAPP_LIVE is true — which is exactly when a row pointing here can actually be billed — and the
+      // opening clause was already platform-neutral ("a Business account on each platform"), so it stays
+      // true of both rows in both states. The ONE claim that is WhatsApp-specific is the billing, and it
+      // is now the only part that is conditional.
+      // ⚠️ IT IS STILL SLIGHTLY OVER-BROAD WHEN LIVE, AND THAT IS ACCEPTED AND RECORDED. A reader of the
+      // Messenger & Instagram row sees a footnote naming WhatsApp billing. It names WhatsApp explicitly
+      // rather than saying "the platform bills you", so it cannot be read as a claim ABOUT Messenger or
+      // Instagram — and those rows say "Coming soon", so nothing is promised about them anyway.
+      // 🔴 OFF-BRANCH IS BYTE-IDENTICAL TO THE PREVIOUS STATIC STRING. Do not "simplify" it into the
+      // template literal: with the flag off this footnote must claim nothing about charges at all.
+      text: WHATSAPP_LIVE
+        // 🔴 EVERY WORD OPERATOR-SUPPLIED AND EXACT. Do not tidy it, reorder the clauses or "improve" the
+        // punctuation — the semicolon in "Correct at <date>; Meta may change" is deliberate, and so is
+        // "check with Meta" rather than a link: this string is printed into the features PDF as well as
+        // the page, and a PDF cannot be clicked.
+        // 🔴 NOTHING IN IT IS A LITERAL. Both dates and the allowance are interpolated, because the same
+        // three constants render the Settings billing summary — and the one thing worse than a stale date
+        // on a pricing surface is two surfaces carrying DIFFERENT stale dates.
+        ? `Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From ${META_FREE_ALLOWANCE_FROM} the first ${formatLimit(META_FREE_REPLIES_PER_MONTH)} a month are free. Correct at ${META_PRICING_CHECKED_ON}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong.`
+        : 'Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.',
+    },
+    {
+      number: '5',
+      // PLATFORM-NEUTRAL, deliberately. It said "the HatchGrab iPad app"; it does NOT now say "iPad and
+      // Android", because printing is not the same kind of claim as a build target. The recommended
+      // backend ('mfi' — Star/Epson via Apple's External Accessory framework, lib/printing/transport.ts:6)
+      // is iOS-only by construction, and the cross-platform path ('ble') is documented there as the budget
+      // fallback with limited/no paper-out status. Naming Android here would underwrite that. "The
+      // HatchGrab kitchen app" stays true whichever backend lands first.
+      text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers listed in our help centre.',
+    },
+    // 🔴 THERE IS NO FOOTNOTE 6, AND THE NUMBERING STOPS AT 5 IN BOTH FLAG STATES (16 September 2026).
+    // It existed only while WHATSAPP_LIVE was true and carried the WhatsApp billing text; that text has
+    // moved into footnote 4, which both auto-reply rows now share.
+    // 🔴 NUMBERING IS LOAD-BEARING — DO NOT RENUMBER OR REORDER THIS ARRAY TO "TIDY UP". `hide_pricing`
+    // masks the pricing footnote by the magic string `f.number !== '2'` (docs/reference-manual.md §44);
+    // renumbering would silently unmask it with no error, no type failure and no test. Removing 6 is safe
+    // precisely because it was LAST and CONDITIONAL: 1-5 do not move, in either state.
+    // ⚠️ 6 IS NOW FREE AGAIN. If a future footnote needs a number, append 6 — do not insert.
+  ]
+}
 
 // ── DRIFT GUARD (the structural fix) ────────────────────────────────────────────────────────────────────
 // This file (PRESENTATION) and lib/features.ts (the ENFORCEMENT gate — PLAN_FEATURES / canAccess) are two

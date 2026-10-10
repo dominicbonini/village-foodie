@@ -1,3 +1,6 @@
+import { requirePlanPrice, moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
+import { perMonthLabel } from '@/lib/money-format'
+
 export type Plan = 'starter' | 'pro' | 'max' | 'trial' | 'tester' | 'demo'
 
 export type Feature =
@@ -246,55 +249,57 @@ export function getPlanFeatures(plan: Plan): Set<Feature> {
   return PLAN_FEATURES[plan] ?? PLAN_FEATURES.starter
 }
 
-// ── 🔴 THE MONTHLY PLAN PRICE, AS A NUMBER. STRUCTURED FIRST, DISPLAYED SECOND. ─────────────────────
-// Added 23 August 2026, following the convention lib/plan-features.ts's CARD_FEES already established
-// and whose comment tells the next person to follow it: "STRUCTURED VALUES, NOT DISPLAY STRINGS … the
-// £1,500 / £2,000 allowances were defined only INSIDE display strings, so lib/payments cannot read a
-// number and therefore cannot apply an allowance at all. Do not repeat that here."
-// `PLAN_META.price` was exactly that mistake for the plan fee: '£29/mo' is unparseable arithmetic, so
-// nothing could compute an annual cost, a saving, or a pro-rata charge without a regex over prose.
+// ── 🔴 THE MONTHLY PLAN PRICE COMES FROM country_settings (10 October 2026) ───────────────────────
+// PLAN_MONTHLY_PENCE ({ starter: 0, pro: 2900, max: 4900 }) and planPriceLabel() lived here. They are
+// now the GB row of public.country_settings (20261010_03 — every value mapped from these constants and
+// proved identical by scripts/country-settings-parity.cjs), read by lib/country-settings.ts and passed
+// in as a CountrySettings object. Nothing in this file knows a price any more.
 //
-// ⚠️ PENCE, AS AN INTEGER, AND THE REASON IS NOT STYLE. It matches CARD_FEES (`pence: 20`), it matches
-// `orders.total_minor` — which §16 records as "the authoritative charge amount in pence" — and it is the
-// only representation that cannot accumulate a rounding error across twelve months of arithmetic.
-// Money is an integer of the smallest unit everywhere else in this codebase; this is not the place to
-// introduce a float.
+// ⚠️ STILL AN INTEGER OF THE SMALLEST UNIT, AND STILL NOT STYLE: it matches `orders.total_minor` (§16,
+// "the authoritative charge amount") and cannot accumulate a rounding error across twelve months of
+// arithmetic. "Minor" rather than "pence" because a US row holds cents.
 //
-// ⚠️ ONLY THE THREE PURCHASABLE TIERS. `trial`, `tester` and `demo` carry no monthly fee to express —
-// their PLAN_META prices are the words 'Free trial', 'Lifetime' and 'Demo', which are not amounts and
-// are not derived below. Inventing a number for them would be inventing a commercial fact.
-export const PLAN_MONTHLY_PENCE: Record<'starter' | 'pro' | 'max', number> = {
-  starter: 0,
-  pro: 2900,
-  max: 4900,
+// ⚠️ ONLY THE THREE PURCHASABLE TIERS carry a monthly amount. `trial`, `tester` and `demo` are words
+// ('Free trial', 'Lifetime', 'Demo'), not amounts — inventing a number for them would be inventing a
+// commercial fact.
+
+/** A purchasable tier's monthly price in minor units of the settings' currency. 🔴 THROWS on an
+ *  undecided (NULL) price — see requirePlanPrice. */
+export function planMonthlyMinor(tier: 'starter' | 'pro' | 'max', s: CountrySettings): number {
+  return requirePlanPrice(s, tier === 'starter' ? 'starterMonthlyMinor' : tier === 'pro' ? 'proMonthlyMinor' : 'maxMonthlyMinor')
 }
 
-/** "£29/mo" — the ONLY place a monthly plan fee becomes a string. Pence are shown only when non-zero,
- *  so a future £29.50 renders correctly without this needing to be revisited. */
-export function planPriceLabel(pence: number): string {
-  const pounds = Math.floor(pence / 100)
-  const rem = pence % 100
-  return rem === 0 ? `£${pounds}/mo` : `£${pounds}.${String(rem).padStart(2, '0')}/mo`
-}
-
-// Plan display metadata — THE SINGLE SOURCE for plan name/price/description across the whole app: upgrade
-// prompts AND the pricing / billing / landing tables. lib/plan-features.ts DERIVES PLAN_PRICES +
-// PLAN_DESCRIPTIONS from this — do NOT re-hardcode those strings anywhere; that divergence was the drift
-// (three text mismatches had already crept in between the two copies).
-// ⚠️ `price` IS NOW ITSELF DERIVED for pro and max — see PLAN_MONTHLY_PENCE above. Change the NUMBER,
-// never this string. `starter` keeps the literal word 'Free' because £0 displays as a word, not as
-// '£0/mo', and that word is also what lib/pricing.ts's NON_SECRET_PRICE set matches on.
+// Plan display metadata — THE SINGLE SOURCE for plan name and description across the whole app: upgrade
+// prompts AND the pricing / billing / landing tables. lib/plan-features.ts DERIVES PLAN_DESCRIPTIONS
+// from this — do NOT re-hardcode those strings anywhere; that divergence was the drift (three text
+// mismatches had already crept in between the two copies).
+// ⚠️ NO PRICE HERE ANY MORE. A price depends on the truck's (or the visitor's) country, so it is a
+// function of the settings — planPrice() below — and cannot be a module constant.
 export const PLAN_META: Record<Plan, {
   name: string
-  price: string
   description: string
 }> = {
-  starter: { name: 'Starter', price: 'Free',       description: 'Weekend traders & walk-up pitches' },
-  pro:     { name: 'Pro',     price: planPriceLabel(PLAN_MONTHLY_PENCE.pro), description: 'Busy trucks scaling pre-orders' },
-  max:     { name: 'Max',     price: planPriceLabel(PLAN_MONTHLY_PENCE.max), description: 'High-volume operations & festivals' },
-  trial:   { name: 'Trial',   price: 'Free trial', description: 'All features included — Max tier + Pay at Hatch ordering' },
-  tester:  { name: 'Tester',  price: 'Lifetime',   description: 'Pre-launch tester — full feature access, lifetime discount' },
-  demo:    { name: 'Demo',    price: 'Demo',       description: 'Prospect sandbox — full trial before signup (never public)' },
+  starter: { name: 'Starter', description: 'Weekend traders & walk-up pitches' },
+  pro:     { name: 'Pro',     description: 'Busy trucks scaling pre-orders' },
+  max:     { name: 'Max',     description: 'High-volume operations & festivals' },
+  trial:   { name: 'Trial',   description: 'All features included — Max tier + Pay at Hatch ordering' },
+  tester:  { name: 'Tester',  description: 'Pre-launch tester — full feature access, lifetime discount' },
+  demo:    { name: 'Demo',    description: 'Prospect sandbox — full trial before signup (never public)' },
+}
+
+/**
+ * The plan's price as shown: "£29/mo" for pro and max, from the settings.
+ * ⚠️ THE WORDS ARE LOAD-BEARING. 'Free', 'Free trial', 'Lifetime' and 'Demo' are matched by EXACT
+ * STRING in lib/pricing.ts's NON_SECRET_PRICE, which is what exempts them from the pre-launch mask.
+ * A starter tier that one day costs money renders as an amount, and is then masked like any other.
+ */
+export function planPrice(plan: Plan, s: CountrySettings): string {
+  if (plan === 'trial') return 'Free trial'
+  if (plan === 'tester') return 'Lifetime'
+  if (plan === 'demo') return 'Demo'
+  const minor = planMonthlyMinor(plan, s)
+  if (plan === 'starter' && minor === 0) return 'Free'
+  return perMonthLabel(minor, moneyFormatOf(s))
 }
 
 // Maximum vans allowed per plan

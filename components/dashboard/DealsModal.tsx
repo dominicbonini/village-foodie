@@ -3,6 +3,8 @@
 // Unified deal selection modal for both truck dashboard and customer ordering
 
 import { useState } from 'react'
+import { useMoney } from '@/components/MoneyContext'
+import { formatMajorOrBare } from '@/lib/money-format'
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, type ModRuleGroup, type ModRuleOption } from '@/lib/modifier-rules'
 import { tallyBasketOptionQtys, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
@@ -85,6 +87,9 @@ export function DealsModal({
   onClose: () => void
   existingDeals?: Array<{ bundle: Bundle; slots: Record<string, string>; itemsTakenFromBasket?: string[]; slotModifiers?: Record<string, { name: string; price: number }[]> }>
 }) {
+  // The basket's currency — the customer page's or the Add Order panel's provider (the truck's format).
+  const fmt = useMoney()
+  const amount = (major: number) => formatMajorOrBare(major, fmt, 'deals')
   const [selectedDeal, setSelectedDeal] = useState<Bundle | null>(bundles.length === 1 ? bundles[0] : null)
   const [slotSelections, setSlotSelections] = useState<Record<string, string>>({})
   const [slotMods, setSlotMods] = useState<Record<string, { name: string; price: number }[]>>({})
@@ -269,9 +274,9 @@ export function DealsModal({
                       <p className="text-slate-500 text-xs">{bundle.description}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="font-black text-orange-600">£{bundle.bundle_price.toFixed(2)}</p>
+                      <p className="font-black text-orange-600">{amount(bundle.bundle_price)}</p>
                       {saving && saving > 0 && (
-                        <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{saving.toFixed(2)}</span>
+                        <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save {amount(saving)}</span>
                       )}
                     </div>
                   </div>
@@ -295,7 +300,7 @@ export function DealsModal({
             <div className="border border-orange-200 bg-orange-50 rounded-xl p-3 mb-4">
               <div className="flex items-center justify-between">
                 <p className="text-slate-700 text-xs font-bold">{selectedDeal.description}</p>
-                <p className="font-black text-orange-600 text-sm">£{selectedDeal.bundle_price.toFixed(2)}</p>
+                <p className="font-black text-orange-600 text-sm">{amount(selectedDeal.bundle_price)}</p>
               </div>
             </div>
 
@@ -374,7 +379,7 @@ export function DealsModal({
                     {inBasketOpts.length > 0 && <option disabled>── Add new ──</option>}
                     {allOpts.map(item => (
                       <option key={item.name} value={item.name}>
-                        {item.name} £{item.price.toFixed(2)}
+                        {item.name} {amount(item.price)}
                       </option>
                     ))}
                   </select>
@@ -413,7 +418,7 @@ export function DealsModal({
                                       : `bg-white text-slate-700 hover:border-orange-300 ${unmet ? 'border-amber-300' : 'border-slate-200'}`
                                     }`}>
                                     <span>{opt.name}</span>
-                                    {opt.price_adjustment > 0 && <span className={isSelected ? 'text-orange-200' : 'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
+                                    {opt.price_adjustment > 0 && <span className={isSelected ? 'text-orange-200' : 'text-orange-500'}>+{amount(opt.price_adjustment)}</span>}
                                     <OptionStockBadge remaining={rem} />
                                     {/* Allergen chip removed from selection (V7.8 §31) — the allergen still
                                         travels on the modifier (toggleWithGroupRules→selectedFromOption) to the order/email. */}
@@ -464,8 +469,8 @@ export function DealsModal({
               const saving = Math.max(0, orig - buttonPrice)
               return saving > 0 ? (
                 <div className="bg-green-50 border border-green-200 rounded-xl p-3 mb-4 text-center">
-                  <p className="text-green-700 font-black text-sm">Save £{saving.toFixed(2)}</p>
-                  <p className="text-green-600 text-xs">£{orig.toFixed(2)} → £{buttonPrice.toFixed(2)}</p>
+                  <p className="text-green-700 font-black text-sm">Save {amount(saving)}</p>
+                  <p className="text-green-600 text-xs">{amount(orig)} → {amount(buttonPrice)}</p>
                 </div>
               ) : null
             })()}
@@ -478,7 +483,7 @@ export function DealsModal({
               <button onClick={applyDeal}
                 disabled={!allSlotsFilled || dealHasUnmetRequired}
                 className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-40">
-                {allSlotsFilled && dealHasUnmetRequired ? 'Choose required options' : `Apply deal · £${buttonPrice.toFixed(2)}`}
+                {allSlotsFilled && dealHasUnmetRequired ? 'Choose required options' : `Apply deal · ${amount(buttonPrice)}`}
               </button>
             </div>
           </div>

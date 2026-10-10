@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { nationalDigitsOfInternational } from '@/lib/phone'
 import { createClient } from '@supabase/supabase-js'
 import { canAccess, type Plan } from '@/lib/features'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
+import { moneyFormatForTruck } from '@/lib/money-server'
+import { truckTimeSettings, truckTimeZone } from '@/lib/truck-time'
 import { sendMetaWhatsApp } from '@/lib/meta-whatsapp'
 import { getLocalDateInTz, localDateOfInstant } from '@/lib/time-utils'
-import { monthStartIso, truckTimezone } from '@/lib/whatsapp/usage'
+import { monthStartIso } from '@/lib/whatsapp/usage'
 import {
   decideReplyCap, type ReplyCapDecision, isCapClassification, handoffMessage,
   DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H, DEFAULT_MONTHLY_REPLY_LIMIT,
@@ -169,7 +172,7 @@ const TRUCK_FIELDS = `
   whatsapp_sender, whatsapp, phone_number_id,
   plan, feature_overrides, trial_expires_at,
   whatsapp_monthly_reply_limit, timezone,
-  contact_email
+  contact_email, currency, country
 `
 
 interface TruckRow {
@@ -187,6 +190,9 @@ interface TruckRow {
   timezone: string | null
   /** Nullable, and blank on plenty of trucks — the allowance and payment emails skip when it is. */
   contact_email: string | null
+  /** trucks.currency / trucks.country — the format a reply quotes menu prices in (Phase 2A). */
+  currency: string
+  country: string
 }
 
 const VERIFY_TOKEN = process.env.META_WEBHOOK_VERIFY_TOKEN
@@ -454,11 +460,15 @@ export async function POST(req: NextRequest) {
     // The variants are the same three shapes the old code built, because whatsapp_sender is free text
     // and Pizzeria Gusto's is stored UK-national ('07380736226') while the field's placeholder is E.164.
     if (!truck && displayPhoneNumber) {
+      // 🔴 THE NATIONAL VARIANT IS lib/phone.ts's (Phase 2C) — it was `44… → 0…`, UK only. Meta's display
+      // number is international, so the number's OWN country gives its national form ("447380736226" →
+      // "07380736226", "12015550123" → "2015550123"); the truck is not known yet at this point, and does
+      // not need to be. For every UK number the three variants are byte-identical to before.
       const digits = displayPhoneNumber.replace(/\D/g, '')
       const toVariants = [
         `+${digits}`,
         digits,
-        digits.startsWith('44') ? `0${digits.slice(2)}` : null,
+        nationalDigitsOfInternational(digits),
       ].filter((v): v is string => v !== null)
       const { data, error } = await supabase
         .from('trucks')
@@ -555,11 +565,9 @@ export async function POST(req: NextRequest) {
     }
 
     // FOLLOW-UP GREETING — greet ONCE per calendar day per sender (timezone-correct, never UTC-date).
-    // Single tz swap point: → truck.timezone ?? 'Europe/London' once that column exists.
-    // 🔴 THE TRUCK'S OWN TIMEZONE NOW, THROUGH THE SHARED HELPER. `trucks.timezone` is null on every
-    // truck today, so 'Europe/London' is still the branch that runs — but it is a real fallback rather
-    // than a hardcoded assumption, and the day the column is populated this follows it.
-    const truckTz = truckTimezone(truck.timezone)
+    // 🔴 THE TRUCK'S ZONE, BY THE ONE RULE (Phase 2B): trucks.timezone, else its country's default
+    // (lib/truck-time.ts) — the same zone the monthly cap and the reply's date reference use.
+    const truckTz = await truckTimeZone(truck)
 
     // ── 🔴 ONE READ SERVES THE GREETING AND THE PER-CUSTOMER CAP. THAT EQUIVALENCE IS ARGUED, NOT
     //    ASSUMED. ──────────────────────────────────────────────────────────────────────────────────
@@ -600,10 +608,9 @@ export async function POST(req: NextRequest) {
       // whatever day the account was created and is not exposed to us. This is a PROXY, deliberately —
       // it becomes per-truck and real when Embedded Signup ships and we own the account.
       //
-      // 🔴 `truckTz` IS 'Europe/London', A BARE CONSTANT — AND `trucks.timezone` IS NULL ON ALL TWELVE
-      // TRUCKS. The column exists and nothing populates it, so a `?? 'Europe/London'` would not be a
-      // fallback: it is the ONLY BRANCH THAT EVER RUNS. **This is a UK-ONLY ASSUMPTION, not a defensive
-      // default.**
+      // 🔴 `truckTz` IS THE TRUCK'S ZONE BY THE ONE RULE (Phase 2B, lib/truck-time.ts): trucks.timezone,
+      // else its country's default_timezone. It was a bare UK constant; `trucks.timezone` is still null
+      // on every existing truck, so today every truck takes its country's default — London for GB.
       // ⚠️ AND THE MONTH BOUNDARY IS WHERE IT BITES HARDEST. A wrong timezone on the DAY boundary shifts
       // a cap by an hour. On the MONTH boundary it shifts A WHOLE BILLING PERIOD — silently, and in the
       // direction of a cap that RESETS EARLY, i.e. a ceiling that quietly stops being a ceiling. The
@@ -736,7 +743,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
-    const today = new Date().toISOString().split('T')[0]
+    // 🔴 THE TRUCK'S CLOCK (Phase 2B): its today, and the date reference the reply is written against.
+    const truckTime = await truckTimeSettings(truck)
+    const today = getLocalDateInTz(truckTime.timeZone)
     const { data: events } = await supabase
       .from('truck_events')
       /* ⚠️ `id` ADDED 20261014 — only so the privacy probe below has something to ask about. */
@@ -754,6 +763,9 @@ export async function POST(req: NextRequest) {
 
     const hgUrl = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
     const { reply, classification } = await generateWhatsAppReply({
+      // The TRUCK's currency — a reply quotes menu prices, which are not an order yet.
+      money:           await moneyFormatForTruck(truck),
+      time:            truckTime,
       truckName:       truck.name,
       truckEmoji:      truck.truck_emoji ?? '',
       truckId:         truck.id,

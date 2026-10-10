@@ -34,10 +34,18 @@ import { LandingFooter } from '@/components/landing/LandingFooter'
 // `findPlanParityViolations()` at module load, so importing it is what fires the presentation↔gate
 // guard on this route. The four below are all genuinely used by the pricing cards — but if a later
 // change removes the last of them, THE GUARD STOPS RUNNING HERE AND NOTHING WILL SAY SO.
+// ⚠️ 10 October 2026: the price names became functions of the country's settings (planPrices,
+// planAllowances, cardFeeOnlineLabel, …) — the import is still from lib/plan-features.ts, so the guard
+// still fires on this route.
 import {
-  PLAN_PRICES, PLAN_DESCRIPTIONS, PLAN_ALLOWANCES, CARD_FEE_ONLINE_LABEL,
+  planPrices, PLAN_DESCRIPTIONS, planAllowances, platformFeeLabel, allowanceAmountLabel, allowanceMinorFor,
+  cardFeeOnlineLabel, cardRegionOnline,
 } from '@/lib/plan-features'
-import { PLAN_META } from '@/lib/features'
+import { PLAN_META, planMonthlyMinor } from '@/lib/features'
+import { formatAmount } from '@/lib/money-format'
+import { moneyFormatOf } from '@/lib/country-settings-types'
+// 🔴 THE VISITOR'S COUNTRY (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
+import { resolveVisitorCountry } from '@/lib/visitor-country'
 // 🔴 THE SINGLE WHATSAPP SWITCH — one value governs every surface. See lib/whatsapp-live.ts.
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
 // ══ 🔴 THE ONLY ICON LIBRARY IN THIS REPOSITORY, ADDED 6 October 2026 ════════════════════════════
@@ -156,9 +164,10 @@ const Check = () => (
 )
 
 // Pricing-card price: split "£29/mo" into the big amount + a "per truck / month" sub-line (matches the compare
-// header wording). Free/other plans show no sub. Render-only — PLAN_PRICES/PLAN_META are untouched.
-function PlanPrice({ plan }: { plan: 'starter' | 'pro' | 'max' }) {
-  const raw = PLAN_PRICES[plan]
+// header wording). Free/other plans show no sub. Render-only — the price arrives already formatted from the
+// marketing country's settings.
+function PlanPrice({ price }: { price: string }) {
+  const raw = price
   const perTruck = raw.endsWith('/mo')
   const amount = perTruck ? raw.slice(0, -3) : raw
   return <div className="plan-price">{amount}{perTruck && <span>per truck / month</span>}</div>
@@ -187,7 +196,16 @@ function TileIcon({ icon: Icon }: { icon: typeof Clock }) {
   return <span className="does-ico" aria-hidden="true"><Icon /></span>
 }
 
-export default function LandingPage() {
+export default async function LandingPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  // 🔴 ONE READ, SERVER-SIDE, AND LOUD: a missing row or an undecided price throws here rather than
+  // rendering a pricing section with a borrowed or blank figure.
+  // Phase 2D-1: the VISITOR'S country (?country → hg_country cookie → x-vercel-ip-country → GB, switched-on
+  // only — lib/visitor-country.ts), resolved here on the server so the first paint has the right prices.
+  const visitor = await resolveVisitorCountry((await searchParams)?.country)
+  const s = visitor.settings
+  const prices = planPrices(s)
+  const allowances = planAllowances(s)
+  const money = moneyFormatOf(s)
   return (
     // DemoModalProvider is a CLIENT component taking server-rendered children — that's what lets every
     // CTA below open one shared modal without the page itself becoming a client component.
@@ -206,7 +224,7 @@ export default function LandingPage() {
           would have left the DOM reading "Log in, Upload menu" while the eye reads "Upload menu, Log in".
           Keeping those two in step is the requirement, so the ELEMENTS move, not their painted order.
           ⚠️ /compare renders the same <LandingNav /> WITHOUT this prop and is byte-identical. */}
-      <LandingNav ctaFirst />
+      <LandingNav ctaFirst country={visitor.menu} />
 
       {/* ============ HERO ============ */}
       <header className="hero">
@@ -557,14 +575,14 @@ export default function LandingPage() {
             {/* 🔴 THE LEDE STATES THE HEADLINE AND STOPS. The walk-up detail — the in-person rate, the
                 UK/EEA limit, the tap surcharge, "coming soon" — lives ONCE, in footnote 1, which renders
                 further down this same page. Restating any of it here is what made this section read three
-                times over. Figures come from CARD_FEES; never write one as a literal.
+                times over. Figures come from cardFees() (country_settings); never write one as a literal.
                 🔴 THE TRAILING CLAUSE IS LOAD-BEARING AND IS NOT PADDING. Without it, "no platform fee"
                 reads as "free", which is untrue for anyone taking cards. And it is worded as "your card
                 terminal's own fees" DELIBERATELY: "card processing still applies" would read as a second,
                 NEW charge, when in fact most trucks already pay their own terminal provider and nothing
                 about that changes. It says whose fee it is and that nothing changes. Do not shorten it to
                 "fees still apply", and do not add a figure — there is deliberately no number here. */}
-            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan. Your card terminal&apos;s own fees still apply.</p>
+            <p className="lede">Pro is {formatAmount(planMonthlyMinor('pro', s), money)} a month with {allowanceAmountLabel(allowanceMinorFor('pro', s), s)} of online orders included. Max is {formatAmount(planMonthlyMinor('max', s), money)} with {allowanceAmountLabel(allowanceMinorFor('max', s), s)}. Anything above that is {platformFeeLabel(s)}. Standard card processing fees apply to all online orders (currently {cardFeeOnlineLabel(s)} on {cardRegionOnline(s)}), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan. Your card terminal&apos;s own fees still apply.</p>
           </div>
 
           <div className="trial-banner">
@@ -577,8 +595,8 @@ export default function LandingPage() {
             <div className="plan">
               <div className="plan-name">{PLAN_META.starter.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.starter}</div>
-              <PlanPrice plan="starter" />
-              <div className="plan-fee">{PLAN_ALLOWANCES.starter}</div>
+              <PlanPrice price={prices.starter} />
+              <div className="plan-fee">{allowances.starter}</div>
               <ul>
                 <li className="lead">Everything to run a service</li>
                 <li>Walk-up orders &amp; kitchen screen</li>
@@ -622,9 +640,9 @@ export default function LandingPage() {
               <span className="plan-tag">Most trucks</span>
               <div className="plan-name">{PLAN_META.pro.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.pro}</div>
-              <PlanPrice plan="pro" />
+              <PlanPrice price={prices.pro} />
               {/* ══ 🔴 "No fee on walk-ups." — ADDED 10 October 2026, ON PRO AND MAX ONLY ═══════════════
-                  ⚠️ IT IS APPENDED **HERE**, NOT IN `PLAN_ALLOWANCES`. That constant is read by the
+                  ⚠️ IT IS APPENDED **HERE**, NOT IN `planAllowances()`. That constant is read by the
                   features PDF and by the comparison table as well as by this card, and the brief asks for
                   the two cards — changing the source string would have changed three surfaces.
                   ⛔ THE STAR STAYS WHERE IT IS, on the percentage it footnotes: the new sentence follows
@@ -635,7 +653,7 @@ export default function LandingPage() {
                   platform fee on any plan" all along. This puts it where a reader comparing two cards is
                   actually looking. ⚠️ STARTER IS DELIBERATELY UNTOUCHED: its fee line is "Pay at Hatch",
                   which is a model and not an allowance, and the brief names Pro and Max. */}
-              <div className="plan-fee">{PLAN_ALLOWANCES.pro}<sup className="fee-star">*</sup>. No fee on walk-ups.</div>
+              <div className="plan-fee">{allowances.pro}<sup className="fee-star">*</sup>. No fee on walk-ups.</div>
               <ul>
                 <li className="lead">Everything in Free, plus</li>
                 <li>Offline order protection</li>
@@ -725,9 +743,9 @@ export default function LandingPage() {
             <div className="plan">
               <div className="plan-name">{PLAN_META.max.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.max}</div>
-              <PlanPrice plan="max" />
+              <PlanPrice price={prices.max} />
               {/* ⚠️ THE SAME SENTENCE AS PRO'S, FOR THE SAME REASON — see the note on the Pro card. */}
-              <div className="plan-fee">{PLAN_ALLOWANCES.max}<sup className="fee-star">*</sup>. No fee on walk-ups.</div>
+              <div className="plan-fee">{allowances.max}<sup className="fee-star">*</sup>. No fee on walk-ups.</div>
               <ul>
                 <li className="lead">Everything in Pro, plus</li>
                 <li>Multi-device kitchen sync</li>
@@ -825,7 +843,7 @@ export default function LandingPage() {
           <div className="price-foot">
             {/* ⚠️ THE WALK-UP PARAGRAPH THAT STOOD HERE WAS REMOVED, NOT SHORTENED. Footnote 1 covers it
                 and renders on this same screen, so this restated it a third time. */}
-            <p>*Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance.</p>
+            <p>*Standard card processing fees apply to all online orders (currently {cardFeeOnlineLabel(s)} on {cardRegionOnline(s)}), including those within your allowance.</p>
             <p>Cancel by doing nothing. Even if you’ve added a card for payments, we’ll never charge it for a plan unless you actively choose one.</p>
           </div>
         </div>
@@ -842,8 +860,8 @@ export default function LandingPage() {
           checked the other way round, by sweeping every `#fragment` in the repository: the only
           landing anchors that have ever existed are `#pricing` and `#try`, and nothing in the codebase
           — no email, no template, no document — ever linked to where this table was.
-          🔴 `lib/plan-features.ts` IS STILL IMPORTED BY THIS FILE (PLAN_PRICES, PLAN_DESCRIPTIONS,
-          PLAN_ALLOWANCES, CARD_FEE_ONLINE_LABEL), WHICH IS LOAD-BEARING: that module runs
+          🔴 `lib/plan-features.ts` IS STILL IMPORTED BY THIS FILE (planPrices, PLAN_DESCRIPTIONS,
+          planAllowances, cardFeeOnlineLabel and friends), WHICH IS LOAD-BEARING: that module runs
           `findPlanParityViolations()` at module load, so the guard still fires when this route renders.
           If those imports ever go too, the guard goes with them silently. */}
 
@@ -889,7 +907,7 @@ export default function LandingPage() {
       </section>
 
       {/* ============ FOOTER ============ (slate bg = HEADER_BG from lib/brand.ts) */}
-      <LandingFooter />
+      <LandingFooter country={visitor.menu} />
       {/* Mounted ONCE — every DemoCta above drives this one instance. */}
       <DemoModal />
     </div>

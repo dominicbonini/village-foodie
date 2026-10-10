@@ -19,12 +19,20 @@ import { mapOrderToTicket } from '@/lib/printing/mapOrderToTicket'
 import { getOrderBalance, type LedgerRow } from '@/lib/payments/ledger'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
+import { formatMinor, type MoneyFormat } from '@/lib/money-format'
+
+// The sample's money — a UK truck. The order carries it as orders.currency/country and the truck as the
+// /api/dashboard `money` payload, exactly as a real order reaches the mapper.
+const SAMPLE_MONEY: MoneyFormat = { currency: 'GBP', locale: 'en-GB' }
+const SAMPLE_COUNTRY = 'GB'
 
 // ── FIXTURES — `Order`-SHAPED, not TicketOrder-shaped ────────────────────────────────────────────────
 // Exercises every content branch at once: prices, a DEAL with slot fills AND slot modifiers AND a slot
 // NOTE (the allergy-adjacent case that used to be dropped), modifiers priced and free, an item-level
 // instruction, and a LONG order note that must wrap untruncated across many lines.
 const SAMPLE_ORDER: Order = {
+  currency: SAMPLE_MONEY.currency,
+  country: SAMPLE_COUNTRY,
   id: '17',
   order_key: 'k-17',
   customer_name: 'Jamie',
@@ -63,6 +71,7 @@ const SAMPLE_TRUCK: TruckData = {
   dashboard_token: 'tok', kds_mode: false, crew_mode: 'solo', display_mode: 'grid',
   keep_screen_on: false, plan: 'max', trial_expires_at: null, feature_overrides: null,
   show_paid_step: true, takes_cash: true,
+  money: { ...SAMPLE_MONEY, localeByCountry: { [SAMPLE_COUNTRY]: SAMPLE_MONEY.locale } },
 }
 
 const SAMPLE_EVENT: TruckEvent = {
@@ -91,7 +100,7 @@ interface Scenario {
 
 // 🔴 Payment scenarios are LEDGER ROWS, so resolvePaidStep + getOrderBalance genuinely run.
 const SCENARIOS: Scenario[] = [
-  { key: 'part', label: 'Part paid — £25.00 taken of £42.50', rows: [charge(2500)] },
+  { key: 'part', label: `Part paid — ${formatMinor(2500, SAMPLE_MONEY)} taken of ${formatMinor(4250, SAMPLE_MONEY)}`, rows: [charge(2500)] },
   { key: 'unpaid', label: 'Unpaid — no ledger rows', rows: [] },
   { key: 'paid', label: 'Paid in full', rows: [charge(4250)] },
   // 🔴 The Gusto case. show_paid_step false ⇒ NO payment line at all, not "unpaid".

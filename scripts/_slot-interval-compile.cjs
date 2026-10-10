@@ -23,7 +23,14 @@ function compile(root, files, tag, extraCompilerOptions) {
     const real = Module._resolveFilename
     Module._resolveFilename = function (r, ...rest) {
       if (r.startsWith('@/')) return real.call(this, path.join(out, r.slice(2)), ...rest)
-      return real.call(this, r, ...rest)
+      try { return real.call(this, r, ...rest) }
+      catch (e) {
+        // A PACKAGE import from the compiled tree (it sits in the OS temp dir, beside no node_modules) is
+        // resolved from the repo's own node_modules — e.g. libphonenumber-js, which lib/phone.ts imports
+        // since Phase 2C. Relative and absolute paths are never redirected.
+        if (/^[./]/.test(r)) throw e
+        return require.resolve(r, { paths: [REPO] })
+      }
     }
     try { return require(path.join(out, rel)) } finally { Module._resolveFilename = real }
   }

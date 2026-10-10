@@ -14,7 +14,7 @@
 
 import { localDateOfInstant } from '@/lib/time-utils'
 import { formatOneTime, type TimeStyle } from './format'
-import { WEEKDAY_NAMES, WEEK_TZ, weekdayOf } from './week'
+import { WEEKDAY_NAMES, weekdayOf } from './week'
 /* 🔴 THE CAPTION ASKS THE SAME LOCALE TABLE THE POSTER DOES (6 October 2026). It used to carry its own
  * `SHORT_DAYS`/`SHORT_MONTHS` arrays and spell "Tue 13 Oct" out in the UK's order — a third copy of
  * "how is a date written", after the renderer's and the formatter's. ⚠️ GB OUTPUT IS UNCHANGED, which
@@ -44,11 +44,11 @@ export type WhenWord = 'today' | 'tonight' | 'tomorrow' | 'dated'
  * 🔴 "TONIGHT" BEATS "TODAY" WHEN THE EVENT STARTS AT 17:00 OR LATER — that is the brief's rule and it
  * is what a truck actually writes. "Tomorrow" has no evening form on purpose: "tomorrow night" is a
  * different promise from "tomorrow", and the operator can say it themselves if they mean it.
- * ⚠️ COMPARED AS CALENDAR DATES IN LONDON, never as timestamps. An event "today" is one whose date is
- * today's date where the truck is — not one within 24 hours.
+ * ⚠️ COMPARED AS CALENDAR DATES ON THE TRUCK'S CLOCK (`tz`, Phase 2B — was a fixed London), never as
+ * timestamps. An event "today" is one whose date is today's date where the truck is — not one within 24 hours.
  */
-export function whenWord(eventDate: string, startTime: string | null | undefined, now: Date | string): WhenWord {
-  const today = localDateOfInstant(now, WEEK_TZ)
+export function whenWord(eventDate: string, startTime: string | null | undefined, now: Date | string, tz: string): WhenWord {
+  const today = localDateOfInstant(now, tz)
   if (eventDate === today) {
     const h = startHour(startTime)
     return h !== null && h >= EVENING_FROM_HOUR ? 'tonight' : 'today'
@@ -72,9 +72,10 @@ export function whenPhrase(
   eventDate: string,
   startTime: string | null | undefined,
   now: Date | string,
-  country: CountryCode = DEFAULT_COUNTRY,
+  country: CountryCode,
+  tz: string,
 ): string {
-  const w = whenWord(eventDate, startTime, now)
+  const w = whenWord(eventDate, startTime, now, tz)
   return w === 'dated' ? `on ${shortDate(eventDate, country)}` : w
 }
 
@@ -87,6 +88,9 @@ export interface EventPostInput {
   orderUrl: string | null
   timeStyle: TimeStyle
   now: Date | string
+  /** The truck's zone and country — "tonight"/"tomorrow" are its clock's, "on Tue 13 Oct" its order. */
+  timeZone: string
+  country: CountryCode
 }
 
 /**
@@ -98,7 +102,7 @@ export interface EventPostInput {
 export function eventPostText(input: EventPostInput): string {
   const { entry, date, truckName, orderUrl, timeStyle, now } = input
   const where = entry.town && !entry.name.includes(entry.town) ? `${entry.name}, ${entry.town}` : entry.name
-  const when = whenPhrase(date, entry.startTime, now)
+  const when = whenPhrase(date, entry.startTime, now, input.country, input.timeZone)
 
   if (entry.status === 'cancelled') {
     return [

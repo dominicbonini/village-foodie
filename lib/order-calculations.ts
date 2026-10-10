@@ -2,10 +2,12 @@
 // SINGLE SOURCE OF TRUTH for all order calculations
 // Used by: customer order form, truck dashboard, server-side validation
 
-/** Format modifier names with upcharge prices for cart line display.
+import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
+
+/** Format modifier names with upcharge prices for cart line display, in the basket's currency.
  *  e.g. [{name:'Extra Cheese',price:1.5}] → "Extra Cheese +£1.50" */
-export function formatModifiers(modifiers: { name: string; price: number }[]): string {
-  return modifiers.map(m => m.price > 0 ? `${m.name} +£${m.price.toFixed(2)}` : m.name).join(', ')
+export function formatModifiers(modifiers: { name: string; price: number }[], fmt: MoneyFormat | null | undefined): string {
+  return modifiers.map(m => m.price > 0 ? `${m.name} +${formatMajorOrBare(m.price, fmt, 'modifier list')}` : m.name).join(', ')
 }
 
 export interface OrderItem {
@@ -114,8 +116,9 @@ export interface OrderItem {
         // Percentage discount
         discountAmt = subtotal * (discountCode.value / 100)
       } else {
-        // Fixed amount discount
-        discountAmt = discountCode.value
+        // Fixed amount discount — never more than the subtotal (audit D34): the total was already floored at
+        // zero, but the STORED discount_amt then claimed more money off than was ever taken.
+        discountAmt = Math.min(discountCode.value, subtotal)
       }
     }
     

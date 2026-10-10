@@ -30,6 +30,8 @@ import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
 import CostComparison from './CostComparison'
+// 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
+import { resolveVisitorCountry } from '@/lib/visitor-country'
 import '../landing/landing.css'
 
 export const dynamic = 'force-dynamic'
@@ -75,7 +77,7 @@ const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'],
 // this reason. So the chrome is wrapped twice, above and below, and the calculator sits outside both.
 const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`
 
-export default async function CostPage() {
+export default async function CostPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   // ── 🔴 GATE 1 OF 2: THE BRAND. THIS PAGE DOES NOT EXIST ON VILLAGE FOODIE. ────────────────────
   // Village Foodie is the CONSUMER discovery brand. Someone there is looking for a food truck, not for
   // operator plan pricing, and showing them £29/£49 tiers is the branding leak app/contact/page.tsx's
@@ -102,6 +104,13 @@ export default async function CostPage() {
   // it does not make the decision. Do not read this as "the flag no longer does anything".
   // ⚠️ SO THIS PAGE NOW SHOWS THE REAL PRICE LIST TO ANYONE ON A HATCHGRAB HOST, unconditionally. That is
   // the intent. The only thing still standing between it and the public is the host gate above.
+
+  // The marketing country's prices (lib/marketing-country.ts), read AFTER the host gate so the Village
+  // Foodie 404 costs no read. Loud: a missing row or an undecided price throws rather than rendering a
+  // calculator built on borrowed figures.
+  // Phase 2D-1: the visitor's country (lib/visitor-country.ts), on the server, after the host gate.
+  const visitor = await resolveVisitorCountry((await searchParams)?.country)
+  const settings = visitor.settings
 
   // ── 🔴 THE PROVIDER AND THE MODAL CAME BACK — 3 SEPTEMBER 2026. THIS PAGE'S CTAs OPEN THE DEMO. ───
   // They were removed on 23 August, when all three of this page's CTAs pointed at /signup and nothing in
@@ -152,13 +161,13 @@ export default async function CostPage() {
             its Pricing link are bare fragments that resolve against THIS page and silently do nothing —
             see the table in LandingNav.tsx. '/landing' is used rather than '/' because '/' is only the
             landing on a hatchgrab host. */}
-        <LandingNav landingHref="/landing" />
+        <LandingNav landingHref="/landing" country={visitor.menu} />
       </div>
 
-      <CostComparison />
+      <CostComparison settings={settings} />
 
       <div className={CHROME}>
-        <LandingFooter landingHref="/landing" />
+        <LandingFooter landingHref="/landing" country={visitor.menu} />
       </div>
 
       {/* Mounted ONCE — all three CTAs above drive this one instance. Same placement as

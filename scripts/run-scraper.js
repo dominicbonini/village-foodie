@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import { createHash, randomUUID } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
+// Phase 2D-2: the three schedule prompts, moved out UNCHANGED and given the source's country.
+import { buildPassARulePrompt, buildPassAEventPrompt, buildHgPrompt as hgPromptFor } from './scraper-prompts.js';
 // Authoritative geocoding + coordinate validation + the loud-failure assertions. A SEPARATE module so
 // every throw below can be exercised by a test that imports the REAL code — this file calls main() at
 // import time and therefore can never be imported by one. See scripts/geo-validate.js.
@@ -398,6 +400,11 @@ async function getTabData(sheets, rangeName) {
 }
 
 async function main() {
+// ── 🔴 PHASE 2D-2 — THE SOURCE'S COUNTRY. Every Pass A source (the Sheet's trucks and venues, and the discovery
+// rows they become) is British, so Pass A reads, matches and writes in GB only — a US discovery row (written
+// by the admin screenshot tab) is never matched, scraped or overwritten here. Pass B uses each HatchGrab
+// truck's own trucks.country. docs/schedules-country-report.md.
+const SOURCE_COUNTRY = 'GB';
 const TARGET_NAME = process.argv[2] ? process.argv[2].toLowerCase().trim() : null;
 
 if (TARGET_NAME) {
@@ -515,6 +522,7 @@ if (RUN_DISCOVERY) {
     const { data: exRows, error: exReadErr } = await supabase
       .from('discovery_exclusion_terms')
       .select('term, term_key')
+      .eq('country', SOURCE_COUNTRY)   // Phase 2D-2: a term silences names in its own country only
       .limit(10000);
     if (exReadErr) throw new Error(`[${exReadErr.code}] ${exReadErr.message}`);
     if (!Array.isArray(exRows)) throw new Error('discovery_exclusion_terms returned a non-array');
@@ -703,8 +711,8 @@ let matchReadError = null;
 if (RUN_DISCOVERY) {
   try {
     const [{ data: mtRows, error: mtErr }, { data: mvRows, error: mvErr }] = await Promise.all([
-      supabase.from('discovery_trucks').select('name, aliases').limit(10000),
-      supabase.from('venues').select('name, village, postcode').limit(10000),
+      supabase.from('discovery_trucks').select('name, aliases').eq('country', SOURCE_COUNTRY).limit(10000),
+      supabase.from('venues').select('name, village, postcode').eq('country', SOURCE_COUNTRY).limit(10000),
     ]);
     if (mtErr) throw new Error(`discovery_trucks: [${mtErr.code}] ${mtErr.message}`);
     if (mvErr) throw new Error(`venues: [${mvErr.code}] ${mvErr.message}`);
@@ -911,9 +919,11 @@ if (RUN_DISCOVERY) {
     const [{ data: tRows, error: tErr }, { data: vRows, error: vErr }] = await Promise.all([
       supabase.from('discovery_trucks')
         .select('id, name, schedule_url, website, ai_instructions, scraper_strategy, created_at')
+        .eq('country', SOURCE_COUNTRY)
         .order('created_at', { ascending: true }).order('id', { ascending: true }).limit(10000),
       supabase.from('venues')
         .select('id, name, village, schedule_url, ai_instructions, scraper_strategy, created_at')
+        .eq('country', SOURCE_COUNTRY)
         .order('created_at', { ascending: true }).order('id', { ascending: true }).limit(10000),
     ]);
     if (tErr) throw new Error(`discovery_trucks: [${tErr.code}] ${tErr.message}`);
@@ -1203,71 +1213,9 @@ for (const [index, site] of sitesToScrape.entries()) {
     
     // --- UPDATED AI PROMPTS: Requesting exclusionsToAdd for the Web Scraper ---
     if (isRuleExtraction) {
-        prompt = `
-          You are a Data Extraction Bot. 
-          TRUCK NAME: "${site.name}"
-          CURRENT YEAR: ${new Date().getFullYear()}
-          
-          TASK 1: Extract any manual rules provided in the user's hint below.
-          CRITICAL HINT FROM USER: ${site.instructions || "None provided."}
-          
-          TASK 2: Extract EVERY recurring schedule stop found in the WEBSITE TEXT below (e.g., Monday Route, Tuesday Route). Treat "Route" as freq: "weekly".
-          
-          TASK 3: Look for explicit mentions that something is NOT a food truck (e.g., 'Live Music', 'Quiz Night'). Extract those into 'exclusionsToAdd'.
-
-          RULES TO FOLLOW:
-          1. Extract EACH venue as a separate JSON object. Do not combine stops.
-          2. "rawTimeStart" and "rawTimeEnd" MUST be the exact times from the text (e.g., "4.00", "6.00pm").
-          3. "freq" and "day" MUST BE LOWERCASE ONLY.
-          4. DATE BOUNDARIES: If rules say "from [Date]" or "until [Date]", extract "startDate" and/or "endDate" in "YYYY-MM-DD" format.
-          5. IGNORE PRIVATE EVENTS: Do not extract any event labeled as "private", "private party", or "private lunch".
-          6. VILLAGE: Extract the town, village, or city into a separate "village" field. If the town or village truly cannot be determined from the text, use "" (an empty string) — do NOT repeat the venue name and do NOT guess.
-
-          JSON FORMAT ONLY:
-          {
-            "events": [
-              { "venue": "Wickhambrook MSC", "village": "Wickhambrook", "proof": "Saturday", "rawTimeStart": "11:45", "rawTimeEnd": "13:45", "freq": "weekly", "day": "saturday", "pos": "", "startDate": null, "endDate": null }
-            ],
-            "exclusionsToAdd": ["Name of non-truck"]
-          }
-          
-          WEBSITE TEXT TO PARSE:
-          ${cleanText.slice(0, 100000)}
-        `;
+        prompt = buildPassARulePrompt({ site, cleanText, country: SOURCE_COUNTRY });
       } else {
-        prompt = `
-          You are extracting food truck events for: "${site.name}".
-          Current Date: ${new Date().toDateString()}.
-          Current Year: ${new Date().getFullYear()}.
-          
-          ${site.instructions ? `\n🚨 CRITICAL USER HINT FOR THIS WEBSITE: "${site.instructions}"` : ""}
-          
-          TASK 1: Extract EVERY food truck event from the provided text for the schedule shown.
-          TASK 2: Look for explicit mentions that something is NOT a food truck (e.g., 'Live Music', 'Quiz Night'). Extract those into 'exclusionsToAdd'.
-
-          CRITICAL RULES:
-          1. **EXPLICIT DATES OVERRIDE EVERYTHING:** If a specific date is written (e.g., "6th April"), you MUST extract that exact date. Do NOT shift explicit past dates into the future.
-          2. **PRESERVE THE WHOLE WEEK:** Extract ALL days of that schedule, including days that have already happened. 
-          3. **RELATIVE DAYS:** ONLY calculate the "next immediate date" for a day of the week if NO specific date number is provided.
-          4. **DateStart Format:** "DD/MM/YYYY". 
-          5. **VENUE NAME:** Extract ONLY the Business Name (e.g., 'The Plough'). DO NOT append the village.
-          6. **VILLAGE:** Extract the town, village, or city name. If it truly cannot be determined from the text, use "" (an empty string) — do NOT repeat the venue name and do NOT guess.
-          7. **NOTES:** Postcodes, addresses, or extra event details go into the "Notes" field.
-          8. **DOUBLE DAYS:** If a single day lists multiple locations, create a completely separate JSON object for location.
-          9. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
-          10. **PRIVATE EVENTS:** If an event is explicitly marked as "private", "private party", completely ignore it. Do NOT extract it.
-          11. **FACEBOOK 'TONIGHT' RULE (STRICT):** NEVER extract an event based solely on relative words like "tonight", "today", "tomorrow". Ignore these words entirely.
-          12. **PROXIMITY REQUIREMENT:** You must ONLY extract an event if an explicit Day or Date is explicitly stated in the exact same sentence or list block as the venue name.
-          
-          JSON FORMAT ONLY:
-          {
-            "events": [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town Name", "Notes": "..." }],
-            "exclusionsToAdd": ["Name of non-truck"]
-          }
-          
-          WEBSITE TEXT:
-          ${cleanText.slice(0, 150000)} 
-        `;
+        prompt = buildPassAEventPrompt({ site, cleanText, country: SOURCE_COUNTRY });
     }
 
     try {
@@ -1366,6 +1314,7 @@ for (const [index, site] of sitesToScrape.entries()) {
                           term_key: cleanEx,       // 🔎 the value the fuzzy check actually compares
                           source: 'scraper',
                           created_by: `scraper:${site.name}`,   // provenance the Exclusions tab never had
+                          country: SOURCE_COUNTRY,
                         }, { onConflict: 'term_key', ignoreDuplicates: true });
                         if (exErr) {
                           dbWriteFailures.push(`discovery_exclusion_terms "${ex}": [${exErr.code}] ${exErr.message}`);
@@ -1917,7 +1866,7 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
   // (an explicit request overrides the auto/both filter). Unset → all eligible auto/both trucks (cron).
   let hgQuery = supabase
     .from('trucks')
-    .select('id, name, schedule_url, scraper_preference, scraper_rule, scraper_last_hash, scraper_last_text_hash, scraper_learning_complete, scraper_update_day, scraper_first_run_at, scraper_last_empty_notify_at, scrape_times_per_day, scraper_last_run_at, timezone, dashboard_token, operator_id')
+    .select('id, name, schedule_url, scraper_preference, scraper_rule, scraper_last_hash, scraper_last_text_hash, scraper_learning_complete, scraper_update_day, scraper_first_run_at, scraper_last_empty_notify_at, scrape_times_per_day, scraper_last_run_at, timezone, dashboard_token, operator_id, country')
     .not('schedule_url', 'is', null);
   hgQuery = SCRAPE_TRUCK_ID
     ? hgQuery.eq('id', SCRAPE_TRUCK_ID)
@@ -1935,6 +1884,16 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
 
   // Authoritative last-run per candidate truck from scraper_run_log (NOT trucks.scraper_last_run_at, which
   // test-truck cleanup resets to NULL). Feeds the forgiving due-window gate (isDueByLog) below.
+  // Phase 2D-2: each truck's country decides its prompt's location lines (country_settings.address_format,
+  // date_order). A read that fails leaves every truck on the UK lines — today's behaviour.
+  const fmtByCountry = new Map();
+  {
+    const { data: csRows, error: csErr } = await supabase.from('country_settings').select('country_code, address_format, date_order');
+    if (csErr) console.warn(`   ⚠️  country_settings unreadable (${csErr.message}) — UK prompt lines for every truck`);
+    for (const r of (csRows || [])) fmtByCountry.set(r.country_code, { addressFormat: r.address_format, dateOrder: r.date_order });
+  }
+  const addressFormatOf = (c) => fmtByCountry.get(c || 'GB') || { addressFormat: 'postcode', dateOrder: 'dmy' };
+
   const lastRunByTruck = new Map();
   if (hgTrucks && hgTrucks.length > 0) {
     const { data: logRows } = await supabase
@@ -2101,27 +2060,8 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
         // Parse events with Gemini.
         // The template below is UNCHANGED — it is a function of the page text only so the zero-retry can run
         // the IDENTICAL extraction on the other strategy's text without a second copy of the prompt drifting.
-        const buildHgPrompt = (pageText) => `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.
-You are extracting a food truck's schedule from website text. Extract events from TODAY ONWARDS — you MUST
-INCLUDE today's event (a truck trading today is the most important to capture). Exclude ONLY events dated
-BEFORE today.
-DATE RULES: Format "DD/MM/YYYY". Always append /${currentYear}. Map day names to exact dates based on today.
-TIME RULES: "HH:MM" 24-hour. "5pm" → "17:00". If unknown, use "".
-VENUE RULES: "venue_name" = ONLY the pub/venue name. "town" = the village/town/city it is in.
-TOWN RULES (IMPORTANT): ALWAYS populate "town". If the town/village is EMBEDDED inside the venue name,
-SPLIT it out — put the place-name in "town" and keep "venue_name" as just the pub/venue name. A UK
-place-name sitting next to a generic pub name (Bells/Star/Bell/Lion/Swan/Arms/Crown/Anchor, etc.) is the
-town, not part of the venue name. Never leave a town buried in venue_name. If the town truly cannot be
-determined, use "".
-EXAMPLES (embedded-town split):
-  "The Cavendish Five Bells"      -> {"venue_name":"Five Bells","town":"Cavendish"}
-  "The Star Pub, Lidgate"         -> {"venue_name":"The Star","town":"Lidgate"}
-  "Nethergate Brewery, Long Melford" -> {"venue_name":"Nethergate Brewery","town":"Long Melford"}
-Return ONLY valid JSON:
-{"events":[{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name","town":"Town","postcode":"Postcode or empty"}]}
-
-WEBSITE TEXT:
-${pageText.slice(0, 100000)}`;
+        const hgFormat = addressFormatOf(hgTruck.country);
+        const buildHgPrompt = (pageText) => hgPromptFor({ todayStr, currentYear, pageText, addressFormat: hgFormat.addressFormat, dateOrder: hgFormat.dateOrder });
 
         // Uses gemini-2.5-flash (not lite) for schedule extraction per the manual spec.
         // Apps Script paths also use gemini-2.5-flash — update there separately if rotated.
@@ -2209,8 +2149,12 @@ ${pageText.slice(0, 100000)}`;
         }
 
         // POST to inbound-schedule
+        // 🔴 PHASE 2D-2: the truck's country and its own id travel with the batch, so the bridge links THIS
+        // truck (no name matching) and only in its country.
         const payload = {
           secret: INBOUND_SECRET,
+          country: hgTruck.country || 'GB',
+          hatchgrab_truck_id: hgTruck.id,
           events: hgEvents.map(e => ({
             truck_name: hgTruck.name,
             event_date: e.event_date,
@@ -2219,6 +2163,7 @@ ${pageText.slice(0, 100000)}`;
             venue_name: e.venue_name,
             village: e.town || null,
             postcode: e.postcode || null,
+            ...(e.state ? { region: e.state } : {}),
             source: `hg_scraper:${winningRule}`,
           })),
         };
@@ -2303,10 +2248,12 @@ if (newTrucksDetected.size > 0) {
       // 🔴 AWAITED (was `.then()` with no await, as the last thing Pass A does — Node could exit with
       // the requests in flight, which is exactly the shape that hid the venue outage for three months).
       for (const row of newTruckRows) {
+        // Phase 2D-2: the country-scoped key (20261010_15) — the global 'name' key is dropped by 20261010_16.
         const { error: trErr } = await supabase.from('discovery_trucks').upsert({
           name: row[0],
           exclude_reason: 'Yes - New Truck',
-        }, { onConflict: 'name', ignoreDuplicates: true });
+          country: SOURCE_COUNTRY,
+        }, { onConflict: 'country,name', ignoreDuplicates: true });
         if (trErr) dbWriteFailures.push(`discovery_trucks "${row[0]}": [${trErr.code}] ${trErr.message}`);
       }
   } catch (error) {
@@ -2355,7 +2302,7 @@ if (newRowsToAdd.length > 0) {
     try {
       const res = await fetch(`${HATCHGRAB_API_URL}/api/discovery/ingest`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: INBOUND_SECRET, events: batch }),
+        body: JSON.stringify({ secret: INBOUND_SECRET, events: batch, country: SOURCE_COUNTRY }),
       });
       const rawBody = await res.text();
       assertInboundOk(res.status, rawBody);   // non-2xx (incl. 207 partial) → throws → recorded below
@@ -2493,7 +2440,8 @@ if (newVenuesDetected.size > 0) {
           latitude: r.ok ? r.latitude : null,
           longitude: r.ok ? r.longitude : null,
           postcode: r.postcode || null,
-        }, { onConflict: 'name,village', ignoreDuplicates: true });
+          country: SOURCE_COUNTRY,
+        }, { onConflict: 'country,name,village', ignoreDuplicates: true });   // Phase 2D-2: the country-scoped key
 
         if (error) venueWriteFailures.push(`${q.name} (${village}): [${error.code}] ${error.message}`);
         else {

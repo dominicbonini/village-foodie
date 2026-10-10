@@ -24,7 +24,7 @@ function expect(label: string, cond: boolean, got: string) {
 function pickerEarliestOffer(order: Record<string, number>, fromMins: number): string | null {
   const rows = buildSlotAvailability({
     times: TIMES, productionSlotUnits: STORED, catConfigs: PIZZA, kitchenCapacity: 6,
-    date: '2099-01-01', nowMins: 0, earliestCollectionMins: 0, eventStartMins: EVENT_START,
+    date: '2099-01-01', nowMins: 0, earliestCollectionMins: 0, eventStartMins: EVENT_START, tz: 'Europe/London',
     basketByCat: order,
   })
   const offer = rows.filter(r => toMins(r.collection_time) >= fromMins && r.tone !== 'red')

@@ -64,7 +64,7 @@ export class DemoEventError extends Error {
  *  wall clock in the venue's timezone, floored to the nearest half hour (:00 or :30). */
 export const DEMO_WINDOW_HOURS = 4
 
-export function demoEventWindow(now: Date, tz = 'Europe/London'): { date: string; start: string; end: string } {
+export function demoEventWindow(now: Date, tz: string): { date: string; start: string; end: string } {
   const parts = new Intl.DateTimeFormat('en-GB', {
     timeZone: tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
   }).formatToParts(now)
@@ -87,6 +87,16 @@ export function demoEventWindow(now: Date, tz = 'Europe/London'): { date: string
   return { date: getLocalDateInTz(tz), start, end }
 }
 
+/** A demo truck's zone — trucks.timezone, else its country's default (lib/truck-time.ts). */
+export async function demoTruckZone(supabase: SupabaseClient, truckId: string): Promise<string> {
+  // ⚠️ IMPORTED HERE, NOT AT THE TOP — the loader's own pattern (lib/country-settings.ts): this module and
+  // lib/seed-demo-orders.ts are compiled and loaded by harnesses outside Next, where `server-only` (which
+  // lib/truck-time.ts imports) does not resolve. Only a caller that actually needs the zone loads it.
+  const { truckTimeZone } = await import('@/lib/truck-time')
+  const { data } = await supabase.from('trucks').select('timezone, country').eq('id', truckId).maybeSingle()
+  return truckTimeZone(data)
+}
+
 /** minutes-since-midnight → 'HH:MM'. Shared by the window rule and (via export) the roll. */
 export function toHHMM(mins: number): string {
   return `${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`
@@ -105,7 +115,8 @@ export async function provisionDemoEvent(
   truckId: string,
   opts: { now?: Date; tz?: string; replaceExisting?: boolean } = {},
 ): Promise<DemoEvent> {
-  const tz = opts.tz ?? 'Europe/London'
+  // The demo truck's zone by the one rule (Phase 2B; was a fixed London) unless the caller names one.
+  const tz = opts.tz ?? await demoTruckZone(supabase, truckId)
   const { date, start, end } = demoEventWindow(opts.now ?? new Date(), tz)
   const replaceExisting = opts.replaceExisting !== false
 

@@ -22,6 +22,8 @@
 // fit. Nothing this component sends decides how much money moves.
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useMoney } from '@/components/MoneyContext'
+import { formatMinorOrBare, currencySymbolOrBare, editableMinor } from '@/lib/money-format'
 
 /** Our seven, mirrored from lib/payments/refund — the labels an operator reads are only here. */
 const REASONS: { value: string; label: string }[] = [
@@ -83,10 +85,14 @@ export function PaymentActionsModal({
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState<string | null>(null)
+  const fmt = useMoney()
 
   if (!open) return null
 
-  const money = (minor: number) => `£${(minor / 100).toFixed(2)}`
+  // The ORDER's format — the order card (or the completed row) wraps this modal in it.
+  const money = (minor: number) => formatMinorOrBare(minor, fmt, 'payment actions')
+  // An editable box's figure, from minor units: the currency's own decimals, never "÷ 100" here.
+  const editable = (minor: number) => editableMinor(minor, fmt)
   // What the operator is shown as refundable. The server re-derives this from Stripe.
   const refundableMinor = Math.max(0, cardChargeMinor - refundedMinor)
 
@@ -308,10 +314,10 @@ export function PaymentActionsModal({
         <label className="block">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Amount</span>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-slate-500 text-sm">£</span>
-            <input type="number" inputMode="decimal" step="0.01" min="0.01" max={(refundableMinor / 100).toFixed(2)}
+            <span className="text-slate-500 text-sm">{currencySymbolOrBare(fmt, 'payment actions')}</span>
+            <input type="number" inputMode="decimal" step="0.01" min="0.01" max={editable(refundableMinor)}
               value={amountInput} onChange={e => { setAmountInput(e.target.value); setError(null) }}
-              placeholder={(refundableMinor / 100).toFixed(2)}
+              placeholder={editable(refundableMinor)}
               className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm" />
           </div>
           {partialMinor > refundableMinor && (

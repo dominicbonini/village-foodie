@@ -19,6 +19,9 @@ import { readEventType } from '@/lib/event-types/read'
  * migration that has not been applied cannot fail the statement that fetches the MENU — it resolves
  * to "menu prices", which is what this route served before this build. See lib/event-pricing/read.ts. */
 import { readEventPricing } from '@/lib/event-pricing/read'
+import { moneyFormatForTruck } from '@/lib/money-server'
+import { truckTimeSettings } from '@/lib/truck-time'
+import { phoneCopyForTruck } from '@/lib/phone-copy'
 import { priceAtEvent, pricingApplies, toPence, toPounds } from '@/lib/event-pricing/price'
 /* ⛔ THE AUTO-DETECT MUST NEVER PICK A PRIVATE EVENT. See the note at the `else` branch below. */
 import { isEventPrivate } from '@/lib/private-events/read'
@@ -81,7 +84,6 @@ export async function GET(
     { data: subcategories },
     { data: bundles },
     { data: upsellRules },
-    { data: codes },
     { data: modifierGroups },
     { data: modifierOptions },
     { data: itemModGroups },
@@ -118,11 +120,11 @@ export async function GET(
       .select('*')
       .eq('truck_id', truck.id),
 
-    supabase
-      .from('discount_codes_db')
-      .select('*')
-      .eq('truck_id', truck.id)
-      .eq('is_active', true),
+    // 🔴 NO DISCOUNT CODES (audit D31, docs/audit-fixes-report.md). This public route used to send every
+    // active code — its value included — to anyone who opened a menu. Nothing in the browser used them
+    // (the order page has no code box); a code is looked up by the SERVER on submit, from
+    // discount_codes_db with is_active (app/api/orders/submit/route.ts), and never trusted from here.
+    // The operator's own list comes from the authenticated Manage route.
 
     supabase
       .from('modifier_groups')
@@ -177,7 +179,8 @@ export async function GET(
       }, { status: 404 })
     }
   } else {
-    const today = new Date().toISOString().split('T')[0]
+    // The truck's today (Phase 2B; the UTC date was yesterday from 00:00 to 01:00 BST).
+    const today = getLocalDateInTz((await truckTimeSettings(truck)).timeZone)
     const { data: openEvent } = await supabase
       .from('truck_events')
       .select('id')
@@ -514,9 +517,9 @@ export async function GET(
 
   // PRE-ORDER (Stage 3) — read-time context for the sold-out term. Event-tz now (NEVER device-local
   // new Date().getHours()), and the plan gate: when the truck isn't on advance_preordering, the term
-  // is inert (a Pro→Starter downgrade stops stored config applying). tz defaults to 'Europe/London'
-  // (the documented current state until per-truck trucks.timezone lands).
-  const preorderTz = (truck as any).timezone || 'Europe/London'
+  // is inert (a Pro→Starter downgrade stops stored config applying). The zone is the TRUCK's (Phase 2B).
+  const truckTime = await truckTimeSettings(truck)
+  const preorderTz = truckTime.timeZone
   const preorderNowMins = getNowMinsInTz(preorderTz)
   const preorderNowDate = getLocalDateInTz(preorderTz)
   const preorderFeatureOn = canAccess(
@@ -761,12 +764,7 @@ export async function GET(
       max_suggestions: r.max_suggestions,
       show_at_checkout: r.show_at_checkout ?? false,
     })),
-    
-    codes: (codes || []).map(c => ({
-      code: c.code,
-      type: c.type,
-      value: c.value,
-    })),
+    // (No `codes` — see the note on the reads above: the public menu carries no discount code.)
   }
 
   console.log('[MENU API] Returning menu with', menu.items.length, 'items')
@@ -810,10 +808,21 @@ export async function GET(
     cardPaymentsReady = resolveOnlineCardPayments(op, truck).offered
   }
 
+  // 🔴 THE TRUCK'S MONEY FORMAT — {currency, locale} only, never the settings row. Every price on the
+  // customer page is shown in it. A truck with no currency or country is a LOUD error (it cannot happen:
+  // both columns are NOT NULL), never a guessed £.
+  const money = await moneyFormatForTruck(truck)
+
   return NextResponse.json({
     truck: {
       id: truck.id,
       name: truck.name,
+      money,
+      // 🔴 The truck's time settings — its zone and how its times and dates look (Phase 2B).
+      time: truckTime,
+      // 🔴 The phone box's country, name and example — { phoneCountry, short_name, phone_example } only,
+      // never the settings row (Phase 2C). Loud like `money`: a truck with no country does not get here.
+      phone: await phoneCopyForTruck(truck),
       logo,
       mode: truck.mode,
       venue_name: truck.venue_name,

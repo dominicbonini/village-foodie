@@ -21,6 +21,9 @@
 
 export const SCREENSHOT_OUTCOMES = [
   'schedule', 'updated', 'new_truck', 'nothing_new', 'needs_a_look', 'failed',
+  // Phase 2D-2: the screenshot looks like another country — nothing written until the admin decides.
+  // ⚠️ screenshot_log.outcome has no CHECK on its values (Dominic, Q7), so no migration is needed.
+  'held_country',
 ] as const
 export type ScreenshotOutcome = (typeof SCREENSHOT_OUTCOMES)[number]
 
@@ -32,6 +35,7 @@ export const OUTCOME_CHIP: Record<ScreenshotOutcome, string> = {
   nothing_new: 'Nothing new',
   needs_a_look: 'Needs a look',
   failed: 'Failed',
+  held_country: 'Check country',
 }
 
 export type LogRow = {
@@ -84,7 +88,7 @@ export function groupLogRows(rows: LogRow[], now: Date = new Date()): { today: L
 /** Counts for the filter chips, over exactly the rows the list is showing. */
 export function chipCounts(rows: LogRow[]): Record<'all' | ScreenshotOutcome, number> {
   const out = {
-    all: rows.length, schedule: 0, updated: 0, new_truck: 0, nothing_new: 0, needs_a_look: 0, failed: 0,
+    all: rows.length, schedule: 0, updated: 0, new_truck: 0, nothing_new: 0, needs_a_look: 0, failed: 0, held_country: 0,
   }
   for (const r of rows) if (r.outcome in OUTCOME_CHIP) out[r.outcome]++
   return out

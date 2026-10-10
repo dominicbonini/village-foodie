@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { resolveTruckLogo } from '@/lib/truck-logo'
+import { moneyFormatForOrder } from '@/lib/money-server'
+import { truckTimeSettings } from '@/lib/truck-time'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -43,12 +45,16 @@ export async function GET(
       total,
       payment_status,
       truck_id,
+      currency,
+      country,
       trucks!truck_id (
         name,
         slug,
         logo_storage_path,
         allow_customer_cancellation,
-        cancellation_cutoff_mins
+        cancellation_cutoff_mins,
+        timezone,
+        country
       )
     `)
     .eq('order_key', id)
@@ -92,6 +98,16 @@ export async function GET(
     }
   }
 
+  // 🔴 THE TRUCK'S CLOCK AND STYLE (Phase 2B) — the receipt's cancellation window is the truck's wall clock
+  // and its collection time reads in the truck's country's style. A failure here sends none, and the page
+  // falls back (loudly) rather than refusing to show a customer their order.
+  let time = null
+  try {
+    time = await truckTimeSettings({ timezone: truck?.timezone ?? null, country: truck?.country ?? order.country ?? null })
+  } catch (e) {
+    console.error('[orders/:id] truck time settings unavailable — sending none:', e instanceof Error ? e.message : e)
+  }
+
   return NextResponse.json({
     id: order.id,
     status: order.status,
@@ -117,5 +133,8 @@ export async function GET(
     asap_estimate: order.asap_estimate ?? null,
     deal_savings: order.deal_savings ?? null,
     truck_logo: truckLogo,
+    // 🔴 THE ORDER'S OWN currency (orders.currency) and its country's locale — {currency, locale} only.
+    money: await moneyFormatForOrder(order),
+    time,
   })
 }

@@ -1,0 +1,1561 @@
+{
+ "bstAfternoon": {
+  "days": {
+   "today": "2026-10-09",
+   "yesterday": "2026-10-08",
+   "tomorrow": "2026-10-10",
+   "plus5": "2026-10-14",
+   "minus8": "2026-10-01"
+  },
+  "helpers": {
+   "ukDevice": {
+    "localTodayIso": "2026-10-09",
+    "nowMinsLondon": 920,
+    "todayLondon": "2026-10-09",
+    "eventDateLabel": {
+     "yesterday|long": "Thursday 8th October",
+     "yesterday|compact": "Thu 8 Oct",
+     "today|long": "Today 9th October",
+     "today|compact": "Today",
+     "tomorrow|long": "Tomorrow 10th October",
+     "tomorrow|compact": "Tomorrow",
+     "plus5|long": "Wednesday 14th October",
+     "plus5|compact": "Wed 14 Oct"
+    },
+    "formatFriendlyDate": {
+     "yesterday": "Thursday 8th October",
+     "today": "Today - Friday 9th October",
+     "tomorrow": "Tomorrow - Saturday 10th October",
+     "plus5": "Wednesday 14th October"
+    },
+    "pickDefault": "t",
+    "asap|yesterday": null,
+    "past|yesterday": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "asap|today": "15:20",
+    "past|today": [
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "asap|tomorrow": "14:30",
+    "past|tomorrow": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "calcReadyTime": "15:30",
+    "week": {
+     "today": "2026-10-09",
+     "default": "next",
+     "this": {
+      "which": "this",
+      "start": "2026-10-05",
+      "end": "2026-10-11",
+      "days": [
+       "2026-10-05",
+       "2026-10-06",
+       "2026-10-07",
+       "2026-10-08",
+       "2026-10-09",
+       "2026-10-10",
+       "2026-10-11"
+      ]
+     },
+     "next": {
+      "which": "next",
+      "start": "2026-10-12",
+      "end": "2026-10-18",
+      "days": [
+       "2026-10-12",
+       "2026-10-13",
+       "2026-10-14",
+       "2026-10-15",
+       "2026-10-16",
+       "2026-10-17",
+       "2026-10-18"
+      ]
+     },
+     "options": [
+      "2026-10-05..2026-10-11",
+      "2026-10-12..2026-10-18"
+     ]
+    },
+    "eventCaption": [
+     "on Thu 8 Oct",
+     "tonight",
+     "tomorrow",
+     "on Wed 14 Oct"
+    ],
+    "usage": {
+     "monthStart": "2026-09-30T23:00:24.609Z",
+     "reset": "2026-11-01",
+     "tz": "Europe/London"
+    },
+    "demoWindow": {
+     "date": "2026-10-09",
+     "start": "15:00",
+     "end": "19:00"
+    },
+    "seedWindowStart": "2025-10-09"
+   },
+   "utcServer": {
+    "localTodayIso": "2026-10-09",
+    "nowMinsLondon": 920,
+    "todayLondon": "2026-10-09",
+    "eventDateLabel": {
+     "yesterday|long": "Thursday 8th October",
+     "yesterday|compact": "Thu 8 Oct",
+     "today|long": "Today 9th October",
+     "today|compact": "Today",
+     "tomorrow|long": "Tomorrow 10th October",
+     "tomorrow|compact": "Tomorrow",
+     "plus5|long": "Wednesday 14th October",
+     "plus5|compact": "Wed 14 Oct"
+    },
+    "formatFriendlyDate": {
+     "yesterday": "Thursday 8th October",
+     "today": "Today - Friday 9th October",
+     "tomorrow": "Tomorrow - Saturday 10th October",
+     "plus5": "Wednesday 14th October"
+    },
+    "pickDefault": "t",
+    "asap|yesterday": null,
+    "past|yesterday": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "asap|today": "15:20",
+    "past|today": [
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "asap|tomorrow": "14:30",
+    "past|tomorrow": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "calcReadyTime": "14:30",
+    "week": {
+     "today": "2026-10-09",
+     "default": "next",
+     "this": {
+      "which": "this",
+      "start": "2026-10-05",
+      "end": "2026-10-11",
+      "days": [
+       "2026-10-05",
+       "2026-10-06",
+       "2026-10-07",
+       "2026-10-08",
+       "2026-10-09",
+       "2026-10-10",
+       "2026-10-11"
+      ]
+     },
+     "next": {
+      "which": "next",
+      "start": "2026-10-12",
+      "end": "2026-10-18",
+      "days": [
+       "2026-10-12",
+       "2026-10-13",
+       "2026-10-14",
+       "2026-10-15",
+       "2026-10-16",
+       "2026-10-17",
+       "2026-10-18"
+      ]
+     },
+     "options": [
+      "2026-10-05..2026-10-11",
+      "2026-10-12..2026-10-18"
+     ]
+    },
+    "eventCaption": [
+     "on Thu 8 Oct",
+     "tonight",
+     "tomorrow",
+     "on Wed 14 Oct"
+    ],
+    "usage": {
+     "monthStart": "2026-09-30T23:00:24.609Z",
+     "reset": "2026-11-01",
+     "tz": "Europe/London"
+    },
+    "demoWindow": {
+     "date": "2026-10-09",
+     "start": "15:00",
+     "end": "19:00"
+    },
+    "seedWindowStart": "2025-10-09"
+   }
+  },
+  "slots": {
+   "yesterday": "17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10 grace, 21:20 grace, 21:30 grace",
+   "today": "12:00 past full, 12:10 past full, 12:20 past full, 12:30 past full, 12:40 past full, 12:50 past full, 13:00 past full, 13:10 past full, 13:20 past full, 13:30 past full, 13:40 past full, 13:50 past full, 14:00 past full, 14:10 past full, 14:20 past full, 14:30 past full, 14:40 past full, 14:50 past full, 15:00 past full, 15:10 past full, 15:20 soon full, 15:30, 15:40, 15:50, 16:00, 16:10, 16:20, 16:30, 16:40, 16:50, 17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10, 21:20, 21:30, 21:40, 21:50, 22:00, 22:10, 22:20, 22:30, 22:40, 22:50, 23:00, 23:10, 23:20, 23:30, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "tomorrow": "11:30, 11:40, 11:50, 12:00, 12:10, 12:20, 12:30, 12:40, 12:50, 13:00, 13:10, 13:20, 13:30, 13:40, 13:50, 14:00, 14:10 grace, 14:20 grace, 14:30 grace",
+   "noDate": "12:00 past full, 12:10 past full, 12:20 past full, 12:30 past full, 12:40 past full, 12:50 past full, 13:00 past full, 13:10 past full, 13:20 past full, 13:30 past full, 13:40 past full, 13:50 past full, 14:00 past full, 14:10 past full, 14:20 past full, 14:30 past full, 14:40 past full, 14:50 past full, 15:00 past full, 15:10 past full, 15:20 soon full, 15:30, 15:40, 15:50, 16:00, 16:10, 16:20, 16:30, 16:40, 16:50, 17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10, 21:20, 21:30, 21:40, 21:50, 22:00, 22:10, 22:20, 22:30, 22:40, 22:50, 23:00, 23:10, 23:20, 23:30, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "todayById": "12:00 past full, 12:10 past full, 12:20 past full, 12:30 past full, 12:40 past full, 12:50 past full, 13:00 past full, 13:10 past full, 13:20 past full, 13:30 past full, 13:40 past full, 13:50 past full, 14:00 past full, 14:10 past full, 14:20 past full, 14:30 past full, 14:40 past full, 14:50 past full, 15:00 past full, 15:10 past full, 15:20 soon full, 15:30, 15:40, 15:50, 16:00, 16:10, 16:20, 16:30, 16:40, 16:50, 17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10, 21:20, 21:30, 21:40, 21:50, 22:00, 22:10, 22:20, 22:30, 22:40, 22:50, 23:00, 23:10, 23:20, 23:30, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "engine|today": "17:00:no 17:10:no 17:20:ok 17:30:ok 17:40:ok",
+   "engine|tomorrow": "17:00:no 17:10:no 17:20:ok 17:30:ok 17:40:ok"
+  },
+  "orders": {
+   "auto|yesterday|hours2|1020": false,
+   "auto|yesterday|hours2|1425": false,
+   "auto|yesterday|cutoff16|1020": false,
+   "auto|yesterday|cutoff16|1425": false,
+   "auto|yesterday|cutoff2330|1020": false,
+   "auto|yesterday|cutoff2330|1425": false,
+   "auto|today|hours2|1020": false,
+   "auto|today|hours2|1425": true,
+   "auto|today|cutoff16|1020": true,
+   "auto|today|cutoff16|1425": true,
+   "auto|today|cutoff2330|1020": true,
+   "auto|today|cutoff2330|1425": true,
+   "auto|tomorrow|hours2|1020": true,
+   "auto|tomorrow|hours2|1425": true,
+   "auto|tomorrow|cutoff16|1020": true,
+   "auto|tomorrow|cutoff16|1425": true,
+   "auto|tomorrow|cutoff2330|1020": true,
+   "auto|tomorrow|cutoff2330|1425": true,
+   "place|today|asap": "15:30|true",
+   "place|today|17:00": "17:00|true",
+   "place|today|21:30": "21:30|true",
+   "place|tomorrow|asap": "12:10|true",
+   "place|tomorrow|17:00": "17:00|true",
+   "place|tomorrow|21:30": "21:30|true"
+  },
+  "edge": {
+   "auto-event-scheduler": {
+    "body": {
+     "opened": 2,
+     "closed": 2
+    },
+    "writes": [
+     "truck_events:update:opened_at+status:conf-t-1500,conf-t-early",
+     "truck_events:update:closed_at+status:open-t-ended,open-y"
+    ]
+   },
+   "heartbeat-monitor": {
+    "body": {
+     "paused": 5
+    },
+    "writes": [
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-y",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-ended",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-2320",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-manual",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-m"
+    ]
+   }
+  },
+  "events": [
+   "2026-10-10|10/10/2026|Tomorrow · Saturday 10th October|11:30:00-14:00:00",
+   "2026-10-09|09/10/2026|Today · Friday 9th October|17:00:00-21:00:00",
+   "2026-10-14|14/10/2026|Wednesday 14th October|17:00:00-20:00:00"
+  ],
+  "prompts": {
+   "reply": "Hey there 👋 See you soon — Pizza Kitchen 🍕",
+   "whatsappPrompt": "You are the owner of Pizza Kitchen 🍕, a food truck. Reply warmly to this WhatsApp message.\n\nDATE REFERENCE (use these exact mappings — do not guess):\nToday = 2026-10-09 (9 October)\nTomorrow = 2026-10-10 (10 October)\nSunday = 2026-10-11 (11 October)\nMonday = 2026-10-12 (12 October)\nTuesday = 2026-10-13 (13 October)\nWednesday = 2026-10-14 (14 October)\nThursday = 2026-10-15 (15 October)\n\nUpcoming confirmed events:\n- Friday 9 October (TODAY): The Green, Harnessville 17:00–21:00 [CONFIRMED]\n- Saturday 10 October (TOMORROW): The Square, Harnessville 11:30–14:00 [CONFIRMED]\n- Wednesday 14 October: Mill Lane, Harnessville 17:00–20:00 [CONFIRMED]\n\nCustomer message: \"where are you this weekend\"\n\nInstructions:\n- Open with exactly: \"Hey there 👋\"\n- Do NOT use any food emoji in the greeting or body. The ONLY food emoji is 🍕, used once at the very end in the sign-off.\n- Match the customer's date reference (tomorrow, Friday, tonight, this week etc) using the DATE REFERENCE above\n- If they ask about a day by name (e.g. \"Friday\"), look up the exact date from DATE REFERENCE\n- If events exist for that date, give venue name, town and times in a friendly tone\n- If asked about a location (village/town), check if any event's town field matches\n- If no event that specific day but upcoming events at that location within 7 days, mention the next one: \"Nothing tomorrow but we're in Wickhambrook on Friday!\"\n- If no event that specific day but other upcoming events exist, mention the next one\n- Always end with the order link: https://x\n- Keep to 2-3 sentences, warm and casual — like the owner typed it\n- Sign off as: Pizza Kitchen 🍕\n- Never mention Village Foodie or any platform name. Never make up events.",
+   "schedulePrompt": "CRITICAL CONTEXT: Today is Friday, 9 October 2026. Current year is 2026.\n\nYou are extracting a food truck's schedule from messy, unstructured text or an image. Your job has two steps:\n1. EXTRACT what you can see\n2. ENRICH missing fields using your knowledge of UK venues and locations\n\n14-DAY DATE REFERENCE — use this exact table when converting day names to dates. Do not calculate independently:\nFriday = 09/10/2026\nSaturday = 10/10/2026\nSunday = 11/10/2026\nMonday = 12/10/2026\nTuesday = 13/10/2026\nWednesday = 14/10/2026\nThursday = 15/10/2026\nFriday = 16/10/2026\nSaturday = 17/10/2026\nSunday = 18/10/2026\nMonday = 19/10/2026\nTuesday = 20/10/2026\nWednesday = 21/10/2026\nThursday = 22/10/2026\n\nSTEP 1 — EXTRACTION RULES:\n"
+  },
+  "emails": {
+   "cancellations": [
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Friday 9 October has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    },
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Saturday 10 October has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    },
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Wednesday 14 October has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    }
+   ],
+   "confirmation": "Order #40 confirmed — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nCollection time: 18:30. See you at the hatch!\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "adjusted": "Order #40 confirmed — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nCollection time updated to 18:30 (was 18:00).\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "ready": "Order #40 is ready to collect — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nYour order is ready for collection — come and collect. Pay at the truck.\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "newOrder": "New order #40 from Sam for 18:30 at The Green, Harnessville. Total £19.00."
+  },
+  "screens": {
+   "card|paid|kds=false": "#40 · 18:30 in 3h Sam Harness ✉ £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|paid|kds=true": "#40 · 18:30 in 3h Sam Harness ✉ £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|hatch|kds=false": "#41 · 15:40 in 20m Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|hatch|kds=true": "#41 · 15:40 in 20m Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|pending|kds=false": "#42 · 15:20 now Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject",
+   "card|pending|kds=true": "#42 · 15:20 now Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject",
+   "card|ready|kds=false": "#43 · 23:40 in 8h Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card",
+   "card|ready|kds=true": "#43 · 23:40 in 8h Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card",
+   "card|done|kds=false": "#44 · 14:00 80m late Sam Harness ✉ Collected £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ↩ Undo",
+   "card|done|kds=true": "#44 · 14:00 80m late Sam Harness ✉ Collected £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ↩ Undo",
+   "dayLoadStrip": "Kitchen capacity 15:30 — 16:00 — 18:30 — 23:40 —",
+   "kds": "← Dashboard Pizza Kitchen List Grid Full Cook ✓ Ready step 💷 Payment & handover 🔔 Screen off Screen settings ▾ Manage event ▾ Sound settings 🌙 Screen off 🔔 👆 Keep screen on To make 8× Margherita 12× Coke 📍 The Green — Harnessville · 12:00–23:59 📅 Today 9th October ● Live Manage event ▾ #42 £26.90 Sam Harness ✉ 15:20 · now Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✓ Confirm ✗ Reject #41 £26.90 Sam Harness ✉ 15:40 · in 20m Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice 💷 Cash 💳 Card #40 £26.90 PAID Sam Harness ✉ 18:30 · in 3h Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice Collected #43 Ready £26.90 Sam Harness ✉ 23:40 · in 8h £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice 💷 Cash 💳 Card Done today · 1 #44 · Sam Harness ✓ paid",
+   "dash|orders": "Pizza Kitchen The Green 1 🔔 Screen off ? Orders (1) + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 12:00–23:59 📅 Today 9th October ● Live Manage event ▾ 👆 Keep screen on 1 New 3 Confirmed 1 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 15:30 16:00 18:30 23:40 New — action needed #42 · 15:20 now Sam Harness ✉ £26.90 Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject Confirmed #41 · 15:40 in 20m Sam Harness ✉ £26.90 Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 💷 Cash 💳 Card #40 · 18:30 in 3h Sam Harness ✉ £26.90 PAID Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel Collected #43 · 23:40 in 8h Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card ▶ Completed & cancelled (1) 1 done #44 Collected 🕐 14:00 Sam Harness · 2× Margherita, 3× Coke ↩ Undo PAID £26.90 Kitchen capacity 15:30 — 16:00 — 18:30 — 23:40 — Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "dash|empty": "Pizza Kitchen The Green 🔔 Screen off ? Orders + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 12:00–23:59 📅 Today 9th October ● Live Manage event ▾ 👆 Keep screen on 0 New 0 Confirmed 0 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 15:30 16:00 18:30 23:40 🍕 No orders yet today Updated 15:20:00 Kitchen capacity 15:30 — 16:00 — 18:30 — 23:40 — Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "dash|tomorrowSelected": "Pizza Kitchen The Green 🔔 Screen off ? Orders + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 11:30–14:00 📅 Tomorrow 10th October Not started Manage event ▾ 👆 Keep screen on 0 New 0 Confirmed 0 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 15:00 15:30 16:00 18:30 23:40 🍕 All orders complete! Updated 15:20:00 Kitchen capacity 15:00 — 15:30 — 16:00 — 18:30 — 23:40 — The Green — Harnessville Tomorrow · 11:30–14:00 Change Start Event ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Stock counts aren’t loaded on this device. You can still take orders — check what you have. Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 15:00 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 The Green — Harnessville Tomorrow · 11:30–14:00 Change Start Event ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Stock counts aren’t loaded on this device. You can still take orders — check what you have. Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "add|today": "Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP — 15:20 15:20 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 ⚡ ~5 mins · around 15:25 + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "add|tomorrow": "The Green — Harnessville Tomorrow · 11:30–14:00 Change ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP — 15:00 15:00 🟢 15:20 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 ⚡ Ready around 11:30 Sat 10 Oct + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 The Green — Harnessville Tomorrow · 11:30–14:00 Change ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "add|yesterday": "The Green — Harnessville Thu 8 Oct · 17:00–21:00 Change ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event. Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP ⚡ ~5 mins · around 15:25 + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 The Green — Harnessville Thu 8 Oct · 17:00–21:00 Change ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event. Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "order|today": "Pizza Kitchen ← Back Order from Pizza Kitchen Fri 9 Oct 12:00 – 23:59 Live The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 15:20 Choose time 15:20 15:30 16:00 18:30 23:40 ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|tomorrow": "Pizza Kitchen ← Back Order from Pizza Kitchen Sat 10 Oct 12:00 – 23:59 The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 15:00 Choose time 15:00 15:20 15:30 16:00 18:30 23:40 ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|yesterday": "Pizza Kitchen ← Back Order from Pizza Kitchen Thu 8 Oct 12:00 – 23:59 The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 12:00 Choose time ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|submitted": "Pizza Kitchen ✓ Order received! Pizza Kitchen will confirm your order shortly. Order #40 Preferred collection: 18:30 Pizza Kitchen will confirm your collection time when they accept your order. 2× Margherita £19.00 Total £19.00 Payment Pay at the truck Back to Pizza Kitchen",
+   "order|confirm": "Pizza Kitchen ✓ Order confirmed! Thanks! We've received your order and it'll be ready soon. Order #40 Collection time: 18:30 See you at the hatch! 2× Margherita £19.00 + Extra cheese +£2.50 Total £21.50 3× Coke £5.40 📝 No ice Total £26.90 Payment Paid by card Confirmation sent to sam@example.test Back to Pizza Kitchen",
+   "receipt|paid": "Pizza Kitchen Order #40 Pickup 18:30 · The Green Payment Paid by card Status confirmed 2× Margherita £21.50 3× Coke £5.40 Total £26.90 Cancel order Cancellations accepted up to 30 minutes before pickup",
+   "receipt|pending": "Pizza Kitchen Order #42 Payment Pay at the truck Status pending 2× Margherita £21.50 3× Coke £5.40 Total £26.90 Cancel order Cancellations accepted up to 30 minutes before pickup",
+   "reports|orders": {
+    "text": "📅 Date range 📍 Event View report to 📋 Orders 📦 Items ⬇ Filter by 📅 Date range 📍 Event to Show 📋 Orders 📦 Items View report ⬇ Export CSV 5 orders · £134.50 Revenue breakdown Other £122.00 Modifier upcharges £12.50 Total £134.50 Customisations Paid modifiers # Modifier Qty Total 1 Extra cheese 10 £12.50 Customer notes \"No ice\" 5× Order breakdown # Date Time Channel Item Qty Total #40 09/10/26 14:30 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #40 09/10 £26.90 Online · 14:30 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #41 09/10/26 14:30 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #41 09/10 £26.90 Online · 14:30 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #42 09/10/26 14:30 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #42 09/10 £26.90 Online · 14:30 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #43 09/10/26 14:30 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #43 09/10 £26.90 Online · 14:30 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #44 09/10/26 14:30 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #44 09/10 £26.90 Online · 14:30 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80",
+    "attrs": [
+     "max=2026-10-09",
+     "value=2026-10-02",
+     "max=2026-10-09",
+     "value=2026-10-08",
+     "max=2026-10-09",
+     "value=2026-10-02",
+     "max=2026-10-09",
+     "value=2026-10-08"
+    ]
+   },
+   "reports|items": {
+    "text": "📅 Date range 📍 Event View report to 📋 Orders 📦 Items ⬇ Filter by 📅 Date range 📍 Event to Show 📋 Orders 📦 Items View report ⬇ Export CSV 5 orders · £134.50 Revenue breakdown Other £122.00 Modifier upcharges £12.50 Total £134.50 Customisations Paid modifiers # Modifier Qty Total 1 Extra cheese 10 £12.50 Customer notes \"No ice\" 5× Item breakdown # Date Time Channel Item Qty Total #40 09/10/26 14:30 Online Margherita 2 £21.50 #40 09/10/26 14:30 Online Coke 3 £5.40 #41 09/10/26 14:30 Online Margherita 2 £21.50 #41 09/10/26 14:30 Online Coke 3 £5.40 #42 09/10/26 14:30 Online Margherita 2 £21.50 #42 09/10/26 14:30 Online Coke 3 £5.40 #43 09/10/26 14:30 Online Margherita 2 £21.50 #43 09/10/26 14:30 Online Coke 3 £5.40 #44 09/10/26 14:30 Online Margherita 2 £21.50 #44 09/10/26 14:30 Online Coke 3 £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40",
+    "attrs": [
+     "max=2026-10-09",
+     "value=2026-10-02",
+     "max=2026-10-09",
+     "value=2026-10-08",
+     "max=2026-10-09",
+     "value=2026-10-02",
+     "max=2026-10-09",
+     "value=2026-10-08"
+    ]
+   },
+   "reports|csv": [
+    {
+     "text": "\"Order ID\",\"Date\",\"Event\",\"Time placed\",\"Collection time\",\"Customer name\",\"Order type\",\"Items\",\"Deals\",\"Modifiers\",\"Notes\",\"Total\"\n\"40\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"18:30\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"41\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"15:40\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"42\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"43\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"23:40\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"44\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"14:00\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"",
+     "name": "orders-2026-10-02-to-2026-10-08.csv"
+    },
+    {
+     "text": "\"Order ID\",\"Date\",\"Event\",\"Time placed\",\"Collection time\",\"Customer name\",\"Order type\",\"Item name\",\"Qty\",\"Unit price\",\"Modifiers\",\"Notes\",\"Item total\",\"Order total\"\n\"40\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"18:30\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"40\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"18:30\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"41\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"15:40\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"41\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"15:40\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"42\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"42\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"43\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"23:40\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"43\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"23:40\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"44\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"14:00\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"44\",\"09/10/2026\",\"The Green, Harnessville\",\"14:30\",\"14:00\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"",
+     "name": "items-2026-10-02-to-2026-10-08.csv"
+    }
+   ],
+   "schedule": "Events Event types Schedule 3 upcoming ✨ Import schedule photo, PDF or text + Add event You're managing your schedule manually · Change in Settings Confirmed FRI 9 OCT The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel SAT 10 OCT The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel WED 14 OCT The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel ▶ Past events (1)",
+   "ticket|stamp": "15:20|920",
+   "ticket|lines": [
+    "#40        COLLECT 18:30",
+    "Sam Harness                         07700 900123",
+    "2x Margherita                             £21.50",
+    "  + Extra cheese                          +£1.25",
+    "3x Coke                                    £5.40",
+    "  ! No ice",
+    "TOTAL                                     £26.90",
+    "PAYMENT                                     PAID",
+    "Pizza Kitchen",
+    "printed 15:20"
+   ],
+   "ticket|test": "@tda!EB#TEST      COLLECT 15:20 | a!EBTest ticket | a!EB------------------------------------------------ | a!EB1x Test ticket | a!EB------------------------------------------------ | a!EBTOTAL                                       0.00 | a!EBPizza Kitchen | a!EBprinted 15:20 | !EaBdV"
+  }
+ },
+ "gmtAfternoon": {
+  "days": {
+   "today": "2026-11-13",
+   "yesterday": "2026-11-12",
+   "tomorrow": "2026-11-14",
+   "plus5": "2026-11-18",
+   "minus8": "2026-11-05"
+  },
+  "helpers": {
+   "ukDevice": {
+    "localTodayIso": "2026-11-13",
+    "nowMinsLondon": 920,
+    "todayLondon": "2026-11-13",
+    "eventDateLabel": {
+     "yesterday|long": "Thursday 12th November",
+     "yesterday|compact": "Thu 12 Nov",
+     "today|long": "Today 13th November",
+     "today|compact": "Today",
+     "tomorrow|long": "Tomorrow 14th November",
+     "tomorrow|compact": "Tomorrow",
+     "plus5|long": "Wednesday 18th November",
+     "plus5|compact": "Wed 18 Nov"
+    },
+    "formatFriendlyDate": {
+     "yesterday": "Thursday 12th November",
+     "today": "Today - Friday 13th November",
+     "tomorrow": "Tomorrow - Saturday 14th November",
+     "plus5": "Wednesday 18th November"
+    },
+    "pickDefault": "t",
+    "asap|yesterday": null,
+    "past|yesterday": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "asap|today": "15:20",
+    "past|today": [
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "asap|tomorrow": "14:30",
+    "past|tomorrow": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "calcReadyTime": "15:30",
+    "week": {
+     "today": "2026-11-13",
+     "default": "next",
+     "this": {
+      "which": "this",
+      "start": "2026-11-09",
+      "end": "2026-11-15",
+      "days": [
+       "2026-11-09",
+       "2026-11-10",
+       "2026-11-11",
+       "2026-11-12",
+       "2026-11-13",
+       "2026-11-14",
+       "2026-11-15"
+      ]
+     },
+     "next": {
+      "which": "next",
+      "start": "2026-11-16",
+      "end": "2026-11-22",
+      "days": [
+       "2026-11-16",
+       "2026-11-17",
+       "2026-11-18",
+       "2026-11-19",
+       "2026-11-20",
+       "2026-11-21",
+       "2026-11-22"
+      ]
+     },
+     "options": [
+      "2026-11-09..2026-11-15",
+      "2026-11-16..2026-11-22"
+     ]
+    },
+    "eventCaption": [
+     "on Thu 12 Nov",
+     "tonight",
+     "tomorrow",
+     "on Wed 18 Nov"
+    ],
+    "usage": {
+     "monthStart": "2026-11-01T00:00:00.000Z",
+     "reset": "2026-12-01",
+     "tz": "Europe/London"
+    },
+    "demoWindow": {
+     "date": "2026-11-13",
+     "start": "15:00",
+     "end": "19:00"
+    },
+    "seedWindowStart": "2025-11-13"
+   },
+   "utcServer": {
+    "localTodayIso": "2026-11-13",
+    "nowMinsLondon": 920,
+    "todayLondon": "2026-11-13",
+    "eventDateLabel": {
+     "yesterday|long": "Thursday 12th November",
+     "yesterday|compact": "Thu 12 Nov",
+     "today|long": "Today 13th November",
+     "today|compact": "Today",
+     "tomorrow|long": "Tomorrow 14th November",
+     "tomorrow|compact": "Tomorrow",
+     "plus5|long": "Wednesday 18th November",
+     "plus5|compact": "Wed 18 Nov"
+    },
+    "formatFriendlyDate": {
+     "yesterday": "Thursday 12th November",
+     "today": "Today - Friday 13th November",
+     "tomorrow": "Tomorrow - Saturday 14th November",
+     "plus5": "Wednesday 18th November"
+    },
+    "pickDefault": "t",
+    "asap|yesterday": null,
+    "past|yesterday": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "asap|today": "15:20",
+    "past|today": [
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "asap|tomorrow": "14:30",
+    "past|tomorrow": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "calcReadyTime": "15:30",
+    "week": {
+     "today": "2026-11-13",
+     "default": "next",
+     "this": {
+      "which": "this",
+      "start": "2026-11-09",
+      "end": "2026-11-15",
+      "days": [
+       "2026-11-09",
+       "2026-11-10",
+       "2026-11-11",
+       "2026-11-12",
+       "2026-11-13",
+       "2026-11-14",
+       "2026-11-15"
+      ]
+     },
+     "next": {
+      "which": "next",
+      "start": "2026-11-16",
+      "end": "2026-11-22",
+      "days": [
+       "2026-11-16",
+       "2026-11-17",
+       "2026-11-18",
+       "2026-11-19",
+       "2026-11-20",
+       "2026-11-21",
+       "2026-11-22"
+      ]
+     },
+     "options": [
+      "2026-11-09..2026-11-15",
+      "2026-11-16..2026-11-22"
+     ]
+    },
+    "eventCaption": [
+     "on Thu 12 Nov",
+     "tonight",
+     "tomorrow",
+     "on Wed 18 Nov"
+    ],
+    "usage": {
+     "monthStart": "2026-11-01T00:00:00.000Z",
+     "reset": "2026-12-01",
+     "tz": "Europe/London"
+    },
+    "demoWindow": {
+     "date": "2026-11-13",
+     "start": "15:00",
+     "end": "19:00"
+    },
+    "seedWindowStart": "2025-11-13"
+   }
+  },
+  "slots": {
+   "yesterday": "17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10 grace, 21:20 grace, 21:30 grace",
+   "today": "12:00 past full, 12:10 past full, 12:20 past full, 12:30 past full, 12:40 past full, 12:50 past full, 13:00 past full, 13:10 past full, 13:20 past full, 13:30 past full, 13:40 past full, 13:50 past full, 14:00 past full, 14:10 past full, 14:20 past full, 14:30 past full, 14:40 past full, 14:50 past full, 15:00 past full, 15:10 past full, 15:20 soon full, 15:30, 15:40, 15:50, 16:00, 16:10, 16:20, 16:30, 16:40, 16:50, 17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10, 21:20, 21:30, 21:40, 21:50, 22:00, 22:10, 22:20, 22:30, 22:40, 22:50, 23:00, 23:10, 23:20, 23:30, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "tomorrow": "11:30, 11:40, 11:50, 12:00, 12:10, 12:20, 12:30, 12:40, 12:50, 13:00, 13:10, 13:20, 13:30, 13:40, 13:50, 14:00, 14:10 grace, 14:20 grace, 14:30 grace",
+   "noDate": "12:00 past full, 12:10 past full, 12:20 past full, 12:30 past full, 12:40 past full, 12:50 past full, 13:00 past full, 13:10 past full, 13:20 past full, 13:30 past full, 13:40 past full, 13:50 past full, 14:00 past full, 14:10 past full, 14:20 past full, 14:30 past full, 14:40 past full, 14:50 past full, 15:00 past full, 15:10 past full, 15:20 soon full, 15:30, 15:40, 15:50, 16:00, 16:10, 16:20, 16:30, 16:40, 16:50, 17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10, 21:20, 21:30, 21:40, 21:50, 22:00, 22:10, 22:20, 22:30, 22:40, 22:50, 23:00, 23:10, 23:20, 23:30, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "todayById": "12:00 past full, 12:10 past full, 12:20 past full, 12:30 past full, 12:40 past full, 12:50 past full, 13:00 past full, 13:10 past full, 13:20 past full, 13:30 past full, 13:40 past full, 13:50 past full, 14:00 past full, 14:10 past full, 14:20 past full, 14:30 past full, 14:40 past full, 14:50 past full, 15:00 past full, 15:10 past full, 15:20 soon full, 15:30, 15:40, 15:50, 16:00, 16:10, 16:20, 16:30, 16:40, 16:50, 17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10, 21:20, 21:30, 21:40, 21:50, 22:00, 22:10, 22:20, 22:30, 22:40, 22:50, 23:00, 23:10, 23:20, 23:30, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "engine|today": "17:00:no 17:10:no 17:20:ok 17:30:ok 17:40:ok",
+   "engine|tomorrow": "17:00:no 17:10:no 17:20:ok 17:30:ok 17:40:ok"
+  },
+  "orders": {
+   "auto|yesterday|hours2|1020": false,
+   "auto|yesterday|hours2|1425": false,
+   "auto|yesterday|cutoff16|1020": false,
+   "auto|yesterday|cutoff16|1425": false,
+   "auto|yesterday|cutoff2330|1020": false,
+   "auto|yesterday|cutoff2330|1425": false,
+   "auto|today|hours2|1020": false,
+   "auto|today|hours2|1425": true,
+   "auto|today|cutoff16|1020": true,
+   "auto|today|cutoff16|1425": true,
+   "auto|today|cutoff2330|1020": true,
+   "auto|today|cutoff2330|1425": true,
+   "auto|tomorrow|hours2|1020": true,
+   "auto|tomorrow|hours2|1425": true,
+   "auto|tomorrow|cutoff16|1020": true,
+   "auto|tomorrow|cutoff16|1425": true,
+   "auto|tomorrow|cutoff2330|1020": true,
+   "auto|tomorrow|cutoff2330|1425": true,
+   "place|today|asap": "15:30|true",
+   "place|today|17:00": "17:00|true",
+   "place|today|21:30": "21:30|true",
+   "place|tomorrow|asap": "12:10|true",
+   "place|tomorrow|17:00": "17:00|true",
+   "place|tomorrow|21:30": "21:30|true"
+  },
+  "edge": {
+   "auto-event-scheduler": {
+    "body": {
+     "opened": 2,
+     "closed": 2
+    },
+    "writes": [
+     "truck_events:update:opened_at+status:conf-t-1500,conf-t-early",
+     "truck_events:update:closed_at+status:open-t-ended,open-y"
+    ]
+   },
+   "heartbeat-monitor": {
+    "body": {
+     "paused": 5
+    },
+    "writes": [
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-y",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-ended",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-2320",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-manual",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-m"
+    ]
+   }
+  },
+  "events": [
+   "2026-11-14|14/11/2026|Tomorrow · Saturday 14th November|11:30:00-14:00:00",
+   "2026-11-13|13/11/2026|Today · Friday 13th November|17:00:00-21:00:00",
+   "2026-11-18|18/11/2026|Wednesday 18th November|17:00:00-20:00:00"
+  ],
+  "prompts": {
+   "reply": "Hey there 👋 See you soon — Pizza Kitchen 🍕",
+   "whatsappPrompt": "You are the owner of Pizza Kitchen 🍕, a food truck. Reply warmly to this WhatsApp message.\n\nDATE REFERENCE (use these exact mappings — do not guess):\nToday = 2026-11-13 (13 November)\nTomorrow = 2026-11-14 (14 November)\nSunday = 2026-11-15 (15 November)\nMonday = 2026-11-16 (16 November)\nTuesday = 2026-11-17 (17 November)\nWednesday = 2026-11-18 (18 November)\nThursday = 2026-11-19 (19 November)\n\nUpcoming confirmed events:\n- Friday 13 November (TODAY): The Green, Harnessville 17:00–21:00 [CONFIRMED]\n- Saturday 14 November (TOMORROW): The Square, Harnessville 11:30–14:00 [CONFIRMED]\n- Wednesday 18 November: Mill Lane, Harnessville 17:00–20:00 [CONFIRMED]\n\nCustomer message: \"where are you this weekend\"\n\nInstructions:\n- Open with exactly: \"Hey there 👋\"\n- Do NOT use any food emoji in the greeting or body. The ONLY food emoji is 🍕, used once at the very end in the sign-off.\n- Match the customer's date reference (tomorrow, Friday, tonight, this week etc) using the DATE REFERENCE above\n- If they ask about a day by name (e.g. \"Friday\"), look up the exact date from DATE REFERENCE\n- If events exist for that date, give venue name, town and times in a friendly tone\n- If asked about a location (village/town), check if any event's town field matches\n- If no event that specific day but upcoming events at that location within 7 days, mention the next one: \"Nothing tomorrow but we're in Wickhambrook on Friday!\"\n- If no event that specific day but other upcoming events exist, mention the next one\n- Always end with the order link: https://x\n- Keep to 2-3 sentences, warm and casual — like the owner typed it\n- Sign off as: Pizza Kitchen 🍕\n- Never mention Village Foodie or any platform name. Never make up events.",
+   "schedulePrompt": "CRITICAL CONTEXT: Today is Friday, 13 November 2026. Current year is 2026.\n\nYou are extracting a food truck's schedule from messy, unstructured text or an image. Your job has two steps:\n1. EXTRACT what you can see\n2. ENRICH missing fields using your knowledge of UK venues and locations\n\n14-DAY DATE REFERENCE — use this exact table when converting day names to dates. Do not calculate independently:\nFriday = 13/11/2026\nSaturday = 14/11/2026\nSunday = 15/11/2026\nMonday = 16/11/2026\nTuesday = 17/11/2026\nWednesday = 18/11/2026\nThursday = 19/11/2026\nFriday = 20/11/2026\nSaturday = 21/11/2026\nSunday = 22/11/2026\nMonday = 23/11/2026\nTuesday = 24/11/2026\nWednesday = 25/11/2026\nThursday = 26/11/2026\n\nSTEP 1 — EXTRACTION RULES:\n"
+  },
+  "emails": {
+   "cancellations": [
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Friday 13 November has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    },
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Saturday 14 November has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    },
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Wednesday 18 November has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    }
+   ],
+   "confirmation": "Order #40 confirmed — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nCollection time: 18:30. See you at the hatch!\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "adjusted": "Order #40 confirmed — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nCollection time updated to 18:30 (was 18:00).\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "ready": "Order #40 is ready to collect — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nYour order is ready for collection — come and collect. Pay at the truck.\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "newOrder": "New order #40 from Sam for 18:30 at The Green, Harnessville. Total £19.00."
+  },
+  "screens": {
+   "card|paid|kds=false": "#40 · 18:30 in 3h Sam Harness ✉ £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|paid|kds=true": "#40 · 18:30 in 3h Sam Harness ✉ £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|hatch|kds=false": "#41 · 15:40 in 20m Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|hatch|kds=true": "#41 · 15:40 in 20m Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|pending|kds=false": "#42 · 15:20 now Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject",
+   "card|pending|kds=true": "#42 · 15:20 now Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject",
+   "card|ready|kds=false": "#43 · 23:40 in 8h Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card",
+   "card|ready|kds=true": "#43 · 23:40 in 8h Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card",
+   "card|done|kds=false": "#44 · 14:00 80m late Sam Harness ✉ Collected £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ↩ Undo",
+   "card|done|kds=true": "#44 · 14:00 80m late Sam Harness ✉ Collected £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ↩ Undo",
+   "dayLoadStrip": "Kitchen capacity 15:30 — 16:00 — 18:30 — 23:40 —",
+   "kds": "← Dashboard Pizza Kitchen List Grid Full Cook ✓ Ready step 💷 Payment & handover 🔔 Screen off Screen settings ▾ Manage event ▾ Sound settings 🌙 Screen off 🔔 👆 Keep screen on To make 8× Margherita 12× Coke 📍 The Green — Harnessville · 12:00–23:59 📅 Today 13th November ● Live Manage event ▾ #42 £26.90 Sam Harness ✉ 15:20 · now Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✓ Confirm ✗ Reject #41 £26.90 Sam Harness ✉ 15:40 · in 20m Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice 💷 Cash 💳 Card #40 £26.90 PAID Sam Harness ✉ 18:30 · in 3h Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice Collected #43 Ready £26.90 Sam Harness ✉ 23:40 · in 8h £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice 💷 Cash 💳 Card Done today · 1 #44 · Sam Harness ✓ paid",
+   "dash|orders": "Pizza Kitchen The Green 1 🔔 Screen off ? Orders (1) + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 12:00–23:59 📅 Today 13th November ● Live Manage event ▾ 👆 Keep screen on 1 New 3 Confirmed 1 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 15:30 16:00 18:30 23:40 New — action needed #42 · 15:20 now Sam Harness ✉ £26.90 Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject Confirmed #41 · 15:40 in 20m Sam Harness ✉ £26.90 Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 💷 Cash 💳 Card #40 · 18:30 in 3h Sam Harness ✉ £26.90 PAID Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel Collected #43 · 23:40 in 8h Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card ▶ Completed & cancelled (1) 1 done #44 Collected 🕐 14:00 Sam Harness · 2× Margherita, 3× Coke ↩ Undo PAID £26.90 Kitchen capacity 15:30 — 16:00 — 18:30 — 23:40 — Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "dash|empty": "Pizza Kitchen The Green 🔔 Screen off ? Orders + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 12:00–23:59 📅 Today 13th November ● Live Manage event ▾ 👆 Keep screen on 0 New 0 Confirmed 0 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 15:30 16:00 18:30 23:40 🍕 No orders yet today Updated 15:20:00 Kitchen capacity 15:30 — 16:00 — 18:30 — 23:40 — Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "dash|tomorrowSelected": "Pizza Kitchen The Green 🔔 Screen off ? Orders + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 11:30–14:00 📅 Tomorrow 14th November Not started Manage event ▾ 👆 Keep screen on 0 New 0 Confirmed 0 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 15:00 15:30 16:00 18:30 23:40 🍕 All orders complete! Updated 15:20:00 Kitchen capacity 15:00 — 15:30 — 16:00 — 18:30 — 23:40 — The Green — Harnessville Tomorrow · 11:30–14:00 Change Start Event ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Stock counts aren’t loaded on this device. You can still take orders — check what you have. Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 15:00 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 The Green — Harnessville Tomorrow · 11:30–14:00 Change Start Event ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Stock counts aren’t loaded on this device. You can still take orders — check what you have. Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "add|today": "Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP — 15:20 15:20 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 ⚡ ~5 mins · around 15:25 + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "add|tomorrow": "The Green — Harnessville Tomorrow · 11:30–14:00 Change ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP — 15:00 15:00 🟢 15:20 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 ⚡ Ready around 11:30 Sat 14 Nov + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 The Green — Harnessville Tomorrow · 11:30–14:00 Change ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "add|yesterday": "The Green — Harnessville Thu 12 Nov · 17:00–21:00 Change ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event. Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP ⚡ ~5 mins · around 15:25 + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 The Green — Harnessville Thu 12 Nov · 17:00–21:00 Change ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event. Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "order|today": "Pizza Kitchen ← Back Order from Pizza Kitchen Fri 13 Nov 12:00 – 23:59 Live The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 15:20 Choose time 15:20 15:30 16:00 18:30 23:40 ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|tomorrow": "Pizza Kitchen ← Back Order from Pizza Kitchen Sat 14 Nov 12:00 – 23:59 The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 15:00 Choose time 15:00 15:20 15:30 16:00 18:30 23:40 ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|yesterday": "Pizza Kitchen ← Back Order from Pizza Kitchen Thu 12 Nov 12:00 – 23:59 The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 12:00 Choose time ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|submitted": "Pizza Kitchen ✓ Order received! Pizza Kitchen will confirm your order shortly. Order #40 Preferred collection: 18:30 Pizza Kitchen will confirm your collection time when they accept your order. 2× Margherita £19.00 Total £19.00 Payment Pay at the truck Back to Pizza Kitchen",
+   "order|confirm": "Pizza Kitchen ✓ Order confirmed! Thanks! We've received your order and it'll be ready soon. Order #40 Collection time: 18:30 See you at the hatch! 2× Margherita £19.00 + Extra cheese +£2.50 Total £21.50 3× Coke £5.40 📝 No ice Total £26.90 Payment Paid by card Confirmation sent to sam@example.test Back to Pizza Kitchen",
+   "receipt|paid": "Pizza Kitchen Order #40 Pickup 18:30 · The Green Payment Paid by card Status confirmed 2× Margherita £21.50 3× Coke £5.40 Total £26.90 Cancel order Cancellations accepted up to 30 minutes before pickup",
+   "receipt|pending": "Pizza Kitchen Order #42 Payment Pay at the truck Status pending 2× Margherita £21.50 3× Coke £5.40 Total £26.90 Cancel order Cancellations accepted up to 30 minutes before pickup",
+   "reports|orders": {
+    "text": "📅 Date range 📍 Event View report to 📋 Orders 📦 Items ⬇ Filter by 📅 Date range 📍 Event to Show 📋 Orders 📦 Items View report ⬇ Export CSV 5 orders · £134.50 Revenue breakdown Other £122.00 Modifier upcharges £12.50 Total £134.50 Customisations Paid modifiers # Modifier Qty Total 1 Extra cheese 10 £12.50 Customer notes \"No ice\" 5× Order breakdown # Date Time Channel Item Qty Total #40 13/11/26 14:30 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #40 13/11 £26.90 Online · 14:30 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #41 13/11/26 14:30 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #41 13/11 £26.90 Online · 14:30 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #42 13/11/26 14:30 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #42 13/11 £26.90 Online · 14:30 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #43 13/11/26 14:30 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #43 13/11 £26.90 Online · 14:30 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #44 13/11/26 14:30 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #44 13/11 £26.90 Online · 14:30 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80",
+    "attrs": [
+     "max=2026-11-13",
+     "value=2026-11-06",
+     "max=2026-11-13",
+     "value=2026-11-12",
+     "max=2026-11-13",
+     "value=2026-11-06",
+     "max=2026-11-13",
+     "value=2026-11-12"
+    ]
+   },
+   "reports|items": {
+    "text": "📅 Date range 📍 Event View report to 📋 Orders 📦 Items ⬇ Filter by 📅 Date range 📍 Event to Show 📋 Orders 📦 Items View report ⬇ Export CSV 5 orders · £134.50 Revenue breakdown Other £122.00 Modifier upcharges £12.50 Total £134.50 Customisations Paid modifiers # Modifier Qty Total 1 Extra cheese 10 £12.50 Customer notes \"No ice\" 5× Item breakdown # Date Time Channel Item Qty Total #40 13/11/26 14:30 Online Margherita 2 £21.50 #40 13/11/26 14:30 Online Coke 3 £5.40 #41 13/11/26 14:30 Online Margherita 2 £21.50 #41 13/11/26 14:30 Online Coke 3 £5.40 #42 13/11/26 14:30 Online Margherita 2 £21.50 #42 13/11/26 14:30 Online Coke 3 £5.40 #43 13/11/26 14:30 Online Margherita 2 £21.50 #43 13/11/26 14:30 Online Coke 3 £5.40 #44 13/11/26 14:30 Online Margherita 2 £21.50 #44 13/11/26 14:30 Online Coke 3 £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40",
+    "attrs": [
+     "max=2026-11-13",
+     "value=2026-11-06",
+     "max=2026-11-13",
+     "value=2026-11-12",
+     "max=2026-11-13",
+     "value=2026-11-06",
+     "max=2026-11-13",
+     "value=2026-11-12"
+    ]
+   },
+   "reports|csv": [
+    {
+     "text": "\"Order ID\",\"Date\",\"Event\",\"Time placed\",\"Collection time\",\"Customer name\",\"Order type\",\"Items\",\"Deals\",\"Modifiers\",\"Notes\",\"Total\"\n\"40\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"18:30\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"41\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"15:40\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"42\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"43\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"23:40\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"44\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"14:00\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"",
+     "name": "orders-2026-11-06-to-2026-11-12.csv"
+    },
+    {
+     "text": "\"Order ID\",\"Date\",\"Event\",\"Time placed\",\"Collection time\",\"Customer name\",\"Order type\",\"Item name\",\"Qty\",\"Unit price\",\"Modifiers\",\"Notes\",\"Item total\",\"Order total\"\n\"40\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"18:30\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"40\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"18:30\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"41\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"15:40\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"41\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"15:40\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"42\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"42\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"43\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"23:40\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"43\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"23:40\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"44\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"14:00\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"44\",\"13/11/2026\",\"The Green, Harnessville\",\"14:30\",\"14:00\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"",
+     "name": "items-2026-11-06-to-2026-11-12.csv"
+    }
+   ],
+   "schedule": "Events Event types Schedule 3 upcoming ✨ Import schedule photo, PDF or text + Add event You're managing your schedule manually · Change in Settings Confirmed FRI 13 NOV The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel SAT 14 NOV The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel WED 18 NOV The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel ▶ Past events (1)",
+   "ticket|stamp": "15:20|920",
+   "ticket|lines": [
+    "#40        COLLECT 18:30",
+    "Sam Harness                         07700 900123",
+    "2x Margherita                             £21.50",
+    "  + Extra cheese                          +£1.25",
+    "3x Coke                                    £5.40",
+    "  ! No ice",
+    "TOTAL                                     £26.90",
+    "PAYMENT                                     PAID",
+    "Pizza Kitchen",
+    "printed 15:20"
+   ],
+   "ticket|test": "@tda!EB#TEST      COLLECT 15:20 | a!EBTest ticket | a!EB------------------------------------------------ | a!EB1x Test ticket | a!EB------------------------------------------------ | a!EBTOTAL                                       0.00 | a!EBPizza Kitchen | a!EBprinted 15:20 | !EaBdV"
+  }
+ },
+ "late2330": {
+  "days": {
+   "today": "2026-10-09",
+   "yesterday": "2026-10-08",
+   "tomorrow": "2026-10-10",
+   "plus5": "2026-10-14",
+   "minus8": "2026-10-01"
+  },
+  "helpers": {
+   "ukDevice": {
+    "localTodayIso": "2026-10-09",
+    "nowMinsLondon": 1410,
+    "todayLondon": "2026-10-09",
+    "eventDateLabel": {
+     "yesterday|long": "Thursday 8th October",
+     "yesterday|compact": "Thu 8 Oct",
+     "today|long": "Today 9th October",
+     "today|compact": "Today",
+     "tomorrow|long": "Tomorrow 10th October",
+     "tomorrow|compact": "Tomorrow",
+     "plus5|long": "Wednesday 14th October",
+     "plus5|compact": "Wed 14 Oct"
+    },
+    "formatFriendlyDate": {
+     "yesterday": "Thursday 8th October",
+     "today": "Today - Friday 9th October",
+     "tomorrow": "Tomorrow - Saturday 10th October",
+     "plus5": "Wednesday 14th October"
+    },
+    "pickDefault": "tl",
+    "asap|yesterday": null,
+    "past|yesterday": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "asap|today": "23:40",
+    "past|today": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     false
+    ],
+    "asap|tomorrow": "14:30",
+    "past|tomorrow": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "calcReadyTime": "23:40",
+    "week": {
+     "today": "2026-10-09",
+     "default": "next",
+     "this": {
+      "which": "this",
+      "start": "2026-10-05",
+      "end": "2026-10-11",
+      "days": [
+       "2026-10-05",
+       "2026-10-06",
+       "2026-10-07",
+       "2026-10-08",
+       "2026-10-09",
+       "2026-10-10",
+       "2026-10-11"
+      ]
+     },
+     "next": {
+      "which": "next",
+      "start": "2026-10-12",
+      "end": "2026-10-18",
+      "days": [
+       "2026-10-12",
+       "2026-10-13",
+       "2026-10-14",
+       "2026-10-15",
+       "2026-10-16",
+       "2026-10-17",
+       "2026-10-18"
+      ]
+     },
+     "options": [
+      "2026-10-05..2026-10-11",
+      "2026-10-12..2026-10-18"
+     ]
+    },
+    "eventCaption": [
+     "on Thu 8 Oct",
+     "tonight",
+     "tomorrow",
+     "on Wed 14 Oct"
+    ],
+    "usage": {
+     "monthStart": "2026-09-30T23:00:24.609Z",
+     "reset": "2026-11-01",
+     "tz": "Europe/London"
+    },
+    "demoWindow": {
+     "date": "2026-10-09",
+     "start": "23:30",
+     "end": "23:59"
+    },
+    "seedWindowStart": "2025-10-09"
+   },
+   "utcServer": {
+    "localTodayIso": "2026-10-09",
+    "nowMinsLondon": 1410,
+    "todayLondon": "2026-10-09",
+    "eventDateLabel": {
+     "yesterday|long": "Thursday 8th October",
+     "yesterday|compact": "Thu 8 Oct",
+     "today|long": "Today 9th October",
+     "today|compact": "Today",
+     "tomorrow|long": "Tomorrow 10th October",
+     "tomorrow|compact": "Tomorrow",
+     "plus5|long": "Wednesday 14th October",
+     "plus5|compact": "Wed 14 Oct"
+    },
+    "formatFriendlyDate": {
+     "yesterday": "Thursday 8th October",
+     "today": "Today - Friday 9th October",
+     "tomorrow": "Tomorrow - Saturday 10th October",
+     "plus5": "Wednesday 14th October"
+    },
+    "pickDefault": "tl",
+    "asap|yesterday": null,
+    "past|yesterday": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "asap|today": "23:40",
+    "past|today": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     false
+    ],
+    "asap|tomorrow": "14:30",
+    "past|tomorrow": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "calcReadyTime": "22:40",
+    "week": {
+     "today": "2026-10-09",
+     "default": "next",
+     "this": {
+      "which": "this",
+      "start": "2026-10-05",
+      "end": "2026-10-11",
+      "days": [
+       "2026-10-05",
+       "2026-10-06",
+       "2026-10-07",
+       "2026-10-08",
+       "2026-10-09",
+       "2026-10-10",
+       "2026-10-11"
+      ]
+     },
+     "next": {
+      "which": "next",
+      "start": "2026-10-12",
+      "end": "2026-10-18",
+      "days": [
+       "2026-10-12",
+       "2026-10-13",
+       "2026-10-14",
+       "2026-10-15",
+       "2026-10-16",
+       "2026-10-17",
+       "2026-10-18"
+      ]
+     },
+     "options": [
+      "2026-10-05..2026-10-11",
+      "2026-10-12..2026-10-18"
+     ]
+    },
+    "eventCaption": [
+     "on Thu 8 Oct",
+     "tonight",
+     "tomorrow",
+     "on Wed 14 Oct"
+    ],
+    "usage": {
+     "monthStart": "2026-09-30T23:00:24.609Z",
+     "reset": "2026-11-01",
+     "tz": "Europe/London"
+    },
+    "demoWindow": {
+     "date": "2026-10-09",
+     "start": "23:30",
+     "end": "23:59"
+    },
+    "seedWindowStart": "2025-10-09"
+   }
+  },
+  "slots": {
+   "yesterday": "17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10 grace, 21:20 grace, 21:30 grace",
+   "today": "12:00 past full, 12:10 past full, 12:20 past full, 12:30 past full, 12:40 past full, 12:50 past full, 13:00 past full, 13:10 past full, 13:20 past full, 13:30 past full, 13:40 past full, 13:50 past full, 14:00 past full, 14:10 past full, 14:20 past full, 14:30 past full, 14:40 past full, 14:50 past full, 15:00 past full, 15:10 past full, 15:20 past full, 15:30 past full, 15:40 past full, 15:50 past full, 16:00 past full, 16:10 past full, 16:20 past full, 16:30 past full, 16:40 past full, 16:50 past full, 17:00 past full, 17:10 past full, 17:20 past full, 17:30 past full, 17:40 past full, 17:50 past full, 18:00 past full, 18:10 past full, 18:20 past full, 18:30 past full, 18:40 past full, 18:50 past full, 19:00 past full, 19:10 past full, 19:20 past full, 19:30 past full, 19:40 past full, 19:50 past full, 20:00 past full, 20:10 past full, 20:20 past full, 20:30 past full, 20:40 past full, 20:50 past full, 21:00 past full, 21:10 past full, 21:20 past full, 21:30 past full, 21:40 past full, 21:50 past full, 22:00 past full, 22:10 past full, 22:20 past full, 22:30 past full, 22:40 past full, 22:50 past full, 23:00 past full, 23:10 past full, 23:20 past full, 23:30 soon full, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "tomorrow": "11:30, 11:40, 11:50, 12:00, 12:10, 12:20, 12:30, 12:40, 12:50, 13:00, 13:10, 13:20, 13:30, 13:40, 13:50, 14:00, 14:10 grace, 14:20 grace, 14:30 grace",
+   "noDate": "12:00 past full, 12:10 past full, 12:20 past full, 12:30 past full, 12:40 past full, 12:50 past full, 13:00 past full, 13:10 past full, 13:20 past full, 13:30 past full, 13:40 past full, 13:50 past full, 14:00 past full, 14:10 past full, 14:20 past full, 14:30 past full, 14:40 past full, 14:50 past full, 15:00 past full, 15:10 past full, 15:20 past full, 15:30 past full, 15:40 past full, 15:50 past full, 16:00 past full, 16:10 past full, 16:20 past full, 16:30 past full, 16:40 past full, 16:50 past full, 17:00 past full, 17:10 past full, 17:20 past full, 17:30 past full, 17:40 past full, 17:50 past full, 18:00 past full, 18:10 past full, 18:20 past full, 18:30 past full, 18:40 past full, 18:50 past full, 19:00 past full, 19:10 past full, 19:20 past full, 19:30 past full, 19:40 past full, 19:50 past full, 20:00 past full, 20:10 past full, 20:20 past full, 20:30 past full, 20:40 past full, 20:50 past full, 21:00 past full, 21:10 past full, 21:20 past full, 21:30 past full, 21:40 past full, 21:50 past full, 22:00 past full, 22:10 past full, 22:20 past full, 22:30 past full, 22:40 past full, 22:50 past full, 23:00 past full, 23:10 past full, 23:20 past full, 23:30 soon full, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "todayById": "12:00 past full, 12:10 past full, 12:20 past full, 12:30 past full, 12:40 past full, 12:50 past full, 13:00 past full, 13:10 past full, 13:20 past full, 13:30 past full, 13:40 past full, 13:50 past full, 14:00 past full, 14:10 past full, 14:20 past full, 14:30 past full, 14:40 past full, 14:50 past full, 15:00 past full, 15:10 past full, 15:20 past full, 15:30 past full, 15:40 past full, 15:50 past full, 16:00 past full, 16:10 past full, 16:20 past full, 16:30 past full, 16:40 past full, 16:50 past full, 17:00 past full, 17:10 past full, 17:20 past full, 17:30 past full, 17:40 past full, 17:50 past full, 18:00 past full, 18:10 past full, 18:20 past full, 18:30 past full, 18:40 past full, 18:50 past full, 19:00 past full, 19:10 past full, 19:20 past full, 19:30 past full, 19:40 past full, 19:50 past full, 20:00 past full, 20:10 past full, 20:20 past full, 20:30 past full, 20:40 past full, 20:50 past full, 21:00 past full, 21:10 past full, 21:20 past full, 21:30 past full, 21:40 past full, 21:50 past full, 22:00 past full, 22:10 past full, 22:20 past full, 22:30 past full, 22:40 past full, 22:50 past full, 23:00 past full, 23:10 past full, 23:20 past full, 23:30 soon full, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "engine|today": "17:00:no:past 17:10:no:past 17:20:no:past 17:30:no:past 17:40:no:past",
+   "engine|tomorrow": "17:00:no 17:10:no 17:20:ok 17:30:ok 17:40:ok"
+  },
+  "orders": {
+   "auto|yesterday|hours2|1020": false,
+   "auto|yesterday|hours2|1425": false,
+   "auto|yesterday|cutoff16|1020": false,
+   "auto|yesterday|cutoff16|1425": false,
+   "auto|yesterday|cutoff2330|1020": false,
+   "auto|yesterday|cutoff2330|1425": false,
+   "auto|today|hours2|1020": false,
+   "auto|today|hours2|1425": false,
+   "auto|today|cutoff16|1020": false,
+   "auto|today|cutoff16|1425": false,
+   "auto|today|cutoff2330|1020": false,
+   "auto|today|cutoff2330|1425": false,
+   "auto|tomorrow|hours2|1020": true,
+   "auto|tomorrow|hours2|1425": true,
+   "auto|tomorrow|cutoff16|1020": true,
+   "auto|tomorrow|cutoff16|1425": true,
+   "auto|tomorrow|cutoff2330|1020": true,
+   "auto|tomorrow|cutoff2330|1425": true,
+   "place|today|asap": "23:40|true",
+   "place|today|17:00": "23:40|true",
+   "place|today|21:30": "23:40|true",
+   "place|tomorrow|asap": "12:10|true",
+   "place|tomorrow|17:00": "17:00|true",
+   "place|tomorrow|21:30": "21:30|true"
+  },
+  "edge": {
+   "auto-event-scheduler": {
+    "body": {
+     "opened": 4,
+     "closed": 3
+    },
+    "writes": [
+     "truck_events:update:opened_at+status:conf-t-1500,conf-t-1530,conf-t-2300,conf-t-early",
+     "truck_events:update:closed_at+status:open-t-2320,open-t-ended,open-y"
+    ]
+   },
+   "heartbeat-monitor": {
+    "body": {
+     "paused": 5
+    },
+    "writes": [
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-y",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-ended",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-2320",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-manual",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-m"
+    ]
+   }
+  },
+  "events": [
+   "2026-10-10|10/10/2026|Tomorrow · Saturday 10th October|11:30:00-14:00:00",
+   "2026-10-09|09/10/2026|Today · Friday 9th October|17:00:00-21:00:00",
+   "2026-10-14|14/10/2026|Wednesday 14th October|17:00:00-20:00:00"
+  ],
+  "prompts": {
+   "reply": "Hey there 👋 See you soon — Pizza Kitchen 🍕",
+   "whatsappPrompt": "You are the owner of Pizza Kitchen 🍕, a food truck. Reply warmly to this WhatsApp message.\n\nDATE REFERENCE (use these exact mappings — do not guess):\nToday = 2026-10-09 (9 October)\nTomorrow = 2026-10-10 (10 October)\nSunday = 2026-10-11 (11 October)\nMonday = 2026-10-12 (12 October)\nTuesday = 2026-10-13 (13 October)\nWednesday = 2026-10-14 (14 October)\nThursday = 2026-10-15 (15 October)\n\nUpcoming confirmed events:\n- Friday 9 October (TODAY): The Green, Harnessville 17:00–21:00 [CONFIRMED]\n- Saturday 10 October (TOMORROW): The Square, Harnessville 11:30–14:00 [CONFIRMED]\n- Wednesday 14 October: Mill Lane, Harnessville 17:00–20:00 [CONFIRMED]\n\nCustomer message: \"where are you this weekend\"\n\nInstructions:\n- Open with exactly: \"Hey there 👋\"\n- Do NOT use any food emoji in the greeting or body. The ONLY food emoji is 🍕, used once at the very end in the sign-off.\n- Match the customer's date reference (tomorrow, Friday, tonight, this week etc) using the DATE REFERENCE above\n- If they ask about a day by name (e.g. \"Friday\"), look up the exact date from DATE REFERENCE\n- If events exist for that date, give venue name, town and times in a friendly tone\n- If asked about a location (village/town), check if any event's town field matches\n- If no event that specific day but upcoming events at that location within 7 days, mention the next one: \"Nothing tomorrow but we're in Wickhambrook on Friday!\"\n- If no event that specific day but other upcoming events exist, mention the next one\n- Always end with the order link: https://x\n- Keep to 2-3 sentences, warm and casual — like the owner typed it\n- Sign off as: Pizza Kitchen 🍕\n- Never mention Village Foodie or any platform name. Never make up events.",
+   "schedulePrompt": "CRITICAL CONTEXT: Today is Friday, 9 October 2026. Current year is 2026.\n\nYou are extracting a food truck's schedule from messy, unstructured text or an image. Your job has two steps:\n1. EXTRACT what you can see\n2. ENRICH missing fields using your knowledge of UK venues and locations\n\n14-DAY DATE REFERENCE — use this exact table when converting day names to dates. Do not calculate independently:\nFriday = 09/10/2026\nSaturday = 10/10/2026\nSunday = 11/10/2026\nMonday = 12/10/2026\nTuesday = 13/10/2026\nWednesday = 14/10/2026\nThursday = 15/10/2026\nFriday = 16/10/2026\nSaturday = 17/10/2026\nSunday = 18/10/2026\nMonday = 19/10/2026\nTuesday = 20/10/2026\nWednesday = 21/10/2026\nThursday = 22/10/2026\n\nSTEP 1 — EXTRACTION RULES:\n"
+  },
+  "emails": {
+   "cancellations": [
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Friday 9 October has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    },
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Saturday 10 October has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    },
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Wednesday 14 October has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    }
+   ],
+   "confirmation": "Order #40 confirmed — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nCollection time: 18:30. See you at the hatch!\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "adjusted": "Order #40 confirmed — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nCollection time updated to 18:30 (was 18:00).\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "ready": "Order #40 is ready to collect — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nYour order is ready for collection — come and collect. Pay at the truck.\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "newOrder": "New order #40 from Sam for 18:30 at The Green, Harnessville. Total £19.00."
+  },
+  "screens": {
+   "card|paid|kds=false": "#40 · 18:30 300m late Sam Harness ✉ £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|paid|kds=true": "#40 · 18:30 300m late Sam Harness ✉ £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|hatch|kds=false": "#41 · 15:40 470m late Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|hatch|kds=true": "#41 · 15:40 470m late Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|pending|kds=false": "#42 · 23:30 now Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject",
+   "card|pending|kds=true": "#42 · 23:30 now Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject",
+   "card|ready|kds=false": "#43 · 23:40 in 10m Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card",
+   "card|ready|kds=true": "#43 · 23:40 in 10m Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card",
+   "card|done|kds=false": "#44 · 14:00 570m late Sam Harness ✉ Collected £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ↩ Undo",
+   "card|done|kds=true": "#44 · 14:00 570m late Sam Harness ✉ Collected £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ↩ Undo",
+   "dayLoadStrip": "Kitchen capacity 23:40 —",
+   "kds": "← Dashboard Pizza Kitchen List Grid Full Cook ✓ Ready step 💷 Payment & handover 🔔 Screen off Screen settings ▾ Manage event ▾ Sound settings 🌙 Screen off 🔔 👆 Keep screen on To make 8× Margherita 12× Coke 📍 The Green — Harnessville · 12:00–23:59 📅 Today 9th October ● Live Manage event ▾ #42 £26.90 Sam Harness ✉ 23:30 · now Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✓ Confirm ✗ Reject #41 £26.90 Sam Harness ✉ 15:40 470m late Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice 💷 Cash 💳 Card #40 £26.90 PAID Sam Harness ✉ 18:30 300m late Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice Collected #43 Ready £26.90 Sam Harness ✉ 23:40 · in 10m £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice 💷 Cash 💳 Card Done today · 1 #44 · Sam Harness ✓ paid",
+   "dash|orders": "Pizza Kitchen The Green 1 🔔 Screen off ? Orders (1) + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 12:00–23:59 📅 Today 9th October ● Live Manage event ▾ 👆 Keep screen on 1 New 3 Confirmed 1 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 23:40 New — action needed #42 · 23:30 now Sam Harness ✉ £26.90 Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject Confirmed #41 · 15:40 470m late Sam Harness ✉ £26.90 Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 💷 Cash 💳 Card #40 · 18:30 300m late Sam Harness ✉ £26.90 PAID Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel Collected #43 · 23:40 in 10m Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card ▶ Completed & cancelled (1) 1 done #44 Collected 🕐 14:00 Sam Harness · 2× Margherita, 3× Coke ↩ Undo PAID £26.90 Kitchen capacity 23:40 — Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "dash|empty": "Pizza Kitchen The Green 🔔 Screen off ? Orders + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 12:00–23:59 📅 Today 9th October ● Live Manage event ▾ 👆 Keep screen on 0 New 0 Confirmed 0 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 23:40 🍕 No orders yet today Updated 23:30:00 Kitchen capacity 23:40 — Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "dash|tomorrowSelected": "Pizza Kitchen The Green 🔔 Screen off ? Orders + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 11:30–14:00 📅 Tomorrow 10th October Not started Manage event ▾ 👆 Keep screen on 0 New 0 Confirmed 0 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 15:00 15:30 16:00 18:30 23:40 🍕 All orders complete! Updated 23:30:00 Kitchen capacity 15:00 — 15:30 — 16:00 — 18:30 — 23:40 — The Green — Harnessville Tomorrow · 11:30–14:00 Change Start Event ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Stock counts aren’t loaded on this device. You can still take orders — check what you have. Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 15:00 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 The Green — Harnessville Tomorrow · 11:30–14:00 Change Start Event ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Stock counts aren’t loaded on this device. You can still take orders — check what you have. Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "add|today": "Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP — 23:40 23:40 🟢 ⚡ ~5 mins · around 23:35 + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "add|tomorrow": "The Green — Harnessville Tomorrow · 11:30–14:00 Change ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP — 15:00 15:00 🟢 15:20 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 ⚡ Ready around 11:30 Sat 10 Oct + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 The Green — Harnessville Tomorrow · 11:30–14:00 Change ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "add|yesterday": "The Green — Harnessville Thu 8 Oct · 17:00–21:00 Change ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event. Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP ⚡ ~5 mins · around 23:35 + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 The Green — Harnessville Thu 8 Oct · 17:00–21:00 Change ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event. Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "order|today": "Pizza Kitchen ← Back Order from Pizza Kitchen Fri 9 Oct 12:00 – 23:59 Live The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 23:40 Choose time 23:40 ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|tomorrow": "Pizza Kitchen ← Back Order from Pizza Kitchen Sat 10 Oct 12:00 – 23:59 The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 15:00 Choose time 15:00 15:20 15:30 16:00 18:30 23:40 ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|yesterday": "Pizza Kitchen ← Back Order from Pizza Kitchen Thu 8 Oct 12:00 – 23:59 The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 12:00 Choose time ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|submitted": "Pizza Kitchen ✓ Order received! Pizza Kitchen will confirm your order shortly. Order #40 Preferred collection: 18:30 Pizza Kitchen will confirm your collection time when they accept your order. 2× Margherita £19.00 Total £19.00 Payment Pay at the truck Back to Pizza Kitchen",
+   "order|confirm": "Pizza Kitchen ✓ Order confirmed! Thanks! We've received your order and it'll be ready soon. Order #40 Collection time: 18:30 See you at the hatch! 2× Margherita £19.00 + Extra cheese +£2.50 Total £21.50 3× Coke £5.40 📝 No ice Total £26.90 Payment Paid by card Confirmation sent to sam@example.test Back to Pizza Kitchen",
+   "receipt|paid": "Pizza Kitchen Order #40 Pickup 18:30 · The Green Payment Paid by card Status confirmed 2× Margherita £21.50 3× Coke £5.40 Total £26.90 The cancellation window has passed.",
+   "receipt|pending": "Pizza Kitchen Order #42 Payment Pay at the truck Status pending 2× Margherita £21.50 3× Coke £5.40 Total £26.90 Cancel order Cancellations accepted up to 30 minutes before pickup",
+   "reports|orders": {
+    "text": "📅 Date range 📍 Event View report to 📋 Orders 📦 Items ⬇ Filter by 📅 Date range 📍 Event to Show 📋 Orders 📦 Items View report ⬇ Export CSV 5 orders · £134.50 Revenue breakdown Other £122.00 Modifier upcharges £12.50 Total £134.50 Customisations Paid modifiers # Modifier Qty Total 1 Extra cheese 10 £12.50 Customer notes \"No ice\" 5× Order breakdown # Date Time Channel Item Qty Total #40 09/10/26 22:40 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #40 09/10 £26.90 Online · 22:40 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #41 09/10/26 22:40 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #41 09/10 £26.90 Online · 22:40 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #42 09/10/26 22:40 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #42 09/10 £26.90 Online · 22:40 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #43 09/10/26 22:40 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #43 09/10 £26.90 Online · 22:40 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #44 09/10/26 22:40 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #44 09/10 £26.90 Online · 22:40 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80",
+    "attrs": [
+     "max=2026-10-09",
+     "value=2026-10-02",
+     "max=2026-10-09",
+     "value=2026-10-08",
+     "max=2026-10-09",
+     "value=2026-10-02",
+     "max=2026-10-09",
+     "value=2026-10-08"
+    ]
+   },
+   "reports|items": {
+    "text": "📅 Date range 📍 Event View report to 📋 Orders 📦 Items ⬇ Filter by 📅 Date range 📍 Event to Show 📋 Orders 📦 Items View report ⬇ Export CSV 5 orders · £134.50 Revenue breakdown Other £122.00 Modifier upcharges £12.50 Total £134.50 Customisations Paid modifiers # Modifier Qty Total 1 Extra cheese 10 £12.50 Customer notes \"No ice\" 5× Item breakdown # Date Time Channel Item Qty Total #40 09/10/26 22:40 Online Margherita 2 £21.50 #40 09/10/26 22:40 Online Coke 3 £5.40 #41 09/10/26 22:40 Online Margherita 2 £21.50 #41 09/10/26 22:40 Online Coke 3 £5.40 #42 09/10/26 22:40 Online Margherita 2 £21.50 #42 09/10/26 22:40 Online Coke 3 £5.40 #43 09/10/26 22:40 Online Margherita 2 £21.50 #43 09/10/26 22:40 Online Coke 3 £5.40 #44 09/10/26 22:40 Online Margherita 2 £21.50 #44 09/10/26 22:40 Online Coke 3 £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40",
+    "attrs": [
+     "max=2026-10-09",
+     "value=2026-10-02",
+     "max=2026-10-09",
+     "value=2026-10-08",
+     "max=2026-10-09",
+     "value=2026-10-02",
+     "max=2026-10-09",
+     "value=2026-10-08"
+    ]
+   },
+   "reports|csv": [
+    {
+     "text": "\"Order ID\",\"Date\",\"Event\",\"Time placed\",\"Collection time\",\"Customer name\",\"Order type\",\"Items\",\"Deals\",\"Modifiers\",\"Notes\",\"Total\"\n\"40\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"18:30\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"41\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"15:40\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"42\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"43\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"23:40\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"44\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"14:00\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"",
+     "name": "orders-2026-10-02-to-2026-10-08.csv"
+    },
+    {
+     "text": "\"Order ID\",\"Date\",\"Event\",\"Time placed\",\"Collection time\",\"Customer name\",\"Order type\",\"Item name\",\"Qty\",\"Unit price\",\"Modifiers\",\"Notes\",\"Item total\",\"Order total\"\n\"40\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"18:30\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"40\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"18:30\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"41\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"15:40\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"41\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"15:40\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"42\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"42\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"43\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"23:40\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"43\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"23:40\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"44\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"14:00\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"44\",\"09/10/2026\",\"The Green, Harnessville\",\"22:40\",\"14:00\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"",
+     "name": "items-2026-10-02-to-2026-10-08.csv"
+    }
+   ],
+   "schedule": "Events Event types Schedule 2 upcoming ✨ Import schedule photo, PDF or text + Add event You're managing your schedule manually · Change in Settings Confirmed SAT 10 OCT The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel WED 14 OCT The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel ▶ Past events (2)",
+   "ticket|stamp": "23:30|1410",
+   "ticket|lines": [
+    "#40        COLLECT 18:30",
+    "Sam Harness                         07700 900123",
+    "2x Margherita                             £21.50",
+    "  + Extra cheese                          +£1.25",
+    "3x Coke                                    £5.40",
+    "  ! No ice",
+    "TOTAL                                     £26.90",
+    "PAYMENT                                     PAID",
+    "Pizza Kitchen",
+    "printed 23:30"
+   ],
+   "ticket|test": "@tda!EB#TEST      COLLECT 23:30 | a!EBTest ticket | a!EB------------------------------------------------ | a!EB1x Test ticket | a!EB------------------------------------------------ | a!EBTOTAL                                       0.00 | a!EBPizza Kitchen | a!EBprinted 23:30 | !EaBdV"
+  }
+ },
+ "after0030": {
+  "days": {
+   "today": "2026-10-10",
+   "yesterday": "2026-10-09",
+   "tomorrow": "2026-10-11",
+   "plus5": "2026-10-15",
+   "minus8": "2026-10-02"
+  },
+  "helpers": {
+   "ukDevice": {
+    "localTodayIso": "2026-10-10",
+    "nowMinsLondon": 30,
+    "todayLondon": "2026-10-10",
+    "eventDateLabel": {
+     "yesterday|long": "Friday 9th October",
+     "yesterday|compact": "Fri 9 Oct",
+     "today|long": "Today 10th October",
+     "today|compact": "Today",
+     "tomorrow|long": "Tomorrow 11th October",
+     "tomorrow|compact": "Tomorrow",
+     "plus5|long": "Thursday 15th October",
+     "plus5|compact": "Thu 15 Oct"
+    },
+    "formatFriendlyDate": {
+     "yesterday": "Friday 9th October",
+     "today": "Today - Saturday 10th October",
+     "tomorrow": "Tomorrow - Sunday 11th October",
+     "plus5": "Thursday 15th October"
+    },
+    "pickDefault": "t",
+    "asap|yesterday": null,
+    "past|yesterday": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "asap|today": "14:30",
+    "past|today": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "asap|tomorrow": "14:30",
+    "past|tomorrow": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "calcReadyTime": "00:40",
+    "week": {
+     "today": "2026-10-10",
+     "default": "next",
+     "this": {
+      "which": "this",
+      "start": "2026-10-05",
+      "end": "2026-10-11",
+      "days": [
+       "2026-10-05",
+       "2026-10-06",
+       "2026-10-07",
+       "2026-10-08",
+       "2026-10-09",
+       "2026-10-10",
+       "2026-10-11"
+      ]
+     },
+     "next": {
+      "which": "next",
+      "start": "2026-10-12",
+      "end": "2026-10-18",
+      "days": [
+       "2026-10-12",
+       "2026-10-13",
+       "2026-10-14",
+       "2026-10-15",
+       "2026-10-16",
+       "2026-10-17",
+       "2026-10-18"
+      ]
+     },
+     "options": [
+      "2026-10-05..2026-10-11",
+      "2026-10-12..2026-10-18"
+     ]
+    },
+    "eventCaption": [
+     "on Fri 9 Oct",
+     "tonight",
+     "tomorrow",
+     "on Thu 15 Oct"
+    ],
+    "usage": {
+     "monthStart": "2026-09-30T23:00:24.609Z",
+     "reset": "2026-11-01",
+     "tz": "Europe/London"
+    },
+    "demoWindow": {
+     "date": "2026-10-10",
+     "start": "00:30",
+     "end": "04:30"
+    },
+    "seedWindowStart": "2025-10-09"
+   },
+   "utcServer": {
+    "localTodayIso": "2026-10-10",
+    "nowMinsLondon": 30,
+    "todayLondon": "2026-10-10",
+    "eventDateLabel": {
+     "yesterday|long": "Friday 9th October",
+     "yesterday|compact": "Fri 9 Oct",
+     "today|long": "Today 10th October",
+     "today|compact": "Today",
+     "tomorrow|long": "Tomorrow 11th October",
+     "tomorrow|compact": "Tomorrow",
+     "plus5|long": "Thursday 15th October",
+     "plus5|compact": "Thu 15 Oct"
+    },
+    "formatFriendlyDate": {
+     "yesterday": "Today - Friday 9th October",
+     "today": "Tomorrow - Saturday 10th October",
+     "tomorrow": "Sunday 11th October",
+     "plus5": "Thursday 15th October"
+    },
+    "pickDefault": "t",
+    "asap|yesterday": null,
+    "past|yesterday": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "asap|today": "14:30",
+    "past|today": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "asap|tomorrow": "14:30",
+    "past|tomorrow": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "calcReadyTime": "23:40",
+    "week": {
+     "today": "2026-10-10",
+     "default": "next",
+     "this": {
+      "which": "this",
+      "start": "2026-10-05",
+      "end": "2026-10-11",
+      "days": [
+       "2026-10-05",
+       "2026-10-06",
+       "2026-10-07",
+       "2026-10-08",
+       "2026-10-09",
+       "2026-10-10",
+       "2026-10-11"
+      ]
+     },
+     "next": {
+      "which": "next",
+      "start": "2026-10-12",
+      "end": "2026-10-18",
+      "days": [
+       "2026-10-12",
+       "2026-10-13",
+       "2026-10-14",
+       "2026-10-15",
+       "2026-10-16",
+       "2026-10-17",
+       "2026-10-18"
+      ]
+     },
+     "options": [
+      "2026-10-05..2026-10-11",
+      "2026-10-12..2026-10-18"
+     ]
+    },
+    "eventCaption": [
+     "on Fri 9 Oct",
+     "tonight",
+     "tomorrow",
+     "on Thu 15 Oct"
+    ],
+    "usage": {
+     "monthStart": "2026-09-30T23:00:24.609Z",
+     "reset": "2026-11-01",
+     "tz": "Europe/London"
+    },
+    "demoWindow": {
+     "date": "2026-10-10",
+     "start": "00:30",
+     "end": "04:30"
+    },
+    "seedWindowStart": "2025-10-09"
+   }
+  },
+  "slots": {
+   "yesterday": "17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10 grace, 21:20 grace, 21:30 grace",
+   "today": "12:00, 12:10, 12:20, 12:30, 12:40, 12:50, 13:00, 13:10, 13:20, 13:30, 13:40, 13:50, 14:00, 14:10, 14:20, 14:30, 14:40, 14:50, 15:00, 15:10, 15:20, 15:30, 15:40, 15:50, 16:00, 16:10, 16:20, 16:30, 16:40, 16:50, 17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10, 21:20, 21:30, 21:40, 21:50, 22:00, 22:10, 22:20, 22:30, 22:40, 22:50, 23:00, 23:10, 23:20, 23:30, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "tomorrow": "11:30, 11:40, 11:50, 12:00, 12:10, 12:20, 12:30, 12:40, 12:50, 13:00, 13:10, 13:20, 13:30, 13:40, 13:50, 14:00, 14:10 grace, 14:20 grace, 14:30 grace",
+   "noDate": "17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10 grace, 21:20 grace, 21:30 grace",
+   "todayById": "12:00, 12:10, 12:20, 12:30, 12:40, 12:50, 13:00, 13:10, 13:20, 13:30, 13:40, 13:50, 14:00, 14:10, 14:20, 14:30, 14:40, 14:50, 15:00, 15:10, 15:20, 15:30, 15:40, 15:50, 16:00, 16:10, 16:20, 16:30, 16:40, 16:50, 17:00, 17:10, 17:20, 17:30, 17:40, 17:50, 18:00, 18:10, 18:20, 18:30, 18:40, 18:50, 19:00, 19:10, 19:20, 19:30, 19:40, 19:50, 20:00, 20:10, 20:20, 20:30, 20:40, 20:50, 21:00, 21:10, 21:20, 21:30, 21:40, 21:50, 22:00, 22:10, 22:20, 22:30, 22:40, 22:50, 23:00, 23:10, 23:20, 23:30, 23:40, 23:50, 24:00 grace, 24:10 grace, 24:20 grace",
+   "engine|today": "17:00:no 17:10:no 17:20:ok 17:30:ok 17:40:ok",
+   "engine|tomorrow": "17:00:no 17:10:no 17:20:ok 17:30:ok 17:40:ok"
+  },
+  "orders": {
+   "auto|yesterday|hours2|1020": false,
+   "auto|yesterday|hours2|1425": false,
+   "auto|yesterday|cutoff16|1020": false,
+   "auto|yesterday|cutoff16|1425": false,
+   "auto|yesterday|cutoff2330|1020": false,
+   "auto|yesterday|cutoff2330|1425": false,
+   "auto|today|hours2|1020": true,
+   "auto|today|hours2|1425": true,
+   "auto|today|cutoff16|1020": true,
+   "auto|today|cutoff16|1425": true,
+   "auto|today|cutoff2330|1020": true,
+   "auto|today|cutoff2330|1425": true,
+   "auto|tomorrow|hours2|1020": true,
+   "auto|tomorrow|hours2|1425": true,
+   "auto|tomorrow|cutoff16|1020": true,
+   "auto|tomorrow|cutoff16|1425": true,
+   "auto|tomorrow|cutoff2330|1020": true,
+   "auto|tomorrow|cutoff2330|1425": true,
+   "place|today|asap": "12:10|true",
+   "place|today|17:00": "17:00|true",
+   "place|today|21:30": "21:30|true",
+   "place|tomorrow|asap": "12:10|true",
+   "place|tomorrow|17:00": "17:00|true",
+   "place|tomorrow|21:30": "21:30|true"
+  },
+  "edge": {
+   "auto-event-scheduler": {
+    "body": {
+     "opened": 0,
+     "closed": 1
+    },
+    "writes": [
+     "truck_events:update:closed_at+status:open-y"
+    ]
+   },
+   "heartbeat-monitor": {
+    "body": {
+     "paused": 5
+    },
+    "writes": [
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-y",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-ended",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-2320",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-t-manual",
+     "truck_events:update:last_offline_pause_at+online_paused_until:open-m"
+    ]
+   }
+  },
+  "events": [
+   "2026-10-11|11/10/2026|Sunday 11th October|11:30:00-14:00:00",
+   "2026-10-10|10/10/2026|Tomorrow · Saturday 10th October|17:00:00-21:00:00",
+   "2026-10-15|15/10/2026|Thursday 15th October|17:00:00-20:00:00"
+  ],
+  "prompts": {
+   "reply": "Hey there 👋 See you soon — Pizza Kitchen 🍕",
+   "whatsappPrompt": "You are the owner of Pizza Kitchen 🍕, a food truck. Reply warmly to this WhatsApp message.\n\nDATE REFERENCE (use these exact mappings — do not guess):\nToday = 2026-10-09 (9 October)\nTomorrow = 2026-10-10 (10 October)\nSunday = 2026-10-11 (11 October)\nMonday = 2026-10-12 (12 October)\nTuesday = 2026-10-13 (13 October)\nWednesday = 2026-10-14 (14 October)\nThursday = 2026-10-15 (15 October)\n\nUpcoming confirmed events:\n- Saturday 10 October (TOMORROW): The Green, Harnessville 17:00–21:00 [CONFIRMED]\n- Sunday 11 October (IN 2 DAYS): The Square, Harnessville 11:30–14:00 [CONFIRMED]\n- Thursday 15 October: Mill Lane, Harnessville 17:00–20:00 [CONFIRMED]\n\nCustomer message: \"where are you this weekend\"\n\nInstructions:\n- Open with exactly: \"Hey there 👋\"\n- Do NOT use any food emoji in the greeting or body. The ONLY food emoji is 🍕, used once at the very end in the sign-off.\n- Match the customer's date reference (tomorrow, Friday, tonight, this week etc) using the DATE REFERENCE above\n- If they ask about a day by name (e.g. \"Friday\"), look up the exact date from DATE REFERENCE\n- If events exist for that date, give venue name, town and times in a friendly tone\n- If asked about a location (village/town), check if any event's town field matches\n- If no event that specific day but upcoming events at that location within 7 days, mention the next one: \"Nothing tomorrow but we're in Wickhambrook on Friday!\"\n- If no event that specific day but other upcoming events exist, mention the next one\n- Always end with the order link: https://x\n- Keep to 2-3 sentences, warm and casual — like the owner typed it\n- Sign off as: Pizza Kitchen 🍕\n- Never mention Village Foodie or any platform name. Never make up events.",
+   "schedulePrompt": "CRITICAL CONTEXT: Today is Friday, 9 October 2026. Current year is 2026.\n\nYou are extracting a food truck's schedule from messy, unstructured text or an image. Your job has two steps:\n1. EXTRACT what you can see\n2. ENRICH missing fields using your knowledge of UK venues and locations\n\n14-DAY DATE REFERENCE — use this exact table when converting day names to dates. Do not calculate independently:\nFriday = 09/10/2026\nSaturday = 10/10/2026\nSunday = 11/10/2026\nMonday = 12/10/2026\nTuesday = 13/10/2026\nWednesday = 14/10/2026\nThursday = 15/10/2026\nFriday = 16/10/2026\nSaturday = 17/10/2026\nSunday = 18/10/2026\nMonday = 19/10/2026\nTuesday = 20/10/2026\nWednesday = 21/10/2026\nThursday = 22/10/2026\n\nSTEP 1 — EXTRACTION RULES:\n"
+  },
+  "emails": {
+   "cancellations": [
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Saturday 10 October has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    },
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Sunday 11 October has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    },
+    {
+     "subject": "Pizza Kitchen at The Green, Harnessville — cancelled",
+     "text": "Hi Sam, unfortunately Pizza Kitchen's event at The Green, Harnessville on Thursday 15 October has been cancelled. Your order #41 has been cancelled. Weather We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com"
+    }
+   ],
+   "confirmation": "Order #40 confirmed — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nCollection time: 18:30. See you at the hatch!\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "adjusted": "Order #40 confirmed — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nCollection time updated to 18:30 (was 18:00).\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "ready": "Order #40 is ready to collect — Pizza Kitchen\n2x Margherita — £19.00\nTotal: £19.00\nYour order is ready for collection — come and collect. Pay at the truck.\nPay at the truck on collection.\n📍 The Green, Harnessville\nPowered by HatchGrab — hatchgrab.com",
+   "newOrder": "New order #40 from Sam for 18:30 at The Green, Harnessville. Total £19.00."
+  },
+  "screens": {
+   "card|paid|kds=false": "#40 · 18:30 in 18h Sam Harness ✉ £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|paid|kds=true": "#40 · 18:30 in 18h Sam Harness ✉ £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|hatch|kds=false": "#41 · 15:40 in 15h Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|hatch|kds=true": "#41 · 15:40 in 15h Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 🍕 Ready",
+   "card|pending|kds=false": "#42 · 12:00 in 12h Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject",
+   "card|pending|kds=true": "#42 · 12:00 in 12h Sam Harness ✉ £26.90 Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject",
+   "card|ready|kds=false": "#43 · 23:40 in 23h Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card",
+   "card|ready|kds=true": "#43 · 23:40 in 23h Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card",
+   "card|done|kds=false": "#44 · 14:00 in 14h Sam Harness ✉ Collected £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ↩ Undo",
+   "card|done|kds=true": "#44 · 14:00 in 14h Sam Harness ✉ Collected £26.90 PAID Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ↩ Undo",
+   "dayLoadStrip": "Kitchen capacity 15:00 — 15:30 — 16:00 — 18:30 — 23:40 —",
+   "kds": "← Dashboard Pizza Kitchen List Grid Full Cook ✓ Ready step 💷 Payment & handover 🔔 Screen off Screen settings ▾ Manage event ▾ Sound settings 🌙 Screen off 🔔 👆 Keep screen on To make 8× Margherita 12× Coke 📍 The Green — Harnessville · 12:00–23:59 📅 Today 10th October ● Live Manage event ▾ #42 £26.90 Sam Harness ✉ 12:00 · in 12h Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice ✓ Confirm ✗ Reject #41 £26.90 Sam Harness ✉ 15:40 · in 15h Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice 💷 Cash 💳 Card #40 £26.90 PAID Sam Harness ✉ 18:30 · in 18h Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice Collected #43 Ready £26.90 Sam Harness ✉ 23:40 · in 23h £10.00 paid, £16.90 due Other 2× Margherita £21.50 + Extra cheese +£1.25 3× Coke £5.40 📝 No ice 💷 Cash 💳 Card Done today · 1 #44 · Sam Harness ✓ paid",
+   "dash|orders": "Pizza Kitchen The Green 1 🔔 Screen off ? Orders (1) + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 12:00–23:59 📅 Today 10th October ● Live Manage event ▾ 👆 Keep screen on 1 New 3 Confirmed 1 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 15:00 15:30 16:00 18:30 23:40 New — action needed #42 · 12:00 in 12h Sam Harness ✉ £26.90 Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✓ Confirm ✗ Reject Confirmed #41 · 15:40 in 15h Sam Harness ✉ £26.90 Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel 💷 Cash 💳 Card #40 · 18:30 in 18h Sam Harness ✉ £26.90 PAID Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✏ Edit ✕ Cancel Collected #43 · 23:40 in 23h Sam Harness ✉ Ready £26.90 £10.00 paid, £16.90 due Pizzas 2× Margherita £21.50 + Extra cheese +£1.25 Drinks 3× Coke £5.40 📝 No ice ✕ Cancel 💷 Cash 💳 Card ▶ Completed & cancelled (1) 1 done #44 Collected 🕐 14:00 Sam Harness · 2× Margherita, 3× Coke ↩ Undo PAID £26.90 Kitchen capacity 15:00 — 15:30 — 16:00 — 18:30 — 23:40 — Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 15:00 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "dash|empty": "Pizza Kitchen The Green 🔔 Screen off ? Orders + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 12:00–23:59 📅 Today 10th October ● Live Manage event ▾ 👆 Keep screen on 0 New 0 Confirmed 0 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 15:00 15:30 16:00 18:30 23:40 🍕 No orders yet today Updated 00:30:00 Kitchen capacity 15:00 — 15:30 — 16:00 — 18:30 — 23:40 — Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 15:00 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "dash|tomorrowSelected": "Pizza Kitchen The Green 🔔 Screen off ? Orders + Add order Menu & Stock Settings Order link QR code Kitchen screen 📍 The Green — Harnessville · 11:30–14:00 📅 Tomorrow 11th October Not started Manage event ▾ 👆 Keep screen on 0 New 0 Confirmed 0 Done ⏱ Add extra wait +10 min +20 min +30 min 📋 Prep Kitchen capacity 15:00 15:30 16:00 18:30 23:40 🍕 All orders complete! Updated 00:30:00 Kitchen capacity 15:00 — 15:30 — 16:00 — 18:30 — 23:40 — The Green — Harnessville Sun 11 Oct · 11:30–14:00 Change Start Event ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Stock counts aren’t loaded on this device. You can still take orders — check what you have. Pizzas Drinks Margherita £9.50 🛒 Tap items to build order ⚡ ASAP 15:00 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 + Add email / phone / notes Place order 💷 Cash £0.00 💳 Card £0.00 The Green — Harnessville Sun 11 Oct · 11:30–14:00 Change Start Event ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Stock counts aren’t loaded on this device. You can still take orders — check what you have. Pizzas Drinks Margherita £9.50 + £0.00 0 items Review order →",
+   "add|today": "Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP — 15:00 15:00 🟢 15:20 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 ⚡ ~11.5 hrs · around 12:00 + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "add|tomorrow": "The Green — Harnessville Sun 11 Oct · 11:30–14:00 Change ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP — 15:00 15:00 🟢 15:20 🟢 15:30 🟢 16:00 🟢 18:30 🟢 23:40 🟢 ⚡ Ready around 11:30 Sun 11 Oct + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 The Green — Harnessville Sun 11 Oct · 11:30–14:00 Change ⚠️ Tomorrow event selected. Orders will appear on the order screen when the event opens. Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "add|yesterday": "The Green — Harnessville Today · 17:00–21:00 Change ℹ️ Today's event — not yet open for orders. Orders will be queued and visible when you open the event. ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event. Pizzas Drinks 2× Margherita £9.50 Pizzas − 2 + Margherita ✏ Edit £19.00 ✏ Total £19.00 ⚡ ASAP ⚡ ~5 mins · around 00:35 + Add email / phone / notes Place order 💷 Cash £19.00 💳 Card £19.00 The Green — Harnessville Today · 17:00–21:00 Change ℹ️ Today's event — not yet open for orders. Orders will be queued and visible when you open the event. ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event. Pizzas Drinks Margherita £9.50 + − 2 + ✏️ £19.00 £19.00 2 items Review order →",
+   "order|today": "Pizza Kitchen ← Back Order from Pizza Kitchen Sat 10 Oct 12:00 – 23:59 Live The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 15:00 Choose time 15:00 15:20 15:30 16:00 18:30 23:40 ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|tomorrow": "Pizza Kitchen ← Back Order from Pizza Kitchen Sun 11 Oct 12:00 – 23:59 The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 15:00 Choose time 15:00 15:20 15:30 16:00 18:30 23:40 ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|yesterday": "Pizza Kitchen ← Back Order from Pizza Kitchen Fri 9 Oct 12:00 – 23:59 The Green Harnessville Menu ⓘ Allergen Info Pizzas Drinks Pizzas Margherita £9.50 − 2 + Drinks Coke £1.80 Add Complete your order ✕ 2 items £19.00 Pizzas 2× Margherita £19.00 Total £19.00 Collection time ⚡ ASAP Around 12:00 Choose time ▾ Select ASAP or choose a specific time Your details Name * Email * — confirmation sent here Phone number — optional Special instructions — optional Place order Pay at the truck on collection · No card details needed 2 items £19.00 Review & order → Pay at the truck on collection · No card details needed",
+   "order|submitted": "Pizza Kitchen ✓ Order received! Pizza Kitchen will confirm your order shortly. Order #40 Preferred collection: 18:30 Pizza Kitchen will confirm your collection time when they accept your order. 2× Margherita £19.00 Total £19.00 Payment Pay at the truck Back to Pizza Kitchen",
+   "order|confirm": "Pizza Kitchen ✓ Order confirmed! Thanks! We've received your order and it'll be ready soon. Order #40 Collection time: 18:30 See you at the hatch! 2× Margherita £19.00 + Extra cheese +£2.50 Total £21.50 3× Coke £5.40 📝 No ice Total £26.90 Payment Paid by card Confirmation sent to sam@example.test Back to Pizza Kitchen",
+   "receipt|paid": "Pizza Kitchen Order #40 Pickup 18:30 · The Green Payment Paid by card Status confirmed 2× Margherita £21.50 3× Coke £5.40 Total £26.90 Cancel order Cancellations accepted up to 30 minutes before pickup",
+   "receipt|pending": "Pizza Kitchen Order #42 Payment Pay at the truck Status pending 2× Margherita £21.50 3× Coke £5.40 Total £26.90 Cancel order Cancellations accepted up to 30 minutes before pickup",
+   "reports|orders": {
+    "text": "📅 Date range 📍 Event View report to 📋 Orders 📦 Items ⬇ Filter by 📅 Date range 📍 Event to Show 📋 Orders 📦 Items View report ⬇ Export CSV 5 orders · £134.50 Revenue breakdown Other £122.00 Modifier upcharges £12.50 Total £134.50 Customisations Paid modifiers # Modifier Qty Total 1 Extra cheese 10 £12.50 Customer notes \"No ice\" 5× Order breakdown # Date Time Channel Item Qty Total #40 09/10/26 23:40 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #40 09/10 £26.90 Online · 23:40 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #41 09/10/26 23:40 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #41 09/10 £26.90 Online · 23:40 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #42 09/10/26 23:40 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #42 09/10 £26.90 Online · 23:40 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #43 09/10/26 23:40 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #43 09/10 £26.90 Online · 23:40 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80 #44 09/10/26 23:40 Online 2× Margherita, 3× Coke 5 £26.90 ▶ #44 09/10 £26.90 Online · 23:40 Sam Harness · The Green 2× Margherita (Extra cheese) £10.75 3× Coke £1.80",
+    "attrs": [
+     "max=2026-10-10",
+     "value=2026-10-02",
+     "max=2026-10-10",
+     "value=2026-10-08",
+     "max=2026-10-10",
+     "value=2026-10-02",
+     "max=2026-10-10",
+     "value=2026-10-08"
+    ]
+   },
+   "reports|items": {
+    "text": "📅 Date range 📍 Event View report to 📋 Orders 📦 Items ⬇ Filter by 📅 Date range 📍 Event to Show 📋 Orders 📦 Items View report ⬇ Export CSV 5 orders · £134.50 Revenue breakdown Other £122.00 Modifier upcharges £12.50 Total £134.50 Customisations Paid modifiers # Modifier Qty Total 1 Extra cheese 10 £12.50 Customer notes \"No ice\" 5× Item breakdown # Date Time Channel Item Qty Total #40 09/10/26 23:40 Online Margherita 2 £21.50 #40 09/10/26 23:40 Online Coke 3 £5.40 #41 09/10/26 23:40 Online Margherita 2 £21.50 #41 09/10/26 23:40 Online Coke 3 £5.40 #42 09/10/26 23:40 Online Margherita 2 £21.50 #42 09/10/26 23:40 Online Coke 3 £5.40 #43 09/10/26 23:40 Online Margherita 2 £21.50 #43 09/10/26 23:40 Online Coke 3 £5.40 #44 09/10/26 23:40 Online Margherita 2 £21.50 #44 09/10/26 23:40 Online Coke 3 £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40 2× Margherita £21.50 3× Coke £5.40",
+    "attrs": [
+     "max=2026-10-10",
+     "value=2026-10-02",
+     "max=2026-10-10",
+     "value=2026-10-08",
+     "max=2026-10-10",
+     "value=2026-10-02",
+     "max=2026-10-10",
+     "value=2026-10-08"
+    ]
+   },
+   "reports|csv": [
+    {
+     "text": "\"Order ID\",\"Date\",\"Event\",\"Time placed\",\"Collection time\",\"Customer name\",\"Order type\",\"Items\",\"Deals\",\"Modifiers\",\"Notes\",\"Total\"\n\"40\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"18:30\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"41\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"15:40\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"42\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"43\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"23:40\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"\n\"44\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"14:00\",\"Sam Harness\",\"Customer online\",\"2× Margherita; 3× Coke\",\"\",\"Extra cheese +£1.25\",\"No ice\",\"£26.90\"",
+     "name": "orders-2026-10-02-to-2026-10-08.csv"
+    },
+    {
+     "text": "\"Order ID\",\"Date\",\"Event\",\"Time placed\",\"Collection time\",\"Customer name\",\"Order type\",\"Item name\",\"Qty\",\"Unit price\",\"Modifiers\",\"Notes\",\"Item total\",\"Order total\"\n\"40\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"18:30\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"40\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"18:30\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"41\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"15:40\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"41\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"15:40\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"42\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"42\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"ASAP\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"43\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"23:40\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"43\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"23:40\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"\n\"44\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"14:00\",\"Sam Harness\",\"Customer online\",\"Margherita\",\"2\",\"£9.50\",\"Extra cheese +£1.25\",\"\",\"£21.50\",\"£26.90\"\n\"44\",\"09/10/2026\",\"The Green, Harnessville\",\"23:40\",\"14:00\",\"Sam Harness\",\"Customer online\",\"Coke\",\"3\",\"£1.80\",\"\",\"No ice\",\"£5.40\",\"£26.90\"",
+     "name": "items-2026-10-02-to-2026-10-08.csv"
+    }
+   ],
+   "schedule": "Events Event types Schedule 3 upcoming ✨ Import schedule photo, PDF or text + Add event You're managing your schedule manually · Change in Settings Confirmed SAT 10 OCT The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel SUN 11 OCT The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel THU 15 OCT The Green Confirmed Harnessville 17:00–21:00 ⧉ Copy ✏ Edit ▣ Make post ✕ Cancel ▶ Past events (1)",
+   "ticket|stamp": "00:30|30",
+   "ticket|lines": [
+    "#40        COLLECT 18:30",
+    "Sam Harness                         07700 900123",
+    "2x Margherita                             £21.50",
+    "  + Extra cheese                          +£1.25",
+    "3x Coke                                    £5.40",
+    "  ! No ice",
+    "TOTAL                                     £26.90",
+    "PAYMENT                                     PAID",
+    "Pizza Kitchen",
+    "printed 00:30"
+   ],
+   "ticket|test": "@tda!EB#TEST      COLLECT 00:30 | a!EBTest ticket | a!EB------------------------------------------------ | a!EB1x Test ticket | a!EB------------------------------------------------ | a!EBTOTAL                                       0.00 | a!EBPizza Kitchen | a!EBprinted 00:30 | !EaBdV"
+  }
+ }
+}

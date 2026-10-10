@@ -23,12 +23,14 @@
 // the request. Held authorisations behind cancelled orders are still stranded; that is a separate, parked
 // defect (docs/event-cancel-holds-report.md), and this modal is where its money summary will belong.
 import { useState } from 'react'
-import { formatTime } from '@/lib/time-utils'
+import { formatTime, formatYmd, type TimeSettings } from '@/lib/time-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
 
 // Lifted verbatim from the manage page's local helper so the three surfaces render the date identically.
-function fmtDate(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+/** The event's date in the truck's words and order (Phase 2B). ⚠️ formatYmd pins the date to UTC, so a
+ *  device in another zone can no longer shift it a day (`new Date('YYYY-MM-DD')` is UTC midnight). */
+function fmtDate(d: string, time: TimeSettings | null | undefined) {
+  return formatYmd(d, time, { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
 export const EVENT_CANCEL_REASONS = [
@@ -45,7 +47,10 @@ export function EventCancelModal({
   busy = false,
   onKeep,
   onConfirm,
+  time,
 }: {
+  /** The truck's time settings (truck.time) — how the date and times read. */
+  time: TimeSettings | null | undefined
   /** The event being cancelled. The CALLER gates the mount — see the header. */
   event: TruckEvent
   /** From /api/events/affected-orders. 0 renders no line at all, which is also the value shown while the
@@ -67,9 +72,9 @@ export function EventCancelModal({
           <p className="text-sm text-slate-500 mt-1">
             {event.venue_name}{event.town ? `, ${event.town}` : ''}
             {' · '}
-            {fmtDate(event.event_date)}
+            {fmtDate(event.event_date, time)}
             {event.start_time && event.end_time
-              ? ` · ${formatTime(event.start_time)}–${formatTime(event.end_time)}`
+              ? ` · ${formatTime(event.start_time, time)}–${formatTime(event.end_time, time)}`
               : ''}
           </p>
           {affectedOrderCount > 0 && (

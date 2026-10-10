@@ -20,6 +20,8 @@ import { Btn, Card, Input, Spinner } from '@/components/manage/primitives'
  * belonged to `WeeklyPostPane`, which moved to components/manage/SocialPosts.tsx — see the tombstone
  * below. Nothing else in this file is gated or knows about a plan. */
 import { placeWhenLine, timeRangeLabel } from '@/lib/schedule-graphics/places'
+import { formatYmd, type TimeSettings } from '@/lib/time-utils'
+import { useTruckTime } from '@/components/TruckTimeContext'
 
 export interface Place {
   id: string
@@ -106,20 +108,18 @@ const msgOf = (e: unknown, fallback: string): string => {
   return m || fallback
 }
 
-/** "Tue 13 Oct". ⚠️ Built from the 'YYYY-MM-DD' PARTS, never `new Date(str)`: a date-only string
- *  parsed as a Date is UTC midnight, which renders as the previous day west of here. */
-export function shortDay(ymd: string | null): string {
+/** "Tue 13 Oct" (GB) / "Tue, Oct 13" (US) — in the truck's words (Phase 2B). ⚠️ A calendar date, formatted
+ *  pinned to UTC by `formatYmd`, never `new Date(str)` in the device's zone. */
+export function shortDay(ymd: string | null, ts: TimeSettings | null | undefined): string {
   if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return ''
-  const [y, m, d] = ymd.split('-').map(Number)
-  return new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' })
-    .format(new Date(Date.UTC(y, m - 1, d)))
+  return formatYmd(ymd, ts, { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
 /** Re-exported so the modal has one import for the pair. The rule itself lives in the shared lib. */
 export const timeRange = timeRangeLabel
 
 /** The one muted line under a place's name — "Last: Tue 6 Oct · 17:00–20:00". */
-export const placeSubLine = (p: Place): string => placeWhenLine(p, shortDay)
+export const placeSubLine = (p: Place, ts: TimeSettings | null | undefined): string => placeWhenLine(p, ymd => shortDay(ymd, ts), ts)
 
 /** Hidden or merged: out of the list unless the operator asks for them. */
 export const isRetired = (p: Place): boolean => p.is_hidden || !!p.merged_into_id
@@ -275,6 +275,7 @@ export function PlaceList({
    */
   hiddenSection?: boolean
 }) {
+  const ts = useTruckTime() // the truck's words for the Last/Next line (Phase 2B)
   const { favourites, others, hidden } = useMemo(() => {
     const q = search.trim().toLowerCase()
     const matches = (p: Place) => !q
@@ -322,7 +323,7 @@ export function PlaceList({
           </span>
           {typeLabelFor?.(p)}
         </span>
-        <span className="block text-xs text-slate-400 truncate">{placeSubLine(p)}</span>
+        <span className="block text-xs text-slate-400 truncate">{placeSubLine(p, ts)}</span>
       </button>
     </li>
   )

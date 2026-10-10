@@ -22,7 +22,7 @@ import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcAddableRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
-import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { formatTime, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz, instantOfLocal, clockOfInstantInTz, formatYmd, formatSlot, formatInstantClock, addDaysYmd, timeSettingsOr } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel } from '@/lib/event-display'
 import { EventPickerPanel } from '@/components/shared/EventPickerPanel'
 import { useAndroidBack } from '@/lib/native/backHandler'
@@ -33,21 +33,21 @@ import { isNativeApp } from '@/lib/native/device'
 import { newUuid } from '@/lib/native/outbox'
 import { isOnline } from '@/lib/native/reachability'
 import { createCapacityRefresher, type CapacityRefresher } from '@/lib/capacity-refresh'
+import { MoneyProvider } from '@/components/MoneyContext'
+import { formatMajorOrBare } from '@/lib/money-format'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
-function getAsapBaseTime(event: { event_date: string; start_time: string } | null): Date {
+function getAsapBaseTime(event: { event_date: string; start_time: string } | null, tz: string): Date {
+  // 🔴 THE TRUCK'S CLOCK (Phase 2B): the event's start is its date + time on the truck's wall clock, and
+  // "today" is the truck's — was the device's (a tablet set to another zone shifted the ASAP base).
   if (!event) return new Date()
   const now = new Date()
-  const todayStr = localTodayIso() // LOCAL date (s.7) — UTC must not treat a future event as today
-  const [startH, startM] = (event.start_time || '00:00').split(':').map(Number)
-  if (event.event_date > todayStr) {
-    const [y, mo, d] = event.event_date.split('-').map(Number)
-    return new Date(y, mo - 1, d, startH, startM, 0, 0)
-  }
+  const todayStr = getLocalDateInTz(tz)
+  const start = (event.start_time || '00:00').slice(0, 5)
+  if (event.event_date > todayStr) return new Date(instantOfLocal(event.event_date, start, tz))
   if (event.event_date === todayStr) {
-    const eventStart = new Date()
-    eventStart.setHours(startH, startM, 0, 0)
+    const eventStart = new Date(instantOfLocal(event.event_date, start, tz))
     return now < eventStart ? eventStart : now
   }
   return now
@@ -339,6 +339,9 @@ export function AddOrderPanel({
   isDemo = false, onLockedEventAction,
   buzzerCount = null, buzzerPromptEnabled = false, onSaveBuzzer, vanTakesCash = null,
 }: AddOrderPanelProps) {
+  // 🔴 THE TRUCK'S CURRENCY — this order does not exist yet (/api/dashboard's truck.money). The panel
+  // provides it to its leaves (the basket lines, the price editor, the deals modal) as well.
+  const amount = (major: number) => formatMajorOrBare(major, truck.money, 'add order')
 
   // ── order state ─────────────────────────────────────────────────────────────
   const [manualName, setManualName] = useState('')
@@ -377,7 +380,10 @@ export function AddOrderPanel({
   }, [orders, manualEvent])
   const [apiSlots, setApiSlots] = useState<Slot[]>([])   // raw /api/slots; `manualSlots` below derives the offline fallback
   // Event timezone from /api/slots (default London); ASAP + isSlotPast derive in this tz.
-  const [eventTz, setEventTz] = useState('Europe/London')
+  // 🔴 THE TRUCK'S ZONE (Phase 2B; was a fixed London), then whatever /api/slots answers — the same zone.
+  const [eventTz, setEventTz] = useState(() => timeSettingsOr(truck.time, 'add order').timeZone)
+  /** The truck's display settings — how every time and date on this panel reads (GB: as before). */
+  const panelTime = timeSettingsOr(truck.time, 'add order')
   // Live 30s tick → re-render so manualAsapSlot + the dropdown's isSlotPast re-evaluate as the clock
   // advances even without a refetch (a just-passed slot drops out automatically). Value unused — the
   // re-render it triggers is the point.
@@ -585,16 +591,16 @@ export function AddOrderPanel({
     // Today pre-start: continuous crossover, queue-aware, old empty-queue behaviour.
     // Underway: base=now and totalSecs > pushSecs always, so now+totalSecs wins —
     // identical to the pre-fix path. No step at the event-start boundary.
-    const base = getAsapBaseTime(manualEvent)
+    const base = getAsapBaseTime(manualEvent, eventTz)
     const t = new Date(Math.max(
       Date.now() + totalSecs * 1000,
       base.getTime() + calcQueuePushSecs(newByCat, apiQueueByCat, categoryConfigs) * 1000,
     ))
     return {
-      readyTime: `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`,
+      readyTime: clockOfInstantInTz(t, eventTz),
       minsFromNow: Math.max(0, Math.ceil((t.getTime() - Date.now()) / 60000)),
     }
-  }, [manualItems, appliedDeals, basketByCat, apiQueueByCat, manualEvent, categoryConfigs, waitMinutes])
+  }, [manualItems, appliedDeals, basketByCat, apiQueueByCat, manualEvent, categoryConfigs, waitMinutes, eventTz])
 
   // Dots + pick-slot indicator: per-window OVEN OCCUPANCY via the SHARED helper
   // (lib/slot-display) — the SAME projection→tone/label mapping the Edit Order picker
@@ -759,7 +765,7 @@ export function AddOrderPanel({
         .sort((a, b) => readyToMins(a) - readyToMins(b))[0] ?? null)
     : null
   const readyTime = !fitReadyTime
-    ? (queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs))
+    ? (queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs, eventTz))
     : (queueAware.readyTime && queueAwareGridSlot === fitReadyTime)
       ? queueAware.readyTime   // gridding-only gap ⇒ honest-early (food done before the gridded slot)
       : fitReadyTime           // load/ceiling pushed the slot past queueAware ⇒ ready follows the slot
@@ -771,17 +777,17 @@ export function AddOrderPanel({
     ? queueAware.minsFromNow
     : readyTime
     ? (() => {
-        const nowM = new Date().getHours() * 60 + new Date().getMinutes()
+        const nowM = getNowMinsInTz(eventTz)
         return Math.max(0, readyToMins(readyTime) - nowM)
       })()
     : queueAware.minsFromNow
 
   const isEventEnded = manualEvent ? (() => {
-    const today = localTodayIso() // LOCAL date (s.7) — pairs with the local end_time check below
+    const today = getLocalDateInTz(eventTz) // the TRUCK's date (Phase 2B) — pairs with its clock below
     if (manualEvent.event_date > today) return false
     if (manualEvent.event_date < today) return true
     const [h, m] = manualEvent.end_time.split(':').map(Number)
-    return new Date().getHours() * 60 + new Date().getMinutes() > h * 60 + m
+    return getNowMinsInTz(eventTz) > h * 60 + m
   })() : false
 
   const hasItems = isOrderNonEmpty(manualItems, appliedDeals)
@@ -1071,8 +1077,8 @@ export function AddOrderPanel({
     // never "the single today event" by UTC date, which could seat a stale-live event. The
     // dashboard's controlledEvent (activeEvent) remains the authoritative driver via the sync
     // effect above; this is only the no-controlledEvent cold-start default.
-    setManualEvent(pickDefaultEventByTime(upcomingEvents))
-  }, [upcomingEvents])
+    setManualEvent(pickDefaultEventByTime(upcomingEvents, eventTz))
+  }, [upcomingEvents, eventTz])
 
   // An EVENT change (id/date/times) fetches immediately — a new grid must never wait on a throttle. The
   // tab merely being SHOWN again on the same event is the safety net's job (throttled, never dropped).
@@ -1565,6 +1571,9 @@ setItemModal({ item, modGroups, editCartKey })
           // and this line hand-writes it either way. It is corrected here rather than removed because
           // removing a field from the optimistic object is a wider change than this task allows.
           order_type: 'collection', payment_status: manualOrder.paymentTaken ? 'paid' : 'unpaid', created_at: new Date().toISOString(),
+          // 🔴 THE TRUCK'S CURRENCY AND COUNTRY — exactly what the 20261010 trigger stamps on the real row,
+          // so the card and a ticket printed before the round trip show the same currency the server will.
+          currency: truck.currency ?? truck.money?.currency ?? null, country: truck.country ?? null,
         } as unknown as Order
         onOrderPlaced(optimistic)
         // Same value as the card, for the same reason: on route 2 this read "Order  saved" with a hole
@@ -1620,7 +1629,7 @@ setItemModal({ item, modGroups, editCartKey })
         const detail = list.length
           ? list.map(u => `${u.name}${u.on ? ` (on ${u.on})` : ''} — not on the menu`).join('\n')
           : 'Something on this order is no longer on the menu'
-        const proceed = window.confirm(`${detail}\n\nSave at £${Number(data.total ?? 0).toFixed(2)}?\n\nOK = save at this total   ·   Cancel = edit the order`)
+        const proceed = window.confirm(`${detail}\n\nSave at ${amount(Number(data.total ?? 0))}?\n\nOK = save at this total   ·   Cancel = edit the order`)
         if (proceed) {
           confirmUnresolvedTotalRef.current = Number(data.total ?? 0)
           // skipFitCheck=true for the same reason the stock override passes it: the fit check already
@@ -1793,14 +1802,14 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         >
           {/* Show the concrete earliest-fitting time ONLY once the basket has items — empty-basket
               "earliest" (event open) is misleading and jumps as soon as an item is added. Display-only. */}
-          <option value="">⚡ ASAP{asapNoFit ? ' — over capacity (no slot fits)' : (hasItems && adjustedAsapSlot) ? ` — ${adjustedAsapSlot.collection_time}` : ''}</option>
+          <option value="">⚡ ASAP{asapNoFit ? ' — over capacity (no slot fits)' : (hasItems && adjustedAsapSlot) ? ` — ${formatSlot(adjustedAsapSlot.collection_time, panelTime)}` : ''}</option>
           {/* PAST = the SINGLE live source of truth isSlotPast(eventTz) — never the cached server
               is_past flag (stale once the clock advances; on Vercel it's UTC, an hour off in BST).
               Operators see every slot from NOW including the imminent next one (isSlotPast excludes
               only genuinely-elapsed slots, no +5 grace); too-soon/full slots stay visible with their
               traffic-light. */}
           {manualSlots.filter(s => s.is_grace || !isSlotPast(s, eventTz, manualEvent?.event_date)).map(s => {
-            if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>
+            if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {formatSlot(s.collection_time, panelTime)} · After closing</option>
             const ind = slotIndicatorFor(s)
             // ❗ = this window is STRICTLY OVER the ceiling, not merely full. Red alone conflates the
             // two (tone goes red at conc >= ceiling), so an at-capacity slot and an over-subscribed
@@ -1827,7 +1836,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             // anyway". `disabled` would take the row out of the tab order and out of the picker entirely,
             // which is the opposite of what the mark is for — it flags the time, it does not withhold it.
             const mark = hasItems ? (wontFit ? CROSS_MARK : BLANK_MARK) : ''
-            return <option key={s.collection_time} value={s.collection_time} style={wontFit ? { color: '#94a3b8' } : undefined}>{mark}{s.collection_time} {ind.emoji}{ind.overTotal > 0 ? '❗' : ''}{label ? ` ${label}` : ''}{formatFitSuffix(ind.tone, wontFit, !!label)}</option>
+            return <option key={s.collection_time} value={s.collection_time} style={wontFit ? { color: '#94a3b8' } : undefined}>{mark}{formatSlot(s.collection_time, panelTime)} {ind.emoji}{ind.overTotal > 0 ? '❗' : ''}{label ? ` ${label}` : ''}{formatFitSuffix(ind.tone, wontFit, !!label)}</option>
           })}
         </select>
       ) : (
@@ -1849,7 +1858,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             // previously had NO past filter — a past time was selectable). isSlotPast in the event tz.
             return opts
               .filter(time => !isSlotPast({ collection_time: time }, eventTz, manualEvent?.event_date))
-              .map(time => <option key={time} value={time}>{time}</option>)
+              .map(time => <option key={time} value={time}>{formatSlot(time, panelTime)}</option>)
           })()}
         </select>
       )}
@@ -1882,9 +1891,9 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         // NOT show a basket-blind "around 16:40". The operator can still pick a specific slot + override.
         <p className="text-xs text-red-600 font-semibold mt-1.5">⚠ Over capacity — no slot fits this order</p>
       ) : !manualSlot && readyTime && (() => {
-        const isFutureDay = manualEvent && manualEvent.event_date > localTodayIso()
+        const isFutureDay = manualEvent && manualEvent.event_date > getLocalDateInTz(eventTz)
         const dateLabel = isFutureDay
-          ? new Date(manualEvent!.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+          ? formatYmd(manualEvent!.event_date, panelTime, { weekday: 'short', day: 'numeric', month: 'short' })
           : null
         // Sub-label time + minutes come from `readyTime`/`readyMinsFromNow`, anchored to the engine's
         // ASAP slot (adjustedAsapSlot): ready ALWAYS agrees with the dropdown slot — equal to it when
@@ -1898,12 +1907,12 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
           <div className="mt-2 bg-teal-50 border border-teal-200 rounded-xl px-3 py-2.5 flex items-center gap-2">
             <span className="text-teal-600 text-base">⚡</span>
             <div>
-              <p className="text-sm font-black text-teal-800">Ready around {readyTime}</p>
+              <p className="text-sm font-black text-teal-800">Ready around {formatSlot(readyTime, panelTime)}</p>
               <p className="text-xs text-teal-600 font-medium">{dateLabel}</p>
             </div>
           </div>
         ) : (
-          <p className="text-xs text-green-600 font-medium mt-1.5">⚡ {wait} · around {readyTime}</p>
+          <p className="text-xs text-green-600 font-medium mt-1.5">⚡ {wait} · around {formatSlot(readyTime, panelTime)}</p>
         )
       })()}
     </div>
@@ -1930,7 +1939,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
       {hasItems && (
         <div className="flex justify-between text-base font-semibold text-slate-900">
           <span>Total</span>
-          <span>£{manualTotal.toFixed(2)}</span>
+          <span>{amount(manualTotal)}</span>
         </div>
       )}
       <input
@@ -2004,7 +2013,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
               >
                 {submitting === 'take-cash' ? <span className="text-sm">Confirming…</span> : (
-                  <><span className="text-sm">💷 Cash</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+                  <><span className="text-sm">💷 Cash</span><span className="text-base font-black">{amount(manualTotal)}</span></>
                 )}
               </button>
               <button
@@ -2013,7 +2022,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
               >
                 {submitting === 'take-card' ? <span className="text-sm">Confirming…</span> : (
-                  <><span className="text-sm">💳 Card</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+                  <><span className="text-sm">💳 Card</span><span className="text-base font-black">{amount(manualTotal)}</span></>
                 )}
               </button>
             </>
@@ -2024,7 +2033,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
               className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
             >
               {submitting === 'take' ? <span className="text-sm">Confirming…</span> : (
-                <><span className="text-sm">Take payment</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+                <><span className="text-sm">Take payment</span><span className="text-base font-black">{amount(manualTotal)}</span></>
               )}
             </button>
           )}
@@ -2040,7 +2049,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
           >
             {submitting === 'take-cash' ? <span className="text-sm">Confirming…</span> : !manualEvent ? <span className="text-sm">Select an event</span> : (
-              <><span className="text-sm">💷 Cash</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+              <><span className="text-sm">💷 Cash</span><span className="text-base font-black">{amount(manualTotal)}</span></>
             )}
           </button>
           <button
@@ -2049,7 +2058,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
           >
             {submitting === 'take-card' ? <span className="text-sm">Confirming…</span> : !manualEvent ? <span className="text-sm">Select an event</span> : (
-              <><span className="text-sm">💳 Card</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+              <><span className="text-sm">💳 Card</span><span className="text-base font-black">{amount(manualTotal)}</span></>
             )}
           </button>
         </div>
@@ -2067,7 +2076,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
           disabled={loading || !hasItems || !manualEvent}
           className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
         >
-          {loading ? 'Confirming...' : !manualEvent ? 'Select an event to confirm' : `Take payment${manualTotal > 0 ? ` £${manualTotal.toFixed(2)}` : ''}`}
+          {loading ? 'Confirming...' : !manualEvent ? 'Select an event to confirm' : `Take payment${manualTotal > 0 ? ` ${amount(manualTotal)}` : ''}`}
         </button>
       )}
     </div>
@@ -2115,7 +2124,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 {mods.map(m => (
                   <div key={m.name} className="flex justify-between pl-8 text-xs text-slate-400">
                     <span>{m.name}</span>
-                    {m.price > 0 && <span className="text-slate-500">+£{m.price.toFixed(2)}</span>}
+                    {m.price > 0 && <span className="text-slate-500">+{amount(m.price)}</span>}
                   </div>
                 ))}
                 {note && <div className="pl-8 text-xs text-slate-400 italic">📝 {note}</div>}
@@ -2235,7 +2244,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
     <div className={`rounded-xl px-3 py-2 mb-2 text-xs font-semibold ${stockStatus === 'unknown' ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-800'}`}>
       {stockStatus === 'unknown'
         ? 'Stock counts aren\u2019t loaded on this device. You can still take orders \u2014 check what you have.'
-        : `Stock last checked${stockCheckedAt ? ` at ${stockCheckedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}. It may have moved since.`}
+        : `Stock last checked${stockCheckedAt ? ` at ${formatInstantClock(stockCheckedAt, panelTime)}` : ''}. It may have moved since.`}
     </div>
   )
 
@@ -2340,7 +2349,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 )}
                 <span className="pr-6 text-left leading-tight">{item.name}</span>
                 <div className="flex items-center gap-1.5">
-                  <span className={`text-xs font-normal ${atStockLimit ? 'text-slate-400' : totalInBasket > 0 ? 'text-orange-200' : 'text-slate-400'}`}>£{item.price.toFixed(2)}</span>
+                  <span className={`text-xs font-normal ${atStockLimit ? 'text-slate-400' : totalInBasket > 0 ? 'text-orange-200' : 'text-slate-400'}`}>{amount(item.price)}</span>
                   {atStockLimit && <span className="text-[10px] text-red-500 font-black">max</span>}
                   {!atStockLimit && isLow && <span className={`text-[10px] font-black ${totalInBasket > 0 ? 'text-white' : 'text-orange-500'}`}>({addable} left)</span>}
                 </div>
@@ -2394,7 +2403,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm font-semibold truncate ${isSoldOut ? 'line-through text-slate-400' : 'text-slate-800'}`}>{item.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs text-slate-400">£{item.price.toFixed(2)}</span>
+                      <span className="text-xs text-slate-400">{amount(item.price)}</span>
                       {isSoldOut && <span className="text-[10px] text-red-400 font-bold">sold out</span>}
                       {!isSoldOut && atStockLimit && <span className="text-[10px] text-red-500 font-black">max reached</span>}
                       {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">{addable} left</span>}
@@ -2417,7 +2426,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 {lines.map(line => {
                   const rowKey = line.cartKey || line.name
                   const optBlocked = optionAddBlocked((line.modifiers || []).map(m => m.name))
-                  const modLabel = (line.modifiers || []).map(m => `${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}`).join(', ')
+                  const modLabel = (line.modifiers || []).map(m => `${m.name}${m.price > 0 ? ` +${amount(m.price)}` : ''}`).join(', ')
                   const note = line.specialInstructions
                   return (
                     <div key={rowKey} className="flex items-center gap-2 py-1.5 pl-3 mt-1">
@@ -2431,7 +2440,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                           truncate: the operator must see exactly what was chosen). rem type sizes scale w/ OS. */}
                       <div className="flex-1 min-w-0">
                         {(line.modifiers || []).map(m => (
-                          <p key={m.name} className="text-sm text-slate-700 break-words">{m.name}{m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</p>
+                          <p key={m.name} className="text-sm text-slate-700 break-words">{m.name}{m.price > 0 ? ` +${amount(m.price)}` : ''}</p>
                         ))}
                         {note && <p className="text-sm italic text-slate-400 break-words">📝 {note}</p>}
                       </div>
@@ -2441,7 +2450,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                       <button onClick={() => openManualItemModal(item, itemModGroups, rowKey)} aria-label="Edit"
                         className="shrink-0 min-w-[2.75rem] min-h-[2.75rem] flex items-center justify-center text-slate-400 active:scale-95">✏️</button>
                       {/* Price (right) */}
-                      <span className="shrink-0 text-sm font-bold text-slate-900 tabular-nums">£{(line.unit_price * line.quantity).toFixed(2)}</span>
+                      <span className="shrink-0 text-sm font-bold text-slate-900 tabular-nums">{amount(line.unit_price * line.quantity)}</span>
                     </div>
                   )
                 })}
@@ -2509,11 +2518,11 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 </p>
               )}
               <p className="text-xs text-orange-600 truncate">{(() => {
-                const t = new Date().toISOString().split('T')[0]
-                const tmrw = new Date(Date.now() + 86400000).toISOString().split('T')[0]
+                const t = getLocalDateInTz(eventTz)
+                const tmrw = addDaysYmd(t, 1)
                 const d = manualEvent.event_date
-                const label = d === t ? 'Today' : d === tmrw ? 'Tomorrow' : new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-                return `${label} · ${formatTime(manualEvent.start_time)}–${formatTime(manualEvent.end_time)}`
+                const label = d === t ? 'Today' : d === tmrw ? 'Tomorrow' : formatYmd(d, panelTime, { weekday: 'short', day: 'numeric', month: 'short' })
+                return `${label} · ${formatTime(manualEvent.start_time, panelTime)}–${formatTime(manualEvent.end_time, panelTime)}`
               })()}</p>
             </div>
             {/* Change event — SHOWN but locked in demo (opens the explainer via openEventPicker's guard). */}
@@ -2551,15 +2560,15 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
           `isEventEnded` below, which is the same kind of statement about the same selection, and they
           persist while the operator is actually building the order.
           ⚠️ THE COPY AND THE CONDITIONS ARE VERBATIM. Only their position changed. */}
-      {manualEvent && manualEvent.event_date > new Date().toISOString().split('T')[0] && (
+      {manualEvent && manualEvent.event_date > getLocalDateInTz(eventTz) && (
         <div className="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
           <span className="text-amber-500 flex-shrink-0 text-sm">⚠️</span>
           <p className="text-xs text-amber-700">
-            {eventDateLabel(manualEvent.event_date, 'compact')} event selected. Orders will appear on the order screen when the event opens.
+            {eventDateLabel(manualEvent.event_date, panelTime, 'compact')} event selected. Orders will appear on the order screen when the event opens.
           </p>
         </div>
       )}
-      {manualEvent && manualEvent.event_date === new Date().toISOString().split('T')[0] && liveEvent?.status === 'confirmed' && (
+      {manualEvent && manualEvent.event_date === getLocalDateInTz(eventTz) && liveEvent?.status === 'confirmed' && (
         <div className="mt-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
           <span className="text-blue-500 flex-shrink-0 text-sm">ℹ️</span>
           <p className="text-xs text-blue-700">
@@ -2578,7 +2587,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
   // ── render ────────────────────────────────────────────────────────────────
 
   return (
-    <>
+    <MoneyProvider fmt={truck.money}>
       {/* ── iPad / desktop: two-column split ── */}
       <div className="hidden md:flex flex-1 min-h-0 -mx-4">
 
@@ -2675,7 +2684,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
       {/* ── Phone: sticky bottom bar ── */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between gap-3 z-20">
         <div>
-          <p className="text-sm font-bold text-slate-900">£{manualTotal.toFixed(2)}</p>
+          <p className="text-sm font-bold text-slate-900">{amount(manualTotal)}</p>
           <p className="text-xs text-slate-400">{totalItemCount} item{totalItemCount !== 1 ? 's' : ''}</p>
         </div>
         <button
@@ -2839,7 +2848,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="font-black text-slate-900 text-lg">{itemModal.item.name}</h3>
-                  <p className="text-slate-400 text-sm">£{itemModal.item.price.toFixed(2)} base</p>
+                  <p className="text-slate-400 text-sm">{amount(itemModal.item.price)} base</p>
                 </div>
                 <button onClick={() => setItemModal(null)} className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none ml-4 mt-0.5">✕</button>
               </div>
@@ -2870,7 +2879,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                             <button key={opt.id} onClick={() => { if (!lock) toggleModalMod(opt, group) }} disabled={lock}
                               className={`flex items-center gap-1.5 text-sm font-bold px-3.5 py-2 transition-all active:scale-95 border-2 rounded-xl ${selected ? 'bg-orange-600 border-orange-600 text-white' : lock ? 'bg-slate-50 border-slate-200 text-slate-400 line-through cursor-not-allowed opacity-60' : `bg-white text-slate-700 hover:border-orange-300 ${isUnmet ? 'border-amber-300' : 'border-slate-200'}`}`}>
                               <span>{opt.name}</span>
-                              {opt.price_adjustment > 0 && <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
+                              {opt.price_adjustment > 0 && <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+{amount(opt.price_adjustment)}</span>}
                               {/* "N left" / sold-out (basket-aware) — shared badge, same thresholds as item stock. */}
                               <OptionStockBadge remaining={rem} />
                               {/* Per-option allergens (Stage C) NOT shown on the operator selection (V7.8 §25) —
@@ -2901,7 +2910,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
                 {modalUnmetGroupIds.length > 0
                   ? 'Choose required options'
-                  : `${itemModal.editCartKey ? 'Save changes' : 'Add'} · £${(itemModal.item.price + modalMods.reduce((s, m) => s + m.price, 0)).toFixed(2)}`}
+                  : `${itemModal.editCartKey ? 'Save changes' : 'Add'} · ${amount(itemModal.item.price + modalMods.reduce((s, m) => s + m.price, 0))}`}
               </button>
             </div>
           </div>
@@ -2942,6 +2951,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
           🔴 THE CARD IS NOW max-h-[85dvh], NOT 80vh. `dvh` tracks a webview's dynamic toolbars and
           `vh` does not; this surface runs inside the iOS and Android shells. */}
       <EventPickerPanel
+        time={truck.time}
         open={showEventPicker}
         isDemo={isDemo}
         events={upcomingEvents}
@@ -2955,6 +2965,6 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
           ? <>{[0, 1, 2].map(i => <div key={i} className="h-[58px] rounded-xl bg-slate-100 animate-pulse" />)}</>
           : <p className="text-sm text-slate-400 text-center py-6">No upcoming events found</p>}
       />
-    </>
+    </MoneyProvider>
   )
 }

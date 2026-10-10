@@ -1,9 +1,15 @@
 // lib/email.ts
 // Shared email formatting and sending for order confirmations
+import { phoneLinkDigits } from '@/lib/phone'
 import type { EmailPaymentState } from '@/lib/payments/email-payment-state'
 // For notifyCustomer's demo guard, moved here from app/api/dashboard/action. lib/demo imports
 // nothing, so this adds no cycle.
 import { isDemoIdentifier } from '@/lib/demo'
+// 🔴 EVERY AMOUNT IN EVERY EMAIL IS IN THE ORDER'S CURRENCY. `money` is a REQUIRED parameter on every
+// function below that prints one, so the compiler names every caller; the caller gets it from
+// lib/money-server.ts (moneyFormatForOrder) — never a default, never GBP by omission.
+import { formatMajor, formatMinor, type MoneyFormat } from '@/lib/money-format'
+import { formatSlot, formatYmd, type TimeSettings } from '@/lib/time-utils'
 
 // THE PAYMENT SENTENCE, IN ONE PLACE, FOR EVERY EMAIL THAT NEEDS ONE.
 //
@@ -25,7 +31,9 @@ export function paymentNote(
   /** Minor units, for the states that need figures. Absent renders the same sentence without them,
    *  which is still true — a caller that cannot cheaply produce a balance is not forced to invent one.
    *  `heldMinor` is what the card is authorised for, and only 'held_short' reads it. */
-  amounts?: { paidMinor: number; balanceMinor: number; heldMinor?: number },
+  amounts: { paidMinor: number; balanceMinor: number; heldMinor?: number } | undefined,
+  /** The ORDER's currency and its country's locale. */
+  fmt: MoneyFormat,
 ): {
   html: string
   text: string
@@ -51,7 +59,7 @@ export function paymentNote(
       // a customer they are settled when they owe half.
       // THE FIGURES COME FROM getOrderBalance VIA THE CALLER, never from this function. It renders.
       // NO FIGURES SUPPLIED means the same sentence without them. Vaguer, never wrong.
-      const money = (m: number) => `£${(m / 100).toFixed(2)}`
+      const money = (m: number) => formatMinor(m, fmt)
       const paidPart = amounts ? `${money(amounts.paidMinor)} of this order is paid.` : ''
       return {
         html: `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
@@ -86,7 +94,7 @@ export function paymentNote(
       // the card is standing by for the amount the customer agreed to, and an edit since has taken the
       // order past it. So this says what is held, what is still to pay, and does NOT use the word paid.
       // NO FIGURES SUPPLIED means the same sentence without them. Vaguer, never wrong.
-      const money = (m: number) => `£${(m / 100).toFixed(2)}`
+      const money = (m: number) => formatMinor(m, fmt)
       const held = typeof amounts?.heldMinor === 'number' ? amounts.heldMinor : null
       const stillToPay = amounts && held !== null ? amounts.balanceMinor - held : null
       return {
@@ -161,17 +169,17 @@ export interface EmailDeal {
  * notes render below. Numerics coerced defensively (callers may pass string unit_price/
  * quantity straight from the orders table). Returns the inner <tr> rows (no <table> wrapper).
  */
-export function renderOrderLinesHtml(items: EmailOrderItem[], deals: EmailDeal[]): string {
+export function renderOrderLinesHtml(items: EmailOrderItem[], deals: EmailDeal[], fmt: MoneyFormat): string {
   const itemRows = (items || []).map(item => {
     const modRows = (item.modifiers || []).map(m =>
-      `<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">+ ${m.name}${Number(m.price) > 0 ? ` <span style="color:#ea580c">+£${Number(m.price).toFixed(2)}</span>` : ''}</td></tr>`
+      `<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">+ ${m.name}${Number(m.price) > 0 ? ` <span style="color:#ea580c">+${formatMajor(Number(m.price), fmt)}</span>` : ''}</td></tr>`
     ).join('')
     const noteRow = item.specialInstructions
       ? `<tr><td colspan="2" style="padding:1px 0 4px 16px;font-size:12px;color:#64748b;font-style:italic">📝 ${item.specialInstructions}</td></tr>`
       : ''
     return `<tr>
       <td style="padding:4px 0 2px;color:#475569">${item.quantity}× ${item.name}</td>
-      <td style="text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500">£${(Number(item.unit_price) * Number(item.quantity)).toFixed(2)}</td>
+      <td style="text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500">${formatMajor(Number(item.unit_price) * Number(item.quantity), fmt)}</td>
     </tr>${modRows}${noteRow}`
   }).join('')
 
@@ -186,7 +194,7 @@ export function renderOrderLinesHtml(items: EmailOrderItem[], deals: EmailDeal[]
       })
     const slotNotes = deal.slotNotes || {}
     const priceCell = deal.price != null
-      ? `<td style="text-align:right;padding:4px 0 2px;color:#d97706;font-weight:500">£${Number(deal.price).toFixed(2)}</td>`
+      ? `<td style="text-align:right;padding:4px 0 2px;color:#d97706;font-weight:500">${formatMajor(Number(deal.price), fmt)}</td>`
       : `<td></td>`
     const headerRow = `<tr><td style="padding:4px 0 2px;color:#d97706;font-size:13px">🎁 ${deal.name}: ${slotNames.join(', ')}</td>${priceCell}</tr>`
     const subRows = Object.entries(deal.slots).flatMap(([cat, itemName]) => {
@@ -195,7 +203,7 @@ export function renderOrderLinesHtml(items: EmailOrderItem[], deals: EmailDeal[]
       const mods = slotMods[cat] || []
       mods.forEach(m => {
         if (Number(m.price) > 0) {
-          rows.push(`<tr><td style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">↳ + ${m.name}</td><td style="text-align:right;padding:1px 0;font-size:12px;color:#64748b">+£${Number(m.price).toFixed(2)}</td></tr>`)
+          rows.push(`<tr><td style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">↳ + ${m.name}</td><td style="text-align:right;padding:1px 0;font-size:12px;color:#64748b">+${formatMajor(Number(m.price), fmt)}</td></tr>`)
         } else {
           rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">↳ + ${m.name}</td></tr>`)
         }
@@ -265,6 +273,8 @@ export function formatConfirmationEmail(params: {
   preferredContactMethod?: string | null
   contactPhone?: string | null
   whatsappSender?: string | null
+  /** 🔴 The truck's country (`trucks.country`, Phase 2C) — a nationally written WhatsApp number is read in it. */
+  phoneCountry: string
   socialFacebook?: string | null
   socialInstagram?: string | null
   contactEmail?: string | null
@@ -275,7 +285,18 @@ export function formatConfirmationEmail(params: {
   /** 'ready' reuses the confirmation layout (order lines, venue, contact) reworded as an "order ready
    *  to collect" notification — drops the collection-time box + the cancel link. Default 'confirmation'. */
   variant?: 'confirmation' | 'ready'
+  /** The ORDER's currency and its country's locale (lib/money-server.ts). */
+  money: MoneyFormat
+  /** The truck's time settings (lib/truck-time.ts) — how its collection times read (GB: as given). */
+  time: TimeSettings
 }): { subject: string; html: string; text: string } {
+  // Every time this email prints, in the truck's style (Phase 2B). GB: exactly the string passed in.
+  params = {
+    ...params,
+    slot: formatSlot(params.slot, params.time),
+    requestedSlot: formatSlot(params.requestedSlot, params.time),
+    slotAdjustedFrom: formatSlot(params.slotAdjustedFrom, params.time),
+  }
   const isReady = params.variant === 'ready'
   // ONE RESOLUTION, USED BY ALL THREE PLACES THIS EMAIL MENTIONS MONEY. The fallback is what keeps
   // every existing caller byte-identical: promote-draft still passes only `cardHeld`, and the walk-up
@@ -287,6 +308,7 @@ export function formatConfirmationEmail(params: {
     typeof params.paidMinor === 'number' && typeof params.balanceMinor === 'number'
       ? { paidMinor: params.paidMinor, balanceMinor: params.balanceMinor, heldMinor: params.heldMinor }
       : undefined,
+    params.money,
   )
   const subject = isReady
     ? `Order #${params.orderId} is ready — ${params.truckName}`
@@ -295,7 +317,7 @@ export function formatConfirmationEmail(params: {
       : `Order #${params.orderId} received`
 
   // Single-sourced line rendering (item + deal rows) — see renderOrderLinesHtml.
-  const orderLinesHtml = renderOrderLinesHtml(params.items, params.deals)
+  const orderLinesHtml = renderOrderLinesHtml(params.items, params.deals, params.money)
 
   const discountRow = ''
 
@@ -334,14 +356,14 @@ export function formatConfirmationEmail(params: {
       whatsapp:  (() => {
         // Customer-facing WhatsApp number: prefer the WhatsApp sender, fall back to the contact phone
         // (Gusto's number lives in contact_phone, not whatsapp_sender). Show the number VISIBLY in the
-        // label so the customer can read it even if the link doesn't open, and link to a wa.me URL
-        // normalised to UK international digits — strip a leading 0 / accept +44 or 44 → "44…":
-        // "07380736226" → "https://wa.me/447380736226".
+        // label so the customer can read it even if the link doesn't open, and link to a wa.me URL in
+        // international digits, read in the TRUCK's country (Phase 2C, lib/phone.ts — was a hand-written
+        // "→ 44…"): "07380736226" (GB) → "https://wa.me/447380736226". A number that is not a plausible
+        // length for its country gets no link (it had one that could not open).
         const raw = params.whatsappSender ?? params.contactPhone
         if (!raw) return { label: 'WhatsApp us', value: null as string | null, isLink: true }
-        const digits = raw.replace(/\D/g, '')
-        const intl = digits.startsWith('44') ? digits : digits.startsWith('0') ? `44${digits.slice(1)}` : `44${digits}`
-        return { label: `WhatsApp us: ${raw}`, value: `https://wa.me/${intl}`, isLink: true }
+        const intl = phoneLinkDigits(raw, params.phoneCountry)
+        return { label: `WhatsApp us: ${raw}`, value: intl ? `https://wa.me/${intl}` : null, isLink: true }
       })(),
       facebook:  { label: 'Message us on Facebook',    value: params.socialFacebook,   isLink: true },
       messenger: { label: 'Message us on Messenger',   value: params.socialFacebook ? `https://m.me/${params.socialFacebook.split('/').pop()}` : null, isLink: true },
@@ -397,7 +419,7 @@ export function formatConfirmationEmail(params: {
       ${discountRow}
       <tr style="border-top:1px solid #e2e8f0">
         <td style="padding-top:10px;font-weight:800;font-size:15px">Total</td>
-        <td style="text-align:right;padding-top:10px;font-weight:800;font-size:15px">£${params.total.toFixed(2)}</td>
+        <td style="text-align:right;padding-top:10px;font-weight:800;font-size:15px">${formatMajor(params.total, params.money)}</td>
       </tr>
     </table>
   </div>
@@ -425,8 +447,8 @@ export function formatConfirmationEmail(params: {
       : `Order #${params.orderId} ${params.autoAccepted ? 'confirmed' : 'received'} — ${params.truckName}`,
     '',
     params.items.map(i => {
-      const lines = [`${i.quantity}x ${i.name} — £${(i.unit_price * i.quantity).toFixed(2)}`]
-      if (i.modifiers?.length) lines.push(`  + ${i.modifiers.map(m => m.name + (m.price > 0 ? ` +£${m.price.toFixed(2)}` : '')).join(', ')}`)
+      const lines = [`${i.quantity}x ${i.name} — ${formatMajor(i.unit_price * i.quantity, params.money)}`]
+      if (i.modifiers?.length) lines.push(`  + ${i.modifiers.map(m => m.name + (m.price > 0 ? ` +${formatMajor(m.price, params.money)}` : '')).join(', ')}`)
       if (i.specialInstructions) lines.push(`  📝 ${i.specialInstructions}`)
       return lines.join('\n')
     }).join('\n'),
@@ -438,17 +460,17 @@ export function formatConfirmationEmail(params: {
           const mods = dSlotMods[cat] || []
           return mods.length ? `${itemName} (+ ${mods.map(m => m.name).join(', ')})` : itemName
         }).join(', ')
-      const lines = [`🎁 ${d.name}: ${slotLabel}${d.price != null ? ` — £${d.price.toFixed(2)}` : ''}`]
+      const lines = [`🎁 ${d.name}: ${slotLabel}${d.price != null ? ` — ${formatMajor(d.price, params.money)}` : ''}`]
       Object.entries(d.slots || {}).forEach(([cat, itemName]) => {
         if (!itemName) return
         const mods = (d.slotModifiers || {})[cat] || []
-        mods.forEach(m => lines.push(`  ↳ + ${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}`))
+        mods.forEach(m => lines.push(`  ↳ + ${m.name}${m.price > 0 ? ` +${formatMajor(m.price, params.money)}` : ''}`))
         const note = (d.slotNotes || {})[cat]
         if (note) lines.push(`  ↳ 📝 ${note}`)
       })
       return lines.join('\n')
     }).join('\n') : '',
-    `Total: £${params.total.toFixed(2)}`,
+    `Total: ${formatMajor(params.total, params.money)}`,
     isReady
       ? `Your order is ready for collection — come and collect.${payNote.readySuffix}`
       : params.slotAdjustedFrom && params.slot
@@ -507,12 +529,17 @@ export function formatNewOrderEmail(params: {
   venueTown?: string | null
   venuePostcode?: string | null
   autoAccepted?: boolean
+  /** The ORDER's currency and its country's locale (lib/money-server.ts). */
+  money: MoneyFormat
+  /** The truck's time settings (lib/truck-time.ts) — how its collection time reads (GB: as given). */
+  time: TimeSettings
 }): { subject: string; html: string; text: string } {
-  const { orderId, customerName, customerPhone, slot, items, deals, total, notes,
-          venueName, venueTown, venuePostcode, autoAccepted } = params
+  const { orderId, customerName, customerPhone, items, deals, total, notes,
+          venueName, venueTown, venuePostcode, autoAccepted, money } = params
+  const slot = formatSlot(params.slot, params.time)
 
   // Single-sourced line rendering (now shows deal bundle price + slot-modifier prices too).
-  const orderLinesHtml = renderOrderLinesHtml(items, deals)
+  const orderLinesHtml = renderOrderLinesHtml(items, deals, money)
 
   const subject = `🔔 New order #${orderId} — ${customerName}${slot ? ' · ' + slot : ''}`
   const html = `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
@@ -525,7 +552,7 @@ export function formatNewOrderEmail(params: {
               ${orderLinesHtml}
               <tr style="border-top:2px solid #e2e8f0">
                 <td style="padding-top:8px;font-weight:800">Total</td>
-                <td style="text-align:right;padding-top:8px;font-weight:800">£${total.toFixed(2)}</td>
+                <td style="text-align:right;padding-top:8px;font-weight:800">${formatMajor(total, money)}</td>
               </tr>
             </table>
             ${notes ? `<p><strong>📝 Notes:</strong> ${notes}</p>` : ''}
@@ -533,7 +560,7 @@ export function formatNewOrderEmail(params: {
               ? `<p style="color:#16a34a;font-size:13px;font-weight:600;margin-top:16px">✓ Auto-confirmed — no action needed.</p>`
               : `<p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your HatchGrab dashboard to confirm or reject this order.</p>`}
           </body>`
-  const text = `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}${(venueName || venueTown) ? ' at ' + [venueName, venueTown].filter(Boolean).join(', ') : ''}. Total £${total.toFixed(2)}.${notes ? ' Notes: ' + notes : ''}`
+  const text = `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}${(venueName || venueTown) ? ' at ' + [venueName, venueTown].filter(Boolean).join(', ') : ''}. Total ${formatMajor(total, money)}.${notes ? ' Notes: ' + notes : ''}`
 
   return { subject, html, text }
 }
@@ -657,8 +684,10 @@ export function cancellationPaymentSentence(args: {
   refundedMinor?: number | null
   /** The operator was offered the refund and declined it. Distinct from "not asked". */
   refundDeclined?: boolean
+  /** The ORDER's currency and its country's locale (lib/money-server.ts). */
+  money: MoneyFormat
 }): { html: string; text: string } {
-  const money = (m: number) => `£${(m / 100).toFixed(2)}`
+  const money = (m: number) => formatMinor(m, args.money)
   if (typeof args.refundedMinor === 'number' && args.refundedMinor > 0) {
     const sentence = `${money(args.refundedMinor)} has been refunded to your card. Refunds usually take 5 to 10 business days to appear on your statement, depending on your bank.`
     return { html: `<p>${sentence}</p>`, text: ` ${sentence}` }
@@ -742,8 +771,10 @@ export async function sendRefundEmail(params: {
   amountMinor: number
   /** What the order was charged in total, minor units. Equal to amountMinor on a full refund. */
   chargedMinor: number
+  /** The ORDER's currency and its country's locale (lib/money-server.ts). */
+  money: MoneyFormat
 }): Promise<void> {
-  const money = (m: number) => `£${(m / 100).toFixed(2)}`
+  const money = (m: number) => formatMinor(m, params.money)
   const full = params.amountMinor >= params.chargedMinor
   const remaining = Math.max(0, params.chargedMinor - params.amountMinor)
   const timing = 'Refunds usually take 5 to 10 business days to appear on your statement, depending on your bank.'
@@ -771,7 +802,7 @@ export async function sendRefundEmail(params: {
 }
 
 export async function sendCancellationEmail({
-  to, customerName, orderId, truckName, reason, paymentStatus, paymentState, refundedMinor, refundDeclined,
+  to, customerName, orderId, truckName, reason, paymentStatus, paymentState, refundedMinor, refundDeclined, money: fmt,
 }: {
   to: string
   customerName: string
@@ -789,6 +820,8 @@ export async function sendCancellationEmail({
   refundedMinor?: number | null
   /** The operator was offered the refund and declined it. See cancellationPaymentSentence. */
   refundDeclined?: boolean
+  /** The ORDER's currency and its country's locale (lib/money-server.ts). */
+  money: MoneyFormat
 }): Promise<void> {
   const reasonLine = reason ? `<p style="color:#475569">${reason}</p>` : ''
   // "AUTOMATICALLY" WAS ALWAYS WRONG AND IS MORE WRONG NOW THAT A BUTTON EXISTS.
@@ -807,6 +840,7 @@ export async function sendCancellationEmail({
     paymentState: paymentState ?? (paymentStatus === 'paid' ? 'captured' : undefined),
     refundedMinor,
     refundDeclined,
+    money: fmt,
   })
   const refundLine = money.html
   const refundText = money.text
@@ -831,7 +865,7 @@ export async function sendCancellationEmail({
 }
 
 export async function sendEventCancellationEmail({
-  to, customerName, orderId, truckName, venueName, village, eventDate, note, paymentStatus,
+  to, customerName, orderId, truckName, venueName, village, eventDate, note, paymentStatus, time,
 }: {
   to: string
   customerName: string
@@ -842,10 +876,12 @@ export async function sendEventCancellationEmail({
   eventDate: string | null
   note: string | null
   paymentStatus: string | null
+  /** The truck's time settings (lib/truck-time.ts) — the date in its country's words and order. */
+  time: TimeSettings
 }): Promise<void> {
   const location = [venueName, village].filter(Boolean).join(', ')
   const dateFormatted = eventDate
-    ? new Date(eventDate).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+    ? formatYmd(eventDate, time, { weekday: 'long', day: 'numeric', month: 'long' })
     : null
   const noteLine = note ? `<p>${note}</p>` : ''
   // Same correction as the cancellation email above, for the same reasons.

@@ -1,8 +1,9 @@
 // lib/weekly-post/week.ts — which seven days is "this week", and when does the picker default to next?
 //
 // ── 🔴 THE RULE THIS FILE EXISTS TO MAKE IMPOSSIBLE TO GET WRONG ────────────────────────────────────
-// A weekly post is Monday–Sunday in Europe/London. Get the boundary wrong by an hour and the post for
-// "this week" starts on Sunday, which is wrong in a way an operator would only notice after posting.
+// A weekly post's week is seven days in the TRUCK's zone, starting on its country's first day (Phase 2B):
+// Monday–Sunday for a GB truck (unchanged), Sunday–Saturday for a US one. Get the boundary wrong by an hour
+// and "this week" starts a day early, which an operator would only notice after posting.
 //
 // 🔴 EVERYTHING HERE WORKS ON CALENDAR DATES ('YYYY-MM-DD'), NEVER ON INSTANTS. A calendar date's
 // weekday is a property of the date, not of a timezone or a clock — so once `localDateOfInstant` has
@@ -20,7 +21,9 @@
 
 import { localDateOfInstant } from '@/lib/time-utils'
 
-export const WEEK_TZ = 'Europe/London'
+/** Which clock and which first day a truck's week uses — from its TimeSettings (lib/truck-time.ts). ⛔ No
+ *  default: every caller names the truck's (WEEK_TZ, a fixed Europe/London, is gone). */
+export interface WeekConfig { timeZone: string; weekStart: 'monday' | 'sunday' }
 
 /** Monday-first, because the week is Monday–Sunday. ⚠️ NOT `Date.getDay()`'s Sunday-first numbering. */
 export const WEEKDAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const
@@ -30,11 +33,11 @@ export type WeekChoice = 'this' | 'next'
 
 export interface WeekRange {
   which: WeekChoice
-  /** 'YYYY-MM-DD' Monday. */
+  /** 'YYYY-MM-DD' — the week's first day (Monday for GB, Sunday for US). */
   start: string
-  /** 'YYYY-MM-DD' Sunday. */
+  /** 'YYYY-MM-DD' — its last day. */
   end: string
-  /** The seven dates, Monday first. Always exactly 7. */
+  /** The seven dates, the week's first day first. Always exactly 7. */
   days: string[]
 }
 
@@ -85,9 +88,15 @@ export function mondayOf(ymd: string): string {
   return addDays(ymd, -weekdayOf(ymd))
 }
 
-/** Today's date in London. ⚠️ The only place this module reads a clock. */
-export function todayInWeekTz(now: Date | string = new Date()): string {
-  return localDateOfInstant(now, WEEK_TZ)
+/** Today's date on the truck's clock. ⚠️ The only place this module reads a clock. */
+export function todayInWeekTz(now: Date | string, week: WeekConfig): string {
+  return localDateOfInstant(now, week.timeZone)
+}
+
+/** The first day of the week containing `ymd` — `ymd` itself when it is that day. Monday or Sunday. */
+export function weekStartOf(ymd: string, week: WeekConfig): string {
+  const intoWeek = week.weekStart === 'sunday' ? (weekdayOf(ymd) + 1) % 7 : weekdayOf(ymd)
+  return addDays(ymd, -intoWeek)
 }
 
 /**
@@ -100,8 +109,12 @@ export function todayInWeekTz(now: Date | string = new Date()): string {
  * date is a Friday, Saturday or Sunday", because 00:00 is the start of the day. Reading an hour here
  * would add a clock dependency for no gain and would be wrong for the hour the clocks change.
  */
-export function defaultWeekChoice(now: Date | string = new Date()): WeekChoice {
-  return weekdayOf(todayInWeekTz(now)) >= 4 ? 'next' : 'this'
+export function defaultWeekChoice(now: Date | string, week: WeekConfig): WeekChoice {
+  // The fifth day of the truck's week onwards: Friday for a Monday-first week (unchanged), Thursday for a
+  // Sunday-first one — in both, the last three days of the week.
+  const today = todayInWeekTz(now, week)
+  const intoWeek = week.weekStart === 'sunday' ? (weekdayOf(today) + 1) % 7 : weekdayOf(today)
+  return intoWeek >= 4 ? 'next' : 'this'
 }
 
 /**
@@ -111,15 +124,15 @@ export function defaultWeekChoice(now: Date | string = new Date()): WeekChoice {
  * The default and the meaning are deliberately separate: an operator who switches back to "This week"
  * on a Saturday wants the week they are in, not the one that is ending.
  */
-export function weekRange(which: WeekChoice, now: Date | string = new Date()): WeekRange {
-  const monday = which === 'next'
-    ? addDays(mondayOf(todayInWeekTz(now)), 7)
-    : mondayOf(todayInWeekTz(now))
-  const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i))
-  return { which, start: monday, end: days[6], days }
+export function weekRange(which: WeekChoice, now: Date | string, week: WeekConfig): WeekRange {
+  const first = which === 'next'
+    ? addDays(weekStartOf(todayInWeekTz(now, week), week), 7)
+    : weekStartOf(todayInWeekTz(now, week), week)
+  const days = Array.from({ length: 7 }, (_, i) => addDays(first, i))
+  return { which, start: first, end: days[6], days }
 }
 
 /** Both weeks the picker offers, in order, so the UI has no arithmetic of its own. */
-export function weekOptions(now: Date | string = new Date()): WeekRange[] {
-  return [weekRange('this', now), weekRange('next', now)]
+export function weekOptions(now: Date | string, week: WeekConfig): WeekRange[] {
+  return [weekRange('this', now, week), weekRange('next', now, week)]
 }

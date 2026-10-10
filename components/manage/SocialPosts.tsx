@@ -64,6 +64,8 @@ import {
 import { EventSetupScreen, EventPostModal, renderPng } from '@/components/manage/EventPost'
 import { FeatureGate } from '@/components/FeatureGate'
 import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
+import { formatYmd, type TimeSettings } from '@/lib/time-utils'
+import { useTruckTime } from '@/components/TruckTimeContext'
 import type { Plan } from '@/lib/features'
 /* ══ ⛔ ELEVEN COPY CONSTANTS LEFT THIS IMPORT — 7 October 2026 ════════════════════════════════════
  * They belonged to the pictures library page and to "Post for a place", both of which are gone:
@@ -278,11 +280,10 @@ export type SocialArea = 'create' | 'designs' | 'locations'
 
 /** "Tue 13 Oct" — built from the 'YYYY-MM-DD' PARTS, never `new Date(str)`, which on a date-only value
  *  is UTC midnight and renders as the previous day west of here. */
-export function shortDate(ymd: string | null | undefined): string {
+export function shortDate(ymd: string | null | undefined, ts: TimeSettings | null | undefined): string {
   if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return ''
-  const [y, m, d] = ymd.split('-').map(Number)
-  return new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' })
-    .format(new Date(Date.UTC(y, m - 1, d)))
+  // The truck's words and order (Phase 2B): GB "Tue 13 Oct", US "Tue, Oct 13".
+  return formatYmd(ymd, ts, { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
 /* ⛔ `timeLabel` WAS A SECOND TIME FORMATTER (6 October 2026). It wrote `17:00–20:00` with no spaces
@@ -674,6 +675,7 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
   onFullWidth?: (on: boolean) => void
   manageApi: (action: string, extra?: Record<string, unknown>) => Promise<unknown>
 }) {
+  const ts = useTruckTime() // the truck's clock and words (Phase 2B)
   const [data, setData] = useState<Overview | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [view, setView] = useState<View>({ kind: 'boxes' })
@@ -935,11 +937,14 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
       socialTag: placeById(chosenEvent.placeId)?.socialTag ?? null,
       country: (data.captionBits?.country as 'GB' | 'US' | undefined) ?? 'GB',
       now: new Date(),
+      /* 🔴 THE TRUCK'S ZONE (Phase 2B): "tonight" / "tomorrow" are decided on the truck's clock, not the
+       * operator's device — the zone `event_post` uses for the same caption on the server. */
+      timeZone: ts.timeZone,
     }))
     /* ⚠️ `placeById` AND `data` ARE THE DEPENDENCIES THAT MATTER; `placeById` closes over `places`,
      * which comes out of `data`, so listing `data` covers both. ⛔ `new Date()` IS NOT A DEPENDENCY and
      * must not be — a caption that re-filled every render would retype itself under the operator. */
-  }, [chosenEvent, data, placeById])
+  }, [chosenEvent, data, placeById, ts])
 
   /* ══════════════════════════════════════════════════════════════════════════════════════════════
    * 🔴 §B10 · THE LEAVE DIALOG — BUILT HERE, **ABOVE** THE EARLY RETURNS
@@ -1181,8 +1186,8 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
                   <select id="which-week" value={week} onChange={e => setWeek(e.target.value as 'this' | 'next')}
                     data-week-select
                     className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
-                    <option value="this">This week · {shortDate(data.weekly.thisWeek.start)} – {shortDate(data.weekly.thisWeek.end)}</option>
-                    <option value="next">Next week · {shortDate(data.weekly.nextWeek.start)} – {shortDate(data.weekly.nextWeek.end)}</option>
+                    <option value="this">This week · {shortDate(data.weekly.thisWeek.start, ts)} – {shortDate(data.weekly.thisWeek.end, ts)}</option>
+                    <option value="next">Next week · {shortDate(data.weekly.nextWeek.start, ts)} – {shortDate(data.weekly.nextWeek.end, ts)}</option>
                   </select>
                   {/* 🔴 ONE OF THE TWO ORANGE BUTTONS ON THIS AREA, and it is only drawn when the
                     * design is ready — the empty state above is the other branch. */}
@@ -1383,6 +1388,7 @@ function NextEventHalf({
   chosenId: string | null
   onChoose: (id: string) => void
 }) {
+  const ts = useTruckTime() // the truck's clock and words (Phase 2B)
   /* 🔴 THE DEFAULT IS THE NEXT **PUBLIC** EVENT, not the next event. There is no post for a private
    * booking — the route refuses `event_post` for one — so a private event can never be the chosen one.
    * ⚠️ IT STILL APPEARS IN THE LIST BELOW, greyed, in its date position, because leaving it out would
@@ -1436,7 +1442,7 @@ function NextEventHalf({
         className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
         {events.map(ev => (
           <option key={ev.id} value={ev.id} disabled={ev.isPrivate}>
-            {shortDate(ev.date)} · {ev.isPrivate ? PRIVATE_EVENT_ROW : (ev.venue ?? '—')}
+            {shortDate(ev.date, ts)} · {ev.isPrivate ? PRIVATE_EVENT_ROW : (ev.venue ?? '—')}
             {!ev.isPrivate && ev.town ? ` · ${ev.town}` : ''}
           </option>
         ))}

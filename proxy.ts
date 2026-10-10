@@ -444,8 +444,11 @@ export async function proxy(request: NextRequest) {
   // the 308 lands on '/', which the branch below rewrites straight back to the landing, so the page is
   // reachable and the address bar reads `https://www.hatchgrab.com/`. On villagefoodie.co.uk it lands
   // on the discovery map, which is what a non-admin already got there from app/landing/layout.tsx.
+  // Phase 2D-1: the QUERY travels with it (`?country=US` is how a link picks the visitor's country) — a bare
+  // `new URL('/', …)` would drop it. No query, no change.
   if (pathname === '/landing') {
-    return carrySessionCookies(NextResponse.redirect(new URL('/', request.url), 308))
+    const to = new URL('/', request.url); to.search = request.nextUrl.search
+    return carrySessionCookies(NextResponse.redirect(to, 308))
   }
 
   // ── THE ROOT ───────────────────────────────────────────────────────────────────────────────────────
@@ -459,7 +462,9 @@ export async function proxy(request: NextRequest) {
   // non-admin to /support rather than to '/' precisely to avoid the loop that would otherwise exist.
   // 🔴 EVERY OTHER HOST FALLS THROUGH UNTOUCHED. villagefoodie.co.uk's root still renders app/page.tsx.
   if (pathname === '/' && isHatchGrab(host)) {
-    return carrySessionCookies(NextResponse.rewrite(new URL('/landing', request.url)))
+    // The query rides along so the landing's own searchParams see `?country=` (Phase 2D-1).
+    const to = new URL('/landing', request.url); to.search = request.nextUrl.search
+    return carrySessionCookies(NextResponse.rewrite(to))
   }
 
   return supabaseResponse

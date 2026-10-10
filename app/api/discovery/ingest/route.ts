@@ -15,6 +15,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { admitDiscoveryEvents, type IncomingEvent } from '@/lib/discovery-gate'
+// Phase 2D-2: the batch's country — every current caller (scraper Pass A, the Hatches Up importer) sends 'GB'.
+import { normaliseCountry } from '@/lib/discovery-country'
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 const SECRET = process.env.INBOUND_SCHEDULE_SECRET
@@ -42,15 +44,18 @@ export async function POST(req: NextRequest) {
     if (!date) { dropped.push({ row: e, reason: 'no parseable event_date' }); continue }
     if (!e?.truck_name) { dropped.push({ row: e, reason: 'no truck_name' }); continue }
     rows.push({ event_date: date, start_time: e.start_time || null, end_time: e.end_time || null, truck_name: String(e.truck_name),
-      venue_name: e.venue_name || null, village: e.village || null, event_notes: e.event_notes || null, source: e.source || null, ai_notes: e.ai_notes || null })
+      venue_name: e.venue_name || null, village: e.village || null, event_notes: e.event_notes || null, source: e.source || null, ai_notes: e.ai_notes || null,
+      ...(e.region ? { region: String(e.region) } : {}) })
   }
   const dryRun = body.dry_run === true
-  const result = await admitDiscoveryEvents(supabase, rows, { dryRun })
+  const result = await admitDiscoveryEvents(supabase, rows, { dryRun, country: normaliseCountry(body.country) })
   const failed = result.outcomes.filter(o => o.wrote === 'failed').length
+  // A row left alone because its key belongs to another country (lib/discovery-gate.ts) — reported, not failed.
+  const skipped = result.outcomes.filter(o => o.wrote === 'skipped').length
   // 🔴 A PARTIAL FAILURE IS NOT 200. The scraper's assertInboundOk treats any non-2xx as a failure it
   // must record, which is exactly right: a batch where 3 of 100 rows did not land is a red run.
   const status = failed > 0 ? 207 : 200
-  return NextResponse.json({ ok: failed === 0, dryRun, received: events.length, dropped, written: rows.length - failed, failed,
+  return NextResponse.json({ ok: failed === 0, dryRun, received: events.length, dropped, written: rows.length - failed - skipped, failed, ...(skipped ? { skipped } : {}),
     venuesCreated: result.created, superseded: result.superseded, markFailed: result.markFailed, rejectedByR5: result.rejectedByR5,
     outcomes: result.outcomes }, { status })
 }

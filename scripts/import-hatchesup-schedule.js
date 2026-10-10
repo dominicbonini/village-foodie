@@ -387,7 +387,8 @@ async function main() {
   // ── 1. Load DB state ──────────────────────────────────────────────────────
   const [{ data: hgTrucks }, { data: discTrucks }] = await Promise.all([
     supabase.from('trucks').select('id, name'),
-    supabase.from('discovery_trucks').select('id, name, visibility, logo_url, menu_url'),
+    // Phase 2D-2: hatchesup.co.uk is a British source — it matches and writes GB rows only.
+    supabase.from('discovery_trucks').select('id, name, visibility, logo_url, menu_url').eq('country', 'GB'),
   ]);
 
   const publicDiscTrucks = (discTrucks || []).filter(t => t.visibility !== 'hidden');
@@ -677,18 +678,18 @@ ${scheduleText.slice(0, 150000)}`;
     }
 
     // Upsert discovery_trucks
-    const truckRow = { name: truckName, visibility };
+    const truckRow = { name: truckName, visibility, country: 'GB' };   // Phase 2D-2: a British source
     if (logoUrl) truckRow.logo_url = logoUrl;
     if (menuInfo?.url) { truckRow.menu_url = menuInfo.url; truckRow.order_url = menuInfo.url; }
 
     const { error } = await supabase
       .from('discovery_trucks')
-      .upsert(truckRow, { onConflict: 'name', ignoreDuplicates: false });
+      .upsert(truckRow, { onConflict: 'country,name', ignoreDuplicates: false });   // Phase 2D-2: the country-scoped key
     if (error) console.warn(`   ⚠️  DB write failed for ${truckName}: ${error.message}`);
   }
 
   // ── 7. Write discovery_events ─────────────────────────────────────────────
-  const { data: freshDiscTrucks } = await supabase.from('discovery_trucks').select('id, name');
+  const { data: freshDiscTrucks } = await supabase.from('discovery_trucks').select('id, name').eq('country', 'GB');
   function resolveDiscTruckId(truckName) {
     return freshDiscTrucks?.find(t => nameMatches(t.name, truckName))?.id ?? null;
   }
@@ -724,7 +725,7 @@ ${scheduleText.slice(0, 150000)}`;
   if (!GATE || !SECRET) { console.error('HATCHGRAB_API_URL / INBOUND_SCHEDULE_SECRET unset — nothing written'); process.exit(1); }
   for (let i = 0; i < rows.length; i += 100) {
     const batch = rows.slice(i, i + 100).map(({ visibility, discovery_truck_id, ...r }) => r);
-    const res = await fetch(`${GATE}/api/discovery/ingest`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: SECRET, events: batch }) });
+    const res = await fetch(`${GATE}/api/discovery/ingest`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: SECRET, events: batch, country: 'GB' }) });
     const body = await res.json().catch(() => ({}));
     if (!res.ok) console.warn(`[gate] Batch ${Math.floor(i / 100) + 1}: HTTP ${res.status} — ${body.error ?? `${body.failed ?? '?'} row(s) failed`}`);
     written += body.written ?? 0;

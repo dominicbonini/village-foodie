@@ -37,6 +37,7 @@
 // statement. Nothing calls it today, so today it is inert — the coupling starts in phase 2b.
 
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { ledgerCurrency } from '@/lib/payments/currency'
 
 /** Every column this module reads, in one place. See the deploy-coupling note in the header. */
 export const DRAFT_ROW_COLUMNS = [
@@ -124,9 +125,11 @@ export interface NewOrderDraft {
   subtotal: number
   discountAmt: number
   total: number
-  /** Integer pence, from toMinor(). The amount that will be authorised. */
+  /** Integer minor units, from toMinor(). The amount that will be authorised. */
   totalMinor: number
-  currency?: string
+  /** 🔴 REQUIRED, NO DEFAULT (10 October 2026) — the truck's currency, which the submit route passes. The
+   *  hold is authorised in it (authorize.ts reads this column) and the order inherits it on promotion. */
+  currency: string
 }
 
 /**
@@ -210,7 +213,7 @@ export async function createOrderDraft(
       discount_amt:   draft.discountAmt,
       total:          draft.total,
       total_minor:    draft.totalMinor,
-      currency:       draft.currency ?? 'GBP',
+      currency:       ledgerCurrency(draft.currency, `draft ${draft.orderKey}`),
       // created_at, expires_at and promoted_at are the column defaults. expires_at deliberately is NOT
       // settable from here — see the migration header for why it lives in one place.
     })

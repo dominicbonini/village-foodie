@@ -11,6 +11,9 @@ import { PaymentActionsModal, type RefundSubmit } from '@/components/dashboard/P
 import { BTN_COLOURS } from '@/lib/ui-tokens'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { completionLabel } from '@/lib/order-completion-label'
+import { formatMajorOrBare, formatMinorOrBare, editableAmount, orderMoney, currencySymbolOrBare } from '@/lib/money-format'
+import { MoneyProvider, useMoney } from '@/components/MoneyContext'
+import { timeSettingsOr, formatInstantClock } from '@/lib/time-utils'
 
 export type ViewMode = 'solo' | 'window' | 'cook'
 
@@ -54,12 +57,14 @@ export function Btn({ label, colour, loading, onClick }: {
 export function InlinePriceEditor({ price, quantity, onChange }: {
   price: number; quantity: number; onChange: (p: number) => void
 }) {
+  // The basket's currency — the Add Order panel's provider (the truck's format: this order does not exist yet).
+  const fmt = useMoney()
   const [editing, setEditing] = useState(false)
-  const [val, setVal] = useState(price.toFixed(2))
+  const [val, setVal] = useState(editableAmount(price, fmt))
   if (editing) {
     return (
       <div className="flex items-center gap-1 shrink-0">
-        <span className="text-slate-400 text-xs">£</span>
+        <span className="text-slate-400 text-xs">{currencySymbolOrBare(fmt)}</span>
         <input type="number" value={val} step="0.50" min="0" autoFocus
           onChange={e => setVal(e.target.value)}
           onBlur={() => { onChange(parseFloat(val) || 0); setEditing(false) }}
@@ -69,9 +74,9 @@ export function InlinePriceEditor({ price, quantity, onChange }: {
     )
   }
   return (
-    <button onClick={() => { setVal(price.toFixed(2)); setEditing(true) }}
+    <button onClick={() => { setVal(editableAmount(price, fmt)); setEditing(true) }}
       className="flex items-center gap-1.5 shrink-0 text-right group" title="Tap to override price">
-      <span className="text-slate-900 font-bold text-sm">£{(price * quantity).toFixed(2)}</span>
+      <span className="text-slate-900 font-bold text-sm">{formatMajorOrBare(price * quantity, fmt, 'basket line')}</span>
       <span className="text-slate-300 group-hover:text-orange-400 transition-colors text-xs" aria-hidden>✏</span>
     </button>
   )
@@ -370,7 +375,11 @@ export function OrderCard({
     : pendingPayment === 'pending_unpaid' ? false
     : isPaid
   const effectivePartPaid = pendingPayment ? false : isPartPaid
-  const money = (minor: number) => `£${(minor / 100).toFixed(2)}`
+  // 🔴 THE ORDER'S OWN CURRENCY (orders.currency), laid out in its country's locale. Null on an order that
+  // carries none — the card then shows bare figures and warns, never a £ (see lib/money-format).
+  const fmt = orderMoney(order, truck?.money)
+  const money = (minor: number) => formatMinorOrBare(minor, fmt, 'order card')
+  const amount = (major: number) => formatMajorOrBare(major, fmt, 'order card')
 
   // Dismiss the inline confirm whenever the payment state moves underneath it — the removal landed, or
   // another device changed it — so a stale "Remove payment?" can never sit over an order that is no
@@ -783,13 +792,14 @@ export function OrderCard({
   // (Manual s.7). slotDt is now non-null for ASAP orders whenever the event is
   // known, so urgency and the displayed time become date-aware instead of falling
   // back to ticket age.
-  const slotDt = resolveCollectionTime(order, event ?? null)
+  // 🔴 THE TRUCK'S CLOCK (Phase 2B): the due time is the event's date + slot on the truck's wall clock, and
+  // the label is written in its style — GB "17:00", US "5pm". Was the device's clock.
+  const cardTime = timeSettingsOr(truck?.time, 'order card')
+  const slotDt = resolveCollectionTime(order, event ?? null, cardTime.timeZone)
 
-  // HH:MM to show on the card — the resolved time, so an ASAP order reads "17:00"
+  // The time to show on the card — the resolved time, so an ASAP order reads "17:00"
   // instead of nothing/"658m".
-  const timeLabel = slotDt
-    ? `${String(slotDt.getHours()).padStart(2, '0')}:${String(slotDt.getMinutes()).padStart(2, '0')}`
-    : ''
+  const timeLabel = slotDt ? formatInstantClock(slotDt, cardTime) : ''
 
   const computeOffset = () => slotDt ? getSlotOffset(slotDt) : -999
 
@@ -1127,6 +1137,8 @@ export function OrderCard({
   ) : null
 
   return (
+    // The card's leaves (the payment modal) read the ORDER's format, not the page's.
+    <MoneyProvider fmt={fmt}>
     <div id={anchorId} className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border transition-opacity flex flex-col ${allStruck ? 'opacity-50' : ''} ${conflict === 'payment' ? 'border-red-600 border-2' : conflict === 'status' ? 'border-amber-400' : pendingSync ? 'border-amber-300' : 'border-slate-200'}${highlight ? ' demo-order-highlight' : ''}`}>
 
       {conflictMarker}
@@ -1227,7 +1239,7 @@ export function OrderCard({
                 {/* ⚠️ SOLO IS THE DASHBOARD AND `hideAmounts` DEFAULTS FALSE THERE, so this guard is a
                     constant-false test and this span renders exactly as it always has. The gate is here
                     only because the same header serves any future caller that sets the prop. */}
-                {!hideAmounts && <span className="font-bold text-sm flex-shrink-0">£{Number(order.total).toFixed(2)}</span>}
+                {!hideAmounts && <span className="font-bold text-sm flex-shrink-0">{amount(Number(order.total))}</span>}
                 {paidChip}
               </div>
             </>
@@ -1266,7 +1278,7 @@ export function OrderCard({
                       device renders this header even when its display is set to Cook — so without this
                       guard the order total would print on a Cook card, which is the first thing Cook
                       exists to remove. */}
-                  {!hideAmounts && <span className="font-bold text-base">£{Number(order.total).toFixed(2)}</span>}
+                  {!hideAmounts && <span className="font-bold text-base">{amount(Number(order.total))}</span>}
                   {paidChip}
                   {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
                 </div>
@@ -1381,7 +1393,7 @@ export function OrderCard({
                         ⚠️ THE FALSE ARM IS THE ORIGINAL SPAN, CHILD FOR CHILD, so solo is untouched. */}
                     {!hideAmounts && (
                       <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">
-                        {deal.price != null ? `£${Number(deal.price).toFixed(2)}` : ''}
+                        {deal.price != null ? amount(Number(deal.price)) : ''}
                       </span>
                     )}
                   </div>
@@ -1404,7 +1416,7 @@ export function OrderCard({
                             {mods.map(m => (
                               <div key={m.name} className="flex items-baseline justify-between gap-2">
                                 <span className="flex-1 text-xs text-slate-500">+ {m.name}</span>
-                                {!hideAmounts && m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+£{m.price.toFixed(2)}</span>}
+                                {!hideAmounts && m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+{amount(m.price)}</span>}
                               </div>
                             ))}
                             {note && <span className="text-xs text-slate-500 italic">📝 {note}</span>}
@@ -1465,7 +1477,7 @@ export function OrderCard({
                             ? <span className="text-right tabular-nums w-16 flex-shrink-0 text-xs text-green-500 font-bold">✓</span>
                             : hideAmounts
                               ? null
-                              : <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">£{(line.unit_price * line.quantity).toFixed(2)}</span>
+                              : <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">{amount(line.unit_price * line.quantity)}</span>
                           }
                         </button>
                         {(line.modifiers?.length || line.specialInstructions) && (
@@ -1473,7 +1485,7 @@ export function OrderCard({
                             {line.modifiers?.map(m => (
                               <div key={m.name} className="flex items-baseline justify-between gap-2">
                                 <span className="flex-1 text-xs text-slate-500">+ {m.name}</span>
-                                {!hideAmounts && m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+£{m.price.toFixed(2)}</span>}
+                                {!hideAmounts && m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+{amount(m.price)}</span>}
                               </div>
                             ))}
                             {line.specialInstructions && (
@@ -1554,5 +1566,6 @@ export function OrderCard({
         </div>
       )}
     </div>
+    </MoneyProvider>
   )
 }

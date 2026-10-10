@@ -96,9 +96,17 @@ export async function POST(req: NextRequest) {
     kitchen_capacity: null,
   }
 
+  // Phase 2D-1: the admin form's Country select (switched-on countries only). provisionTruck refuses an
+  // unknown or switched-off country and writes the country, currency and default zone from its settings.
+  const country = typeof body.country === 'string' ? body.country.trim().toUpperCase() : ''
+  if (!/^[A-Z]{2}$/.test(country)) {
+    return NextResponse.json({ error: 'Choose the country the truck is based in.' }, { status: 400 })
+  }
+
   try {
     const result = await provisionTruck(supabase, {
       kind,
+      country,
       name: body.name as string | undefined,
       slug: body.slug as string | undefined,
       plan: body.plan as ProvisionTruckOptions['plan'],

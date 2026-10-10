@@ -3,6 +3,9 @@ import { createClient } from '@supabase/supabase-js'
 import { canAccess } from '@/lib/features'
 import { sendWhatsApp, logMessage } from '@/lib/twilio'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
+import { moneyFormatForTruck } from '@/lib/money-server'
+import { truckTimeSettings } from '@/lib/truck-time'
+import { getLocalDateInTz } from '@/lib/time-utils'
 /* 🔴 PRIVATE EVENTS (20261014): redacted before the reply model sees them. */
 import { redactPrivateRows } from '@/lib/private-events/read'
 
@@ -36,7 +39,8 @@ export async function POST(req: NextRequest) {
       .select(`
         id, name, slug, dashboard_token, truck_emoji,
         whatsapp_sender, whatsapp,
-        plan, feature_overrides, trial_expires_at
+        plan, feature_overrides, trial_expires_at,
+        currency, country, timezone
       `)
       .eq('whatsapp_sender', toNumber)
       .eq('active', true)
@@ -61,7 +65,9 @@ export async function POST(req: NextRequest) {
     )
     }
 
-    const today = new Date().toISOString().split('T')[0]
+    // 🔴 THE TRUCK'S CLOCK (Phase 2B): its today, and the date reference the reply is written against.
+    const truckTime = await truckTimeSettings(truck)
+    const today = getLocalDateInTz(truckTime.timeZone)
     const { data: events } = await supabase
       .from('truck_events')
       /* ⚠️ `id` ADDED 20261014 — only so the privacy probe below has something to ask about. */
@@ -81,6 +87,9 @@ export async function POST(req: NextRequest) {
 
     const hgUrl = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
     const { reply, classification } = await generateWhatsAppReply({
+      // The TRUCK's currency — a reply quotes menu prices, which are not an order yet.
+      money:           await moneyFormatForTruck(truck),
+      time:            truckTime,
       truckName:       truck.name,
       truckEmoji:      truck.truck_emoji ?? '',
       truckId:         truck.id,

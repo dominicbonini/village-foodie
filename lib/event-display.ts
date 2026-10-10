@@ -8,7 +8,7 @@
 // ⚠️ THESE ARE PRESENTATION ONLY. Neither reads or writes anything, neither knows about status, and
 // neither is on a money path. They decide what an operator READS, and the two surfaces that show an
 // event bar must read the same thing or the same event looks like two events.
-import { getLocalDateInTz } from '@/lib/time-utils'
+import { getLocalDateInTz, addDaysYmd, formatYmd, formatOrdinalDate, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 
 /** "The Bell — Castle Hedingham", or just the venue when the town is already inside its name.
  *  ⚠️ LIFTED VERBATIM from app/dashboard/[token]/page.tsx — the em dash, the `toLowerCase().includes`
@@ -24,7 +24,7 @@ export function fmtVenue(venueName?: string | null, town?: string | null): strin
 
 /** "Today 17th August" · "Tomorrow 18th August" · "Monday 19th August".
  *  ⚠️ LIFTED VERBATIM from the dashboard page, including the ordinal table and the UTC construction.
- *  🔴 EUROPE/LONDON IS THE REFERENCE CLOCK, NOT THE DEVICE'S. `getLocalDateInTz('Europe/London')`
+ *  🔴 THE TRUCK'S ZONE IS THE REFERENCE CLOCK, NOT THE DEVICE'S. `getLocalDateInTz(ts.timeZone)`
  *  decides what "today" means, so a tablet left on the wrong timezone still agrees with the dashboard
  *  and with the event's own `event_date`. Do not swap it for `new Date()`.
  *  ⚠️ The event date itself is parsed as UTC (`Date.UTC`) and formatted with `timeZone:'UTC'`, so a
@@ -44,23 +44,22 @@ export function fmtVenue(venueName?: string | null, town?: string | null): strin
  * AddOrderPanel: `Today` / `Tomorrow` / `Sat 6 Sep`). Compact is AddOrderPanel's shape, because it is
  * the one that distinguishes tomorrow — the distinction an operator actually acts on.
  */
-export function eventDateLabel(dateStr: string, style: 'long' | 'compact' = 'long'): string {
-  const ordinal = (n: number) => { const v = n % 100; const s = ['th', 'st', 'nd', 'rd']; return `${n}${s[(v - 20) % 10] || s[v] || s[0]}` }
-  const todayStr = getLocalDateInTz('Europe/London')
-  const [ty, tm, td] = todayStr.split('-').map(Number)
-  const tmw = new Date(Date.UTC(ty, tm - 1, td + 1))
-  const tomorrowStr = `${tmw.getUTCFullYear()}-${String(tmw.getUTCMonth() + 1).padStart(2, '0')}-${String(tmw.getUTCDate()).padStart(2, '0')}`
-  const [ey, em, ed] = dateStr.split('-').map(Number)
-  const d = new Date(Date.UTC(ey, em - 1, ed))
+export function eventDateLabel(dateStr: string, ts: TimeSettings | null | undefined, style: 'long' | 'compact' = 'long'): string {
+  // 🔴 THE TRUCK'S CLOCK DECIDES "today" (Phase 2B; was a fixed Europe/London), and its country's order
+  // writes the date: GB "Today 9th October" / "Fri 9 Oct", US "Today, October 9th" / "Fri, Oct 9".
+  const s = timeSettingsOr(ts, 'eventDateLabel')
+  const todayStr = getLocalDateInTz(s.timeZone)
+  const tomorrowStr = addDaysYmd(todayStr, 1)
   if (style === 'compact') {
     if (dateStr === todayStr) return 'Today'
     if (dateStr === tomorrowStr) return 'Tomorrow'
-    return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
+    return formatYmd(dateStr, s, { weekday: 'short', day: 'numeric', month: 'short' })
   }
-  const dayLabel = `${ordinal(ed)} ${d.toLocaleDateString('en-GB', { month: 'long', timeZone: 'UTC' })}`
-  if (dateStr === todayStr) return `Today ${dayLabel}`
-  if (dateStr === tomorrowStr) return `Tomorrow ${dayLabel}`
-  return `${d.toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'UTC' })} ${dayLabel}`
+  const dayLabel = formatOrdinalDate(dateStr, s, false)
+  const sep = s.dateOrder === 'mdy' ? ', ' : ' '
+  if (dateStr === todayStr) return `Today${sep}${dayLabel}`
+  if (dateStr === tomorrowStr) return `Tomorrow${sep}${dayLabel}`
+  return formatOrdinalDate(dateStr, s, true)
 }
 
 // ── THE EVENT STATUS LABEL — ONE MAPPING, TWO HEADERS ──────────────────────────────────────────────

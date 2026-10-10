@@ -89,7 +89,10 @@ export async function POST(req: NextRequest) {
     if (!prospectId) return NextResponse.json({ error: 'prospect_id required' }, { status: 400 })
     let pdf: Buffer
     try {
-      pdf = await generatePlansPdf()
+      // 🔴 'GB', EXPLICITLY: outreach prospects have no country yet (discovery_trucks / outreach_prospects
+      // carry none — docs/international-audit-report.md §N-01), so every prospect is sent the UK price
+      // list. When a prospect carries a country, pass it here instead of this literal.
+      pdf = await generatePlansPdf('GB')
     } catch (err) {
       console.error('[outreach/attachments] plans PDF generation failed:', (err as { message?: string })?.message || err)
       return refuse('The plans PDF could not be generated just now. Try again, or attach a saved copy.')

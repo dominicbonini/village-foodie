@@ -32,7 +32,10 @@ import {
 // 🔴 EVERY FIGURE ON THIS PAGE COMES FROM CARD_FEES, VIA THESE LABELS. No rate is written as a literal
 // anywhere below — the landing page carries the same rule and the same reason: a rate typed twice is a
 // rate that disagrees with itself the first time one of them moves.
-import { CARD_FEE_ONLINE_LABEL, CARD_FEE_IN_PERSON_LABEL, TAP_TO_PAY_SURCHARGE_LABEL } from '@/lib/plan-features'
+import { cardFeeOnlineLabel, cardFeeInPersonLabel, tapToPaySurchargeLabel, cardRegionOnline, cardRegionInPerson } from '@/lib/plan-features'
+// The truck's own country's card fees and wording, from the provider the manage page mounts (never read by
+// the browser from the table — see components/CountrySettingsProvider.tsx).
+import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { CONNECTING_STRIPE_NOT_A_COMMITMENT } from '@/lib/settings-copy'
 import {
   derivePaymentsState, shouldMountNotificationBanner, shouldShowOnboarding, shouldOfferAccountManagement,
@@ -139,6 +142,7 @@ export function PaymentsTab({ token, plan, showToast }: {
    *  shared dashboard PIN and is what Manage already has. See the route's requireOwner note. */
   showToast: (msg: string, type?: 'success' | 'error') => void
 }) {
+  const cs = useCountrySettings()
   const [status, setStatus] = useState<Status | null>(null)
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
@@ -492,7 +496,7 @@ export function PaymentsTab({ token, plan, showToast }: {
           )}
           {/* ── 🔴 WHOSE FEE THIS IS, STATED — AND IT IS NOT OURS ────────────────────────────────
               TWO FEES, TWO OWNERS, NEITHER QUANTIFIED TWICE.
-              🔴 STRIPE'S rate is named as Stripe's and comes from CARD_FEES. 🔴 HATCHGRAB'S platform fee
+              🔴 STRIPE'S rate is named as Stripe's and comes from cardFees(). 🔴 HATCHGRAB'S platform fee
               on online orders is NAMED but NOT QUANTIFIED — it depends on the plan, so the line points
               at Billing instead of carrying a figure.
               ⚠️ NAMING IT WAS THE CORRECTION (10 August 2026). Quoting only Stripe's rate implied
@@ -501,14 +505,14 @@ export function PaymentsTab({ token, plan, showToast }: {
               of the plan, they already live on Billing, and the manual records what restating the same
               fee facts across surfaces has cost before. A figure here also invites an operator to add
               the two rates together, which is not how either works.
-              ⚠️ FROM CARD_FEES, never a literal — and it carries the qualifier CARD_FEES itself
+              ⚠️ FROM cardFees(), never a literal — and it carries the qualifier cardFees() itself
               instructs: the rate is for standard UK cards, and cards issued outside the UK/EEA cost
               more, because "quoting the domestic rate alone would be a claim that is untrue for some
               customers".
               ⚠️ ONE LINE. Detail belongs in the plan pricing, not on this page. */}
           <p className="text-xs text-slate-500 mt-3">
-            Stripe charges {CARD_FEE_ONLINE_LABEL} per payment on standard UK cards. Cards issued outside
-            the UK and EEA cost more. HatchGrab&apos;s own fee on online orders depends on your plan — see Billing.
+            Stripe charges {cardFeeOnlineLabel(cs)} per payment on {cardRegionOnline(cs)}. Other cards may
+            cost more. HatchGrab&apos;s own fee on online orders depends on your plan — see Billing.
           </p>
           {/* ── 🔴 TEST MODE SAYS SO; LIVE MODE SAYS NOTHING. THE ASYMMETRY IS THE POINT. ──────────
               This line was once an unconditional literal reading "Test mode…" whatever keys were set —
@@ -745,18 +749,18 @@ export function PaymentsTab({ token, plan, showToast }: {
                 straight from your phone or tablet.
               </span>
               {/* 🔴 EVERY FIGURE FROM CARD_FEES. No literal rate.
-                  ⚠️ TWO THINGS CARD_FEES ITSELF INSTRUCTS US TO SAY, and both are said here:
+                  ⚠️ TWO THINGS cardFees() ITSELF INSTRUCTS US TO SAY, and both are said here:
                     • the in-person rate is for UK/EEA-issued cards, and cards issued elsewhere cost MORE
                       — quoting the domestic rate alone "would be a claim that is untrue for some
                       customers";
                     • the Tap to Pay surcharge is stated SEPARATELY, never folded into the headline rate,
                       because folding it "would understate the cost for exactly the trucks most likely to
                       use it".
-                  ⚠️ CARD_FEES holds no reader price or hardware cost, so none is quoted. If one is ever
-                  needed it goes in CARD_FEES first, not into this string. */}
+                  ⚠️ cardFees() holds no reader price or hardware cost, so none is quoted. If one is ever
+                  needed it goes in cardFees() first, not into this string. */}
               <span className="block text-xs text-slate-400 mt-1">
-                {CARD_FEE_IN_PERSON_LABEL} per payment on UK and EEA cards, plus {TAP_TO_PAY_SURCHARGE_LABEL} for
-                contactless taken on a phone or tablet. Cards issued outside the UK and EEA cost more.
+                {cardFeeInPersonLabel(cs)} per payment on {cardRegionInPerson(cs)}, plus {tapToPaySurchargeLabel(cs)} for
+                contactless taken on a phone or tablet. Other cards may cost more.
               </span>
             </span>
           </div>

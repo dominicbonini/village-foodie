@@ -30,14 +30,16 @@
 // pence — see §16 on `orders.total_minor`.
 import { useState, useMemo } from 'react'
 import { DemoCta } from '@/components/landing/DemoUpload'
-import { PLAN_MONTHLY_PENCE } from '@/lib/features'
+import { planMonthlyMinor } from '@/lib/features'
 import {
-  PLAN_ONLINE_ALLOWANCE,
-  PLATFORM_FEE_OVER_ALLOWANCE,
+  platformFeeOverAllowance,
   allowanceAmountLabel,
-  allowancePenceFor,
-  CARD_FEES,
+  allowanceMinorFor,
+  cardFees,
 } from '@/lib/plan-features'
+import type { CountrySettings } from '@/lib/country-settings-types'
+import { toMajor, formatMajor, smallFeeLabel, minorDigits, type MoneyFormat } from '@/lib/money-format'
+import { moneyFormatOf } from '@/lib/country-settings-types'
 
 const ORANGE = '#EF8B2C'
 
@@ -67,54 +69,51 @@ const CREAM = '#FFF7EE'
 const INK = '#1A2233'
 const SLATE = '#334155'
 
-// ── THE REAL NUMBERS, RESOLVED ONCE AT MODULE LOAD ─────────────────────────────────────────────────
-// 🔴 DELIBERATELY AT MODULE SCOPE, NOT INSIDE THE COMPONENT. `allowancePenceFor` THROWS if a tier stops
-// being a `{ kind: 'amount' }` — the loud failure the union is there to force. Resolving it here means
-// that failure happens at import, before anything renders, rather than mid-interaction on a page that
-// has already told someone a number. An unreachable state should break the build, not the third click.
-// ⚠️ The union's other two cases ('none' for starter, 'unlimited' for trial) are unreachable because
-// this page only ever offers pro and max, and `allowancePenceFor` is typed to those two — so the
-// exhaustiveness is enforced by the compiler first and by the throw second.
-const PLANS = {
-  pro: {
-    name: 'Pro',
-    monthly: PLAN_MONTHLY_PENCE.pro / 100,
-    allowance: allowancePenceFor('pro') / 100,
-    allowanceLabel: allowanceAmountLabel(allowancePenceFor('pro')),
-  },
-  max: {
-    name: 'Max',
-    monthly: PLAN_MONTHLY_PENCE.max / 100,
-    allowance: allowancePenceFor('max') / 100,
-    allowanceLabel: allowanceAmountLabel(allowancePenceFor('max')),
-  },
-} as const
-
-const CARD_PCT = CARD_FEES.online.pct
-const CARD_PENCE = CARD_FEES.online.pence
-const OVERAGE = PLATFORM_FEE_OVER_ALLOWANCE.pct
+// ── THE REAL NUMBERS, FROM THE MARKETING COUNTRY'S SETTINGS ─────────────────────────────────────────
+// These were module constants until 10 October 2026; they now come from country_settings, which the
+// server page reads (lib/marketing-country.ts) and passes in. 🔴 STILL LOUD: `allowanceMinorFor` and
+// `planMonthlyMinor` THROW on an undecided price or a tier that stops being an amount, and the page is
+// server-rendered, so that failure happens on the server before anything reaches a visitor — not on the
+// third click of a page that has already told someone a number.
+// ⚠️ The allowance union's other two cases ('none' for starter, 'unlimited' for trial) are unreachable
+// because this page only ever offers pro and max, and `allowanceMinorFor` is typed to those two.
+// ⚠️ toMajor, NOT `/ 100` — the manual's "never hardcode ×100" (zero-decimal currencies exist).
+function pricingFrom(s: CountrySettings) {
+  const cur = s.currency
+  const PLANS = {
+    pro: {
+      name: 'Pro',
+      monthly: toMajor(planMonthlyMinor('pro', s), cur),
+      allowance: toMajor(allowanceMinorFor('pro', s), cur),
+      allowanceLabel: allowanceAmountLabel(allowanceMinorFor('pro', s), s),
+    },
+    max: {
+      name: 'Max',
+      monthly: toMajor(planMonthlyMinor('max', s), cur),
+      allowance: toMajor(allowanceMinorFor('max', s), cur),
+      allowanceLabel: allowanceAmountLabel(allowanceMinorFor('max', s), s),
+    },
+  } as const
+  // Card processing is STRIPE'S, the overage is OURS — two functions, two owners (lib/plan-features.ts).
+  const CARD_PCT = cardFees(s).online.pct
+  const CARD_PENCE = cardFees(s).online.fixedMinor
+  const OVERAGE = platformFeeOverAllowance(s).pct
+  return { PLANS, CARD_PCT, CARD_PENCE, OVERAGE }
+}
 
 // Average order value. ⚠️ THE ONE FIGURE ON THIS PAGE THAT IS OURS RATHER THAN SOURCED — it converts
 // order VALUE into an order COUNT so a per-order fee can be applied. The small print states it.
 const AOV = 15
 
-// ── 🔴 GROUPING WITHOUT toLocaleString, AND THE REASON IS RECORDED ─────────────────────────────────
-// lib/plan-features.ts's `allowanceAmountLabel` avoids toLocaleString because ICU availability differs
-// between the build host and the browser: a trimmed-ICU runtime renders 1500 rather than 1,500. This
-// page shows an allowance from THAT helper alongside its own computed figures, so if these used a
-// locale helper the same screen could show "£1,500" and "£1500" at once. Same regex, same result,
-// everywhere.
-function group(intPart: string): string {
-  return intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
-
-/** "£1,234" / "£12.34". The page's own dynamic figures. Whole pounds by default. */
-function gbp(n: number, dp = 0): string {
+// ── THE PAGE'S OWN FIGURES, IN THE MARKETING COUNTRY'S CURRENCY (Phase 2A) ───────────────────────────
+// Through lib/money-format, grouped ("£1,234") and with the sign before the symbol ("-£5"), exactly as the
+// hand-rolled helper this replaces printed them. ⚠️ The ICU worry recorded here before (a trimmed-ICU
+// runtime printing "£1500") is measured now, not avoided: scripts/country-settings-parity.cjs renders this
+// page and compares it, and lib/plan-features' allowance label is on the same formatter.
+/** "£1,234" / "£12.34". The page's own dynamic figures. Whole units by default. */
+function gbpIn(f: MoneyFormat, n: number, dp = 0): string {
   const safe = Number.isFinite(n) ? n : 0
-  const fixed = Math.abs(safe).toFixed(dp)
-  const [int, frac] = fixed.split('.')
-  const sign = safe < 0 ? '-' : ''
-  return `${sign}£${group(int)}${frac ? '.' + frac : ''}`
+  return formatMajor(safe, f, { grouping: true, decimals: dp, minusBeforeSymbol: true })
 }
 
 // ── 🔴 MONEY TO THE PENNY, EXCEPT UNDER A POUND ───────────────────────────────────────────────────
@@ -125,10 +124,10 @@ function gbp(n: number, dp = 0): string {
 // place. This adds a case to the formatter; it does not become a second formatter.
 // ⚠️ ROUNDED, NOT TRUNCATED, and rounded on the PENCE: 0.8019… × 100 = 80.19… → "80p". Truncating
 // would render 0.999 as "99p" when the next line up says "£1.00".
-function money(n: number): string {
+function moneyIn(f: MoneyFormat, n: number): string {
   const safe = Number.isFinite(n) ? n : 0
-  if (Math.abs(safe) < 1) return `${Math.round(Math.abs(safe) * 100)}p`
-  return gbp(safe, 2)
+  if (Math.abs(safe) < 1) return smallFeeLabel(Math.round(Math.abs(safe) * 10 ** minorDigits(f.currency)), f)
+  return gbpIn(f, safe, 2)
 }
 
 // ── 🔴 A MONTHLY FIGURE AS A TRADING DAY, ON THE CALENDAR AND NOT ON A ROUND NUMBER ───────────────
@@ -181,13 +180,13 @@ function freeMonthsLine(n: number): string | null {
 // ⚠️ THIS COMPARES gbp(n) TO gbp(0). The decision is therefore made on THE STRING THE OPERATOR WILL
 // ACTUALLY SEE, so the display and the claim cannot diverge by construction — whatever gbp() does later,
 // this follows it. There is no magic number to drift.
-function rendersAsZero(n: number): boolean {
-  return gbp(n) === gbp(0)
+function rendersAsZeroIn(f: MoneyFormat, n: number): boolean {
+  return gbpIn(f, n) === gbpIn(f, 0)
 }
 
 /** Do we announce a SAVING? Only when it is positive AND survives formatting. */
-function isRealSaving(n: number): boolean {
-  return n > 0 && !rendersAsZero(n)
+function isRealSavingIn(f: MoneyFormat, n: number): boolean {
+  return n > 0 && !rendersAsZeroIn(f, n)
 }
 
 /** A number from free text, or the fallback. Number inputs can still yield '', '-', '1e5' and 'abc'. */
@@ -235,7 +234,17 @@ function anchor(v: number): string | null {
 // 🔴 DO NOT ADD A PROVIDER HERE TO "MAKE THIS COMPONENT SELF-CONTAINED". A second provider would give
 // these two CTAs their own `open` state, invisible to the <DemoModal /> mounted under the first one, and
 // the buttons would simply do nothing when clicked. No error, no warning — a dead CTA.
-export default function CostComparison() {
+export default function CostComparison({ settings }: {
+  /** The marketing country's settings, read server-side by app/compare/page.tsx. */
+  settings: CountrySettings
+}) {
+  const { PLANS, CARD_PCT, CARD_PENCE, OVERAGE } = useMemo(() => pricingFrom(settings), [settings])
+  // The marketing country's money format, and the page's helpers bound to it (same names, same calls).
+  const fmt = moneyFormatOf(settings)
+  const gbp = (n: number, dp = 0) => gbpIn(fmt, n, dp)
+  const money = (n: number) => moneyIn(fmt, n)
+  const isRealSaving = (n: number) => isRealSavingIn(fmt, n)
+  const rendersAsZero = (n: number) => rendersAsZeroIn(fmt, n)
   // ── 🔴 THE FIRST QUESTION, AND IT HAS NO DEFAULT ─────────────────────────────────────────────────
   // The page assumed every visitor already pays another provider, so a truck with no system at all was
   // asked what it pays per order and then shown a "saving" against a number it had invented for itself.
@@ -262,17 +271,15 @@ export default function CostComparison() {
   // ⚠️ RAW STRINGS, NOT NUMBERS, FOR EVERY FREE-ENTRY FIELD. A number-typed state cannot represent "the
   // box is empty while I retype it": `+''` is 0, so clearing the field would snap the value to zero and
   // fight the operator's cursor. The string is what the input shows; `numOr` is what the maths reads.
-  // 🔴 4.5% + 20p IS THE COMPETITOR'S PUBLISHED RATE, NOT OURS. §21 records Hatches Up's cost model as
-  // "4.5% + 20p all-in on online orders". These are the prefill for what the operator pays TODAY, so
-  // they are correctly literals here and must NOT be wired to CARD_FEES. ⚠️ The 20p coincidentally
-  // equals CARD_FEES.online.pence — do not "tidy" it into that constant; they are different companies'
-  // numbers that happen to match, and the page subtracts one from the other.
-  const [feePctRaw, setFeePctRaw] = useState('4.5')
-  const [feePenceRaw, setFeePenceRaw] = useState('20')
+  // 🔴 NO PREFILL (decided 10 October 2026). Both boxes start EMPTY, with neutral placeholders: the page
+  // asks what the operator pays rather than suggesting a rate, and names no other provider anywhere. The
+  // country_settings.competitor_* columns that used to fill these are retired and unread (20261010_10).
+  const [feePctRaw, setFeePctRaw] = useState('')
+  const [feePenceRaw, setFeePenceRaw] = useState('')
   const [freeMonthsRaw, setFreeMonthsRaw] = useState('1')
   // ── 🔴 IS THE RATE THEY TYPED ALL-IN, OR PLATFORM-ONLY? ──────────────────────────────────────────
   // The page used to assume ALL-IN unconditionally and subtract card processing out of it. That is
-  // right for the rate we prefill (§21 records Hatches Up as "4.5% + 20p all-in") and WRONG for any
+  // right for a provider that quotes one all-in rate and WRONG for any
   // provider that quotes a platform fee and bills card processing separately: 3% + 20p platform-only
   // was being read as 3% + 20p all-in and shown as 1.5% + 0p, understating their cost and therefore
   // understating the saving. ⚠️ DEFAULTS TO 'inclusive' — the previous behaviour, so an operator who
@@ -282,6 +289,8 @@ export default function CostComparison() {
 
   const feePct = numOr(feePctRaw, 0)
   const feePence = numOr(feePenceRaw, 0)
+  // Has the operator typed what they pay? Either box counts. Until then the "Yes" path shows no result.
+  const rateTyped = feePctRaw.trim() !== '' || feePenceRaw.trim() !== ''
   const freeMonths = numOr(freeMonthsRaw, 0)
 
   // ── 🔴 ONE PLACE DECIDES THE ACTIVE PLAN, AND EVERYTHING DOWNSTREAM ALREADY READS IT. ───────────
@@ -365,7 +374,8 @@ export default function CostComparison() {
       pctY2: theirsYear > 0 ? ((theirsYear - oursY2) / theirsYear) * 100 : 0,
       twoYear: theirsYear * 2 - (oursY1 + oursY2),
     }
-  }, [gmv, feePct, feePence, feeMode, plan, free, allowance, fleet])
+  // CARD_PCT / CARD_PENCE / OVERAGE are the settings' (memoised above on `settings`), so they are listed.
+  }, [gmv, feePct, feePence, feeMode, plan, free, allowance, fleet, CARD_PCT, CARD_PENCE, OVERAGE])
 
   // 🔴 EVERY PLACE THAT ANNOUNCES A SAVING AS A FIGURE HANGS OFF THIS, so they cannot disagree: the
   // hero heading, the hero colour, the "that's a new fryer" anchor and the primary CTA label.
@@ -529,8 +539,8 @@ export default function CostComparison() {
                 is a block inside a left-aligned card, not a centred island, so plain block flow is
                 already correct and adding a width would be the exact mistake that broke the hero twice.
                 🔴 EVERY NUMBER IS INTERPOLATED. `gbp(plan)` resolves through `tier.monthly` to
-                `PLAN_MONTHLY_PENCE`; `tier.allowanceLabel` through `allowancePenceFor` to
-                `PLAN_ONLINE_ALLOWANCE`. ⚠️ NO £29, £49, £1,500 OR £2,000 IS WRITTEN IN THIS FILE.
+                `planMonthlyMinor()`; `tier.allowanceLabel` through `allowanceMinorFor` to
+                `planOnlineAllowance()` (country_settings). ⚠️ NO £29, £49, £1,500 OR £2,000 IS WRITTEN IN THIS FILE.
                 ⚠️ "on each" IS GATED ON `fleet`, NOT ON `staff` — the allowance is per truck, so it only
                 means anything when there is more than one truck to spread it across. */}
             {staff && (
@@ -669,8 +679,8 @@ export default function CostComparison() {
                 <span className="mb-1 block text-xs font-semibold text-slate-600">Percentage</span>
                 <div className="flex items-center rounded-lg border px-3" style={{ borderColor: '#CBD5E1' }}>
                   <input type="number" step={0.1} min={0} max={30} inputMode="decimal" value={feePctRaw}
-                    onChange={e => setFeePctRaw(e.target.value)}
-                    className="w-full min-w-0 py-2 text-xl font-black tabular-nums focus:outline-none focus-visible:ring-2"
+                    onChange={e => setFeePctRaw(e.target.value)} placeholder="Your rate"
+                    className="w-full min-w-0 py-2 text-xl font-black tabular-nums placeholder:text-base placeholder:font-semibold placeholder:text-slate-400 focus:outline-none focus-visible:ring-2"
                     aria-label="Percentage fee" />
                   <span className="pl-1 text-lg font-bold text-slate-400">%</span>
                 </div>
@@ -679,8 +689,8 @@ export default function CostComparison() {
                 <span className="mb-1 block text-xs font-semibold text-slate-600">Plus per order</span>
                 <div className="flex items-center rounded-lg border px-3" style={{ borderColor: '#CBD5E1' }}>
                   <input type="number" step={1} min={0} inputMode="numeric" value={feePenceRaw}
-                    onChange={e => setFeePenceRaw(e.target.value)}
-                    className="w-full min-w-0 py-2 text-xl font-black tabular-nums focus:outline-none focus-visible:ring-2"
+                    onChange={e => setFeePenceRaw(e.target.value)} placeholder="Your fee"
+                    className="w-full min-w-0 py-2 text-xl font-black tabular-nums placeholder:text-base placeholder:font-semibold placeholder:text-slate-400 focus:outline-none focus-visible:ring-2"
                     aria-label="Pence per order" />
                   <span className="pl-1 text-lg font-bold text-slate-400">p</span>
                 </div>
@@ -934,7 +944,7 @@ export default function CostComparison() {
                   <div className="h-px" style={{ backgroundColor: '#E2E8F0' }} />
                   <BRow label="HatchGrab each month" amount={money(m.oursPerTruck)} bold orange />
                   {free >= 1 && (
-                    <BRow small label={free === 1 ? 'Month 1' : `Months 1–${free}`} amount="£0 — on us" />
+                    <BRow small label={free === 1 ? 'Month 1' : `Months 1–${free}`} amount={`${gbp(0)} — on us`} />
                   )}
                   {fleet > 1 && (
                     <BRow small label={`Across ${fleet} vans`} amount={`${money(m.oursMonth)} a month`} />
@@ -942,7 +952,7 @@ export default function CostComparison() {
                 </div>
                 {/* ── 🔴 STRIPE'S FEE, NAMED AS STRIPE'S, AND NOT IN OUR TOTAL ──────────────────────
                     It sits in its own inset BELOW the rule precisely so it cannot be read as part of the
-                    HatchGrab line above it. 🔴 DERIVED FROM `CARD_FEES` ONLY — these are Stripe's rates,
+                    HatchGrab line above it. 🔴 DERIVED FROM `cardFees()` ONLY — these are Stripe's rates,
                     we do not set them, and the "~" is the hedge lib/plan-features.ts requires on them.
                     ⚠️ THE SECOND SENTENCE IS THE POINT OF SHOWING IT AT ALL: an operator comparing this
                     against "nothing" needs to know the fee is not new money, it is the money they already
@@ -960,6 +970,15 @@ export default function CostComparison() {
                 </div>
               </div>
             </>
+            ) : !rateTyped ? (
+            /* ── 🔴 THE "Yes" PATH SHOWS NO RESULT UNTIL A RATE IS TYPED (Phase 2A, decided) ───────────────
+               Before, an empty rate read as 0% + 0p, so the page computed a "saving" against a provider that
+               charges nothing — a figure from an assumption the operator never made. Until they type what
+               they pay, there is nothing to compare against, so the result is replaced by the one sentence
+               that says what to do. */
+            <p className="rounded-2xl border bg-white p-6 text-center text-base font-semibold text-slate-600 shadow-sm" style={{ borderColor: '#E2E8F0' }}>
+              Enter what you pay now to see your saving.
+            </p>
             ) : (
             <>
             <div className="overflow-hidden rounded-2xl border-2 bg-white shadow-lg" style={{ borderColor: ORANGE }}>
@@ -1297,9 +1316,9 @@ export default function CostComparison() {
             </div>
             ) : (
             <div className="rounded-2xl border bg-white p-5 shadow-sm md:p-6" style={{ borderColor: '#E2E8F0' }}>
-              <YearLine label="Year one" theirs={m.theirsYear} ours={m.oursY1} save={m.saveY1} pct={m.pctY1} />
+              <YearLine fmt={fmt} label="Year one" theirs={m.theirsYear} ours={m.oursY1} save={m.saveY1} pct={m.pctY1} />
               <div className="my-5 h-px" style={{ backgroundColor: '#F1F5F9' }} />
-              <YearLine label="Year two" theirs={m.theirsYear} ours={m.oursY2} save={m.saveY2} pct={m.pctY2} />
+              <YearLine fmt={fmt} label="Year two" theirs={m.theirsYear} ours={m.oursY2} save={m.saveY2} pct={m.pctY2} />
 
               {/* Same test as the CTA: a two-year total that prints as £0 does not get announced.
                   ⚠️ THE "LEFT, NOT CENTRED, SO THE CARD SHARES ONE EDGE" RULE IS DELIBERATELY OVERRIDDEN
@@ -1329,7 +1348,7 @@ export default function CostComparison() {
                   ⚠️ Every other figure here is about THIS operator's situation. That one was about our
                   position in the market. `effTheirs` and `effOurs` were deleted with it. */}
               {/* ⚠️ THE "Adjust plan prices" TOGGLE AND ITS TWO INPUTS WERE DELETED (23 August 2026).
-                  Prices come from PLAN_MONTHLY_PENCE and an operator must not be able to edit them — an
+                  Prices come from planMonthlyMinor() (country_settings) and an operator must not be able to edit them — an
                   editable price on a page that computes a saving is a page that can be made to say
                   anything. The `proPrice`/`maxPrice`/`open` state went with them. */}
             </div>
@@ -1402,9 +1421,13 @@ export default function CostComparison() {
   )
 }
 
-function YearLine({ label, theirs, ours, save, pct }: {
+function YearLine({ label, theirs, ours, save, pct, fmt }: {
   label: string; theirs: number; ours: number; save: number; pct: number
+  /** The marketing country's money format. */
+  fmt: MoneyFormat
 }) {
+  const gbp = (n: number, dp = 0) => gbpIn(fmt, n, dp)
+  const isRealSaving = (n: number) => isRealSavingIn(fmt, n)
   return (
     <div>
       {/* ── ⚠️ TOP-DOWN, ALL LEFT-ALIGNED (23 August 2026). ─────────────────────────────────────────

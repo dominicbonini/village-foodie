@@ -97,7 +97,10 @@ function runSuite({ decide, isLimit, monthStart, view, canSend, plan }) {
     usage.monthResetLocalDate('Europe/London', at2330) === '2026-11-01')
   t('reset date mid-September is 1 October',
     usage.monthResetLocalDate('Europe/London', new Date('2026-09-15T12:00:00Z')) === '2026-10-01')
-  t('a null timezone falls back to Europe/London', usage.truckTimezone(null) === 'Europe/London')
+  // Phase 2B (10 October 2026): the London fallback for a truck with no zone is GONE, by design — a truck's
+  // zone is trucks.timezone, else its country's default, from lib/truck-time.ts, and nothing defaults to a
+  // zone of its own. Re-aimed from "a null timezone falls back to Europe/London".
+  t('🔴 no default zone here any more: truckTimezone (null → London) is gone', usage.truckTimezone === undefined && usage.DEFAULT_TRUCK_TZ === undefined)
 
   // ── THE VALIDATOR ───────────────────────────────────────────────────────────────────────────────
   for (const v of [250, 500, 1000, 2000, 5000]) t(`validator accepts ${v}`, isLimit(v) === true)

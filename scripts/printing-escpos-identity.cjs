@@ -15,7 +15,11 @@ const base = { id: '17', customer_name: 'Jamie', customer_phone: '07700 900123',
           { name: 'José\'s Spring Rolls £', quantity: 1, unit_price: 4.5, modifiers: [{ name: 'sweet chilli dip', price: 0 }] }],
   deals: [{ name: 'Two mains + drink', price: 18, slots: { main: 'Pad Thai', drink: 'Coke' }, slotModifiers: { main: [{ name: 'extra chilli', price: 0.5 }] }, slotNotes: { main: 'no peanuts - severe allergy' } }],
   notes: 'SEVERE PEANUT ALLERGY for one of the mains - please use clean oil and a clean pan, and keep it away from the wings. Also no coriander on anything. Thank you!',
-  total: 42.5, truck_name: 'Test Kitchen', printedLabel: '18:37' }
+  total: 42.5, truck_name: 'Test Kitchen', printedLabel: '18:37',
+  // Phase 2A (10 October 2026): the mapper hands the renderer the ORDER's money format; a UK order's is
+  // this. HEAD ignores the field, so the bytes must still be identical. (With none, the renderer prints
+  // bare figures by design — never a £ nobody vouched for.)
+  money: { currency: 'GBP', locale: 'en-GB' } }
 const FIX = [
   ['full order, unpaid, paid step on', { ...base, showPaidStep: true, paymentStatus: 'unpaid' }],
   ['paid', { ...base, showPaidStep: true, paymentStatus: 'paid' }],
@@ -25,24 +29,31 @@ const FIX = [
   ['possible duplicate', { ...base, reprint: { reason: 'possible_duplicate', attempt: 2 } }],
   ['reprint', { ...base, reprint: { reason: 'reprint' } }],
   ['ASAP, no phone, no notes, no deals', { ...base, collection_time: null, customer_phone: null, notes: null, deals: null, buzzer_number: null }],
-  ['test-ticket shape', { id: 'TEST', customer_name: 'Test ticket', collection_time: '12:00', items: [{ name: 'Test ticket', quantity: 1 }], total: 0, truck_name: 'Pizza Kitchen', printedLabel: '12:00' }],
+  ['test-ticket shape', { id: 'TEST', customer_name: 'Test ticket', collection_time: '12:00', items: [{ name: 'Test ticket', quantity: 1 }], total: 0, truck_name: 'Pizza Kitchen', printedLabel: '12:00', money: { currency: 'GBP', locale: 'en-GB' } }],
 ]
 console.log('── BROKEN VARIANT: MUST report FAILURE ──────────────────────────────────────────────────')
 {
   const src = fs.readFileSync(path.join(REPO, 'lib/printing/ticket.ts'), 'utf8').replace('const TICKET_LEADING_FEED_LINES = 2', 'const TICKET_LEADING_FEED_LINES = 3')
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'escV1-')); fs.mkdirSync(path.join(tmp, 'lib/printing'), { recursive: true })
   fs.writeFileSync(path.join(tmp, 'lib/printing/ticket.ts'), src)
-  for (const f of ['prep-utils.ts', 'slot-capacity.ts', 'slot-indicator.ts']) if (fs.existsSync(path.join(REPO, 'lib', f))) fs.copyFileSync(path.join(REPO, 'lib', f), path.join(tmp, 'lib', f))
+  for (const f of ['prep-utils.ts', 'slot-capacity.ts', 'slot-indicator.ts', 'money-format.ts']) if (fs.existsSync(path.join(REPO, 'lib', f))) fs.copyFileSync(path.join(REPO, 'lib', f), path.join(tmp, 'lib', f))
   const V = compile(tmp, ['lib/printing/ticket.ts'], 'escV1').req('lib/printing/ticket.js')
   const a = JSON.stringify(Array.from(H.renderTicket(FIX[0][1], { paper_width: 80 }))), b = JSON.stringify(Array.from(V.renderTicket(FIX[0][1], { paper_width: 80 })))
   console.log(`  ${a !== b ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V1 TICKET_LEADING_FEED_LINES 2→3 changes the bytes`)
   if (a === b) { head.remove(); process.exit(1) }
 }
 console.log('\n── HEAD vs WORKING TREE ────────────────────────────────────────────────────────────────')
+/* ⚠️ AUDIT D38 (docs/audit-fixes-report.md) — THE ONE NAMED CHANGE. The fixture's "José" now prints "Jose"
+ * (accents fold to plain letters) where HEAD printed "Jos?". So HEAD is fed the already-folded text and the
+ * working tree the original: if the fold is the ONLY change, the two byte streams are identical. Every other
+ * byte — ASCII, "£" at 0xA3, ESC t 16, layout — is still compared exactly. */
+const foldForHead = o => JSON.parse(JSON.stringify(o).replace(/José/g, 'Jose'))
 for (const [label, order] of FIX) for (const w of [58, 80]) {
-  const a = JSON.stringify(Array.from(H.renderTicket(order, { paper_width: w }))), b = JSON.stringify(Array.from(N.renderTicket(order, { paper_width: w })))
-  check(a === b, `${label} @${w}mm — ${JSON.parse(a).length} bytes, identical`)
+  const a = JSON.stringify(Array.from(H.renderTicket(foldForHead(order), { paper_width: w }))), b = JSON.stringify(Array.from(N.renderTicket(order, { paper_width: w })))
+  check(a === b, `${label} @${w}mm — ${JSON.parse(a).length} bytes, identical (with "José" printing "Jose", audit D38)`)
 }
+check(JSON.stringify(Array.from(H.renderTicket(FIX[0][1], { paper_width: 58 }))) !== JSON.stringify(Array.from(N.renderTicket(FIX[0][1], { paper_width: 58 }))),
+  'CONTROL: without the fold, HEAD and the working tree differ — so the check above is really comparing')
 head.remove()
 console.log(`\n${fails ? '🔴 ' + fails + ' FAILED' : '✅ renderTicket byte-identical to HEAD on ' + FIX.length * 2 + ' fixtures'}`)
 process.exit(fails ? 1 : 0)

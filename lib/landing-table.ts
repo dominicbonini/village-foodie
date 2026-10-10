@@ -21,8 +21,9 @@
 //      price mask. A renderer that substitutes or normalises it must NEVER write back here.
 // ⚠️ ANY PDF/PRINT PATH MUST TREAT THIS FILE AS READ-ONLY. Rendering may transform characters for
 // display; it may not feed them back into the source.
+import type { CountrySettings } from '@/lib/country-settings-types'
 import {
-  PLAN_PRICES,
+  planPrices,
   type FeatureValue,
   type FeatureRow,
   type FeatureSection,
@@ -33,7 +34,11 @@ export type TablePlan = (typeof TABLE_PLANS)[number]
 
 export const PLAN_SUB: Record<TablePlan, string> = { trial: '', starter: 'free forever', pro: 'per truck / month', max: 'per truck / month' }
 // Trial column shows just "Free" (not "Free trial" + a sub) — keeps the sticky header compact.
-export const PLAN_PRICE_LABEL: Record<TablePlan, string> = { trial: 'Free', starter: PLAN_PRICES.starter, pro: PLAN_PRICES.pro, max: PLAN_PRICES.max }
+// A function of the settings since 10 October 2026: the prices are the country's (see lib/plan-features.ts).
+export function planPriceLabels(s: CountrySettings): Record<TablePlan, string> {
+  const p = planPrices(s)
+  return { trial: 'Free', starter: p.starter, pro: p.pro, max: p.max }
+}
 
 // Trial mirrors Billing exactly: it includes everything Max has, and pay-at-hatch is always available. EXCEPT
 // SMS order alerts — a paid add-on that isn't part of the free trial, so the Trial column shows "—" (not the

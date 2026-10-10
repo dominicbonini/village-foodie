@@ -9,16 +9,10 @@
 // ceiling that resets early, i.e. one that quietly stops being a ceiling.
 // 🧪 2026-09-30T23:30:00Z is already 1 October in Europe/London (BST, UTC+1), so a UTC month start would
 // count that message against September and let the truck spend twice in one Meta month.
-// ⚠️ `trucks.timezone` IS NULL ON EVERY TRUCK TODAY, so 'Europe/London' is the branch that actually runs.
-// It is a real fallback, not a pretend one — the column exists and the day it is populated this works.
+// 🔴 THE ZONE IS THE TRUCK'S, BY THE ONE RULE (Phase 2B): the caller resolves it through lib/truck-time.ts
+// (trucks.timezone, else its country's default). This module has no default zone of its own any more.
 
 import { localDateOfInstant } from '@/lib/time-utils'
-
-export const DEFAULT_TRUCK_TZ = 'Europe/London'
-
-/** The truck's timezone, or the documented default. Blank strings count as absent. */
-export const truckTimezone = (tz: string | null | undefined): string =>
-  tz && tz.trim() ? tz.trim() : DEFAULT_TRUCK_TZ
 
 /**
  * PURE. The instant the truck's current calendar month began, as an ISO string.
@@ -79,12 +73,13 @@ export interface MonthlyUsage {
  */
 export async function readMonthlyUsage(input: {
   truckId: string
-  timezone: string | null | undefined
+  /** The truck's zone, resolved by the caller (lib/truck-time.ts). */
+  timeZone: string
   limit: number
   count: UsageCounter
   now?: Date
 }): Promise<MonthlyUsage> {
-  const tz = truckTimezone(input.timezone)
+  const tz = input.timeZone
   const now = input.now ?? new Date()
   const start = monthStartIso(tz, now)
   const used = await input.count(input.truckId, start)

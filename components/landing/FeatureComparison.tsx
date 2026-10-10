@@ -23,12 +23,13 @@
 // browser for no gain.
 
 import {
-  FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS, CARD_FEE_ONLINE_LABEL,
+  FEATURE_SECTIONS, footnotes, transactionRows, cardFeeOnlineLabel, cardRegionOnline,
   type FeatureValue,
 } from '@/lib/plan-features'
+import type { CountrySettings } from '@/lib/country-settings-types'
 import { PLAN_META } from '@/lib/features'
 import {
-  TABLE_PLANS, PLAN_SUB, PLAN_PRICE_LABEL, trialFeatureValue,
+  TABLE_PLANS, PLAN_SUB, planPriceLabels, trialFeatureValue,
   visibleRows, rowName, rowDetail, cellLabel,
 } from '@/lib/landing-table'
 
@@ -37,9 +38,10 @@ import {
 // ⚠️ MOVED WITH THE SECTION. It was a module constant in app/landing/page.tsx and had exactly one
 // reader, which is this table; leaving it behind would have left the landing holding an override for
 // a table it no longer renders.
-const FOOTNOTE_TEXT_OVERRIDES: Record<string, string> = {
-  '2': `Standard card processing fees apply to all online orders (currently ${CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance.`,
-}
+// A function of the settings since 10 October 2026: the fee and the card wording are the country's.
+const footnoteTextOverrides = (s: CountrySettings): Record<string, string> => ({
+  '2': `Standard card processing fees apply to all online orders (currently ${cardFeeOnlineLabel(s)} on ${cardRegionOnline(s)}), including those within your allowance.`,
+})
 
 // One shared cell renderer. 🔴 THE GLYPHS THEMSELVES ARE IN lib/landing-table.ts so the PDF prints
 // exactly what the page prints — including the protected em-dash '—' for a not-included cell.
@@ -53,7 +55,12 @@ function Cell({ value }: { value: FeatureValue }) {
 }
 
 /** The whole section: eyebrow, heading, subline, table and footnotes 1–5. */
-export function FeatureComparison() {
+export function FeatureComparison({ settings }: {
+  /** The marketing country's settings, read server-side by the page (lib/marketing-country.ts). */
+  settings: CountrySettings
+}) {
+  const priceLabel = planPriceLabels(settings)
+  const overrides = footnoteTextOverrides(settings)
   return (
     <section className="band">
       <div className="wrap">
@@ -69,7 +76,7 @@ export function FeatureComparison() {
             {TABLE_PLANS.map(p => (
               <div key={p} className="cmp2-col">
                 <span className="th-plan">{PLAN_META[p].name}</span>
-                <span className="th-price">{PLAN_PRICE_LABEL[p]}</span>
+                <span className="th-price">{priceLabel[p]}</span>
                 {PLAN_SUB[p] && <span className="th-sub">{PLAN_SUB[p]}</span>}
               </div>
             ))}
@@ -89,7 +96,7 @@ export function FeatureComparison() {
               container to the fees block, so exactly one heading is ever pinned. */}
           <div>
             <div className="cmp2-grp">Fees</div>
-            {TRANSACTION_ROWS.map(row => (
+            {transactionRows(settings).map(row => (
               <div key={row.name} className="cmp2-row">
                 <div className="cmp2-label">
                   <span className="f-name">{row.name}{row.footnote && <sup className="f-note">{row.footnote}</sup>}</span>
@@ -126,8 +133,8 @@ export function FeatureComparison() {
         </div>
 
         <div className="fn">
-          {FOOTNOTES.map(f => (
-            <p key={f.number}><sup>{f.number}</sup> {FOOTNOTE_TEXT_OVERRIDES[f.number] ?? f.text}</p>
+          {footnotes(settings).map(f => (
+            <p key={f.number}><sup>{f.number}</sup> {overrides[f.number] ?? f.text}</p>
           ))}
         </div>
       </div>

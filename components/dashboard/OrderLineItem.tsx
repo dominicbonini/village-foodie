@@ -5,6 +5,8 @@
 // Matches the canonical email format in lib/email.ts.
 
 import React from 'react'
+import { useMoney } from '@/components/MoneyContext'
+import { formatMajorOrBare } from '@/lib/money-format'
 
 interface Mod { name: string; price: number; allergens?: string[]; dietary?: string[] }
 
@@ -39,6 +41,9 @@ export function OrderLineItem({
   rightSlot,
   hideName = false,
 }: Props) {
+  // The screen's currency — the basket's (the truck's) or, inside an order card, the order's own.
+  const fmt = useMoney()
+  const amount = (major: number) => formatMajorOrBare(major, fmt, 'order line')
   const hasMods = modifiers.length > 0
   const modSum = modifiers.reduce((s, m) => s + m.price, 0)
   const lineTotal = unitPrice * quantity
@@ -60,7 +65,7 @@ export function OrderLineItem({
         </div>
         {rightSlot ?? (
           <span className={variant === 'operator' ? 'text-sm font-bold text-slate-900 shrink-0' : 'text-xs font-medium text-slate-700 shrink-0'}>
-            £{firstRowPrice.toFixed(2)}
+            {amount(firstRowPrice)}
           </span>
         )}
       </div>
@@ -74,14 +79,14 @@ export function OrderLineItem({
             : 'flex justify-between text-[10px] pl-3 text-slate-400'}
         >
           <span>{variant === 'operator'
-            ? `${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}`
+            ? `${m.name}${m.price > 0 ? ` +${amount(m.price)}` : ''}`
             : `+ ${m.name}`}
           </span>
           {/* Per-option allergens (Stage C) intentionally NOT shown on the basket summary (V7.8 §25) —
               redundant once selected. STILL CARRIED on the modifier (m.allergens) so it freezes onto
               the order and reaches the kitchen email; the customer SELECTION modal keeps the safety chip. */}
           {variant === 'customer' && m.price > 0 && (
-            <span className="ml-auto">+£{(m.price * quantity).toFixed(2)}</span>
+            <span className="ml-auto">+{amount(m.price * quantity)}</span>
           )}
         </div>
       ))}
@@ -90,7 +95,7 @@ export function OrderLineItem({
       {showBreakdown && (
         <div className="flex justify-between text-[10px] pl-3 text-slate-600 font-medium border-t border-slate-200 mt-0.5 pt-0.5">
           <span>Total</span>
-          <span>£{lineTotal.toFixed(2)}</span>
+          <span>{amount(lineTotal)}</span>
         </div>
       )}
 

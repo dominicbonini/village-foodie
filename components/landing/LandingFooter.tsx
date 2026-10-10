@@ -10,6 +10,8 @@
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
+import { CountryMenu } from '@/components/landing/CountryMenu'
+import type { VisitorCountryMenu } from '@/lib/visitor-country-types'
 
 // ⚠️ `landingHref` — see the long note in LandingNav.tsx for why this is a prop and not a hardcoded
 // path. Default '' keeps the bare fragment, which is the landing's own behaviour and is byte-identical.
@@ -44,7 +46,7 @@ import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 export { APP_STORE_URL, APP_STORE_BADGE_SRC, GOOGLE_PLAY_URL, GOOGLE_PLAY_BADGE_SRC } from '@/lib/app-badges'
 import { StoreBadges } from '@/components/StoreBadges'
 
-export function LandingFooter({ landingHref = '' }: { landingHref?: string } = {}) {
+export function LandingFooter({ landingHref = '', country }: { landingHref?: string; country?: VisitorCountryMenu } = {}) {
   return (
   <footer className={HEADER_BG}>
     <div className="wrap">
@@ -118,6 +120,8 @@ export function LandingFooter({ landingHref = '' }: { landingHref?: string } = {
                 ⚠️ The classes REPLACE the component's Tailwind defaults rather than adding to them, so
                 exactly one rule owns the gap. */}
             <StoreBadges className="foot-apps" linkClassName="foot-badge" />
+            {/* Phase 2D-1: the country button, at every width — flag, full name, chevron. */}
+            {country && <CountryMenu menu={country} variant="footer" />}
         </div>
       </div>
       {/* 🔴 REVERSED ON 2 SEPTEMBER 2026, ON REQUEST — THE ORIGINAL REASONING IS KEPT BELOW ON PURPOSE.

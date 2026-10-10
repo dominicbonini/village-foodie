@@ -14,6 +14,8 @@
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { DemoCta } from '@/components/landing/DemoUpload'
+import { CountryMenu } from '@/components/landing/CountryMenu'
+import type { VisitorCountryMenu } from '@/lib/visitor-country-types'
 
 /**
  * An alternative nav CTA, for a page whose primary action is not the demo upload.
@@ -73,7 +75,7 @@ export interface NavCta {
  * ✅ SO: the landing passes nothing and keeps bare fragments — byte-identical, no behaviour change — and
  * a child route passes '/landing', which is a real route on every host.
  */
-export function LandingNav({ cta, landingHref = '', ctaFirst = false }: { cta?: NavCta; landingHref?: string; ctaFirst?: boolean } = {}) {
+export function LandingNav({ cta, landingHref = '', ctaFirst = false, country }: { cta?: NavCta; landingHref?: string; ctaFirst?: boolean; country?: VisitorCountryMenu } = {}) {
   // ONE definition, rendered by whichever branch `ctaFirst` selects — the two orders cannot drift apart.
   const navCta = cta ? (
     <a href={cta.href} className="btn btn-primary nav-cta">
@@ -137,6 +139,9 @@ export function LandingNav({ cta, landingHref = '', ctaFirst = false }: { cta?: 
         <a href="/features" className="btn btn-quiet nav-hide-md">Features</a>
         <a href={`${landingHref}#pricing`} className="btn btn-quiet nav-hide-sm">Pricing</a>
         <a href="/login" className="btn btn-ghost nav-hide-sm">Log in</a>
+        {/* Phase 2D-1: the country button — between the nav links and the CTA, laptop and up only
+            (`.cc-head`, landing.css). Below 1024px it is in the footer only. */}
+        {country && <CountryMenu menu={country} variant="header" />}
         {/* ── 🔴 `ctaFirst` SWAPS TWO ELEMENTS, AND ONLY BELOW 640px DOES IT SHOW ──────────────────
             The mobile-only Log in and the CTA are the same two nodes in both branches; `ctaFirst`
             decides which is written first. The landing passes it so that, on a phone, "Log in" is the

@@ -36,7 +36,7 @@
 //     control stay reachable at every scroll position.
 //   • The card stops click propagation so a tap on a row's padding cannot dismiss the modal; the
 //     backdrop's own dismiss is unchanged.
-import { formatTime } from '@/lib/time-utils'
+import { formatTime, type TimeSettings } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_LIGHT } from '@/lib/event-display'
 
 /** The shape both callers already hold. Deliberately minimal — anything richer is the caller's. */
@@ -78,10 +78,12 @@ export interface EventPickerPanelProps<T extends PickableEvent> {
   isEventBlocked?: (event: T) => boolean
   /** Rendered in place of the list when there are no events — skeletons, an empty line, whatever the caller wants. */
   emptyState?: React.ReactNode
+  /** The truck's time settings (truck.time) — "today", and how the dates and times read. */
+  time: TimeSettings | null | undefined
 }
 
 export function EventPickerPanel<T extends PickableEvent>({
-  open, isDemo, events, isSelected, onSelect, onClose, title, closeLabel, isEventBlocked, emptyState,
+  open, isDemo, events, isSelected, onSelect, onClose, title, closeLabel, isEventBlocked, emptyState, time,
 }: EventPickerPanelProps<T>) {
   if (!open || isDemo) return null
 
@@ -130,7 +132,7 @@ export function EventPickerPanel<T extends PickableEvent>({
                   >
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-bold text-slate-900 flex-1">
-                        {eventDateLabel(event.event_date, 'compact')} · {formatTime(event.start_time)}–{formatTime(event.end_time)}
+                        {eventDateLabel(event.event_date, time, 'compact')} · {formatTime(event.start_time, time)}–{formatTime(event.end_time, time)}
                       </p>
                       {blocked && (
                         <span className="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">

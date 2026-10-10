@@ -1,5 +1,6 @@
 'use client'
-import { canAccess, requiredPlan, PLAN_META, type Plan, type Feature } from '@/lib/features'
+import { canAccess, requiredPlan, PLAN_META, planPrice, type Plan, type Feature } from '@/lib/features'
+import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { manageTabHref } from '@/lib/manage-links'
 import { usePriceMask } from '@/components/PricingPolicy'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
@@ -27,6 +28,10 @@ export function FeatureGate({
   // truck arrives by CONTEXT rather than a prop: FeatureGate is shared, has no truck, and both of its
   // render sites would otherwise have to remember to pass one.
   const px = usePriceMask()
+  // The upgrade line quotes the required plan's price in the TRUCK's currency — the settings arrive the
+  // same way the mask does, by context, for the same reason. Both render sites sit under the manage page's
+  // CountrySettingsProvider; outside one, this throws rather than guess a currency.
+  const settings = useCountrySettings()
 
   if (canAccess(plan ?? 'starter', feature, overrides ?? {}, trialExpiresAt ?? null)) {
     return <>{children}</>
@@ -44,7 +49,7 @@ export function FeatureGate({
           {upgradeMessage ?? `This feature requires the ${meta.name} plan`}
         </div>
         <div className="text-xs text-slate-400 mt-0.5">
-          {meta.name} · {px(meta.price)} · {meta.description}
+          {meta.name} · {px(planPrice(needed, settings))} · {meta.description}
         </div>
       </div>
       {/* 🔴 iOS (App Store 3.1.1/3.1.3): the CTA goes, the EXPLANATION stays. The panel above still names

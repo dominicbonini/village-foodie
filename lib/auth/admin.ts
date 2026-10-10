@@ -9,6 +9,15 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 const serviceClient = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
 export async function verifyAdmin(req?: NextRequest): Promise<boolean> {
+  return (await adminUser(req)) !== null
+}
+
+/**
+ * The signed-in ADMIN — same check as verifyAdmin, which is now this plus `!== null` — or null. Exists
+ * so a route that records WHO made a change (the Countries page stamps updated_by) asks the one question
+ * once rather than verifying and then looking the user up a second way.
+ */
+export async function adminUser(req?: NextRequest): Promise<{ id: string; email: string | null } | null> {
   const supabaseAuth = await createSupabaseServerClient()
   let { data: { user } } = await supabaseAuth.auth.getUser()   // WEB (cookie) — resolves first
   // ADDITIVE (native app): no cookie, but sends its Supabase session as a Bearer. Only reached when there's
@@ -21,11 +30,11 @@ export async function verifyAdmin(req?: NextRequest): Promise<boolean> {
       if (bearerUser) user = bearerUser
     }
   }
-  if (!user) return false
+  if (!user) return null
   const { data: operator } = await serviceClient
     .from('operators')
     .select('is_admin')
     .eq('auth_user_id', user.id)
     .single()
-  return !!operator?.is_admin
+  return operator?.is_admin ? { id: user.id, email: user.email ?? null } : null
 }

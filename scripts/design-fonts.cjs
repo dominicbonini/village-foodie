@@ -28,6 +28,10 @@ const path = require('path')
 const fs = require('fs')
 const { compile } = require('./_slot-interval-compile.cjs')
 const REPO = path.resolve(__dirname, '..')
+// Phase 2B (10 October 2026): the week and caption words are on the TRUCK's clock and week, passed in — no
+// default zone any more. The GB row's values: the truck every check here is about.
+const GB_TZ = 'Europe/London'
+const GB_WEEK = { timeZone: GB_TZ, weekStart: 'monday' }
 
 const LIB = [
   'lib/weekly-post/week.ts', 'lib/weekly-post/format.ts', 'lib/weekly-post/locale.ts',
@@ -356,7 +360,7 @@ head('4 · A LIBRARY FONT IS FETCHED ONCE AND REUSED FROM CACHE')
   }
   const URI = 'data:image/png;base64,' + makePng(PNG_W, PNG_H).toString('base64')
 
-  const range = W.weekRange('this', '2026-10-12T12:00:00Z')
+  const range = W.weekRange('this', '2026-10-12T12:00:00Z', GB_WEEK)
   const week = D.buildWeekData(range, [
     { id: 'e1', event_date: range.days[0], start_time: '17:00', end_time: '21:00', venue_name: 'The Kings Arms', town: 'Lavenham', status: 'confirmed' },
   ], [], { timeStyle: '12h', showCancelled: true })

@@ -118,6 +118,24 @@ export interface TicketOrder {
   printedLabel?: string
   /** Undefined/null ⇒ a first ticket ⇒ no banner. See TicketReprint. */
   reprint?: TicketReprint | null
+  /** The ORDER's currency and its country's locale (orderMoney in lib/money-format). 🔴 Missing ⇒ the
+   *  amounts print with NO symbol and one console warning — the kitchen never breaks and never sees a £
+   *  nobody vouched for. */
+  money?: MoneyFormat | null
+}
+
+/** An amount as the printer can print it. "£" (0xA3) and "$" (ASCII) print as themselves; a symbol the
+ *  printer cannot encode would come out as "?", so it is replaced by the ISO code — "EUR 12.00" — never
+ *  a "?" where money should be. */
+function ticketAmount(major: number, fmt: MoneyFormat | null | undefined): string {
+  const s = formatMajorOrBare(major, fmt, 'printed ticket')
+  if (!fmt || printableText(s) === s) return s
+  return `${fmt.currency} ${formatMajorNumber(major, fmt)}`
+}
+
+/** The same, from MINOR units (a ledger balance) — the currency's own decimals, never "÷ 100". */
+function ticketAmountMinor(minor: number, fmt: MoneyFormat | null | undefined): string {
+  return fmt ? ticketAmount(toMajor(minor, fmt.currency), fmt) : formatMinorOrBare(minor, fmt, 'printed ticket')
 }
 
 /** One rendered line. `divider` draws a full-width rule; `size:'large'` = ESC/POS double width+height. */
@@ -131,6 +149,8 @@ export interface TicketLine {
    *  bold — there is no colour. Reserved for the order-notes block, where allergy information lives. */
   invert?: boolean
 }
+
+import { formatMajorOrBare, formatMinorOrBare, formatMajorNumber, toMajor, type MoneyFormat } from '@/lib/money-format'
 
 const colsFor = (w: PaperWidth): number => (w === 58 ? 32 : 48)   // chars/line at normal size
 
@@ -172,10 +192,14 @@ function padBetween(left: string, right: string, width: number): string {
 
 /** Build the layout model. `type` selects the ticket variant (only 'combined' today). */
 export function buildTicketLines(order: TicketOrder, config: TicketConfig, type: TicketType = 'combined'): TicketLine[] {
+  // 🔴 EVERY STRING IS CLEANED BEFORE LAYOUT (audit D38). wrap() and padBetween() measure `.length`, and the
+  // printer gets one byte per character — so they must measure the text the printer will actually get, or an
+  // emoji (two UTF-16 units, one "?") or a decomposed accent shifts a right-aligned price by a column.
+  const clean = cleanForLayout(order)
   switch (type) {
     case 'combined':
     default:
-      return buildCombined(order, config)
+      return buildCombined(clean, config)
   }
 }
 
@@ -183,6 +207,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   const width = colsFor(config.paper_width)
   const largeWidth = Math.max(1, Math.floor(width / 2))   // double-width chars ⇒ half the chars/line
   const lines: TicketLine[] = []
+  const amount = (major: number) => ticketAmount(major, order.money)
 
   // ── 🔴 THE REPRINT BANNER — ABOVE EVERYTHING, BOXED AND INVERTED ────────────────────────────────
   // WHY IT EXISTS: the print pipeline deliberately prefers a duplicate ticket to a missing one, because a
@@ -309,7 +334,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   for (const it of order.items || []) {
     const b: TicketLine[] = []
     const label = `${it.quantity}x ${it.name}`
-    const lineTotal = it.unit_price != null ? `£${(it.unit_price * it.quantity).toFixed(2)}` : ''
+    const lineTotal = it.unit_price != null ? amount(it.unit_price * it.quantity) : ''
     // Only pad onto one line when both halves fit; otherwise wrap the name and put the price on its own
     // right-aligned line, so a long dish name never collides with its price.
     if (lineTotal && label.length + lineTotal.length + 1 <= width) {
@@ -320,7 +345,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
     }
     for (const m of it.modifiers ?? []) {
       const mLabel = `  + ${m.name}`
-      const mPrice = m.price != null && m.price > 0 ? `+£${m.price.toFixed(2)}` : ''
+      const mPrice = m.price != null && m.price > 0 ? `+${amount(m.price)}` : ''
       if (mPrice && mLabel.length + mPrice.length + 1 <= width) b.push({ text: padBetween(mLabel, mPrice, width) })
       else for (const w of wrapIndented(`+ ${m.name}`, width)) b.push({ text: w })
     }
@@ -332,7 +357,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   for (const d of order.deals ?? []) {
     const b: TicketLine[] = []
     const dLabel = `* ${d.name}`
-    const dPrice = d.price != null ? `£${Number(d.price).toFixed(2)}` : ''
+    const dPrice = d.price != null ? amount(Number(d.price)) : ''
     if (dPrice && dLabel.length + dPrice.length + 1 <= width) b.push({ text: padBetween(dLabel, dPrice, width) })
     else for (const w of wrap(dLabel, width)) b.push({ text: w })
     // 🔴 ENTRIES, NOT VALUES. The slot KEY is what ties a fill to its modifiers and its note; iterating
@@ -343,7 +368,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
       for (const w of wrapIndented(`- ${fill}`, width)) b.push({ text: w })
       for (const m of d.slotModifiers?.[slotKey] ?? []) {
         const mLabel = `    + ${m.name}`
-        const mPrice = m.price != null && m.price > 0 ? `+£${m.price.toFixed(2)}` : ''
+        const mPrice = m.price != null && m.price > 0 ? `+${amount(m.price)}` : ''
         if (mPrice && mLabel.length + mPrice.length + 1 <= width) b.push({ text: padBetween(mLabel, mPrice, width) })
         else for (const w of wrapIndented(`+ ${m.name}`, width, '    ')) b.push({ text: w })
       }
@@ -359,13 +384,13 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
 
   lines.push({ divider: true })
 
-  lines.push({ text: padBetween('TOTAL', `£${order.total.toFixed(2)}`, width), bold: true })
+  lines.push({ text: padBetween('TOTAL', amount(order.total), width), bold: true })
 
   // ── PAYMENT (D) — the caller has already resolved this. See the TicketOrder note.
   // 🔴 ABSENT when showPaidStep is false. Not "unpaid" — a truck without the paid step has no such state.
   if (order.showPaidStep && order.paymentStatus) {
     const bal = order.balanceMinor ?? 0
-    const money = (minor: number) => `£${(minor / 100).toFixed(2)}`
+    const money = (minor: number) => ticketAmountMinor(minor, order.money)
     if (order.paymentStatus === 'paid') lines.push({ text: padBetween('PAYMENT', 'PAID', width), bold: true })
     // 🔴 HELD BEATS 'unpaid', AND ONLY 'unpaid'. `TO PAY £6.00` on a ticket whose card is already
     // authorised is a printed instruction to collect money that is held — the exact double-payment path
@@ -403,23 +428,54 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
 // ── ESC/POS byte encoding ─────────────────────────────────────────────────────────────────────────────
 const ESC = 0x1B, GS = 0x1D, LF = 0x0A
 
-/** Encode a string to printer bytes: ASCII direct, £ → 0xA3 (Latin-1), other non-ASCII → '?'. The exact code
- *  page is printer-specific and is tuned in Phase B against the real Epson/Star; the preview is unaffected. */
+/** Encode a string to printer bytes: ASCII direct, £ → 0xA3 (Latin-1), everything else folded to plain letters
+ *  first (below). The code page (`ESC t 16`) is unchanged; option 2 of the audit — real accents through it —
+ *  is deliberately NOT built until a real printer has been seen to print them. */
+
+/* ── 🔴 PLAIN LETTERS, NOT "?" (audit D38 option 1, docs/audit-fixes-report.md) ──────────────────────────
+ * "Jalapeños" printed "Jalape?os": every character outside plain ASCII except "£" became "?" here, before any
+ * printer saw it. Now the text is FOLDED first — NFC, this small table, then NFD with the combining accents
+ * stripped — so "ñ" prints "n", "é" "e", "ß" "ss", a curly quote a straight one, an en or em dash "-", "…"
+ * "...", "€" "EUR". Only what is still outside plain ASCII (an emoji, a non-Latin script) becomes "?".
+ * ⚠️ "£" is untouched (it has no decomposition and stays byte 0xA3), and plain ASCII is untouched, so a UK
+ * ticket of ASCII and £ is BYTE-IDENTICAL to before — proven by scripts/audit-fixes.cjs. */
+const FOLD: Readonly<Record<string, string>> = {
+  'ß': 'ss', 'æ': 'ae', 'Æ': 'AE', 'ø': 'o', 'Ø': 'O', 'œ': 'oe', 'Œ': 'OE',
+  '\u2018': "'", '\u2019': "'", '\u201A': "'", '\u201B': "'", '\u201C': '"', '\u201D': '"', '\u201E': '"', '\u201F': '"',
+  '\u2013': '-', '\u2014': '-', '\u2026': '...', '€': 'EUR',
+}
+function fold(s: string): string {
+  let t = ''
+  for (const ch of s.normalize('NFC')) t += FOLD[ch] ?? ch
+  return t.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+/** One character as the printer gets it: plain ASCII and "£" as themselves, anything else "?".
+ *  `keepSpace` keeps line breaks and tabs, which the LAYOUT splits on (only cleanForLayout uses it). */
+function printableChar(ch: string, keepSpace: boolean): string {
+  const c = ch.codePointAt(0) ?? 0x3F
+  if (c >= 0x20 && c <= 0x7E) return ch
+  if (ch === '£') return '£'
+  if (keepSpace && (ch === '\n' || ch === '\r' || ch === '\t')) return ch
+  return '?'
+}
+
 /** 🔴 THE CHARACTER RULE, AS TEXT — exported so the PREVIEW can show what will REALLY print.
- *  The on-screen preview renders a browser string; the printer renders this. Without it, "José" previews
- *  perfectly and prints "Jos?", and nobody finds out until there is hardware. Anything outside printable
- *  ASCII becomes '?', except '£' which the printer has at 0xA3.
+ *  The on-screen preview renders a browser string; the printer renders this. Folded to plain letters
+ *  ("José" → "Jose"); "?" only for what has no plain-letter form; "£" kept (the printer has it at 0xA3).
  *  ⚠️ strBytes() is DERIVED from this, so there is exactly one rule and the preview cannot drift from the
  *  byte stream. Do not re-implement this mapping anywhere. */
 export function printableText(s: string): string {
   let out = ''
-  for (const ch of s) {
-    const c = ch.codePointAt(0) ?? 0x3F
-    if (c >= 0x20 && c <= 0x7E) out += ch
-    else if (ch === '£') out += '£'
-    else out += '?'
-  }
+  for (const ch of fold(s)) out += printableChar(ch, false)
   return out
+}
+
+/** The same rule over every string in a ticket order, keeping line breaks — applied BEFORE layout. */
+function cleanForLayout<T>(v: T): T {
+  if (typeof v === 'string') { let out = ''; for (const ch of fold(v)) out += printableChar(ch, true); return out as T }
+  if (Array.isArray(v)) return v.map(cleanForLayout) as T
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, cleanForLayout(x)])) as T
+  return v
 }
 
 function strBytes(s: string): number[] {

@@ -63,6 +63,9 @@ import type { PreorderConfig } from '@/lib/preorder'
 import { nextOrderId } from '@/lib/order-utils'
 import { enforceStockLimits } from '@/lib/stock-availability'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
+import { moneyFormatForOrder } from '@/lib/money-server'
+import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
+import { getLocalDateInTz } from '@/lib/time-utils'
 import { isDemoIdentifier } from '@/lib/demo'
 import { toMinor } from '@/lib/order-repricing'
 // 🔴 THE SOLD-OUT SENTENCE LIVES IN ONE PLACE. Three runtimes render it — here, the return route when the
@@ -156,7 +159,9 @@ export async function promoteDraft(
                customerMessage: 'This truck is no longer taking orders. No money has been taken.' }
     }
 
-    const eventDate = draft.event_date ?? new Date().toISOString().split('T')[0]
+    // 🔴 THE TRUCK'S CLOCK (Phase 2B) — its zone decides "today" here and in placement / auto-accept below.
+    const truckTz = await truckTimeZone(truck)
+    const eventDate = draft.event_date ?? getLocalDateInTz(truckTz)
     const items = draft.items as unknown[]
     const deals = (draft.deals ?? null) as unknown[] | null
     const orderLines = normaliseOrderLines(items as never, deals as never)
@@ -273,6 +278,7 @@ export async function promoteDraft(
           kitchenCapacity, capacityWindowMins,
           undefined,
           batchReservationsOn,
+          truckTz,
         )
         claimReservation = claim.reservation ?? null
         if (claim.booked && claim.finalSlot) {
@@ -321,6 +327,7 @@ export async function promoteDraft(
             notes: draft.notes,
             items,
             deals,
+            timeZone: truckTz,
           })
         }
       }
@@ -367,6 +374,10 @@ export async function promoteDraft(
           discount_amt:   draft.discount_amt,
           total:          draft.total,
           total_minor:    draft.total_minor ?? toMinor(draft.total),
+          // 🔴 THE DRAFT'S CURRENCY — the one the hold was authorised in. orders_fill_currency_country
+          // (20261010_07) would otherwise copy the truck's, which is the same today; naming it here makes
+          // the order record what the customer was actually charged in. `country` is left to the trigger.
+          currency:       draft.currency,
           notes:          draft.notes,
           status:         autoAccepted ? 'confirmed' : 'pending',
           payment_status: 'unpaid',
@@ -467,6 +478,10 @@ export async function promoteDraft(
         // ⚠️ INSIDE THE EMAIL GUARD, so a demo truck or an order with no email address pays nothing.
         const paymentState = await resolveEmailPaymentState(supabase, draft.order_key, captureResult)
         const { subject, html, text } = formatConfirmationEmail({
+          // The order's currency is the draft's (written on the insert above); its country the truck's (trigger).
+          money:        await moneyFormatForOrder({ currency: draft.currency, country: truck.country }),
+          time: await truckTimeSettings(truck),
+          phoneCountry: truck.country,
           orderId,
           orderKey:     draft.order_key,
           truckName:    truck.name,
@@ -519,6 +534,8 @@ export async function promoteDraft(
     if (!isDemoTruck && truck.contact_email && (truck as { truck_order_email_enabled?: boolean }).truck_order_email_enabled !== false) {
       try {
         const { subject, html, text } = formatNewOrderEmail({
+          money:         await moneyFormatForOrder({ currency: draft.currency, country: truck.country }),
+          time: await truckTimeSettings(truck),
           orderId,
           customerName:  draft.customer_name ?? '',
           customerPhone: draft.customer_phone ?? null,

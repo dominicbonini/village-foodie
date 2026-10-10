@@ -47,8 +47,32 @@
  * ⚠️ THE ABSENCE OF A RULE IS `null`, WHICH IS A DIFFERENT THING. A type whose switch is off, or an
  * event with no own prices, has no setup at all and resolves to the menu — see `resolvePricing`.
  */
-export const PRICE_MODES = ['none', 'add_gbp', 'add_pct', 'sub_gbp', 'sub_pct'] as const
+import { formatMajor, type MoneyFormat } from '@/lib/money-format'
+
+export const PRICE_MODES = ['none', 'add_amount', 'add_pct', 'sub_amount', 'sub_pct'] as const
 export type PriceMode = (typeof PRICE_MODES)[number]
+
+/**
+ * 🔴 THE OLD NAMES, READ BUT NEVER WRITTEN (10 October 2026). `add_gbp` / `sub_gbp` named a currency in
+ * stored data; a US truck's "+ $1" rule cannot be called "add_gbp". Code now writes `add_amount` /
+ * `sub_amount` — "an amount in the truck's own currency" — and reads the old names as these aliases.
+ * 20261010_08 keeps both spellings valid in the CHECK on event_types and truck_events; no stored row used
+ * the old ones when this was written, and a later migration removes them once nothing can write them.
+ */
+export const LEGACY_PRICE_MODE_ALIASES: Readonly<Record<string, PriceMode>> = { add_gbp: 'add_amount', sub_gbp: 'sub_amount' }
+
+/** A stored or submitted mode, with the old names read as the new. Anything else is null. Every READ of
+ *  `price_mode` goes through this; every WRITE therefore stores a new name. */
+export function normalisePriceMode(v: unknown): PriceMode | null {
+  if (typeof v !== 'string') return null
+  if ((PRICE_MODES as readonly string[]).includes(v)) return v as PriceMode
+  return LEGACY_PRICE_MODE_ALIASES[v] ?? null
+}
+
+/** "+ an amount" / "− an amount" — the two modes measured in the truck's currency. */
+export const isAmountMode = (m: unknown): boolean => { const n = normalisePriceMode(m); return n === 'add_amount' || n === 'sub_amount' }
+/** "+ %" / "− %". */
+export const isPctMode = (m: unknown): boolean => { const n = normalisePriceMode(m); return n === 'add_pct' || n === 'sub_pct' }
 
 /** The three roundings, exactly as the migration's CHECK constrains them. */
 export const PRICE_ROUNDINGS = ['none', 'nearest_1', 'up_1'] as const
@@ -58,12 +82,12 @@ export const isPriceMode = (v: unknown): v is PriceMode => PRICE_MODES.includes(
 export const isPriceRounding = (v: unknown): v is PriceRounding => PRICE_ROUNDINGS.includes(v as PriceRounding)
 
 /**
- * ⚠️ A `%` MODE SHOWS "%" AND A `£` MODE SHOWS "£", AND THE SCREENS READ IT FROM HERE.
- * The Amount box's suffix was going to be a ternary in two components; one function means the grid
- * and the sheet cannot label the same mode differently.
+ * ⚠️ A `%` MODE SHOWS "%" AND AN AMOUNT MODE SHOWS THE TRUCK'S CURRENCY SYMBOL ("£", "$"), AND THE
+ * SCREENS READ IT FROM HERE. One function means the grid and the sheet cannot label the same mode
+ * differently. The symbol is the caller's — lib/money-format.ts currencySymbol() of the truck's settings.
  */
-export const amountUnitFor = (mode: PriceMode | null | undefined): '%' | '£' | null =>
-  mode === 'add_pct' || mode === 'sub_pct' ? '%' : mode === 'add_gbp' || mode === 'sub_gbp' ? '£' : null
+export const amountUnitFor = (mode: unknown, currencySymbol: string): string | null =>
+  isPctMode(mode) ? '%' : isAmountMode(mode) ? currencySymbol : null
 
 /** One setup's across-the-board rule, plus the per-item prices that override it. */
 export interface PriceSetup {
@@ -170,16 +194,16 @@ export function applyPriceRule(menuPence: number, setup: PriceSetup | null | und
   if (base === 0) return 0
   if (!setup) return base
 
-  const mode = isPriceMode(setup.mode) ? setup.mode : 'none'
+  const mode = normalisePriceMode(setup.mode) ?? 'none'
   const rounding = isPriceRounding(setup.rounding) ? setup.rounding : 'none'
 
   // 2 · the rule.
   let out = base
-  if (mode === 'add_gbp' || mode === 'sub_gbp') {
-    /* The amount is POUNDS and goes through the same `toPence` the menu price did, so "£1.15" is
-     * 115p here exactly as it is there. */
+  if (mode === 'add_amount' || mode === 'sub_amount') {
+    /* The amount is in MAJOR units of the truck's currency and goes through the same `toPence` the
+     * menu price did, so "1.15" is 115 minor units here exactly as it is there. */
     const deltaPence = toPence(Math.abs(numOr(setup.amount, 0)))
-    out = mode === 'add_gbp' ? base + deltaPence : base - deltaPence
+    out = mode === 'add_amount' ? base + deltaPence : base - deltaPence
   } else if (mode === 'add_pct' || mode === 'sub_pct') {
     /* 🔴 BASIS POINTS, SO 12.5% IS EXACT. `amount` is a percentage with up to two decimals; ×100
      * makes it an integer, and the whole multiplication is then integer × integer / 10000 with one
@@ -253,7 +277,7 @@ const setupFrom = (
   row: TypePricing | null | undefined,
   typed: Readonly<Record<string, number>>,
 ): PriceSetup => ({
-  mode: isPriceMode(row?.price_mode) ? row!.price_mode as PriceMode : 'none',
+  mode: normalisePriceMode(row?.price_mode) ?? 'none',
   amount: row?.price_amount === null || row?.price_amount === undefined ? null : numOr(row.price_amount, 0),
   rounding: isPriceRounding(row?.price_rounding) ? row!.price_rounding as PriceRounding : 'none',
   typed,
@@ -388,13 +412,18 @@ export function pricingDiffersFromMenu(
 // 5 · WHAT THE SCREENS SAY
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-const money = (pounds: number): string =>
-  `£${(Math.round(pounds * 100) / 100).toFixed(2).replace(/\.00$/, '')}`
+/** "£1.50", "£1" — the rule's amount in the TRUCK's currency, whole amounts without ".00". Rounded to the
+ *  engine's minor units first (toPence/toPounds), as the amount is everywhere else. */
+const money = (pounds: number, fmt: MoneyFormat): string =>
+  formatMajor(toPounds(toPence(pounds)), fmt, { trimWhole: true })
 
-export const ROUNDING_PHRASE: Record<PriceRounding, string> = {
-  none: 'no rounding',
-  nearest_1: 'nearest £1',
-  up_1: 'always round up',
+/** The rounding as a phrase — "nearest £1" names ONE UNIT of the truck's currency ("nearest $1"). */
+export function roundingPhrase(rounding: PriceRounding, fmt: MoneyFormat): string {
+  switch (rounding) {
+    case 'nearest_1': return `nearest ${money(1, fmt)}`
+    case 'up_1': return 'always round up'
+    default: return 'no rounding'
+  }
 }
 
 /**
@@ -403,15 +432,16 @@ export const ROUNDING_PHRASE: Record<PriceRounding, string> = {
  * ⚠️ A MINUS SIGN (U+2212), NOT A HYPHEN, matching the control labels. The two are a different width
  * and a reader comparing the card's summary with the dropdown would see two different symbols.
  */
-export function describeRule(setup: PriceSetup | null | undefined): string | null {
-  if (!setup || !isPriceMode(setup.mode) || setup.mode === 'none') return null
+export function describeRule(setup: PriceSetup | null | undefined, fmt: MoneyFormat): string | null {
+  const mode = normalisePriceMode(setup?.mode)
+  if (!setup || !mode || mode === 'none') return null
   const amount = numOr(setup.amount, 0)
   if (amount <= 0) return null
-  switch (setup.mode) {
+  switch (mode) {
     case 'add_pct': return `+${amount}%`
     case 'sub_pct': return `−${amount}%`
-    case 'add_gbp': return `+${money(amount)}`
-    case 'sub_gbp': return `−${money(amount)}`
+    case 'add_amount': return `+${money(amount, fmt)}`
+    case 'sub_amount': return `−${money(amount, fmt)}`
     default: return null
   }
 }
@@ -436,6 +466,8 @@ export function summarisePricing(
   typeName: string | null | undefined,
   /** How many items THIS EVENT has typed a price for. */
   eventTypedCount: number,
+  /** The TRUCK's money format, for the rule's amount and "nearest £1". */
+  fmt: MoneyFormat,
 ): string {
   /* ══ 🔴 RE-WORDED FOR THE PER-ITEM RULE (5 October 2026) ══════════════════════════════════════
    * The third shape used to be "Own prices · +15%, nearest £1 · 1 typed", which described a
@@ -454,9 +486,9 @@ export function summarisePricing(
     : null
   if (!p.typeSetup) return own ?? 'Menu prices'
   const parts: string[] = []
-  const rule = describeRule(p.typeSetup)
+  const rule = describeRule(p.typeSetup, fmt)
   const rounding = isPriceRounding(p.typeSetup.rounding) ? p.typeSetup.rounding : 'none'
-  if (rule) parts.push(rounding === 'none' ? rule : `${rule}, ${ROUNDING_PHRASE[rounding]}`)
+  if (rule) parts.push(rounding === 'none' ? rule : `${rule}, ${roundingPhrase(rounding, fmt)}`)
   const typeTypedCount = Object.keys(p.typeSetup.typed).length
   if (typeTypedCount > 0) parts.push(`${typeTypedCount} typed`)
   if (own) parts.push(own)
@@ -477,16 +509,16 @@ export function summarisePricing(
  * ⚠️ NEGATIVE IS REFUSED, NOT ABSOLUTED. "+ −10%" has two possible readings and neither is one the
  * operator can have meant; the direction is the MODE's job.
  */
-export const MAX_PRICE_AMOUNT_GBP = 1000
+/** In MAJOR units of the truck's own currency (it was MAX_PRICE_AMOUNT_GBP until 10 October 2026). */
+export const MAX_PRICE_AMOUNT = 1000
 export const MAX_PRICE_AMOUNT_PCT = 500
 
 export function cleanPriceAmount(mode: PriceMode | null | undefined, raw: unknown): number | null {
   if (raw === null || raw === undefined || raw === '') return null
   const n = typeof raw === 'number' ? raw : parseFloat(String(raw))
   if (!Number.isFinite(n) || n < 0) return null
-  const unit = amountUnitFor(mode)
-  if (unit === null) return null                       // mode 'none' carries no amount
-  const max = unit === '%' ? MAX_PRICE_AMOUNT_PCT : MAX_PRICE_AMOUNT_GBP
+  if (!isPctMode(mode) && !isAmountMode(mode)) return null   // mode 'none' carries no amount
+  const max = isPctMode(mode) ? MAX_PRICE_AMOUNT_PCT : MAX_PRICE_AMOUNT
   if (n > max) return null
   /* ── ⚠️ TWO DECIMALS, ROUNDED NOT REFUSED ───────────────────────────────────────────────────────
    * `numeric(8,2)` would round it on the way in anyway; doing it here means the value the operator

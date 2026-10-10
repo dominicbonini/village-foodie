@@ -24,6 +24,10 @@ const path = require('path')
 const fs = require('fs')
 const { compile } = require('./_slot-interval-compile.cjs')
 const REPO = path.resolve(__dirname, '..')
+// Phase 2B (10 October 2026): the week and caption words are on the TRUCK's clock and week, passed in — no
+// default zone any more. The GB row's values: the truck every check here is about.
+const GB_TZ = 'Europe/London'
+const GB_WEEK = { timeZone: GB_TZ, weekStart: 'monday' }
 
 const LIB = [
   'lib/weekly-post/week.ts', 'lib/weekly-post/format.ts', 'lib/weekly-post/locale.ts',
@@ -295,7 +299,7 @@ head('2 · PIZZA KITCHEN\'S EXISTING PICTURE IS MAPPED, NOT MOVED')
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 head('3 · A PRIVATE EVENT NEVER GETS A PLACE PICTURE')
 {
-  const range = W.weekRange('this', '2026-10-12T12:00:00Z')
+  const range = W.weekRange('this', '2026-10-12T12:00:00Z', GB_WEEK)
   const base = { event_date: range.days[0], start_time: '17:00', end_time: '21:00', venue_name: 'The Kings Arms', town: 'Lavenham', status: 'confirmed' }
   const places = [{ id: 'pl-1', name: 'The Kings Arms', short_name: 'Kings Arms', area: 'Lavenham', name_key: 'the kings arms', venue_id: null, merged_into_id: null, is_hidden: false }]
   const entryOf = (over) => D.entryFor({ id: 'e1', ...base, ...over }, places, '12h')
@@ -428,7 +432,7 @@ head('4 · "Whole background" AND THE SHAPE RULE')
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
 ;(async () => {
-  const range = W.weekRange('this', '2026-10-12T12:00:00Z')
+  const range = W.weekRange('this', '2026-10-12T12:00:00Z', GB_WEEK)
   const places = [
     { id: 'pl-1', name: 'The Kings Arms', short_name: 'Kings Arms', area: 'Lavenham', name_key: 'the kings arms', venue_id: null, merged_into_id: null, is_hidden: false },
     { id: 'pl-2', name: 'Market Square', short_name: 'Market Square', area: 'Sudbury', name_key: 'market square', venue_id: null, merged_into_id: null, is_hidden: false },
@@ -1459,14 +1463,14 @@ head('9 · each tab says what it is for, and the captions are the truck\'s own')
       && CT.tokenOf('venue') === '{venue}' && CT.tokenOf('area') === '{area}'
       /* ⛔ AND AN OLD TEMPLATE NAMING `{place}` STILL FILLS THE JOINED FORM — driven, because this is
        * the compatibility promise and a pattern match could not keep it. */
-      && CT.fillCaptionTemplate('at {place}.', CT.eventCaptionValues({
+      && CT.fillCaptionTemplate('at {place}.', CT.eventCaptionValues({ timeZone: GB_TZ, 
         placeName: 'The Kings Arms', town: 'Lavenham', date: '2026-10-13',
         startTime: '17:00', endTime: '20:00', orderUrl: null, timeStyle: '24h',
         now: '2026-10-10T12:00:00Z',
       })) === 'at The Kings Arms, Lavenham.'
       /* ⚠️ AND THE TWO NEW ONES FILL THE HALVES, with no "only if the name does not contain it" dance:
        * that rule exists because `{place}` has to decide whether to JOIN them, and these do not. */
-      && CT.fillCaptionTemplate('{venue} / {area}', CT.eventCaptionValues({
+      && CT.fillCaptionTemplate('{venue} / {area}', CT.eventCaptionValues({ timeZone: GB_TZ, 
         placeName: 'Lavenham Market', town: 'Lavenham', date: '2026-10-13',
         startTime: '17:00', endTime: '20:00', orderUrl: null, timeStyle: '24h',
         now: '2026-10-10T12:00:00Z',
@@ -1546,11 +1550,11 @@ head('9 · each tab says what it is for, and the captions are the truck\'s own')
   t('🔴 the seed fills to byte-identical output with `caption.ts`', (() => {
     const entry = { name: 'The Kings Arms', town: 'Lavenham', startTime: '17:00', endTime: '20:00', status: 'ok' }
     const now = '2026-10-10T12:00:00Z'
-    const today = C.eventPostText({
+    const today = C.eventPostText({ timeZone: GB_TZ, country: 'GB', 
       truckName: 'Pizza Kitchen', entry, date: '2026-10-13',
       orderUrl: 'https://x.co/p', timeStyle: '24h', now,
     })
-    const seeded = CT.fillCaptionTemplate(CT.seedEventTemplate('Pizza Kitchen'), CT.eventCaptionValues({
+    const seeded = CT.fillCaptionTemplate(CT.seedEventTemplate('Pizza Kitchen'), CT.eventCaptionValues({ timeZone: GB_TZ, 
       placeName: entry.name, town: entry.town, date: '2026-10-13',
       startTime: entry.startTime, endTime: entry.endTime,
       orderUrl: 'https://x.co/p', timeStyle: '24h', now,
@@ -1565,11 +1569,11 @@ head('9 · each tab says what it is for, and the captions are the truck\'s own')
       /* 🔴 INCLUDING THE RELATIVE WORDING. `{day-date}` carries `whenPhrase`, not a bare date — a label
        * that always said "Tue 13 Oct" would have changed what every truck posts. ⚠️ THE FIRST DRAFT
        * USED `shortDateTextFor` AND THIS CHECK IS WHAT WOULD HAVE CAUGHT IT. */
-      && CT.eventCaptionValues({
+      && CT.eventCaptionValues({ timeZone: GB_TZ, 
         placeName: 'X', date: '2026-10-10', startTime: '18:00', endTime: '21:00',
         orderUrl: null, timeStyle: '24h', now,
       })['day-date'] === 'tonight'
-      && CT.eventCaptionValues({
+      && CT.eventCaptionValues({ timeZone: GB_TZ, 
         placeName: 'X', date: '2026-10-11', startTime: '12:00', endTime: '14:00',
         orderUrl: null, timeStyle: '24h', now,
       })['day-date'] === 'tomorrow'
@@ -1585,7 +1589,7 @@ head('9 · each tab says what it is for, and the captions are the truck\'s own')
    * `fillCaptionTemplate`'s own rule and this is where it is proved for the seed. */
   t('⚠️ …and the seed\'s location tag fills to nothing until a truck has a handle', (() => {
     const seed = CT.seedEventTemplate('Pizza Kitchen')
-    const vals = (tag) => CT.eventCaptionValues({
+    const vals = (tag) => CT.eventCaptionValues({ timeZone: GB_TZ, 
       placeName: 'The Kings Arms', town: 'Lavenham', date: '2026-10-13',
       startTime: '17:00', endTime: '20:00', orderUrl: 'https://x.co/p', timeStyle: '24h',
       socialTag: tag, now: '2026-10-10T12:00:00Z',

@@ -7,6 +7,7 @@ import { checkSubdomain, domainFromWebsite } from '@/lib/custom-domain/apex'
 import { CopyButton } from '@/components/dashboard/CopyButton'
 import { notificationCopy, recordRows, providerFieldRows, TIMING_LINE, CONFIRM_COPY, CONFIRMED_COPY, TURN_OFF_COPY, confirmProblemMailto, addressUrl, orderPageUrl, type RecordRow, scanUrl } from '@/lib/custom-domain/copy'
 import type { DnsProvider } from '@/lib/custom-domain/dns'
+import type { TimeSettings } from '@/lib/time-utils'
 
 /**
  * ── "YOUR SCHEDULE AT YOUR OWN ADDRESS" ─────────────────────────────────────────────────────────
@@ -35,6 +36,8 @@ type Props = {
    *  say it here instead — "you started this on 4 September" is the half that makes it actionable. */
   setupStartedAt: string | null
   verifiedAt: string | null
+  /** 🔴 The truck's time settings (Phase 2B) — the dates in the waiting banner and the problem email. */
+  time: TimeSettings | null | undefined
   confirmedAt: string | null
 }
 
@@ -458,7 +461,7 @@ export default function CustomDomainSetup(props: Props) {
       {/* ⚠️ `justWentLive` IS WHY THIS DISAPPEARS WITHOUT A RELOAD. The check that just ran wrote
           `custom_domain_verified_at`, but `props.verifiedAt` is the value this page loaded with. */}
       {props.customDomain && !props.verifiedAt && !justWentLive && (() => {
-        const waiting = notificationCopy({ address: props.customDomain, startedAt: props.setupStartedAt }).waiting
+        const waiting = notificationCopy({ address: props.customDomain, startedAt: props.setupStartedAt, time: props.time }).waiting
         return (
           <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 flex items-start gap-2.5">
             <span className="text-amber-500 text-base leading-none shrink-0 mt-0.5" aria-hidden>⏳</span>
@@ -582,7 +585,7 @@ export default function CustomDomainSetup(props: Props) {
             <div className="mt-3 rounded-lg border border-green-200 bg-white p-3">
               <p className="text-xs text-green-800 leading-relaxed">{CONFIRM_COPY.problemLine}</p>
               <a
-                href={confirmProblemMailto({ truckName, address: props.customDomain ?? '', verifiedAt: props.verifiedAt })}
+                href={confirmProblemMailto({ truckName, address: props.customDomain ?? '', verifiedAt: props.verifiedAt, time: props.time })}
                 className="mt-2 inline-block rounded-lg border border-slate-200 px-3.5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
               >
                 {CONFIRM_COPY.problemButton}

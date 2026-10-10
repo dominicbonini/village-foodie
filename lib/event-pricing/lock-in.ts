@@ -21,7 +21,7 @@
  * put real numbers through the real decision with no client at all.
  */
 
-import { applyPriceRule, isPriceMode, isPriceRounding, toPounds } from './price'
+import { applyPriceRule, normalisePriceMode, isPriceRounding, toPounds } from './price'
 import type { PriceSetup, PriceMode, PriceRounding } from './price'
 import type { PricingItem } from './read'
 
@@ -60,9 +60,9 @@ export interface LockInQuestion {
  */
 export function shouldLockIn(q: LockInQuestion): boolean {
   if (!q.wasOn || !q.willBeOn) return false
-  const ends = isPriceMode(q.newMode) ? q.newMode : 'none'
+  const ends = normalisePriceMode(q.newMode) ?? 'none'
   if (ends !== 'none') return false
-  const oldMode: PriceMode = isPriceMode(q.oldMode) ? q.oldMode : 'none'
+  const oldMode: PriceMode = normalisePriceMode(q.oldMode) ?? 'none'
   const oldRounding: PriceRounding = isPriceRounding(q.oldRounding) ? q.oldRounding : 'none'
   return oldMode !== 'none' || oldRounding !== 'none'
 }
@@ -112,7 +112,7 @@ export const oldSetupOf = (
   oldAmount: number | string | null | undefined,
   oldRounding: string | null | undefined,
 ): PriceSetup => ({
-  mode: isPriceMode(oldMode) ? oldMode : 'none',
+  mode: normalisePriceMode(oldMode) ?? 'none',
   amount: oldAmount === null || oldAmount === undefined ? null : Number(oldAmount),
   rounding: isPriceRounding(oldRounding) ? oldRounding : 'none',
   typed: {},

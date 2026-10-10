@@ -19,8 +19,9 @@
 // ── 🔴 RUNNING IT TWICE IN ONE DAY MUST BE HARMLESS, AND IS ────────────────────────────────────────
 // Vercel can deliver a cron more than once, and an admin can trigger it by hand on the same day. Three
 // things make a second run a no-op rather than a second set of consequences:
-//   1. The three token alerts are keyed on the UTC DAY (utcDayKey), so the second run's claim loses the
-//      unique constraint and sends nothing.
+//   1. The three token alerts are keyed on the TRUCK'S DAY (Phase 2B — its zone by the one rule,
+//      lib/truck-time.ts; was the UTC day), so the second run's claim loses the unique constraint and sends
+//      nothing. At the 03:00 UTC schedule a GB truck's day is the UTC day, so its keys are unchanged.
 //   2. Refreshing is idempotent in effect — a second exchange returns another valid token for the same
 //      account, and the second run will not even attempt one, because the first run pushed the expiry
 //      back beyond REFRESH_WHEN_DAYS_LEFT_BELOW.
@@ -29,6 +30,8 @@
 // ⚠️ NOTHING HERE CAN REPORT THAT IT NEVER RAN. Same residual gap as every other job in this directory.
 
 import { NextRequest, NextResponse } from 'next/server'
+import { truckTimeZone } from '@/lib/truck-time'
+import { localDateOfInstant } from '@/lib/time-utils'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { decryptToken, encryptToken, encryptionKeyConfigured } from '@/lib/whatsapp/token-crypto'
@@ -66,7 +69,6 @@ export async function GET(req: NextRequest) {
   if (!await authorised(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
   const now = new Date()
-  const dayKey = utcDayKey(now)
   const autoRefresh = tokenAutoRefreshEnabled(process.env.WHATSAPP_TOKEN_AUTO_REFRESH)
   const store = supabaseAlertStore(supabase)
 
@@ -111,6 +113,8 @@ export async function GET(req: NextRequest) {
     }
 
     summary.checked++
+    // The once-a-day key for this truck's alerts: the truck's own calendar day.
+    const dayKey = await truckDayKey(row.truck_id, now)
 
     const inspected = await inspectBusinessToken({ appId, appSecret, token })
     const plan = planTokenWork({
@@ -191,6 +195,18 @@ export async function GET(req: NextRequest) {
 }
 
 /** Best-effort display name for an alert email. The truck id is always included separately. */
+/** The truck's calendar day for `now` (its zone by the one rule). A truck whose zone cannot be resolved
+ *  falls back to the UTC day — the alert key's old behaviour — and says so in the log. */
+async function truckDayKey(truckId: string, now: Date): Promise<string> {
+  try {
+    const { data } = await supabase.from('trucks').select('timezone, country').eq('id', truckId).maybeSingle()
+    return localDateOfInstant(now, await truckTimeZone(data))
+  } catch (e) {
+    console.error(`[whatsapp-maintenance] no zone for truck ${truckId} — keying its alerts on the UTC day:`, e instanceof Error ? e.message : e)
+    return utcDayKey(now)
+  }
+}
+
 async function truckName(truckId: string): Promise<string> {
   const { data } = await supabase.from('trucks').select('name').eq('id', truckId).maybeSingle()
   return (data?.name as string | undefined) || truckId

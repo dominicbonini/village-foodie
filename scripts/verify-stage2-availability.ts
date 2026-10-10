@@ -43,7 +43,7 @@ console.log('\nTEST 2 — customer availability (10 pizzas @19:00):')
 {
   const rows = buildSlotAvailability({
     times: SLOTS, productionSlotUnits: STORED, catConfigs: PIZZA, kitchenCapacity: 6,
-    date: '2099-01-01', nowMins: 0, earliestCollectionMins: 0, eventStartMins: EVENT_START,
+    date: '2099-01-01', nowMins: 0, earliestCollectionMins: 0, eventStartMins: EVENT_START, tz: 'Europe/London',
   })
   const a = (t: string) => rows.find(r => r.collection_time === t)!
   expect('18:45 OFFERED (window 18:40 free)', a('18:45').available === true, `available=${a('18:45').available} tone=${a('18:45').tone}`)
@@ -126,7 +126,7 @@ console.log('\nTEST 8 — stored productionSlotUnits NOT mutated:')
 {
   const stored = { '19:00': { pizza: 10 } }
   const before = JSON.stringify(stored)
-  buildSlotAvailability({ times: SLOTS, productionSlotUnits: stored, catConfigs: PIZZA, kitchenCapacity: 6, date: '2099-01-01', nowMins: 0, earliestCollectionMins: 0, eventStartMins: EVENT_START, basketByCat: { pizza: 5 } })
+  buildSlotAvailability({ times: SLOTS, productionSlotUnits: stored, catConfigs: PIZZA, kitchenCapacity: 6, date: '2099-01-01', nowMins: 0, earliestCollectionMins: 0, eventStartMins: EVENT_START, tz: 'Europe/London', basketByCat: { pizza: 5 } })
   buildSlotIndicators(SLOTS, stored, PIZZA, 6, EVENT_START)
   expect('input unchanged', JSON.stringify(stored) === before, JSON.stringify(stored))
 }

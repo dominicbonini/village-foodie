@@ -29,6 +29,7 @@ import { buildWeekData, busyWeekData, type WeekEvent } from '@/lib/weekly-post/w
  * already asks it, so the day the column lands nothing else changes. ⛔ NO COMPONENT AND NO FORMATTER
  * MAY DEFAULT TO 'GB' ITSELF — that would be a second answer to the same question. */
 import { countryForTruck } from '@/lib/weekly-post/locale'
+import { truckTimeSettings } from '@/lib/truck-time'
 import {
   defaultLayout, defaultEventLayout, rowsFitWarning, validateLayout, validateEventLayout,
   /* 🔴 THE ONE DOOR IN FOR A **STORED** LAYOUT (7 October 2026). The validators above guard every
@@ -152,6 +153,9 @@ type TruckRow = {
   plan: string | null
   feature_overrides: Record<string, boolean> | null
   trial_expires_at: string | null
+  /** trucks.country / trucks.timezone — the truck's week and clock (select('*') carries them). */
+  country?: string | null
+  timezone?: string | null
 }
 
 async function getTruck(token: string): Promise<TruckRow | null> {
@@ -967,14 +971,18 @@ export async function POST(req: NextRequest) {
    * about what the operator asked for — the tick list, the caption and the picture are one answer. */
   const showPrivate = body.showPrivate === true
   const country = countryForTruck(truck as { country?: string | null })
+  // 🔴 THE TRUCK'S WEEK (Phase 2B): its zone decides "today", its country's week_start the first day —
+  // Monday–Sunday for a GB truck, as before; was a fixed Europe/London and Monday-first for everyone.
+  const truckTime = await truckTimeSettings(truck)
+  const wk = { timeZone: truckTime.timeZone, weekStart: truckTime.weekStart }
 
   // ── LOAD ────────────────────────────────────────────────────────────────────────────────────────
   if (action === 'load') {
     const { missingTable, design } = await loadDesign(truck.id, KIND)
     const which: WeekChoice = body.week === 'this' || body.week === 'next'
       ? body.week as WeekChoice
-      : defaultWeekChoice()
-    const range = weekRange(which)
+      : defaultWeekChoice(new Date(), wk)
+    const range = weekRange(which, new Date(), wk)
     const { events, places } = await loadWeek(truck.id, range.start, range.end)
     const layout = (design?.layout ?? null) as Layout | null
     const week = buildWeekData(range, events, places, {
@@ -1012,7 +1020,7 @@ export async function POST(req: NextRequest) {
        * re-deriving which events the days came from. */
       events: week.included.map(e => ({ id: e.id, date: e.event_date, status: e.status, venue: e.venue_name })),
       orderUrl: truck.slug ? scanUrl(truck.slug) : null,
-      defaultWeek: defaultWeekChoice(),
+      defaultWeek: defaultWeekChoice(new Date(), wk),
     })
   }
 
@@ -1039,7 +1047,7 @@ export async function POST(req: NextRequest) {
    * place's next event is the one its "Make post" button would post. §73's rule, applied here rather
    * than trusted to the client. */
   if (action === 'social_overview') {
-    const today = todayInWeekTz()
+    const today = todayInWeekTz(new Date(), wk)
     const [{ data: placeRows, error: placeErr }, { data: evRows }] = await Promise.all([
       supabase.from('truck_places')
         .select(`id, venue_id, name_key, name, short_name, area, merged_into_id, is_hidden, is_favourite, event_bg_path, event_bg_width, event_bg_height, event_layout, ${SLOT_COLS}`)
@@ -1100,8 +1108,8 @@ export async function POST(req: NextRequest) {
      * left out would make the two halves of that sentence contradict each other. */
     const countIn = (from: string, to: string) => inWeek(from, to).filter(e => e.is_private !== true).length
     const privateIn = (from: string, to: string) => inWeek(from, to).filter(e => e.is_private === true).length
-    const thisWeek = weekRange('this')
-    const nextWeek = weekRange('next')
+    const thisWeek = weekRange('this', new Date(), wk)
+    const nextWeek = weekRange('next', new Date(), wk)
 
     /**
      * ══ 🔴 §6 · THE WEEKLY CAPTION, **FILLED**, FOR BOTH WEEKS ════════════════════════════════════
@@ -1271,7 +1279,7 @@ export async function POST(req: NextRequest) {
           privateEvents: privateIn(nextWeek.start, nextWeek.end),
           caption: captionForWeek(nextWeek),
         },
-        defaultWeek: defaultWeekChoice(),
+        defaultWeek: defaultWeekChoice(new Date(), wk),
       },
       standard: {
         ready: designIsReady(evDesign),
@@ -1695,8 +1703,8 @@ export async function POST(req: NextRequest) {
   if (action === 'captions') {
     const { design } = await loadDesign(truck.id)
     const layout = (design?.layout ?? null) as Layout | null
-    const which: WeekChoice = body.week === 'next' ? 'next' : body.week === 'this' ? 'this' : defaultWeekChoice()
-    const range = weekRange(which)
+    const which: WeekChoice = body.week === 'next' ? 'next' : body.week === 'this' ? 'this' : defaultWeekChoice(new Date(), wk)
+    const range = weekRange(which, new Date(), wk)
     const { events, places } = await loadWeek(truck.id, range.start, range.end)
     const week = buildWeekData(range, events, places, {
       timeStyle: layout?.timeStyle ?? '12h',
@@ -1728,7 +1736,7 @@ export async function POST(req: NextRequest) {
         date: d.date,
         name: e.name,
         status: e.status,
-        text: eventPostText({ truckName: truck.name, entry: e, date: d.date, orderUrl, timeStyle: layout?.timeStyle ?? '12h', now }),
+        text: eventPostText({ truckName: truck.name, entry: e, date: d.date, orderUrl, timeStyle: layout?.timeStyle ?? '12h', now, timeZone: truckTime.timeZone, country }),
       }))),
     })
   }
@@ -1747,8 +1755,8 @@ export async function POST(req: NextRequest) {
     const info = readImageInfo(bytes)
     if (!info) return NextResponse.json({ error: 'Your blank image could not be read.' }, { status: 500 })
 
-    const which: WeekChoice = body.week === 'next' ? 'next' : body.week === 'this' ? 'this' : defaultWeekChoice()
-    const range = weekRange(which)
+    const which: WeekChoice = body.week === 'next' ? 'next' : body.week === 'this' ? 'this' : defaultWeekChoice(new Date(), wk)
+    const range = weekRange(which, new Date(), wk)
     const opts = {
       timeStyle: v.layout.timeStyle,
       showCancelled: v.layout.showCancelled,
@@ -1817,7 +1825,7 @@ export async function POST(req: NextRequest) {
   /** The event design, the places and their pictures — everything the setup screen needs. */
   if (action === 'event_load') {
     const { missingTable, design } = await loadDesign(truck.id, EVENT_KIND)
-    const today = todayInWeekTz()
+    const today = todayInWeekTz(new Date(), wk)
     const EV_COLS = 'id, event_date, start_time, end_time, status, venue_name, venue_id, truck_place_id, town'
     const [{ data: places }, { data: upcoming }, { data: past }] = await Promise.all([
       supabase.from('truck_places')
@@ -2115,6 +2123,7 @@ export async function POST(req: NextRequest) {
       ? eventPostText({
         truckName: truck.name, entry: ctx.entry, date: ctx.date,
         orderUrl: orderUrlForPost, timeStyle: layout?.timeStyle ?? '12h', now,
+        timeZone: truckTime.timeZone, country,
       })
       : fillCaptionTemplate(eventTpl, eventCaptionValues({
         placeName: ctx.entry.name,
@@ -2127,6 +2136,7 @@ export async function POST(req: NextRequest) {
         socialTag: ctx.socialTag,
         country,
         now,
+        timeZone: truckTime.timeZone,
       }))
     return NextResponse.json({
       /* 🔴 `designIsReady`, so the modal routes to setup rather than proceeding into

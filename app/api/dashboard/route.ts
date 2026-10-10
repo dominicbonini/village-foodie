@@ -24,6 +24,12 @@ import { readEventType } from '@/lib/event-types/read'
 import { LEDGER_ROW_COLUMNS } from '@/lib/payments/ledger'
 import { readHeldAuthorisations } from '@/lib/payments/held-authorisation'
 import { resolveBatchReservations } from '@/lib/features'
+import { truckMoneyWithOrders } from '@/lib/money-server'
+import { truckTimeSettings } from '@/lib/truck-time'
+import { getLocalDateInTz, getNowMinsInTz, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
+import { phoneCopyForTruck } from '@/lib/phone-copy'
+import type { PhoneCopy } from '@/lib/phone'
+import type { TruckMoney } from '@/lib/money-format'
 
 // ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
 // 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
@@ -81,7 +87,7 @@ export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
   const pin   = req.nextUrl.searchParams.get('pin')
   const vanId = req.nextUrl.searchParams.get('van_id')
-  const date  = req.nextUrl.searchParams.get('date') || new Date().toISOString().split('T')[0]
+  const dateParam = req.nextUrl.searchParams.get('date')
   const eventIdParam = req.nextUrl.searchParams.get('event_id')
 
   if (!token) {
@@ -127,6 +133,29 @@ export async function GET(req: NextRequest) {
     console.error(`[dashboard] no truck for token ending …${token.slice(-6)} — returning 401 (authoritative)`)
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
   }
+
+  // ── 🔴 THE TRUCK'S CLOCK (Phase 2B) — trucks.timezone, else its country's default, with the country's
+  // display settings. It goes to every screen as `truck.time` and decides this route's own "today" (the
+  // default date was the UTC date: yesterday from 00:00 to 01:00 BST) and "now" (was the server's UTC
+  // clock: an hour behind London all through BST).
+  // ⚠️ THIS ROUTE FEEDS THE KITCHEN, SO IT DOES NOT FAIL ON IT: a lookup that throws is logged loudly,
+  // `time` goes out null, and this route uses the UK's settings (lib/time-utils `timeSettingsOr`) — every
+  // truck that predates this build is a UK truck.
+  let truckTime: TimeSettings | null = null
+  try {
+    truckTime = await truckTimeSettings(truck)
+  } catch (e) {
+    console.error('[dashboard] 🔴 time settings unavailable — using the UK\'s:', e instanceof Error ? e.message : e)
+  }
+  // Phase 2C: the phone copy the demo's signup box shows. Same rule as `time`: never fails the kitchen.
+  let truckPhone: PhoneCopy | null = null
+  try {
+    truckPhone = await phoneCopyForTruck(truck)
+  } catch (e) {
+    console.error('[dashboard] 🔴 phone copy unavailable — sending none:', e instanceof Error ? e.message : e)
+  }
+  const tz = timeSettingsOr(truckTime, 'dashboard api').timeZone
+  const date = dateParam || getLocalDateInTz(tz)
 
   // ── DEMO: NO automatic event roll here. Deliberately. ───────────────────────────────────────────
   // This used to call rollDemoEventIfStale on every dashboard load, shifting an elapsed demo window
@@ -693,7 +722,7 @@ export async function GET(req: NextRequest) {
     dashReservations = eventReservations
     dashBatchReservations = resolveBatchReservations(truck)
     dashProductionSlotUnits = productionSlotUnits   // surface the raw occupancy for the offline client re-run
-    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
+    const nowMins = getNowMinsInTz(tz)
     // For the truck: don't show slots before event start (use eventStartMins as minimum)
     const earliestMins = eventStartMins !== null ? eventStartMins : nowMins
     // Per-slot per-category composition wording ("2 Pizzas, 1 Other") — the SAME buildSlotIndicators
@@ -729,6 +758,7 @@ export async function GET(req: NextRequest) {
       displayIntervalMins: truckIntervalMins,
       date,
       nowMins,
+      tz,
       earliestCollectionMins: earliestMins,
       eventStartMins: eventStartMins ?? 0,
       eventEndMins: eventEndMins ?? undefined,
@@ -861,6 +891,17 @@ export async function GET(req: NextRequest) {
   // ONE query; only its position moved. This block now just consumes what that read produced.
   const stripeChargesEnabled = operatorStripe.chargesEnabled
 
+  // ── 🔴 THE MONEY FORMAT (Phase 2A) — the truck's {currency, locale} and the locale of every country its
+  // orders came from, so every card, ticket and total shows its order's own currency. ⚠️ THIS ROUTE FEEDS
+  // THE KDS, SO IT DOES NOT FAIL ON IT: a lookup that throws is logged loudly and `money` goes out null, and
+  // every client then prints bare figures (no symbol) and warns — never a guessed £, never a dead board.
+  let money: TruckMoney | null = null
+  try {
+    money = await truckMoneyWithOrders(truck, (orders ?? []) as Array<{ country?: string | null }>)
+  } catch (e) {
+    console.error('[dashboard] 🔴 money format unavailable — amounts will show without a symbol:', e instanceof Error ? e.message : e)
+  }
+
   return NextResponse.json({
     currentUserName,
     userRole,
@@ -901,6 +942,11 @@ export async function GET(req: NextRequest) {
       // placed here (in the truck object, after the spread) because that is where the customer menu API
       // puts its equivalent `card_payments_ready`. Delete with the switch.
       stripe_charges_enabled: stripeChargesEnabled,
+      money,
+      // The truck's time settings (or null — see above). Kept in the native offline snapshot with the rest.
+      time: truckTime,
+      // { phoneCountry, short_name, phone_example } — never the settings row (Phase 2C).
+      phone: truckPhone,
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }

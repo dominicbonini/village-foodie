@@ -61,6 +61,9 @@ const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*
 const LIB = [
   'lib/event-pricing/price.ts', 'lib/event-pricing/read.ts', 'lib/event-pricing/lock-in.ts',
   'lib/order-repricing.ts', 'lib/order-calculations.ts',
+  // Phase 2A: the rule labels and formatModifiers print through the one money formatter, which itself
+  // imports nothing — so it is compiled alongside, and nothing can cycle through it.
+  'lib/money-format.ts',
 ]
 
 function build(root, files, tag) {
@@ -201,8 +204,8 @@ head('1 · THE ARITHMETIC — the brief’s table, to the penny')
     [2,     'add_pct', 10,  'up_1',       300, '£2 +10% always-up → £3'],
     [2,     'add_pct', 10,  'nearest_1',  200, '£2 +10% nearest → £2'],
     [0.40,  'sub_pct', 10,  'nearest_1',   36, '£0.40 −10% nearest → £0.36 — rounding NEVER makes it free'],
-    [1.50,  'sub_gbp', 2,   'none',         0, '£1.50 −£2 → £0, never a negative'],
-    [0,     'add_gbp', 1,   'none',         0, 'a £0 menu item + £1 stays £0'],
+    [1.50,  'sub_amount', 2, 'none',        0, '£1.50 −£2 → £0, never a negative'],
+    [0,     'add_amount', 1, 'none',        0, 'a £0 menu item + £1 stays £0'],
     [0,     'add_pct', 50,  'up_1',         0, '…and no rounding can lift it off £0 either'],
   ]
   for (const [pounds, mode, amount, rounding, want, why] of TABLE) {
@@ -229,10 +232,12 @@ head('1 · THE ARITHMETIC — the brief’s table, to the penny')
   /* ⚠️ A HALF-PENNY IS NOT A PRICE. `numeric(8,2)` would round it on the way in, so the boundary does
    * it here and the value the operator sees back is the value that was stored. */
   t('⚠️ an amount is capped at 2 decimals, and a silly one is refused rather than clamped',
-    P.cleanPriceAmount('add_gbp', 1.005) === 1.01
-    && P.cleanPriceAmount('add_gbp', 1001) === null
+    P.cleanPriceAmount('add_amount', 1.005) === 1.01
+    && P.cleanPriceAmount('add_amount', 1001) === null
     && P.cleanPriceAmount('add_pct', 501) === null
-    && P.cleanPriceAmount('add_gbp', -1) === null
+    && P.cleanPriceAmount('add_amount', -1) === null
+    // the old name is still READ by the validator (an older client may still send it)
+    && P.cleanPriceAmount('add_gbp', 1.005) === 1.01
     && P.cleanPriceAmount('none', 5) === null)
 
   /* ── 🔴 "nearest £1" IS HALVES **UP**, AT EVERY POUND BOUNDARY ──────────────────────────────────
@@ -271,7 +276,7 @@ head('1b · TYPED PRICES BEAT THE RULE, AND ARE NEVER ROUNDED')
     P.priceForItem(P.toPence(10), setup({ mode: 'add_pct', amount: 10, typed: { [ITEM.margherita]: 0 } }), ITEM.margherita) === 0)
   t('🔴 …and a TYPED price can set a £0 menu item ABOVE zero, where a rule cannot',
     P.priceForItem(0, setup({ typed: { [ITEM.sauce]: 1.5 } }), ITEM.sauce) === 150
-    && P.applyPriceRule(0, setup({ mode: 'add_gbp', amount: 1.5 })) === 0)
+    && P.applyPriceRule(0, setup({ mode: 'add_amount', amount: 1.5 })) === 0)
   t('⚠️ clearing a typed price is a DELETE, not a £0 — the validator says so',
     P.cleanTypedPrice('') === null && P.cleanTypedPrice(null) === null
     && P.cleanTypedPrice(0) === 0 && P.cleanTypedPrice('-1') === null)
@@ -651,8 +656,12 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     const priceSrc = fs.readFileSync(path.join(REPO, PRICE_SRC), 'utf8')
     t('🔴 …and lib/event-pricing/price.ts is PURE — no supabase, no fetch, no Date, no react',
       !/supabase|SupabaseClient|fetch\(|new Date|Date\.now|from 'react'/.test(priceSrc))
-    t('⚠️ …and it has no imports at all, which is why nothing can cycle through it',
-      !/^import /m.test(priceSrc))
+    // Phase 2A: ONE import is allowed — the money formatter, for the rule labels' currency — and only
+    // because that module imports nothing itself, so the no-cycle guarantee this check exists for holds.
+    const priceImports = priceSrc.match(/^import .*$/gm) || []
+    t('⚠️ …and it imports nothing but the import-free money formatter, which is why nothing can cycle through it',
+      priceImports.every(l => /from '@\/lib\/money-format'$/.test(l))
+      && !/^import /m.test(fs.readFileSync(path.join(REPO, 'lib/money-format.ts'), 'utf8')))
   }
 
   // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -679,8 +688,34 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
       return m
     }
     const mb = ms(before), mn = ms(now)
+    /* ⚠️ PHASE 2B (10 October 2026) — FOUR MORE LINES LEFT, NONE OF THEM ON THE PRICE LEG, AND EACH IS
+     * ACCOUNTED FOR BY ITS REPLACEMENT. The route's "today" (was the UTC date) and the pre-order zone (was
+     * `trucks.timezone || 'Europe/London'`) are now the truck's, by the one rule (lib/truck-time.ts); two
+     * comment lines that described the old default went with them. The companion check below requires
+     * both replacements, so this is an edit that is proved, not a hole in "exactly one line". */
+    const PHASE_2B_REMOVED = new Set([
+      "const today = new Date().toISOString().split('T')[0]",
+      "// is inert (a Pro→Starter downgrade stops stored config applying). tz defaults to 'Europe/London'",
+      '// (the documented current state until per-truck trucks.timezone lands).',
+      "const preorderTz = (truck as any).timezone || 'Europe/London'",
+    ])
+    t('⚠️ …Phase 2B\'s four lines left the menu API for the truck\'s clock, and both replacements are there',
+      /const today = getLocalDateInTz\(\(await truckTimeSettings\(truck\)\)\.timeZone\)/.test(now)
+      && /const truckTime = await truckTimeSettings\(truck\)\n\s*const preorderTz = truckTime\.timeZone/.test(now)
+      && !/'Europe\/London'/.test(now.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n')))
+    /* ⚠️ AUDIT D31 (docs/audit-fixes-report.md) REMOVED THE DISCOUNT-CODE READ AND ITS EMIT from the public menu,
+     * on purpose. Its lines are excused BY COUNT (some, like `supabase`, appear many times), and the companion
+     * check right after asserts the menu no longer reads or sends codes. scripts/audit-fixes.cjs proves the rest
+     * of the response byte-identical. */
+    const D31_REMOVED = new Map([["{ data: codes },", 1], ['supabase', 1], [".from('discount_codes_db')", 1], [".select('*')", 1],
+      [".eq('truck_id', truck.id)", 1], [".eq('is_active', true),", 1], ['codes: (codes || []).map(c => ({', 1], ['code: c.code,', 1],
+      ['type: c.type,', 1], ['value: c.value,', 1], ['})),', 1]])
     const removed = []
-    for (const [l, n] of mb) { const k = n - (mn.get(l) || 0); if (k > 0 && l.trim()) removed.push([l.trim(), k]) }
+    for (const [l, n] of mb) {
+      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0)
+      if (k > 0 && l.trim() && !PHASE_2B_REMOVED.has(l.trim())) removed.push([l.trim(), k])
+    }
+    t('⚠️ audit D31: the public menu neither reads nor sends discount codes', !/discount_codes_db/.test(now.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n')) && !/codes: \(codes/.test(now))
     /* The ONE line this build replaces. */
     const EXPECTED_REMOVED = ['price: i.price,']
     t('🔴 EXACTLY ONE LINE IS REMOVED FROM THE MENU API, and it is the price emit',
@@ -725,10 +760,29 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
   {
     const M = 'supabase/migrations/20261011_event_pricing.sql'
     const sql = fs.readFileSync(path.join(REPO, M), 'utf8')
+    // 🔴 THE PRICE-MODE CHECK WAS WIDENED BY 20261010_08 (10 October 2026) to accept the currency-neutral
+    // names the code now WRITES (add_amount / sub_amount) beside the old ones it still READS (add_gbp /
+    // sub_gbp). So the mode half of this claim is asked of THAT file — on BOTH tables, since truck_events
+    // carries the same vocabulary — and the rounding half still of 20261011.
+    const W = fs.readFileSync(path.join(REPO, 'supabase/migrations/20261010_08_price_mode_currency_neutral.sql'), 'utf8')
+    const allowed = (table) => {
+      const m = W.match(new RegExp(`add constraint ${table}_price_mode_check\\s+check \\(price_mode is null or price_mode in \\(([^)]*)\\)\\)`))
+      return m ? new Set([...m[1].matchAll(/'([a-z_]+)'/g)].map(x => x[1])) : null
+    }
+    const expect = new Set([...P.PRICE_MODES, ...Object.keys(P.LEGACY_PRICE_MODE_ALIASES)])
+    const same = (a, b) => !!a && a.size === b.size && [...a].every(v => b.has(v))
     t('🔴 every value the code can write is allowed by a CHECK, and nothing else is',
-      P.PRICE_MODES.every(m => sql.includes(`'${m}'`))
-      && P.PRICE_ROUNDINGS.every(r => sql.includes(`'${r}'`))
-      && /check \(price_mode is null or price_mode in \('none', 'add_gbp', 'add_pct', 'sub_gbp', 'sub_pct'\)\)/.test(sql))
+      same(allowed('event_types'), expect) && same(allowed('truck_events'), expect)
+      && P.PRICE_ROUNDINGS.every(r => sql.includes(`'${r}'`)))
+    t('🔴 the code WRITES only the new names — the old ones are aliases, read and never written',
+      !P.PRICE_MODES.includes('add_gbp') && !P.PRICE_MODES.includes('sub_gbp')
+      && P.PRICE_MODES.includes('add_amount') && P.PRICE_MODES.includes('sub_amount')
+      && P.normalisePriceMode('add_gbp') === 'add_amount' && P.normalisePriceMode('sub_gbp') === 'sub_amount'
+      && P.normalisePriceMode('bogus') === null)
+    t('🔴 a stored OLD name prices exactly as the new one — the alias is read, not dropped to "none"',
+      P.applyPriceRule(1000, setup({ mode: 'add_gbp', amount: 1.5 })) === P.applyPriceRule(1000, setup({ mode: 'add_amount', amount: 1.5 }))
+      && P.applyPriceRule(1000, setup({ mode: 'sub_gbp', amount: 2 })) === P.applyPriceRule(1000, setup({ mode: 'sub_amount', amount: 2 }))
+      && P.applyPriceRule(1000, setup({ mode: 'add_amount', amount: 1.5 })) === 1150)
     t('🔴 the two switches default FALSE and are NOT NULL, so every existing row reads "menu prices"',
       /add column if not exists price_change_on boolean not null default false/.test(sql)
       && /add column if not exists price_own boolean not null default false/.test(sql))
@@ -1198,7 +1252,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
       const V = buildVariant('lib/event-pricing/price.ts',
         '  if (base === 0) return 0\n', '', 'v4')
       const detected = !V || !V.price
-        || V.price.applyPriceRule(0, setup({ mode: 'add_gbp', amount: 1 })) !== 0
+        || V.price.applyPriceRule(0, setup({ mode: 'add_amount', amount: 1 })) !== 0
       must('V4 🔴 a free item starts being charged for under "+£1"', detected)
     }
     // V5 — a typed price goes through the rounding
@@ -1215,7 +1269,7 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
       const V = buildVariant('lib/event-pricing/price.ts',
         '  out = Math.max(0, out)\n', '', 'v6')
       const detected = !V || !V.price
-        || V.price.applyPriceRule(150, setup({ mode: 'sub_gbp', amount: 2 })) !== 0
+        || V.price.applyPriceRule(150, setup({ mode: 'sub_amount', amount: 2 })) !== 0
       must('V6 🔴 £1.50 − £2 becomes −£0.50, which would subtract money from the bill', detected)
     }
     // V7 — `||` instead of `??` on a typed price, so £0 is lost

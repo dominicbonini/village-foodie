@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { extractMenu, MenuExtractionError } from '@/lib/menu-extract'
+import { moneyFormatForTruck } from '@/lib/money-server'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,14 +24,14 @@ export async function POST(req: NextRequest) {
 
   const { data: truck } = await supabase
     .from('trucks')
-    .select('id, name')
+    .select('id, name, currency, country')
     .eq('dashboard_token', token)
     .single()
 
   if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
   try {
-    const result = await extractMenu(supabase, truck, { file, text })
+    const result = await extractMenu(supabase, { id: truck.id, name: truck.name, money: await moneyFormatForTruck(truck) }, { file, text })
     return NextResponse.json(result)
   } catch (err) {
     // Same 500 + message the inline implementation returned.

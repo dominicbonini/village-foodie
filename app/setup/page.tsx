@@ -27,9 +27,13 @@ import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 // app/api/setup/route.ts:13 imports this exact function and rejects on it at :74; components/
 // DemoGetStarted.tsx:53 imports it for the identical field. Three callers, one rule — so this form
 // cannot accept a number the server will refuse, and the two signup paths cannot drift apart.
-import { isValidUKPhone } from '@/lib/contact-validation'
+import { isPlausiblePhone, phoneErrorMessage, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
+// Phase 2D-1: "Where's your truck based?" comes FIRST — the same step the demo modal shows.
+import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
+import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'
 
 const STEPS = [
+  { key: 'based', label: 'Where you’re based' },
   { key: 'identity', label: 'Your truck' },
   { key: 'menu', label: 'Your menu' },
   { key: 'event', label: 'First event' },
@@ -64,6 +68,23 @@ function SetupWizard() {
   // and it matters here for the same reason: a server message replaced by a client one loses the
   // only account of what actually happened.
   const [phoneError, setPhoneError] = useState<string | null>(null)
+  // 🔴 The signup country's phone copy (Phase 2C) — from the server's check below, never the settings row.
+  // Null when that check failed: the box then names no country or example and the SERVER checks the number.
+  // Phase 2D-1: the copy is now the CHOSEN country's (it rides in the countries list), so the phone field —
+  // which comes after the country is chosen — checks and words the number for that country.
+  const [stage, setStage] = useState<'based' | 'identity'>('based')
+  const signupCountries = useSignupCountries()
+  // The answer starts as the pre-fill (derived, not copied into state) until the operator changes something.
+  const [baseChoice, setBase] = useState<BaseAnswer | null>(null)
+  const base = baseChoice ?? (signupCountries.data ? initialBaseAnswer(signupCountries.data.countries, signupCountries.data.guess.code) : null)
+  const [baseErrors, setBaseErrors] = useState<BaseErrors>({})
+  const phoneCopy: PhoneCopy | null = signupCountries.data?.countries.find(c => c.code === base?.country)?.phone ?? null
+  const continueFromBased = () => {
+    if (!base || !signupCountries.data) return
+    const errs = baseAnswerErrors(base, signupCountries.data.countries)
+    setBaseErrors(errs)
+    if (Object.keys(errs).length === 0) { setError(null); setStage('identity') }
+  }
 
   // ── DO NOT ASK FOR A NAME WE ALREADY HAVE (A3) ──────────────────────────────────────────────────
   // 🔴 This page used to render the truck-name form UNCONDITIONALLY, with no lookup of any kind. An
@@ -104,7 +125,9 @@ function SetupWizard() {
   // ── 🔴 THE SAME TWO CHECKS, IN THE SAME ORDER, WITH THE SAME TWO MESSAGES AS THE DEMO MODAL. ─────
   // components/DemoGetStarted.tsx:432-433 (validateDetailsStep) reads:
   //     if (!contactPhone.trim()) errs.phone = 'Add a phone number — customers and we both use it to reach you.'
-  //     else if (!isValidUKPhone(contactPhone)) errs.phone = 'Enter a valid UK phone number (e.g. 07700 900123).'
+  //     else if (!isPlausiblePhone(contactPhone, …)) errs.phone = phoneErrorMessage('phone_number', …)
+  // (Phase 2C: one phone check, worded from the country's settings — GB reads exactly as before:
+  // 'Enter a valid UK phone number (e.g. 07700 900123).')
   // Copied verbatim so the two signup paths accept exactly the same set of inputs and say exactly the
   // same thing when they refuse one. ⚠️ If either copy changes, change both — nothing joins them.
   // 🟢 THE SECOND MESSAGE IS ALSO THE SERVER'S, WORD FOR WORD (app/api/setup/route.ts:75), so a
@@ -112,7 +135,7 @@ function SetupWizard() {
   const validatePhone = (): boolean => {
     const v = contactPhone.trim()
     if (!v) { setPhoneError('Add a phone number — customers and we both use it to reach you.'); return false }
-    if (!isValidUKPhone(contactPhone)) { setPhoneError('Enter a valid UK phone number (e.g. 07700 900123).'); return false }
+    if (phoneCopy && !isPlausiblePhone(contactPhone, phoneCopy.phoneCountry, phoneCopy.phoneCheck)) { setPhoneError(phoneErrorMessage('phone_number', phoneCopy)); return false }
     setPhoneError(null)
     return true
   }
@@ -132,7 +155,7 @@ function SetupWizard() {
       // sends them (DemoGetStarted.tsx:528-540). They must ride on THIS call and not a later one:
       // provisionTruck derives `whatsapp` and `preferred_contact_method` during the INSERT, so a
       // phone patched on afterwards would leave both null on a truck that has a number.
-      // ⚠️ Sent verbatim, untrimmed of internal spacing — isValidUKPhone does not normalise and the
+      // ⚠️ Sent verbatim, untrimmed of internal spacing — the phone check does not normalise and the
       // server stores what it is given (route.ts:114).
       const res = await fetch('/api/setup', {
         method: 'POST',
@@ -142,6 +165,7 @@ function SetupWizard() {
           name: name.trim(),
           contact_phone: contactPhone.trim(),
           phone_is_whatsapp: phoneIsWhatsapp,
+          ...(base ? baseAnswerBody(base) : {}),
         }),
       })
       const data = await res.json()
@@ -216,7 +240,7 @@ function SetupWizard() {
           <ol className="flex items-center gap-2 mb-6 text-xs">
             {STEPS.map((s, i) => (
               <li key={s.key} className="flex items-center gap-2">
-                <span className={i === 0 ? 'font-black text-slate-900' : 'text-slate-400'}>
+                <span className={s.key === stage ? 'font-black text-slate-900' : 'text-slate-400'}>
                   {i + 1}. {s.label}
                 </span>
                 {i < STEPS.length - 1 && <span className="text-slate-300">›</span>}
@@ -224,6 +248,17 @@ function SetupWizard() {
             ))}
           </ol>
 
+          {stage === 'based' ? (
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-5">
+              <h1 className="text-lg font-black text-slate-900">{WHERE_YOU_TRADE_COPY.stepHeading}</h1>
+              {signupCountries.data && base ? (
+                <WhereBasedStep countries={signupCountries.data.countries} guessedCode={signupCountries.data.guess.fromLocation ? signupCountries.data.guess.code : null}
+                  value={base} errors={baseErrors} onChange={a => { setBase(a); setBaseErrors({}) }} />
+              ) : (
+                <p className="text-sm text-slate-500">{signupCountries.error ?? 'Loading…'}</p>
+              )}
+            </div>
+          ) : (
           <form onSubmit={submit} className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-5">
             <div>
               <h1 className="text-lg font-black text-slate-900">What&apos;s your truck called?</h1>
@@ -261,7 +296,7 @@ function SetupWizard() {
               <input
                 id="setup-phone" type="tel" autoComplete="tel" value={contactPhone}
                 onChange={e => { setContactPhone(e.target.value); setPhoneError(null) }}
-                placeholder="07700 900123"
+                placeholder={phonePlaceholder(phoneCopy)}
                 className={`w-full border rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${phoneError ? 'border-red-400' : 'border-slate-200'}`} />
               {phoneError && <p className="text-xs text-red-600 mt-1">{phoneError}</p>}
               <label className="flex items-center gap-2 mt-2 text-sm text-slate-600 cursor-pointer">
@@ -286,16 +321,30 @@ function SetupWizard() {
 
             {error && <p className="text-sm text-red-600">{error}</p>}
           </form>
+          )}
         </div>
       </div>
 
       {/* FOOTER — shrink-0 */}
       <div className="shrink-0 border-t border-slate-200 bg-white px-4 py-3">
         <div className="max-w-lg mx-auto">
-          <button type="button" onClick={submit} disabled={busy || name.trim().length < 2}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl disabled:opacity-40">
-            {busy ? 'Creating your truck…' : 'Continue'}
-          </button>
+          {stage === 'based' ? (
+            <button type="button" onClick={continueFromBased} disabled={!base}
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl disabled:opacity-40">
+              {WHERE_YOU_TRADE_COPY.continueButton}
+            </button>
+          ) : (
+          <div className="flex gap-2">
+            <button type="button" onClick={() => setStage('based')} disabled={busy}
+              className="shrink-0 border border-slate-200 text-slate-700 font-bold px-4 py-3 rounded-xl disabled:opacity-40 hover:bg-slate-50">
+              Back
+            </button>
+            <button type="button" onClick={submit} disabled={busy || name.trim().length < 2}
+              className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl disabled:opacity-40">
+              {busy ? 'Creating your truck…' : 'Continue'}
+            </button>
+          </div>
+          )}
         </div>
       </div>
     </div>

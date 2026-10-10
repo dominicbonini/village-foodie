@@ -25,6 +25,8 @@
 
 import { normalizeVenue, venuesFuzzyMatch } from '@/lib/venue-signature'
 import { normaliseUrl, isScraperBlockedDomain } from '@/lib/url-normalise'
+import { phoneNationalDigits, isPlausiblePhone, phoneDisplay, type PhoneCountry } from '@/lib/phone'
+import { MARKETING_COUNTRY } from '@/lib/marketing-country'
 
 /* ─────────────────────────────── 1. CLASSIFICATION ─────────────────────────────── */
 
@@ -159,15 +161,14 @@ export function normaliseEmail(input: string | null | undefined): string | null 
  * value reads the way Dominic would dial it; the harness pins both the digits and the spacing so a later
  * change to the grouping cannot pass unnoticed.
  */
-export function normaliseUkPhone(input: string | null | undefined): { mobile: string | null; landline: string | null } {
+export function normaliseUkPhone(input: string | null | undefined, country: PhoneCountry): { mobile: string | null; landline: string | null } {
   const none = { mobile: null, landline: null }
-  let d = String(input ?? '').replace(/[^\d+]/g, '')
-  if (!d) return none
-  if (d.startsWith('+44')) d = '0' + d.slice(3)
-  else if (d.startsWith('0044')) d = '0' + d.slice(4)
-  else if (d.startsWith('44') && d.length >= 12) d = '0' + d.slice(2)
-  d = d.replace(/\D/g, '')
-  if (!d.startsWith('0')) return none
+  // 🔴 THE +44 / 0044 / 44 → 0 STEP IS lib/phone.ts's NATIONAL FORM (Phase 2C), read in `country`. The
+  // grouping and the mobile / landline split below are this admin screen's own and unchanged, so a UK
+  // number displays byte-for-byte as before (scripts/phone-parity.cjs). A number that is not a plausible
+  // length, or not this country's, is not written — as before.
+  const d = phoneNationalDigits(input, country)
+  if (!d || !d.startsWith('0')) return none
 
   // Mobile: 07 + 9 digits. 11 digits exactly; anything else is not a UK mobile.
   if (/^07\d{9}$/.test(d)) return { mobile: `${d.slice(0, 5)} ${d.slice(5)}`, landline: null }
@@ -185,14 +186,10 @@ export function normaliseUkPhone(input: string | null | undefined): { mobile: st
 }
 
 /** Digits only, for comparing two numbers that may be spaced or prefixed differently. */
-export function phoneDigits(input: string | null | undefined): string | null {
-  let d = String(input ?? '').replace(/[^\d+]/g, '')
-  if (!d) return null
-  if (d.startsWith('+44')) d = '0' + d.slice(3)
-  else if (d.startsWith('0044')) d = '0' + d.slice(4)
-  else if (d.startsWith('44') && d.length >= 12) d = '0' + d.slice(2)
-  d = d.replace(/\D/g, '')
-  return d.length >= 10 ? d : null
+export function phoneDigits(input: string | null | undefined, country: PhoneCountry): string | null {
+  // The national form as digits (lib/phone.ts, Phase 2C) — both sides of a comparison go through it.
+  const d = phoneNationalDigits(input, country)
+  return d && d.length >= 10 ? d : null
 }
 
 /**
@@ -322,7 +319,7 @@ export function detailsAreEmpty(d: TruckDetails): boolean {
  * ⚠️ `area` is free text and is NOT normalised — it goes into a note a human reads, not a key anything
  * matches on. Trimmed and length-capped, nothing more.
  */
-export function parseTruckDetails(raw: string): TruckDetails {
+export function parseTruckDetails(raw: string, country: PhoneCountry = MARKETING_COUNTRY): TruckDetails {
   let parsed: Record<string, unknown>
   try {
     const p = JSON.parse(cleanJson(raw))
@@ -330,7 +327,17 @@ export function parseTruckDetails(raw: string): TruckDetails {
   } catch { return { ...EMPTY_DETAILS } }
 
   const str = (k: string) => String(parsed[k] ?? '').trim()
-  const ph = normaliseUkPhone(str('phone'))
+  // 🔴 PHASE 2D-2: the number is read in the CHOSEN country (the screenshot panel's picker). The UK keeps its
+  // own grouping and mobile/landline split byte for byte (normaliseUkPhone). Any other country keeps a number
+  // of a plausible length for it — a +1 number is no longer thrown away — in that country's own display
+  // form, as `phone` (a US mobile and landline look the same, so no split is guessed).
+  const ph = country === 'GB'
+    ? normaliseUkPhone(str('phone'), country)
+    : (() => {
+        const raw = str('phone')
+        const shown = raw && isPlausiblePhone(raw, country, 'length') ? phoneDisplay(raw, country) : null
+        return { mobile: null, landline: shown }
+      })()
   const area = str('area').replace(/\s+/g, ' ').slice(0, 120)
 
   return {
@@ -388,15 +395,17 @@ export function sameFacebookPage(a: string | null | undefined, b: string | null 
  * ⚠️ INSTAGRAM IS NOT A MATCH KEY. The brief lists five keys and Instagram is not among them; it is
  * extracted and filled, never used to assert identity.
  */
-export function matchProspect(d: TruckDetails, rows: MatchRow[]): MatchResult {
+export function matchProspect(d: TruckDetails, rows: MatchRow[], country: PhoneCountry = MARKETING_COUNTRY): MatchResult {
+  // 🔴 PHASE 2D-2: the caller passes only the prospects whose truck is in `country` (the route filters by
+  // discovery_trucks.country), so nothing here can match across countries; phone numbers compare in it.
   const hits: { row: MatchRow; on: MatchKey }[] = []
 
   for (const r of rows) {
     if (d.facebook_url && sameFacebookPage(d.facebook_url, r.facebook_url)) { hits.push({ row: r, on: 'facebook' }); continue }
     const rWeb = bareDomain(r.website)
     if (d.website && rWeb && d.website === rWeb) { hits.push({ row: r, on: 'website' }); continue }
-    const ours = [phoneDigits(d.mobile), phoneDigits(d.phone)].filter(Boolean) as string[]
-    const theirs = [phoneDigits(r.mobile), phoneDigits(r.phone)].filter(Boolean) as string[]
+    const ours = [phoneDigits(d.mobile, country), phoneDigits(d.phone, country)].filter(Boolean) as string[]
+    const theirs = [phoneDigits(r.mobile, country), phoneDigits(r.phone, country)].filter(Boolean) as string[]
     if (ours.length && theirs.some(t => ours.includes(t))) { hits.push({ row: r, on: 'phone' }); continue }
     const rEmail = normaliseEmail(r.contact_email)
     if (d.contact_email && rEmail && d.contact_email === rEmail) { hits.push({ row: r, on: 'email' }); continue }
@@ -525,12 +534,15 @@ export function planIsEmpty(p: FillPlan): boolean {
  * a truck nobody has looked at into the nightly scrape. It goes into `outreach_prospects.notes` instead
  * and the row summary says so.
  */
-export function hiddenTruckInsert(details: TruckDetails): Record<string, unknown> {
+export function hiddenTruckInsert(details: TruckDetails, country?: string): Record<string, unknown> {
   const row: Record<string, unknown> = {
     name: details.name,
     show_on_vf: false,
     show_on_hg: false,
   }
+  // Phase 2D-2: the chosen country, written explicitly (the column defaults to GB for the UK sources that
+  // write without one). Its prospect reads the country through this truck.
+  if (country) row.country = country
   if (details.contact_email) row.contact_email = details.contact_email
   if (details.mobile) row.mobile = details.mobile
   if (details.phone) row.phone = details.phone

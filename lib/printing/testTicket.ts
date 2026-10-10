@@ -5,10 +5,12 @@
 // transport and reports the transport's answer. It exists so an operator can prove bytes reach paper
 // before a real order depends on it, and so TICKET_LEADING_FEED_LINES can be measured with a ruler.
 import { renderTicket, type PaperWidth, type TicketOrder } from './ticket'
+import { formatInstantClock, type TimeSettings } from '@/lib/time-utils'
 
-export function renderTestTicket(args: { truckName?: string | null; paper: PaperWidth; at?: Date }): Uint8Array {
+export function renderTestTicket(args: { truckName?: string | null; paper: PaperWidth; at?: Date; time: TimeSettings | null | undefined }): Uint8Array {
   const d = args.at ?? new Date()
-  const hhmm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  // The truck's clock and style (Phase 2B): GB "18:37", US "6:37pm".
+  const hhmm = formatInstantClock(d, args.time)
   const order: TicketOrder = {
     id: 'TEST',
     customer_name: 'Test ticket',

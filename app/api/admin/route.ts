@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'   // canonical admin check (shared with the /landing gate)
 import { PLAN_META, type Plan } from '@/lib/features'
+import { getCountrySettingsMany } from '@/lib/country-settings'
+import type { CountrySettings } from '@/lib/country-settings-types'
+import { MARKETING_COUNTRY } from '@/lib/marketing-country'
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
@@ -51,7 +54,7 @@ export async function GET(req: NextRequest) {
 
   const { data: trucks } = await supabase
     .from('trucks')
-    .select('id,name,slug,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note,hide_pricing,show_on_vf,show_on_hg,order_link_vf,order_link_hg,is_customer,excluded,custom_domain,custom_domain_verified_at,custom_domain_confirmed_at,custom_domain_setup_state,custom_domain_setup_started_at,custom_domain_last_checked_at,custom_domain_last_ok_at,custom_domain_last_seen_value')
+    .select('id,name,slug,country,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note,hide_pricing,show_on_vf,show_on_hg,order_link_vf,order_link_hg,is_customer,excluded,custom_domain,custom_domain_verified_at,custom_domain_confirmed_at,custom_domain_setup_state,custom_domain_setup_started_at,custom_domain_last_checked_at,custom_domain_last_ok_at,custom_domain_last_seen_value')
     .order('name')
 
   // ── J3: THE SIGNUP PROMO CODE, KEYED BY OPERATOR ────────────────────────────────────────────────
@@ -66,7 +69,18 @@ export async function GET(req: NextRequest) {
     if (error) console.warn('[admin] signup_promo_code unavailable (migration not run?):', error.message)
     else operators = data ?? []
   }
-  return NextResponse.json({ trucks: trucks || [], operators })
+  // ── THE COUNTRY SETTINGS THIS SCREEN QUOTES — the marketing country's (the plan matrix) plus every
+  // truck's own (one truck's modal). public.country_settings is service-role only (V12.1), so the admin
+  // page never reads it: it rides here, behind verifyAdmin above. ⚠️ FATAL: a read that fails returns 500
+  // rather than letting the matrix render guessed figures.
+  let countrySettings: Record<string, CountrySettings>
+  try {
+    countrySettings = await getCountrySettingsMany([MARKETING_COUNTRY, ...(trucks || []).map(t => t.country as string)])
+  } catch (e) {
+    console.error('[admin] country settings read failed', e instanceof Error ? e.message : e)
+    return NextResponse.json({ error: 'Could not load country settings.' }, { status: 500 })
+  }
+  return NextResponse.json({ trucks: trucks || [], operators, countrySettings })
 }
 
 export async function POST(req: NextRequest) {

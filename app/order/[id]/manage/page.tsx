@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
+import { formatSlot, instantOfLocal, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 
 type OrderState = {
+  /** 🔴 THE ORDER'S OWN currency and locale, from /api/orders/[id]. Missing ⇒ figures with no symbol. */
+  money?: MoneyFormat | null
+  /** 🔴 The truck's zone and display settings (Phase 2B), from /api/orders/[id]. */
+  time?: TimeSettings | null
   id: string
   status: string
   customer_name: string
@@ -23,6 +29,7 @@ type OrderState = {
 export default function ManageOrderPage() {
   const { id } = useParams<{ id: string }>()
   const [order, setOrder] = useState<OrderState | null>(null)
+  const amount = (major: number) => formatMajorOrBare(major, order?.money, 'order receipt')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [cancelling, setCancelling] = useState(false)
@@ -105,11 +112,13 @@ export default function ManageOrderPage() {
   }
 
   if (!order) return null
+  const ts = timeSettingsOr(order.time, 'order receipt')
 
   const isPastCutoff = (): boolean => {
     if (!order.slot || !order.event_date || !order.cancellation_cutoff_mins) return false
-    const slotTime = new Date(`${order.event_date}T${order.slot}`)
-    const cutoff = new Date(slotTime.getTime() - order.cancellation_cutoff_mins * 60 * 1000)
+    // The slot is the truck's wall clock (Phase 2B) — not the customer's device's.
+    const slotTime = instantOfLocal(order.event_date, order.slot, ts.timeZone)
+    const cutoff = new Date(slotTime - order.cancellation_cutoff_mins * 60 * 1000)
     return new Date() > cutoff
   }
 
@@ -171,7 +180,7 @@ export default function ManageOrderPage() {
             <div className="flex justify-between text-sm mb-1">
               <span className="text-slate-500">Pickup</span>
               <span className="font-medium text-slate-900">
-                {order.slot}{order.venue_name ? ` · ${order.venue_name}` : ''}
+                {formatSlot(order.slot, ts)}{order.venue_name ? ` · ${order.venue_name}` : ''}
               </span>
             </div>
           )}
@@ -226,13 +235,13 @@ export default function ManageOrderPage() {
                 {item.quantity}× {item.name}
               </span>
               <span className="text-slate-500">
-                £{((item.unit_price ?? item.price ?? 0) * (item.quantity || 1)).toFixed(2)}
+                {amount((item.unit_price ?? item.price ?? 0) * (item.quantity || 1))}
               </span>
             </div>
           ))}
           <div className="flex justify-between text-sm font-bold mt-2 pt-2 border-t border-slate-100">
             <span>Total</span>
-            <span>£{(order.total ?? 0).toFixed(2)}</span>
+            <span>{amount(order.total ?? 0)}</span>
           </div>
         </div>
 

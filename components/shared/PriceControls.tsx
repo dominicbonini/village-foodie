@@ -29,8 +29,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { CONTROL_BOX } from '@/lib/ui-tokens'
+import { formatMinorOrBare, currencySymbolOrBare, editableAmount, type MoneyFormat } from '@/lib/money-format'
 import {
-  PRICE_MODE_CHOICES, PRICE_ROUNDING_CHOICES,
+  priceModeChoices, priceRoundingChoices,
 } from '@/lib/copy/serviceSettings'
 import {
   amountUnitFor, applyPriceRule, cleanPriceAmount, cleanTypedPrice, priceForItem, toPence, toPounds,
@@ -164,21 +165,26 @@ const styleFor = (height?: number) => ({ height: height ?? CONTROL_H })
 // 3 · THE RULE: MODE, AMOUNT, ROUNDING
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-export function PriceModeSelect({ value, onChange, disabled, label, height }: {
+export function PriceModeSelect({ value, onChange, disabled, label, height, currencySymbol }: {
   value: PriceMode; onChange: (v: PriceMode) => void; disabled?: boolean; label: string
   /** Omitted ⇒ the sheet's `CONTROL_H`. The grid passes `GRID_CONTROL_H`. */
   height?: number
+  /** The TRUCK's currency symbol, for the "+ £" / "− £" labels. Required — never a typed £. */
+  currencySymbol: string
 }) {
+  const choices = priceModeChoices(currencySymbol)
   return (
     <Select className={PRICE_CONTROL_CLASS} height={height} ariaLabel={label} disabled={disabled} value={value}
-      title={PRICE_MODE_CHOICES.find(c => c.value === value)?.label ?? ''}
-      options={PRICE_MODE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
+      title={choices.find(c => c.value === value)?.label ?? ''}
+      options={choices.map(c => ({ value: c.value, label: c.label }))}
       onChange={v => onChange(v as PriceMode)} />
   )
 }
 
-export function PriceRoundingSelect({ value, onChange, disabled, label, faded, height }: {
+export function PriceRoundingSelect({ value, onChange, disabled, label, faded, height, currencySymbol }: {
   value: PriceRounding; onChange: (v: PriceRounding) => void; disabled?: boolean; label: string
+  /** The TRUCK's currency symbol, for "Nearest £1". Required — never a typed £. */
+  currencySymbol: string
   /** Omitted ⇒ the sheet's `CONTROL_H`. The grid passes `GRID_CONTROL_H`. */
   height?: number
   /**
@@ -191,8 +197,8 @@ export function PriceRoundingSelect({ value, onChange, disabled, label, faded, h
 }) {
   return (
     <Select className={PRICE_CONTROL_CLASS} height={height} ariaLabel={label} disabled={disabled} value={value} faded={faded}
-      title={PRICE_ROUNDING_CHOICES.find(c => c.value === value)?.label ?? ''}
-      options={PRICE_ROUNDING_CHOICES.map(c => ({ value: c.value, label: c.label }))}
+      title={priceRoundingChoices(currencySymbol).find(c => c.value === value)?.label ?? ''}
+      options={priceRoundingChoices(currencySymbol).map(c => ({ value: c.value, label: c.label }))}
       onChange={v => onChange(v as PriceRounding)} />
   )
 }
@@ -210,8 +216,10 @@ export function PriceRoundingSelect({ value, onChange, disabled, label, faded, h
  * ⚠️ `cleanPriceAmount` IS THE SAME VALIDATOR THE ROUTE USES, so a value this box accepts is a value
  * the server stores, and a value it rejects never leaves the screen.
  */
-export function PriceAmountInput({ mode, value, onCommit, disabled, label, height }: {
+export function PriceAmountInput({ mode, value, onCommit, disabled, label, height, currencySymbol }: {
   mode: PriceMode
+  /** The TRUCK's currency symbol — the suffix of an amount mode's box. */
+  currencySymbol: string
   value: number | null
   onCommit: (v: number | null) => void
   disabled?: boolean
@@ -219,7 +227,7 @@ export function PriceAmountInput({ mode, value, onCommit, disabled, label, heigh
   /** Omitted ⇒ the sheet's `CONTROL_H`. The grid passes `GRID_CONTROL_H`. */
   height?: number
 }) {
-  const unit = amountUnitFor(mode)
+  const unit = amountUnitFor(mode, currencySymbol)
   const [draft, setDraft] = useState<string | null>(null)
   const shown = draft ?? (value === null || value === undefined ? '' : String(value))
 
@@ -258,7 +266,6 @@ export function PriceAmountInput({ mode, value, onCommit, disabled, label, heigh
 // 4 · ONE ITEM'S PRICE CELL
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-const gbp = (pence: number): string => `£${(pence / 100).toFixed(2)}`
 
 /**
  * ══ 🔴 ONE ITEM'S PRICE IN ONE COLUMN — COMPUTED, TYPED, OR BEING TYPED ═══════════════════════════
@@ -277,7 +284,7 @@ const gbp = (pence: number): string => `£${(pence / 100).toFixed(2)}`
  * keyboard; a span is not reachable and gives no focus ring.
  */
 export function PriceCell({
-  menuPrice, setup, itemId, typed, onType, onClear, disabled, label, grey, height, showDiff,
+  menuPrice, setup, itemId, typed, onType, onClear, disabled, label, grey, height, showDiff, money,
 }: {
   /** The MENU price, in pounds. */
   menuPrice: number
@@ -303,7 +310,12 @@ export function PriceCell({
    * ⚠️ THE DASHBOARD SHEET DOES NOT PASS IT EITHER, so the sheet is byte-identical.
    */
   showDiff?: boolean
+  /** 🔴 THE TRUCK'S MONEY FORMAT (the manage page's country settings) — every figure in the cell. Missing
+   *  ⇒ figures with no symbol, never a typed £. */
+  money: MoneyFormat | null | undefined
 }) {
+  // The engine works in the currency's minor units (toPence); the cell only lays them out.
+  const minor = (m: number) => formatMinorOrBare(m, money, 'price cell')
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState('')
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -321,7 +333,7 @@ export function PriceCell({
 
   if (grey || !setup) {
     return (
-      <span className="text-sm text-slate-400 tabular-nums" title={label}>{gbp(menuPence)}</span>
+      <span className="text-sm text-slate-400 tabular-nums" title={label}>{minor(menuPence)}</span>
     )
   }
 
@@ -355,7 +367,7 @@ export function PriceCell({
     return (
       <span className="relative inline-flex w-full min-w-0 items-stretch text-sm">
         <span aria-hidden="true"
-          className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">£</span>
+          className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">{currencySymbolOrBare(money, 'price cell')}</span>
         <input ref={inputRef} type="text" inputMode="decimal" aria-label={label}
           value={draft} onChange={e => setDraft(e.target.value)} onBlur={commit}
           onKeyDown={e => {
@@ -388,7 +400,7 @@ export function PriceCell({
    * difference is always zero there. The grid passes `showDiff` only for a type column. */
   const diffPence = shownPence - menuPence
   const diff = showDiff && diffPence !== 0
-    ? `(${diffPence > 0 ? '+' : '−'}£${toPounds(Math.abs(diffPence)).toFixed(2)})`
+    ? `(${diffPence > 0 ? '+' : '−'}${minor(Math.abs(diffPence))})`
     : null
 
   if (hasTyped) {
@@ -401,7 +413,7 @@ export function PriceCell({
         <button type="button" disabled={disabled} aria-label={`${label} — change`}
           onClick={() => { setDraft(String(typed)); setEditing(true) }}
           className="text-sm font-semibold text-blue-800 tabular-nums disabled:text-slate-400">
-          {gbp(toPence(typed))}
+          {minor(toPence(typed))}
         </button>
         {diff && <span className="shrink-0 text-[10px] text-blue-600 tabular-nums">{diff}</span>}
         {/* ⚠️ THE × IS ITS OWN BUTTON WITH ITS OWN LABEL. One control doing both would make "go back
@@ -420,9 +432,9 @@ export function PriceCell({
      * editor — and an operator reading the difference is reading, not editing. */
     <span className="inline-flex min-w-0 items-baseline gap-1">
       <button type="button" disabled={disabled} aria-label={`${label} — type a price`}
-        onClick={() => { setDraft(toPounds(shownPence).toFixed(2)); setEditing(true) }}
+        onClick={() => { setDraft(editableAmount(toPounds(shownPence), money)); setEditing(true) }}
         className="text-sm text-slate-900 tabular-nums rounded px-1 hover:bg-slate-100 disabled:text-slate-400 disabled:hover:bg-transparent">
-        {gbp(shownPence)}
+        {minor(shownPence)}
       </button>
       {diff && <span className="shrink-0 text-[10px] text-slate-400 tabular-nums">{diff}</span>}
     </span>

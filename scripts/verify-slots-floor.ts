@@ -55,7 +55,7 @@ console.log('\n(A/B) availability with corrected floor (future, floor=17:00):')
 {
   const rows = buildSlotAvailability({
     times: SLOTS, productionSlotUnits: STORED, catConfigs: PIZZA, kitchenCapacity: 6,
-    date: '2099-01-01', nowMins: 9 * 60, earliestCollectionMins: EVENT_START, eventStartMins: EVENT_START,
+    date: '2099-01-01', nowMins: 9 * 60, earliestCollectionMins: EVENT_START, eventStartMins: EVENT_START, tz: 'Europe/London',
   })
   const r = (t: string) => rows.find(x => x.collection_time === t)!
   expect('17:00 NOT too_soon, available', r('17:00').too_soon === false && r('17:00').available === true, `too_soon=${r('17:00').too_soon} available=${r('17:00').available}`)
@@ -86,7 +86,7 @@ console.log('\n(floor consistency) no-basket 17:00 available AND 4-pizza basket 
 {
   const rows = buildSlotAvailability({
     times: [{ collection_time: '17:00', production_slot: '17:00' }], productionSlotUnits: {}, catConfigs: PIZZA,
-    kitchenCapacity: 6, date: '2099-01-01', nowMins: 0, earliestCollectionMins: EVENT_START, eventStartMins: EVENT_START,
+    kitchenCapacity: 6, date: '2099-01-01', nowMins: 0, earliestCollectionMins: EVENT_START, eventStartMins: EVENT_START, tz: 'Europe/London',
   })
   const noBasket1700 = rows[0].available
   const back = projectBackwardOccupancy({}, PIZZA, EVENT_START, 6)
