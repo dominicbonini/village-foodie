@@ -115,7 +115,9 @@
     "signup-country.cjs",
     "time-dates-parity.cjs",
     "schedules-country-parity.cjs",
-    "audit-fixes.cjs"
+    "audit-fixes.cjs",
+    "order-charges.cjs",
+    "phase3-screens.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -150,7 +152,9 @@
         "_render-kit.cjs",
         "_printing-mocks.cjs",
         "_slot-interval-compile.cjs",
-        "_fake-pg.cjs"
+        "_fake-pg.cjs",
+        "_order-charges-us.cjs",
+        "_phase3-screens-us.cjs"
       ]
     },
     "fixture_generators": {
@@ -187,7 +191,8 @@
         "phone-editor.cjs",
         "subtab-row.cjs",
         "signup-landing-screenshots.cjs",
-        "schedules-country-screenshots.cjs"
+        "schedules-country-screenshots.cjs",
+        "phase3-screens-shots.cjs"
       ]
     }
   }

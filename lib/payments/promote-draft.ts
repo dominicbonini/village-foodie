@@ -68,6 +68,8 @@ import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
 import { getLocalDateInTz } from '@/lib/time-utils'
 import { isDemoIdentifier } from '@/lib/demo'
 import { toMinor } from '@/lib/order-repricing'
+import { chargeColumnsOf } from '@/lib/order-charges'
+import { chargeSourceOf } from '@/lib/order-charge-lines'
 // 🔴 THE SOLD-OUT SENTENCE LIVES IN ONE PLACE. Three runtimes render it — here, the return route when the
 // OTHER trigger refused and only the machine reason survived, and the order page for a pay-at-hatch
 // refusal that has no server sentence at all. See lib/payments/sold-out-copy.
@@ -384,6 +386,11 @@ export async function promoteDraft(
           // ⚠️ SERVER-MINTED, matching the customer path's rule. This IS the moment of sale for a card
           // order: the request that creates it is the request that commits it.
           placed_at:      new Date().toISOString(),
+          // 🔴 Phase 3: THE DRAFT'S CHARGES, COPIED — never re-derived. The card was authorised for exactly
+          // these (total_minor above is their grand total); recomputing here could disagree with the hold.
+          // ⚠️ A draft written before 20261010_17's code has none of the columns' values (its food_minor is
+          // NULL), and the order then keeps the same NULL/0 defaults an order placed before Phase 3 has.
+          ...chargeColumnsOf(draft as unknown as Record<string, unknown>),
         })
         .select('order_key')
         .single()
@@ -493,6 +500,7 @@ export async function promoteDraft(
           deals:        (draft.deals ?? []) as never,
           discountAmt:  draft.discount_amt ?? 0,
           total:        draft.total,
+          charges:      chargeSourceOf(draft as unknown as Record<string, unknown>),   // Phase 3 screens: tax, fee and tip rows (none for a UK order)
           notes:        draft.notes ?? null,
           autoAccepted,
           // ── 🔴 THE PAYMENT SENTENCE. RESOLVED, NOT ASSUMED. ───────────────────────────────────────
@@ -543,6 +551,7 @@ export async function promoteDraft(
           items:         draft.items as never,
           deals:         (draft.deals ?? []) as never,
           total:         draft.total,
+          charges:       chargeSourceOf(draft as unknown as Record<string, unknown>),   // Phase 3 screens: tax, fee and tip rows (none for a UK order)
           notes:         draft.notes ?? null,
           venueName:     eventRow?.venue_name ?? null,
           venueTown:     eventRow?.town ?? null,

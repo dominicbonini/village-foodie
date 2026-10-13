@@ -34,6 +34,8 @@ import { STOPPED_AFTER_MS } from '@/lib/custom-domain/cadence'
 // The poster's logo geometry, so the preview's placeholder is exactly logo-sized. DRY: one
 // definition, in the file that draws the poster.
 import { QR_POSTER, posterLogoRect } from '@/lib/generateQRCode'
+import { ChargesCard } from '@/components/manage/ChargesCard'
+import { TakingPaymentPanel } from '@/components/manage/TakingPaymentPanel'
 import { PaymentsTab } from '@/components/manage/PaymentsTab'
 // (No lib/legal import here by design — this page carries no legal links. They live in the account
 //  dropdown, components/dashboard/UserMenu.tsx, which every role reaches. See the note at the foot of
@@ -165,7 +167,7 @@ import {
 } from '@/lib/manage-links'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null }
+interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -1520,7 +1522,14 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           }}
         />}
         {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} notices={notices} />}
-        {activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}
+        {activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast}
+          /* Phase 3 screens: after the online payments section and before "Walk-up payments" — the new
+           * "Tax, tips and fees" card (only where tax is added at checkout), then "Taking payment", moved
+           * here from Settings unchanged (named difference 1). */
+          afterOnline={truck ? <>
+            <ChargesCard truck={truck} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} />
+            <TakingPaymentPanel truck={truck} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} />
+          </> : null} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
         </div>
       </main>
@@ -7831,6 +7840,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
        * reader would have to know which branch they were in. `false` is the answer either way. */
       is_private: false,
       private_name: '',
+      /* ── 🔴 A COPY KEEPS ITS PLACE (12 October 2026) ──────────────────────────────────────────────
+       * ⛔ IT DID NOT, AND THE COPY LANDED ON A NEW, EMPTY PLACE. Dominic duplicated 14 October at the
+       * Five Bells onto the 12th: the original is linked to the place "Five Bells" but its venue name
+       * for that date reads "The Five Bells", so the copy — carrying only the name — was matched by
+       * name on save, found no "the five bells", and created a second place with none of the first
+       * one's pictures. Its single event post then drew with no location photo.
+       * 🔴 THE LINK IS THE OPERATOR'S OWN EARLIER ANSWER TO "WHERE IS THIS", so it travels with the
+       * pitch and the times. The server still checks it is this truck's and follows any merge. */
+      truck_place_id: (event as { truck_place_id?: string | null }).truck_place_id ?? null,
     })
     /* ⛔ A COPY STARTS AT STANDARD. Copying the type would copy Private too — see the note above. */
     setEventTypeId(null)
@@ -11582,15 +11600,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // True when WhatsApp is a usable customer contact method (ticked + a phone present).
   const whatsappUsable = !!form.phone_is_whatsapp && !!(form.contact_phone || '').trim()
 
-  // ── THE RESOLVED COMPLETION SETTING, ONE PLACE ON THIS PAGE ────────────────────────────────────
-  // Read by the "Completing an unpaid order" radio AND by the cash row's enable gate, so those two
-  // cannot disagree about what this truck is doing.
-  // 🔴 THE FALLBACK IS `show_paid_step`, NOT A CONSTANT — the SAME expression lib/payments/paid-step.ts
-  // uses. Before the column is backfilled it arrives undefined, and `?? 'one'` would show every
-  // two-press truck as one-press, i.e. Settings lying about live behaviour for the length of the
-  // deploy window. Do not simplify it; see the resolver for the full reasoning.
-  const completionPresses: 'one' | 'two' =
-    form.completion_presses ?? (form.show_paid_step === true ? 'two' : 'one')
+  // ── ⛔ `completionPresses` MOVED WITH "TAKING PAYMENT" (Phase 3 screens, 13 October 2026) ─────────────
+  // Its only readers — the "Completing an unpaid order" radio and the cash row — now live in
+  // `TakingPaymentPanel` on Manage › Payments, which carries the SAME expression and the same note:
+  // the fallback is `show_paid_step`, never a constant (lib/payments/paid-step.ts).
 
   // ⚠️ THE "Menu layout" CONTROL (trucks.add_order_layout) LIVED HERE AND HAS MOVED, 14 August 2026.
   // It is now on DASHBOARD → Settings, beside the other Add-order controls, written by the
@@ -12267,215 +12280,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           </div>
         </div>
 
-        {/* ── TAKING PAYMENT (V9.5) — one neutral sub-panel, same treatment as Sounds and the
-            auto-accept group, so the two payment settings read as a grouped section rather than loose
-            rows at the bottom of the card.
-            ⚠️ SIBLINGS INSIDE A GROUP, NOT NESTED. They answer different questions — "WHEN do we take
-            money" (show_paid_step, which the dashboard can override per event) and "HOW does it arrive"
-            (takes_cash, truck-level, no override). The cash split was briefly rendered as a CHILD of the
-            paid step; that implied a dependency which does not exist. Do not reintroduce the nesting.
-            Both resolved only by lib/payments/paid-step.ts.
-            ⚠️ Both keys must stay on update_truck's `allowed` list (app/api/manage/route.ts:854) — that
-            list SILENTLY DROPS anything not on it, so a missing key means the toggle appears to save,
-            returns {ok:true}, and writes nothing. This regrouping changes no key and no save path. */}
-        <div className="pt-3 border-t border-slate-100">
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
-            <div className="pb-3">
-              <p className={SUBCARD_HEADING}>Taking payment</p>
-              <p className="text-xs text-slate-500 mt-0.5">How your team records money for each order.</p>
-            </div>
-            {/* ── SETTING 1 — trucks.show_paid_step, RELABELLED (10 August 2026) ─────────────────────
-                Same column, same save path, same per-event override. Only the words changed, because
-                the old ones ("Separate paid step — splits Paid & collected into Mark paid then
-                Collected") described the COMPLETION behaviour, which is now its own setting below.
-                What this column actually controls is the Add Order panel: on, it offers a Confirm
-                button so an order can be placed unpaid; off, the panel only takes payment.
-                ⚠️ THE NOTE IS DELIBERATELY NOT ELABORATED. "It doesn't affect online orders" is true
-                whatever state online orders arrive in — and Stripe is being integrated, after which they
-                will arrive PAID. A sentence describing what state they arrive in today would go stale at
-                exactly the moment nobody remembers to come back and change it. Leave it as it is. */}
-            <div className="flex items-center justify-between gap-3 py-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-800">Take orders without payment</p>
-                <p className="text-xs text-slate-500 mt-0.5">Adds a Confirm button when you add an order yourself, so you can place it now and take payment later. Turn this on if you take phone or advance orders.</p>
-                <p className="text-xs text-slate-400 mt-1">This only affects orders you add. It doesn&apos;t affect online orders.</p>
-              </div>
-              <Toggle
-                on={(form as any).show_paid_step === true}
-                onToggle={() => { const next = (form as any).show_paid_step !== true; setForm(p => ({...p, show_paid_step: next} as any)); saveSetting('show_paid_step', next) }}
-              />
-            </div>
-            {/* ── SETTING 2 — trucks.completion_presses (NEW, 10 August 2026) ────────────────────────
-                🔴 A SIBLING, NOT A CHILD, AND IT MUST NEVER BE DISABLED BY THE SETTING ABOVE.
-                It looks like a dependency and is not. "Take orders without payment" decides whether the
-                Add Order panel can place an order unpaid; this decides how an unpaid order is COMPLETED.
-                Unpaid orders arrive from the CUSTOMER PATH regardless — every truck has them — so
-                greying this out when the setting above is off would hide the control for a case that
-                still happens every day. The cash row below IS a genuine dependency and is treated as
-                one; this is not, and the two must not be made to look alike.
-                ⚠️ It reads slightly oddly in this group, and that is worth knowing rather than papering
-                over: the group now holds two independent top-level settings plus one nested dependent,
-                so the indentation below no longer means "depends on the row directly above" but
-                "depends on this group". Reported rather than resolved.
-                RADIO, not a toggle: two named alternatives that each need their own explanation, which
-                is the deals "Apply to events" pattern in this same file — the page's existing shape for
-                exactly this. A toggle would need a single label that reads true in one direction only.
-                ⚠️ `completion_presses` must stay on update_truck's `allowed` list
-                (app/api/manage/route.ts) — that list SILENTLY DROPS unlisted keys, so a missing entry
-                means this appears to save, returns {ok:true}, and writes nothing. */}
-            <div className="py-3">
-              <p className="text-sm font-semibold text-slate-800">Completing an unpaid order</p>
-              <p className="text-xs text-slate-500 mt-0.5">What happens when an unpaid order is ready to hand over.</p>
-              <div className="flex flex-col gap-2 mt-2">
-                {([
-                  // ── 🔴 THE BUTTON NAMES HERE ARE QUOTED FROM THE CODE, NOT DESCRIBED ────────────
-                  // “Mark paid & collected”, “Mark paid” and “Collected” are the EXACT `label` strings
-                  // OrderCard renders (components/dashboard/OrderCard.tsx — the one-press branch, the
-                  // two-press unpaid branch and the effectivePaid branch). Copy that names a button an
-                  // operator cannot find sends them looking for it, so **verify these against the code
-                  // before editing either side**, and change the copy to match the button — never the
-                  // button to match the copy.
-                  // ⚠️ TWO RENDERED VARIANTS THIS COPY DELIBERATELY DOES NOT NAME, because they are
-                  // conditional and naming them here would make the common case unreadable: a PART-PAID
-                  // order reads “Mark £X.XX paid” instead of “Mark paid”, and with "Do you take cash?"
-                  // on, the two-press money button splits into “💷 Cash” / “💳 Card”. The cash row below
-                  // is where that second one is explained.
-                  // ⚠️ CURLY QUOTES, matching how this file already names a button inline (the paid-step
-                  // and cash rows both do it). Not a new convention.
-                  ['one', 'One press (“Mark paid & collected”)',
-                   'Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
-                  ['two', 'Two presses (“Mark paid” & “Collected”)',
-                   'Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.'],
-                ] as const).map(([v, lbl, help]) => (
-                  /* 🔴 SHAPE COPIED VERBATIM FROM "Past the deadline" IN THIS SAME FILE — the page's
-                     EXISTING two-option-with-descriptions control (button + drawn radio + font-medium
-                     label over a text-xs help line). It replaced a native <input type="radio">, which
-                     was mine and was wrong: it rendered in the browser's own accent rather than this
-                     page's, so it read as a foreign control in a card of matched ones.
-                     ⚠️ ORANGE HERE IS NOT AN INTRODUCTION, IT IS THIS PAGE'S SELECTED STATE. On Manage,
-                     orange is the selection/focus colour throughout — focus:ring-orange-400 on every
-                     input, accent-orange-600 on checkboxes, and border-orange-500 / bg-orange-500 on
-                     exactly this radio. The reserved-meaning rule for orange ("a MONEY action") belongs
-                     to the ORDER CARD's vocabulary, a different surface with a different palette. */
-                  <button type="button" key={v}
-                    onClick={() => { setForm(p => ({...p, completion_presses: v})); saveSetting('completion_presses', v) }}
-                    className="w-full text-left flex items-start gap-2 cursor-pointer">
-                    {/* Absent ⇒ resolve from show_paid_step, the SAME fallback lib/payments/paid-step.ts
-                        uses, so this shows what the cards are actually doing before the column has been
-                        backfilled. Never `?? 'one'` — that would render two-press trucks as one-press
-                        for the length of the deploy window. */}
-                    <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${completionPresses === v ? 'border-orange-500' : 'border-slate-300'}`}>{completionPresses === v && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
-                    <span className="text-sm">
-                      <span className="font-medium text-slate-700">{lbl}</span>
-                      <span className="block text-xs text-slate-400">{help}</span>
-                      {/* ⚠️ THE SEPARATE BUTTON-NAMES LINE WAS REMOVED, NOT LOST. It rendered
-                          “Mark paid & collected” / “Mark paid” then “Collected” beneath the
-                          description — and the description now names those buttons in its own
-                          sentence, so the line repeated it verbatim on the row directly below.
-                          One fact, one place. The names still have to match the code; see the note
-                          on the options array above. */}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-            {/* ── 🔴 DE-NESTED AGAIN ON 10 AUGUST 2026, AND NOT BY REVERSING THE RULE BELOW ──────────
-                READ THIS BEFORE RE-INDENTING IT. The V9.6 note that follows is KEPT because its rule is
-                still right; what changed is that the rule now points the other way.
-                THE RULE: "structure should show the DEPENDENCY, not the semantics." Correct, and it is
-                what put `pl-4` here when the cash split had exactly ONE parent (the paid step).
-                WHAT CHANGED: the cash split now has TWO parents. It renders in two places, and after the
-                settings were split those places answer to different settings — the Add Order panel's
-                "Take payment" button splits on show_paid_step, and the ORDER CARD's "Mark paid" button
-                splits on completion_presses === 'two'. Indentation is a SINGLE-PARENT notation: it can
-                only point at the row directly above it, which is now "Completing an unpaid order" —
-                only one of the two ways to unlock this. So the indent had stopped showing the
-                dependency and started asserting a WRONG one. Applying the rule removes the indent.
-                WHAT CARRIES THE DEPENDENCY INSTEAD: the disabled state plus the inline note, which now
-                NAMES BOTH PARENTS. That is the other half of the V9.6 instruction — "structure shows
-                the relationship, the text explains it. Both, not either" — with the half that can no
-                longer be true dropped rather than left to mislead.
-                ⚠️ SO THE GROUP IS NOW FLAT: two independent settings and one dependent, all at the same
-                level, with the dependent saying in words what it depends on. If the cash split ever goes
-                back to a single parent, re-indent it and restore the note below.
-                ── the V9.6 reasoning, retained ──────────────────────────────────────────────────────
-                ⚠️ THESE TWO WERE DELIBERATELY DE-NESTED ONCE, AND THAT WAS REVERSED ON A LAYOUT ARGUMENT.
-                The de-nesting rationale — "they answer different questions: WHEN do we take money vs HOW
-                does it arrive" — is still true and is still in the git history, which is exactly why this
-                note exists. It was the WRONG TEST. Two settings can answer different questions and still
-                have one DEPEND on the other, and structure should show the DEPENDENCY, not the semantics.
-                THE DEPENDENCY IS DRIVEN BY LAYOUT AS MUCH AS BY MEANING. With the paid step OFF, one tap
-                means "paid AND collected" — which is why the button reads `Paid & collected`. Splitting
-                that into Cash/Card would make each button ALSO collect, but "Cash" does not say so, and
-                the honest label `Cash & collected` needs ~110px against a 72px label box at the 240px KDS
-                column. **There is no honest way to render the split when the button also collects.** So a
-                truck wanting the split turns the paid step on — that step is what creates the moment where
-                "how did they pay" is a separate question from "have they got their food".
-                INDENT + TYPE SCALE copied from the notes-review sub-option above (pl-4, same
-                text-sm/text-xs pair), NOT invented — one nesting treatment per card.
-                ⚠️ Unlike that sub-option, this one is NOT conditionally rendered. It stays visible and
-                goes DISABLED with the reason inline: structure shows the relationship, the text explains
-                it. Both, not either. An operator who cannot find this setting is why it exists on two
-                surfaces at all. */}
-            {/* ══ 🔴 THE TRUCK-LEVEL CASH SWITCH IS NOW A FALLBACK ONLY (5 October 2026) ═════════
-                "Do you take cash?" became a PER-VAN setting — it is drawn on each van's own card in
-                Your trucks, writing `truck_vans.takes_cash`. Dominic, on localhost: "Turning on 'Do
-                you take cash?' for Van 1 also turned it on for Van 2", which it did, because this
-                control is the only one there was and `trucks.takes_cash` is one column for the whole
-                truck.
-                🔴 IT STAYS HERE, GATED ON `!vanCashAvailable`, AND IS NOT DELETED. Two reasons:
-                  • Before 20261012 is applied there IS no per-van column, so this is the only control
-                    that can store anything. A screen with no cash switch at all would be worse than
-                    one in the old place.
-                  • `trucks.takes_cash` remains the LAST LINK of the resolver chain
-                    (event ?? type ?? van ?? truck), so the value it holds still decides what a van
-                    with NULL does. It is not dead data.
-                ⚠️ AFTER THE MIGRATION THIS ROW DISAPPEARS and the per-van switches replace it. A van
-                that has never been touched shows this value and says "Following your truck setting". */}
-            {!vanCashAvailable && (
-            <div className="flex items-center justify-between gap-3 py-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-800">{SERVICE_SETTING_LABELS.takes_cash}</p>
-                <p className="text-xs text-slate-500 mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. You can turn this on for a single event from the dashboard.</p>
-                {/* ── 🔴 THE GATE NOW HAS TWO PARENTS, AND IT HAD TO (10 August 2026) ─────────────
-                    The cash split renders in two places, and after the settings were split those two
-                    places answer to DIFFERENT settings:
-                      • the Add Order panel's "Take payment" button splits when show_paid_step is on;
-                      • the ORDER CARD's "Mark paid" button splits when completion_presses is 'two'.
-                    Leaving this disabled on `show_paid_step !== true` alone would have been a real
-                    defect introduced by this change: a truck with entry payment-only but a TWO-press
-                    completion has a live "Mark paid" button that this control would refuse to split.
-                    So the condition is the OR of the two, and the split is inert only when neither
-                    surface can reach it — which is exactly the state it was inert in before.
-                    ⚠️ The card's ONE-press button is still never split, and the reasoning above stands
-                    unchanged: "Cash" that also collects cannot be labelled honestly at a 240px column.
-                    ⚠️ DOES NOT auto-enable either parent. toggleOfflineProtection silently enabling
-                    keep-screen-on is already recorded in the manual as a defect; one is enough.
-                    ⚠️ DOES NOT write takes_cash=false when it becomes inert. The stored value is left
-                    exactly as the operator set it and simply renders inert — never mutate what the
-                    operator chose in order to tidy state. Re-enabling either parent restores it. */}
-                {/* 🔴 THE GATE IS GONE — 10 August 2026. The cash split is now ALWAYS reachable, and
-                    keeping a condition here would disable a toggle whose button is live on screen.
-                    The Add Order confirm bar was rebuilt so that it ALWAYS offers a payment button:
-                    with "Take orders without payment" OFF that is the single button, with it ON it is
-                    the primary one. So the split has a live parent in every configuration, and the
-                    previous OR condition ("paid step on, or completion set to two presses") is stale —
-                    it would have disabled this for the nine trucks on OFF + one press, every one of
-                    which now has a payment button in Add Order.
-                    ⚠️ THE CARD'S ONE-PRESS BUTTON IS STILL NEVER SPLIT — `Cash & collected` cannot be
-                    labelled honestly at a 240px KDS column. The split reaches the Add Order bar in all
-                    states, and the card's `Mark paid` only under two presses. That asymmetry is
-                    deliberate and unchanged. */}
-              </div>
-              <Toggle
-                on={(form as any).takes_cash === true}
-                onToggle={() => { const next = (form as any).takes_cash !== true; setForm(p => ({...p, takes_cash: next} as any)); saveSetting('takes_cash', next) }}
-              />
-            </div>
-            )}
-          </div>
-        </div>
-
+        {/* ── ⛔ "TAKING PAYMENT" MOVED TO MANAGE › PAYMENTS (Phase 3 screens, 13 October 2026) ──────────
+            Named difference 1 of docs/phase-3-screens-report.md: the same three settings, the same words,
+            the same `update_truck` saves — rendered by `TakingPaymentPanel` below, which Payments places
+            after its online payments section and before "Walk-up payments". Nothing else left Settings. */}
         {/* ── OPENING AND CLOSING — same sub-panel treatment. These two were loose rows describing one
             thing (when an event starts and stops taking online orders), so they group. Presentation
             only: same columns, same saveSetting calls, same defaults. */}
@@ -14962,6 +14770,9 @@ function BillingTab({ truck }: { truck: Truck | null }) {
 interface ReportData {
   totalOrders?: number
   totalRevenue?: number
+  /** Phase 3 screens: food, tax, tips and fees separately — present only when the truck's country adds tax at
+   *  checkout or the range has a tip or fee (see get_report). Never for a UK truck. */
+  charges?: { taxAtCheckout: boolean; taxLabel: string; foodMinor: number; discount: number; taxMinor: number; tipsMinor: number; serviceFeesMinor: number; cardSurchargesMinor: number }
   avgOrder?: number
   topItems?: Array<{ name: string; qty: number; revenue: number }>
   dealsRedeemed?: number
@@ -15154,7 +14965,20 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
         catBase[cat] = (catBase[cat] || 0) + ((item.unit_price || 0) - modSum) * qty
       }
     }
-    const total = revenueOrders.reduce((s: number, o: any) => s + (o.total || 0), 0)
+    /* ── 🔴 PHASE 3 SCREENS — FOOD, NOT THE GRAND TOTAL ────────────────────────────────────────────────
+     * An order's `total` includes any tax, tip and service fee, so summing it as revenue would push them
+     * into the categories' "Other" line. `food_minor` is the order's food; an order without it (every UK
+     * order in a range with nothing else to report — get_report strips the columns — and every order
+     * from before Phase 3) has no tax, tip or fee, so its total IS its food and the sum is unchanged. */
+    const foodOf = (o: { food_minor?: unknown; total?: unknown }) => (o.food_minor != null ? Number(o.food_minor) / 100 : (Number(o.total) || 0))
+    const total = revenueOrders.reduce((s: number, o: any) => s + foodOf(o), 0)
+    const extraMinor = (k: string) => (revenueOrders as Record<string, unknown>[]).reduce((s: number, o) => s + (Number(o[k]) || 0), 0)
+    const extras = [
+      { key: 'tax', label: reportData?.charges?.taxLabel ?? 'Tax', minor: extraMinor('tax_minor') },
+      { key: 'tips', label: 'Tips', minor: extraMinor('tip_minor') },
+      { key: 'fees', label: 'Service fees', minor: extraMinor('service_fee_minor') },
+      { key: 'cards', label: 'Card fees', minor: extraMinor('card_surcharge_minor') },
+    ].filter(x => x.minor > 0)
     const base = total - dealRev - mods   // authoritative menu-items residual
     // Reconcile: categories MUST sum to `base` (so categories + dealRev + mods === total). Any drift
     // (e.g. deal-member modifiers, which `mods` counts but the category loop skips) is absorbed into 'Other'.
@@ -15165,7 +14989,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
       ...Object.keys(catBase).filter((c: string) => !categoryOrder.includes(c)).sort(),
     ]
     const categories = ordered.map((name) => ({ name, revenue: catBase[name] })).filter((c) => Math.abs(c.revenue) > 0.005)
-    return { categories, base, dealRev, mods, total }
+    return { categories, base, dealRev, mods, total, extras }
   }, [orders, reportData]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const dealBreakdown = useMemo(() => {
@@ -15229,7 +15053,12 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 
   const exportCSV = () => {
     if (!orders.length) return
-    const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Items', 'Deals', 'Modifiers', 'Notes', 'Total']
+    /* Phase 3 screens: Subtotal, the tax, Tip and Service fee columns — only when get_report says this truck's
+     * country adds tax at checkout or the range has a tip or fee (`charges`). Never for a UK truck, whose
+     * file is byte-identical. */
+    const csvCharges = reportData?.charges ?? null
+    const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Items', 'Deals', 'Modifiers', 'Notes',
+      ...(csvCharges ? ['Subtotal', csvCharges.taxLabel, 'Tip', 'Service fee'] : []), 'Total']
     const rows = orders.map((o: any) => {
       const createdAt = o.created_at ? new Date(o.created_at) : null
       const dateStr = createdAt ? formatNumericDate(localDateOfInstant(createdAt, ts.timeZone), ts) : ''
@@ -15244,7 +15073,13 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
       const dealStr = (Array.isArray(o.deals) ? o.deals : []).map((d: any) => d.name).join('; ')
       const modStr  = (Array.isArray(o.items) ? o.items : []).flatMap((i: any) => (i.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +${orderMoney(o, m.price)}`)).join('; ')
       const noteStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => i.specialInstructions).filter(Boolean).join('; ')
-      return [o.id, dateStr, eventStr, timePlaced, collectionTime, customerName, orderType, itemStr, dealStr, modStr, noteStr, orderMoney(o, o.total || 0)]
+      const chargeCells = csvCharges ? [
+        orderMoney(o, o.food_minor != null ? Number(o.food_minor) / 100 : (o.total || 0)),
+        orderMoney(o, (Number(o.tax_minor) || 0) / 100),
+        orderMoney(o, (Number(o.tip_minor) || 0) / 100),
+        orderMoney(o, (Number(o.service_fee_minor) || 0) / 100),
+      ] : []
+      return [o.id, dateStr, eventStr, timePlaced, collectionTime, customerName, orderType, itemStr, dealStr, modStr, noteStr, ...chargeCells, orderMoney(o, o.total || 0)]
         .map(v => `"${String(v).replace(/"/g, '""')}"`)
     })
     const csv = [headers.map(h => `"${h}"`), ...rows].map(r => r.join(',')).join('\n')
@@ -15484,9 +15319,18 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                     </div>
                   )}
                   <div className="flex justify-between text-sm font-semibold border-t border-slate-100 pt-2 mt-1">
-                    <span className="text-slate-900">Total</span>
+                    {/* Phase 3 screens: with tax, tips or fees in the range, this line is FOOD SALES and
+                        they follow as their own lines — never folded into "Other". With none (every UK
+                        range) it reads "Total", exactly as before. */}
+                    <span className="text-slate-900">{revenueBreakdown.extras.length ? 'Food sales' : 'Total'}</span>
                     <span className="text-slate-900">{money(revenueBreakdown.total)}</span>
                   </div>
+                  {revenueBreakdown.extras.map(x => (
+                    <div key={x.key} className="flex justify-between text-sm" data-report-extra={x.key}>
+                      <span className="text-slate-600">{x.label}</span>
+                      <span className="font-medium text-slate-900">{money(x.minor / 100)}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 

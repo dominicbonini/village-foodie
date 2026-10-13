@@ -47,6 +47,21 @@ export interface CountrySettings {
   serviceFeeAllowed: boolean
   tippingEnabledDefault: boolean
   tipPresetsPct: number[]
+  // ── Phase 3 (20261010_17): who keeps the online service fee, its amounts, the platform-fee switch and
+  //    whether fees are taxed. Data only — no Countries page rows yet. Every one defaults to OFF. Read by
+  //    lib/order-charge-rules.ts and nothing else.
+  /** Who keeps the online service fee: the truck (default) or HatchGrab. */
+  serviceFeeRecipient: 'truck' | 'hatchgrab'
+  /** HatchGrab's service fee when HatchGrab keeps it, basis points / minor units. Trucks cannot change it. */
+  serviceFeeHatchgrabBps: number | null
+  serviceFeeHatchgrabFixedMinor: number | null
+  /** The most a truck may set when the truck keeps it. NULL = that part is not allowed. */
+  serviceFeeTruckMaxBps: number | null
+  serviceFeeTruckMaxFixedMinor: number | null
+  /** The platform fee (platformFeePct of food) switched on. Default OFF; nothing sends it this phase. */
+  platformFeeEnabled: boolean
+  /** Whether the service fee and card surcharge are taxed (D8). Default false. */
+  feesTaxed: boolean
   allergenSet: 'uk14' | 'us9'
 
   // 🔴 NULL = NOT DECIDED (the US row today). Read through requirePlanPrice(), never directly: a NULL

@@ -195,6 +195,22 @@ export default function CountriesTab() {
       <span className="pl-1 text-sm font-semibold text-slate-500">{moneyOf(code).small}</span>
     </div>
   )
+  /* Phase 3 screens: the service-fee boxes. Percentages as written (3.5); fixed parts in the currency's
+   * smallest unit (50 → 50¢), like the card fee boxes above. `off` greys a box that does not apply. */
+  const feePct = (code: string, field: 'serviceFeeHatchgrabPct' | 'serviceFeeTruckMaxPct', off = false) => (
+    <div className={`flex w-24 items-center rounded-lg border ${border(code, field)} px-2 ${off ? 'opacity-50' : ''}`}>
+      <input className="w-full min-w-0 bg-transparent py-1.5 text-sm text-slate-900 focus:outline-none disabled:cursor-not-allowed" inputMode="decimal" disabled={off}
+        aria-label={`${field} for ${code}`} value={forms[code][field]} onChange={e => setField(code, field, e.target.value)} />
+      <span className="pl-1 text-sm font-semibold text-slate-500">%</span>
+    </div>
+  )
+  const feeFixed = (code: string, field: 'serviceFeeHatchgrabFixed' | 'serviceFeeTruckMaxFixed', off = false) => (
+    <div className={`flex w-24 items-center rounded-lg border ${border(code, field)} px-2 ${off ? 'opacity-50' : ''}`}>
+      <input className="w-full min-w-0 bg-transparent py-1.5 text-sm text-slate-900 focus:outline-none disabled:cursor-not-allowed" inputMode="numeric" disabled={off}
+        aria-label={`${field} for ${code}`} value={forms[code][field]} onChange={e => setField(code, field, e.target.value)} />
+      <span className="pl-1 text-sm font-semibold text-slate-500">{moneyOf(code).small}</span>
+    </div>
+  )
   const text = (code: string, field: 'name' | 'taxLabel' | 'cardFeeRegionLabel' | 'supportHours' | 'locale' | 'currency' | 'shortName' | 'phoneExample', placeholder?: string, max?: string) => (
     <>
       <input className={`${BOX} ${border(code, field)} ${max ?? ''}`} aria-label={`${field} for ${code}`} value={forms[code][field]}
@@ -267,6 +283,21 @@ export default function CountriesTab() {
     { label: 'Pro, online orders included', hint: 'Each month, before our fee starts', cell: code => money(code, 'proAllowance') },
     { label: 'Max, online orders included', hint: 'Each month, before our fee starts', cell: code => money(code, 'maxAllowance') },
     { label: 'Our fee above that', cell: code => <>{pct(code, 'platformFeePct', true)}{msg(code, 'platformFeePct')}</> },
+    /* Phase 3 screens: the platform fee's own switch (country_settings.platform_fee_enabled). Charging is not
+     * built, so the grey note says plainly that switching it on does nothing yet. */
+    { label: 'Take our fee', hint: 'Off: the rate is shown on plans but never charged', cell: code => {
+      const noRate = forms[code].platformFeePct.trim() === ''
+      return (
+        <>
+          <div className="flex items-center gap-2">
+            {toggle(code, 'platformFeeEnabled', `Take our fee, ${code}`, noRate && !forms[code].platformFeeEnabled)}
+            {noRate && <span className="text-xs font-medium text-amber-700">Needs a rate first</span>}
+          </div>
+          <p className="mt-1 text-xs text-slate-400">Not charged yet — switching on has no effect until fee charging is built.</p>
+          {msg(code, 'platformFeeEnabled')}
+        </>
+      )
+    } },
     { label: 'Extra van', cell: () => <span className="text-sm text-slate-500">Same as the plan&apos;s monthly price</span> },
 
     { group: 'Stripe card fees', hint: 'As we quote them on pricing pages and in Payments' },
@@ -288,7 +319,7 @@ export default function CountriesTab() {
         <input className={`${BOX} ${border(code, 'taxLabel')} max-w-[9rem]`} aria-label={`taxLabel for ${code}`} value={forms[code].taxLabel}
           onChange={e => setField(code, 'taxLabel', e.target.value)} /></div>{msg(code, 'taxLabel')}</>
     ) },
-    { label: "Card fee can go on the customer's bill", hint: "Shows 'Who pays the card fee' in Manage › Payments", cell: code => toggle(code, 'cardSurchargeAllowed', `Card fee can go on the customer's bill, ${code}`) },
+    { label: "Card fee can go on the customer's bill", hint: "Card fees on the bill aren't built yet", cell: code => toggle(code, 'cardSurchargeAllowed', `Card fee can go on the customer's bill, ${code}`) },
     { label: 'Card fee limits', cell: code => forms[code].cardSurchargeAllowed ? (
       <><div className="flex flex-wrap items-center gap-2 text-sm text-slate-600"><span className="text-xs text-slate-500">Cap</span>{pct(code, 'cardSurchargeCapPct')}
         <label className="inline-flex items-center gap-1.5 text-xs text-slate-600"><input type="checkbox" checked={forms[code].cardSurchargeCreditOnly}
@@ -297,11 +328,62 @@ export default function CountriesTab() {
     ) : dash() },
     { label: 'Card fee not allowed in', cell: code => forms[code].cardSurchargeAllowed
       ? chips(code, 'cardSurchargeExcludedRegions', 'e.g. CT') : dash() },
-    { label: 'Online service fee allowed', cell: code => toggle(code, 'serviceFeeAllowed', `Online service fee allowed, ${code}`) },
     { label: 'Tipping on for new trucks', hint: 'And the tip choices offered', cell: code => (
       <div className="flex flex-wrap items-center gap-2">{toggle(code, 'tippingEnabledDefault', `Tipping on for new trucks, ${code}`)}
         {chips(code, 'tipPresetsPct', 'e.g. 15', '%')}</div>
     ) },
+
+    /* ── Phase 3 screens: THE ONLINE SERVICE FEE, as its own group (20261010_17) ─────────────────────────
+     * "Online service fee allowed" moved here from the group above as "Allowed in this country". Every row
+     * after it reads "—" while the fee is not allowed, because none of them means anything then. */
+    { group: 'Online service fee', hint: 'Online orders only — never pay at the truck or walk-up' },
+    { label: 'Allowed in this country', cell: code => {
+      const f = forms[code]
+      return (
+        <>
+          {toggle(code, 'serviceFeeAllowed', `Online service fee allowed, ${code}`)}
+          {!f.serviceFeeAllowed && f.pricesIncludeTax && (
+            <p className="mt-1 text-xs font-medium text-amber-700">If switched on, {(f.shortName || f.name).trim()} law needs it inside the prices customers first see</p>
+          )}
+        </>
+      )
+    } },
+    { label: 'Who keeps it', cell: code => forms[code].serviceFeeAllowed ? (
+      <>
+        <select className={`${BOX} ${border(code, 'serviceFeeRecipient')} max-w-[12rem]`} aria-label={`serviceFeeRecipient for ${code}`}
+          value={forms[code].serviceFeeRecipient} onChange={e => setField(code, 'serviceFeeRecipient', e.target.value as CountryForm['serviceFeeRecipient'])}>
+          <option value="truck">The truck</option>
+          <option value="hatchgrab">HatchGrab</option>
+        </select>
+        {msg(code, 'serviceFeeRecipient')}
+      </>
+    ) : dash() },
+    { label: "HatchGrab's fee", hint: "Used when HatchGrab keeps it; trucks can't change it", cell: code => {
+      const f = forms[code]
+      if (!f.serviceFeeAllowed) return dash()
+      const off = f.serviceFeeRecipient !== 'hatchgrab'
+      return (
+        <>
+          <div className="flex items-center gap-1.5 text-sm text-slate-500">{feePct(code, 'serviceFeeHatchgrabPct', off)} + {feeFixed(code, 'serviceFeeHatchgrabFixed', off)}</div>
+          {off && <p className="mt-1 text-xs text-slate-400">Only when &ldquo;HatchGrab&rdquo; is chosen</p>}
+          {msg(code, 'serviceFeeHatchgrabPct')}{msg(code, 'serviceFeeHatchgrabFixed')}
+        </>
+      )
+    } },
+    { label: 'Most a truck can charge', hint: 'Used when the truck keeps it; trucks set their own up to this', cell: code => forms[code].serviceFeeAllowed ? (
+      <>
+        <div className="flex items-center gap-1.5 text-sm text-slate-500">{feePct(code, 'serviceFeeTruckMaxPct')} + {feeFixed(code, 'serviceFeeTruckMaxFixed')}</div>
+        {msg(code, 'serviceFeeTruckMaxPct')}{msg(code, 'serviceFeeTruckMaxFixed')}
+      </>
+    ) : dash() },
+
+    { group: 'Tax on fees' },
+    { label: 'Service fee and card fee are taxed', hint: 'Only matters where tax is added at checkout', cell: code => {
+      const f = forms[code]
+      return f.pricesIncludeTax
+        ? <span className="text-sm text-slate-400">— ({(f.shortName || f.name).trim()} prices include {f.taxLabel.trim() || 'tax'})</span>
+        : toggle(code, 'feesTaxed', `Service fee and card fee are taxed, ${code}`)
+    } },
 
     { group: 'Formats' },
     { label: 'Currency', cell: code => {

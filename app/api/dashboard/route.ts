@@ -26,6 +26,9 @@ import { readHeldAuthorisations } from '@/lib/payments/held-authorisation'
 import { resolveBatchReservations } from '@/lib/features'
 import { truckMoneyWithOrders } from '@/lib/money-server'
 import { truckTimeSettings } from '@/lib/truck-time'
+// Phase 3 screens: the tax rule the offline walk-up total needs (foundations gap 1).
+import { loadChargeRules } from '@/lib/order-charge-rules'
+import { checkoutRulesFrom, type CheckoutRules } from '@/lib/order-charges'
 import { getLocalDateInTz, getNowMinsInTz, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { phoneCopyForTruck } from '@/lib/phone-copy'
 import type { PhoneCopy } from '@/lib/phone'
@@ -902,6 +905,22 @@ export async function GET(req: NextRequest) {
     console.error('[dashboard] 🔴 money format unavailable — amounts will show without a symbol:', e instanceof Error ? e.message : e)
   }
 
+  /* ── 🔴 THE TRUCK'S CHARGE RULES, FOR TWO CLIENT-SIDE TOTALS (Phase 3 screens) ────────────────────────
+   *   • the OFFLINE walk-up total (foundations gap 1): offline, the Add Order panel cannot ask the server
+   *     what a walk-up costs, so it works it out with the same pure engine (channel `walk_up`: tax yes, no
+   *     fee, no tip);
+   *   • the EDIT preview: an order with tax, a tip or a fee is re-priced with the engine's
+   *     `chargesForEdit` — the function the server's edit runs — never by adding to its grand total.
+   * The same `CheckoutRules` the customer page gets, sent ONLY when one applies, so a UK dashboard response
+   * is unchanged. It rides in the native offline snapshot with the rest of `truck`. ⚠️ A failed lookup
+   * sends nothing: the walk-up total falls back to food = total, and the edit preview to its old sum. */
+  let chargeRules: CheckoutRules | null = null
+  try {
+    chargeRules = checkoutRulesFrom(await loadChargeRules(truck))
+  } catch (e) {
+    console.error('[dashboard] charge rules unavailable — client-side totals fall back to food only:', e instanceof Error ? e.message : e)
+  }
+
   return NextResponse.json({
     currentUserName,
     userRole,
@@ -947,6 +966,7 @@ export async function GET(req: NextRequest) {
       time: truckTime,
       // { phoneCountry, short_name, phone_example } — never the settings row (Phase 2C).
       phone: truckPhone,
+      ...(chargeRules ? { charge_rules: chargeRules } : {}),
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }

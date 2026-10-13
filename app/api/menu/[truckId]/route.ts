@@ -20,6 +20,9 @@ import { readEventType } from '@/lib/event-types/read'
  * to "menu prices", which is what this route served before this build. See lib/event-pricing/read.ts. */
 import { readEventPricing } from '@/lib/event-pricing/read'
 import { moneyFormatForTruck } from '@/lib/money-server'
+// Phase 3 screens: what the order page needs to SHOW tax, a tip and a service fee (never to decide them).
+import { loadChargeRules } from '@/lib/order-charge-rules'
+import { checkoutRulesFrom } from '@/lib/order-charges'
 import { truckTimeSettings } from '@/lib/truck-time'
 import { phoneCopyForTruck } from '@/lib/phone-copy'
 import { priceAtEvent, pricingApplies, toPence, toPounds } from '@/lib/event-pricing/price'
@@ -813,6 +816,12 @@ export async function GET(
   // both columns are NOT NULL), never a guessed £.
   const money = await moneyFormatForTruck(truck)
 
+  /* ── 🔴 THE CHECKOUT RULES (Phase 3 screens) — ONE KEY, AND ONLY WHEN THE PAGE WOULD SHOW SOMETHING ────
+   * Tax added at checkout, tips on, or a service fee on card orders. A UK truck has none of the three, so
+   * `checkout` is absent and this response is byte-identical to before. The page uses these to DISPLAY
+   * amounts; the submit route re-prices on its own rules and takes only the tip choice from the browser. */
+  const checkout = checkoutRulesFrom(await loadChargeRules(truck))
+
   return NextResponse.json({
     truck: {
       id: truck.id,
@@ -862,6 +871,7 @@ export async function GET(
       allergensVerified: ((truck.allergen_display_mode ?? null) === 'card' && !!(truck.allergen_info_url || truck.allergen_info_text))
         ? true
         : !(items || []).some((i: any) => i.allergens_verified === false),
+      ...(checkout ? { checkout } : {}),
     },
     menu,
   })

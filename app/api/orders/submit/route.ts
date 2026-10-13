@@ -9,6 +9,10 @@ import type { DiscountCode } from '@/lib/order-calculations'
  * through `loadEventPriceBook` (below), which is the ONE place the event-aware wrapper is
  * applied. An import of the raw book beside the wrapper is an invitation to call the wrong one. */
 import { repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
+// Phase 3: tax, tip and fees — the pure engine and the server's rules (docs/phase-3-foundations-report.md).
+import { computeOrderCharges, parseTipChoice, tipChoiceAllowed } from '@/lib/order-charges'
+import { loadChargeRules } from '@/lib/order-charge-rules'
+import { chargesForResponse } from '@/lib/order-charge-lines'
 /* 🔴 EVENT PRICING (§70, October 2026). `loadEventPriceBook` wraps `loadPriceBook` — same signature
  * for the inner call, same PriceBook shape out, only item prices moved. `candidatesChangePrices` is
  * decision 7's guard: never price against a guessed event. */
@@ -243,6 +247,9 @@ export async function POST(req: NextRequest) {
       // ⛔ IT IS A CREDENTIAL, NOT A HINT. It is never logged, never stored on the order, and never
       // echoed back; it is matched against the event's current token and discarded.
       privateToken,
+      // ── Phase 3: THE ONLY MONEY INPUT THE BROWSER MAY SEND — which tip, never what anything costs.
+      // Optional ({ kind: 'none' | 'percent' | 'amount' }); nothing in the browser sends it yet.
+      tip,
     } = body
 
     // ── Validate ──────────────────────────────────────────────────────────────
@@ -679,8 +686,9 @@ export async function POST(req: NextRequest) {
           return { ...line, menu_price: menu, price_basis: basis }
         })
     const pricedDeals = repriced.deals
-    const serverTotalMinor = toMinor(repriced.calculation.total)
-    const serverTotal = serverTotalMinor / 100
+    // 🔴 FOOD AFTER THE DISCOUNT, in minor units — the base every Phase 3 charge is computed on, and the
+    // stored food_minor. The GRAND total (serverTotalMinor) is decided below, once the event is known.
+    const foodMinor = toMinor(repriced.calculation.total)
     const serverSubtotal = repriced.calculation.subtotal
     const serverDiscountAmt = repriced.calculation.discountAmt
 
@@ -749,6 +757,29 @@ export async function POST(req: NextRequest) {
       }
       eventRow = data
     }
+
+    // ── 🔴 TAX, TIP AND FEES (Phase 3) — ONE CALL, THE SAME ENGINE EVERY ORDER PATH USES ─────────────────
+    // The rules are the server's (lib/order-charge-rules.ts: the truck's country and the truck — one rate per
+    // truck, no per-event override); the browser's only say is which tip. The channel is decided here and nowhere else: a card
+    // order is 'online_card', everything else on this route is paid at the truck, which carries no
+    // service fee, surcharge or online tip (D13, D25).
+    // 🔴 GB: tax is included and every add-on is off, so serverTotalMinor === foodMinor — the same number
+    // this route charged before Phase 3 — and the snapshot's only non-null values are food_minor,
+    // tax_inclusive, tax_label and card_fee_payer.
+    // ⚠️ A MALFORMED TIP, OR ONE THE TRUCK DOES NOT OFFER, IS REFUSED BEFORE ANYTHING IS WRITTEN — never
+    // quietly dropped from a card order the customer believes includes it. A tip sent with a
+    // pay-at-the-truck order is ignored: there is no online payment to carry it (D13).
+    const chargeChannel = payByCard === true ? 'online_card' as const : 'online_pay_at_truck' as const
+    const tipChoice = parseTipChoice(tip)
+    const chargeRules = await loadChargeRules(truck)
+    if (tipChoice === 'invalid' || (chargeChannel === 'online_card' && tipChoice && !tipChoiceAllowed(tipChoice, chargeRules))) {
+      return NextResponse.json({ error: 'That tip option isn’t available — please choose again.', tipInvalid: true }, { status: 400 })
+    }
+    const charges = computeOrderCharges({ foodMinor, rules: chargeRules, channel: chargeChannel, tip: tipChoice })
+    // The GRAND total: what the card is authorised for, what total_minor stores, what the emails show.
+    // `total` (major units) is derived from it, so the two are the same number by construction.
+    const serverTotalMinor = charges.totalMinor
+    const serverTotal = serverTotalMinor / 100
 
     // ── Required-modifier completeness guard (A2, safety net) ──────────────────────────────
     // Belt-and-braces BEHIND the order modals: reject if a standalone line is missing a required
@@ -970,6 +1001,8 @@ export async function POST(req: NextRequest) {
         discountAmt:   serverDiscountAmt,
         total:         serverTotal,
         totalMinor:    serverTotalMinor,
+        // Phase 3: the snapshot, copied to the order unchanged on promotion.
+        charges:       charges.snapshot,
         // 🔴 THE TRUCK'S CURRENCY (trucks.currency — `select('*')` above), the one the hold is authorised
         // in. Was omitted, so every draft took the writer's 'GBP' default.
         currency:      truck.currency,
@@ -1222,8 +1255,12 @@ export async function POST(req: NextRequest) {
         notes:          notes ?? null,
         van_id:         eventRow?.van_id ?? null,
         payment_status: 'unpaid',
+        // Phase 3: the grand total in minor units, sent rather than re-derived, and the snapshot.
+        total_minor:    serverTotalMinor,
+        ...charges.snapshot,
       }
-      const { data: rpcData, error: rpcErr } = await supabase.rpc('place_order_atomic', {
+      // 🔴 _v2 (20261010_17): the 20260804 function plus the snapshot columns. The old one is left in place.
+      const { data: rpcData, error: rpcErr } = await supabase.rpc('place_order_atomic_v2', {
         p_order,
         p_final_slot: finalSlot,
         p_status:     status,
@@ -1235,7 +1272,7 @@ export async function POST(req: NextRequest) {
       if (rpcErr || !rpcData) {
         // Rolled back — NOTHING persisted (no order, no usage, option stock restored, counter not
         // advanced). Mirrors the old "Failed to save order" 500; the client retries on a clean slate.
-        console.error('place_order_atomic failed (rolled back, nothing persisted):', rpcErr)
+        console.error('place_order_atomic_v2 failed (rolled back, nothing persisted):', rpcErr)
         return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
       }
       orderId = String((rpcData as any).order_number)
@@ -1379,6 +1416,7 @@ export async function POST(req: NextRequest) {
           items: pricedItems,
           deals: pricedDeals,
           total: serverTotal,
+          charges: charges.snapshot,   // Phase 3 screens: tax, fee and tip rows (none for a UK order)
           notes: notes ?? null,
           venueName:     eventRow?.venue_name ?? null,
           venueTown:     eventRow?.town ?? null,
@@ -1425,6 +1463,7 @@ export async function POST(req: NextRequest) {
         deals:        pricedDeals,
         discountAmt:  serverDiscountAmt,
         total:        serverTotal,
+        charges:      charges.snapshot,   // Phase 3 screens: tax, fee and tip rows (none for a UK order)
         notes:        notes ?? null,
         autoAccepted,
         venueName:              eventRow?.venue_name ?? null,
@@ -1549,6 +1588,9 @@ export async function POST(req: NextRequest) {
       // mattered. (The in-memory confirmation renders from basket state, so this is not what the
       // customer sees on screen; the URL-reachable one reads the row. Both now agree with this.)
       total: serverTotal,
+      // Phase 3 screens: the order's tax, fee and tip, for the in-page confirmation's lines — present only
+      // when there is a line to draw, so a UK response is unchanged.
+      ...(chargesForResponse(charges.snapshot as unknown as Record<string, unknown>) ? { charges: chargesForResponse(charges.snapshot as unknown as Record<string, unknown>) } : {}),
     })
 
   } catch (err: any) {

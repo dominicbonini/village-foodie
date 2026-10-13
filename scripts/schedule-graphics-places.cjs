@@ -108,6 +108,26 @@ function runMatchingSuite(P) {
   t('🔴 "Bull & Butcher" and "Bull and Butcher" are one place',
     k('Bull & Butcher') === k('Bull and Butcher') && k('Bull & Butcher') === 'bull and butcher')
 
+  // ── 12 OCTOBER 2026 · "The Five Bells" BESIDE "Five Bells" MADE A SECOND, EMPTY PLACE ───────────────
+  {
+    const pl = (id, name_key) => ({ id, name_key })
+    const fb = [pl('p1', 'five bells'), pl('p2', 'bull and butcher')]
+    t('🔴 a typed "The Five Bells" finds the existing "Five Bells" rather than making a new place',
+      P.placeForTypedName(k('The Five Bells'), fb)?.id === 'p1')
+    t('🔴 …and the other way round: a typed "Five Bells" finds a place called "The Five Bells"',
+      P.placeForTypedName(k('Five Bells'), [pl('p9', 'the five bells')])?.id === 'p9')
+    t('🔴 the EXACT key still wins over the loose one',
+      P.placeForTypedName('the five bells', [pl('pA', 'five bells'), pl('pB', 'the five bells')])?.id === 'pB')
+    t('⚠️ two loose candidates is an ambiguity → null (a new place), never a guess',
+      P.placeForTypedName('five bells', [pl('pA', 'the five bells'), pl('pB', 'the five bells')]) === null)
+    t('⚠️ only a LEADING "the" is dropped — "Bell the Cat" and "Bell Cat" stay two places',
+      P.placeForTypedName(k('Bell the Cat'), [pl('x', 'bell cat')]) === null)
+    t('⚠️ no match → null, so the caller makes a new place exactly as before',
+      P.placeForTypedName(k('The Red Lion'), fb) === null && P.placeForTypedName('', fb) === null)
+    t('🔴 the stored keys and the normaliser are UNCHANGED — "The Five Bells" still normalises with its "the"',
+      k('The Five Bells') === 'the five bells')
+  }
+
   // ── THE CASES A NAIVE NORMALISER GETS WRONG ──────────────────────────────────────────────────
   t('⚠️ an ampersand with NO spaces still separates — "B&B" is "b and b", never "band"',
     k('B&B Yard') === 'b and b yard')
@@ -1099,6 +1119,19 @@ function runWiringSuite(lib) {
     /\{starError && <p className="text-xs text-red-500/.test(read(PLACES_UI)))
   t('⚠️ …and `handleCopyEvent` SURVIVES for the per-event Copy button in the list',
     /const handleCopyEvent = /.test(P) && /handleCopyEvent\(event\)/.test(P))
+  /* 🔴 12 OCTOBER 2026 — a duplicated event landed on a new, empty place because the copy carried only
+   * the venue name. It carries the original's link now; the server still verifies it and follows merges. */
+  t('🔴 `handleCopyEvent` carries the original event\'s `truck_place_id`',
+    /const handleCopyEvent = [\s\S]{0,4000}?truck_place_id: \(event as \{ truck_place_id\?: string \| null \}\)\.truck_place_id \?\? null,/.test(P))
+  {
+    const R = read('app/api/manage/route.ts')
+    const fn = R.slice(R.indexOf('async function resolveEventPlaceId('), R.indexOf('// ── Auth helper'))
+    t('🔴 a typed venue name looks for an existing place ("The" or no "The") BEFORE the upsert can make one',
+      /placeForTypedName\(name_key, rows\)/.test(fn) && fn.indexOf('placeForTypedName(') < fn.indexOf(".upsert(")
+      && /from '@\/lib\/schedule-graphics\/places'/.test(R.slice(0, 8000)) && /\n  placeForTypedName,\n/.test(R.slice(0, 8000)))
+    t('⚠️ a copied link to a place that is gone falls through to the name instead of linking nothing',
+      /if \(picked\) return resolvePlaceMerge\(picked, placesById\(all\)\)\.id/.test(fn) && !/if \(!picked\) return null/.test(fn))
+  }
   t('🔴 the fill rule is the SHARED function, not a copy in the component',
     /\.\.\.fillFromPlace\(pl, p\)/.test(P) && /from '@\/lib\/schedule-graphics\/places'/.test(P)
     && /export function fillFromPlace/.test(read(LIB)))
@@ -1615,7 +1648,14 @@ function runWiringSuite(lib) {
      * ⚠️ ALLOWED TO BE ABSENT HERE ONLY because the assertion below proves each one is present,
      * spelled identically, in the file it moved to. A label that vanished from both still fails. */
     const MOVED_TO_SERVICE_COPY = ['Do you take cash?', 'Collection times', 'Offline order protection']
-    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY, ...MOVED_TO_SCHEDULE_MODAL, ...MOVED_TO_SERVICE_COPY])
+    /* 🔴 13 October 2026 (Phase 3 screens, named difference 1): "Taking payment" moved to Manage ›
+     * Payments, unchanged. ALLOWED TO BE ABSENT HERE ONLY if each string is present in the file it moved
+     * to — the filter below reads that file, so a string that vanished from both still fails. */
+    const movedToPayments = (() => {
+      const src = read('components/manage/TakingPaymentPanel.tsx')
+      return new Set([...before].filter(x => src.includes(x)))
+    })()
+    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY, ...MOVED_TO_SCHEDULE_MODAL, ...MOVED_TO_SERVICE_COPY, ...movedToPayments])
     const removed = [...before].filter(x => !after.has(x)).filter(x => !removable.has(x))
     const badAdded = added.filter(x => !allowed.has(x))
     if (badAdded.length || removed.length) {
@@ -1941,6 +1981,10 @@ function runWiringSuite(lib) {
       /* ⛔ ScheduleSettingsModal.tsx IS DELETED — its two cards are back in Settings, so nothing
        * moved into it and it cannot absorb a lost line. */
       'lib/copy/scheduleVerify.ts',
+      /* 🔴 13 October 2026 (Phase 3 screens, named difference 1): "Taking payment" moved from Settings to
+       * Manage › Payments, unchanged, as its own component. docs/phase-3-screens-report.md;
+       * scripts/_phase3-screens-us.cjs proves the block is there byte for byte. */
+      'components/manage/TakingPaymentPanel.tsx',
     ]
     const movedTo = (() => {
       try {
@@ -1955,6 +1999,22 @@ function runWiringSuite(lib) {
      * ⚠️ ADDING AN ENTRY IS THE EXPENSIVE WAY TO SILENCE THIS GUARD, DELIBERATELY. The cheap way is
      * to leave the line alone. */
     const movedEdits = [
+      /* ── Phase 3 screens, 13 October 2026 (docs/phase-3-screens-report.md) — each with its new form ── */
+      { was: "{activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}",
+        now: "{activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast}", nowIn: 'app/manage/[token]/page.tsx',
+        reason: 'Payments now receives `afterOnline`: the Tax, tips and fees card and the moved Taking payment section' },
+      { was: '<div className="pt-3 border-t border-slate-100">', now: '<div>', nowIn: 'components/manage/TakingPaymentPanel.tsx',
+        reason: 'the moved Taking payment block lost only its Settings separator wrapper (named difference 1)' },
+      { was: 'const total = revenueOrders.reduce((s: number, o: any) => s + (o.total || 0), 0)',
+        now: 'const total = revenueOrders.reduce((s: number, o: any) => s + foodOf(o), 0)', nowIn: 'app/manage/[token]/page.tsx',
+        reason: 'Reports sum FOOD, not the grand total, so tax, tips and fees never fall into "Other"' },
+      { was: 'return { categories, base, dealRev, mods, total }', now: 'return { categories, base, dealRev, mods, total, extras }', nowIn: 'app/manage/[token]/page.tsx',
+        reason: 'tax, tips and fees as their own report lines' },
+      { was: "const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Items', 'Deals', 'Modifiers', 'Notes', 'Total']",
+        now: "...(csvCharges ? ['Subtotal', csvCharges.taxLabel, 'Tip', 'Service fee'] : []), 'Total']", nowIn: 'app/manage/[token]/page.tsx',
+        reason: 'the Orders CSV gains Subtotal, the tax, Tip and Service fee columns — only where tax is added at checkout or a tip/fee exists' },
+      { was: '<span className="text-slate-900">Total</span>', now: "<span className=\"text-slate-900\">{revenueBreakdown.extras.length ? 'Food sales' : 'Total'}</span>", nowIn: 'app/manage/[token]/page.tsx',
+        reason: 'the breakdown line reads "Food sales" when tax, tips or fees follow it; "Total" otherwise, as before' },
       /* 1-2 · SettingsTab gained ONE prop, `onOpenKitchenCapacity`, so that the pointer left behind in
        * Settings › Kitchen can open Menu › Kitchen capacity. Both the mount and the signature changed,
        * and both stay in page.tsx. */

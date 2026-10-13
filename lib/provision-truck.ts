@@ -483,6 +483,8 @@ export async function provisionTruck(
         ...(tradeArea ? {
           base_place_id: tradeArea.base_place_id, base_place_name: tradeArea.base_place_name, base_region: tradeArea.base_region,
           base_lat: tradeArea.base_lat, base_lng: tradeArea.base_lng,
+          // D22 (Phase 3): a 'zip_state' country's state code — the key exists only for one.
+          ...('base_region_code' in tradeArea ? { base_region_code: tradeArea.base_region_code ?? null } : {}),
         } : {}),
         // 🔴 STAYS NULL, and now MEANS something: "trial not started". Nomination — the operator
         // choosing which event starts it — is what sets a date, and does not exist yet. canAccess

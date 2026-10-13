@@ -6,6 +6,9 @@
 import type { CountrySettings } from '@/lib/country-settings-types'
 
 type CountryFacts = Pick<CountrySettings, 'countryCode' | 'name' | 'enabled' | 'timezones' | 'defaultTimezone'>
+  // D22 (Phase 3): a 'zip_state' country also stores the state's code. Optional so the browser's own check
+  // (which has no address format) runs unchanged.
+  & Partial<Pick<CountrySettings, 'addressFormat'>>
 
 export const TRADE_AREA_ERRORS = {
   noCountry: 'Choose the country your truck is based in.',
@@ -23,6 +26,9 @@ export interface TradeAreaValues {
   base_region: string | null
   base_lat: number | null
   base_lng: number | null
+  /** D22 (Phase 3): the state's two-letter code. PRESENT ONLY for a 'zip_state' country, so a GB save
+   *  writes exactly the columns it wrote before. Nothing displays it. */
+  base_region_code?: string | null
 }
 
 const num = (v: unknown, lo: number, hi: number): number | null =>
@@ -56,6 +62,10 @@ export function checkTradeArea(input: Record<string, unknown>, c: CountryFacts):
       base_region: pointed ? str(input.base_region, 120) : null,
       base_lat: pointed ? lat : null,
       base_lng: pointed ? lng : null,
+      ...(c.addressFormat === 'zip_state' ? {
+        base_region_code: pointed && typeof input.base_region_code === 'string' && /^[A-Z]{2}$/.test(input.base_region_code)
+          ? input.base_region_code : null,
+      } : {}),
     },
   }
 }

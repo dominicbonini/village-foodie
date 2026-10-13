@@ -90,6 +90,10 @@ export interface TicketOrder {
   }[] | null
   /** 🔴 ORDER-LEVEL NOTES — the allergy carrier. Printed UNTRUNCATED and boxed; see buildCombined. */
   notes?: string | null
+  /** 🔴 PHASE 3 SCREENS — TAX, SERVICE FEE AND TIP, printed between the items and TOTAL ("Subtotal",
+   *  "Sales tax 8.25%", "Service fee", "Tip"), each already worked out by lib/order-charge-lines.ts.
+   *  ABSENT OR EMPTY FOR EVERY UK ORDER, and then not one byte of the ticket changes. */
+  adjustments?: { label: string; minor: number }[] | null
   total: number
   /** ── PAYMENT (D) ────────────────────────────────────────────────────────────────────────────────
    *  🔴 RESOLVED BY THE CALLER, NEVER RE-DERIVED HERE. `showPaidStep` comes from resolvePaidStep()
@@ -383,6 +387,11 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   blocks.forEach((b, i) => { if (i > 0) lines.push({ text: '' }); lines.push(...b) })
 
   lines.push({ divider: true })
+
+  // Phase 3 screens: Subtotal, tax, service fee and tip, only when the order has them (never a UK order).
+  for (const adj of order.adjustments ?? []) {
+    lines.push({ text: padBetween(adj.label, amount(adj.minor / 100), width) })
+  }
 
   lines.push({ text: padBetween('TOTAL', amount(order.total), width), bold: true })
 

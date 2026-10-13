@@ -38,6 +38,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { ledgerCurrency } from '@/lib/payments/currency'
+import { ORDER_CHARGE_COLUMNS, type OrderChargeSnapshot } from '@/lib/order-charges'
 
 /** Every column this module reads, in one place. See the deploy-coupling note in the header. */
 export const DRAFT_ROW_COLUMNS = [
@@ -51,6 +52,9 @@ export const DRAFT_ROW_COLUMNS = [
   // header. A NAMED select on a missing column is a 42703 that fails the whole statement, so this
   // build REQUIRES that migration.
   'authorization_cancelled_at', 'promotion_failed_at', 'promotion_failure_reason',
+  // 🔴 ADDED 10 October 2026 (20261010_17_order_charges.sql, and 20261010_18 for `tax_rate_milli`) — Phase 3's snapshot. Same rule as above: a
+  // named select, so this build REQUIRES that migration.
+  ...ORDER_CHARGE_COLUMNS,
 ].join(', ')
 
 /** The request as the draft holds it. Money is SERVER-computed — see NewOrderDraft's note. */
@@ -90,6 +94,20 @@ export interface OrderDraftRow {
   authorization_cancelled_at: string | null
   promotion_failed_at: string | null
   promotion_failure_reason: string | null
+  /** Phase 3: the charges snapshot (20261010_17), copied to the order on promotion. */
+  food_minor: number | null
+  tax_minor: number
+  tax_rate_milli: number | null
+  tax_inclusive: boolean | null
+  tax_label: string | null
+  tip_minor: number
+  tip_pct_bps: number | null
+  service_fee_minor: number
+  service_fee_recipient: string | null
+  card_surcharge_minor: number
+  card_funding: string | null
+  card_fee_payer: string | null
+  application_fee_minor: number | null
 }
 
 /**
@@ -130,6 +148,9 @@ export interface NewOrderDraft {
   /** 🔴 REQUIRED, NO DEFAULT (10 October 2026) — the truck's currency, which the submit route passes. The
    *  hold is authorised in it (authorize.ts reads this column) and the order inherits it on promotion. */
   currency: string
+  /** 🔴 Phase 3: the charges snapshot from lib/order-charges (computeOrderCharges). totalMinor is its
+   *  grand total. Required: every draft stores it, so every promoted order does. */
+  charges: OrderChargeSnapshot
 }
 
 /**
@@ -214,6 +235,7 @@ export async function createOrderDraft(
       total:          draft.total,
       total_minor:    draft.totalMinor,
       currency:       ledgerCurrency(draft.currency, `draft ${draft.orderKey}`),
+      ...draft.charges,
       // created_at, expires_at and promoted_at are the column defaults. expires_at deliberately is NOT
       // settable from here — see the migration header for why it lives in one place.
     })

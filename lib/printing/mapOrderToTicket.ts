@@ -26,6 +26,7 @@ import { resolvePaidStep } from '@/lib/payments/paid-step'
 import type { TicketOrder, TicketReprint } from '@/lib/printing/ticket'
 import { orderMoney } from '@/lib/money-format'
 import { formatSlot } from '@/lib/time-utils'
+import { chargeLinesFor, chargeSourceOf } from '@/lib/order-charge-lines'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
 
 /** Every TicketOrder key becomes REQUIRED while keeping its original value type (which still includes
@@ -117,6 +118,12 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
     })),
 
     notes: order.notes,
+    // 🔴 Phase 3 screens — the kitchen's words ("Service fee", "Tip"). `undefined` when there are none, which
+    // is every UK order: the renderer then prints exactly what it printed before.
+    adjustments: (() => {
+      const lines = chargeLinesFor(chargeSourceOf(order as unknown as Record<string, unknown>), 'kitchen')
+      return lines.length ? lines.map(l => ({ label: l.rate ? `${l.label} ${l.rate}` : l.label, minor: l.minor })) : undefined
+    })(),
     total: order.total,
 
     showPaidStep,

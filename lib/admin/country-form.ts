@@ -46,6 +46,14 @@ export interface CountryForm {
   serviceFeeAllowed: boolean
   tippingEnabledDefault: boolean
   tipPresetsPct: string[]
+  // Phase 3 (20261010_17) — carried by the form so a save keeps them; the page shows no box for them yet.
+  serviceFeeRecipient: 'truck' | 'hatchgrab'
+  serviceFeeHatchgrabPct: string
+  serviceFeeHatchgrabFixed: string
+  serviceFeeTruckMaxPct: string
+  serviceFeeTruckMaxFixed: string
+  platformFeeEnabled: boolean
+  feesTaxed: boolean
   currency: string
   locale: string
   timeFormat: '24h' | '12h'
@@ -86,6 +94,10 @@ export const FIELD_LABELS: Record<keyof CountryForm, string> = {
   cardSurchargeCreditOnly: 'Credit cards only', cardSurchargeExcludedRegions: 'Card fee not allowed in',
   serviceFeeAllowed: 'Online service fee allowed', tippingEnabledDefault: 'Tipping on for new trucks',
   tipPresetsPct: 'Tip choices',
+  serviceFeeRecipient: 'Who keeps the service fee',
+  serviceFeeHatchgrabPct: 'Our service fee (%)', serviceFeeHatchgrabFixed: 'Our service fee (fixed part)',
+  serviceFeeTruckMaxPct: "Most a truck's service fee can be (%)", serviceFeeTruckMaxFixed: "Most a truck's service fee can be (fixed part)",
+  platformFeeEnabled: 'Our fee switched on', feesTaxed: 'Service fee and card fee are taxed',
   currency: 'Currency', locale: 'Language style', timeFormat: 'Times', dateOrder: 'Dates', weekStart: 'Week starts',
   phoneCountryCode: 'Phone country code', shortName: 'Short name', phoneExample: 'Example phone number', phoneCheck: 'Phone number check', addressFormat: 'Addresses', timezones: 'Time zones offered at signup',
   defaultTimezone: 'Default time zone', allergenSet: 'Allergen list', supportHours: 'Support hours',
@@ -112,6 +124,23 @@ export function minorToBox(minor: number | null, currency: string, kind: 'price'
 }
 
 const pctToBox = (n: number | null): string => (n === null ? '' : String(n))
+/** Basis points → a percentage box: 350 → "3.5". Integer arithmetic on the string, never `/ 100` drift. */
+const bpsToBox = (n: number | null): string => {
+  if (n === null) return ''
+  const s = String(n).padStart(3, '0')
+  const whole = s.slice(0, -2).replace(/^0+(?=\d)/, '')
+  const frac = s.slice(-2).replace(/0+$/, '')
+  return frac ? `${whole}.${frac}` : whole
+}
+/** A typed percentage → basis points, by string arithmetic ("3.5" → 350). '' → null. */
+export function boxToBps(text: string): number | null | 'bad' {
+  const t = text.trim()
+  if (t === '') return null
+  const m = t.match(/^(\d+)(?:\.(\d{1,2}))?$/)
+  if (!m) return 'bad'
+  const n = Number(m[1] + (m[2] ?? '').padEnd(2, '0'))
+  return n >= 0 && n <= 10000 ? n : 'bad'
+}
 
 export function rowToForm(r: CountrySettings): CountryForm {
   return {
@@ -130,6 +159,12 @@ export function rowToForm(r: CountrySettings): CountryForm {
     cardSurchargeCreditOnly: r.cardSurchargeCreditOnly, cardSurchargeExcludedRegions: [...r.cardSurchargeExcludedRegions],
     serviceFeeAllowed: r.serviceFeeAllowed, tippingEnabledDefault: r.tippingEnabledDefault,
     tipPresetsPct: r.tipPresetsPct.map(n => String(n)),
+    serviceFeeRecipient: r.serviceFeeRecipient,
+    serviceFeeHatchgrabPct: bpsToBox(r.serviceFeeHatchgrabBps),
+    serviceFeeHatchgrabFixed: r.serviceFeeHatchgrabFixedMinor === null ? '' : String(r.serviceFeeHatchgrabFixedMinor),
+    serviceFeeTruckMaxPct: bpsToBox(r.serviceFeeTruckMaxBps),
+    serviceFeeTruckMaxFixed: r.serviceFeeTruckMaxFixedMinor === null ? '' : String(r.serviceFeeTruckMaxFixedMinor),
+    platformFeeEnabled: r.platformFeeEnabled, feesTaxed: r.feesTaxed,
     currency: r.currency, locale: r.locale, timeFormat: r.timeFormat, dateOrder: r.dateOrder, weekStart: r.weekStart,
     phoneCountryCode: r.phoneCountryCode, shortName: r.shortName ?? '', phoneExample: r.phoneExample ?? '', phoneCheck: r.phoneCheck, addressFormat: r.addressFormat,
     timezones: [...r.timezones], defaultTimezone: r.defaultTimezone,
@@ -275,6 +310,25 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
   }
   if (new Set(tips).size !== tips.length) err('tipPresetsPct', 'Each tip choice can only appear once.')
 
+  // ── Phase 3: the service fee's owner and amounts, the platform-fee switch, fees taxed ──
+  if (f.serviceFeeRecipient !== 'truck' && f.serviceFeeRecipient !== 'hatchgrab') err('serviceFeeRecipient', 'Choose who keeps the service fee.')
+  const bps = (field: 'serviceFeeHatchgrabPct' | 'serviceFeeTruckMaxPct'): number | null => {
+    const v = boxToBps(f[field])
+    if (v === 'bad') { err(field, `${FIELD_LABELS[field]} must be a percentage between 0 and 100, with at most 2 decimal places.`); return null }
+    return v
+  }
+  const optionalWhole = (field: 'serviceFeeHatchgrabFixed' | 'serviceFeeTruckMaxFixed'): number | null => {
+    const v = boxToWholeMinor(f[field])
+    if (v === 'empty') return null
+    if (v === 'bad') { err(field, `${FIELD_LABELS[field]} must be a whole number of the currency's smallest unit, like 50.`); return null }
+    return v
+  }
+  const serviceFeeHatchgrabBps = bps('serviceFeeHatchgrabPct')
+  const serviceFeeHatchgrabFixedMinor = optionalWhole('serviceFeeHatchgrabFixed')
+  const serviceFeeTruckMaxBps = bps('serviceFeeTruckMaxPct')
+  const serviceFeeTruckMaxFixedMinor = optionalWhole('serviceFeeTruckMaxFixed')
+  if (f.platformFeeEnabled && f.platformFeePct.trim() === '') err('platformFeeEnabled', "Our fee can't be switched on until 'Our fee above that' is filled in.")
+
   // ── formats ──
   const locale = f.locale.trim()
   if (!isLocale(locale)) err('locale', 'Language style must look like en-GB or en-US.')
@@ -325,6 +379,9 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
       cardFeeOnlinePct: cardFeeOnlinePct as number, cardFeeOnlineFixedMinor: cardFeeOnlineFixedMinor as number,
       cardFeeInPersonPct: cardFeeInPersonPct as number, cardFeeInPersonFixedMinor: cardFeeInPersonFixedMinor as number,
       tapToPayFixedMinor: tapToPayFixedMinor as number, cardFeeRegionLabel,
+      serviceFeeRecipient: f.serviceFeeRecipient,
+      serviceFeeHatchgrabBps, serviceFeeHatchgrabFixedMinor, serviceFeeTruckMaxBps, serviceFeeTruckMaxFixedMinor,
+      platformFeeEnabled: f.platformFeeEnabled, feesTaxed: f.feesTaxed,
       supportHours: supportHours || null,
     },
   }
@@ -352,8 +409,10 @@ export function asCountryForm(x: unknown): CountryForm | null {
   const strs = ['name', 'starterMonthly', 'proMonthly', 'maxMonthly', 'proAllowance', 'maxAllowance', 'platformFeePct',
     'cardFeeOnlinePct', 'cardFeeOnlineFixed', 'cardFeeInPersonPct', 'cardFeeInPersonFixed', 'tapToPayFixed',
     'cardFeeRegionLabel', 'taxLabel', 'cardSurchargeCapPct', 'currency', 'locale', 'timeFormat', 'dateOrder', 'weekStart',
-    'phoneCountryCode', 'shortName', 'phoneExample', 'phoneCheck', 'addressFormat', 'defaultTimezone', 'allergenSet', 'supportHours']
-  const bools = ['enabled', 'pricesIncludeTax', 'cardSurchargeAllowed', 'cardSurchargeCreditOnly', 'serviceFeeAllowed', 'tippingEnabledDefault']
+    'phoneCountryCode', 'shortName', 'phoneExample', 'phoneCheck', 'addressFormat', 'defaultTimezone', 'allergenSet', 'supportHours',
+    'serviceFeeRecipient', 'serviceFeeHatchgrabPct', 'serviceFeeHatchgrabFixed', 'serviceFeeTruckMaxPct', 'serviceFeeTruckMaxFixed']
+  const bools = ['enabled', 'pricesIncludeTax', 'cardSurchargeAllowed', 'cardSurchargeCreditOnly', 'serviceFeeAllowed', 'tippingEnabledDefault',
+    'platformFeeEnabled', 'feesTaxed']
   const lists = ['cardSurchargeExcludedRegions', 'tipPresetsPct', 'timezones']
   if (strs.some(k => typeof o[k] !== 'string')) return null
   if (bools.some(k => typeof o[k] !== 'boolean')) return null

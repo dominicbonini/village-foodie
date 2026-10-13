@@ -32,6 +32,10 @@ import { nextOrderId } from '@/lib/order-utils'
  * through `loadEventPriceBook` (below), which is the ONE place the event-aware wrapper is
  * applied. An import of the raw book beside the wrapper is an invitation to call the wrong one. */
 import { repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
+// Phase 3: tax, tip and fees — the same engine and rules as the customer path (docs/phase-3-foundations-report.md).
+import { computeOrderCharges, chargesForEdit } from '@/lib/order-charges'
+import { chargeSourceOf } from '@/lib/order-charge-lines'
+import { loadChargeRules } from '@/lib/order-charge-rules'
 /* 🔴 EVENT PRICING (§70, October 2026). The walk-up path prices NEW lines, so it prices at the
  * event; the edit path prices only what an edit ADDS, under price-lock. */
 import { loadEventPriceBook, stampEditedLines } from '@/lib/event-pricing/read'
@@ -212,6 +216,7 @@ async function deliverReadyEmail(order: any, truck: any) {
     slot: order.slot ?? null,
     discountAmt: order.discount_amt ?? 0,
     total: Number(order.total),
+    charges: chargeSourceOf(order),   // Phase 3 screens: tax, fee and tip rows (none for a UK order)
     notes: order.notes ?? null,
     venueName: eventRow?.venue_name ?? null,
     venueTown: eventRow?.town ?? null,
@@ -351,6 +356,7 @@ export async function POST(req: NextRequest) {
           slot: order.slot ?? null,
           discountAmt: order.discount_amt ?? 0,
           total: Number(order.total),
+          charges: chargeSourceOf(order),   // Phase 3 screens: tax, fee and tip rows (none for a UK order)
           notes: order.notes ?? null,
           autoAccepted: true,
           paymentState,
@@ -810,7 +816,14 @@ export async function POST(req: NextRequest) {
       // `total` from that means total and total_minor are the same number by construction, instead of
       // JS float rounding and Postgres numeric(8,2) rounding independently and disagreeing by 1p.
       // For every total that is already 2dp — i.e. all of them today — this is an exact round-trip.
-      const newTotalMinor = toMinor(repriced.calculation.total)
+      // ── 🔴 Phase 3: RE-PRICED THROUGH THE ENGINE (lib/order-charges chargesForEdit). Tax is recomputed on
+      // the new food under the order's own snapshot (D4); an online tip keeps its percentage, never above
+      // the original amount (D14); a service fee is recomputed, never above the original; and an edit
+      // never ADDS a charge the order did not have. GB: tax included, nothing else → the grand total is
+      // the food, the same number as before Phase 3.
+      const editFoodMinor = toMinor(repriced.calculation.total)
+      const editCharges = chargesForEdit(editFoodMinor, await loadChargeRules(truck), order)
+      const newTotalMinor = editCharges.totalMinor
       const newTotal = newTotalMinor / 100
       const unresolved = [...repriced.unresolved, ...unresolvedDiscount]
 
@@ -918,6 +931,8 @@ export async function POST(req: NextRequest) {
         discount_amt: newDiscountAmt,
         // §4a — pence, derived server-side from the server total. Never client-supplied.
         total_minor: newTotalMinor,
+        // Phase 3: the whole snapshot, re-written with the re-priced amounts.
+        ...editCharges.snapshot,
         status:   'modified',
       }).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (updateErr) {
@@ -1068,6 +1083,7 @@ export async function POST(req: NextRequest) {
           slot: slotToShow,
           discountAmt: newDiscountAmt,
           total: newTotal,
+          charges: editCharges.snapshot,   // Phase 3 screens: tax, fee and tip rows (none for a UK order)
           notes: notes !== undefined ? notes : order.notes,
           autoAccepted: true,
           paymentState,
@@ -1518,7 +1534,14 @@ export async function POST(req: NextRequest) {
       // price and the total it would store, and the panel asks the operator to confirm that figure.
       // Nothing is written on this branch — no lock is taken, no counter advanced, no row inserted.
       // 🔴 An OVERRIDE is not an unresolved. The operator setting a price is an answer, not a question.
-      const serverTotalMinor = toMinor(priced.calculation.total)
+      // ── 🔴 Phase 3: A WALK-UP IS TAXED (D9) AND CARRIES NO SERVICE FEE, SURCHARGE OR ONLINE TIP. The same
+      // engine and rules as the customer path, channel 'walk_up'. GB: tax included → total = food.
+      const walkupCharges = computeOrderCharges({
+        foodMinor: toMinor(priced.calculation.total),
+        rules: await loadChargeRules(truck),
+        channel: 'walk_up',
+      })
+      const serverTotalMinor = walkupCharges.totalMinor
       const serverTotal = serverTotalMinor / 100
       const serverSubtotal = priced.calculation.subtotal
       const serverDiscountAmt = priced.calculation.discountAmt
@@ -1696,6 +1719,8 @@ export async function POST(req: NextRequest) {
           deal_savings: serverDealSavings > 0 ? serverDealSavings : null,
           // §4a — pence, derived here from the server-held total. Never client-supplied.
           total_minor: serverTotalMinor,
+          // Phase 3: the snapshot.
+          ...walkupCharges.snapshot,
           // OVER-CAPACITY ACKNOWLEDGEMENT. Set only when the operator was shown the over-capacity
           // modal (AddOrderPanel, submit-time fresh fit check) and chose "Place it anyway". The
           // TIMESTAMP is server-minted — the client sends a boolean intent, never a time it could
@@ -1865,6 +1890,7 @@ export async function POST(req: NextRequest) {
           deals: pricedDeals || [],
           discountAmt: serverDiscountAmt,
           total: serverTotal,
+          charges: walkupCharges.snapshot,   // Phase 3 screens: tax, fee and tip rows (none for a UK order)
           notes: notes || null,
           autoAccepted: true,
           venueName:              manualEventRow?.venue_name ?? null,
@@ -1899,6 +1925,7 @@ export async function POST(req: NextRequest) {
           items: manualEmailItems,
           deals: pricedDeals || [],
           total: serverTotal,
+          charges: walkupCharges.snapshot,   // Phase 3 screens: tax, fee and tip rows (none for a UK order)
           notes: notes || null,
           venueName:     manualEventRow?.venue_name ?? null,
           venueTown:     manualEventRow?.town ?? null,
@@ -2184,7 +2211,7 @@ export async function POST(req: NextRequest) {
       // discarded and this branch returns `{ success: true, newSlot }` unconditionally, so a filtered
       // write would report SUCCESS for an order that never moved — while the booking, the capture and
       // the email still ran. That is the silent-no-op trap the cross-truck cancel hole hid behind.
-      const { data: ord } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt,currency,country').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      const { data: ord } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt,currency,country,food_minor,tax_minor,tax_rate_milli,tax_label,tip_minor,tip_pct_bps,service_fee_minor,card_surcharge_minor').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!ord?.slot) return NextResponse.json({ error: 'No slot' }, { status: 400 })
       const [h, m] = ord.slot.split(':').map(Number)
       const newTotal = h * 60 + m + mins
@@ -2244,6 +2271,7 @@ export async function POST(req: NextRequest) {
           slotAdjustedFrom: ord.slot,
           discountAmt: ord.discount_amt ?? 0,
           total: Number(ord.total),
+          charges: chargeSourceOf(ord as Record<string, unknown>),   // Phase 3 screens: tax, fee and tip rows (none for a UK order)
           notes: ord.notes ?? null,
           autoAccepted: true,
           paymentState,

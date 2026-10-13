@@ -32,6 +32,11 @@ import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, s
 import { clockGridMinutes } from '@/lib/slot-generation'
 import { formatMajorOrBare, formatMinorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { MoneyProvider } from '@/components/MoneyContext'
+// Phase 3 screens: tax, a tip and the service fee, SHOWN with the server's own pure engine. The server
+// re-prices on submit; the browser sends only the tip choice.
+import { computeOrderCharges, rulesFromCheckout, applyBps, type CheckoutRules, type TipChoice } from '@/lib/order-charges'
+import { ChargeRows } from '@/components/ChargeRows'
+import { formatRateBps, type ChargeLineSource } from '@/lib/order-charge-lines'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -64,7 +69,10 @@ interface TruckData { id: string; name: string; logo: string | null; mode: 'vill
   money?: MoneyFormat | null
   /** 🔴 Whether to OFFER a card option, from /api/menu. Absent/false ⇒ Pay-at-Hatch, silently, exactly
    *  as before. A RENDERING HINT ONLY — lib/payments/authorize re-reads readiness server-side. */
-  card_payments_ready?: boolean }
+  card_payments_ready?: boolean
+  /** Phase 3 screens: the checkout rules /api/menu sends ONLY when tax is added at checkout, tips are on or a
+   *  service fee applies — never for a UK truck, so every branch that reads it is dead there. */
+  checkout?: CheckoutRules }
 interface EventData {
   id: string            // truck_events.id — the event the customer is ordering against
   date: string          // dd/mm/yyyy
@@ -472,6 +480,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // not completed Stripe onboarding — all of them today — the choice is never rendered and this value
   // never reaches the submit path, so the page behaves exactly as it did before.
   const [payByCard, setPayByCard] = useState(true)
+  /* ── Phase 3 screens: THE TIP CHOICE — the only money input the browser sends. 'none' by default.
+   * A number is a preset in basis points; 'other' reads `tipOther`, typed in major units. */
+  const [tipSel, setTipSel] = useState<'none' | number | 'other'>('none')
+  const [tipOther, setTipOther] = useState('')
+  /** The server's lines for the in-memory confirmation — set only when the response carries some. */
+  const [submittedCharges, setSubmittedCharges] = useState<ChargeLineSource | null>(null)
+  const [submittedTotal, setSubmittedTotal] = useState<number | null>(null)
   /** Set when the order was placed but the card step could not start. NEVER silent — see the confirmation. */
   const [cardFallbackNotice, setCardFallbackNotice] = useState(false)
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null)
@@ -1512,6 +1527,31 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     )
   }, [basket, appliedDeals, appliedCode, menu])
 
+  /* ── 🔴 PHASE 3 SCREENS — WHAT THE CUSTOMER WILL PAY, FROM THE SERVER'S OWN ENGINE ──────────────────
+   * `total` above is the FOOD (after any code). Where the truck's country adds tax at checkout, tips are
+   * on or a service fee applies, /api/menu sends `truck.checkout`, and the SAME pure function the submit
+   * route runs (lib/order-charges.ts) works out tax, fee and tip for display. The server re-prices
+   * everything on submit and takes only the tip choice from here.
+   * 🔴 A UK TRUCK HAS NO `checkout`: `pageCharges` is null, `grandTotal` IS `total`, and every line below
+   * that reads them renders exactly what it did before. */
+  const checkout = truck?.checkout ?? null
+  const cardChosen = !!(truck?.card_payments_ready && payByCard)
+  const foodMinor = Math.round(total * 100)
+  const tipOtherMinor = (() => {
+    const m = tipOther.trim().replace(/,/g, '').match(/^(\d+)(?:\.(\d{1,2}))?$/)
+    return m ? Number(m[1]) * 100 + Number((m[2] ?? '').padEnd(2, '0')) : 0
+  })()
+  const tipChoice: TipChoice = useMemo(() => (tipSel === 'none' ? { kind: 'none' }
+    : tipSel === 'other' ? (tipOtherMinor > 0 ? { kind: 'amount', minor: tipOtherMinor } : { kind: 'none' })
+    : { kind: 'percent', bps: tipSel }), [tipSel, tipOtherMinor])
+  const showTip = !!checkout?.tipping && cardChosen
+  const pageCharges = checkout ? computeOrderCharges({
+    foodMinor, rules: rulesFromCheckout(checkout),
+    channel: cardChosen ? 'online_card' : 'online_pay_at_truck',
+    tip: showTip ? tipChoice : null,
+  }) : null
+  const grandTotal = pageCharges ? pageCharges.totalMinor / 100 : total
+
   const hasItems = basket.length > 0 || appliedDeals.length > 0
   const totalItems = basket.reduce((s, b) => s + b.quantity, 0)
   // ── A2 FIX: THE LAST CATEGORY MUST ALWAYS REACH THE TOP ─────────────────────────────────────────
@@ -1604,11 +1644,81 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <span className="text-green-600 font-medium">-{amount(discountAmt)}</span>
         </div>
       )}
+      {/* Phase 3 screens: Subtotal, tax, fee and tip — nothing for a UK truck. */}
+      <ChargeRows charges={pageCharges?.snapshot} amount={amount} />
       <div className="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
-        <span>Total</span><span>{amount(total)}</span>
+        <span>Total</span><span>{amount(grandTotal)}</span>
       </div>
     </div>
   )
+
+  // ══ 🔴 PHASE 3 SCREENS — THE CHECKOUT PIECES (approved mockup, docs/phase-3-screens-report.md) ══════
+  // Every one of these is null, or renders nothing, for a truck with no `checkout` — every UK truck — so
+  // the UK page is unchanged. They read `pageCharges`, the server's own engine run on this basket.
+  //
+  // UNDER THE BASKET HEADING: tax is not in the menu prices. The country's tax name in lower case
+  // ("sales tax"), and only where tax is added at checkout.
+  const taxNoticeEl = checkout && !checkout.taxInclusive ? (
+    <p className="text-[11px] text-slate-500 mb-2" data-tax-notice>
+      Menu prices don&apos;t include {checkout.taxLabel.toLowerCase()}. It&apos;s added below.
+    </p>
+  ) : null
+  // UNDER "Pay at the truck": what that choice leaves out — one line, either or both halves.
+  const payAtTruckNote = checkout
+    ? [checkout.serviceFee ? 'No service fee.' : null, checkout.tipping ? 'Tip the truck in person if you like.' : null].filter(Boolean).join(' ')
+    : ''
+  // The currency's own symbol, for the "Other" tip box ("$", "£", "€").
+  const currencySymbol = (() => {
+    try {
+      const m = truck?.money
+      if (!m) return ''
+      return new Intl.NumberFormat(m.locale, { style: 'currency', currency: m.currency }).formatToParts(0).find(x => x.type === 'currency')?.value ?? ''
+    } catch { return '' }
+  })()
+  // THE TIP BLOCK — card orders only, tipping on. Equal buttons, the selected one a 2px dark border on a
+  // pale blue fill; at least 44px tall. "No tip" is the default.
+  const tipBtn = (selected: boolean) =>
+    `min-h-[44px] rounded-xl px-1 py-1.5 text-sm font-semibold text-slate-800 flex flex-col items-center justify-center ${
+      selected ? 'border-2 border-slate-900 bg-blue-50' : 'border border-slate-200 bg-white'}`
+  const tipPresets = checkout?.tipping?.presetsBps ?? []
+  const tipOverCap = tipSel === 'other' && tipOtherMinor > foodMinor
+  const tipBlockEl = checkout?.tipping ? (
+    <div className="mt-4" data-tip-block>
+      <p className="text-sm font-bold text-slate-900 mb-2">Add a tip for the truck?</p>
+      <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${tipPresets.length + 2}, minmax(0, 1fr))` }}>
+        <button type="button" onClick={() => setTipSel('none')} className={tipBtn(tipSel === 'none')} aria-pressed={tipSel === 'none'}>No tip</button>
+        {tipPresets.map(bps => (
+          <button type="button" key={bps} onClick={() => setTipSel(bps)} className={tipBtn(tipSel === bps)} aria-pressed={tipSel === bps}>
+            <span>{formatRateBps(bps)}%</span>
+            <span className="text-xs font-medium text-slate-500">{amountMinor(applyBps(foodMinor, bps))}</span>
+          </button>
+        ))}
+        <button type="button" onClick={() => setTipSel('other')} className={tipBtn(tipSel === 'other')} aria-pressed={tipSel === 'other'}>Other</button>
+      </div>
+      {tipSel === 'other' && (
+        <div className="mt-2">
+          <div className="flex items-center rounded-xl border border-slate-200 bg-white px-3 min-h-[44px] focus-within:ring-2 focus-within:ring-orange-400">
+            <span className="text-sm text-slate-500 mr-1">{currencySymbol}</span>
+            <input type="text" inputMode="decimal" aria-label="Tip amount" value={tipOther}
+              onChange={e => setTipOther(e.target.value)} placeholder="0.00"
+              className="flex-1 text-sm font-medium text-slate-900 bg-transparent focus:outline-none py-2" />
+          </div>
+          {tipOverCap && <p className="text-xs text-amber-700 mt-1">Tips can be up to {amountMinor(foodMinor)}.</p>}
+        </div>
+      )}
+      <p className="text-[11px] text-slate-500 mt-2">100% of your tip goes to the truck. Worked out on the food, before tax.</p>
+    </div>
+  ) : null
+  // THE TOTALS BOX, above Place order: Subtotal (when anything follows it), tax with its rate, the online
+  // service fee, the tip, then Total, bold, above a top border. Each line only when non-zero.
+  const checkoutTotalsEl = checkout && hasItems ? (
+    <div className="mt-4 bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-1" data-checkout-totals>
+      <ChargeRows charges={pageCharges?.snapshot} amount={amount} />
+      <div className="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
+        <span>Total</span><span>{amount(grandTotal)}</span>
+      </div>
+    </div>
+  ) : null
 
   // ── Queue-aware ASAP time (pre-order, queue-aware) ───────────────────────────
   // Uses same batch logic as truck dashboard calcQueueAwareReadyTime.
@@ -2014,7 +2124,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     c: appliedCode?.code || null,
     t: Math.round(total * 100),
     e: event?.id ?? null,
-  }), [basket, appliedDeals, asapChosen, selectedSlot, appliedCode, total, event?.id])
+    // Phase 3 screens: a different tip is a different amount to authorise. Only where checkout rules
+    // apply, so a UK fingerprint is unchanged.
+    ...(checkout ? { g: Math.round(grandTotal * 100), tip: showTip ? tipChoice : null } : {}),
+  }), [basket, appliedDeals, asapChosen, selectedSlot, appliedCode, total, event?.id, checkout, grandTotal, showTip, tipChoice])
 
   // ── 🔴 THE CARD BUTTON. THE ONE DECISION POINT: REOPEN, OR AUTHORISE AFRESH. ────────────────────
   // Reopen is free and must be preferred; a fresh authorisation costs a draft and a PaymentIntent, and
@@ -2093,6 +2206,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           // ⚠️ ANDed with `card_payments_ready` here only to avoid a pointless server round-trip on a
           // truck that plainly cannot take one; the server never trusts this value.
           payByCard: sentByCard,
+          // ── Phase 3 screens: THE TIP CHOICE, the only money input sent — and only on a card order at
+          // a truck with tips on. Never sent by a UK truck (no `checkout`), so its body is unchanged.
+          ...(sentByCard && checkout?.tipping ? { tip: tipChoice } : {}),
           // 🔴 ONE LIVE AUTHORISATION PER BASKET. If we are holding one and the basket has since moved,
           // its key rides along so the SERVER cancels it before creating the replacement — cancel-then-
           // create, in one request, so there is never a moment when two intents are live for one basket.
@@ -2221,6 +2337,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       }
 
       setSubmittedOrderId(data.orderId)
+      // Phase 3 screens: the server's lines and grand total, for the confirmation. Absent for a UK order.
+      if (data.charges) { setSubmittedCharges(data.charges); setSubmittedTotal(typeof data.total === 'number' ? data.total : null) }
       setSubmittedAutoAccepted(!!data.autoAccepted)
       setSubmittedConfirmedSlot(data.slot ?? null)
       setSubmittedRequestedSlot(data.requestedSlot ?? (selectedSlot || null))
@@ -2321,6 +2439,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           slotNotes: (d?.slotNotes ?? {}) as Record<string, string>,
         }))}
         total={Number(confirmOrder.total ?? 0)}
+        charges={confirmOrder.charges ?? null}
         // 🔴 THE ORDER'S OWN STATE. Written by the webhook from Stripe's event, never by this page and
         // never from the URL — a `?confirm=` in the address bar says WHICH order, never that it is paid.
         paymentStatus={confirmOrder.payment_status ?? 'unpaid'}
@@ -2405,7 +2524,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           slotNotes: deal.slotNotes ?? {},
         }
       })}
-      total={total}
+      total={submittedTotal ?? total}
+      charges={submittedCharges}
       paymentStatus="unpaid"
       email={email}
       cardFallbackNotice={cardFallbackNotice}
@@ -3506,7 +3626,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       {(() => { const n = totalItems + appliedDeals.length; return `${n} item${n !== 1 ? 's' : ''}` })()}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <span className="font-black text-slate-900 text-sm">{amount(total)}</span>
+                      <span className="font-black text-slate-900 text-sm">{amount(grandTotal)}</span>
                       <svg className={`w-4 h-4 text-slate-400 transition-transform ${sheetSummaryExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                       </svg>
@@ -3515,6 +3635,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   {/* Height cap (sheet ONLY): a small 2–4 item order shows fully with no scroll; a
                       large order scrolls WITHIN this 40vh box so the collection-time + name/email
                       fields stay reachable below. The footer peek is uncapped (unchanged). */}
+                  {taxNoticeEl}
                   {sheetSummaryExpanded && <div className="mt-2 max-h-[40vh] overflow-y-auto">{orderBreakdownEl}</div>}
                 </div>
               )}
@@ -3732,7 +3853,65 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   re-presents a live authorisation for an unchanged basket without touching the server;
                   only a first attempt or a changed basket calls submitOrder. Pay-at-hatch is untouched
                   and still goes straight to handleSubmitClick. */}
-              <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
+              {/* ── 🔴 PHASE 3 SCREENS — WHERE THE CHECKOUT RULES APPLY, THE CHOICE COMES FIRST ────────────
+                  With tax, a tip or a fee to show, the customer chooses how to pay, then (card) a tip,
+                  then sees the totals, then places the order — so the button's last word is the amount it
+                  will charge. 🔴 A UK TRUCK HAS NO `checkout` and takes the second branch: the button,
+                  then the choice, exactly as before, byte for byte. */}
+              {checkout ? (<>
+              {/* ── 🔴 THE CARD CHOICE. RENDERED ONLY WHEN THE TRUCK'S OPERATOR IS ACTUALLY READY. ──
+                  `card_payments_ready` is false for every truck whose operator has not completed Stripe
+                  onboarding, so this block does not exist for any of them and the line below is the
+                  page exactly as it was. That is the "silent fallback" rule: never a card option that
+                  then fails, and no explanation of a thing that is not on offer.
+                  ⚠️ Stacked rows in the existing radio vocabulary — a filled circle in a ring — not a
+                  native <input>, matching the pattern used across Manage. */}
+              {truck?.card_payments_ready && (
+                <div className="mt-4 space-y-1.5">
+                  {([
+                    { key: true,  label: 'Pay now by card', hint: 'Secure payment through Stripe' },
+                    { key: false, label: 'Pay at the truck', hint: 'No card details needed' },
+                  ] as const).map(opt => (
+                    <button
+                      key={String(opt.key)}
+                      type="button"
+                      onClick={() => setPayByCard(opt.key)}
+                      className="w-full flex items-start gap-2 text-left"
+                    >
+                      <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        payByCard === opt.key ? 'border-orange-500' : 'border-slate-300'
+                      }`}>
+                        {payByCard === opt.key && <span className="w-2 h-2 rounded-full bg-orange-500" />}
+                      </span>
+                      <span className="text-sm min-w-0">
+                        <span className="font-medium text-slate-700">{opt.label}</span>
+                        <span className="block text-xs text-slate-400">{opt.hint}</span>
+                        {/* Phase 3 screens: what paying at the truck leaves out — never for a UK truck. */}
+                        {!opt.key && payAtTruckNote && <span className="block text-xs text-slate-400">{payAtTruckNote}</span>}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {showTip && tipBlockEl}
+              {checkoutTotalsEl}
+                            <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
+                disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
+                className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
+                {submitting ? 'Placing order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : orderingTimeNotSet ? 'Set-up pending' : !eventLoading && !event ? 'No event available' : 'Place order'}
+              </button>
+              {/* ⚠️ The original line, unchanged, for every truck that cannot take cards — and replaced
+                  only when a card is both available and chosen, so it never describes the wrong thing.
+                  🔴 "on the next screen" IS GONE. There is no next screen: the card form opens HERE,
+                  on this page, and saying otherwise would promise a navigation that no longer happens. */}
+              <p className="text-center text-slate-400 text-xs mt-2">
+                {truck?.card_payments_ready && payByCard
+                  ? 'You’ll pay securely by card on this page · Apple Pay and Google Pay supported'
+                  : 'Pay at the truck on collection · No card details needed'}
+              </p>
+
+              </>) : (<>
+                            <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
                 disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
                 className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
                 {submitting ? 'Placing order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : orderingTimeNotSet ? 'Set-up pending' : !eventLoading && !event ? 'No event available' : 'Place order'}
@@ -3778,6 +3957,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   ? 'You’ll pay securely by card on this page · Apple Pay and Google Pay supported'
                   : 'Pay at the truck on collection · No card details needed'}
               </p>
+
+              </>)}
               </div>{/* end review, hidden while paying */}
 
             </div>
@@ -3808,13 +3989,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   {(() => { const n = totalItems + appliedDeals.length; return `${n} item${n !== 1 ? 's' : ''}` })()}
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-slate-900 text-sm">{amount(total)}</span>
+                  <span className="font-black text-slate-900 text-sm">{amount(grandTotal)}</span>
                   <svg className={`w-4 h-4 text-slate-400 transition-transform ${summaryExpanded ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
               </button>
 
+              {taxNoticeEl}
               {/* Expanded breakdown — shared element (see orderBreakdownEl), also used in the sheet. */}
               {summaryExpanded && orderBreakdownEl}
             </div>
@@ -4092,7 +4274,7 @@ export interface ConfirmationDeal {
 function OrderConfirmation({
   slug, truck, truckName, orderId, autoAccepted,
   confirmedSlot, requestedSlot, slotChanged, asapEstimate, preferredSlot,
-  lines, deals, total, paymentStatus, email, cardFallbackNotice, money, time,
+  lines, deals, total, charges, paymentStatus, email, cardFallbackNotice, money, time,
 }: {
   slug: string
   truck: TruckData | null
@@ -4108,6 +4290,8 @@ function OrderConfirmation({
   lines: ConfirmationLine[]
   deals: ConfirmationDeal[]
   total: number
+  /** Phase 3 screens: the server's tax, fee and tip lines' source — absent for every UK order. */
+  charges?: ChargeLineSource | null
   /** 🔴 THE ORDER'S OWN payment_status, never a truck setting. See the payment line below. */
   paymentStatus: string | null
   email: string | null
@@ -4222,6 +4406,8 @@ function OrderConfirmation({
                 })}
               </div>
             ))}
+            {/* Phase 3 screens: Subtotal, tax, fee and tip — nothing at all for a UK order. */}
+            <ChargeRows charges={charges} amount={amount} />
             <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
               <span className="font-black text-slate-900">Total</span>
               <span className="font-black text-slate-900">{amount(total)}</span>

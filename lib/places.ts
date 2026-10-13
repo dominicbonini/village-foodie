@@ -13,7 +13,12 @@
 import 'server-only'
 
 export type Suggestion = { placeId: string; name: string; detail: string }
-export type PlaceDetails = { placeId: string; name: string; region: string | null; lat: number; lng: number }
+export type PlaceDetails = {
+  placeId: string; name: string; region: string | null; lat: number; lng: number
+  /** D22 (Phase 3): the state's two-letter code ('TX'), 'zip_state' countries ONLY — the key is absent for a
+   *  'postcode' country, so a GB answer is unchanged. Null when Places gives none, or not two letters. */
+  regionCode?: string | null
+}
 export type SuggestResult = { state: 'ok'; suggestions: Suggestion[] } | { state: 'none'; reason: string }
 export type DetailsResult = { state: 'ok'; place: PlaceDetails } | { state: 'none'; reason: string }
 
@@ -75,14 +80,22 @@ export async function townDetails(placeId: string, sessionToken: string, address
   try {
     const data = await call(f, `${BASE}/places/${encodeURIComponent(placeId)}?sessionToken=${encodeURIComponent(sessionToken)}`, {
       headers: { 'X-Goog-Api-Key': k, 'X-Goog-FieldMask': 'id,displayName,location,addressComponents' },
-    }) as { id?: string; displayName?: { text?: string }; location?: { latitude?: number; longitude?: number }; addressComponents?: { longText?: string; types?: string[] }[] }
+    }) as { id?: string; displayName?: { text?: string }; location?: { latitude?: number; longitude?: number }; addressComponents?: { longText?: string; shortText?: string; types?: string[] }[] }
     const lat = data.location?.latitude, lng = data.location?.longitude
     if (typeof lat !== 'number' || typeof lng !== 'number' || !data.displayName?.text) return { state: 'none', reason: 'incomplete answer' }
     const comp = (t: string) => data.addressComponents?.find(c => c.types?.includes(t))?.longText ?? null
     const region = addressFormat === 'zip_state'
       ? comp('administrative_area_level_1')
       : (comp('administrative_area_level_2') ?? comp('administrative_area_level_1'))
-    return { state: 'ok', place: { placeId: data.id ?? placeId, name: data.displayName.text, region, lat: round6(lat), lng: round6(lng) } }
+    // D22: the state's short code, kept only when it IS a two-letter code — an unknown state stores nothing.
+    const short = addressFormat === 'zip_state'
+      ? (data.addressComponents?.find(c => c.types?.includes('administrative_area_level_1'))?.shortText ?? null)
+      : null
+    const regionCode = typeof short === 'string' && /^[A-Z]{2}$/.test(short) ? short : null
+    return { state: 'ok', place: {
+      placeId: data.id ?? placeId, name: data.displayName.text, region, lat: round6(lat), lng: round6(lng),
+      ...(addressFormat === 'zip_state' ? { regionCode } : {}),
+    } }
   } catch (e) {
     console.error('[places] details failed — the town is kept as typed:', e instanceof Error ? e.message : e)
     return { state: 'none', reason: 'google failed' }

@@ -43,6 +43,9 @@ export const COUNTRY_SETTINGS_COLUMNS = [
   'card_fee_online_pct', 'card_fee_online_fixed_minor',
   'card_fee_in_person_pct', 'card_fee_in_person_fixed_minor',
   'tap_to_pay_fixed_minor', 'card_fee_region_label',
+  // Phase 3 (20261010_17) — a NAMED select, so that migration must run before this code.
+  'service_fee_recipient', 'service_fee_hatchgrab_bps', 'service_fee_hatchgrab_fixed_minor',
+  'service_fee_truck_max_bps', 'service_fee_truck_max_fixed_minor', 'platform_fee_enabled', 'fees_taxed',
   'support_hours', 'updated_at', 'updated_by',
 ].join(', ')
 const COLUMNS = COUNTRY_SETTINGS_COLUMNS
@@ -130,6 +133,13 @@ export function mapCountryRow(r: Row): CountrySettings {
     cardFeeInPersonFixedMinor: num(c, r, 'card_fee_in_person_fixed_minor'),
     tapToPayFixedMinor: num(c, r, 'tap_to_pay_fixed_minor'),
     cardFeeRegionLabel: str(c, r, 'card_fee_region_label'),
+    serviceFeeRecipient: oneOf(c, r, 'service_fee_recipient', ['truck', 'hatchgrab'] as const),
+    serviceFeeHatchgrabBps: numOrNull(c, r, 'service_fee_hatchgrab_bps'),
+    serviceFeeHatchgrabFixedMinor: numOrNull(c, r, 'service_fee_hatchgrab_fixed_minor'),
+    serviceFeeTruckMaxBps: numOrNull(c, r, 'service_fee_truck_max_bps'),
+    serviceFeeTruckMaxFixedMinor: numOrNull(c, r, 'service_fee_truck_max_fixed_minor'),
+    platformFeeEnabled: bool(c, r, 'platform_fee_enabled'),
+    feesTaxed: bool(c, r, 'fees_taxed'),
     supportHours: strOrNull(c, r, 'support_hours'),
     updatedAt: str(c, r, 'updated_at'),
     updatedBy: strOrNull(c, r, 'updated_by'),

@@ -84,11 +84,14 @@ import {
 /* 🔴 "Do you take cash?" PER VAN (5 October 2026). Its own PROBED reader, for the reason that file's
  * header gives: naming `takes_cash` on `get_vans`' select would empty the van list on a 42703. */
 import { readVanTakesCashForTruck } from '@/lib/payments/van-cash'
+// Phase 3 screens: the truck's tax, tip and fee rules (Reports, Payments).
+import { loadChargeRules } from '@/lib/order-charge-rules'
 // 🔴 ONE DEFINITION OF "WHICH PLACE IS THIS EVENT AT", IMPORTED NOT RE-WRITTEN. Stages 2 and 3 import
 // the same module; a second normaliser here would make events stop finding their place with no error.
 import {
   normalisePlaceName, planPlaceSeed, nextEventAt, lastEventAt, tradedCountInLastYear,
   groupEventsByPlace, seedWindowStart, mergeRefusal, mergePatch, resolvePlaceMerge, placesById,
+  placeForTypedName,
   /* 🔴 `countsAsTraded` FOR THE PLACES TAB'S "used N times" (20261015) — the SAME predicate the
    * last-year count uses, so one place cannot be "used 9 times" by one rule and 7 by another. */
   /* ⛔ `countsAsUpcoming` WENT WITH `sg_place_events` (5 October 2026). It split that action's rows
@@ -240,12 +243,24 @@ async function resolveEventPlaceId(
         .from('truck_places').select('id, merged_into_id').eq('truck_id', truckId)
       const all = (data ?? []) as SgPlace[]
       const picked = placesById(all).get(pickedPlaceId)
-      if (!picked) return null
-      return resolvePlaceMerge(picked, placesById(all)).id
+      if (picked) return resolvePlaceMerge(picked, placesById(all)).id
+      // ⚠️ A LINK TO A PLACE THAT IS NO LONGER THIS TRUCK'S FALLS THROUGH TO THE NAME (12 October 2026),
+      // rather than linking nothing. "Duplicate" now carries the original's link, and the original's
+      // place may have gone since; the venue name still says where the copy is.
     }
     const name = String(venueName ?? '').trim()
     const name_key = normalisePlaceName(name)
     if (!name_key) return null
+    /* 🔴 AN EXISTING PLACE FIRST, "The" OR NO "The" (12 October 2026). "The Five Bells" beside a place
+     * called "Five Bells" used to create a second, empty place — see `placeForTypedName`. Only when
+     * nothing matches does the upsert below make a new one, exactly as before. */
+    {
+      const { data: existing } = await supabase
+        .from('truck_places').select('id, name_key, merged_into_id').eq('truck_id', truckId)
+      const rows = (existing ?? []) as (SgPlace & { name_key?: string | null })[]
+      const hit = placeForTypedName(name_key, rows)
+      if (hit) return resolvePlaceMerge(hit, placesById(rows)).id
+    }
     /* 🔴 THE SAME IDEMPOTENT RULE AS THE SEEDER — `on conflict (truck_id, name_key) do nothing`, so
      * two events added at the same moment for a new venue produce ONE place. `ignoreDuplicates` then a
      * read-back: never `do update`, which would overwrite a name the operator had edited. */
@@ -1242,6 +1257,13 @@ export async function POST(req: NextRequest) {
       .from('truck_events').select('id').eq('id', String(eventId ?? '')).eq('truck_id', truck.id).maybeSingle()
     if (evErr) return NextResponse.json({ error: evErr.message }, { status: 400 })
     if (!ownEvent) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    // 🔴 …AND SO MUST THE BUNDLE (Phase 3, closing the audit-fixes follow-up). Another truck's bundle id on
+    // this truck's own event is refused with the SAME answer and nothing written — the reply does not say
+    // which of the two was not this truck's.
+    const { data: ownBundle, error: bErr } = await supabase
+      .from('bundles_db').select('id').eq('id', String(bundleId ?? '')).eq('truck_id', truck.id).maybeSingle()
+    if (bErr) return NextResponse.json({ error: bErr.message }, { status: 400 })
+    if (!ownBundle) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
     const { error } = await supabase
       .from('event_deals')
       .upsert({ event_id: eventId, bundle_id: bundleId, active, overridden: true }, { onConflict: 'event_id,bundle_id' })
@@ -1869,6 +1891,30 @@ export async function POST(req: NextRequest) {
   // country (zone in its list, a town given) by lib/trade-area.ts — the check signup runs — and written
   // together; only the columns that check returns are written (a stray travel_radius_km is ignored). The COUNTRY is never written here: it is tied to the truck's
   // card payments and cannot change. A zone the country does not offer is refused in words.
+  /* ── 🔴 MANAGE › PAYMENTS › "Tax, tips and fees" (Phase 3 screens) ──────────────────────────────────────
+   * The truck's ONE sales tax rate, its tips switch and its own online service fee. Every value is checked
+   * by lib/charge-settings.ts — the same function the card runs — against the truck's country: the rate
+   * 0–20 % with up to 3 decimals, and the fee only where the country allows one, the truck keeps it, and
+   * each part is within the country's maximum. Nothing is written for a refused save.
+   * ⚠️ OWNER ONLY, like the Payments tab that shows it (and admins). Money settings are not a manager's. */
+  if (action === 'update_charges') {
+    if (requestingUserRole !== 'owner' && !requestingIsAdmin) {
+      return NextResponse.json({ error: 'Only the owner can change tax, tips and fees' }, { status: 403 })
+    }
+    const cs = await countrySettingsForTruck(truck)
+    const { checkChargeSettings } = await import('@/lib/charge-settings')
+    const { formatMinor } = await import('@/lib/money-format')
+    const fmt = { currency: cs.currency, locale: cs.locale }
+    const input: Record<string, unknown> = {}
+    for (const k of ['taxRate', 'tippingEnabled', 'serviceFeeEnabled', 'serviceFeePct', 'serviceFeeFixed']) if (k in body) input[k] = body[k]
+    const r = checkChargeSettings(input, cs, m => formatMinor(m, fmt))
+    if (!r.ok) return NextResponse.json({ error: r.error }, { status: 400 })
+    const { data, error } = await supabase.from('trucks').update(r.values).eq('id', truck.id)
+      .select('tax_rate_milli, tipping_enabled, service_fee_enabled, service_fee_bps, service_fee_fixed_minor').single()
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true, truck: data })
+  }
+
   if (action === 'update_trade_area') {
     const cs = await countrySettingsForTruck(truck)
     const r = checkTradeArea(body, cs)
@@ -2985,7 +3031,10 @@ export async function POST(req: NextRequest) {
       // 🔴 orders.van_id is deliberately NOT selected and plays NO part in reporting — it is a KDS
       // ROUTING field with no accounting meaning (NULL on ~78% of live orders, because the walk-up path
       // never sets it while the customer path does). Filtering money by it would silently drop revenue.
-      .select('order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id')
+      // Phase 3 screens: the snapshot's amounts ride on the same read (named: needs 20261010_17/_18). They are
+      // REMOVED from the rows below unless this range has tax, a tip or a fee to report, so a UK response is
+      // unchanged.
+      .select('order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id, food_minor, tax_minor, tax_rate_milli, tax_label, tip_minor, tip_pct_bps, service_fee_minor, card_surcharge_minor')
       .eq('truck_id', truck.id)
       // Reports exclude cancelled/rejected orders (confirmed/collected/etc. only). Revenue already excludes
       // them client-side (:7008) — this server filter keeps the list + the revenue calc consistent.
@@ -3084,6 +3133,33 @@ export async function POST(req: NextRequest) {
     }
     const categoryOrder = (catRows || []).map((c: any) => c.name)
 
+    /* ── 🔴 FOOD, DISCOUNT, TAX, TIPS AND FEES, SEPARATELY (Phase 3 screens) ─────────────────────────────
+     * `total` is the GRAND total — food plus tax, tip and fees — so summing it as "sales" would count
+     * a customer's tip as food. `charges` reports each part on its own, and only when there is something
+     * other than food to report, or the truck's country adds tax at checkout (the Orders CSV's columns
+     * follow that). A UK range has neither, so `charges` is absent, the snapshot columns are stripped from
+     * the rows, and this response is byte-identical. */
+    const reportRules = await loadChargeRules(truck)
+    const taxAtCheckout = !reportRules.taxInclusive
+    const rows = orders as unknown as Record<string, unknown>[]
+    const sumMinor = (k: string) => rows.reduce((s: number, o) => s + (Number(o[k]) || 0), 0)
+    const extrasMinor = { tax: sumMinor('tax_minor'), tips: sumMinor('tip_minor'), serviceFees: sumMinor('service_fee_minor'), cardSurcharges: sumMinor('card_surcharge_minor') }
+    const anyExtras = Object.values(extrasMinor).some(v => v > 0)
+    const reportCharges = taxAtCheckout || anyExtras ? {
+      taxAtCheckout,
+      taxLabel: reportRules.taxLabel,
+      // Food is the snapshot's food_minor; an order from before Phase 3 has none, and its total IS its food.
+      foodMinor: rows.reduce((s: number, o) => s + (o.food_minor != null ? Number(o.food_minor) : Math.round((Number(o.total) || 0) * 100)), 0),
+      discount: rows.reduce((s: number, o) => s + (Number(o.discount_amt) || 0), 0),
+      taxMinor: extrasMinor.tax, tipsMinor: extrasMinor.tips,
+      serviceFeesMinor: extrasMinor.serviceFees, cardSurchargesMinor: extrasMinor.cardSurcharges,
+    } : null
+    if (!reportCharges) {
+      for (const o of rows) {
+        for (const k of ['food_minor', 'tax_minor', 'tax_rate_milli', 'tax_label', 'tip_minor', 'tip_pct_bps', 'service_fee_minor', 'card_surcharge_minor']) delete o[k]
+      }
+    }
+
     const totalRevenue = orders.reduce((s: number, o: any) => s + (o.total || 0), 0)
     const dealsRedeemed = orders.filter((o: any) => (o.discount_amt || 0) > 0).length
     const dealSavings = orders.reduce((s: number, o: any) => s + (o.discount_amt || 0), 0)
@@ -3120,6 +3196,7 @@ export async function POST(req: NextRequest) {
         eventsByDate,
         itemCategories,
         categoryOrder,
+        ...(reportCharges ? { charges: reportCharges } : {}),
       },
     })
   }

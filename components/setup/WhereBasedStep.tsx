@@ -15,7 +15,11 @@ import type { SignupCountry } from '@/lib/signup-country-types'
 import { checkTradeArea, TRADE_AREA_ERRORS } from '@/lib/trade-area'
 import { WHERE_YOU_TRADE_COPY as COPY } from '@/lib/settings-copy'
 
-export interface BasePlace { placeId: string | null; name: string; region: string | null; lat: number | null; lng: number | null }
+export interface BasePlace {
+  placeId: string | null; name: string; region: string | null; lat: number | null; lng: number | null
+  /** D22 (Phase 3): the state's code — present only when Places gave a 'zip_state' answer. */
+  regionCode?: string | null
+}
 export interface BaseAnswer { country: string; timezone: string; place: BasePlace }
 export type BaseErrors = Partial<Record<'country' | 'timezone' | 'town', string>>
 
@@ -39,6 +43,8 @@ export function baseAnswerBody(a: BaseAnswer) {
     country: a.country, timezone: a.timezone,
     base_place_id: a.place.placeId, base_place_name: a.place.name.trim(), base_region: a.place.region,
     base_lat: a.place.lat, base_lng: a.place.lng,
+    // D22: only when the picked place carries one ('zip_state' countries) — a GB body is unchanged.
+    ...(a.place.regionCode !== undefined ? { base_region_code: a.place.regionCode } : {}),
   }
 }
 
@@ -127,7 +133,11 @@ export function TownInput({ id, country, value, onChange, onCommit, invalid }: {
     try {
       const r = await fetch(`/api/places/details?id=${encodeURIComponent(s.placeId)}&country=${encodeURIComponent(country)}&session=${session()}`)
       const d = await r.json()
-      if (d?.state === 'ok' && d.place) { picked = { placeId: d.place.placeId, name: d.place.name, region: d.place.region, lat: d.place.lat, lng: d.place.lng }; onChange(picked) }
+      if (d?.state === 'ok' && d.place) {
+        picked = { placeId: d.place.placeId, name: d.place.name, region: d.place.region, lat: d.place.lat, lng: d.place.lng,
+          ...(d.place.regionCode !== undefined ? { regionCode: d.place.regionCode } : {}) }
+        onChange(picked)
+      }
     } catch { /* kept as typed — the name is what matters */ }
     endSession()   // the pick ends this search's billing session
     onCommit?.(picked)

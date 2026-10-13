@@ -63,7 +63,19 @@ function phoneCheckDefault() {
   if (!m) throw new Error('20261010_12 no longer has the shape this parser reads')
   return m[1]
 }
-const withPhoneCopy = (row) => ({ ...row, shortName: null, phoneExample: null, ...(phoneCopyFromMigration()[row.countryCode] || {}), phoneCheck: phoneCheckDefault() })
+// Phase 3: 20261010_17 adds seven columns, each NULL or with a default that every existing row takes. Read
+// from THAT file, so the harnesses' rows are the database's rows after every migration.
+function chargeDefaultsFromMigration() {
+  const sql = read('supabase/migrations/20261010_17_order_charges.sql')
+  const out = {}
+  for (const m of sql.matchAll(/alter table public\.country_settings add column if not exists (\w+)\s+(\w+)(?:\s+not null default ([^;]+?))?\s*;/g)) {
+    const key = m[1].replace(/_([a-z])/g, (_, c) => c.toUpperCase())
+    out[key] = m[3] === undefined ? null : sqlValue(m[3].trim())
+  }
+  if (Object.keys(out).length !== 7) throw new Error(`20261010_17 no longer has the shape this parser reads (${Object.keys(out).length} columns)`)
+  return out
+}
+const withPhoneCopy = (row) => ({ ...row, shortName: null, phoneExample: null, ...(phoneCopyFromMigration()[row.countryCode] || {}), phoneCheck: phoneCheckDefault(), ...chargeDefaultsFromMigration() })
 const gbFromSeed = () => withPhoneCopy(rowFromSeed('supabase/migrations/20261010_03_country_settings_seed_gb.sql'))
 const usFromSeed = () => withPhoneCopy(rowFromSeed('supabase/migrations/20261010_04_country_settings_seed_us.sql'))
-module.exports = { gbFromSeed, usFromSeed, phoneCopyFromMigration, phoneCheckDefault }
+module.exports = { gbFromSeed, usFromSeed, phoneCopyFromMigration, phoneCheckDefault, chargeDefaultsFromMigration }

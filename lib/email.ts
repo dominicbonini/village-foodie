@@ -9,6 +9,8 @@ import { isDemoIdentifier } from '@/lib/demo'
 // function below that prints one, so the compiler names every caller; the caller gets it from
 // lib/money-server.ts (moneyFormatForOrder) — never a default, never GBP by omission.
 import { formatMajor, formatMinor, type MoneyFormat } from '@/lib/money-format'
+// Phase 3 screens: the order's tax, fee and tip lines — the same list every surface draws.
+import { chargeLinesFor, chargeLineText, type ChargeLineSource } from '@/lib/order-charge-lines'
 import { formatSlot, formatYmd, type TimeSettings } from '@/lib/time-utils'
 
 // THE PAYMENT SENTENCE, IN ONE PLACE, FOR EVERY EMAIL THAT NEEDS ONE.
@@ -220,6 +222,23 @@ export function renderOrderLinesHtml(items: EmailOrderItem[], deals: EmailDeal[]
   return itemRows + dealRows
 }
 
+/**
+ * 🔴 THE TAX, FEE AND TIP ROWS (Phase 3 screens), drawn where the discount row sits, above Total. The
+ * same lines as the order page's totals box. ⚠️ EMPTY FOR EVERY UK ORDER (lib/order-charge-lines.ts), so
+ * the rows add nothing and the email is byte-identical.
+ */
+export function chargeRowsHtml(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string {
+  return chargeLinesFor(charges).map(l => `
+      <tr>
+        <td style="padding:4px 0;color:#64748b">${l.label}${l.rate ? ` <span style="font-size:12px;color:#94a3b8">${l.rate}</span>` : ''}</td>
+        <td style="text-align:right;padding:4px 0;color:#64748b">${formatMinor(l.minor, money)}</td>
+      </tr>`).join('')
+}
+/** The same rows as text lines, e.g. "Sales tax 8.25%: $1.98". Empty for every UK order. */
+export function chargeTextLines(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string[] {
+  return chargeLinesFor(charges).map(l => chargeLineText(l, m => formatMinor(m, money)))
+}
+
 export function formatConfirmationEmail(params: {
   orderId: string
   /** UUID row key — used for the cancel link (globally unique, not enumerable).
@@ -235,6 +254,8 @@ export function formatConfirmationEmail(params: {
   deals: EmailDeal[]
   discountAmt: number
   total: number
+  /** Phase 3 screens: the order's snapshot (tax, fee, tip). Absent, or a UK order, adds no row. */
+  charges?: ChargeLineSource | null
   notes: string | null
   autoAccepted?: boolean
   slotAdjustedFrom?: string | null
@@ -319,7 +340,8 @@ export function formatConfirmationEmail(params: {
   // Single-sourced line rendering (item + deal rows) — see renderOrderLinesHtml.
   const orderLinesHtml = renderOrderLinesHtml(params.items, params.deals, params.money)
 
-  const discountRow = ''
+  // The discount row this used to hold was emptied long ago; the tax, fee and tip rows take its place.
+  const discountRow = chargeRowsHtml(params.charges, params.money)
 
   const slotSection = (params.slot && !isReady) ? `
     <div style="background:${params.slotAdjustedFrom || !params.autoAccepted ? '#fff7ed' : '#f0fdf4'};border:1px solid ${params.slotAdjustedFrom || !params.autoAccepted ? '#fed7aa' : '#bbf7d0'};border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center">
@@ -470,6 +492,7 @@ export function formatConfirmationEmail(params: {
       })
       return lines.join('\n')
     }).join('\n') : '',
+    ...chargeTextLines(params.charges, params.money),
     `Total: ${formatMajor(params.total, params.money)}`,
     isReady
       ? `Your order is ready for collection — come and collect.${payNote.readySuffix}`
@@ -524,6 +547,8 @@ export function formatNewOrderEmail(params: {
   items: EmailOrderItem[]
   deals: EmailDeal[]
   total: number
+  /** Phase 3 screens: the order's snapshot (tax, fee, tip). Absent, or a UK order, adds nothing. */
+  charges?: ChargeLineSource | null
   notes: string | null
   venueName?: string | null
   venueTown?: string | null
@@ -549,7 +574,7 @@ export function formatNewOrderEmail(params: {
             ${(venueName || venueTown) ? `<p>📍 ${[venueName, venueTown, venuePostcode].filter(Boolean).join(', ')}</p>` : ''}
             ${customerPhone ? `<p>📞 <a href="tel:${customerPhone}">${customerPhone}</a></p>` : ''}
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
-              ${orderLinesHtml}
+              ${orderLinesHtml}${chargeRowsHtml(params.charges, money)}
               <tr style="border-top:2px solid #e2e8f0">
                 <td style="padding-top:8px;font-weight:800">Total</td>
                 <td style="text-align:right;padding-top:8px;font-weight:800">${formatMajor(total, money)}</td>
@@ -560,7 +585,8 @@ export function formatNewOrderEmail(params: {
               ? `<p style="color:#16a34a;font-size:13px;font-weight:600;margin-top:16px">✓ Auto-confirmed — no action needed.</p>`
               : `<p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your HatchGrab dashboard to confirm or reject this order.</p>`}
           </body>`
-  const text = `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}${(venueName || venueTown) ? ' at ' + [venueName, venueTown].filter(Boolean).join(', ') : ''}. Total ${formatMajor(total, money)}.${notes ? ' Notes: ' + notes : ''}`
+  const chargeText = chargeTextLines(params.charges, money)
+  const text = `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}${(venueName || venueTown) ? ' at ' + [venueName, venueTown].filter(Boolean).join(', ') : ''}.${chargeText.length ? ` ${chargeText.join('. ')}.` : ''} Total ${formatMajor(total, money)}.${notes ? ' Notes: ' + notes : ''}`
 
   return { subject, html, text }
 }

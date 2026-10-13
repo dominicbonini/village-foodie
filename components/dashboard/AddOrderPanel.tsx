@@ -35,6 +35,8 @@ import { isOnline } from '@/lib/native/reachability'
 import { createCapacityRefresher, type CapacityRefresher } from '@/lib/capacity-refresh'
 import { MoneyProvider } from '@/components/MoneyContext'
 import { formatMajorOrBare } from '@/lib/money-format'
+// Phase 3 screens: the offline walk-up total, worked out by the server's own pure engine.
+import { computeOrderCharges, rulesFromCheckout } from '@/lib/order-charges'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -1557,6 +1559,16 @@ setItemModal({ item, modGroups, editCartKey })
           slot: effectiveSlot, event_date: manualEvent?.event_date ?? null, event_id: manualEvent?.id ?? null,
           van_id: null, status: 'confirmed', items: manualItems, deals: manualOrder.deals,
           subtotal: manualItemsSubtotal, total: manualTotal, notes: manualNotes || null,
+          /* ── 🔴 PHASE 3 SCREENS — THE OFFLINE WALK-UP TOTAL INCLUDES TAX (foundations gap 1) ──────────
+           * Where tax is added at checkout the server stores food + tax for a walk-up, so the card shown
+           * before the round trip must too. The SAME pure engine, channel `walk_up` (tax yes, no fee, no
+           * tip), on the truck's rules from /api/dashboard (`truck.charge_rules`). Spread AFTER `total`, so
+           * it overrides it. 🔴 A UK TRUCK HAS NO `charge_rules`: nothing is spread, the object is exactly
+           * what it was, and food = total as before. */
+          ...(truck.charge_rules ? (() => {
+            const c = computeOrderCharges({ foodMinor: Math.round(manualTotal * 100), rules: rulesFromCheckout(truck.charge_rules), channel: 'walk_up' })
+            return { total: c.totalMinor / 100, total_minor: c.totalMinor, ...c.snapshot }
+          })() : {}),
           // 🔴 DERIVED FROM THE SAME VALUE THAT WAS QUEUED, NOT A LITERAL (14 August 2026). This read
           // `payment_status: 'unpaid'` — a hardcoded string, eight lines after `paymentTaken` was
           // captured at :1093 and queued correctly at :1102. The payload was always right; only this

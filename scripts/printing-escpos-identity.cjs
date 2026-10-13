@@ -47,13 +47,27 @@ console.log('\n── HEAD vs WORKING TREE ────────────�
  * (accents fold to plain letters) where HEAD printed "Jos?". So HEAD is fed the already-folded text and the
  * working tree the original: if the fold is the ONLY change, the two byte streams are identical. Every other
  * byte — ASCII, "£" at 0xA3, ESC t 16, layout — is still compared exactly. */
-const foldForHead = o => JSON.parse(JSON.stringify(o).replace(/José/g, 'Jose'))
+/* ⚠️ ONCE D38 IS COMMITTED (the checkpoint 3033a53, docs/phase-3-foundations-report.md Step 0), HEAD FOLDS TOO, and
+ * the comparison is plain HEAD vs working tree again. Which case applies is read off HEAD itself — its own
+ * printableText — never assumed, so this stays right whichever side of that commit it runs on. */
+const headFolds = typeof H.printableText === 'function' && H.printableText('José') === 'Jose'
+const foldForHead = o => (headFolds ? o : JSON.parse(JSON.stringify(o).replace(/José/g, 'Jose')))
 for (const [label, order] of FIX) for (const w of [58, 80]) {
   const a = JSON.stringify(Array.from(H.renderTicket(foldForHead(order), { paper_width: w }))), b = JSON.stringify(Array.from(N.renderTicket(order, { paper_width: w })))
-  check(a === b, `${label} @${w}mm — ${JSON.parse(a).length} bytes, identical (with "José" printing "Jose", audit D38)`)
+  check(a === b, `${label} @${w}mm — ${JSON.parse(a).length} bytes, identical (with "José" printing "Jose", audit D38${headFolds ? ', now in HEAD' : ''})`)
 }
-check(JSON.stringify(Array.from(H.renderTicket(FIX[0][1], { paper_width: 58 }))) !== JSON.stringify(Array.from(N.renderTicket(FIX[0][1], { paper_width: 58 }))),
-  'CONTROL: without the fold, HEAD and the working tree differ — so the check above is really comparing')
+if (headFolds) {
+  // The control the D38 note relied on is restated: the working tree must fold exactly as HEAD does, and a
+  // ticket fed the UNFOLDED fixture to an unfolded renderer would differ — proven by refusing the fold by hand.
+  const raw = JSON.stringify(Array.from(N.renderTicket(FIX[0][1], { paper_width: 58 })))
+  check(raw.includes('74,111,115,101,39,115') && !raw.includes('74,111,115,63,39,115'),   // "Jose's", never "Jos?'s"
+    'CONTROL: HEAD already folds (D38 committed) — the working tree prints "Jose", never "Jos?", on the raw fixture')
+  check(JSON.stringify(Array.from(H.renderTicket(FIX[0][1], { paper_width: 58 }))) !== JSON.stringify(Array.from(H.renderTicket(JSON.parse(JSON.stringify(FIX[0][1]).replace(/José/g, 'Jos\u00bf')), { paper_width: 58 }))),
+    'CONTROL: a changed name changes the bytes — so the comparison above is really comparing')
+} else {
+  check(JSON.stringify(Array.from(H.renderTicket(FIX[0][1], { paper_width: 58 }))) !== JSON.stringify(Array.from(N.renderTicket(FIX[0][1], { paper_width: 58 }))),
+    'CONTROL: without the fold, HEAD and the working tree differ — so the check above is really comparing')
+}
 head.remove()
 console.log(`\n${fails ? '🔴 ' + fails + ' FAILED' : '✅ renderTicket byte-identical to HEAD on ' + FIX.length * 2 + ' fixtures'}`)
 process.exit(fails ? 1 : 0)

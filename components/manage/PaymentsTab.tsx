@@ -134,8 +134,11 @@ const HEADER: Record<PaymentsState, { title: string; body: string; chip: string;
   },
 }
 
-export function PaymentsTab({ token, plan, showToast }: {
+export function PaymentsTab({ token, plan, showToast, afterOnline }: {
   token: string
+  /** 🔴 Phase 3 screens: what Manage places AFTER the online payments section and BEFORE "Walk-up
+   *  payments" — the "Tax, tips and fees" card and "Taking payment" (moved here from Settings). */
+  afterOnline?: React.ReactNode
   /** The truck's plan. Only 'trial' renders the reassurance banner — see the copy constant's note. */
   plan: string | null | undefined
   /** ⚠️ No PIN. This route authenticates by SESSION + truck ownership, which is stronger than the
@@ -677,6 +680,8 @@ export function PaymentsTab({ token, plan, showToast }: {
           )}
         </ConnectComponentsProvider>
       )}
+
+      {afterOnline}
 
       {/* ══ WALK-UP PAYMENTS ══════════════════════════════════════════════════════════════════════
           🔴 NOT A SECOND CONNECTION. This section is a choice about HOW MONEY IS TAKEN AT THE HATCH.

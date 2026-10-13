@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
     const trade = checkTradeArea({
       timezone: body.timezone, base_place_id: body.base_place_id, base_place_name: body.base_place_name,
       base_region: body.base_region, base_lat: body.base_lat, base_lng: body.base_lng,
+      base_region_code: body.base_region_code,
     }, countryRow)
     if (!trade.ok) return NextResponse.json({ ok: false, error: trade.error }, { status: 400 })
 

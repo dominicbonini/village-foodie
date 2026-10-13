@@ -38,6 +38,10 @@ export function valuesToColumns(v: CountryValues): Record<string, unknown> {
     card_fee_online_pct: v.cardFeeOnlinePct, card_fee_online_fixed_minor: v.cardFeeOnlineFixedMinor,
     card_fee_in_person_pct: v.cardFeeInPersonPct, card_fee_in_person_fixed_minor: v.cardFeeInPersonFixedMinor,
     tap_to_pay_fixed_minor: v.tapToPayFixedMinor, card_fee_region_label: v.cardFeeRegionLabel,
+    service_fee_recipient: v.serviceFeeRecipient,
+    service_fee_hatchgrab_bps: v.serviceFeeHatchgrabBps, service_fee_hatchgrab_fixed_minor: v.serviceFeeHatchgrabFixedMinor,
+    service_fee_truck_max_bps: v.serviceFeeTruckMaxBps, service_fee_truck_max_fixed_minor: v.serviceFeeTruckMaxFixedMinor,
+    platform_fee_enabled: v.platformFeeEnabled, fees_taxed: v.feesTaxed,
     support_hours: v.supportHours,
   }
 }

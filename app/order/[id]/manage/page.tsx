@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { formatSlot, instantOfLocal, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
+import { ChargeRows } from '@/components/ChargeRows'
+import type { ChargeLineSource } from '@/lib/order-charge-lines'
 
 type OrderState = {
   /** 🔴 THE ORDER'S OWN currency and locale, from /api/orders/[id]. Missing ⇒ figures with no symbol. */
@@ -24,6 +26,8 @@ type OrderState = {
   venue_name: string | null
   allow_cancellation: boolean
   cancellation_cutoff_mins: number
+  /** Phase 3 screens: the tax, fee and tip lines' source — absent for every UK order (see the API). */
+  charges?: ChargeLineSource | null
 }
 
 export default function ManageOrderPage() {
@@ -239,6 +243,8 @@ export default function ManageOrderPage() {
               </span>
             </div>
           ))}
+          {/* Phase 3 screens: Subtotal, tax, fee and tip — nothing at all for a UK order. */}
+          <ChargeRows charges={order.charges} amount={amount} textClass="text-sm py-0.5" />
           <div className="flex justify-between text-sm font-bold mt-2 pt-2 border-t border-slate-100">
             <span>Total</span>
             <span>{amount(order.total ?? 0)}</span>

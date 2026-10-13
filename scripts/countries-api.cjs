@@ -41,6 +41,10 @@ const COL = { // column → field, exactly lib/admin/country-form.ts valuesToCol
   card_fee_in_person_pct: 'cardFeeInPersonPct', card_fee_in_person_fixed_minor: 'cardFeeInPersonFixedMinor',
   tap_to_pay_fixed_minor: 'tapToPayFixedMinor', card_fee_region_label: 'cardFeeRegionLabel', support_hours: 'supportHours',
   updated_at: 'updatedAt', updated_by: 'updatedBy',
+  // Phase 3 (20261010_17)
+  service_fee_recipient: 'serviceFeeRecipient', service_fee_hatchgrab_bps: 'serviceFeeHatchgrabBps',
+  service_fee_hatchgrab_fixed_minor: 'serviceFeeHatchgrabFixedMinor', service_fee_truck_max_bps: 'serviceFeeTruckMaxBps',
+  service_fee_truck_max_fixed_minor: 'serviceFeeTruckMaxFixedMinor', platform_fee_enabled: 'platformFeeEnabled', fees_taxed: 'feesTaxed',
 }
 let checkFired = []
 /** 20261010_02's CHECKs, one for one. */
@@ -64,6 +68,11 @@ function dbChecks(r) {
   if (r.enabled && ['starterMonthlyMinor', 'proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor', 'platformFeePct']
     .some(k => r[k] === null)) v.push('enabled_needs_prices_chk')
   if (typeof r.name !== 'string' || typeof r.taxLabel !== 'string' || typeof r.cardFeeRegionLabel !== 'string') v.push('not_null')
+  // 20261010_17's three country_settings CHECKs (a NULL passes each), and its NOT NULL booleans.
+  if (!['truck', 'hatchgrab'].includes(r.serviceFeeRecipient)) v.push('service_fee_recipient_chk')
+  if (![r.serviceFeeHatchgrabBps, r.serviceFeeTruckMaxBps].every(x => x === null || (x >= 0 && x <= 10000))) v.push('service_fee_bps_chk')
+  if (![r.serviceFeeHatchgrabFixedMinor, r.serviceFeeTruckMaxFixedMinor].every(x => x === null || x >= 0)) v.push('service_fee_fixed_chk')
+  if (typeof r.platformFeeEnabled !== 'boolean' || typeof r.feesTaxed !== 'boolean') v.push('not_null')
   return v
 }
 function makeStore(seed, trucks) {

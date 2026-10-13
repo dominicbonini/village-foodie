@@ -1,0 +1,343 @@
+{
+ "captured_on": "Phase 3 foundations tree (on checkpoint 3033a53), before any Phase 3 screens edit",
+ "views": {
+  "menu": {
+   "status": 200,
+   "body": {
+    "truck": {
+     "id": "test-truck",
+     "name": "Pizza Kitchen",
+     "money": {
+      "currency": "GBP",
+      "locale": "en-GB"
+     },
+     "time": {
+      "timeZone": "Europe/London",
+      "locale": "en-GB",
+      "timeFormat": "24h",
+      "dateOrder": "dmy",
+      "weekStart": "monday"
+     },
+     "phone": {
+      "phoneCountry": "GB",
+      "short_name": "UK",
+      "phone_example": "07700 900123",
+      "phoneCheck": "length"
+     },
+     "logo": null,
+     "mode": "village",
+     "time_selection_enabled": true,
+     "paused": false,
+     "pauseReason": null,
+     "extra_wait_mins": 0,
+     "plan": "pro",
+     "allergen_info_url": null,
+     "allergen_info_text": null,
+     "allergen_display_mode": null,
+     "preorder_open_rule": null,
+     "ordering_available": true,
+     "card_payments_ready": false,
+     "allergensVerified": true
+    },
+    "menu": {
+     "categories": [],
+     "items": [],
+     "bundles": [],
+     "upsell_rules": []
+    }
+   }
+  },
+  "statusLegacy": {
+   "status": 200,
+   "body": {
+    "id": "17",
+    "status": "confirmed",
+    "customer_name": "Ann Example",
+    "slot": "12:30",
+    "event_date": "2026-10-09",
+    "items": [
+     {
+      "name": "Margherita",
+      "quantity": 2,
+      "unit_price": 12
+     }
+    ],
+    "deals": [],
+    "total": 24,
+    "payment_status": "unpaid",
+    "truck_name": "Pizza Kitchen",
+    "venue_name": "The Green",
+    "allow_cancellation": true,
+    "cancellation_cutoff_mins": 30,
+    "customer_email": "ann@example.test",
+    "requested_slot": "12:30",
+    "asap_estimate": null,
+    "deal_savings": null,
+    "truck_logo": null,
+    "money": {
+     "currency": "GBP",
+     "locale": "en-GB"
+    },
+    "time": {
+     "timeZone": "Europe/London",
+     "locale": "en-GB",
+     "timeFormat": "24h",
+     "dateOrder": "dmy",
+     "weekStart": "monday"
+    }
+   }
+  },
+  "statusSnapshot": {
+   "status": 200,
+   "body": {
+    "id": "17",
+    "status": "confirmed",
+    "customer_name": "Ann Example",
+    "slot": "12:30",
+    "event_date": "2026-10-09",
+    "items": [
+     {
+      "name": "Margherita",
+      "quantity": 2,
+      "unit_price": 12
+     }
+    ],
+    "deals": [],
+    "total": 24,
+    "payment_status": "unpaid",
+    "truck_name": "Pizza Kitchen",
+    "venue_name": "The Green",
+    "allow_cancellation": true,
+    "cancellation_cutoff_mins": 30,
+    "customer_email": "ann@example.test",
+    "requested_slot": "12:30",
+    "asap_estimate": null,
+    "deal_savings": null,
+    "truck_logo": null,
+    "money": {
+     "currency": "GBP",
+     "locale": "en-GB"
+    },
+    "time": {
+     "timeZone": "Europe/London",
+     "locale": "en-GB",
+     "timeFormat": "24h",
+     "dateOrder": "dmy",
+     "weekStart": "monday"
+    }
+   }
+  },
+  "reportLegacy": {
+   "status": 200,
+   "body": {
+    "ok": true,
+    "report": {
+     "totalOrders": 3,
+     "totalRevenue": 45.5,
+     "avgOrder": 15.166666666666666,
+     "topItems": [
+      {
+       "name": "Margherita",
+       "qty": 3,
+       "revenue": 45.5
+      }
+     ],
+     "dealsRedeemed": 1,
+     "dealSavings": 1,
+     "upsellRevenue": 0,
+     "whatsappStats": null,
+     "orders": [
+      {
+       "order_key": "ok-r-1",
+       "id": "1",
+       "customer_name": "Bob",
+       "customer_email": "bob@example.test",
+       "status": "confirmed",
+       "slot": "12:00",
+       "total": 12,
+       "discount_amt": 0,
+       "created_at": "2026-10-09T11:00:00.000Z",
+       "items": [
+        {
+         "name": "Margherita",
+         "quantity": 1,
+         "unit_price": 12
+        }
+       ],
+       "deals": [],
+       "event_date": "2026-10-09",
+       "event_id": "ev1"
+      },
+      {
+       "order_key": "ok-r-2",
+       "id": "2",
+       "customer_name": "Bob",
+       "customer_email": null,
+       "status": "confirmed",
+       "slot": "12:00",
+       "total": 24,
+       "discount_amt": 0,
+       "created_at": "2026-10-09T11:00:00.000Z",
+       "items": [
+        {
+         "name": "Margherita",
+         "quantity": 1,
+         "unit_price": 24
+        }
+       ],
+       "deals": [],
+       "event_date": "2026-10-09",
+       "event_id": "ev1"
+      },
+      {
+       "order_key": "ok-r-3",
+       "id": "3",
+       "customer_name": "Bob",
+       "customer_email": "bob@example.test",
+       "status": "confirmed",
+       "slot": "12:00",
+       "total": 9.5,
+       "discount_amt": 1,
+       "created_at": "2026-10-09T11:00:00.000Z",
+       "items": [
+        {
+         "name": "Margherita",
+         "quantity": 1,
+         "unit_price": 9.5
+        }
+       ],
+       "deals": [],
+       "event_date": "2026-10-09",
+       "event_id": "ev1"
+      }
+     ],
+     "eventsMap": {
+      "ev1": {
+       "venue_name": "The Green",
+       "town": "Testville",
+       "van_id": null
+      }
+     },
+     "eventsByDate": {
+      "2026-10-09": {
+       "venue_name": "The Green",
+       "town": "Testville"
+      }
+     },
+     "itemCategories": {
+      "Margherita": "Pizzas"
+     },
+     "categoryOrder": [
+      "Pizzas"
+     ]
+    }
+   }
+  },
+  "reportSnapshot": {
+   "status": 200,
+   "body": {
+    "ok": true,
+    "report": {
+     "totalOrders": 3,
+     "totalRevenue": 45.5,
+     "avgOrder": 15.166666666666666,
+     "topItems": [
+      {
+       "name": "Margherita",
+       "qty": 3,
+       "revenue": 45.5
+      }
+     ],
+     "dealsRedeemed": 1,
+     "dealSavings": 1,
+     "upsellRevenue": 0,
+     "whatsappStats": null,
+     "orders": [
+      {
+       "order_key": "ok-r-1",
+       "id": "1",
+       "customer_name": "Bob",
+       "customer_email": "bob@example.test",
+       "status": "confirmed",
+       "slot": "12:00",
+       "total": 12,
+       "discount_amt": 0,
+       "created_at": "2026-10-09T11:00:00.000Z",
+       "items": [
+        {
+         "name": "Margherita",
+         "quantity": 1,
+         "unit_price": 12
+        }
+       ],
+       "deals": [],
+       "event_date": "2026-10-09",
+       "event_id": "ev1"
+      },
+      {
+       "order_key": "ok-r-2",
+       "id": "2",
+       "customer_name": "Bob",
+       "customer_email": null,
+       "status": "confirmed",
+       "slot": "12:00",
+       "total": 24,
+       "discount_amt": 0,
+       "created_at": "2026-10-09T11:00:00.000Z",
+       "items": [
+        {
+         "name": "Margherita",
+         "quantity": 1,
+         "unit_price": 24
+        }
+       ],
+       "deals": [],
+       "event_date": "2026-10-09",
+       "event_id": "ev1"
+      },
+      {
+       "order_key": "ok-r-3",
+       "id": "3",
+       "customer_name": "Bob",
+       "customer_email": "bob@example.test",
+       "status": "confirmed",
+       "slot": "12:00",
+       "total": 9.5,
+       "discount_amt": 1,
+       "created_at": "2026-10-09T11:00:00.000Z",
+       "items": [
+        {
+         "name": "Margherita",
+         "quantity": 1,
+         "unit_price": 9.5
+        }
+       ],
+       "deals": [],
+       "event_date": "2026-10-09",
+       "event_id": "ev1"
+      }
+     ],
+     "eventsMap": {
+      "ev1": {
+       "venue_name": "The Green",
+       "town": "Testville",
+       "van_id": null
+      }
+     },
+     "eventsByDate": {
+      "2026-10-09": {
+       "venue_name": "The Green",
+       "town": "Testville"
+      }
+     },
+     "itemCategories": {
+      "Margherita": "Pizzas"
+     },
+     "categoryOrder": [
+      "Pizzas"
+     ]
+    }
+   }
+  }
+ }
+}

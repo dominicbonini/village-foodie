@@ -55,6 +55,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { toMinor, fromMinor } from '@/lib/order-repricing'
 import { ledgerCurrency } from '@/lib/payments/currency'
+import { chargesForHatchSwitch, ORDER_CHARGE_COLUMNS, type StoredCharges } from '@/lib/order-charges'
 
 export type PaymentKind = 'charge' | 'refund'
 export type PaymentChannel = 'online' | 'in_person_stripe' | 'in_person_other'
@@ -463,15 +464,43 @@ async function annotateTestAccountRows(supabase: SupabaseClient, rows: LedgerRow
   )
 }
 
-async function readOrder(supabase: SupabaseClient, orderKey: string): Promise<BalanceableOrder & { currency?: string | null }> {
+type LedgerOrder = BalanceableOrder & { currency?: string | null } & StoredCharges
+
+async function readOrder(supabase: SupabaseClient, orderKey: string): Promise<LedgerOrder> {
   const { data, error } = await supabase
     .from('orders')
     // `currency` (20261010_07): an in-person collection is booked in the ORDER's currency, not the truck's.
-    .select('total, total_minor, currency')
+    // The Phase 3 snapshot (20261010_17) rides on the same read, for the pay-at-the-truck switch below —
+    // a NAMED select, so that migration must run first.
+    .select(['total', 'total_minor', 'currency', ...ORDER_CHARGE_COLUMNS].join(', '))
     .eq('order_key', orderKey)
     .single()
   if (error || !data) throw new Error(`[ledger] could not read order ${orderKey}: ${error?.message ?? 'not found'}`)
-  return data as BalanceableOrder & { currency?: string | null }
+  return data as unknown as LedgerOrder
+}
+
+/**
+ * 🔴 THE PAY-AT-THE-TRUCK SWITCH (Phase 3, D25). An online card order whose hold was released and that is
+ * now being paid at the hatch must not be charged its ONLINE-only amounts there — the service fee, the
+ * card surcharge and the online tip — so it is re-priced first (lib/order-charges chargesForHatchSwitch)
+ * and the in-person payment collects the re-priced balance.
+ * ⚠️ ONLY WHEN NOTHING HAS BEEN PAID. A captured card order has nothing to switch; a live hold never gets
+ * here (both callers skip or refuse a held order first).
+ * 🔴 GB, AND EVERY WALK-UP: there is nothing to drop, and NOTHING IS WRITTEN.
+ * Returns the order as re-priced, or null when it was left alone.
+ */
+async function switchToHatchCharges(supabase: SupabaseClient, orderKey: string, order: LedgerOrder): Promise<LedgerOrder | null> {
+  const re = chargesForHatchSwitch(order)
+  if (!re) return null
+  const patch = { total: re.totalMinor / 100, total_minor: re.totalMinor, ...re.snapshot }
+  const { error } = await supabase.from('orders').update(patch).eq('order_key', orderKey)
+  if (error) throw new Error(`[ledger] could not drop the online charges from ${orderKey} before taking payment at the truck: ${error.message}`)
+  console.log(
+    `[ledger] order_key=${orderKey} paid at the truck after its card hold was released — online charges dropped: ` +
+    `total_minor ${orderTotalMinor(order)} → ${re.totalMinor} (tip ${order.tip_minor ?? 0}, service fee ${order.service_fee_minor ?? 0}, ` +
+    `surcharge ${order.card_surcharge_minor ?? 0} → 0)`,
+  )
+  return { ...order, ...patch }
 }
 
 /**
@@ -630,8 +659,14 @@ export async function recordCollectionPayment(
   supabase: SupabaseClient,
   opts: { orderKey: string; truckId: string; createdBy?: string | null; method?: PaymentMethod | null },
 ): Promise<{ inserted: boolean; balance: OrderBalance; chargedMinor: number }> {
-  const [order, rows] = await Promise.all([readOrder(supabase, opts.orderKey), readLedger(supabase, opts.orderKey)])
-  const before = getOrderBalance(order, rows)
+  const [read, rows] = await Promise.all([readOrder(supabase, opts.orderKey), readLedger(supabase, opts.orderKey)])
+  let order = read
+  let before = getOrderBalance(order, rows)
+  // Phase 3: nothing paid yet → drop any online-only charges before the hatch collects (D25).
+  if (before.paidMinor === 0 && before.balanceMinor > 0) {
+    const switched = await switchToHatchCharges(supabase, opts.orderKey, order)
+    if (switched) { order = switched; before = getOrderBalance(order, rows) }
+  }
 
   // Nothing outstanding (already settled, or a replay whose row is present): recalc so the cache is
   // correct and return without inserting a zero/negative row the CHECK would reject anyway.

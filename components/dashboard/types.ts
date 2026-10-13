@@ -30,6 +30,20 @@ export type OrderStatus = typeof ORDER_STATUS[keyof typeof ORDER_STATUS]
 export interface Order {
   /** Per-event display number ("Order #5"). Human-facing only — never a lookup key. */
   id: string
+  /** Phase 3: the charges snapshot (20261010_17/_18), as `select('*')` delivers it. All optional — an
+   *  order from before Phase 3, and an optimistic offline one, may have none. Read through
+   *  lib/order-charge-lines.ts and lib/order-charges.ts, never summed by hand. */
+  food_minor?: number | null
+  tax_minor?: number | null
+  tax_rate_milli?: number | null
+  tax_inclusive?: boolean | null
+  tax_label?: string | null
+  tip_minor?: number | null
+  tip_pct_bps?: number | null
+  service_fee_minor?: number | null
+  service_fee_recipient?: string | null
+  card_surcharge_minor?: number | null
+  card_fee_payer?: string | null
   /** UUID row identity. Every lookup, update, React key, action payload. */
   order_key: string
   customer_name: string
@@ -122,6 +136,10 @@ export const DEFAULT_SOUND_CONFIG: SoundConfig = { new_orders: 'needs_confirming
 export interface TruckData {
   /** ISO 4217, upper case — trucks.currency, carried by /api/dashboard's spread-and-redact projection. */
   currency?: string
+  /** Phase 3 screens: the truck's tax, tip and fee rules (lib/order-charges.ts `CheckoutRules`), sent by
+   *  /api/dashboard ONLY when one applies — never for a UK truck. Feeds the offline walk-up total and the
+   *  edit preview, both through the pure engine. */
+  charge_rules?: import('@/lib/order-charges').CheckoutRules
   /** trucks.country. */
   country?: string
   /** 🔴 THE MONEY FORMAT, from /api/dashboard: the truck's {currency, locale} plus the locale of every

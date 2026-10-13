@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { resolveTruckLogo } from '@/lib/truck-logo'
 import { moneyFormatForOrder } from '@/lib/money-server'
 import { truckTimeSettings } from '@/lib/truck-time'
+import { chargesForResponse } from '@/lib/order-charge-lines'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -47,6 +48,14 @@ export async function GET(
       truck_id,
       currency,
       country,
+      food_minor,
+      tax_minor,
+      tax_rate_milli,
+      tax_label,
+      tip_minor,
+      tip_pct_bps,
+      service_fee_minor,
+      card_surcharge_minor,
       trucks!truck_id (
         name,
         slug,
@@ -136,5 +145,8 @@ export async function GET(
     // 🔴 THE ORDER'S OWN currency (orders.currency) and its country's locale — {currency, locale} only.
     money: await moneyFormatForOrder(order),
     time,
+    // Phase 3 screens: the tax, fee and tip lines' source — a key only when there is a line to draw, so a
+    // UK order's response is unchanged. (Named select: needs 20261010_17 and _18.)
+    ...(chargesForResponse(order as unknown as Record<string, unknown>) ? { charges: chargesForResponse(order as unknown as Record<string, unknown>) } : {}),
   })
 }

@@ -1,0 +1,935 @@
+{
+ "captured_on": "checkpoint 3033a53",
+ "now": "2026-10-09T11:00:00.000Z",
+ "scenarios": {
+  "submit_hatch": {
+   "out": {
+    "status": 200,
+    "body": {
+     "success": true,
+     "orderId": "41",
+     "orderKey": "ok-hatch-1",
+     "truckName": "Pizza Kitchen",
+     "slot": "12:00",
+     "requestedSlot": "12:00",
+     "autoAccepted": true,
+     "slotChanged": false,
+     "total": 23.8
+    }
+   },
+   "rpcs": [
+    {
+     "fn": "place_order_atomic",
+     "args": {
+      "p_order": {
+       "customer_name": "Ann Example",
+       "customer_email": "ann@example.test",
+       "customer_phone": "07700900000",
+       "order_type": "collection",
+       "items": [
+        {
+         "name": "Margherita",
+         "quantity": 2,
+         "unit_price": 10.7,
+         "modifiers": [
+          {
+           "name": "Extra cheese",
+           "price": 1.2
+          }
+         ]
+        },
+        {
+         "name": "Lemonade",
+         "quantity": 1,
+         "unit_price": 2.4
+        }
+       ],
+       "deals": [],
+       "discount_code": null,
+       "subtotal": 23.799999999999997,
+       "discount_amt": 0,
+       "total": 23.8,
+       "notes": null,
+       "van_id": null,
+       "payment_status": "unpaid"
+      },
+      "p_final_slot": "12:00",
+      "p_status": "confirmed",
+      "p_event_id": "ev1",
+      "p_truck_id": "test-truck",
+      "p_event_date": "2026-10-09",
+      "p_unit_rows": [
+       {
+        "production_slot": "12:00",
+        "units_by_cat": {
+         "pizzas": 2,
+         "drinks": 1
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "writes": [
+    {
+     "table": "orders",
+     "op": "update",
+     "patch": {
+      "requested_slot": "12:00",
+      "asap_estimate": null
+     },
+     "ids": [
+      "41"
+     ]
+    }
+   ],
+   "emails": [
+    {
+     "to": "kitchen@example.test",
+     "subject": "🔔 New order #41 — Ann Example · 12:00",
+     "html": "<body style=\"font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px\">\n            <h2 style=\"color:#ea580c;margin:0 0 12px\">🔔 New order received</h2>\n            <p><strong>Order #41</strong> from <strong>Ann Example</strong></p>\n            <p style=\"font-size:16px\"><strong>⏰ Collection: 12:00</strong></p>\n            <p>📍 The Green, Testville, AB1 2CD</p>\n            <p>📞 <a href=\"tel:07700900000\">07700900000</a></p>\n            <table style=\"width:100%;border-collapse:collapse;font-size:14px;margin:12px 0\">\n              <tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">2× Margherita</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£21.40</td>\n    </tr><tr><td colspan=\"2\" style=\"padding:1px 0 1px 16px;font-size:12px;color:#64748b\">+ Extra cheese <span style=\"color:#ea580c\">+£1.20</span></td></tr><tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">1× Lemonade</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£2.40</td>\n    </tr>\n              <tr style=\"border-top:2px solid #e2e8f0\">\n                <td style=\"padding-top:8px;font-weight:800\">Total</td>\n                <td style=\"text-align:right;padding-top:8px;font-weight:800\">£23.80</td>\n              </tr>\n            </table>\n            \n            <p style=\"color:#16a34a;font-size:13px;font-weight:600;margin-top:16px\">✓ Auto-confirmed — no action needed.</p>\n          </body>",
+     "text": "New order #41 from Ann Example for 12:00 at The Green, Testville. Total £23.80.",
+     "senderName": "HatchGrab",
+     "truckName": null
+    },
+    {
+     "to": "ann@example.test",
+     "subject": "Order #41 confirmed",
+     "html": "<!DOCTYPE html>\n<html>\n<body style=\"font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#1e293b;background:#ffffff\">\n\n  <div style=\"text-align:center;padding:20px 0 16px\">\n    <div style=\"width:56px;height:56px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;line-height:56px\">✓</div>\n    <h1 style=\"font-size:22px;font-weight:800;margin:0 0 4px\">Order confirmed!</h1>\n    <p style=\"color:#64748b;margin:0;font-size:14px\">Thanks! We've received your order and we're getting it ready.</p>\n  </div>\n\n  \n    <div style=\"background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center\">\n      <p style=\"margin:0;color:#166534\">\n        <strong style=\"font-size:17px\">Collection time: 12:00</strong><br><span style=\"font-size:13px;opacity:0.85\">See you at the hatch!</span>\n      </p>\n    </div>\n\n  <div style=\"background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:12px\">\n    <p style=\"margin:0 0 10px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em\">Order #41</p>\n    <table style=\"width:100%;border-collapse:collapse;font-size:14px\">\n      <tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">2× Margherita</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£21.40</td>\n    </tr><tr><td colspan=\"2\" style=\"padding:1px 0 1px 16px;font-size:12px;color:#64748b\">+ Extra cheese <span style=\"color:#ea580c\">+£1.20</span></td></tr><tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">1× Lemonade</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£2.40</td>\n    </tr>\n      \n      <tr style=\"border-top:1px solid #e2e8f0\">\n        <td style=\"padding-top:10px;font-weight:800;font-size:15px\">Total</td>\n        <td style=\"text-align:right;padding-top:10px;font-weight:800;font-size:15px\">£23.80</td>\n      </tr>\n    </table>\n  </div>\n\n  \n\n  <p style=\"margin:12px 0 0;font-size:14px;color:#475569\">📍 The Green, Testville, AB1 2CD</p>\n\n  <div style=\"background:#f1f5f9;border-radius:10px;padding:16px;margin-top:12px;text-align:center\">\n    <p style=\"margin:0;font-size:16px;font-weight:800;color:#1e293b\">Pay at the truck on collection</p>\n  </div>\n\n  \n\n  \n    <div style=\"margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0\">\n      <p style=\"margin:0;font-size:12px;color:#94a3b8\">\n        Need to cancel?\n        <a href=\"https://www.hatchgrab.com/order/ok-hatch-1/manage\" style=\"color:#ea580c;margin-left:4px\">Cancel your order</a>\n        (up to 30 minutes before your pickup time)\n      </p>\n    </div>\n\n  <p style=\"text-align:center;margin-top:20px;font-size:11px;color:#94a3b8\">\n    Powered by <a href=\"https://hatchgrab.com\" style=\"color:#ea580c;text-decoration:none;font-weight:700\">HatchGrab</a>\n  </p>\n\n</body>\n</html>",
+     "text": "Order #41 confirmed — Pizza Kitchen\n2x Margherita — £21.40\n  + Extra cheese +£1.20\n1x Lemonade — £2.40\nTotal: £23.80\nCollection time: 12:00. See you at the hatch!\nPay at the truck on collection.\n📍 The Green, Testville, AB1 2CD\nPowered by HatchGrab — hatchgrab.com",
+     "senderName": null,
+     "truckName": "Pizza Kitchen"
+    }
+   ],
+   "push": [],
+   "auth": [],
+   "capture": [
+    {
+     "orderKey": "ok-hatch-1",
+     "truckId": "test-truck",
+     "trigger": "auto_accept"
+    }
+   ]
+  },
+  "submit_hatch_code": {
+   "out": {
+    "status": 200,
+    "body": {
+     "success": true,
+     "orderId": "41",
+     "orderKey": "ok-hatch-1",
+     "truckName": "Pizza Kitchen",
+     "slot": "12:00",
+     "requestedSlot": "12:00",
+     "autoAccepted": false,
+     "slotChanged": false,
+     "total": 31.32
+    }
+   },
+   "rpcs": [
+    {
+     "fn": "place_order_atomic",
+     "args": {
+      "p_order": {
+       "customer_name": "Ann Example",
+       "customer_email": "ann@example.test",
+       "customer_phone": "07700900000",
+       "order_type": "collection",
+       "items": [
+        {
+         "name": "Margherita",
+         "quantity": 2,
+         "unit_price": 10.7,
+         "modifiers": [
+          {
+           "name": "Extra cheese",
+           "price": 1.2
+          }
+         ]
+        },
+        {
+         "name": "Lemonade",
+         "quantity": 1,
+         "unit_price": 2.4
+        }
+       ],
+       "deals": [
+        {
+         "name": "Meal Deal",
+         "quantity": 1,
+         "price": 11,
+         "slots": {
+          "Pizza": "Pepperoni",
+          "Drink": "Lemonade"
+         },
+         "slotModifiers": {}
+        }
+       ],
+       "discount_code": "tenoff",
+       "subtotal": 34.8,
+       "discount_amt": 3.48,
+       "total": 31.32,
+       "notes": "No basil please",
+       "van_id": null,
+       "payment_status": "unpaid"
+      },
+      "p_final_slot": "12:00",
+      "p_status": "pending",
+      "p_event_id": "ev1",
+      "p_truck_id": "test-truck",
+      "p_event_date": "2026-10-09",
+      "p_unit_rows": [
+       {
+        "production_slot": "12:00",
+        "units_by_cat": {
+         "pizzas": 3,
+         "drinks": 2
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "writes": [
+    {
+     "table": "orders",
+     "op": "update",
+     "patch": {
+      "requested_slot": "12:00",
+      "asap_estimate": null
+     },
+     "ids": [
+      "41"
+     ]
+    }
+   ],
+   "emails": [
+    {
+     "to": "kitchen@example.test",
+     "subject": "🔔 New order #41 — Ann Example · 12:00",
+     "html": "<body style=\"font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px\">\n            <h2 style=\"color:#ea580c;margin:0 0 12px\">🔔 New order received</h2>\n            <p><strong>Order #41</strong> from <strong>Ann Example</strong></p>\n            <p style=\"font-size:16px\"><strong>⏰ Collection: 12:00</strong></p>\n            <p>📍 The Green, Testville, AB1 2CD</p>\n            <p>📞 <a href=\"tel:07700900000\">07700900000</a></p>\n            <table style=\"width:100%;border-collapse:collapse;font-size:14px;margin:12px 0\">\n              <tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">2× Margherita</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£21.40</td>\n    </tr><tr><td colspan=\"2\" style=\"padding:1px 0 1px 16px;font-size:12px;color:#64748b\">+ Extra cheese <span style=\"color:#ea580c\">+£1.20</span></td></tr><tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">1× Lemonade</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£2.40</td>\n    </tr><tr><td style=\"padding:4px 0 2px;color:#d97706;font-size:13px\">🎁 Meal Deal: Pepperoni, Lemonade</td><td style=\"text-align:right;padding:4px 0 2px;color:#d97706;font-weight:500\">£11.00</td></tr>\n              <tr style=\"border-top:2px solid #e2e8f0\">\n                <td style=\"padding-top:8px;font-weight:800\">Total</td>\n                <td style=\"text-align:right;padding-top:8px;font-weight:800\">£31.32</td>\n              </tr>\n            </table>\n            <p><strong>📝 Notes:</strong> No basil please</p>\n            <p style=\"color:#64748b;font-size:12px;margin-top:16px\">Log in to your HatchGrab dashboard to confirm or reject this order.</p>\n          </body>",
+     "text": "New order #41 from Ann Example for 12:00 at The Green, Testville. Total £31.32. Notes: No basil please",
+     "senderName": "HatchGrab",
+     "truckName": null
+    },
+    {
+     "to": "ann@example.test",
+     "subject": "Order #41 received",
+     "html": "<!DOCTYPE html>\n<html>\n<body style=\"font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#1e293b;background:#ffffff\">\n\n  <div style=\"text-align:center;padding:20px 0 16px\">\n    <div style=\"width:56px;height:56px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;line-height:56px\">✓</div>\n    <h1 style=\"font-size:22px;font-weight:800;margin:0 0 4px\">Order received!</h1>\n    <p style=\"color:#64748b;margin:0;font-size:14px\">Thanks! We've received your order — we'll let you know once it's confirmed.</p>\n  </div>\n\n  \n    <div style=\"background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center\">\n      <p style=\"margin:0;color:#92400e\">\n        <strong style=\"font-size:16px\">Preferred collection time: 12:00</strong><br><span style=\"font-size:13px;opacity:0.85\">We'll confirm your collection time when we accept your order.</span>\n      </p>\n    </div>\n\n  <div style=\"background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:12px\">\n    <p style=\"margin:0 0 10px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em\">Order #41</p>\n    <table style=\"width:100%;border-collapse:collapse;font-size:14px\">\n      <tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">2× Margherita</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£21.40</td>\n    </tr><tr><td colspan=\"2\" style=\"padding:1px 0 1px 16px;font-size:12px;color:#64748b\">+ Extra cheese <span style=\"color:#ea580c\">+£1.20</span></td></tr><tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">1× Lemonade</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£2.40</td>\n    </tr><tr><td style=\"padding:4px 0 2px;color:#d97706;font-size:13px\">🎁 Meal Deal: Pepperoni, Lemonade</td><td style=\"text-align:right;padding:4px 0 2px;color:#d97706;font-weight:500\">£11.00</td></tr>\n      \n      <tr style=\"border-top:1px solid #e2e8f0\">\n        <td style=\"padding-top:10px;font-weight:800;font-size:15px\">Total</td>\n        <td style=\"text-align:right;padding-top:10px;font-weight:800;font-size:15px\">£31.32</td>\n      </tr>\n    </table>\n  </div>\n\n  \n    <div style=\"margin-top:12px;padding:10px;background:#f8fafc;border-radius:8px;font-size:13px;color:#64748b\">\n      <strong>Special instructions:</strong> No basil please\n    </div>\n\n  <p style=\"margin:12px 0 0;font-size:14px;color:#475569\">📍 The Green, Testville, AB1 2CD</p>\n\n  <div style=\"background:#f1f5f9;border-radius:10px;padding:16px;margin-top:12px;text-align:center\">\n    <p style=\"margin:0;font-size:16px;font-weight:800;color:#1e293b\">Pay at the truck on collection</p>\n  </div>\n\n  \n\n  \n    <div style=\"margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0\">\n      <p style=\"margin:0;font-size:12px;color:#94a3b8\">\n        Need to cancel?\n        <a href=\"https://www.hatchgrab.com/order/ok-hatch-1/manage\" style=\"color:#ea580c;margin-left:4px\">Cancel your order</a>\n        (up to 30 minutes before your pickup time)\n      </p>\n    </div>\n\n  <p style=\"text-align:center;margin-top:20px;font-size:11px;color:#94a3b8\">\n    Powered by <a href=\"https://hatchgrab.com\" style=\"color:#ea580c;text-decoration:none;font-weight:700\">HatchGrab</a>\n  </p>\n\n</body>\n</html>",
+     "text": "Order #41 received — Pizza Kitchen\n2x Margherita — £21.40\n  + Extra cheese +£1.20\n1x Lemonade — £2.40\n🎁 Meal Deal: Pepperoni, Lemonade — £11.00\nTotal: £31.32\nPreferred collection: 12:00 — we'll confirm when we accept your order.\nNotes: No basil please\nPay at the truck on collection.\n📍 The Green, Testville, AB1 2CD\nPowered by HatchGrab — hatchgrab.com",
+     "senderName": null,
+     "truckName": "Pizza Kitchen"
+    }
+   ],
+   "push": [],
+   "auth": [],
+   "capture": []
+  },
+  "submit_card_then_promote": {
+   "out": {
+    "submit": {
+     "status": 200,
+     "body": {
+      "requiresAuthorization": true,
+      "orderKey": "00000000-0000-4000-8000-000000000001",
+      "clientSecret": "cs_harness",
+      "stripeAccount": "acct_harness",
+      "total": 23.8
+     }
+    },
+    "promote": {
+     "status": "promoted",
+     "orderKey": "00000000-0000-4000-8000-000000000001",
+     "orderId": "41",
+     "truckSlug": "test-kitchen",
+     "confirmedSlot": "12:00"
+    }
+   },
+   "rpcs": [
+    {
+     "fn": "increment_event_order_counter",
+     "args": {
+      "p_event_id": "ev1"
+     }
+    }
+   ],
+   "writes": [
+    {
+     "table": "order_drafts",
+     "op": "delete",
+     "ids": []
+    },
+    {
+     "table": "order_drafts",
+     "op": "insert",
+     "row": {
+      "order_key": "00000000-0000-4000-8000-000000000001",
+      "truck_id": "test-truck",
+      "event_id": "ev1",
+      "van_id": null,
+      "event_date": "2026-10-09",
+      "requested_slot": "12:00",
+      "order_type": "collection",
+      "table_ref": null,
+      "customer_name": "Ann Example",
+      "customer_email": "ann@example.test",
+      "customer_phone": "07700900000",
+      "items": [
+       {
+        "name": "Margherita",
+        "quantity": 2,
+        "unit_price": 10.7,
+        "modifiers": [
+         {
+          "name": "Extra cheese",
+          "price": 1.2
+         }
+        ]
+       },
+       {
+        "name": "Lemonade",
+        "quantity": 1,
+        "unit_price": 2.4
+       }
+      ],
+      "deals": [],
+      "extras": null,
+      "bundle": null,
+      "notes": null,
+      "discount_code": null,
+      "asap_estimate": null,
+      "upsell_events": null,
+      "subtotal": 23.799999999999997,
+      "discount_amt": 0,
+      "total": 23.8,
+      "total_minor": 2380,
+      "currency": "GBP"
+     },
+     "id": "order_drafts-new-1"
+    },
+    {
+     "table": "order_drafts",
+     "op": "update",
+     "patch": {
+      "promoted_at": "2026-10-09T11:00:00.000Z"
+     },
+     "ids": [
+      "order_drafts-new-1"
+     ]
+    },
+    {
+     "table": "orders",
+     "op": "insert",
+     "row": {
+      "order_key": "00000000-0000-4000-8000-000000000001",
+      "id": "41",
+      "truck_id": "test-truck",
+      "customer_name": "Ann Example",
+      "customer_email": "ann@example.test",
+      "customer_phone": "07700900000",
+      "order_type": "collection",
+      "table_ref": null,
+      "slot": "12:00",
+      "requested_slot": "12:00",
+      "asap_estimate": null,
+      "event_date": "2026-10-09",
+      "event_id": "ev1",
+      "van_id": null,
+      "items": [
+       {
+        "name": "Margherita",
+        "quantity": 2,
+        "unit_price": 10.7,
+        "modifiers": [
+         {
+          "name": "Extra cheese",
+          "price": 1.2
+         }
+        ]
+       },
+       {
+        "name": "Lemonade",
+        "quantity": 1,
+        "unit_price": 2.4
+       }
+      ],
+      "deals": [],
+      "extras": null,
+      "bundle": null,
+      "discount_code": null,
+      "subtotal": 23.799999999999997,
+      "discount_amt": 0,
+      "total": 23.8,
+      "total_minor": 2380,
+      "currency": "GBP",
+      "notes": null,
+      "status": "confirmed",
+      "payment_status": "unpaid",
+      "placed_at": "2026-10-09T11:00:00.000Z"
+     },
+     "id": "41"
+    },
+    {
+     "table": "order_drafts",
+     "op": "update",
+     "patch": {
+      "customer_name": null,
+      "customer_email": null,
+      "customer_phone": null
+     },
+     "ids": [
+      "order_drafts-new-1"
+     ]
+    },
+    {
+     "table": "production_slot_usage",
+     "op": "delete",
+     "ids": []
+    },
+    {
+     "table": "production_slot_usage",
+     "op": "upsert-insert",
+     "row": {
+      "truck_id": "test-truck",
+      "event_id": "ev1",
+      "event_date": "2026-10-09",
+      "production_slot": "12:00",
+      "units_by_cat": {
+       "pizzas": 2,
+       "drinks": 1
+      },
+      "updated_at": "2026-10-09T11:00:00.000Z"
+     },
+     "id": "production_slot_usage-new-3"
+    }
+   ],
+   "emails": [
+    {
+     "to": "ann@example.test",
+     "subject": "Order #41 confirmed",
+     "html": "<!DOCTYPE html>\n<html>\n<body style=\"font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#1e293b;background:#ffffff\">\n\n  <div style=\"text-align:center;padding:20px 0 16px\">\n    <div style=\"width:56px;height:56px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;line-height:56px\">✓</div>\n    <h1 style=\"font-size:22px;font-weight:800;margin:0 0 4px\">Order confirmed!</h1>\n    <p style=\"color:#64748b;margin:0;font-size:14px\">Thanks! We've received your order and we're getting it ready.</p>\n  </div>\n\n  \n    <div style=\"background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center\">\n      <p style=\"margin:0;color:#166534\">\n        <strong style=\"font-size:17px\">Collection time: 12:00</strong><br><span style=\"font-size:13px;opacity:0.85\">See you at the hatch!</span>\n      </p>\n    </div>\n\n  <div style=\"background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:12px\">\n    <p style=\"margin:0 0 10px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em\">Order #41</p>\n    <table style=\"width:100%;border-collapse:collapse;font-size:14px\">\n      <tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">2× Margherita</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£21.40</td>\n    </tr><tr><td colspan=\"2\" style=\"padding:1px 0 1px 16px;font-size:12px;color:#64748b\">+ Extra cheese <span style=\"color:#ea580c\">+£1.20</span></td></tr><tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">1× Lemonade</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£2.40</td>\n    </tr>\n      \n      <tr style=\"border-top:1px solid #e2e8f0\">\n        <td style=\"padding-top:10px;font-weight:800;font-size:15px\">Total</td>\n        <td style=\"text-align:right;padding-top:10px;font-weight:800;font-size:15px\">£23.80</td>\n      </tr>\n    </table>\n  </div>\n\n  \n\n  <p style=\"margin:12px 0 0;font-size:14px;color:#475569\">📍 The Green, Testville, AB1 2CD</p>\n\n  <div style=\"background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:16px;margin-top:12px;text-align:center\">\n    <p style=\"margin:0;font-size:16px;font-weight:800;color:#3730a3\">Your card is held, not charged</p>\n    <p style=\"margin:6px 0 0;font-size:13px;color:#4f46e5\">Pizza Kitchen takes the payment when they confirm your order. Nothing to pay at the truck.</p>\n  </div>\n\n  \n\n  \n    <div style=\"margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0\">\n      <p style=\"margin:0;font-size:12px;color:#94a3b8\">\n        Need to cancel?\n        <a href=\"https://www.hatchgrab.com/order/00000000-0000-4000-8000-000000000001/manage\" style=\"color:#ea580c;margin-left:4px\">Cancel your order</a>\n        (up to 30 minutes before your pickup time)\n      </p>\n    </div>\n\n  <p style=\"text-align:center;margin-top:20px;font-size:11px;color:#94a3b8\">\n    Powered by <a href=\"https://hatchgrab.com\" style=\"color:#ea580c;text-decoration:none;font-weight:700\">HatchGrab</a>\n  </p>\n\n</body>\n</html>",
+     "text": "Order #41 confirmed — Pizza Kitchen\n2x Margherita — £21.40\n  + Extra cheese +£1.20\n1x Lemonade — £2.40\nTotal: £23.80\nCollection time: 12:00. See you at the hatch!\nYour card is held, not charged. Pizza Kitchen takes the payment when they confirm your order — nothing to pay at the truck.\n📍 The Green, Testville, AB1 2CD\nPowered by HatchGrab — hatchgrab.com",
+     "senderName": null,
+     "truckName": "Pizza Kitchen"
+    },
+    {
+     "to": "kitchen@example.test",
+     "subject": "🔔 New order #41 — Ann Example · 12:00",
+     "html": "<body style=\"font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px\">\n            <h2 style=\"color:#ea580c;margin:0 0 12px\">🔔 New order received</h2>\n            <p><strong>Order #41</strong> from <strong>Ann Example</strong></p>\n            <p style=\"font-size:16px\"><strong>⏰ Collection: 12:00</strong></p>\n            <p>📍 The Green, Testville, AB1 2CD</p>\n            <p>📞 <a href=\"tel:07700900000\">07700900000</a></p>\n            <table style=\"width:100%;border-collapse:collapse;font-size:14px;margin:12px 0\">\n              <tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">2× Margherita</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£21.40</td>\n    </tr><tr><td colspan=\"2\" style=\"padding:1px 0 1px 16px;font-size:12px;color:#64748b\">+ Extra cheese <span style=\"color:#ea580c\">+£1.20</span></td></tr><tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">1× Lemonade</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£2.40</td>\n    </tr>\n              <tr style=\"border-top:2px solid #e2e8f0\">\n                <td style=\"padding-top:8px;font-weight:800\">Total</td>\n                <td style=\"text-align:right;padding-top:8px;font-weight:800\">£23.80</td>\n              </tr>\n            </table>\n            \n            <p style=\"color:#16a34a;font-size:13px;font-weight:600;margin-top:16px\">✓ Auto-confirmed — no action needed.</p>\n          </body>",
+     "text": "New order #41 from Ann Example for 12:00 at The Green, Testville. Total £23.80.",
+     "senderName": "HatchGrab",
+     "truckName": null
+    }
+   ],
+   "push": [],
+   "auth": [
+    {
+     "orderKey": "00000000-0000-4000-8000-000000000001",
+     "truckId": "test-truck",
+     "amountMinor": 2380,
+     "currency": "GBP"
+    }
+   ],
+   "capture": [
+    {
+     "orderKey": "00000000-0000-4000-8000-000000000001",
+     "truckId": "test-truck",
+     "trigger": "promote_auto_accept"
+    }
+   ]
+  },
+  "walkup": {
+   "out": {
+    "status": 200,
+    "body": {
+     "success": true,
+     "orderId": "77",
+     "autoConfirmed": true
+    }
+   },
+   "rpcs": [],
+   "writes": [
+    {
+     "table": "orders",
+     "op": "upsert-insert",
+     "row": {
+      "id": "77",
+      "truck_id": "test-truck",
+      "customer_name": "Walk-up",
+      "customer_phone": null,
+      "customer_email": null,
+      "slot": "13:00",
+      "order_type": "collection",
+      "event_date": "2026-10-09",
+      "event_id": "ev1",
+      "items": [
+       {
+        "name": "Pepperoni",
+        "quantity": 2,
+        "unit_price": 10.75
+       },
+       {
+        "name": "Lemonade",
+        "quantity": 1,
+        "unit_price": 2,
+        "price_override": 2,
+        "book_price": 2.4
+       }
+      ],
+      "deals": null,
+      "discount_code": null,
+      "subtotal": 23.5,
+      "discount_amt": 0,
+      "total": 23.5,
+      "deal_savings": null,
+      "total_minor": 2350,
+      "capacity_ack_at": null,
+      "notes": null,
+      "status": "confirmed",
+      "source": "manual",
+      "payment_status": "unpaid",
+      "placed_at": null,
+      "buzzer_number": null,
+      "order_key": "ok-walk-1"
+     },
+     "id": "77"
+    },
+    {
+     "table": "production_slot_usage",
+     "op": "delete",
+     "ids": []
+    },
+    {
+     "table": "production_slot_usage",
+     "op": "upsert-insert",
+     "row": {
+      "truck_id": "test-truck",
+      "event_id": "ev1",
+      "event_date": "2026-10-09",
+      "production_slot": "13:00",
+      "units_by_cat": {
+       "pizzas": 2,
+       "drinks": 1
+      },
+      "updated_at": "2026-10-09T11:00:00.000Z"
+     },
+     "id": "production_slot_usage-new-2"
+    }
+   ],
+   "emails": [
+    {
+     "to": "kitchen@example.test",
+     "subject": "🔔 New order #77 — Walk-up · 13:00",
+     "html": "<body style=\"font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px\">\n            <h2 style=\"color:#ea580c;margin:0 0 12px\">🔔 New order received</h2>\n            <p><strong>Order #77</strong> from <strong>Walk-up</strong></p>\n            <p style=\"font-size:16px\"><strong>⏰ Collection: 13:00</strong></p>\n            <p>📍 The Green, Testville, AB1 2CD</p>\n            \n            <table style=\"width:100%;border-collapse:collapse;font-size:14px;margin:12px 0\">\n              <tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">2× Pepperoni</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£21.50</td>\n    </tr><tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">1× Lemonade</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£2.00</td>\n    </tr>\n              <tr style=\"border-top:2px solid #e2e8f0\">\n                <td style=\"padding-top:8px;font-weight:800\">Total</td>\n                <td style=\"text-align:right;padding-top:8px;font-weight:800\">£23.50</td>\n              </tr>\n            </table>\n            \n            <p style=\"color:#16a34a;font-size:13px;font-weight:600;margin-top:16px\">✓ Auto-confirmed — no action needed.</p>\n          </body>",
+     "text": "New order #77 from Walk-up for 13:00 at The Green, Testville. Total £23.50.",
+     "senderName": "HatchGrab",
+     "truckName": "Pizza Kitchen"
+    }
+   ],
+   "push": [],
+   "auth": [],
+   "capture": []
+  },
+  "walkup_paid": {
+   "out": {
+    "status": 200,
+    "body": {
+     "success": true,
+     "orderId": "78",
+     "autoConfirmed": true
+    }
+   },
+   "rpcs": [],
+   "writes": [
+    {
+     "table": "orders",
+     "op": "upsert-insert",
+     "row": {
+      "id": "78",
+      "truck_id": "test-truck",
+      "customer_name": "Walk-up",
+      "customer_phone": null,
+      "customer_email": null,
+      "slot": "13:00",
+      "order_type": "collection",
+      "event_date": "2026-10-09",
+      "event_id": "ev1",
+      "items": [
+       {
+        "name": "Margherita",
+        "quantity": 1,
+        "unit_price": 9.5
+       }
+      ],
+      "deals": null,
+      "discount_code": null,
+      "subtotal": 9.5,
+      "discount_amt": 0,
+      "total": 9.5,
+      "deal_savings": null,
+      "total_minor": 950,
+      "capacity_ack_at": null,
+      "notes": null,
+      "status": "confirmed",
+      "source": "manual",
+      "payment_status": "unpaid",
+      "placed_at": null,
+      "buzzer_number": null,
+      "order_key": "ok-walk-2"
+     },
+     "id": "78"
+    },
+    {
+     "table": "production_slot_usage",
+     "op": "delete",
+     "ids": []
+    },
+    {
+     "table": "production_slot_usage",
+     "op": "upsert-insert",
+     "row": {
+      "truck_id": "test-truck",
+      "event_id": "ev1",
+      "event_date": "2026-10-09",
+      "production_slot": "13:00",
+      "units_by_cat": {
+       "pizzas": 1
+      },
+      "updated_at": "2026-10-09T11:00:00.000Z"
+     },
+     "id": "production_slot_usage-new-2"
+    },
+    {
+     "table": "order_payments",
+     "op": "insert",
+     "row": {
+      "order_key": "ok-walk-2",
+      "truck_id": "test-truck",
+      "kind": "charge",
+      "channel": "in_person_other",
+      "amount_minor": 950,
+      "currency": "GBP",
+      "state": "succeeded",
+      "external_ref": null,
+      "note": "Mark paid & done — taken at the hatch",
+      "idempotency_key": "collect:ok-walk-2:0:950",
+      "created_by": null,
+      "method": "cash",
+      "livemode": true
+     },
+     "id": "order_payments-new-3"
+    },
+    {
+     "table": "orders",
+     "op": "update",
+     "patch": {
+      "payment_status": "paid",
+      "amount_paid": 9.5
+     },
+     "ids": [
+      "78"
+     ]
+    },
+    {
+     "table": "action_audit_log",
+     "op": "insert",
+     "row": {
+      "action": "manual_paid_at_order",
+      "truck_id": "test-truck",
+      "order_key": "ok-walk-2",
+      "amount_minor": 950,
+      "before_state": {
+       "payment": "none",
+       "order": "created"
+      },
+      "after_state": {
+       "charged_minor": 950,
+       "ledger_failed": false
+      },
+      "actor_kind": "unknown",
+      "actor_id": null,
+      "actor_label": null,
+      "source": "web"
+     },
+     "id": "action_audit_log-new-4"
+    }
+   ],
+   "emails": [
+    {
+     "to": "kitchen@example.test",
+     "subject": "🔔 New order #78 — Walk-up · 13:00",
+     "html": "<body style=\"font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px\">\n            <h2 style=\"color:#ea580c;margin:0 0 12px\">🔔 New order received</h2>\n            <p><strong>Order #78</strong> from <strong>Walk-up</strong></p>\n            <p style=\"font-size:16px\"><strong>⏰ Collection: 13:00</strong></p>\n            <p>📍 The Green, Testville, AB1 2CD</p>\n            \n            <table style=\"width:100%;border-collapse:collapse;font-size:14px;margin:12px 0\">\n              <tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">1× Margherita</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£9.50</td>\n    </tr>\n              <tr style=\"border-top:2px solid #e2e8f0\">\n                <td style=\"padding-top:8px;font-weight:800\">Total</td>\n                <td style=\"text-align:right;padding-top:8px;font-weight:800\">£9.50</td>\n              </tr>\n            </table>\n            \n            <p style=\"color:#16a34a;font-size:13px;font-weight:600;margin-top:16px\">✓ Auto-confirmed — no action needed.</p>\n          </body>",
+     "text": "New order #78 from Walk-up for 13:00 at The Green, Testville. Total £9.50.",
+     "senderName": "HatchGrab",
+     "truckName": "Pizza Kitchen"
+    }
+   ],
+   "push": [],
+   "auth": [],
+   "capture": []
+  },
+  "edit": {
+   "out": {
+    "status": 200,
+    "body": {
+     "success": true,
+     "status": "modified",
+     "total": 15.55
+    }
+   },
+   "rpcs": [],
+   "writes": [
+    {
+     "table": "orders",
+     "op": "update",
+     "patch": {
+      "items": [
+       {
+        "name": "Pepperoni",
+        "quantity": 1,
+        "unit_price": 10.75
+       },
+       {
+        "name": "Lemonade",
+        "quantity": 2,
+        "unit_price": 2.4
+       }
+      ],
+      "deals": [],
+      "slot": "12:30",
+      "notes": null,
+      "customer_name": "Bob Example",
+      "customer_email": "bob@example.test",
+      "customer_phone": null,
+      "total": 15.55,
+      "subtotal": 15.55,
+      "discount_amt": 0,
+      "total_minor": 1555,
+      "status": "modified"
+     },
+     "ids": [
+      "12"
+     ]
+    },
+    {
+     "table": "orders",
+     "op": "update",
+     "patch": {
+      "payment_status": "unpaid",
+      "amount_paid": 0
+     },
+     "ids": [
+      "12"
+     ]
+    },
+    {
+     "table": "production_slot_usage",
+     "op": "upsert-insert",
+     "row": {
+      "truck_id": "test-truck",
+      "event_id": "ev1",
+      "event_date": "2026-10-09",
+      "production_slot": "12:30",
+      "units_by_cat": {
+       "pizzas": 0,
+       "drinks": 2
+      },
+      "updated_at": "2026-10-09T11:00:00.000Z"
+     },
+     "id": "production_slot_usage-new-1"
+    },
+    {
+     "table": "production_slot_usage",
+     "op": "upsert-update",
+     "row": {
+      "truck_id": "test-truck",
+      "event_id": "ev1",
+      "event_date": "2026-10-09",
+      "production_slot": "12:30",
+      "units_by_cat": {
+       "pizzas": 1,
+       "drinks": 4
+      },
+      "updated_at": "2026-10-09T11:00:00.000Z"
+     },
+     "id": "production_slot_usage-new-1"
+    }
+   ],
+   "emails": [
+    {
+     "to": "bob@example.test",
+     "subject": "Order #12 updated - now £15.55 (was £10.75)",
+     "html": "<!DOCTYPE html>\n<html>\n<body style=\"font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#1e293b;background:#ffffff\">\n\n  <div style=\"text-align:center;padding:20px 0 16px\">\n    <div style=\"width:56px;height:56px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;line-height:56px\">✓</div>\n    <h1 style=\"font-size:22px;font-weight:800;margin:0 0 4px\">Order confirmed!</h1>\n    <p style=\"color:#64748b;margin:0;font-size:14px\">Thanks! We've received your order and we're getting it ready.</p>\n  </div>\n\n  \n    <div style=\"background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center\">\n      <p style=\"margin:0;color:#166534\">\n        <strong style=\"font-size:17px\">Collection time: 12:30</strong><br><span style=\"font-size:13px;opacity:0.85\">See you at the hatch!</span>\n      </p>\n    </div>\n\n  <div style=\"background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:12px\">\n    <p style=\"margin:0 0 10px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em\">Order #12</p>\n    <table style=\"width:100%;border-collapse:collapse;font-size:14px\">\n      <tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">1× Pepperoni</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£10.75</td>\n    </tr><tr>\n      <td style=\"padding:4px 0 2px;color:#475569\">2× Lemonade</td>\n      <td style=\"text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500\">£4.80</td>\n    </tr>\n      \n      <tr style=\"border-top:1px solid #e2e8f0\">\n        <td style=\"padding-top:10px;font-weight:800;font-size:15px\">Total</td>\n        <td style=\"text-align:right;padding-top:10px;font-weight:800;font-size:15px\">£15.55</td>\n      </tr>\n    </table>\n  </div>\n\n  \n\n  \n\n  <div style=\"background:#f1f5f9;border-radius:10px;padding:16px;margin-top:12px;text-align:center\">\n    <p style=\"margin:0;font-size:16px;font-weight:800;color:#1e293b\">Pay at the truck on collection</p>\n  </div>\n\n  \n\n  \n    <div style=\"margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0\">\n      <p style=\"margin:0;font-size:12px;color:#94a3b8\">\n        Need to cancel?\n        <a href=\"https://www.hatchgrab.com/order/ok-old-1/manage\" style=\"color:#ea580c;margin-left:4px\">Cancel your order</a>\n        (up to 30 minutes before your pickup time)\n      </p>\n    </div>\n\n  <p style=\"text-align:center;margin-top:20px;font-size:11px;color:#94a3b8\">\n    Powered by <a href=\"https://hatchgrab.com\" style=\"color:#ea580c;text-decoration:none;font-weight:700\">HatchGrab</a>\n  </p>\n\n</body>\n</html>",
+     "text": "Order #12 confirmed — Pizza Kitchen\n1x Pepperoni — £10.75\n2x Lemonade — £4.80\nTotal: £15.55\nCollection time: 12:30. See you at the hatch!\nPay at the truck on collection.\nPowered by HatchGrab — hatchgrab.com",
+     "senderName": null,
+     "truckName": "Pizza Kitchen"
+    }
+   ],
+   "push": [],
+   "auth": [],
+   "capture": []
+  },
+  "collected": {
+   "out": {
+    "status": 200,
+    "body": {
+     "success": true,
+     "status": "collected"
+    }
+   },
+   "rpcs": [],
+   "writes": [
+    {
+     "table": "order_payments",
+     "op": "insert",
+     "row": {
+      "order_key": "ok-old-1",
+      "truck_id": "test-truck",
+      "kind": "charge",
+      "channel": "in_person_other",
+      "amount_minor": 1075,
+      "currency": "GBP",
+      "state": "succeeded",
+      "external_ref": null,
+      "note": "Mark paid & done — taken at the hatch",
+      "idempotency_key": "collect:ok-old-1:0:1075",
+      "created_by": null,
+      "method": null,
+      "livemode": true
+     },
+     "id": "order_payments-new-1"
+    },
+    {
+     "table": "orders",
+     "op": "update",
+     "patch": {
+      "payment_status": "paid",
+      "amount_paid": 10.75
+     },
+     "ids": [
+      "12"
+     ]
+    },
+    {
+     "table": "action_audit_log",
+     "op": "insert",
+     "row": {
+      "action": "collected",
+      "truck_id": "test-truck",
+      "order_key": "ok-old-1",
+      "amount_minor": 1075,
+      "before_state": {
+       "status": "confirmed",
+       "paid_at": null,
+       "collected_at": null
+      },
+      "after_state": {
+       "status": "collected",
+       "paid_at": "2026-10-09T11:00:00.000Z",
+       "collected_at": "2026-10-09T11:00:00.000Z",
+       "charged_minor": 1075,
+       "ledger_failed": false
+      },
+      "actor_kind": "unknown",
+      "actor_id": null,
+      "actor_label": null,
+      "source": "web"
+     },
+     "id": "action_audit_log-new-2"
+    },
+    {
+     "table": "orders",
+     "op": "update",
+     "patch": {
+      "status": "collected",
+      "paid_at": "2026-10-09T11:00:00.000Z",
+      "collected_at": "2026-10-09T11:00:00.000Z",
+      "status_before_collected": "confirmed"
+     },
+     "ids": [
+      "12"
+     ]
+    },
+    {
+     "table": "production_slot_usage",
+     "op": "delete",
+     "ids": []
+    }
+   ],
+   "emails": [],
+   "push": [],
+   "auth": [],
+   "capture": []
+  },
+  "mark_paid_cash": {
+   "out": {
+    "status": 200,
+    "body": {
+     "success": true,
+     "chargedMinor": 1075
+    }
+   },
+   "rpcs": [],
+   "writes": [
+    {
+     "table": "order_payments",
+     "op": "insert",
+     "row": {
+      "order_key": "ok-old-1",
+      "truck_id": "test-truck",
+      "kind": "charge",
+      "channel": "in_person_other",
+      "amount_minor": 1075,
+      "currency": "GBP",
+      "state": "succeeded",
+      "external_ref": null,
+      "note": "Mark paid & done — taken at the hatch",
+      "idempotency_key": "collect:ok-old-1:0:1075",
+      "created_by": null,
+      "method": "cash",
+      "livemode": true
+     },
+     "id": "order_payments-new-1"
+    },
+    {
+     "table": "orders",
+     "op": "update",
+     "patch": {
+      "payment_status": "paid",
+      "amount_paid": 10.75
+     },
+     "ids": [
+      "12"
+     ]
+    },
+    {
+     "table": "action_audit_log",
+     "op": "insert",
+     "row": {
+      "action": "mark_paid_cash",
+      "truck_id": "test-truck",
+      "order_key": "ok-old-1",
+      "amount_minor": 1075,
+      "before_state": {
+       "payment": "outstanding"
+      },
+      "after_state": {
+       "charged_minor": 1075,
+       "method": "cash",
+       "ledger_failed": false
+      },
+      "actor_kind": "unknown",
+      "actor_id": null,
+      "actor_label": null,
+      "source": "web"
+     },
+     "id": "action_audit_log-new-2"
+    }
+   ],
+   "emails": [],
+   "push": [],
+   "auth": [],
+   "capture": []
+  }
+ }
+}

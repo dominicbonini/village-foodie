@@ -2437,6 +2437,11 @@ head('5b · THE MODAL AND THE CARD')
        * a single very long line. The line left and a longer one arrived; both halves are asserted
        * below — the prop must be passed at both mounts. */
       /^<div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">\{(pending|confirmed)Orders\.map/,
+      /* ⚠️ PHASE 3 SCREENS (13 October 2026, docs/phase-3-screens-report.md): the edit preview's sum is now
+       * held as `linear` and returned for every order without tax, a tip or a fee (every UK order), and an
+       * order with them is re-priced by the engine's `chargesForEdit`. The `return` left; the same
+       * expression arrived one line up. Asserted in scripts/_phase3-screens-us.cjs §7. */
+      /^return Math\.max\(0,editOrderBaseline\.total\+itemDelta-removedOriginalValue\+addedNewValue\)$/,
       /* ══ 🔴 TWO MORE ACCOUNTED EDITS (5 October 2026) ═══════════════════════════════════════════
        * ① THE ORDER-LINK CONSTANT SPLIT IN TWO. It was one expression returning `/o/<slug>`; a
        * PRIVATE event's Order link and QR must give `/p/<token>` and must NOT fall back to the public

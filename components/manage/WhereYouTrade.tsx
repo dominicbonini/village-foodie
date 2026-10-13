@@ -46,6 +46,8 @@ export function WhereYouTrade<T extends TradeAreaTruck>({ truck, api, showToast,
       const res = await api('update_trade_area', {
         timezone: z, base_place_id: p.placeId, base_place_name: p.name.trim(), base_region: p.region,
         base_lat: p.lat, base_lng: p.lng,
+        // D22: only when the picked place carries one ('zip_state' countries) — a GB save is unchanged.
+        ...(p.regionCode !== undefined ? { base_region_code: p.regionCode } : {}),
       })
       setError(null)
       if (res?.truck) onTruckUpdate(res.truck)

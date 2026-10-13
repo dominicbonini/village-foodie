@@ -1,6 +1,7 @@
 'use client'
 // components/dashboard/OrderCard.tsx
 
+import { chargeLinesFor, chargeSourceOf } from '@/lib/order-charge-lines'
 import { useState, useEffect } from 'react'
 import type { Order, TruckData, Slot, TruckEvent } from './types'
 import { STATUS } from './types'
@@ -380,6 +381,8 @@ export function OrderCard({
   const fmt = orderMoney(order, truck?.money)
   const money = (minor: number) => formatMinorOrBare(minor, fmt, 'order card')
   const amount = (major: number) => formatMajorOrBare(major, fmt, 'order card')
+  // Phase 3 screens: the order's tax, fee and tip rows — empty for every UK order.
+  const chargeLines = chargeLinesFor(chargeSourceOf(order as unknown as Record<string, unknown>), 'kitchen')
 
   // Dismiss the inline confirm whenever the payment state moves underneath it — the removal landed, or
   // another device changed it — so a stale "Remove payment?" can never sit over an order that is no
@@ -1496,6 +1499,20 @@ export function OrderCard({
                       </div>
                     )
                   })}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ── 🔴 PHASE 3 SCREENS — TAX, SERVICE FEE AND TIP, AFTER THE ITEMS ───────────────────────────
+              The ticket's own rows (lib/order-charge-lines.ts, the kitchen's words), hidden in cook mode
+              like every other amount. ⚠️ NONE FOR A UK ORDER — `chargeLines` is empty and nothing renders. */}
+          {!hideAmounts && chargeLines.length > 0 && (
+            <div className="mx-3 mb-2 px-1 space-y-0.5 text-xs text-slate-600" data-charge-lines>
+              {chargeLines.map(l => (
+                <div key={l.key} className="flex justify-between gap-2">
+                  <span>{l.label}{l.rate ? <span className="ml-1 text-slate-400">{l.rate}</span> : null}</span>
+                  <span className="tabular-nums">{amount(l.minor / 100)}</span>
                 </div>
               ))}
             </div>

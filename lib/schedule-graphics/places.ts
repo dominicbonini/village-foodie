@@ -104,6 +104,33 @@ export function normalisePlaceName(input: string | null | undefined): string {
     .trim()
 }
 
+/** A normalised key without a leading "the": "the five bells" → "five bells". Nothing else changes. */
+export const keyWithoutThe = (key: string): string => key.replace(/^the\s+/, '')
+
+/**
+ * 🔴 THE PLACE A TYPED VENUE NAME BELONGS TO, BEFORE A NEW ONE IS MADE FOR IT (12 October 2026).
+ *
+ * ⛔ "The Five Bells" TYPED (OR COPIED) BESIDE A PLACE CALLED "Five Bells" MADE A SECOND PLACE — the two
+ * keys differ by the word "the", and the exact-key upsert saw no match. The second place had none of
+ * the first one's pictures, so that event's single event post drew without its location photo.
+ * 🔴 SO: the exact key first, exactly as before; then the key with a leading "the" dropped on BOTH
+ * sides, used only when it names ONE place — two candidates is a real ambiguity, and guessing one would
+ * file an event under the wrong pitch. Null means "make a new place", the old behaviour.
+ * ⚠️ ONLY WHERE A PLACE WOULD BE CREATED. `normalisePlaceName` and the stored `name_key`s are unchanged,
+ * so how every existing event finds its place is unchanged too.
+ */
+export function placeForTypedName<P extends { id: string; name_key?: string | null }>(
+  key: string, places: readonly P[],
+): P | null {
+  if (!key) return null
+  const exact = places.find(p => p.name_key === key)
+  if (exact) return exact
+  const loose = keyWithoutThe(key)
+  if (!loose) return null
+  const hits = places.filter(p => p.name_key && keyWithoutThe(p.name_key) === loose)
+  return hits.length === 1 ? hits[0] : null
+}
+
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // 2 · MATCHING AN EVENT TO A PLACE
 // ════════════════════════════════════════════════════════════════════════════════════════════════

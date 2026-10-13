@@ -85,6 +85,9 @@ import { ExtraWaitModal } from '@/components/shared/ExtraWaitModal'
 import { DeviceSetupGate } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
 import { calculateOrderTotal } from '@/lib/order-calculations'
+// Phase 3 screens: an order with tax, a tip or a fee is re-priced by the engine, never by adding to its total.
+import { chargesForEdit, rulesFromCheckout } from '@/lib/order-charges'
+import { chargeLinesFor, chargeSourceOf } from '@/lib/order-charge-lines'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory, groupBySubcategory, isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
@@ -3836,7 +3839,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const modExtra=Object.values(d.slotModifiers||{}).flat().reduce((sm,m)=>sm+m.price,0)
       return s+(bundle?.bundle_price??0)+modExtra
     },0)
-    return Math.max(0,editOrderBaseline.total+itemDelta-removedOriginalValue+addedNewValue)
+    const linear=Math.max(0,editOrderBaseline.total+itemDelta-removedOriginalValue+addedNewValue)
+    /* ── 🔴 PHASE 3 SCREENS — AN ORDER WITH TAX, A TIP OR A FEE IS NOT RE-PRICED BY ADDITION ────────────
+     * `editOrderBaseline.total` is the GRAND total: adding an item's price to it would leave the tax on
+     * the old food, keep a percentage tip at its old amount and double-count nothing the server does. So
+     * such an order works out its NEW FOOD the same way, then asks the engine's `chargesForEdit` — the
+     * function the server's edit runs — with the order's own snapshot and the truck's rules
+     * (`truck.charge_rules`). 🔴 A UK ORDER NEVER TAKES THIS BRANCH: it has no lines and is tax-inclusive,
+     * so the sum above is returned exactly as before. */
+    const o=editingOrder
+    const priced=!!o&&!!truck?.charge_rules&&(o.tax_inclusive===false||chargeLinesFor(chargeSourceOf(o as unknown as Record<string,unknown>)).length>0)
+    if(!priced||!o)return linear
+    const baseFood=o.food_minor!=null?o.food_minor/100:editOrderBaseline.total
+    const food=Math.max(0,baseFood+itemDelta-removedOriginalValue+addedNewValue)
+    return chargesForEdit(Math.round(food*100),rulesFromCheckout(truck!.charge_rules!),o).totalMinor/100
   })():Math.max(0,editItemsSubtotal)
   // The server's unpriceable-line verdict is only meaningful for the basket it was computed against.
   // Change anything and the banner disappears rather than naming a line that is no longer there;
