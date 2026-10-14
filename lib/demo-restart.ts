@@ -82,6 +82,13 @@ export async function restartDemoService(
     if (error) throw new DemoRestartError(`Failed clearing demo orders: ${error.message}`)
   }
 
+  // 🔴 THE SETTINGS ON THE CURRENT EVENT ARE KEPT (14 October 2026). A restart builds a brand-new event, and
+  // the per-event choices made on the old one — the event type, the order-ready / paid-step / buzzer / cash
+  // choices, offline protection, collection-time overrides, event pricing, the venue line, which deals are
+  // on and per-item event prices — would otherwise vanish with it. Dominic sets these while checking a demo
+  // before sending it; "Reset for sending" must keep them. Read BEFORE the delete, applied to the new event.
+  const carried = await readEventSettings(supabase, truckId, warnings)
+
   const { data: oldEvents, error: evSelErr } = await supabase
     .from('truck_events').select('id').eq('truck_id', truckId)
   if (evSelErr) throw new DemoRestartError(`Failed reading demo events: ${evSelErr.message}`)
@@ -112,6 +119,7 @@ export async function restartDemoService(
     throw new DemoRestartError(
       `New service event failed: ${err instanceof Error ? err.message : 'unknown'}`)
   }
+  if (carried) await applyEventSettings(supabase, truckId, event.id, carried, warnings)
 
   // ── 3. Re-seed against the NEW window ───────────────────────────────────────────────────────────
   // Same call shape as first-run provisioning (lib/provision-demo.ts), so a restarted board and a
@@ -149,4 +157,50 @@ export async function restartDemoService(
   }
 
   return { event, ordersDeleted, eventsDeleted, seededOrders, warnings }
+}
+
+// ── The current event's settings, carried onto the new one ────────────────────────────────────────────
+/** Per-event SETTINGS a restart keeps — never state (status, times, opened/closed stamps, pause, extra wait).
+ *  Copied only when the old row has the column, so an unapplied migration costs nothing. */
+const EVENT_SETTING_COLUMNS = [
+  'event_type_id', 'order_ready_override', 'order_ready_source', 'show_paid_step_override',
+  'completion_presses_override', 'buzzer_prompt', 'takes_cash_override', 'offline_protection_override',
+  'offline_protection_mode_override', 'offline_auto_reject_mins_override', 'collection_interval_mins_override',
+  'operator_collection_interval_mins_override', 'price_mode', 'price_amount', 'price_rounding',
+  'venue_name', 'venue_address', 'customer_note',
+] as const
+/** Per-event child rows that are settings: which deals are on, and per-item event prices. */
+const EVENT_SETTING_TABLES = ['event_deals', 'event_item_prices'] as const
+const ROW_IDENTITY = new Set(['id', 'event_id', 'created_at', 'updated_at'])
+
+interface CarriedSettings { columns: Record<string, unknown>; children: Record<string, Record<string, unknown>[]> }
+
+/** The current event — the most recent by date and start — and its settings. Best-effort: a failed read
+ *  restarts with defaults, as every restart did before, and says so. */
+async function readEventSettings(supabase: SupabaseClient, truckId: string, warnings: string[]): Promise<CarriedSettings | null> {
+  const { data: rows, error } = await supabase.from('truck_events').select('*').eq('truck_id', truckId)
+    .order('event_date', { ascending: false }).order('start_time', { ascending: false }).limit(1)
+  if (error) { warnings.push(`Could not read the current event's settings (${error.message}) — the new event uses the defaults.`); return null }
+  const old = (rows ?? [])[0] as Record<string, unknown> | undefined
+  if (!old) return null
+  const columns = Object.fromEntries(EVENT_SETTING_COLUMNS.filter(c => c in old).map(c => [c, old[c]]))
+  const children: Record<string, Record<string, unknown>[]> = {}
+  for (const table of EVENT_SETTING_TABLES) {
+    const { data, error: cErr } = await supabase.from(table).select('*').eq('event_id', old.id as string)
+    if (cErr) { warnings.push(`Could not read ${table} for the current event (${cErr.message}) — not carried.`); continue }
+    children[table] = ((data ?? []) as Record<string, unknown>[]).map(r => Object.fromEntries(Object.entries(r).filter(([k]) => !ROW_IDENTITY.has(k))))
+  }
+  return { columns, children }
+}
+
+async function applyEventSettings(supabase: SupabaseClient, truckId: string, eventId: string, s: CarriedSettings, warnings: string[]): Promise<void> {
+  if (Object.keys(s.columns).length) {
+    const { error } = await supabase.from('truck_events').update(s.columns).eq('id', eventId).eq('truck_id', truckId)
+    if (error) warnings.push(`Could not carry the event's settings onto the new event (${error.message}).`)
+  }
+  for (const [table, rows] of Object.entries(s.children)) {
+    if (!rows.length) continue
+    const { error } = await supabase.from(table).insert(rows.map(r => ({ ...r, event_id: eventId })))
+    if (error) warnings.push(`Could not carry ${table} onto the new event (${error.message}).`)
+  }
 }

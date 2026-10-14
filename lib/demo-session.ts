@@ -222,6 +222,30 @@ export async function claimDemoFirstOpen(
   return { claimed: false, reason: 'already-opened' }
 }
 
+/**
+ * 🔴 "RESET FOR SENDING" (14 October 2026) — RE-ARM THE FIRST-OPEN RESTART (T2).
+ *
+ * An admin checks a demo before sending it, and a preview opened while NOT signed in as admin (a phone, a
+ * private window) wins the first-open claim — so when the truck opens the link hours later nothing restarts
+ * and they see the preview's orders, now late. Clearing `first_opened_at` hands the claim back: the NEXT
+ * non-admin open restarts the service at that moment, through the same `restartDemoService`, which keeps the
+ * menu, the truck's settings and the current event's settings, and builds the event and orders afresh.
+ * Outreach demos only (`discovery_truck_id` set), exactly as the claim itself is. Returns whether a row was
+ * re-armed.
+ */
+export async function rearmDemoFirstOpen(supabase: SupabaseClient, truckId: string): Promise<{ rearmed: boolean; reason?: string }> {
+  if (!isDemoIdentifier(truckId)) return { rearmed: false, reason: 'not a demo truck' }
+  const { data, error } = await supabase
+    .from('demo_sessions')
+    .update({ first_opened_at: null })
+    .eq('truck_id', truckId)
+    .not('discovery_truck_id', 'is', null)
+    .select('truck_id')
+  if (error) return { rearmed: false, reason: error.message }
+  if (!data || data.length === 0) return { rearmed: false, reason: 'no outreach demo session for this truck' }
+  return { rearmed: true }
+}
+
 export async function markReturnEmailSent(
   supabase: SupabaseClient, truckId: string, now = new Date(),
 ): Promise<void> {

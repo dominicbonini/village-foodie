@@ -65,6 +65,9 @@ export type Prospect = {
     /** The truck the demo runs as. Present ⇒ it can be REBUILT over itself with new kitchen settings;
      *  a demo cannot be un-created. Already returned by /api/admin/outreach — nothing was added there. */
     truckId?: string | null
+    /** When the demo link was first opened by someone not signed in as admin — the moment its first-open
+     *  restart was used. Null ⇒ the next open restarts it fresh ("Reset for sending" sets it back to null). */
+    firstOpenedAt?: string | null
   } | null
   logo_url: string | null; photo_url: string | null
   // 🔴 OPTION A — WHOSE LOGO THIS ACTUALLY IS. `logo_url` above is now the AUTHORITATIVE value the route

@@ -29,7 +29,7 @@ import type { DemoKitchen } from '@/lib/demo-kitchen'
 import { provisionDemoEvent, type DemoEvent } from '@/lib/provision-demo-event'
 import { seedDemoOrders } from '@/lib/seed-demo-orders'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
-import { createDemoSession, touchDemoSession, DemoSessionError } from '@/lib/demo-session'
+import { createDemoSession, touchDemoSession, DemoSessionError, rearmDemoFirstOpen } from '@/lib/demo-session'
 import { copyDemoLogo } from '@/lib/demo-logo'
 import type { Actor } from '@/lib/allergen-audit'
 
@@ -187,6 +187,13 @@ export async function provisionDemo(
   let publicRef: string | null = null
   if (input.existingTruckId) {
     await touchDemoSession(supabase, truckId, now)
+    // 🔴 AN ADMIN REBUILD IS A NEW DEMO TO SEND, SO ITS FIRST OPEN IS RE-ARMED (14 October 2026): whenever the
+    // truck opens the link, the board starts fresh from that moment — the same as "Reset for sending".
+    // Best-effort: a rebuild that cannot re-arm still rebuilds, and the prospect page shows the state.
+    if (input.replaceBoard) {
+      const r = await rearmDemoFirstOpen(supabase, truckId)
+      if (!r.rearmed && r.reason !== 'no outreach demo session for this truck') warnings.push(`Could not reset the demo's first open (${r.reason}) — press Reset for sending.`)
+    }
     // 🔴 A REBUILD RETURNS THE LINK IT REBUILT. `createDemoSession` is what used to mint `publicRef`, and
     // a re-provision does not call it — so this path returned null and the modal showed a result with no
     // link, as though the demo had lost one. The ref is unchanged; it is simply read back.

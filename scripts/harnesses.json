@@ -122,7 +122,8 @@
     "language-phase-0.cjs",
     "messages-parity.cjs",
     "ui-literals.cjs",
-    "demo-rebuild-replace.cjs"
+    "demo-rebuild-replace.cjs",
+    "demo-reset-for-sending.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",

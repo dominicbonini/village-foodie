@@ -52,7 +52,7 @@ import { phoneWhatsApp } from '@/lib/whatsapp-hint'
 import { MARKETING_COUNTRY } from '@/lib/marketing-country'   // discovery and outreach are the marketing country's (Phase 2C)
 import { replyRecipientFor } from '@/lib/outreach-reply-rules'
 import { PAGE_HEADER_ID } from '@/components/admin/EmailReadingPanel'
-import { getLocalDateInTz } from '@/lib/time-utils'
+import { getLocalDateInTz, formatInstant, DISCOVERY_TIME_SETTINGS } from '@/lib/time-utils'
 import { parseAttachments } from '@/lib/outreach-mail-bodies'
 import {
   nextAction, isTypingTarget, SHORTCUTS, type NextAction,
@@ -1817,6 +1817,26 @@ function FilesCard({ timeline, prospectId, onOpen }: {
  */
 function DemoCard({ p, onReload, onInsert }: { p: Prospect; onReload: () => Promise<void>; onInsert: (url: string) => void }) {
   const [creating, setCreating] = useState(false)
+  // ── "RESET FOR SENDING" (14 October 2026) ─────────────────────────────────────────────────────────
+  // Re-arms the demo's first-open restart (/api/admin/demo-reset): whenever the truck next opens the link,
+  // the event and the demo orders start fresh around that moment, and every setting made while checking the
+  // demo is kept. Press it last, after checking, just before sending.
+  const [resetting, setResetting] = useState(false)
+  const [resetError, setResetError] = useState<string | null>(null)
+  const firstOpenedAt = p.demo?.firstOpenedAt ?? null
+  const resetForSending = async () => {
+    if (!p.demo?.truckId || resetting) return
+    setResetting(true); setResetError(null)
+    try {
+      const h = await nativeAuthHeader()
+      const res = await fetch('/api/admin/demo-reset', { method: 'POST', headers: { ...h, 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ truckId: p.demo.truckId }) })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.ok) { setResetError(data.error || `Could not reset the demo (${res.status})`); return }
+      await onReload()
+    } catch (e) {
+      setResetError(e instanceof Error ? e.message : 'Could not reach the server')
+    } finally { setResetting(false) }
+  }
   const [copied, setCopied] = useState(false)
   const ref = p.demo?.publicRef ?? null
   const path = ref ? `/demo/${ref}` : null
@@ -1856,7 +1876,21 @@ function DemoCard({ p, onReload, onInsert }: { p: Prospect; onReload: () => Prom
                   clipboard write on an unrelated click loses whatever was copied a moment ago. */}
               <button onClick={() => fullUrl && onInsert(fullUrl)} className="hover:underline">Insert in email</button>
               {p.demo?.truckId && <button onClick={() => setCreating(true)} className="hover:underline">Rebuild</button>}
+              {p.demo?.truckId && (
+                <button onClick={() => void resetForSending()} disabled={resetting} className="hover:underline disabled:opacity-40"
+                  title="Whenever they open the link, the event and demo orders start fresh from that moment. Your settings are kept.">
+                  {resetting ? 'Resetting…' : 'Reset for sending'}
+                </button>
+              )}
             </div>
+            {p.demo?.truckId && (firstOpenedAt
+              ? <p className="text-[11px] font-semibold text-amber-800">
+                  Opened {formatInstant(firstOpenedAt, DISCOVERY_TIME_SETTINGS, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} — press Reset for sending so it starts fresh when they open it.
+                </p>
+              : <p className="text-[11px] text-emerald-700">
+                  Fresh on next open — the event and orders start when they open the link. Opening it yourself while signed out uses this up.
+                </p>)}
+            {resetError && <p className="text-[11px] font-semibold text-red-600">{resetError}</p>}
             {expiresSoon != null && (
               <p className="text-[11px] font-semibold text-amber-800">
                 Expires in {expiresSoon} day{expiresSoon === 1 ? '' : 's'}

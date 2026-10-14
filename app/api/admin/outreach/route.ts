@@ -259,7 +259,7 @@ export async function GET(req: NextRequest) {
     // "LIVE" = a session row that has not expired. The row itself is the liveness signal — demo_sessions
     // .truck_id → trucks is ON DELETE CASCADE, so a swept demo takes its row with it — and `expires_at`
     // covers the window between expiry and the next hourly cleanup run.
-    const demoByDiscovery = new Map<string, { publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number; truckId: string | null }>()
+    const demoByDiscovery = new Map<string, { publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number; truckId: string | null; firstOpenedAt: string | null }>()
     let hasDemoLinks = false
     {
       const ids = Array.from(new Set((prospects ?? [])
@@ -268,7 +268,7 @@ export async function GET(req: NextRequest) {
       if (ids.length > 0) {
         const { data: sessions, error: sErr } = await supabase
           .from('demo_sessions')
-          .select('truck_id, discovery_truck_id, public_ref, expires_at, created_at')
+          .select('truck_id, discovery_truck_id, public_ref, expires_at, created_at, first_opened_at')
           .in('discovery_truck_id', ids)
           .order('created_at', { ascending: false })
         if (sErr) {
@@ -290,6 +290,8 @@ export async function GET(req: NextRequest) {
               // 🔴 THE DEMO'S OWN trucks.id — already selected, never previously used. Option A needs it:
               // a prospect with a live demo and no real truck stores its logo on the DEMO's truck row.
               truckId: (row.truck_id as string | null) ?? null,
+              // "Reset for sending" (14 October 2026): null ⇒ the next open restarts the demo fresh.
+              firstOpenedAt: (row.first_opened_at as string | null) ?? null,
             })
           }
         }
