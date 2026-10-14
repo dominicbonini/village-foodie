@@ -26,6 +26,12 @@ export function CountrySettingsProvider({ settings, children }: {
   return <CountrySettingsContext.Provider value={settings}>{children}</CountrySettingsContext.Provider>
 }
 
+/** The settings when a provider is above, else null. For a shared control that must keep working outside
+ *  Manage (it then behaves as it always did) — never for money, which must not guess (see the header). */
+export function useOptionalCountrySettings(): CountrySettings | null {
+  return useContext(CountrySettingsContext)
+}
+
 /** The settings for the truck on screen. 🔴 Throws if there is no provider — see the header. */
 export function useCountrySettings(): CountrySettings {
   const s = useContext(CountrySettingsContext)

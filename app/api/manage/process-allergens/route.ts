@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+// US readiness (D35): the truck's country decides which allergen list the prompt names.
+import { countrySettingsForTruck } from '@/lib/country-settings'
+import { allergenCardListLines, allergenCardClosingRule, allergenCardExample, type AllergenSet } from '@/lib/allergens'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,11 +23,20 @@ export async function POST(req: NextRequest) {
 
   const { data: truck } = await supabase
     .from('trucks')
-    .select('id, name')
+    .select('id, name, country')
     .eq('dashboard_token', token)
     .single()
 
   if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+
+  // 🔴 THE TRUCK'S COUNTRY'S ALLERGEN LIST (country_settings.allergen_set). The UK lines below are the
+  // prompt's existing text, so a UK prompt is byte-identical; a US truck's names the 9 US major allergens.
+  // ⚠️ A FAILED LOOKUP USES THE UK LIST — the list every truck had before this existed.
+  let allergenSet: AllergenSet = 'uk14'
+  try { allergenSet = (await countrySettingsForTruck(truck)).allergenSet } catch (e) {
+    console.error('[process-allergens] country settings unavailable — using the UK allergen list:', e instanceof Error ? e.message : e)
+  }
+  const ex = allergenCardExample(allergenSet)
 
   const prompt = `You are extracting allergen information from a food truck allergen card.
 
@@ -33,22 +45,20 @@ Extract and structure all allergen information clearly.
 Return ONLY valid JSON, no markdown:
 {
   "summary": "Brief one-line summary e.g. 'Our kitchen handles nuts, dairy and gluten'",
-  "contains": ["Dairy", "Gluten", "Eggs"],
-  "may_contain": ["Nuts", "Soy"],
+  "contains": ${ex.contains},
+  "may_contain": ${ex.mayContain},
   "free_from": ["Shellfish", "Fish"],
   "dietary_options": ["Vegetarian options available", "Vegan options available"],
   "additional_notes": "Any other relevant allergen information",
   "formatted_text": "The full allergen information formatted as clear readable text for customers",
   "entries": [
-    { "name": "Pad Thai", "allergens": ["Peanuts", "Gluten", "Crustaceans"], "confidence": "high" }
+    { "name": "Pad Thai", "allergens": ${ex.entry}, "confidence": "high" }
   ],
   "blanket": ["Tree nuts"],
   "cross_contamination": ["Fryer shared with gluten-containing items"]
 }
 
-Standard allergens to look for (the 14 UK statutory allergens — use these EXACT names):
-Gluten, Crustaceans, Eggs, Fish, Peanuts, Soy, Dairy, Tree nuts,
-Celery, Mustard, Sesame, Sulphites, Lupin, Molluscs
+${allergenCardListLines(allergenSet)}
 
 PER-DISH "entries" — extract a list of { name, allergens[], confidence } ONLY when the card links allergens
 to SPECIFIC named dishes/items. Cover these card formats:
@@ -72,8 +82,7 @@ NON-PER-DISH statements — do NOT force these into "entries":
 
 "free_from" is an ABSENCE claim — list it in free_from ONLY; NEVER convert a free-from into a dish allergen.
 
-If information is unclear or not present for a field, use an empty array or null. Be precise — the 14 EXACT
-names only; map "milk"→"Dairy". Leave generic "Nuts"/"Shellfish" as written (the operator refines them).`
+${allergenCardClosingRule(allergenSet)}`
 
   // Card-only TRANSCRIBE prompt — faithful prose, NO vocab mapping, NO restructuring (Interpretation A).
   const transcribePrompt = `You are transcribing the allergen and dietary information from a food truck's allergen card so the operator can review it.

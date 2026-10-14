@@ -14,4 +14,6 @@
 // A second copy of a 36KB page would have been the defect this avoids.
 //
 // TO RETIRE IT: delete this directory. Nothing links to it -- it exists only as a URL you hand out.
-export { default, metadata } from '../landing/page'
+// 🔴 US readiness (D37): the landing's tags became `generateMetadata` (they name the visitor's country), so the
+// re-export follows — same module, same tags; GB byte-identical.
+export { default, generateMetadata } from '../landing/page'

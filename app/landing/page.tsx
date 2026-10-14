@@ -46,6 +46,7 @@ import { formatAmount } from '@/lib/money-format'
 import { moneyFormatOf } from '@/lib/country-settings-types'
 // 🔴 THE VISITOR'S COUNTRY (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
+import { marketingCountry } from '@/lib/marketing-meta'
 // 🔴 THE SINGLE WHATSAPP SWITCH — one value governs every surface. See lib/whatsapp-live.ts.
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
 // ══ 🔴 THE ONLY ICON LIBRARY IN THIS REPOSITORY, ADDED 6 October 2026 ════════════════════════════
@@ -66,79 +67,84 @@ const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], varia
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
 const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap' })
 
-export const metadata: Metadata = {
-  // ── TITLE. Terms first, brand last, because the job of this string is to be FOUND, not to be
-  // recognised — nobody is searching the brand yet. "food truck" and "mobile catering" are the two
-  // category terms UK operators actually use for themselves; "UK" is here because every competitor
-  // ranking for this is American unless the page says otherwise. 59 chars, inside Google's ~60 cut.
-  // 🔴 NO "POS" AND NO "EPOS" IN THE TITLE, DELIBERATELY. That category is owned by Toast, Epos Now,
-  // POSApt and the directory sites, and — the part that actually decides it — THIS PRODUCT IS NOT A
-  // TILL. It does not take card at the counter today. Titling it as one would win a click and lose
-  // the operator in the first thirty seconds.
-  // 🔴 NO "STREET FOOD". That is what a DINER types, and diners belong to Village Foodie.
-  // 🔴 `absolute`, NOT a bare string. app/layout.tsx declares `title: { template: '%s | HatchGrab' }`,
-  // so a plain string here renders "… — HatchGrab UK | HatchGrab" — the brand twice, at 75 chars, well
-  // past Google's ~60. CAUGHT IN THE SERVED <head>, NOT IN THE SOURCE: the source read correctly.
-  // ⚠️ THE PREVIOUS TITLE HAD THE SAME DEFECT ('HatchGrab — … | HatchGrab'). It is not new — it was
-  // simply never looked at in rendered output, which is the whole reason this step demanded one.
-  title: { absolute: 'Food truck & mobile catering ordering system — HatchGrab UK' },
+// 🔴 US readiness (D37): the tags name the visitor's country — lib/marketing-meta.ts. For GB every value is the
+// literal this page carried before ("UK", en_GB), byte-identical.
+export async function generateMetadata({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const c = marketingCountry((await resolveVisitorCountry((await searchParams)?.country)).settings)
+  return {
+    // ── TITLE. Terms first, brand last, because the job of this string is to be FOUND, not to be
+    // recognised — nobody is searching the brand yet. "food truck" and "mobile catering" are the two
+    // category terms UK operators actually use for themselves; "UK" is here because every competitor
+    // ranking for this is American unless the page says otherwise. 59 chars, inside Google's ~60 cut.
+    // 🔴 NO "POS" AND NO "EPOS" IN THE TITLE, DELIBERATELY. That category is owned by Toast, Epos Now,
+    // POSApt and the directory sites, and — the part that actually decides it — THIS PRODUCT IS NOT A
+    // TILL. It does not take card at the counter today. Titling it as one would win a click and lose
+    // the operator in the first thirty seconds.
+    // 🔴 NO "STREET FOOD". That is what a DINER types, and diners belong to Village Foodie.
+    // 🔴 `absolute`, NOT a bare string. app/layout.tsx declares `title: { template: '%s | HatchGrab' }`,
+    // so a plain string here renders "… — HatchGrab UK | HatchGrab" — the brand twice, at 75 chars, well
+    // past Google's ~60. CAUGHT IN THE SERVED <head>, NOT IN THE SOURCE: the source read correctly.
+    // ⚠️ THE PREVIOUS TITLE HAD THE SAME DEFECT ('HatchGrab — … | HatchGrab'). It is not new — it was
+    // simply never looked at in rendered output, which is the whole reason this step demanded one.
+    title: { absolute: `Food truck & mobile catering ordering system — HatchGrab ${c.short}` },
 
-  // ── DESCRIPTION. There was none before; the page inherited the root layout's brand-generic one.
-  // Problem-shaped, in an operator's own words, and it names the one thing this is NOT so the wrong
-  // buyer self-selects out of the click rather than out of the trial. "POS" appears exactly once and
-  // only to draw that boundary.
-  // ⚠️ "MESSAGES GOING UNANSWERED" IS STILL LEFT OUT, AND THE REASON HAS CHANGED (16 September 2026).
-  // It was excluded because WhatsApp auto-replies were coming soon behind WHATSAPP_LIVE; the flag is now
-  // true and the feature ships. It stays out on EDITORIAL grounds instead: this description is two lines
-  // of search metadata for "ordering and kitchen-screen software", and auto-replies are not what someone
-  // typing that is looking for. 🔴 If it is ever added, it is now a factual claim rather than a forbidden
-  // one — but check the flag before assuming that, because metadata is the place nobody re-reads.
-  description:
-    'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
-    + 'software for UK food trucks and mobile catering — not a POS.',
-
-  // ── 🟢 INDEXABLE, 8 September 2026. WHAT THIS REPLACED AND WHY IT WAS WRONG:
-  // the previous comment read "noindex RESTORED … the admin gate in layout.tsx is back on while the
-  // Pizzeria Gusto testimonial is unpermissioned and the screenshots are placeholders."
-  // 🔴 EVERY CLAUSE OF THAT WAS FALSE BY 3 SEPTEMBER. app/landing/layout.tsx records the gate being
-  // REMOVED that day, and records WHY: the testimonial has WRITTEN PERMISSION and the hero shots are
-  // REAL captures. Verified here rather than taken on trust — the layout's component body is
-  // `return <>{children}</>`, with no redirect, no verifyAdmin and no NODE_ENV check anywhere in it.
-  // ⚠️ SO THE PAGE WAS PUBLIC AND UNINDEXED FOR FIVE DAYS, on a reason that had already expired. The
-  // old comment's own instruction — "FLIP THIS BACK THE SAME DAY THE GATE COMES OFF" — was correct
-  // and was simply not carried out. This is that flip.
-  // 🔴 IF THE GATE EVER GOES BACK, THIS GOES BACK IN THE SAME COMMIT. The two belong together, and
-  // the last time they were separated it cost five days of invisibility and a comment that lied.
-  robots: { index: true, follow: true },
-
-  alternates: { canonical: 'https://www.hatchgrab.com/' },
-
-  // ── OPEN GRAPH + TWITTER. There were none, so a link pasted into a WhatsApp group or a Facebook
-  // traders' group rendered bare — which, given that outreach here happens in exactly those places,
-  // is a more immediate cost than anything Google does.
-  // ⚠️ THE IMAGE IS AN EXISTING ASSET, NOT A NEW ONE: public/logos/hatchgrab-share-card.png, and the
-  // dimensions below are READ FROM THE PNG HEADER (1200×630), not copied from another file. The root
-  // layout carries a note about exactly this trap — a previous pair declared 1200×630 over a
-  // 2397×1270 file. Re-measure if the card is ever re-rendered.
-  openGraph: {
-    type: 'website',
-    siteName: 'HatchGrab',
-    url: 'https://www.hatchgrab.com/',
-    title: 'Food truck & mobile catering ordering system — HatchGrab UK',
+    // ── DESCRIPTION. There was none before; the page inherited the root layout's brand-generic one.
+    // Problem-shaped, in an operator's own words, and it names the one thing this is NOT so the wrong
+    // buyer self-selects out of the click rather than out of the trial. "POS" appears exactly once and
+    // only to draw that boundary.
+    // ⚠️ "MESSAGES GOING UNANSWERED" IS STILL LEFT OUT, AND THE REASON HAS CHANGED (16 September 2026).
+    // It was excluded because WhatsApp auto-replies were coming soon behind WHATSAPP_LIVE; the flag is now
+    // true and the feature ships. It stays out on EDITORIAL grounds instead: this description is two lines
+    // of search metadata for "ordering and kitchen-screen software", and auto-replies are not what someone
+    // typing that is looking for. 🔴 If it is ever added, it is now a factual claim rather than a forbidden
+    // one — but check the flag before assuming that, because metadata is the place nobody re-reads.
     description:
       'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
-      + 'software for UK food trucks and mobile catering — not a POS.',
-    images: [{ url: 'https://www.hatchgrab.com/logos/hatchgrab-share-card.png', width: 1200, height: 630, alt: 'HatchGrab' }],
-    locale: 'en_GB',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Food truck & mobile catering ordering system — HatchGrab UK',
-    description:
-      'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
-      + 'software for UK food trucks and mobile catering — not a POS.',
-    images: ['https://www.hatchgrab.com/logos/hatchgrab-share-card.png'],
-  },
+      + `software for ${c.short} food trucks and mobile catering — not a POS.`,
+
+    // ── 🟢 INDEXABLE, 8 September 2026. WHAT THIS REPLACED AND WHY IT WAS WRONG:
+    // the previous comment read "noindex RESTORED … the admin gate in layout.tsx is back on while the
+    // Pizzeria Gusto testimonial is unpermissioned and the screenshots are placeholders."
+    // 🔴 EVERY CLAUSE OF THAT WAS FALSE BY 3 SEPTEMBER. app/landing/layout.tsx records the gate being
+    // REMOVED that day, and records WHY: the testimonial has WRITTEN PERMISSION and the hero shots are
+    // REAL captures. Verified here rather than taken on trust — the layout's component body is
+    // `return <>{children}</>`, with no redirect, no verifyAdmin and no NODE_ENV check anywhere in it.
+    // ⚠️ SO THE PAGE WAS PUBLIC AND UNINDEXED FOR FIVE DAYS, on a reason that had already expired. The
+    // old comment's own instruction — "FLIP THIS BACK THE SAME DAY THE GATE COMES OFF" — was correct
+    // and was simply not carried out. This is that flip.
+    // 🔴 IF THE GATE EVER GOES BACK, THIS GOES BACK IN THE SAME COMMIT. The two belong together, and
+    // the last time they were separated it cost five days of invisibility and a comment that lied.
+    robots: { index: true, follow: true },
+
+    alternates: { canonical: 'https://www.hatchgrab.com/' },
+
+    // ── OPEN GRAPH + TWITTER. There were none, so a link pasted into a WhatsApp group or a Facebook
+    // traders' group rendered bare — which, given that outreach here happens in exactly those places,
+    // is a more immediate cost than anything Google does.
+    // ⚠️ THE IMAGE IS AN EXISTING ASSET, NOT A NEW ONE: public/logos/hatchgrab-share-card.png, and the
+    // dimensions below are READ FROM THE PNG HEADER (1200×630), not copied from another file. The root
+    // layout carries a note about exactly this trap — a previous pair declared 1200×630 over a
+    // 2397×1270 file. Re-measure if the card is ever re-rendered.
+    openGraph: {
+      type: 'website',
+      siteName: 'HatchGrab',
+      url: 'https://www.hatchgrab.com/',
+      title: `Food truck & mobile catering ordering system — HatchGrab ${c.short}`,
+      description:
+        'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
+        + `software for ${c.short} food trucks and mobile catering — not a POS.`,
+      images: [{ url: 'https://www.hatchgrab.com/logos/hatchgrab-share-card.png', width: 1200, height: 630, alt: 'HatchGrab' }],
+      locale: c.ogLocale,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Food truck & mobile catering ordering system — HatchGrab ${c.short}`,
+      description:
+        'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
+        + `software for ${c.short} food trucks and mobile catering — not a POS.`,
+      images: ['https://www.hatchgrab.com/logos/hatchgrab-share-card.png'],
+    },
+  }
 }
 
 // Compare-table columns: Trial | Starter | Pro | Max — mirrors Manage → Billing (the point is that Trial
@@ -202,6 +208,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
   // Phase 2D-1: the VISITOR'S country (?country → hg_country cookie → x-vercel-ip-country → GB, switched-on
   // only — lib/visitor-country.ts), resolved here on the server so the first paint has the right prices.
   const visitor = await resolveVisitorCountry((await searchParams)?.country)
+  const seo = marketingCountry(visitor.settings)   // 🔴 D37: the JSON-LD's country (GB: UK, United Kingdom, en-GB)
   const s = visitor.settings
   const prices = planPrices(s)
   const allowances = planAllowances(s)
@@ -251,9 +258,9 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                 applicationCategory: 'BusinessApplication',
                 applicationSubCategory: 'Food truck and mobile catering ordering system',
                 url: 'https://www.hatchgrab.com/',
-                description: 'Ordering, pre-orders and a kitchen screen for UK food trucks and mobile catering.',
-                inLanguage: 'en-GB',
-                areaServed: { '@type': 'Country', name: 'United Kingdom' },
+                description: `Ordering, pre-orders and a kitchen screen for ${seo.short} food trucks and mobile catering.`,
+                inLanguage: seo.lang,
+                areaServed: { '@type': 'Country', name: seo.name },
                 audience: { '@type': 'BusinessAudience', audienceType: 'Food truck and mobile catering operators' },
                 publisher: { '@type': 'Organization', name: 'HatchGrab', url: 'https://www.hatchgrab.com/' },
               }) }}

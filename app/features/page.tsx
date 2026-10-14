@@ -40,51 +40,61 @@ import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'  
 import { FeatureComparison } from '@/components/landing/FeatureComparison'
 // 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
+import { marketingCountry } from '@/lib/marketing-meta'
 import '../landing/landing.css'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  // ── TITLE. Its own, in the landing's style: terms first, brand last, under Google's ~60 chars.
-  // 🔴 `absolute`, NOT a bare string — app/layout.tsx declares `title: { template: '%s | HatchGrab' }`,
-  // so a plain string renders the brand twice. The landing page carries the same note and the same fix,
-  // and it was caught there in the SERVED <head> rather than in the source.
-  title: { absolute: 'Plans & features compared — HatchGrab UK' },
+// 🔴 US readiness (D37): the tags name the visitor's country — lib/marketing-meta.ts. For GB every value is the
+// literal this page carried before ("UK", en_GB), byte-identical.
+export async function generateMetadata({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  // 🔴 The brand gate first, as the page does — no country is read for a host this route does not serve.
+  if (!(await onHatchGrab())) {
+    notFound()
+  }
+  const c = marketingCountry((await resolveVisitorCountry((await searchParams)?.country)).settings)
+  return {
+    // ── TITLE. Its own, in the landing's style: terms first, brand last, under Google's ~60 chars.
+    // 🔴 `absolute`, NOT a bare string — app/layout.tsx declares `title: { template: '%s | HatchGrab' }`,
+    // so a plain string renders the brand twice. The landing page carries the same note and the same fix,
+    // and it was caught there in the SERVED <head> rather than in the source.
+    title: { absolute: `Plans & features compared — HatchGrab ${c.short}` },
 
-  // ⚠️ IT NAMES THE TIERS AND THE FREE MONTH, which is what the page actually answers. It deliberately
-  // does NOT repeat the landing's "not a POS" boundary — that line is there to make the wrong buyer
-  // self-select out of a click on a page ABOUT the product; someone searching a feature comparison has
-  // already decided what they are looking at.
-  description:
-    'Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and '
-    + 'allowances. Your first month includes everything.',
-
-  robots: { index: true, follow: true },
-
-  alternates: { canonical: 'https://www.hatchgrab.com/features' },
-
-  // ── OPEN GRAPH + TWITTER, same shape as the landing's. The image is the EXISTING share card —
-  // public/logos/hatchgrab-share-card.png — and the dimensions below are the ones read from that PNG's
-  // header for the landing page (1200×630), not a fresh guess. ⚠️ Re-measure if the card is re-rendered.
-  openGraph: {
-    type: 'website',
-    siteName: 'HatchGrab',
-    url: 'https://www.hatchgrab.com/features',
-    title: 'Plans & features compared — HatchGrab UK',
+    // ⚠️ IT NAMES THE TIERS AND THE FREE MONTH, which is what the page actually answers. It deliberately
+    // does NOT repeat the landing's "not a POS" boundary — that line is there to make the wrong buyer
+    // self-select out of a click on a page ABOUT the product; someone searching a feature comparison has
+    // already decided what they are looking at.
     description:
       'Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and '
       + 'allowances. Your first month includes everything.',
-    images: [{ url: 'https://www.hatchgrab.com/logos/hatchgrab-share-card.png', width: 1200, height: 630, alt: 'HatchGrab' }],
-    locale: 'en_GB',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Plans & features compared — HatchGrab UK',
-    description:
-      'Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and '
-      + 'allowances. Your first month includes everything.',
-    images: ['https://www.hatchgrab.com/logos/hatchgrab-share-card.png'],
-  },
+
+    robots: { index: true, follow: true },
+
+    alternates: { canonical: 'https://www.hatchgrab.com/features' },
+
+    // ── OPEN GRAPH + TWITTER, same shape as the landing's. The image is the EXISTING share card —
+    // public/logos/hatchgrab-share-card.png — and the dimensions below are the ones read from that PNG's
+    // header for the landing page (1200×630), not a fresh guess. ⚠️ Re-measure if the card is re-rendered.
+    openGraph: {
+      type: 'website',
+      siteName: 'HatchGrab',
+      url: 'https://www.hatchgrab.com/features',
+      title: `Plans & features compared — HatchGrab ${c.short}`,
+      description:
+        'Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and '
+        + 'allowances. Your first month includes everything.',
+      images: [{ url: 'https://www.hatchgrab.com/logos/hatchgrab-share-card.png', width: 1200, height: 630, alt: 'HatchGrab' }],
+      locale: c.ogLocale,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Plans & features compared — HatchGrab ${c.short}`,
+      description:
+        'Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and '
+        + 'allowances. Your first month includes everything.',
+      images: ['https://www.hatchgrab.com/logos/hatchgrab-share-card.png'],
+    },
+  }
 }
 
 /** The one place this route asks which brand it is serving. Same shape as app/compare/page.tsx. */

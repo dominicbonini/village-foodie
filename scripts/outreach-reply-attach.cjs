@@ -455,7 +455,10 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
     check(/generatePlansPdf\(visitor\.settings\.countryCode\)/.test(ROUTE) && /resolveVisitorCountry\(/.test(ROUTE), "Admin's download button uses it, for the admin's chosen country…")
     check(/verifyAdmin\(\)/.test(ROUTE), '…and still has the gate that is the only thing between it and the internet')
     const ATT = readStripped('app/api/admin/outreach/attachments/route.ts')
-    check(/generatePlansPdf\('GB'\)/.test(ATT), '🔴 …and so does the attach button — ONE generator, two callers, both GB')
+    // 13 October 2026 (US readiness sweep): the attach button now passes the PROSPECT'S country
+    // (discovery_trucks.country, else 'GB') — proven per prospect by scripts/us-readiness.cjs §5.
+    check(/generatePlansPdf\(country\)/.test(ATT) && /const country = await prospectCountry\(prospectId\)/.test(ATT) && /: 'GB'\n\}/.test(ATT),
+      "🔴 …and so does the attach button — ONE generator, two callers; the prospect's country, else GB")
     check(/plansPdfFilename\(\)/.test(ATT) && /plansPdfFilename\(\)/.test(ROUTE),
       'both name the file the same way, from one function')
     const d = new Date('2026-09-30T12:00:00Z')

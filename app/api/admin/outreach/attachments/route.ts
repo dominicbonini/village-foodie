@@ -33,6 +33,17 @@ const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SE
 
 const refuse = (message: string) => NextResponse.json({ ok: false, refusal: message }, { status: 200 })
 
+/** The prospect's country for its plans PDF, else 'GB' (see the plans_pdf action). */
+async function prospectCountry(prospectId: string): Promise<string> {
+  const { data: prospect, error: pErr } = await supabase.from('outreach_prospects')
+    .select('discovery_truck_id').eq('id', prospectId).maybeSingle()
+  if (pErr || !prospect?.discovery_truck_id) return 'GB'
+  const { data: truck, error: tErr } = await supabase.from('discovery_trucks')
+    .select('country').eq('id', prospect.discovery_truck_id).maybeSingle()
+  const code = typeof truck?.country === 'string' ? truck.country.trim().toUpperCase() : ''
+  return !tErr && /^[A-Z]{2}$/.test(code) ? code : 'GB'
+}
+
 /** How long a download link lives. Long enough to click, short enough not to be worth forwarding. */
 const DOWNLOAD_TTL_SECONDS = 300
 
@@ -87,12 +98,13 @@ export async function POST(req: NextRequest) {
   if (action === 'plans_pdf') {
     const prospectId = String(body.prospect_id ?? '')
     if (!prospectId) return NextResponse.json({ error: 'prospect_id required' }, { status: 400 })
+    // 🔴 US readiness: the price list is the PROSPECT'S country — discovery_trucks.country, reached through
+    // outreach_prospects.discovery_truck_id (20261010_15). No link, no row, a read error or anything that is not
+    // a two-letter code → 'GB', which is what every prospect was sent before.
+    const country = await prospectCountry(prospectId)
     let pdf: Buffer
     try {
-      // 🔴 'GB', EXPLICITLY: outreach prospects have no country yet (discovery_trucks / outreach_prospects
-      // carry none — docs/international-audit-report.md §N-01), so every prospect is sent the UK price
-      // list. When a prospect carries a country, pass it here instead of this literal.
-      pdf = await generatePlansPdf('GB')
+      pdf = await generatePlansPdf(country)
     } catch (err) {
       console.error('[outreach/attachments] plans PDF generation failed:', (err as { message?: string })?.message || err)
       return refuse('The plans PDF could not be generated just now. Try again, or attach a saved copy.')

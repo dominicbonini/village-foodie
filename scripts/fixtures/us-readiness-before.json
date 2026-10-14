@@ -1,0 +1,98 @@
+{
+ "captured_on": "checkpoint e54c7ea, before any edit of this sweep",
+ "views": {
+  "allergenPrompts": {
+   "structure": "You are extracting allergen information from a food truck allergen card.\n\nExtract and structure all allergen information clearly.\n\nReturn ONLY valid JSON, no markdown:\n{\n  \"summary\": \"Brief one-line summary e.g. 'Our kitchen handles nuts, dairy and gluten'\",\n  \"contains\": [\"Dairy\", \"Gluten\", \"Eggs\"],\n  \"may_contain\": [\"Nuts\", \"Soy\"],\n  \"free_from\": [\"Shellfish\", \"Fish\"],\n  \"dietary_options\": [\"Vegetarian options available\", \"Vegan options available\"],\n  \"additional_notes\": \"Any other relevant allergen information\",\n  \"formatted_text\": \"The full allergen information formatted as clear readable text for customers\",\n  \"entries\": [\n    { \"name\": \"Pad Thai\", \"allergens\": [\"Peanuts\", \"Gluten\", \"Crustaceans\"], \"confidence\": \"high\" }\n  ],\n  \"blanket\": [\"Tree nuts\"],\n  \"cross_contamination\": [\"Fryer shared with gluten-containing items\"]\n}\n\nStandard allergens to look for (the 14 UK statutory allergens — use these EXACT names):\nGluten, Crustaceans, Eggs, Fish, Peanuts, Soy, Dairy, Tree nuts,\nCelery, Mustard, Sesame, Sulphites, Lupin, Molluscs\n\nPER-DISH \"entries\" — extract a list of { name, allergens[], confidence } ONLY when the card links allergens\nto SPECIFIC named dishes/items. Cover these card formats:\n- MATRIX (dishes in rows, allergens in columns, ticks/✓/X) → one entry per dish, allergens = the ticked columns.\n- FOOTNOTE CODES (\"Pad Thai 1,3,7\" with a legend \"1=Gluten, 3=Eggs, 7=Peanuts\") → RESOLVE each code to its\n  allergen NAME via the legend before emitting. If the legend is MISSING or only partial, still emit the dish\n  but set \"confidence\":\"low\" (so the operator double-checks) — never emit an unresolved numeric code.\n- \"name\" = the dish name EXACTLY as printed on the card (so it can be matched to the menu). \"confidence\" =\n  \"high\" for a clear matrix tick / fully-resolved codes; \"low\" when you had to guess or the legend was incomplete.\n\nSTATED-DATA-ONLY (safety-critical): extract an allergen for a dish ONLY from an explicit tick/code/label on\nthe card. NEVER infer an allergen from the dish NAME or what it \"probably\" contains. If a dish has no stated\nallergen data, omit it from \"entries\".\n\nNON-PER-DISH statements — do NOT force these into \"entries\":\n- A blanket statement covering ALL food (\"everything may contain nuts\", \"all items handled in a kitchen with\n  gluten\") → put the allergen name(s) in \"blanket\".\n- A category/prose statement (\"all curries contain peanuts\") that names a CATEGORY not a specific dish → put\n  the sentence in \"cross_contamination\" (the operator decides which dishes) — do NOT expand it to dishes.\n- Cross-contamination / shared-equipment notes (\"fryer shared with gluten\") → \"cross_contamination\".\n\n\"free_from\" is an ABSENCE claim — list it in free_from ONLY; NEVER convert a free-from into a dish allergen.\n\nIf information is unclear or not present for a field, use an empty array or null. Be precise — the 14 EXACT\nnames only; map \"milk\"→\"Dairy\". Leave generic \"Nuts\"/\"Shellfish\" as written (the operator refines them).\n\nAllergen information:\nMargherita contains milk and wheat.",
+   "transcribe": "You are transcribing the allergen and dietary information from a food truck's allergen card so the operator can review it.\n\nRead ONLY the allergen- and dietary-relevant text off the card and return it as plain prose, faithfully.\n\nRULES:\n- Preserve the operator's OWN wording and phrasing, including any per-dish or caveat statements (e.g. \"all fish & chips contain wheat, milk\", \"fryer shared with nuts\", \"lactose\").\n- Keep every term EXACTLY as written. Do NOT map, rename, or normalise anything — e.g. do NOT change \"lactose\" to \"Dairy\", do NOT change \"milk\" to \"Dairy\". Do NOT map to any standard allergen list.\n- Do NOT restructure into \"Contains: X, Y\" unless the card itself is written that way.\n- IGNORE prices, decoration, logos, and any content that is not allergen/dietary information.\n- Preserve line breaks and list structure where the card has them.\n- Return ONLY the transcribed text — no preamble, no JSON, no markdown, no commentary.\n\nAllergen information:\nMargherita contains milk and wheat."
+  },
+  "menuPrompt": "You are a menu digitisation assistant for a food truck called \"Pizza Kitchen\".\n\nExtract all menu items from the content provided.\n\nAvailable categories (use these exactly, pick the best fit):\n- Starters\n- Mains\n- Burgers\n- Pizza\n- Wraps & Sandwiches\n- Sides\n- Dips & Sauces\n- Desserts\n- Drinks\n- Kids Menu\n- Specials\n- Other\n\nRules:\n- Use existing category names when they match\n- Each item needs: name, price (number, no currency symbol), category\n- description: the dish description ONLY — do NOT include allergen labels, dietary info, or \"Contains/May contain\" text in the description\n- allergens: extract any STATED allergen labels as a separate array (e.g. [\"Dairy\", \"Gluten\", \"Peanuts\"])\n  The 14 UK statutory allergens (use these EXACT names): Gluten, Crustaceans, Eggs, Fish, Peanuts, Soy, Dairy, Tree nuts, Celery, Mustard, Sesame, Sulphites, Lupin, Molluscs\n  (Also accept \"Lactose\" when the menu states it specifically.) Map common menu wording to these names:\n  \"milk\" → Dairy; \"nuts\"/\"almonds\"/\"cashews\"/\"walnuts\"/\"hazelnuts\" → Tree nuts; \"peanuts\"/\"groundnuts\" → Peanuts;\n  \"prawn\"/\"shrimp\"/\"crab\"/\"lobster\"/\"crayfish\" → Crustaceans; \"mussels\"/\"clams\"/\"oysters\"/\"squid\"/\"octopus\" → Molluscs;\n  \"soya\"/\"soybeans\" → Soy; \"sulphur dioxide\"/\"sulfites\" → Sulphites.\n  Normalise prefixes — \"Includes Dairy\" / \"Contains Dairy\" both become \"Dairy\"; \"May Contain Peanuts\" becomes \"Peanuts\".\n- ALLERGENS ARE STATED-DATA ONLY (same discipline as spiciness below — do NOT guess): extract an allergen\n  ONLY when the source menu STATES it — an explicit label ('GF', 'VG', 'contains nuts', 'N'), a listed\n  ingredient that is itself an allergen, or an allergen / \"contains\" / \"may contain\" note. NEVER infer an\n  allergen from the dish NAME alone or from what a dish \"probably\" contains. If there is NO stated allergen\n  data for an item, leave its allergens array EMPTY — do not guess.\n- dietary: extract dietary preference labels as a separate array (e.g. [\"Vegetarian\", \"Vegan\", \"Halal\", \"Kosher\"])\n- spiciness: a BEST-EFFORT integer heat rating from 1 to 3, ONLY when there's a clear signal.\n  Chili emoji: one chili (e.g. 🌶) = 1, two = 2, three = 3.\n  Wording: \"mild\" = 1; \"medium\" = 2; \"hot\"/\"very spicy\"/\"extra hot\" = 3; \"spice level N\" = N (clamp to 1-3).\n  If there is NO clear spice signal, OMIT the field (or set it null) — do NOT guess. Most items have no spiciness.\n- If price is unclear or missing, use 0\n- Group items logically — don't create more than 8 categories\n- Return ONLY valid JSON, no markdown\n\nMODIFIER GROUPS (options/variants) — each item MAY carry an optional \"modifierGroups\" array:\n- VARIANT COLLAPSING (be EAGER): when the SAME base dish is listed multiple times differing ONLY by\n  one varying axis (protein/size/etc.), COLLAPSE them into ONE item using the base name, plus a\n  modifierGroup of the varying options. Each option price is the DELTA above the base (cheapest)\n  price. Mark these groups \"_inferredFromVariants\": true.\n  - DETERMINISTIC RULE (always apply): if two or more items share an IDENTICAL base-name prefix and\n    the ONLY difference is a single trailing/embedded PROTEIN or SIZE token, ALWAYS collapse them into\n    ONE item with a choice group — REGARDLESS of whether the prices are equal or differ.\n    • Protein tokens: Beef, Chicken, Prawn, Prawns, Duck, Veg, Vegetable, Vegetarian, Tofu, Lamb,\n      Pork, Fish, Salmon, Paneer, Halloumi, Mushroom, King Prawn.\n    • Size tokens: Small, Regular, Medium, Large, Sm, Reg, Lg.\n  - ANTI-OVER-MERGE GUARD (sharpened): do NOT collapse items whose differing token is NOT a protein\n    or size. If the difference is a dish-TYPE word — sauce/curry/flavour/topping — they are DIFFERENT\n    dishes, keep them SEPARATE. E.g. \"Green Curry\" vs \"Red Curry\" differ by curry-TYPE (not protein)\n    → TWO dishes. \"Margherita Pizza\" vs \"Pepperoni Pizza\" differ by topping → TWO dishes.\n  - WORKED EXAMPLES:\n    • \"Tom Yum Prawn £9.50 / Tom Yum Chicken £9.50\" → ONE item \"Tom Yum\" + protein group\n      [Prawn £0, Chicken £0]. (Equal price still collapses — protein token differs.)\n    • \"Pad Thai Beef £9 / Pad Thai Prawn £10.50 / Pad Thai Chicken £9\" → ONE item \"Pad Thai\" + protein\n      group [Beef £0, Chicken £0, Prawn £1.50].\n    • \"Green Curry Chicken / Red Curry Chicken\" → TWO dishes (the differing token Green/Red is a\n      curry-TYPE, not a protein — keep separate).\n  - \"similar price\" (when used as a soft signal elsewhere) means within £1; but per the deterministic\n    rule above, price equality is NOT required to collapse a protein/size variant. Over-grouping a\n    protein/size axis is cheap (the operator can split later); under-grouping is worse — so lean in.\n- EXPLICIT GROUPS: when the menu STATES a choice (\"choice of protein: chicken/beef/prawn\",\n  \"add extras (£1.50): cheese, bacon\"), extract it as a modifierGroup directly. These are NOT\n  inferred — set \"_inferredFromVariants\": false.\n- Each option is { \"name\", \"price\", \"allergens\"?, \"dietary\"? }. The price is the up-charge above the\n  item's base price (0 for no extra charge).\n- \"isRequired\": whether the customer MUST choose. Set true ONLY on EXPLICIT signals (\"choose one\",\n  \"select your…\", \"required\", \"pick a…\"). DEFAULT false. (A wrong \"required\" blocks ordering, so\n  when in doubt, false.)\n- \"singleSelect\": whether only ONE option may be picked. A variant-inferred group (pick one\n  protein) MAY be true. An \"add extras\" list is false (multi). DEFAULT false when unclear.\n- OPTION allergens/dietary: extract these for each option the SAME way you do for dishes — populate\n  \"allergens\"/\"dietary\" when the option's name or the menu text indicates one (e.g. Prawn →\n  [\"Crustaceans\"], Cheese → [\"Dairy\"], Halloumi → [\"Dairy\"]), using the SAME normalised allergen/\n  dietary vocabulary as the dish rules above. Omit (or empty) when there is no signal. The operator\n  reviews and is responsible for the final allergen info — your job is to surface what you detect.\n\n\nResponse format:\n{\n  \"categories\": [\"Mains\", \"Sides\", \"Drinks\"],\n  \"items\": [\n    {\n      \"name\": \"Tiramisu\",\n      \"description\": \"Layers of delicate ladyfingers soaked in espresso and marsala wine, mascarpone, cream and a dusting of cocoa.\",\n      \"price\": 6.50,\n      \"category\": \"Desserts\",\n      \"allergens\": [\"Dairy\", \"Lactose\", \"Gluten\", \"Eggs\"],\n      \"dietary\": [\"Vegetarian\"],\n      \"spiciness\": null\n    },\n    {\n      \"name\": \"Pad Thai\",\n      \"description\": \"Stir-fried rice noodles with egg, beansprouts, peanuts and tamarind.\",\n      \"price\": 9.00,\n      \"category\": \"Mains\",\n      \"allergens\": [\"Peanuts\", \"Eggs\"],\n      \"dietary\": [],\n      \"spiciness\": 1,\n      \"modifierGroups\": [\n        {\n          \"name\": \"Protein\",\n          \"options\": [ { \"name\": \"Chicken\", \"price\": 0 }, { \"name\": \"Beef\", \"price\": 0 }, { \"name\": \"Prawn\", \"price\": 1.50, \"allergens\": [\"Crustaceans\"] } ],\n          \"isRequired\": false,\n          \"singleSelect\": true,\n          \"_inferredFromVariants\": true\n        }\n      ]\n    }\n  ]\n}\n\nMenu content:\nMargherita 9.50",
+  "landingMeta": {
+   "title": {
+    "absolute": "Food truck & mobile catering ordering system — HatchGrab UK"
+   },
+   "description": "Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen software for UK food trucks and mobile catering — not a POS.",
+   "robots": {
+    "index": true,
+    "follow": true
+   },
+   "alternates": {
+    "canonical": "https://www.hatchgrab.com/"
+   },
+   "openGraph": {
+    "type": "website",
+    "siteName": "HatchGrab",
+    "url": "https://www.hatchgrab.com/",
+    "title": "Food truck & mobile catering ordering system — HatchGrab UK",
+    "description": "Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen software for UK food trucks and mobile catering — not a POS.",
+    "images": [
+     {
+      "url": "https://www.hatchgrab.com/logos/hatchgrab-share-card.png",
+      "width": 1200,
+      "height": 630,
+      "alt": "HatchGrab"
+     }
+    ],
+    "locale": "en_GB"
+   },
+   "twitter": {
+    "card": "summary_large_image",
+    "title": "Food truck & mobile catering ordering system — HatchGrab UK",
+    "description": "Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen software for UK food trucks and mobile catering — not a POS.",
+    "images": [
+     "https://www.hatchgrab.com/logos/hatchgrab-share-card.png"
+    ]
+   }
+  },
+  "featuresMeta": {
+   "title": {
+    "absolute": "Plans & features compared — HatchGrab UK"
+   },
+   "description": "Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and allowances. Your first month includes everything.",
+   "robots": {
+    "index": true,
+    "follow": true
+   },
+   "alternates": {
+    "canonical": "https://www.hatchgrab.com/features"
+   },
+   "openGraph": {
+    "type": "website",
+    "siteName": "HatchGrab",
+    "url": "https://www.hatchgrab.com/features",
+    "title": "Plans & features compared — HatchGrab UK",
+    "description": "Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and allowances. Your first month includes everything.",
+    "images": [
+     {
+      "url": "https://www.hatchgrab.com/logos/hatchgrab-share-card.png",
+      "width": 1200,
+      "height": 630,
+      "alt": "HatchGrab"
+     }
+    ],
+    "locale": "en_GB"
+   },
+   "twitter": {
+    "card": "summary_large_image",
+    "title": "Plans & features compared — HatchGrab UK",
+    "description": "Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and allowances. Your first month includes everything.",
+    "images": [
+     "https://www.hatchgrab.com/logos/hatchgrab-share-card.png"
+    ]
+   }
+  },
+  "placeholders": {
+   "address": "e.g. 123 High St, Wickhambrook",
+   "area": "e.g. Wickhambrook",
+   "paste": "Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
+  },
+  "plans": {
+   "status": 200,
+   "ok": true,
+   "countries": [
+    "GB"
+   ]
+  },
+  "togglesNoProvider": "Gluten Crustaceans Eggs Fish Peanuts Soy Dairy Tree nuts Celery Mustard Sesame Sulphites Lupin Molluscs",
+  "togglesGb": "Gluten Crustaceans Eggs Fish Peanuts Soy Dairy Tree nuts Celery Mustard Sesame Sulphites Lupin Molluscs"
+ }
+}

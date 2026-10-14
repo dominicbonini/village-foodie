@@ -22,6 +22,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { provisionTruck, ProvisionError } from '@/lib/provision-truck'
 import { extractMenu, MenuExtractionError, type MenuExtraction } from '@/lib/menu-extract'
 import { moneyFormatForTruck } from '@/lib/money-server'
+import { countrySettingsForTruck } from '@/lib/country-settings'
 import { commitMenu, type CommitMenuResult } from '@/lib/menu-commit'
 import { buildDemoAssumptions } from '@/lib/demo-assumptions'
 import type { DemoKitchen } from '@/lib/demo-kitchen'
@@ -400,7 +401,9 @@ async function buildMenu(
     let extraction: MenuExtraction | null = null
     try {
       // The prompt's examples are written in the TRUCK's currency symbol (Phase 2A).
-      extraction = await extractMenu(supabase, { ...truck, money: await moneyFormatForTruck(truckRow ?? {}) }, { file: input.file, text: input.text })
+      // …and its allergen list (US readiness, D35) — a demo truck's country decides, like its money.
+      const allergenSet = await countrySettingsForTruck(truckRow ?? {}).then(c => c.allergenSet).catch(() => undefined)
+      extraction = await extractMenu(supabase, { ...truck, money: await moneyFormatForTruck(truckRow ?? {}), allergenSet }, { file: input.file, text: input.text })
     } catch (err) {
       warnings.push(`Extraction failed: ${err instanceof MenuExtractionError ? err.message : 'unknown'}`)
     }

@@ -297,7 +297,9 @@ module.exports = async function us(h) {
     // the move
     const P = read('app/manage/[token]/page.tsx')
     const { execFileSync } = require('child_process')
-    const headSrc = execFileSync('git', ['show', 'HEAD:app/manage/[token]/page.tsx'], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
+    // 🔴 PINNED TO 3033a53, the commit Phase 3 started from (13 October 2026). It read HEAD while Phase 3 was
+    // uncommitted; the checkpoint e54c7ea folded the move into HEAD, so HEAD no longer holds the block that moved.
+    const headSrc = execFileSync('git', ['show', '3033a53:app/manage/[token]/page.tsx'], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
     const was = headSrc.slice(headSrc.indexOf('        {/* ── TAKING PAYMENT (V9.5)'), headSrc.indexOf('        {/* ── OPENING AND CLOSING'))
     const panelSrc = read('components/manage/TakingPaymentPanel.tsx')
     t('named difference 1: the Taking payment block is in components/manage/TakingPaymentPanel.tsx byte for byte (only its outer separator wrapper changed)',
@@ -318,7 +320,7 @@ module.exports = async function us(h) {
         .replace(/  \/\/ ── ⛔ `completionPresses` MOVED WITH[^\n]*\n(  \/\/[^\n]*\n)*/, '')
       const headStripped = headR.replace(was, '')
         .replace(/  \/\/ ── THE RESOLVED COMPLETION SETTING, ONE PLACE ON THIS PAGE[^\n]*\n(  \/\/[^\n]*\n)*  const completionPresses: 'one' \| 'two' =\n    form\.completion_presses \?\? \(form\.show_paid_step === true \? 'two' : 'one'\)\n/, '')
-      t('…and ONLY that block left Settings: the rest of SettingsTab is identical to HEAD',
+      t('…and ONLY that block left Settings: the rest of SettingsTab is identical to 3033a53',
         headStripped.length > 100000 && headStripped === nowStripped,
         headStripped === nowStripped ? '' : `HEAD ${headStripped.length} chars vs now ${nowStripped.length}`)
     }

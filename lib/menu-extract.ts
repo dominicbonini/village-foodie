@@ -12,6 +12,8 @@
 // anti-over-merge guard, allergens-are-stated-data-only). Do not tidy it — behaviour changes silently and
 // only surfaces as a worse import weeks later.
 
+// US readiness (D35): the truck's country's allergen list (absent ⇒ the UK 14, byte-identical).
+import { menuExtractAllergenLines, menuExtractAllergenExample, type AllergenSet } from '@/lib/allergens'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { currencySymbol, type MoneyFormat } from '@/lib/money-format'
 
@@ -65,7 +67,7 @@ export async function extractMenu(
   supabase: SupabaseClient,
   /** 🔴 `money` is the TRUCK's format (lib/money-server moneyFormatForTruck): the prompt's worked examples
    *  are written in its symbol, so a US menu is described in dollars. GB text is unchanged. */
-  truck: { id: string; name: string; money: MoneyFormat },
+  truck: { id: string; name: string; money: MoneyFormat; allergenSet?: AllergenSet },
   input: { file?: File | null; text?: string | null },
 ): Promise<MenuExtraction> {
   const S = currencySymbol(truck.money)
@@ -128,13 +130,8 @@ Rules:
 - Use existing category names when they match
 - Each item needs: name, price (number, no currency symbol), category
 - description: the dish description ONLY — do NOT include allergen labels, dietary info, or "Contains/May contain" text in the description
-- allergens: extract any STATED allergen labels as a separate array (e.g. ["Dairy", "Gluten", "Peanuts"])
-  The 14 UK statutory allergens (use these EXACT names): Gluten, Crustaceans, Eggs, Fish, Peanuts, Soy, Dairy, Tree nuts, Celery, Mustard, Sesame, Sulphites, Lupin, Molluscs
-  (Also accept "Lactose" when the menu states it specifically.) Map common menu wording to these names:
-  "milk" → Dairy; "nuts"/"almonds"/"cashews"/"walnuts"/"hazelnuts" → Tree nuts; "peanuts"/"groundnuts" → Peanuts;
-  "prawn"/"shrimp"/"crab"/"lobster"/"crayfish" → Crustaceans; "mussels"/"clams"/"oysters"/"squid"/"octopus" → Molluscs;
-  "soya"/"soybeans" → Soy; "sulphur dioxide"/"sulfites" → Sulphites.
-  Normalise prefixes — "Includes Dairy" / "Contains Dairy" both become "Dairy"; "May Contain Peanuts" becomes "Peanuts".
+- allergens: extract any STATED allergen labels as a separate array (e.g. ${menuExtractAllergenExample(truck.allergenSet)})
+${menuExtractAllergenLines(truck.allergenSet)}
 - ALLERGENS ARE STATED-DATA ONLY (same discipline as spiciness below — do NOT guess): extract an allergen
   ONLY when the source menu STATES it — an explicit label ('GF', 'VG', 'contains nuts', 'N'), a listed
   ingredient that is itself an allergen, or an allergen / "contains" / "may contain" note. NEVER infer an

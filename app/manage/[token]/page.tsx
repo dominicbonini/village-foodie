@@ -15,7 +15,9 @@ import { ToastStack } from '@/components/ToastStack'
 import { isValidEmail } from '@/lib/contact-validation'
 import { isPlausiblePhone, phoneErrorMessage, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
 import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
-import { CountrySettingsProvider, useCountrySettings } from '@/components/CountrySettingsProvider'
+import { CountrySettingsProvider, useCountrySettings, useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
+import { allergenVocab, genericReplacements } from '@/lib/allergens'
+import { addressPlaceholders, pastePlaceholder } from '@/lib/copy/addressPlaceholders'   // 🔴 US readiness: Schedule's example addresses by address style
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
 import { moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
 import { perMonthLabel, formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-format'
@@ -101,7 +103,7 @@ import { configureStatusBar } from '@/lib/native/statusBar'
 /* ⚠️ `Select` IS THE SHARED NON-NATIVE ONE (5 October 2026). WebKit ignores vertical padding and
  * `min-height` on a native `<select>` and renders it at 23px — see §65 — so the Add/Edit event form's
  * last three native selects (start hour/minute, end hour/minute, Van) use this instead. */
-import { Spinner, Badge, Btn, Input, Card, EmptyState, Toggle, Select, AllergenToggles, DietaryToggles, AllergenModeChooser, OptionCardChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
+import { Spinner, Badge, Btn, Input, Card, EmptyState, Toggle, Select, AllergenToggles, DietaryToggles, AllergenModeChooser, OptionCardChooser, DIETARY_VOCAB } from '@/components/manage/primitives'
 import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'
 import ExtrasEditor from '@/components/manage/ExtrasEditor'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
@@ -1711,11 +1713,8 @@ const VARIANT_AXIS_TOKENS: Record<string, 'protein' | 'size'> = {
 // Legacy generics: slice-1 removed 'Nuts'/'Shellfish' from the vocab. A row may still carry one
 // (e.g. Gusto). We SHOW it and BLOCK confirm until the operator picks the precise allergen of
 // that family — dropping a generic without a precise replacement would under-warn (fatal).
-const GENERIC_REPLACEMENTS: Record<string, string[]> = {
-  Nuts: ['Tree nuts', 'Peanuts'],
-  Shellfish: ['Crustaceans', 'Molluscs'],
-}
-const isVocab = (a: string) => (ALLERGEN_VOCAB as readonly string[]).includes(a)
+// The families (UK: Nuts → Tree nuts/Peanuts, Shellfish → Crustaceans/Molluscs) and the list now come from
+// lib/allergens.ts by the truck's country — see the top of AllergenWizardModal.
 // EXACT, order-independent set-equality (safety-critical — drives allergen auto-re-verify). True ONLY when
 // both arrays hold the same members, no more, no fewer. Length guard + every-member-present catches both
 // "extra in a" and "extra in b" (toggle-built arrays have no dups, so length+membership is exact).
@@ -2031,6 +2030,12 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   onSaveCard?: (text: string) => Promise<void>                                        // CARD-ONLY mode: persist the operator's VERBATIM card text to trucks.allergen_info_text (no extraction)
   onTranscribeCard?: (file: File) => Promise<string | null>                          // CARD-ONLY mode: image → faithful PROSE transcription (process-allergens?mode=transcribe); fills the editor
 }) {
+  // 🔴 US readiness (D35): the truck's country list and its generic families (lib/allergens.ts). A UK truck
+  // reads exactly the UK list and families it always did; outside a provider it is the UK list too.
+  const allergenSet = useOptionalCountrySettings()?.allergenSet
+  const ALLERGEN_VOCAB = allergenVocab(allergenSet)
+  const GENERIC_REPLACEMENTS = genericReplacements(allergenSet)
+  const isVocab = (a: string) => ALLERGEN_VOCAB.includes(a)
   // mode 0 = chooser; 1 = per-dish review; 2 = card; 3 = per-dish CARD-UPLOAD page (#6, standalone only)
   const [mode, setMode] = useState<0 | 1 | 2 | 3>(initialMode)
   // #4: the chooser is SELECT-then-Next (no auto-advance). Holds the operator's pick until they press Next.
@@ -9986,10 +9991,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     UK format: street address → village/town + postcode
                     Future: extract to addressFieldConfig(locale) to support US/EU formats */}
                 <div className="sm:col-span-2">
-                  <Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder="e.g. 123 High St, Wickhambrook" />
+                  <Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder={addressPlaceholders(tabSettings.addressFormat).address} />
                 </div>
                 <div>
-                  <Input label="Area (village, town or city)" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />
+                  <Input label="Area (village, town or city)" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder={addressPlaceholders(tabSettings.addressFormat).area} />
                 </div>
                 <Input label="Postcode" value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder="e.g. CB8 8PD" />
                   </div>
@@ -10280,7 +10285,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   <textarea
                     value={uploadText}
                     onChange={e => setUploadText(e.target.value)}
-                    placeholder="Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
+                    placeholder={pastePlaceholder(tabSettings.addressFormat)}
                     rows={4}
                     className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />

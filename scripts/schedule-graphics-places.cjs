@@ -2015,6 +2015,22 @@ function runWiringSuite(lib) {
         reason: 'the Orders CSV gains Subtotal, the tax, Tip and Service fee columns — only where tax is added at checkout or a tip/fee exists' },
       { was: '<span className="text-slate-900">Total</span>', now: "<span className=\"text-slate-900\">{revenueBreakdown.extras.length ? 'Food sales' : 'Total'}</span>", nowIn: 'app/manage/[token]/page.tsx',
         reason: 'the breakdown line reads "Food sales" when tax, tips or fees follow it; "Total" otherwise, as before' },
+      /* ── US readiness sweep, 13 October 2026 (docs/us-readiness-sweep-report.md §1, §3) — each with its new form.
+       * scripts/us-readiness.cjs proves the UK list, families and placeholders byte-identical to before. ── */
+      { was: 'const GENERIC_REPLACEMENTS: Record<string, string[]> = {', now: 'const GENERIC_REPLACEMENTS = genericReplacements(allergenSet)', nowIn: 'app/manage/[token]/page.tsx',
+        reason: "the allergen generic families follow the truck's country; built inside AllergenWizardModal" },
+      { was: "Nuts: ['Tree nuts', 'Peanuts'],", now: "{ Nuts: ['Tree nuts', 'Peanuts'], Shellfish: ['Crustaceans', 'Molluscs'] }", nowIn: 'lib/allergens.ts',
+        reason: 'the UK families moved, unchanged, to lib/allergens.ts genericReplacements()' },
+      { was: "Shellfish: ['Crustaceans', 'Molluscs'],", now: "{ Nuts: ['Tree nuts', 'Peanuts'], Shellfish: ['Crustaceans', 'Molluscs'] }", nowIn: 'lib/allergens.ts',
+        reason: 'the UK families moved, unchanged, to lib/allergens.ts genericReplacements()' },
+      { was: 'const isVocab = (a: string) => (ALLERGEN_VOCAB as readonly string[]).includes(a)', now: 'const isVocab = (a: string) => ALLERGEN_VOCAB.includes(a)', nowIn: 'app/manage/[token]/page.tsx',
+        reason: "the allergen list is the truck's country list (UK 14 / US 9), built inside AllergenWizardModal" },
+      { was: '<Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder="e.g. 123 High St, Wickhambrook" />',
+        now: 'placeholder={addressPlaceholders(tabSettings.addressFormat).address} />', nowIn: 'app/manage/[token]/page.tsx',
+        reason: 'the example address follows the address style (lib/copy/addressPlaceholders.ts); UK text unchanged' },
+      { was: '<Input label="Area (village, town or city)" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />',
+        now: 'placeholder={addressPlaceholders(tabSettings.addressFormat).area} />', nowIn: 'app/manage/[token]/page.tsx',
+        reason: 'the example area follows the address style (lib/copy/addressPlaceholders.ts); UK text unchanged' },
       /* 1-2 · SettingsTab gained ONE prop, `onOpenKitchenCapacity`, so that the pointer left behind in
        * Settings › Kitchen can open Menu › Kitchen capacity. Both the mount and the signature changed,
        * and both stay in page.tsx. */

@@ -6,6 +6,8 @@
 // these by name; its JSX usages are unchanged. Do not fork the styling here — these are the
 // single source for Card / Btn / Input / Badge / EmptyState / allergen+dietary toggles.
 // ══════════════════════════════════════════════════════════════
+import { UK_14, allergenVocab } from '@/lib/allergens'
+import { useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 import { type ReactNode, type HTMLAttributes, type RefObject } from 'react'
 import { GREEN_SOLID } from '@/lib/ui-tokens'
 
@@ -167,7 +169,13 @@ export function EmptyState({ icon, title, body }: { icon: string; title: string;
 // per product decision. Order follows the FSA 14 + Lactose appended.
 // EXACTLY the 14 UK regulated allergens — nothing more. (Milk = our "Dairy".) Lactose is NOT one of the
 // 14, so it lives in DIETARY_VOCAB, not here.
-export const ALLERGEN_VOCAB = ['Gluten', 'Crustaceans', 'Eggs', 'Fish', 'Peanuts', 'Soy', 'Dairy', 'Tree nuts', 'Celery', 'Mustard', 'Sesame', 'Sulphites', 'Lupin', 'Molluscs'] as const
+/** The UK 14, unchanged (lib/allergens.ts holds both lists now; this name stays for the UK list's readers). */
+export const ALLERGEN_VOCAB = UK_14
+/** 🔴 US readiness (D35): the allergen list for the truck on screen — its country's (UK 14 / US 9), or the UK
+ *  14 where no country is known (outside Manage), exactly as every truck had before. */
+export function useAllergenVocab(): readonly string[] {
+  return allergenVocab(useOptionalCountrySettings()?.allergenSet)
+}
 export const DIETARY_VOCAB = ['Vegetarian', 'Vegan', 'Halal', 'Kosher', 'Gluten Free', 'Dairy Free', 'Lactose'] as const
 
 // ── Allergen DISPLAY-MODE chooser (per-dish vs card) ──────────────────────────
@@ -259,9 +267,10 @@ export function OptionCardChooser<K extends string>({ options, value, onChange, 
 }
 
 export function AllergenToggles({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
+  const vocab = useAllergenVocab()
   return (
     <div className="flex flex-wrap gap-2">
-      {ALLERGEN_VOCAB.map(allergen => {
+      {vocab.map(allergen => {
         const active = (value || []).includes(allergen)
         return (
           <button key={allergen} type="button"
