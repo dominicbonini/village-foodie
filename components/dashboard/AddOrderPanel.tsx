@@ -37,6 +37,8 @@ import { MoneyProvider } from '@/components/MoneyContext'
 import { formatMajorOrBare } from '@/lib/money-format'
 // Phase 3 screens: the offline walk-up total, worked out by the server's own pure engine.
 import { computeOrderCharges, rulesFromCheckout } from '@/lib/order-charges'
+import { WALK_UP_NAME } from '@/lib/walk-up'
+import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -566,11 +568,11 @@ export function AddOrderPanel({
   // (projection: secs 0; fit-check: no rateByCat entry).
   const basketByCat = useMemo(() => {
     const itemCatMap: Record<string, string> = {}
-    ;(truckMenu?.items || []).forEach(i => { itemCatMap[i.name] = (i.category || 'mains').toLowerCase() })
+    ;(truckMenu?.items || []).forEach(i => { itemCatMap[i.name] = (i.category || DEFAULT_CATEGORY_KEY).toLowerCase() })
     const byCat: Record<string, number> = {}
-    manualItems.forEach(i => { const c = itemCatMap[i.name] || 'mains'; byCat[c] = (byCat[c] || 0) + i.quantity })
+    manualItems.forEach(i => { const c = itemCatMap[i.name] || DEFAULT_CATEGORY_KEY; byCat[c] = (byCat[c] || 0) + i.quantity })
     appliedDeals.forEach(d => Object.values(d.slots || {}).filter(Boolean).forEach(name => {
-      const c = itemCatMap[String(name)] || 'mains'; byCat[c] = (byCat[c] || 0) + 1
+      const c = itemCatMap[String(name)] || DEFAULT_CATEGORY_KEY; byCat[c] = (byCat[c] || 0) + 1
     }))
     return byCat
   }, [manualItems, appliedDeals, truckMenu])
@@ -1555,7 +1557,7 @@ setItemModal({ item, modGroups, editCartKey })
         const displayId = result.provisional_id ?? ''
         const optimistic = {
           id: displayId, order_key: orderKey,
-          customer_name: manualName || 'Walk-up', customer_phone: manualPhone || null, customer_email: manualEmail || null,
+          customer_name: manualName || WALK_UP_NAME, customer_phone: manualPhone || null, customer_email: manualEmail || null,
           slot: effectiveSlot, event_date: manualEvent?.event_date ?? null, event_id: manualEvent?.id ?? null,
           van_id: null, status: 'confirmed', items: manualItems, deals: manualOrder.deals,
           subtotal: manualItemsSubtotal, total: manualTotal, notes: manualNotes || null,

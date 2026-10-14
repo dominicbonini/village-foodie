@@ -1,3 +1,6 @@
+import { I18nProvider } from '@/lib/i18n/client'
+import { NAMESPACES } from '@/lib/i18n/namespaces'
+
 export default function KdsLayout({ children }: { children: React.ReactNode }) {
   return (
     // h-dvh, NOT h-screen. This was the one surface still on h-screen while every other operator page
@@ -8,7 +11,8 @@ export default function KdsLayout({ children }: { children: React.ReactNode }) {
     // overflow-hidden meant it could not be scrolled to. h-dvh tracks the real height.
     // The inner page keeps w-full h-full and fills this box, so nothing below needed to change.
     <div className="w-screen h-dvh overflow-hidden m-0 p-0">
-      {children}
+      {/* Language Phase 0: the KDS's own provider — the truck's country's locale, KDS namespaces only. */}
+      <I18nProvider namespaces={NAMESPACES.kds}>{children}</I18nProvider>
     </div>
   )
 }

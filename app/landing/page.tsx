@@ -38,10 +38,10 @@ import { LandingFooter } from '@/components/landing/LandingFooter'
 // planAllowances, cardFeeOnlineLabel, …) — the import is still from lib/plan-features.ts, so the guard
 // still fires on this route.
 import {
-  planPrices, PLAN_DESCRIPTIONS, planAllowances, platformFeeLabel, allowanceAmountLabel, allowanceMinorFor,
+  PLAN_DESCRIPTIONS, planAllowances, platformFeeLabel, allowanceAmountLabel, allowanceMinorFor,
   cardFeeOnlineLabel, cardRegionOnline,
 } from '@/lib/plan-features'
-import { PLAN_META, planMonthlyMinor } from '@/lib/features'
+import { PLAN_META, planMonthlyMinor, planPriceParts } from '@/lib/features'
 import { formatAmount } from '@/lib/money-format'
 import { moneyFormatOf } from '@/lib/country-settings-types'
 // 🔴 THE VISITOR'S COUNTRY (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
@@ -169,14 +169,11 @@ const Check = () => (
   <span className="tick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5 L4.6 9 L10 3" /></svg></span>
 )
 
-// Pricing-card price: split "£29/mo" into the big amount + a "per truck / month" sub-line (matches the compare
-// header wording). Free/other plans show no sub. Render-only — the price arrives already formatted from the
-// marketing country's settings.
-function PlanPrice({ price }: { price: string }) {
-  const raw = price
-  const perTruck = raw.endsWith('/mo')
-  const amount = perTruck ? raw.slice(0, -3) : raw
-  return <div className="plan-price">{amount}{perTruck && <span>per truck / month</span>}</div>
+// Pricing-card price: the big amount + a "per truck / month" sub-line (matches the compare header wording).
+// Free/other plans show no sub. Render-only — the parts arrive already formatted from the marketing country's
+// settings (lib/features.ts planPriceParts). 🔴 It no longer splits "£29/mo" on its "/mo" (Language Phase 0).
+function PlanPrice({ price }: { price: { amount: string; perMonth: boolean } }) {
+  return <div className="plan-price">{price.amount}{price.perMonth && <span>per truck / month</span>}</div>
 }
 
 /**
@@ -210,7 +207,6 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
   const visitor = await resolveVisitorCountry((await searchParams)?.country)
   const seo = marketingCountry(visitor.settings)   // 🔴 D37: the JSON-LD's country (GB: UK, United Kingdom, en-GB)
   const s = visitor.settings
-  const prices = planPrices(s)
   const allowances = planAllowances(s)
   const money = moneyFormatOf(s)
   return (
@@ -602,7 +598,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
             <div className="plan">
               <div className="plan-name">{PLAN_META.starter.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.starter}</div>
-              <PlanPrice price={prices.starter} />
+              <PlanPrice price={planPriceParts('starter', s)} />
               <div className="plan-fee">{allowances.starter}</div>
               <ul>
                 <li className="lead">Everything to run a service</li>
@@ -647,7 +643,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
               <span className="plan-tag">Most trucks</span>
               <div className="plan-name">{PLAN_META.pro.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.pro}</div>
-              <PlanPrice price={prices.pro} />
+              <PlanPrice price={planPriceParts('pro', s)} />
               {/* ══ 🔴 "No fee on walk-ups." — ADDED 10 October 2026, ON PRO AND MAX ONLY ═══════════════
                   ⚠️ IT IS APPENDED **HERE**, NOT IN `planAllowances()`. That constant is read by the
                   features PDF and by the comparison table as well as by this card, and the brief asks for
@@ -750,7 +746,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
             <div className="plan">
               <div className="plan-name">{PLAN_META.max.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.max}</div>
-              <PlanPrice price={prices.max} />
+              <PlanPrice price={planPriceParts('max', s)} />
               {/* ⚠️ THE SAME SENTENCE AS PRO'S, FOR THE SAME REASON — see the note on the Pro card. */}
               <div className="plan-fee">{allowances.max}<sup className="fee-star">*</sup>. No fee on walk-ups.</div>
               <ul>
@@ -867,7 +863,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
           checked the other way round, by sweeping every `#fragment` in the repository: the only
           landing anchors that have ever existed are `#pricing` and `#try`, and nothing in the codebase
           — no email, no template, no document — ever linked to where this table was.
-          🔴 `lib/plan-features.ts` IS STILL IMPORTED BY THIS FILE (planPrices, PLAN_DESCRIPTIONS,
+          🔴 `lib/plan-features.ts` IS STILL IMPORTED BY THIS FILE (PLAN_DESCRIPTIONS,
           planAllowances, cardFeeOnlineLabel and friends), WHICH IS LOAD-BEARING: that module runs
           `findPlanParityViolations()` at module load, so the guard still fires when this route renders.
           If those imports ever go too, the guard goes with them silently. */}

@@ -57,6 +57,8 @@ const LIB_NOW = [
   'lib/buzzer.ts', 'lib/payments/paid-step.ts', 'lib/features.ts',
   // lib/features.ts imports these two since 10 October 2026 (plan prices come from country_settings).
   'lib/country-settings-types.ts', 'lib/money-format.ts',
+  // …and this one since Language Phase 0 (14 October 2026): its price words have one definition.
+  'lib/price-words.ts',
   /* The offline vocabulary. A leaf with no imports, and the OWNER of the two mode values — so a
    * check on the resolver's mode chain is a check against the same constants the screens render. */
   'lib/copy/offlineProtection.ts',
@@ -2505,7 +2507,17 @@ head('5b · THE MODAL AND THE CARD')
       /* ⚠️ PHASE 2C — the demo's signup box now takes the truck's phone copy. The one line that left is the
        * banner's DemoGetStarted mount; its replacement (`phone={truck?.phone??null}`) is asserted below. */
       /^\{isDemo&&<DemoModeBanner action=\{<DemoGetStarted token=\{token\} isAdmin=\{isAdmin\} extractionSource=\{demoSession\?\.extraction_source\?\?null\}\/>\}\/>\}$/,
+      /* ⚠️ LANGUAGE PHASE 0 (14 October 2026, docs/language-phase-0-report.md §2) — display text stopped being a key:
+       * the stored walk-up name is `WALK_UP_NAME` / `isWalkUp()` (lib/walk-up.ts), and the no-category default is
+       * `DEFAULT_CATEGORY_KEY` (lib/category-key.ts). Same values; each replacement is asserted below. */
+      /^customer_name:m\.customerName\|\|'Walk-up',/, /^setEditName\(order\.customer_name&&order\.customer_name!=='Walk-up'\?/,
+      /^const cat=truckMenu\?\.items\.find\(m=>m\.name===name\)\?\.category\|\|'mains'$/,
     ]
+    t('⚠️ …and the Language Phase 0 replacements are present (walk-up helper, default category constant)', (() => {
+      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
+      return /customer_name:m\.customerName\|\|WALK_UP_NAME,/.test(pg) && /order\.customer_name&&!isWalkUp\(order\.customer_name\)\?/.test(pg)
+        && (pg.match(/\?\.category\|\|DEFAULT_CATEGORY_KEY/g) || []).length === 2
+    })())
     t('⚠️ …and the Phase 2C phone copy reaches both demo signup mounts', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')).replace(/\s+/g, '')
       return /<DemoGetStartedtoken=\{token\}isAdmin=\{isAdmin\}extractionSource=\{demoSession\?\.extraction_source\?\?null\}phone=\{truck\?\.phone\?\?null\}\/>/.test(pg)

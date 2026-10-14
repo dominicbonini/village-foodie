@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 import { PLAN_META, type Plan, type Feature } from '@/lib/features'
 import { safeHref } from '@/lib/safe-href'
 import { STOPPED_AFTER_MS, STOPPED_AFTER_LABEL, CHECK_CRON_EXPRESSION, CADENCE_DERIVED } from '@/lib/custom-domain/cadence'
-import { planPrices, FEATURE_SECTIONS, footnotes, transactionRows, platformFeeLabel } from '@/lib/plan-features'
+import { planPrices, FEATURE_SECTIONS, footnotes, transactionRows, platformFeeLabel, PAY_AT_HATCH_ROW } from '@/lib/plan-features'
 import type { CountrySettings } from '@/lib/country-settings-types'
 // 🔴 The plan matrix shows the PUBLIC pages' country (named once — the visitor picker comes later); one
 // truck's modal shows THAT truck's country. Both arrive in the authenticated /api/admin response.
@@ -1093,7 +1093,7 @@ export default function AdminPage() {
                         {row.footnote && <sup className="text-slate-400 ml-0.5">{row.footnote}</sup>}
                       </td>
                       {PLAN_ORDER.map(p => {
-                        const isPayAtHatch = row.name === 'Online ordering — Pay at Hatch'
+                        const isPayAtHatch = row.id === PAY_AT_HATCH_ROW
                         const val = p === 'starter' ? row.starter
                           : (p === 'trial' || p === 'tester') && isPayAtHatch ? true
                           : p === 'pro' ? row.pro

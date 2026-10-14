@@ -118,7 +118,11 @@
     "audit-fixes.cjs",
     "order-charges.cjs",
     "phase3-screens.cjs",
-    "us-readiness.cjs"
+    "us-readiness.cjs",
+    "language-phase-0.cjs",
+    "messages-parity.cjs",
+    "ui-literals.cjs",
+    "demo-rebuild-replace.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -156,7 +160,8 @@
         "_fake-pg.cjs",
         "_order-charges-us.cjs",
         "_phase3-screens-us.cjs",
-        "_us-readiness-us.cjs"
+        "_us-readiness-us.cjs",
+        "_language-phase-0-after.cjs"
       ]
     },
     "fixture_generators": {

@@ -284,7 +284,9 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
       && /placeholder="Your rate"/.test(boxes.join('')) && /placeholder="Your fee"/.test(boxes.join(''))
   })())
   // Phase 2A: the helper is bound to the marketing country's money format; the test is the same one.
-  t('🔴 the formatter-based zero test survives', /return gbpIn\(f, n\) === gbpIn\(f, 0\)/.test(SRC))
+  // Language Phase 0 (14 October 2026): still the FORMATTER'S rounding, asked by number (roundsToZero, lib/money-format.ts)
+  // instead of by comparing two formatted strings; scripts/language-phase-0.cjs proves the two answer alike.
+  t('🔴 the formatter-based zero test survives', /return roundsToZero\(Number\.isFinite\(n\) \? n : 0, f, 0\)/.test(SRC))
   // ── 🔴 THE "Yes" PATH SHOWS NO RESULT UNTIL A RATE IS TYPED (Phase 2A, decided) ─────────────────────
   const GATE = 'Enter what you pay now to see your saving.'
   t('🔴 Yes path, nothing typed: the prompt stands in for the result — no saving, no year lines', (() => {

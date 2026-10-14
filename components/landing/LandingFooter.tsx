@@ -45,6 +45,7 @@ import type { VisitorCountryMenu } from '@/lib/visitor-country-types'
 // it — moving a constant should not break a path nobody was asked to change.
 export { APP_STORE_URL, APP_STORE_BADGE_SRC, GOOGLE_PLAY_URL, GOOGLE_PLAY_BADGE_SRC } from '@/lib/app-badges'
 import { StoreBadges } from '@/components/StoreBadges'
+import { contactHref } from '@/lib/contact-topics'
 
 export function LandingFooter({ landingHref = '', country }: { landingHref?: string; country?: VisitorCountryMenu } = {}) {
   return (
@@ -94,7 +95,7 @@ export function LandingFooter({ landingHref = '', country }: { landingHref?: str
                 it is the same parameter Village Foodie's own footer Contact link sends
                 (components/Footer.tsx). Carried across so this link opens the form where it always
                 did rather than on an empty topic. */}
-            <a href="/contact?topic=General%20Enquiry">Contact</a>
+            <a href={contactHref('general')}>Contact</a>
           </div>
             {/* ── 🔴 APP STORE BADGE ─────────────────────────────────────────────────────
                 IN THE BRAND COLUMN, UNDER THE TAGLINE — not in .foot-base and not in .foot-links.

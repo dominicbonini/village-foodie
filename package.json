@@ -52,6 +52,7 @@
     "libphonenumber-js": "1.13.13",
     "lucide-react": "^1.52.0",
     "next": "16.1.6",
+    "next-intl": "4.14.8",
     "nodemailer": "10.0.12",
     "papaparse": "^5.5.3",
     "posthog-js": "^1.359.1",

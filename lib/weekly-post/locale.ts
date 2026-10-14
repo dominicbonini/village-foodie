@@ -18,8 +18,8 @@
 // every caller already asks it rather than assuming. ⚠️ This is deliberate over-plumbing: the
 // alternative is finding every date in the product on the day the column lands.
 
-import { WEEKDAY_NAMES, weekdayOf } from './week'
 import { ordinal, ordinalSuffix, type TextCase, type TextRun } from './format'
+import { weekdayName, monthName } from '@/lib/time-utils'
 
 /** The countries this table knows. ⚠️ A string union, not `string` — an unknown code is a bug, and
  *  `localeFor()` falls back to GB rather than producing an empty date. */
@@ -110,10 +110,13 @@ export function countryForTruck(truck?: { country?: string | null } | null): Cou
   return c && (c in LOCALES) ? (c as CountryCode) : DEFAULT_COUNTRY
 }
 
-const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'] as const
-const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const
+/* 🔴 THE WORDS COME FROM Intl NOW (Language Phase 0, 14 October 2026) — weekday and month names through
+ * lib/time-utils.ts (`weekdayName`, `monthName`, Intl.formatToParts) in the country's locale, the short month
+ * by its English rule ("Sep", never en-GB Intl's "Sept"). The hand-written month arrays that lived here are
+ * gone; the ORDER, the separator and the ordinal stay this table's business. */
+const INTL_LOCALE: Record<CountryCode, string> = { GB: 'en-GB', US: 'en-US' }
+/** The Intl locale a country's dates are worded in. ⚠️ Unknown → GB's, as `localeFor` does. */
+export const intlLocaleFor = (c: CountryCode | string | null | undefined): string => INTL_LOCALE[localeFor(c).country]
 
 const parts = (ymd: string) => {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd)
@@ -165,10 +168,11 @@ export function datePartsFor(
   const { mo, d } = parts(ymd)
   const spec = localeFor(country)
   const us = spec.country === 'US'
-  const weekdayLong = WEEKDAY_NAMES[weekdayOf(ymd)]
-  const weekdayShort = weekdayLong.slice(0, 3)
-  const monthLong = MONTHS_LONG[mo - 1]
-  const monthShort = MONTHS_SHORT[mo - 1]
+  const loc = INTL_LOCALE[spec.country]
+  const weekdayLong = weekdayName(ymd, loc, 'long')
+  const weekdayShort = weekdayName(ymd, loc, 'short')
+  const monthLong = monthName(ymd, loc, 'long')
+  const monthShort = monthName(ymd, loc, 'short')
   const sep = us ? ', ' : ' '
 
   if (style === 'numeric') {
@@ -247,9 +251,10 @@ export const dateTextFor = (
  * exactly the way the poster no longer is.
  */
 export function shortDateTextFor(ymd: string, country: CountryCode): string {
-  const { mo, d } = parts(ymd)
-  const weekday = WEEKDAY_NAMES[weekdayOf(ymd)].slice(0, 3)
-  const month = MONTHS_SHORT[mo - 1]
+  const { d } = parts(ymd)
+  const loc = intlLocaleFor(country)
+  const weekday = weekdayName(ymd, loc, 'short')
+  const month = monthName(ymd, loc, 'short')
   return localeFor(country).numericOrder === 'mdy'
     ? `${weekday} ${month} ${d}`
     : `${weekday} ${d} ${month}`

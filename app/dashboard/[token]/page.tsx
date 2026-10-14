@@ -146,6 +146,9 @@ import { orderItemsToQtyByCat, mergeQtyByCat, buildOfflineOccupancy } from '@/li
 import { decideRead, classifyReadFailure, nextDegraded, degradedBanner, type ReadSlot, type Degraded } from '@/lib/dashboard-read'
 /* 🔴 PRIVATE EVENTS (20261014) — the SAME panel the Manage Events list opens. */
 import { PrivateLinkPanel, type PrivateLinkData } from '@/components/manage/PrivateLinkPanel'
+import { WALK_UP_NAME, isWalkUp } from '@/lib/walk-up'
+import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
+import { useTruckLocale } from '@/lib/i18n/client'
 
 /** The ONLY list of valid ?tab= values, shared by the tab bar and the URL validator — so a tab cannot be
  *  added to the UI without becoming linkable, or removed without ceasing to be. */
@@ -268,6 +271,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // loaded nothing time-dependent renders; GB's settings stand in silently until then.
   const dashTime=useMemo(()=>truck?timeSettingsOr(truck.time,'dashboard'):LEGACY_UK_TIME_SETTINGS,[truck])
   const dashTz=dashTime.timeZone
+  useTruckLocale(dashTime.locale)   // Language Phase 0: the truck's country's locale for this screen's words
   const[orders,setOrders]=useState<Order[]>([])
   // 🔴 THE ORDERS, READABLE FROM A CALLBACK THAT OUTLIVES ITS RENDER. `openOrderFromPush` awaits a
   // refetch and then has to read the RESULT — the `orders` it closed over is by then a render old. Written
@@ -1611,7 +1615,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             const m=((op.body as Record<string,unknown>)?.manualOrder??{}) as Record<string,any>
             return{
               id:op.provisional_id||'',order_key:op.order_key,
-              customer_name:m.customerName||'Walk-up',customer_phone:m.customerPhone??null,customer_email:m.customerEmail??null,
+              customer_name:m.customerName||WALK_UP_NAME,customer_phone:m.customerPhone??null,customer_email:m.customerEmail??null,
               slot:m.slot??null,event_date:m.event_date??null,event_id:m.event_id??null,
               van_id:null,status:'confirmed',items:m.items??[],deals:m.deals??null,
               subtotal:m.subtotal??0,total:m.total??0,notes:m.notes??null,
@@ -2690,7 +2694,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setEditNotes(order.notes||'')
     // "Walk-up" is the display default, not a real name — start the field empty for it so
     // it isn't shown as a pseudo-name (blank on save preserves the "Walk-up" default).
-    setEditName(order.customer_name&&order.customer_name!=='Walk-up'?order.customer_name:''); setEditEmail(order.customer_email||''); setEditPhone(order.customer_phone||'')
+    setEditName(order.customer_name&&!isWalkUp(order.customer_name)?order.customer_name:''); setEditEmail(order.customer_email||''); setEditPhone(order.customer_phone||'')
     const itemsSubtotal=order.items.reduce((s,i)=>s+Number(i.unit_price)*i.quantity,0)
     setEditOrderBaseline({total:Number(order.total),itemsSubtotal,deals:(order.deals||[]).map(d=>({
       name:d.name,
@@ -4518,7 +4522,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 // Calculate cook time for this slot's items
                 const catGroups:Record<string,number>={}
                 Object.entries(itemMap).forEach(([name,qty])=>{
-                  const cat=truckMenu?.items.find(m=>m.name===name)?.category||'mains'
+                  const cat=truckMenu?.items.find(m=>m.name===name)?.category||DEFAULT_CATEGORY_KEY
                   catGroups[cat]=(catGroups[cat]||0)+qty
                 })
                 let maxSecs=0
@@ -4575,7 +4579,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   const orderNotes=o.notes?[o.notes]:[]
                   const catGroups:Record<string,number>={}
                   Object.entries(itemMap).forEach(([name,qty])=>{
-                    const cat=truckMenu?.items.find(m=>m.name===name)?.category||'mains'
+                    const cat=truckMenu?.items.find(m=>m.name===name)?.category||DEFAULT_CATEGORY_KEY
                     catGroups[cat]=(catGroups[cat]||0)+qty
                   })
                   let maxSecs=0

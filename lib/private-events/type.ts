@@ -14,6 +14,16 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { PRIVATE_TYPE_NAME } from './copy'
 
+/* 🔴 THE BUILT-IN TYPE'S NAME IS STORED DATA, MATCHED IN ONE PLACE (Language Phase 0, 14 October 2026).
+ * `PRIVATE_TYPE_NAME` is what the row is created with and what the unique index on (truck_id, lower(name))
+ * sees; it is never shown as a translatable label. Every "is this the Private type BY NAME?" question
+ * goes through this helper (case-insensitive, as the index is). Everything else compares `kind === 'private'`,
+ * which is an id. */
+/** A query narrowed to the truck's type NAMED "Private" (case-insensitively, as the unique index sees it). */
+function whereNamedPrivate<Q extends { ilike(column: string, pattern: string): Q }>(query: Q): Q {
+  return query.ilike('name', PRIVATE_TYPE_NAME)
+}
+
 /** Postgres' unique-violation code. */
 const UNIQUE_VIOLATION = '23505'
 
@@ -82,11 +92,10 @@ export async function ensurePrivateType(
    * settings are kept, and no second column appears.
    * ⚠️ NO TRUCK HAS ONE TODAY (test-kitchen's only type is "Market"), so this path is exercised by
    * scripts/private-events.cjs rather than by production — which is exactly why it is written down. */
-  const { data: named } = await supabase
+  const { data: named } = await whereNamedPrivate(supabase
     .from('event_types')
     .select(COLS)
-    .eq('truck_id', truckId)
-    .ilike('name', PRIVATE_TYPE_NAME)
+    .eq('truck_id', truckId))
     .maybeSingle()
 
   if (named) {

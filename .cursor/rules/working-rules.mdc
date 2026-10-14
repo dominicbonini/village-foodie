@@ -1,3 +1,7 @@
+---
+description: HatchGrab working rules for this repo (the reference manual is the single source of truth)
+alwaysApply: true
+---
 # HatchGrab — Cursor working rules
 
 This file is NOT a manual. It holds only rules about how to work in this repo that are

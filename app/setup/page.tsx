@@ -31,6 +31,7 @@ import { isPlausiblePhone, phoneErrorMessage, phonePlaceholder, type PhoneCopy }
 // Phase 2D-1: "Where's your truck based?" comes FIRST — the same step the demo modal shows.
 import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
 import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'
+import { useTruckLocale } from '@/lib/i18n/client'
 
 const STEPS = [
   { key: 'based', label: 'Where you’re based' },
@@ -79,6 +80,8 @@ function SetupWizard() {
   const base = baseChoice ?? (signupCountries.data ? initialBaseAnswer(signupCountries.data.countries, signupCountries.data.guess.code) : null)
   const [baseErrors, setBaseErrors] = useState<BaseErrors>({})
   const phoneCopy: PhoneCopy | null = signupCountries.data?.countries.find(c => c.code === base?.country)?.phone ?? null
+  // Language Phase 0: the wizard's words in the chosen country's locale (en-GB until a country is chosen).
+  useTruckLocale(signupCountries.data?.countries.find(c => c.code === base?.country)?.locale)
   const continueFromBased = () => {
     if (!base || !signupCountries.data) return
     const errs = baseAnswerErrors(base, signupCountries.data.countries)

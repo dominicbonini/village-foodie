@@ -144,8 +144,9 @@ head('1 · the key is a PLAN key — Pro, Max and trial — and the preview key 
     'gating-plan-features').req('lib/plan-features.js')
   t('🔴 the comparison table row is MAPPED to this key, so the guard checks the promise', (() => {
     const pf = codeOf(read('lib/plan-features.ts'))
-    return /'Social media posts': 'schedule_graphics',/.test(pf)
-      && /\{ name: 'Social media posts',[^\n]*starter: false, pro: true, max: true \}/.test(pf)
+    // Language Phase 0 (14 October 2026): the map is keyed on the row's CODE ID now, and each row carries one.
+    return /\n  social_media_posts: 'schedule_graphics',/.test(pf)
+      && /\{ id: 'social_media_posts', name: 'Social media posts',[^\n]*starter: false, pro: true, max: true \}/.test(pf)
   })())
   t('🔴 …and `findPlanParityViolations()` reports clean with it mapped',
     Array.isArray(PF.findPlanParityViolations()) && PF.findPlanParityViolations().length === 0)
@@ -153,7 +154,7 @@ head('1 · the key is a PLAN key — Pro, Max and trial — and the preview key 
    * label (Dominic's own correction on 6 October: cells, not a badge), so this is where launching it
    * is visible, and all four renderers follow from here. */
   t('⛔ …and neither cell says `coming_soon` any more', (() => {
-    const row = (codeOf(read('lib/plan-features.ts')).match(/\{ name: 'Social media posts'[^\n]*/) || [''])[0]
+    const row = (codeOf(read('lib/plan-features.ts')).match(/\{ id: 'social_media_posts', name: 'Social media posts'[^\n]*/) || [''])[0]
     return row.length > 60 && !row.includes('coming_soon')
   })())
 }

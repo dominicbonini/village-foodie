@@ -13,6 +13,7 @@ import { truckTimeZone } from '@/lib/truck-time'
 import { normaliseInterval, resolveIntervalsFor } from '@/lib/slot-interval'
 import { resolveCategoriesForVan } from '@/lib/van-category-settings'
 import { resolveBatchReservations } from '@/lib/features'
+import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -233,7 +234,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   ;(existingOrders || []).forEach(order => {
     const items = Array.isArray(order.items) ? order.items : []
     items.forEach((item: { name: string; quantity: number }) => {
-      const cat = itemCatMap[item.name] || 'mains'
+      const cat = itemCatMap[item.name] || DEFAULT_CATEGORY_KEY
       queueByCat[cat] = (queueByCat[cat] || 0) + (item.quantity || 1)
     })
   })

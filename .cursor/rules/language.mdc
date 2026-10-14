@@ -1,0 +1,48 @@
+---
+description: Language rules — how every user-facing word, date and number is written, so adding a language is only adding a message file
+alwaysApply: true
+---
+
+# Language rules (from Language Phase 0, 14 October 2026)
+
+Why: HatchGrab will need US English now and other languages later. Adding a language must be adding a
+translation file, never another sweep. Source: `docs/language-readiness-audit-report.md` §4.5 and
+`docs/language-phase-0-report.md`.
+
+**Words that work in both countries are preferred in new copy; existing UK text stays byte-identical until its phase.**
+
+1. **No new user-facing text written inline.** New words go in `messages/en-GB.json` and are read with `useT`
+   (client components, `lib/i18n/client.tsx`), `getTranslations` (server components) or `translatorFor` (emails,
+   PDFs, API responses, tickets, crons — `lib/i18n/translator.ts`). `scripts/ui-literals.cjs` fails if a new file
+   carries JSX text or a literal placeholder, title, label, aria-label or alt. US wording goes in
+   `messages/en-US.json` only when it differs.
+2. **Whole sentences only.** Never build a sentence from pieces (`'Only ' + n + ' left'`, a prefix and a suffix
+   around a control, a bold word split out). One message with placeholders, and rich-text tags for bold or links.
+3. **No hand-written plurals.** No `n === 1 ? … : …` and no added `'s'`. Use ICU `plural` in the message.
+4. **No case changes on text.** No `toUpperCase` / `toLowerCase` / capitalising on translatable or user text. CSS
+   `uppercase` only on short labels, and never on the truck's own data (category names, plan ids).
+5. **Dates, times, numbers and money only through `lib/time-utils.ts` and `lib/money-format.ts`** with the truck's
+   settings, passed into messages as ready-made strings. No `'en-GB'` literal, no month or day lists, no ordinals
+   by hand, no `toFixed` for display, no currency symbol joined by hand.
+   - Weekday and month names come from Intl (`weekdayName`, `monthName`); ordinals from `ordinalDay`.
+   - ⚠️ **The short month is a rule for English only:** the first three letters of Intl's full month name
+     ("September" → "Sep"). Three-letter truncation fails in other languages (French "juin" and "juillet" are both
+     "jui"), so **each later language must define its short month form when it is added** (`SHORT_MONTH_RULES` in
+     `lib/time-utils.ts`).
+6. **Display text is never a key.** Compare ids, codes or enum values, never words ('Walk-up', 'Coming soon', a
+   plan row's name, a formatted price). Plan rows have `id`s, price words are `PRICE_WORD`, contact topics are
+   `contactHref(id)`, walk-ups are `isWalkUp()`.
+7. **Servers send codes and values; screens supply the words.** New API errors return `{ code, params }` with an
+   English fallback. Never put a sentence in a URL.
+8. **Store codes, not sentences.** No new English sentence in a database row that a customer later sees.
+9. **Leave room for longer text.** No new fixed pixel widths, `nowrap` or `truncate` on button labels or headings
+   without checking the text at 130% of its English length (German runs about 30% longer).
+10. **AI prompts state the output language** and keep the menu's own language. New prompts take the truck's
+    language as a parameter.
+11. **Words that work in both countries are preferred in new copy** where they read naturally ("truck" not
+    "van"; "pickup" where the UK text would otherwise be new). UK text that already exists stays byte-identical
+    until its phase.
+
+Who sees which language: a truck's screens, tickets, kitchen and emails, and its customers, use its country's
+`country_settings.locale` (en-GB / en-US), else en-GB. Marketing pages use the visitor's resolved country. Only
+en-GB and en-US are valid today (`lib/i18n/locales.ts`). "Pay at Hatch" is a brand name in every country.

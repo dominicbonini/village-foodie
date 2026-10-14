@@ -299,10 +299,67 @@ export function formatNumericDayMonth(ymd: string, ts: TimeSettings | null | und
   return s.dateOrder === 'mdy' ? `${m}/${d}` : `${d}/${m}`
 }
 
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 THE ONE PATH FOR A DATE'S WORDS (Language Phase 0, docs/language-phase-0-report.md §3)
+// Weekday and month names come from Intl in the locale given; the ordinal and the short month are the two
+// rules Intl has no answer for. Every date word in the product goes through these four functions — the hand-
+// written name arrays (here, lib/preorder.ts, lib/weekly-post/{week,locale}.ts, lib/whatsapp/copy.ts) and the
+// two other ordinal implementations (lib/weekly-post/format.ts, lib/utils.ts) are gone.
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+/** "st" | "nd" | "rd" | "th". 🔴 THE TEENS ARE CHECKED FIRST: `n % 10 === 1 ? 'st'` gives "11st", "12nd",
+ *  "13rd". ⚠️ ENGLISH ONLY — the product's ordinals are English in every country it serves today; a language
+ *  that writes ordinals ("1er", "1.") gets its own form when it is added (.cursor/rules/language.mdc). */
+export function ordinalSuffix(n: number): 'st' | 'nd' | 'rd' | 'th' {
+  const mod100 = Math.abs(Math.trunc(n)) % 100
+  if (mod100 >= 11 && mod100 <= 13) return 'th'
+  switch (Math.abs(Math.trunc(n)) % 10) {
+    case 1: return 'st'
+    case 2: return 'nd'
+    case 3: return 'rd'
+    default: return 'th'
+  }
+}
+
 /** "9th", "22nd" — English ordinals, as every date in the product writes them. */
 export function ordinalDay(d: number): string {
-  const s = [11, 12, 13].includes(d % 100) ? 'th' : (['st', 'nd', 'rd'][(d % 10) - 1] || 'th')
-  return `${d}${s}`
+  return `${d}${ordinalSuffix(d)}`
+}
+
+const nameFormats = new Map<string, Intl.DateTimeFormat>()
+/** One part of a calendar date ('YYYY-MM-DD') from Intl.formatToParts, in UTC so a date can never shift a day. */
+function datePart(ymd: string, locale: string, opts: Intl.DateTimeFormatOptions, type: 'weekday' | 'month'): string {
+  const key = `${locale}|${JSON.stringify(opts)}`
+  let f = nameFormats.get(key)
+  if (!f) { f = new Intl.DateTimeFormat(locale, { ...opts, timeZone: 'UTC' }); nameFormats.set(key, f) }
+  const [y, m, d] = ymd.split('-').map(Number)
+  return f.formatToParts(new Date(Date.UTC(y, (m || 1) - 1, d || 1))).find(p => p.type === type)?.value ?? ''
+}
+
+/** The weekday's name in the locale: "Saturday" / "Sat". Straight from Intl, long and short. */
+export function weekdayName(ymd: string, locale: string, width: 'long' | 'short'): string {
+  return datePart(ymd, locale, { weekday: width }, 'weekday')
+}
+
+/**
+ * The month's name in the locale: "September" / "Sep".
+ * 🔴 THE SHORT FORM IS A RULE, NOT Intl's, FOR ENGLISH (Dominic, 14 October 2026, option A): the first three
+ * letters of Intl's FULL name. Intl's own short form is "Sept" in en-GB, every screen has always written
+ * "Sep", and the browser's data differs by device (an older iPad may say "Sep", a newer one "Sept") — the full
+ * names are the same everywhere, so three letters of them is the same everywhere.
+ * ⛔ THREE-LETTER TRUNCATION IS ENGLISH-ONLY. It fails in other languages (French "juin" and "juillet" are both
+ * "jui"). EACH LATER LANGUAGE MUST DEFINE ITS SHORT MONTH FORM WHEN IT IS ADDED — add it to SHORT_MONTH_RULES.
+ * Until it does, a non-English locale gets Intl's own short form rather than a guess.
+ */
+const SHORT_MONTH_RULES: Record<string, (long: string) => string> = {
+  en: long => long.slice(0, 3),
+}
+export function monthName(ymd: string, locale: string, width: 'long' | 'short'): string {
+  if (width === 'short') {
+    const rule = SHORT_MONTH_RULES[locale.split('-')[0].toLowerCase()]
+    if (rule) return rule(datePart(ymd, locale, { month: 'long' }, 'month'))
+  }
+  return datePart(ymd, locale, { month: width }, 'month')
 }
 
 /**
@@ -318,17 +375,15 @@ export function formatOrdinalDate(ymd: string, ts: TimeSettings | null | undefin
   return weekday ? `${day} ${ordinalDay(d)} ${month}` : `${ordinalDay(d)} ${month}`
 }
 
-const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 /**
- * "Fri 9th Oct" (d/m) or "Fri, Oct 9th" (m/d) — Manage's schedule cards. ⚠️ THE PRODUCT'S OWN ENGLISH
- * ABBREVIATIONS, NOT Intl's: en-GB's Intl writes "Sept", and these cards have always written "Sep".
+ * "Fri 9th Oct" (d/m) or "Fri, Oct 9th" (m/d) — Manage's schedule cards. The short month is `monthName`'s
+ * rule ("Sep", never Intl's en-GB "Sept"), so these cards read as they always have.
  */
 export function formatShortOrdinalDate(ymd: string, ts: TimeSettings | null | undefined): string {
   const s = timeSettingsOr(ts, 'formatShortOrdinalDate')
-  const [y, m, d] = ymd.split('-').map(Number)
-  const wd = SHORT_DAYS[new Date(Date.UTC(y, (m || 1) - 1, d || 1)).getUTCDay()]
-  const mo = SHORT_MONTHS[(m || 1) - 1]
+  const d = Number(ymd.split('-')[2])
+  const wd = weekdayName(ymd, s.locale, 'short')
+  const mo = monthName(ymd, s.locale, 'short')
   return s.dateOrder === 'mdy' ? `${wd}, ${mo} ${ordinalDay(d)}` : `${wd} ${ordinalDay(d)} ${mo}`
 }
 

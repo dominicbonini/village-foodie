@@ -14,6 +14,7 @@ import dynamic from 'next/dynamic';
 import { isHatchGrab } from '@/lib/domain';
 import { hrefFromStoredUrl } from '@/lib/url-normalise';
 import { safeHref } from '@/lib/safe-href';
+import { contactHref } from '@/lib/contact-topics';
 
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
@@ -190,7 +191,7 @@ export default function TruckClient({ slug }: { slug: string }) {
         <div className="bg-white px-4 pt-8 pb-6 border-b border-slate-200 flex flex-col items-center text-center shadow-sm relative z-0">
             <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
                 <Link 
-                    href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`}
+                    href={contactHref('addBusiness', { truck: truckInfo.name })}
                     className="flex items-center gap-1.5 bg-slate-50 hover:bg-orange-50 border border-slate-200 hover:border-orange-200 text-slate-500 hover:text-orange-600 text-[10px] font-bold px-2.5 py-1.5 rounded-full transition-all shadow-sm"
                     title="Own this truck? Click to update your profile"
                 >
@@ -311,7 +312,7 @@ export default function TruckClient({ slug }: { slug: string }) {
             <h2 className="text-xl font-bold text-slate-800">No upcoming events found</h2>
             <p className="text-slate-500 mt-2 max-w-sm">We might be missing some details for this truck. Are you the owner, or do you know their schedule?</p>
             <Link 
-              href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`} 
+              href={contactHref('addBusiness', { truck: truckInfo.name })} 
               className="mt-6 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105"
             >
               Drop us a message to update!
@@ -337,7 +338,7 @@ export default function TruckClient({ slug }: { slug: string }) {
                         <strong className="text-slate-800">Are we missing an event?</strong> <br />
                         If you're the owner of this truck or just a dedicated fan, help us keep this page accurate! <br />
                         <Link
-                          href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`}
+                          href={contactHref('addBusiness', { truck: truckInfo.name })}
                           className="text-orange-600 font-bold hover:underline mt-2 inline-block"
                         >
                           Contact us to add missing details.

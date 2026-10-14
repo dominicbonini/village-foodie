@@ -29,6 +29,7 @@ export function getBundleSlotCats(b: any): string[] {
 
 import type { Order } from './types'
 import type { CatConfig } from '@/lib/prep-utils'
+import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 
 export type AgeState = 'new' | 'ok' | 'warn' | 'late'
 export type HeaderState = AgeState | 'ready' | 'cooking'
@@ -63,7 +64,7 @@ export function getOrderCookSecs(
 ): number {
   const byCat: Record<string, number> = {}
   items.forEach(it => {
-    const cat = (itemCategoryMap[it.name] || 'mains').toLowerCase()
+    const cat = (itemCategoryMap[it.name] || DEFAULT_CATEGORY_KEY).toLowerCase()
     byCat[cat] = (byCat[cat] || 0) + it.quantity
   })
   let maxSecs = 0

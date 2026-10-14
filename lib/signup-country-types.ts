@@ -8,6 +8,8 @@ export interface SignupCountry {
   shortName: string | null
   timezones: string[]
   defaultTimezone: string
+  /** The country's `locale` (en-GB / en-US) — the setup wizard's language once this country is chosen. */
+  locale: string
   phone: PhoneCopy
   /** data: URI of the flag (lib/flags.ts), or null when the flag package has none. */
   flag: string | null

@@ -23,7 +23,7 @@ import { provisionTruck, ProvisionError } from '@/lib/provision-truck'
 import { extractMenu, MenuExtractionError, type MenuExtraction } from '@/lib/menu-extract'
 import { moneyFormatForTruck } from '@/lib/money-server'
 import { countrySettingsForTruck } from '@/lib/country-settings'
-import { commitMenu, type CommitMenuResult } from '@/lib/menu-commit'
+import { commitMenu, clearMenu, type CommitMenuResult } from '@/lib/menu-commit'
 import { buildDemoAssumptions } from '@/lib/demo-assumptions'
 import type { DemoKitchen } from '@/lib/demo-kitchen'
 import { provisionDemoEvent, type DemoEvent } from '@/lib/provision-demo-event'
@@ -81,6 +81,11 @@ export interface ProvisionDemoInput {
   template?: { name: string; categories: string[]; items: { name: string; price: number; category: string }[] } | null
   /** Re-provision INTO an existing demo truck (return-visit path) instead of creating a new one. */
   existingTruckId?: string
+  /** 🔴 ADMIN REBUILD (14 October 2026): with `existingTruckId`, clear EVERY old event, order and stock
+   *  override on the demo — not just today's — before the new board is built. The admin's "Rebuild" means
+   *  "this demo, built again from scratch"; the landing page's return visit (`/api/demo/return`) does not
+   *  pass it and keeps its same-day behaviour. */
+  replaceBoard?: boolean
   now?: Date
   // ── OUTREACH "Create Demo" (admin-only; /api/admin/provision-demo) ──────────────────────────────
   // All three absent on the anonymous landing-page path, which is then byte-identical to before.
@@ -257,9 +262,17 @@ export async function provisionDemo(
     }
   }
 
-  // ── 3. Menu (skipped on a return visit — theirs is already committed) ──────────────────────────────
+  // ── 3. Menu ──────────────────────────────────────────────────────────────────────────────────────────
+  // 🔴 A REBUILD WITH A NEW MENU REPLACES THE OLD ONE (14 October 2026). The rebuild window has always said
+  // "Add a menu below only to replace it", but this step skipped every rebuild, so a new menu photo was
+  // silently ignored and the demo kept serving the old menu and the old orders. Now:
+  //   • no new menu (a settings-only rebuild, or the landing page's return visit) → the menu is kept;
+  //   • a new menu (photo, text or the sample) → it is read FIRST, and only once it has produced items is the
+  //     old demo cleared (`beforeCommit`). An unreadable photo therefore leaves the old demo exactly as it was.
+  const newMenu = !!(input.file || (input.text && input.text.trim()) || input.template)
+  if (input.existingTruckId && (newMenu || input.replaceBoard)) await assertDemoTruck(supabase, truckId)
   let menu: MenuOutcome
-  if (input.existingTruckId) {
+  if (input.existingTruckId && !newMenu) {
     const { count } = await supabase
       .from('menu_items_db').select('*', { count: 'exact', head: true })
       .eq('truck_id', truckId).eq('is_active', true)
@@ -272,7 +285,10 @@ export async function provisionDemo(
                 optionsCreated: 0, linksCreated: 0, priceConflicts: [], submitted: existingCount, unaccounted: 0 },
     }
   } else {
-    menu = await buildMenu(supabase, truckId, input, warnings)
+    const replaceOld = input.existingTruckId
+      ? async () => { await clearDemoBoard(supabase, truckId); await clearDemoMenu(supabase, truckId) }
+      : undefined
+    menu = await buildMenu(supabase, truckId, input, warnings, replaceOld)
   }
 
   // 🔴 STOP if the menu failed — do NOT provision an event/slot grid for a truck with zero items. Doing so
@@ -292,6 +308,11 @@ export async function provisionDemo(
   // built from it. `null` on the landing-page path, which therefore reaches provisionDemoEvent in exactly
   // the state it always did.
   if (input.kitchen) await applyDemoKitchen(supabase, truckId, vanId, input.kitchen, warnings)
+
+  // 🔴 AN ADMIN REBUILD STARTS FROM AN EMPTY BOARD: every old event and order, whatever its date (14 October
+  // 2026). provisionDemoEvent's own `replaceExisting` clears only the NEW event's date, so a demo first built
+  // on another day kept its old event and orders beside the new ones. Idempotent after a menu replacement.
+  if (input.existingTruckId && input.replaceBoard) await clearDemoBoard(supabase, truckId)
 
   let event: DemoEvent
   try {
@@ -391,7 +412,11 @@ async function buildMenu(
   truckId: string,
   input: ProvisionDemoInput,
   warnings: string[],
+  /** A rebuild's "clear the old demo" — run ONCE, after a menu has been read and just before it is committed. */
+  beforeCommit?: () => Promise<void>,
 ): Promise<MenuOutcome> {
+  let cleared = false
+  const readyToCommit = async () => { if (beforeCommit && !cleared) { cleared = true; await beforeCommit() } }
   const { data: truckRow } = await supabase.from('trucks').select('id, name, currency, country').eq('id', truckId).single()
   const truck = { id: truckId, name: (truckRow?.name as string) ?? 'Demo Kitchen' }
 
@@ -409,6 +434,7 @@ async function buildMenu(
     }
 
     if (extraction && extraction.items.length > 0) {
+      await readyToCommit()
       const result = await commitExtraction(supabase, truck, extraction, warnings, input.kitchen)
       // OUTCOME 1: nothing landed → treat as an extraction failure so the caller can offer the honest
       // "we couldn't read that menu" + template choice (§11). NEVER silently substitute a stock menu.
@@ -445,6 +471,7 @@ async function buildMenu(
       })),
       existing_categories: [],
     }
+    await readyToCommit()
     const result = await commitExtraction(supabase, truck, extraction, warnings, input.kitchen)
     if (result.inserted > 0) {
       // Persist the template extraction too (the return path re-provisions from it, so Pizza stays Pizza),
@@ -457,6 +484,38 @@ async function buildMenu(
   }
 
   return { kind: 'failed', reason: 'Menu extraction produced nothing and no template was supplied' }
+}
+
+// ── 🔴 CLEARING A DEMO FOR A REBUILD (14 October 2026) ────────────────────────────────────────────────
+// DESTRUCTIVE, so it runs only on a truck that is PROVABLY a demo: one with a `demo_sessions` row. The admin
+// route already takes the id from the prospect's own demo, but a wrong id must fail here, never wipe a real
+// truck's menu or orders.
+async function assertDemoTruck(supabase: SupabaseClient, truckId: string): Promise<void> {
+  const { data, error } = await supabase.from('demo_sessions').select('truck_id').eq('truck_id', truckId).maybeSingle()
+  if (error) throw new ProvisionDemoError(`Could not confirm ${truckId} is a demo before clearing it: ${error.message}`)
+  if (!data) throw new ProvisionDemoError(`Truck ${truckId} has no demo session — refusing to clear it as a demo`)
+}
+
+/** Every old order and event on the demo (any date), the slot tables built from them, and the old sold-out
+ *  overrides. Event-scoped rows (collection times, event deals, event stock, event prices) cascade with the
+ *  events; payments cascade with their orders. */
+async function clearDemoBoard(supabase: SupabaseClient, truckId: string): Promise<void> {
+  for (const table of ['orders', 'truck_events', 'slot_capacity', 'production_slot_usage', 'slot_bookings', 'item_overrides', 'category_stock'] as const) {
+    const { error } = await supabase.from(table).delete().eq('truck_id', truckId)
+    if (error) throw new ProvisionDemoError(`Rebuild could not clear the demo's old ${table}: ${error.message}`, truckId)
+  }
+}
+
+/** The old menu and everything built on it: deals, upsells and subcategories, then the menu itself
+ *  (lib/menu-commit.ts clearMenu — groups, items, categories). */
+async function clearDemoMenu(supabase: SupabaseClient, truckId: string): Promise<void> {
+  for (const table of ['bundles_db', 'upsell_rules', 'menu_subcategories'] as const) {
+    const { error } = await supabase.from(table).delete().eq('truck_id', truckId)
+    if (error) throw new ProvisionDemoError(`Rebuild could not clear the demo's old ${table}: ${error.message}`, truckId)
+  }
+  try { await clearMenu(supabase, truckId) } catch (err) {
+    throw new ProvisionDemoError(`Rebuild could not clear the demo's old menu: ${err instanceof Error ? err.message : 'unknown'}`, truckId)
+  }
 }
 
 // ── Persist the RAW extraction to demo_sessions.extraction ────────────────────────────────────────────

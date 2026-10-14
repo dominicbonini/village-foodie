@@ -4,6 +4,8 @@
 // ⚠️ UK English. Straight apostrophes are fine in these strings — they are rendered through {' '} style
 // expressions and JSX text where React escapes them, not as bare JSX apostrophes that the linter flags.
 
+import { monthName } from '@/lib/time-utils'
+
 export const META_PRICING_URL = 'https://developers.facebook.com/docs/whatsapp/pricing'
 export const WHATSAPP_MANAGER_URL = 'https://business.facebook.com/wa/manage/home/'
 
@@ -42,6 +44,7 @@ export const formatLimit = (n: number): string => n.toLocaleString('en-GB')
 export function formatResetDate(isoDate: string): string {
   const [y, m, d] = isoDate.split('-').map(Number)
   if (!y || !m || !d) return isoDate
-  // Built from the parts, NOT `new Date(iso)` — that parses as UTC and can render the previous day.
-  return `${d} ${['January','February','March','April','May','June','July','August','September','October','November','December'][m - 1]}`
+  // Built from the parts, NOT `new Date(iso)` — that parses as UTC and can render the previous day. The month's
+  // name comes from lib/time-utils.ts (Intl, the calendar date pinned to UTC); en-GB, as this copy has always been.
+  return `${d} ${monthName(`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`, 'en-GB', 'long')}`
 }

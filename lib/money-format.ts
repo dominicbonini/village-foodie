@@ -145,6 +145,13 @@ function rounded(major: number, digits: number): number {
   return r === 0 ? 0 : r
 }
 
+/** Would `formatMajor(major, f, { decimals })` print zero? Asked of the FORMATTER'S OWN ROUNDING, by number —
+ *  so a caller never has to compare two formatted strings to find out (Language Phase 0: the words and
+ *  symbols in those strings are about to vary by language). */
+export function roundsToZero(major: number, f: Pick<MoneyFormat, 'currency'>, decimals?: number): boolean {
+  return rounded(major, decimals ?? minorDigits(f.currency)) === 0
+}
+
 /** "£43.90" — an amount in MAJOR units (an order's 43.9, a menu price), in this format's currency. */
 export function formatMajor(major: number, f: MoneyFormat, opts: AmountOptions = {}): string {
   const digits = opts.decimals ?? minorDigits(f.currency)

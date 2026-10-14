@@ -49,8 +49,9 @@ const footnoteTextOverrides = (s: CountrySettings): Record<string, string> => ({
 // table to put a cell in.
 function Cell({ value }: { value: FeatureValue }) {
   const label = cellLabel(value)
-  if (label === '✓') return <span className="yes">{label}</span>
-  if (label === 'Coming soon') return <span className="soon">{label}</span>
+  // 🔴 THE STATE DECIDES THE CLASS, NOT THE WORDS (Language Phase 0): "Coming soon" will be translated.
+  if (value === true) return <span className="yes">{label}</span>
+  if (value === 'coming_soon') return <span className="soon">{label}</span>
   return <span className="no">{label}</span>
 }
 
@@ -113,7 +114,7 @@ export function FeatureComparison({ settings }: {
             <div key={section.title}>
               <div className="cmp2-grp">{section.title}</div>
               {visibleRows(section).map(row => (
-                <div key={row.name} className="cmp2-row">
+                <div key={row.id} className="cmp2-row">
                   <div className="cmp2-label">
                     {/* NAME_OVERRIDES and DETAIL_OVERRIDES are landing-only, exactly as the detail
                         override already was. `row.footnote` is deliberately NOT overridden: both

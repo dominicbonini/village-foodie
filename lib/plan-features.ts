@@ -4,6 +4,7 @@ import { pctLabel, feeLabel, smallFeeLabel, formatWholeAmount } from '@/lib/mone
 export type { Plan }
 
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+import { PRICE_WORD } from '@/lib/price-words'
 // 🔴 THE FREE ALLOWANCE, IMPORTED RATHER THAN RETYPED. lib/whatsapp/reply-cap.ts has NO imports of its
 // own, so this cannot create a cycle. Footnote 6 quotes this number; the Settings card quotes the same
 // constant. A hand-typed "1,000" in the footnote would be a second source of truth for a figure Meta
@@ -27,7 +28,24 @@ const WHATSAPP_ROW_NAME = 'WhatsApp auto-replies'
 
 export type FeatureValue = boolean | 'coming_soon'
 
+/** 🔴 A ROW'S CODE ID (Language Phase 0, 14 October 2026). Every lookup — the feature-gate map, the trial
+ *  column, the landing's overrides, Billing, Admin — keys on THIS, never on the row's display `name`, so the
+ *  name can be reworded or translated without a lookup silently missing. The ids are never shown. */
+export type PlanRowId =
+  | 'discovery_map_listing' | 'web_dashboard' | 'qr_code' | 'schedule_import' | 'meal_deals_upsells'
+  | 'walkup_orders' | 'sold_out_toggle' | 'online_ordering_pay_at_hatch' | 'kitchen_app'
+  | 'offline_protection' | 'online_payments' | 'advance_preordering' | 'preorder_deadline'
+  | 'time_slot_selection' | 'kitchen_capacity' | 'stock_countdown' | 'auto_accept' | 'branded_qr_code'
+  | 'private_events' | 'social_media_posts' | 'whatsapp_auto_replies' | 'messenger_instagram_replies'
+  | 'tap_to_pay' | 'advanced_reporting' | 'sms_order_alerts'
+  | 'multi_device_kitchen' | 'multi_user_access' | 'embed_schedule' | 'event_types' | 'buzzer_tracking'
+  | 'ticket_printing' | 'customer_display' | 'loyalty_stamp_cards'
+
+/** The row the trial column and Billing treat specially: Pay at Hatch is on for every trial. */
+export const PAY_AT_HATCH_ROW: PlanRowId = 'online_ordering_pay_at_hatch'
+
 export interface FeatureRow {
+  id: PlanRowId
   name: string
   detail?: string       // plain-operator tooltip copy (the landing table's `?` hover text)
   footnote?: string
@@ -122,7 +140,7 @@ export function allowanceMinorFor(tier: 'pro' | 'max', s: CountrySettings): numb
 export function planAllowances(s: CountrySettings): Record<'starter' | 'pro' | 'max', string> {
   const fee = platformFeeLabel(s)
   return {
-    starter: 'Pay at Hatch',
+    starter: PRICE_WORD.payAtHatch,
     pro: `First ${allowanceAmountLabel(allowanceMinorFor('pro', s), s)} of online orders included, then ${fee}`,
     max: `First ${allowanceAmountLabel(allowanceMinorFor('max', s), s)} of online orders included, then ${fee}`,
   }
@@ -181,9 +199,9 @@ export function transactionRows(s: CountrySettings): {
 }[] {
   const fee = platformFeeLabel(s)
   return [
-    { name: 'Walk-up orders',         footnote: '1', cells: { trial: '0%',        starter: '0%',           pro: '0%', max: '0%' } },
-    { name: 'Online orders included', footnote: '2', cells: { trial: 'Unlimited', starter: '—',            pro: allowanceAmountLabel(allowanceMinorFor('pro', s), s), max: allowanceAmountLabel(allowanceMinorFor('max', s), s) } },
-    { name: 'Fee after that',         footnote: '2', cells: { trial: 'Free',      starter: 'Pay at Hatch', pro: fee, max: fee } },
+    { name: 'Walk-up orders',         footnote: '1', cells: { trial: PRICE_WORD.zeroPercent, starter: PRICE_WORD.zeroPercent, pro: PRICE_WORD.zeroPercent, max: PRICE_WORD.zeroPercent } },
+    { name: 'Online orders included', footnote: '2', cells: { trial: PRICE_WORD.unlimited, starter: PRICE_WORD.none, pro: allowanceAmountLabel(allowanceMinorFor('pro', s), s), max: allowanceAmountLabel(allowanceMinorFor('max', s), s) } },
+    { name: 'Fee after that',         footnote: '2', cells: { trial: PRICE_WORD.free, starter: PRICE_WORD.payAtHatch, pro: fee, max: fee } },
   ]
 }
 
@@ -209,14 +227,14 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
      * source of truth for a heading. */
     title: 'Starter plan',
     rows: [
-      { name: 'Discovery map listing',           detail: 'Your truck appears on the public HatchGrab map so nearby customers can find you.', starter: true,  pro: true,  max: true  },
-      { name: 'Universal web dashboard',         detail: 'Run your service from any phone, tablet or laptop browser.', starter: true,  pro: true,  max: true  },
-      { name: 'QR code',                          detail: 'A printable QR code that opens your menu and ordering page.', starter: true,  pro: true,  max: true  },
-      { name: 'Automatic schedule import',        detail: 'We fill your schedule automatically — from your website, or a photo you already post to Facebook. You just review and confirm.', starter: true,  pro: true,  max: true  },
-      { name: 'Meal deals & upsells',            detail: 'Bundle items into deals and offer add-ons at checkout to lift the average order.', starter: true,  pro: true,  max: true  },
-      { name: 'Walk-up order processing', footnote: '1', detail: 'Take and manage orders at the hatch, paid on your own card terminal.', starter: true, pro: true, max: true },
-      { name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
-      { name: 'Online ordering — Pay at Hatch', footnote: '1', detail: 'Customers order ahead online and pay in person when they collect.', starter: true, pro: false, max: false },
+      { id: 'discovery_map_listing', name: 'Discovery map listing',           detail: 'Your truck appears on the public HatchGrab map so nearby customers can find you.', starter: true,  pro: true,  max: true  },
+      { id: 'web_dashboard', name: 'Universal web dashboard',         detail: 'Run your service from any phone, tablet or laptop browser.', starter: true,  pro: true,  max: true  },
+      { id: 'qr_code', name: 'QR code',                          detail: 'A printable QR code that opens your menu and ordering page.', starter: true,  pro: true,  max: true  },
+      { id: 'schedule_import', name: 'Automatic schedule import',        detail: 'We fill your schedule automatically — from your website, or a photo you already post to Facebook. You just review and confirm.', starter: true,  pro: true,  max: true  },
+      { id: 'meal_deals_upsells', name: 'Meal deals & upsells',            detail: 'Bundle items into deals and offer add-ons at checkout to lift the average order.', starter: true,  pro: true,  max: true  },
+      { id: 'walkup_orders', name: 'Walk-up order processing', footnote: '1', detail: 'Take and manage orders at the hatch, paid on your own card terminal.', starter: true, pro: true, max: true },
+      { id: 'sold_out_toggle', name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
+      { id: 'online_ordering_pay_at_hatch', name: 'Online ordering — Pay at Hatch', footnote: '1', detail: 'Customers order ahead online and pay in person when they collect.', starter: true, pro: false, max: false },
       // ── 🔴 RE-MERGED, 5 September 2026. ANDROID IS LIVE ON GOOGLE PLAY. ──────────────────────────
       // These were two rows — 'iPhone and iPad kitchen app' (true/true/true) and 'Android kitchen app'
       // (coming_soon ×3) — split on 1 September because iOS was approved and Android was still in
@@ -237,7 +255,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // features on a phone, and Pizzeria Gusto run their service on phones rather than tablets —
       // naming only tablets under-claimed what a live operator does every day. Footnote 3 carries the
       // browser fallback and the "device not supplied" caveat for all three.
-      { name: 'iPhone, iPad and Android kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
+      { id: 'kitchen_app', name: 'iPhone, iPad and Android kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
     ],
   },
   {
@@ -257,9 +275,9 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
      * row names and details only), and adding one would be a second source of truth for a heading. */
     title: 'Pro plan',
     rows: [
-      { name: 'Offline Order Protection',                      detail: "If your internet drops mid-service, orders are held safely and sync when you're back — you never lose one.", starter: false, pro: true,           max: true           },
-      { name: 'Online payments',                  footnote: '2', detail: 'Take card payment upfront when customers order online, via Stripe.', starter: false, pro: true,           max: true           },
-      { name: 'Advance pre-ordering',                         detail: 'Let customers order for a future date or time before the event.', starter: false, pro: true,           max: true           },
+      { id: 'offline_protection', name: 'Offline Order Protection',                      detail: "If your internet drops mid-service, orders are held safely and sync when you're back — you never lose one.", starter: false, pro: true,           max: true           },
+      { id: 'online_payments', name: 'Online payments',                  footnote: '2', detail: 'Take card payment upfront when customers order online, via Stripe.', starter: false, pro: true,           max: true           },
+      { id: 'advance_preordering', name: 'Advance pre-ordering',                         detail: 'Let customers order for a future date or time before the event.', starter: false, pro: true,           max: true           },
       // 🔴 PRE-ORDER DEADLINES — ADDED 2 SEPTEMBER 2026. WORDING SUPPLIED AND APPROVED BY THE OPERATOR;
       // it is not editorial and must not be "tidied". Placed immediately after Advance pre-ordering, on
       // request and because it is the same capability's second half: that row sells ordering ahead, this
@@ -284,8 +302,8 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // event start) or 'daily_cutoff' (a clock time on the event's date); an hours_before offset still
       // resolves to a time, so the wording does not exclude it.
       // 🔴 NO NEW Feature KEY, AND THAT IS DELIBERATE — see ROW_FEATURE_MAP below.
-      { name: 'Pre-order deadline',                           detail: 'Set a cut-off time for items that need notice.', starter: false, pro: true,           max: true           },
-      { name: 'Customer time slot selection',                 detail: 'Customers pick a collection time slot, spreading demand across your service.', starter: false, pro: true,           max: true           },
+      { id: 'preorder_deadline', name: 'Pre-order deadline',                           detail: 'Set a cut-off time for items that need notice.', starter: false, pro: true,           max: true           },
+      { id: 'time_slot_selection', name: 'Customer time slot selection',                 detail: 'Customers pick a collection time slot, spreading demand across your service.', starter: false, pro: true,           max: true           },
       /* ⚠️ RENAMED 10 October 2026 — was 'Smart Slot Management'. "Smart" is a claim the row cannot
        * keep and "slot" is our word for it; what the operator actually sets is their kitchen's
        * capacity, which is what the `detail` has always said. ⛔ THE KEY IN `ROW_FEATURE_MAP` IS
@@ -295,7 +313,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * slots to match your kitchen's capacity" described the MECHANISM in our words — "paced",
        * "slots" — and named nothing the operator does. The new one is the two things they set and the
        * one thing a customer then sees, which is the same sentence the landing page's own tile uses. */
-      { name: 'Kitchen capacity management',                  detail: 'Set how much your kitchen can cook at a time and how long it takes. Once a slot is full, customers can’t pick it.', starter: false, pro: true,           max: true           },
+      { id: 'kitchen_capacity', name: 'Kitchen capacity management',                  detail: 'Set how much your kitchen can cook at a time and how long it takes. Once a slot is full, customers can’t pick it.', starter: false, pro: true,           max: true           },
       // 🔴 MOVED OUT OF 'CORE OPERATIONS' AND OFF STARTER — 2 September 2026, ON REQUEST.
       // Before: 'Core operations', starter TRUE. After: here, starter FALSE. Trial/Pro/Max unchanged.
       // 🟢 THE SECTION MOVE IS PART OF THE CHANGE, NOT TIDYING. 'Core operations' is the section whose
@@ -313,9 +331,9 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // to starter, so the table now says no while the code says yes. That is a KNOWN, ACCEPTED gap
       // being closed separately — see docs/stock-countdown-tier-report.md 4. It is safe only because
       // nothing is on Starter yet: the platform has not launched.
-      { name: 'Automated stock countdown',                    detail: 'Set a stock count and it counts down as orders come in, then sells out automatically.', starter: false, pro: true,           max: true           },
-      { name: 'Auto-accept online orders',                    detail: 'Online orders are accepted automatically — no need to confirm each one.', starter: false, pro: true,           max: true           },
-      { name: 'Branded QR code',                              detail: 'Add your logo to your QR code.', starter: false, pro: true,  max: true  },
+      { id: 'stock_countdown', name: 'Automated stock countdown',                    detail: 'Set a stock count and it counts down as orders come in, then sells out automatically.', starter: false, pro: true,           max: true           },
+      { id: 'auto_accept', name: 'Auto-accept online orders',                    detail: 'Online orders are accepted automatically — no need to confirm each one.', starter: false, pro: true,           max: true           },
+      { id: 'branded_qr_code', name: 'Branded QR code',                              detail: 'Add your logo to your QR code.', starter: false, pro: true,  max: true  },
       /* ══ 🔴 MOVED HERE FROM THE 'Max tier' SECTION, 6 OCTOBER 2026, ON THE OPERATOR'S INSTRUCTION ═══
        * ⛔ IT CROSSED A SECTION BOUNDARY, AND THAT WAS CHECKED BEFORE IT MOVED. The instruction was
        * "directly after Branded QR code", and the two were in different sections — so the move changes
@@ -327,7 +345,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * ⚠️ ORDER ONLY. The name, the detail, the cells and its ROW_FEATURE_MAP entry
        * (`private_events`) are untouched; `findPlanParityViolations()` still checks the same `true`
        * cells against the same `canAccess` keys, because nothing about the row changed. */
-      { name: 'Private events', detail: 'Add private events that don’t show on the map, with their own private ordering link and QR code.', starter: false, pro: true, max: true },
+      { id: 'private_events', name: 'Private events', detail: 'Add private events that don’t show on the map, with their own private ordering link and QR code.', starter: false, pro: true, max: true },
       /* ══ 🔴 LAUNCHED, AND THE PROMISE IS CHECKED NOW (10 October 2026) ═══════════════════════════
        *
        * ⛔ **THIS ROW WAS A `true` CELL WITH NO `ROW_FEATURE_MAP` ENTRY, AND THE FILE SAID SO.** It
@@ -346,7 +364,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * badge — Dominic's own correction on 6 October — so launching it is a two-word change in this one
        * row and nothing else in any of the four renderers.
        * ⛔ STARTER STAYS `false`. The table has always said so and the gate has always agreed. */
-      { name: 'Social media posts', detail: 'Upload your designs — we add your dates, places and times for each week and event automatically.', starter: false, pro: true, max: true },
+      { id: 'social_media_posts', name: 'Social media posts', detail: 'Upload your designs — we add your dates, places and times for each week and event automatically.', starter: false, pro: true, max: true },
       // Auto-replies stay SPLIT across two rows. They USED to be split because WhatsApp was live and the
       // other two were not; as of 1 September 2026 ALL THREE are coming soon, so the split now carries a
       // different fact: WhatsApp is the one being built first. Do not re-merge them into one row — a
@@ -382,10 +400,10 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // 🔴 BEHIND THE SINGLE SWITCH (lib/whatsapp-live.ts). OFF is byte-identical to what production
       //    rendered at 08ac368: footnote '4', coming_soon on both tiers. ON is the go-live row.
       WHATSAPP_LIVE
-        ? { name: WHATSAPP_ROW_NAME,                  footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true, max: true }
-        : { name: WHATSAPP_ROW_NAME,                  footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+        ? { id: 'whatsapp_auto_replies', name: WHATSAPP_ROW_NAME,                  footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true, max: true }
+        : { id: 'whatsapp_auto_replies', name: WHATSAPP_ROW_NAME,                  footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       // Coming soon (kept at the bottom of the section)
-      { name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { id: 'messenger_instagram_replies', name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       // 🔴 MOVED HERE FROM THE PAYMENTS SECTION, AND FOOTNOTED. It sits with the other coming-soon
       // rows rather than among the shipped payment ones, so the block the file calls "Coming soon
       // (kept at the bottom of the section)" stays true of every row in it.
@@ -427,16 +445,16 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * See it above, directly after 'Private events'. ⛔ READ THE NOTE THERE BEFORE CHANGING IT: it
        * is a hard `true` with NO `ROW_FEATURE_MAP` entry, which is the one shape this block warned
        * against — and it is that way on an explicit, recorded instruction, not by oversight. */
-      { name: 'Take payment on your phone', footnote: '1', detail: 'Take card payments on a supported phone, so you don\u2019t need a separate card machine.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
-      { name: 'Advanced reporting', detail: 'Break sales down by date range, item and event to see what’s really selling.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
-      { name: 'SMS order alerts', detail: "Text customers automatically when their order's ready. Will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { id: 'tap_to_pay', name: 'Take payment on your phone', footnote: '1', detail: 'Take card payments on a supported phone, so you don\u2019t need a separate card machine.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { id: 'advanced_reporting', name: 'Advanced reporting', detail: 'Break sales down by date range, item and event to see what’s really selling.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { id: 'sms_order_alerts', name: 'SMS order alerts', detail: "Text customers automatically when their order's ready. Will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },
     ],
   },
   {
     title: 'Max plan',
     rows: [
-      { name: 'Multi-device kitchen sync', detail: 'Run several screens — front counter and kitchen — all showing the same live orders.', starter: false, pro: false, max: true           },
-      { name: 'Multi-user access',         detail: 'Give staff their own logins with the right level of access.', starter: false, pro: false, max: true           },
+      { id: 'multi_device_kitchen', name: 'Multi-device kitchen sync', detail: 'Run several screens — front counter and kitchen — all showing the same live orders.', starter: false, pro: false, max: true           },
+      { id: 'multi_user_access', name: 'Multi-user access',         detail: 'Give staff their own logins with the right level of access.', starter: false, pro: false, max: true           },
       // ── MOVED HERE 29 August 2026, AND IT IS THE ONE ROW THAT MOVED. ────────────────────────
       // Previously last-but-one in this section, below 'Event & festival pricing'. Every other row holds
       // its position relative to every other — only this one was lifted.
@@ -497,11 +515,11 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // have to keep. "on your own website" is close to that line — flagged to the operator, who owns
       // the wording. It is NOT a description of an embed today; if the product ever gains one, this line
       // needs re-reading rather than extending.
-      { name: 'Schedule page on your own website', detail: 'Show your upcoming dates on your own website. Each one links straight through to its order page.', starter: false, pro: false, max: true },
+      { id: 'embed_schedule', name: 'Schedule page on your own website', detail: 'Show your upcoming dates on your own website. Each one links straight through to its order page.', starter: false, pro: false, max: true },
       /* ── 🟢 MOVED HERE 6 OCTOBER 2026, ON THE OPERATOR'S INSTRUCTION: directly after the schedule
          page, from the bottom of this section. ⚠️ ORDER ONLY — the name, the detail, the cells
          (Max only) and its ROW_FEATURE_MAP entry (`event_types`) are all untouched. */
-      { name: 'Custom event types & pricing', detail: 'Create your own event types, with custom prices and settings for events and festivals.', starter: false, pro: false, max: true },
+      { id: 'event_types', name: 'Custom event types & pricing', detail: 'Create your own event types, with custom prices and settings for events and festivals.', starter: false, pro: false, max: true },
       // ── 🔴 MOVED INTO THE MAX TIER SECTION, 3 SEPTEMBER 2026, ON THE OPERATOR'S INSTRUCTION. ──────
       // It was added on 3 September in 'Online sales & automation' (between 'Auto-accept online orders'
       // and 'Branded QR code') as a Pro feature. When the cells went Pro -> Max-only it became the ONLY
@@ -539,7 +557,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // ⚠️ TRIAL IS NOT STORED ON THE ROW. trialFeatureValue() (lib/landing-table.ts:41-45) returns
       // row.max for every row bar two named exceptions, and this is neither — so Trial follows max and
       // keeps the feature. Cells read: Trial ✓ · Starter — · Pro — · Max ✓.
-      { name: 'Buzzer tracking',           detail: 'Give an order a buzzer number when you hand one out, so you know which buzzer belongs to which order.', starter: false, pro: false, max: true },
+      { id: 'buzzer_tracking', name: 'Buzzer tracking',           detail: 'Give an order a buzzer number when you hand one out, so you know which buzzer belongs to which order.', starter: false, pro: false, max: true },
       // 🔴 'coming_soon', NOT true — 14 August 2026. A TICK IS A CLAIM THAT IT WORKS, AND IT DOES NOT.
       // components/printing/PrintingSettings.tsx has NO connect(): the Phase-A stub that wrote
       // 'Demo printer (Phase A stub)' and manufactured a connected state was REMOVED, and no real
@@ -552,9 +570,9 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // ⚠️ It also cannot break findPlanParityViolations(): that guard only inspects cells that are hard
       // `true` (`row[tier] === true && !canAccess(...)`), so turning one into 'coming_soon' removes a
       // check rather than adding one. 'coming_soon' is explicitly a legitimate divergence (:231).
-      { name: 'Kitchen ticket printing',  footnote: '5', detail: 'Print order tickets to a Bluetooth or wired printer in the kitchen.', starter: false, pro: false, max: true },
+      { id: 'ticket_printing', name: 'Kitchen ticket printing',  footnote: '5', detail: 'Print order tickets to a Bluetooth or wired printer in the kitchen.', starter: false, pro: false, max: true },
       // Coming soon (kept at the bottom of the section)
-      { name: 'Customer-facing display',   detail: 'A screen customers can see showing order numbers and when they’re ready.', starter: false, pro: false, max: 'coming_soon'  },
+      { id: 'customer_display', name: 'Customer-facing display',   detail: 'A screen customers can see showing order numbers and when they’re ready.', starter: false, pro: false, max: 'coming_soon'  },
       /* ══ 🔴 ONE "coming soon" ROW BECAME TWO BUILT ONES (5 October 2026) ═══════════════════════════
        * It was `{ name: 'Event & festival pricing', … max: 'coming_soon' }` — one row for what turned
        * out to be two products on two tiers:
@@ -581,7 +599,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // Walk-up flow: phone number lookup in Add Order panel → auto-increment
       // Online flow: email match on order submit → auto-increment
       // Do NOT build flexible stamp criteria until V1 is live and operators request it
-      { name: 'Digital loyalty stamp cards', detail: 'Reward repeat customers with digital stamp cards — collected and redeemed automatically.', starter: false, pro: false, max: 'coming_soon' },
+      { id: 'loyalty_stamp_cards', name: 'Digital loyalty stamp cards', detail: 'Reward repeat customers with digital stamp cards — collected and redeemed automatically.', starter: false, pro: false, max: 'coming_soon' },
     ],
   },
 ]
@@ -715,15 +733,18 @@ export function footnotes(s: CountrySettings): { number: string; text: string }[
 // hard `true` for a tier MUST be allowed by the gate for that tier. This catches the WhatsApp class (marketed
 // Pro, gated Max-only) automatically. The name→Feature map is the one coupling; rows without a mapping
 // (Multi-user access, schedule generator, loyalty, event pricing) are marketing-only and skipped.
-const ROW_FEATURE_MAP: Record<string, Feature> = {
-  'Discovery map listing': 'discovery_map',
-  'Universal web dashboard': 'web_dashboard',
-  'QR code': 'qr_menu',
-  'Meal deals & upsells': 'meal_deals',
-  'Walk-up order processing': 'walkup_orders',
-  'Instant sold out toggle': 'sold_out_toggle',
-  'Automated stock countdown': 'stock_countdown',
-  'Online ordering — Pay at Hatch': 'online_ordering_pay_at_hatch',
+/* 🔴 KEYED ON THE ROW'S CODE ID SINCE 14 OCTOBER 2026 (Language Phase 0). The notes below still say "keyed on
+ * the row name" — that WAS the hazard they describe (rename a row and its entry silently drops out); it is
+ * gone now, because a row's id never changes with its wording and the type rejects an unknown one. */
+const ROW_FEATURE_MAP: Partial<Record<PlanRowId, Feature>> = {
+  discovery_map_listing: 'discovery_map',
+  web_dashboard: 'web_dashboard',
+  qr_code: 'qr_menu',
+  meal_deals_upsells: 'meal_deals',
+  walkup_orders: 'walkup_orders',
+  sold_out_toggle: 'sold_out_toggle',
+  stock_countdown: 'stock_countdown',
+  online_ordering_pay_at_hatch: 'online_ordering_pay_at_hatch',
   // ⚠️ Keyed on the ROW NAME, so renaming a row here without renaming it above silently drops that row
   // from findPlanParityViolations() — the guard stops checking and reports clean. Renamed with the merge.
   // The Feature key itself ('ipad_kds') is the ENFORCEMENT identifier in lib/features.ts and is NOT
@@ -731,13 +752,13 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   // 🔴 RE-KEYED 5 September 2026, IN THE SAME EDIT AS THE ROW RENAME. The label IS the key — a rename
   // here that lags the row silently removes it from findPlanParityViolations(), which then reports
   // clean because it is no longer looking. The Feature ('ipad_kds') is unchanged: it is the same app.
-  'iPhone, iPad and Android kitchen app': 'ipad_kds',
+  kitchen_app: 'ipad_kds',
   /* 🔴 THE TWO ROWS THAT REPLACED 'Event & festival pricing' (5 October 2026). Keyed on the ROW NAME,
    * like every entry here — and because both rows are hard `true` rather than 'coming_soon', these two
    * entries are what `findPlanParityViolations()` uses to prove the table matches `canAccess`. Without
    * them the rows would have no map entry, the guard would `continue` past them, and the table could
    * promise Pro a Max feature with nothing failing. */
-  'Private events': 'private_events',
+  private_events: 'private_events',
   /* ══ 🔴 ADDED AT LAUNCH, 10 OCTOBER 2026 — THE ENTRY THIS TABLE WAS MISSING ═══════════════════════
    * ⛔ WITHOUT IT THIS ROW WAS AN UNCHECKED PROMISE: `findPlanParityViolations()` `continue`s past a row
    * with no entry here, so a hard `true` on a public pricing page was compared against nothing. The
@@ -747,11 +768,11 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
    * so `pro: true, max: true` is exactly what `canAccess` enforces.
    * ⚠️ KEYED ON THE ROW NAME, like every entry here: renaming the row above without renaming this
    * silently drops it from the guard, which then reports clean because it has stopped looking. */
-  'Social media posts': 'schedule_graphics',
-  'Custom event types & pricing': 'event_types',
-  'Offline Order Protection': 'offline_protection',
-  'Online payments': 'online_payments',
-  'Advance pre-ordering': 'advance_preordering',
+  social_media_posts: 'schedule_graphics',
+  event_types: 'event_types',
+  offline_protection: 'offline_protection',
+  online_payments: 'online_payments',
+  advance_preordering: 'advance_preordering',
   // 🔴 MAPPED TO THE EXISTING GATE, NOT A NEW ONE. `advance_preordering` is what actually enforces
   // this on the customer path — orders/submit/route.ts:535 reads exactly that key before any deadline
   // logic runs, so a separate 'preorder_deadlines' Feature would gate nothing.
@@ -761,17 +782,17 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   // 🟢 TWO ROWS SHARING ONE KEY IS FINE HERE: findPlanParityViolations looks the key up PER ROW, so
   // both rows are checked against the same grant — and both carry the same starter/pro/max values, so
   // they cannot drift apart without the checker seeing it.
-  'Pre-order deadline': 'advance_preordering',
-  'Customer time slot selection': 'time_slot_selection',
+  preorder_deadline: 'advance_preordering',
+  time_slot_selection: 'time_slot_selection',
   /* ⚠️ RE-KEYED WITH THE ROW'S RENAME, IN THE SAME EDIT (10 October 2026). The Feature key is
    * unchanged — `smart_batch_pacing` is what the code gates on — only the row's display name moved. */
-  'Kitchen capacity management': 'smart_batch_pacing',
-  'Auto-accept online orders': 'auto_accept',
-  'Branded QR code': 'branded_qr_code',
-  [WHATSAPP_ROW_NAME]: 'whatsapp_replies',
-  'Messenger & Instagram auto-replies': 'instagram_messenger_replies',
-  'Advanced reporting': 'advanced_reporting',
-  'Multi-device kitchen sync': 'multi_device_kds',
+  kitchen_capacity: 'smart_batch_pacing',
+  auto_accept: 'auto_accept',
+  branded_qr_code: 'branded_qr_code',
+  whatsapp_auto_replies: 'whatsapp_replies',
+  messenger_instagram_replies: 'instagram_messenger_replies',
+  advanced_reporting: 'advanced_reporting',
+  multi_device_kitchen: 'multi_device_kds',
   // 🔴 ADDED 29 August 2026 IN THE SAME CHANGE AS THE CELL FLIP TO `true`, AND THAT PAIRING IS THE
   // WHOLE POINT. findPlanParityViolations() `continue`s on any row with no entry here, so a row flipped
   // to hard-`true` without its entry is advertised as included and checked by nothing. The manual records
@@ -782,9 +803,9 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   // 'Your schedule at your own website'. THIS KEY AND THE ROW'S `name` MUST MATCH CHARACTER FOR
   // CHARACTER. They are joined by exact string and nothing checks the join: a stale key here does not
   // error, it makes findPlanParityViolations() `continue` past the row and quietly stop checking it.
-  'Schedule page on your own website': 'embed_schedule',
-  'Kitchen ticket printing': 'ticket_printing',
-  'Customer-facing display': 'cook_screen',
+  embed_schedule: 'embed_schedule',
+  ticket_printing: 'ticket_printing',
+  customer_display: 'cook_screen',
 }
 
 /** Every "advertised hard-true for a tier, but the gate blocks it" mismatch. Empty ⇒ presentation and gate
@@ -794,7 +815,7 @@ export function findPlanParityViolations(): string[] {
   const out: string[] = []
   for (const section of FEATURE_SECTIONS) {
     for (const row of section.rows) {
-      const feature = ROW_FEATURE_MAP[row.name]
+      const feature = ROW_FEATURE_MAP[row.id]
       if (!feature) continue
       for (const tier of tiers) {
         // ── DIRECTION 1 — EVERY ROW, UNCHANGED. Advertised as a hard tick but the gate refuses it.
@@ -815,7 +836,7 @@ export function findPlanParityViolations(): string[] {
         // inspected cells that are literally `true`, and while the flag was off the cells read
         // 'coming_soon' — so the one row with a documented "flip both or neither" rule was the one row
         // the checker could not see. It reported clean on a state it had never actually tested.
-        if (row.name !== WHATSAPP_ROW_NAME) continue
+        if (row.id !== 'whatsapp_auto_replies') continue
 
         if (WHATSAPP_LIVE) {
           // A coming-soon cell while the product says the feature is live. This is the half that would

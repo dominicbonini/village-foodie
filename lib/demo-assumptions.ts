@@ -7,7 +7,11 @@
 // and no order ever paces. "Adjust kitchen capacity and watch slots respond" is one of the four things the
 // demo exists to show, so getting this wrong doesn't degrade the demo, it removes the headline benefit.
 
-import { STANDARD_CATEGORIES, type ExtractedItem } from '@/lib/menu-extract'
+import { STANDARD_CATEGORIES, STANDARD_CATEGORY, type StandardCategoryId, type ExtractedItem } from '@/lib/menu-extract'
+
+// 🔴 BY CATEGORY ID (Language Phase 0, 14 October 2026): the sets below hold the names those ids stand for, so the
+// results are the same, but no English category word is typed here — STANDARD_CATEGORY (lib/menu-extract.ts) owns them.
+const namesOf = (ids: StandardCategoryId[]) => new Set<string>(ids.map(id => STANDARD_CATEGORY[id]))
 
 /** What commit-menu expects, keyed by category NAME. */
 export type CategoryPrep = Record<string, { prep_secs: number | null; batch_size: number | null; counts_toward?: boolean }>
@@ -20,11 +24,11 @@ export const MAIN_BATCH_SIZE = 4
 // of its own (the "existing menu" prompt block drops out when the truck is empty) — so for the demo path
 // this really is a CLOSED vocabulary. That makes a lookup table strictly better than any price/count
 // heuristic: it can't be fooled by a cheap main or a menu with more drinks than dishes.
-const KNOWN_MAIN_CATEGORIES = new Set(['Mains', 'Burgers', 'Pizza', 'Wraps & Sandwiches'])
+const KNOWN_MAIN_CATEGORIES = namesOf(['mains', 'burgers', 'pizza', 'wrapsSandwiches'])
 // Things that come out of a fridge or a bag: no cook time, no batch.
-const KNOWN_INSTANT_CATEGORIES = new Set(['Sides', 'Dips & Sauces', 'Drinks', 'Desserts'])
+const KNOWN_INSTANT_CATEGORIES = namesOf(['sides', 'dipsSauces', 'drinks', 'desserts'])
 // Escape hatches the model uses when a menu doesn't fit — they carry NO signal either way.
-const NO_SIGNAL_CATEGORIES = new Set(['Specials', 'Other'])
+const NO_SIGNAL_CATEGORIES = namesOf(['specials', 'other'])
 
 export interface AssumptionResult {
   categoryPrep: CategoryPrep

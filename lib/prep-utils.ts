@@ -5,6 +5,7 @@
 import { clockOfInstantInTz, instantOfLocal } from '@/lib/time-utils'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { readVanCategorySettings, resolveCategories } from '@/lib/van-category-settings'
+import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 
 export interface CatConfig {
     secs: number
@@ -47,7 +48,7 @@ export interface CatConfig {
     if (!items.length) return 0
     const catGroups: Record<string, number> = {}
     items.forEach(item => {
-      const cat = menuItems?.find(m => m.name === item.name)?.category || 'mains'
+      const cat = menuItems?.find(m => m.name === item.name)?.category || DEFAULT_CATEGORY_KEY
       catGroups[cat] = (catGroups[cat] || 0) + item.quantity
     })
     let maxSecs = 0

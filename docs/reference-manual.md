@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V15.7
+HatchGrab Engineering Reference Manual · V15.8
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 15.7**
+**Version 15.8**
 
 October 2026
 
@@ -38,7 +38,62 @@ checked by an agent at all.
 
 # Changelog
 
-## V15.7 — 10 October 2026 — **SOCIAL MEDIA IS A TOP TAB AND OPEN BY PLAN**, THE PHONE GETS ITS OWN DESIGN EDITOR, LOCATION PICTURES BECOME THREE NAMED SLOTS, AND "Set each price myself" STOPS MOVING PRICES. STILL NOT DEPLOYED.
+## V15.8 — 14 October 2026 — **INTERNATIONAL READINESS**: ONE COUNTRY TABLE; MONEY, TIME, PHONE, SIGNUP, SCHEDULES AND ALLERGENS BY COUNTRY; THE TAX, TIPS AND FEES ENGINE AND SCREENS; THREE BROWSER-CALLABLE FUNCTIONS CLOSED; AND THE LANGUAGE FRAMEWORK (PHASE 0). NOT DEPLOYED.
+
+- Applies the delta `reference-manual-delta-international.md` (session 9–14 October 2026), drawn from the
+  reports it lists, all in `docs/` (`international-audit-report.md` … `language-phase-0-report.md`).
+- `country_settings` is the single source for every per-country value; nothing country-specific is
+  hard-coded. UK output was proven byte-identical at every step by parity harnesses.
+- Money, dates and times, phone checks, signup, landing pricing, schedules and discovery, and allergens all
+  follow the truck's (or the visitor's) country.
+- Tax, tips and an online service fee are computed by one engine, snapshotted on every order, and shown on
+  every customer, kitchen and operator surface. **The UK shows nothing new.**
+- Three Postgres functions callable with the public anon key were closed on the live database (12 October).
+- next-intl installed (Language Phase 0): UK English base, US English override, **no visible change**.
+- 🔴 **NOTHING FROM 10–14 OCTOBER IS DEPLOYED.** Live is still `f4bd277`. Migrations `20261010_01` … `_18`
+  have been run on the live database; `_16` was reversed by hand and must be re-run after deploy (§49).
+
+| What | Where |
+|---|---|
+| **NEW — International readiness — country settings** (the table, formatting, truck time, phone numbers, signup and landing, allergens, the plans PDF) | **NEW §76** — the manual had no such section |
+| **NEW — Languages** (audit facts, decisions, Phase 0 as built, the rules for new code) | **NEW §77** |
+| Schedules, discovery and the scraper by country | §33 (discovery, visibility and the deploy-coupling landmines) |
+| Tax, tips and fees: engine, storage, decisions, screens | §37, new subsection |
+| 🔴 Three anon-callable functions closed; the default-PUBLIC grant invariant; the audit fixes | §35, beside the V12.1 RLS/grants invariants |
+| Printed text folded to plain letters | §42 |
+| Deploy posture at V15.8 | §49 (now headed by the current posture) |
+| Backlog | §27, new block |
+| Six cross-cutting invariants | §35 (35.ag, after 35.af) |
+
+**OLDER LINES CORRECTED IN PLACE (not left beside the new ones):**
+- §3 `lib/time-utils.ts` — `localTodayIso()` is gone; every helper takes the truck's zone or settings; no London default.
+- §15 "THE TIMEZONE COLUMN GOVERNS NOTHING (V11.52)" — in code it now governs opening and closing (deploy pending).
+- §48 `/features` title — the country word follows the visitor's country ("— HatchGrab UK" for GB).
+- §49 heading — "as of V11.58" replaced; the current posture now leads.
+- §67.4 the weekly post's week — the truck's zone and its country's week start, not a fixed London Monday.
+- 🔴 **The changelog headings V13.8 … V15.7 said "NOT DEPLOYED" / "STILL NOT DEPLOYED"**, and V14.0 had a blank
+  deploy date. All of that work is in `f4bd277`, which is live (checked: `git cat-file` finds V15.7's phone
+  editor, `DesignEditor.tsx` and the live-text harnesses in that commit, and every earlier commit is its
+  ancestor). Each heading now says it was not deployed when written and is live in `f4bd277`.
+
+**THE DELTA, CHECKED AGAINST DISK:**
+- ⚠️ **Its Languages "Phase 0 — built" block was written from a chat summary, as it says.** Checked against
+  `docs/language-phase-0-report.md`. Three statements needed correcting:
+  1. **"The 'Other' bucket" is not separated from its label.** It is one constant (`OTHER_REVENUE_BUCKET`), because a separate id would change how it merges with a truck's own "Other" category and how it sorts. That split is a Phase 1d decision.
+  2. **The price words are single-sourced, but the mask still recognises them by their text.**
+  3. **Not every English key "listed in the audit" was separated:** the reject and cancel reasons, cuisines and the WhatsApp 'Other' fallback are left, with reasons.
+
+  The block was also missing the framework's actual shape: `useT` rather than `useTranslations`, the layout providers, `translatorFor`, `getTranslations` configured but unused, and the three new harnesses. It also omitted the new dependencies next-intl brings, and that Phase 0 is uncommitted. All of this is in §77.4.
+- ⚠️ **Its rule 1 offered "or a `lib/copy/*` module until an area's phase lands"; `.cursor/rules/language.mdc`
+  does not.** The rules file — what Cursor actually applies — says new words go in `messages/en-GB.json`.
+  §77.5 states the rule as the file does.
+- ✅ Every other figure spot-checked matches the disk:
+  - the GB and US `country_settings` values (from the migration seeds);
+  - live = `origin/main` = `f4bd277`, with `3033a53`, `e54c7ea` and `234b6a2` unpushed on top;
+  - the ticket fold (`lib/printing/ticket.ts`);
+  - the allergen lists and the plans-PDF fallback (`docs/us-readiness-sweep-report.md`).
+
+## V15.7 — 10 October 2026 — **SOCIAL MEDIA IS A TOP TAB AND OPEN BY PLAN**, THE PHONE GETS ITS OWN DESIGN EDITOR, LOCATION PICTURES BECOME THREE NAMED SLOTS, AND "Set each price myself" STOPS MOVING PRICES. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 - Applies the 9 October delta (`reference-manual-delta-2026-10-09-social-phone.md`), covering Social
   media rounds 3–7 and launch prep, phone fixes 1 and 2, the phone design editor, the event-type price
@@ -58,7 +113,7 @@ checked by an agent at all.
 | 🔴 **"Set each price myself" WRITES THE PRICES DOWN BEFORE IT TAKES THE RULE AWAY** | `applyPriceRule` applies a stored rounding whatever the mode, so clearing one would have dropped a £14.00 item to £12.50 on a settings save. §70.16 |
 | ⛔ **A GOOGLE SERVICE-ACCOUNT PRIVATE KEY WAS PRINTED INTO A TRANSCRIPT** | `sed` over `.env.local`; `GOOGLE_SHEETS_CREDENTIALS` is multi-line JSON. Key rotated. **New standing rule at the head of this manual.** |
 
-## V15.6 — 10 October 2026 — **THE EDITOR DRAWS ITS OWN WORDS**, THE POSTER TREE LEAVES THE RENDERER, CLEARER BUTTONS, DELETE YOUR OWN TEXT, AND THREE PICTURE BOXES THAT LINE UP. STILL NOT DEPLOYED.
+## V15.6 — 10 October 2026 — **THE EDITOR DRAWS ITS OWN WORDS**, THE POSTER TREE LEAVES THE RENDERER, CLEARER BUTTONS, DELETE YOUR OWN TEXT, AND THREE PICTURE BOXES THAT LINE UP. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 - ⚠️ It supersedes **§V15.5's** stage (an `<img>` of the server's PNG) and **§V15.4's** `grid-rows-subgrid`
   picture boxes, both hours old. `docs/social-tab-7-report.md` is the full account.
@@ -89,7 +144,7 @@ checked by an agent at all.
 | ⛔ **"I added +Week dates and saved and it didn't save" — IT HAD SAVED; THE SCREEN NEVER RELOADED** | `saveCaption` now awaits `load()`. ⚠️ THE COMMENT FORBIDDING A RELOAD WAS WRITTEN FOR THE AUTOSAVE ERA and had outlived the thing it protected |
 | ⚠️ **SINGLE EVENT COMES BEFORE WEEKLY ON ALL THREE SCREENS** | Designs, Create a post and Location settings — including the table's columns and ticks. 🔴 **"it matches the table's column order" WAS A REASON ABOUT OUR OWN SCREEN**: the single event post is the one a truck makes most often |
 
-## V15.5 — 10 October 2026 — **"THE 7 DAYS": ONE BOX, SEVEN ROWS**, A PREVIEW THAT IS NOT A MODE, A PICTURE YOU CAN POINT AT, AND AN EDITOR THAT SAYS WHAT IT DOES. STILL NOT DEPLOYED.
+## V15.5 — 10 October 2026 — **"THE 7 DAYS": ONE BOX, SEVEN ROWS**, A PREVIEW THAT IS NOT A MODE, A PICTURE YOU CAN POINT AT, AND AN EDITOR THAT SAYS WHAT IT DOES. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 - ⚠️ It supersedes **§V15.4's** Edit/Preview switch (hours old) and the weekly design's three-boxes-plus-
   `rowSpacing` row model, which has been there since the feature was built. `docs/social-tab-6-report.md`
@@ -125,7 +180,7 @@ checked by an agent at all.
 | ⚠️ **A CHECK WHOSE PREMISE AN OPERATOR CAN CHANGE BY USING THE PRODUCT WILL REPORT A FAILURE NOBODY CAUSED** | "the stored design has no block" passed all afternoon and then failed, because Dominic opened the design and saved it — which is the feature working. It asks the honest question now: whichever state the design is in, is that state right? |
 | ⚠️ **THE DASHBOARD IS BEHIND A LOGIN, SO THE EDITOR IS **MOUNTED** IN THE ROUND-6 HARNESS** | react-dom/client on `scripts/_mini-dom.cjs`, driving the component's real handlers, with the result read back out of the editor's own SAVE. ⛔ **WHAT IT CANNOT DO IS CSS** — no layout engine — so the outlines and the tint are asserted by class in `design-editor.cjs` and the geometry against `dayCells` |
 
-## V15.4 — 9 October 2026 — **THREE BOXES THAT LINE UP (SUBGRID)**, A ZOOM THAT CANNOT WIDEN THE PAGE, THE "LOOK" SWITCH, EDIT/PREVIEW WITH NUDGING, PORTRAIT ADVICE, AND A WEEKLY CAPTION THAT IS FILLED IN. STILL NOT DEPLOYED.
+## V15.4 — 9 October 2026 — **THREE BOXES THAT LINE UP (SUBGRID)**, A ZOOM THAT CANNOT WIDEN THE PAGE, THE "LOOK" SWITCH, EDIT/PREVIEW WITH NUDGING, PORTRAIT ADVICE, AND A WEEKLY CAPTION THAT IS FILLED IN. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 - ⚠️ It supersedes **§V15.3's** "− Fit +" zoom control and its two coloured look notes (hours old).
   `docs/social-tab-5-report.md` is the full account.
@@ -150,7 +205,7 @@ checked by an agent at all.
 | ⚠️ **TWO §6 CHECKS NOBODY WOULD CATCH BY EYE** | no `{token}` survives in either week, and **the two weeks read differently** — a caption accidentally built from a fixed range passes every other check |
 | ⛔ **THE "Background picture 3840 × 2160" BOX: THE CONTROL HAD A PURPOSE, THE DUPLICATION DID NOT** | the name appeared on the button, as the card's heading and under the panel title; the size appeared twice. **Four readouts of two facts** around the one thing that does something — "Replace picture". The card lost its heading and border, the size lives only in the settings (where §5 wants it), the button carries the name alone. ⚠️ Reported as "it doesn't seem to do anything", and the reason it read that way was the noise, not the control |
 
-## V15.3 — 9 October 2026 — **ONE SHARED TEXT STYLE ("All text")**, A FULL-WIDTH EDITOR WITH A FITTED POSTER, A CAPTION YOU CAN EDIT, AND THREE PICTURES PER LOCATION. STILL NOT DEPLOYED.
+## V15.3 — 9 October 2026 — **ONE SHARED TEXT STYLE ("All text")**, A FULL-WIDTH EDITOR WITH A FITTED POSTER, A CAPTION YOU CAN EDIT, AND THREE PICTURES PER LOCATION. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 - ⚠️ It supersedes **§V15.2's** two-pop-up-free three-column editor (hours old) and its
   `weekly_only_picture_id` override (hours old). `docs/social-tab-4-report.md` is the full account.
@@ -181,7 +236,7 @@ checked by an agent at all.
 | ⚠️ **"Town" IS "Area", AND THE DATA KEY IS STILL `town`** | half this product's venues are in a village, so a label that is wrong for half the list is one an operator has to translate. Renaming the KEY would be a migration of every stored event layout for a word |
 | ⚠️ **"Name on posts" IS "Venue name" IN Tidy up places** | a label only, on the same field. The old wording said where the value GOES rather than what it IS — and with the social screen's copy of the field removed, that card is the one editor again |
 
-## V15.2 — 9 October 2026 — THE SETTINGS COME OUT OF THE POP-UPS, **VENUE AND TOWN** BECOME TWO BOXES, ONE LOCATION PICTURE USED EVERYWHERE, AND A SUB-TAB CANNOT DISCARD A DESIGN. STILL NOT DEPLOYED.
+## V15.2 — 9 October 2026 — THE SETTINGS COME OUT OF THE POP-UPS, **VENUE AND TOWN** BECOME TWO BOXES, ONE LOCATION PICTURE USED EVERYWHERE, AND A SUB-TAB CANNOT DISCARD A DESIGN. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 - ⚠️ It supersedes **§V15.1's** `picture_use` rule and **§"THE SHARED DESIGN EDITOR"**'s "no right-hand
   settings column", one and three days old respectively. `docs/social-tab-3-report.md` is the full account.
@@ -208,7 +263,7 @@ checked by an agent at all.
 | ⛔ **"Name on posts" LEFT THE SOCIAL SCREEN** | it wrote `short_name`, and "Tidy up places" edits the name **and the town** side by side. A location's name and its town are one fact about the schedule; a second screen editing half of it is how the two halves come to disagree. A grey note names the real path there |
 | ⚠️ **THE "+1" BADGE IS MEASURED, NOT JUST DRAWN** | it hangs `-right-0.5 -top-0.5` outside its 24px tile, which is exactly the overhang that silently widens a `table-fixed` column and unaligns every row's thumbnails. The claim is an **equality across rows**: every PICTURE cell is the same width, badge or no badge |
 
-## V15.1 — 8 October 2026 — AN EVENT **POSTER** AND A LOCATION **PICTURE** INSTEAD OF TWO SLOTS, A SOCIAL TAG, AND CAPTIONS THE TRUCK OWNS. STILL NOT DEPLOYED.
+## V15.1 — 8 October 2026 — AN EVENT **POSTER** AND A LOCATION **PICTURE** INSTEAD OF TWO SLOTS, A SOCIAL TAG, AND CAPTIONS THE TRUCK OWNS. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 - ⚠️ It supersedes **§V15.0's** "event slot / weekly slot" meaning, one day old.
   `docs/social-tab-2-report.md` is the full account.
@@ -230,7 +285,7 @@ checked by an agent at all.
 | ⚠️ **ONE GRID CONSTANT FOR CREATE A POST AND DESIGNS** | `TWO_HALVES_GRID`. Designs had two narrow columns plus an empty third track left over from a box that had moved out, so two screens one click apart laid out at different widths. Measured as a comparison between two renders: 528/528 on both |
 | ⛔ **"Powered by HatchGrab" — CONFIRMED, NOT FIXED** | four paths, two renderers: the weekly post is `renderWeeklyPost`, and the standard event post, a location's poster and a one-off are all `renderEventPost` with different bytes. Each pushes the mark **last**, which is what puts it above the darken layer. Asserted on the ORDER, not on presence |
 
-## V15.0 — 7 October 2026 — SOCIAL MEDIA BECOMES A TOP TAB, A LOCATION GETS **TWO** IMAGES INSTEAD OF A LIBRARY, AND "WHERE IT GOES" IS REPLACED BY A RULE. STILL NOT DEPLOYED.
+## V15.0 — 7 October 2026 — SOCIAL MEDIA BECOMES A TOP TAB, A LOCATION GETS **TWO** IMAGES INSTEAD OF A LIBRARY, AND "WHERE IT GOES" IS REPLACED BY A RULE. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 - ⚠️ It supersedes **§64.12's** two areas and six boxes, and **§64.13's** picture library screen. Both
   are one day old. `docs/social-tab-report.md` is the full account.
@@ -253,7 +308,7 @@ checked by an agent at all.
 | ⚠️ **The render harness split** | `scripts/social-posts-render.cjs` lost three of its four fixtures — Social posts' three boxes, the per-location design editor, the picture library page — and kept the shared design editor and the font picker. **`scripts/social-tab-render.cjs`** is new: the three social screens at 1100 and 390, in WebKit **and** Chromium, with four controls. ⛔ Its first run found two faults in itself: an orange matcher that could not see WebKit's `lab(…)`, and tiles matched to boxes by geometry rather than by name — ambiguous the moment two boxes share a top |
 | ⛔ **Two deletions and one capability that lost its door** | `scripts/schedule-places-render.cjs` (tombstone in `harnesses.json`); the second "Copy caption" beside the weekly textarea (`PostShareBar`'s copies **without** an `await`, so it is the one that works in WebKit); and `PlaceDesignPage` — the per-location **text positions** editor. ⚠️ `truck_places.event_layout` is still read, still validated and still preferred, so every location that HAS its own keeps rendering. A truck can no longer **create** one |
 
-## V14.9 — 6–7 October 2026 — THE LANDING PAGE CUT BY HALF, THE COMPARISON TABLE MOVED TO ITS OWN `/features` PAGE, AND SIX HERO ARRANGEMENTS TRIED AND REJECTED IN FAVOUR OF THE ONE ALREADY LIVE. STILL NOT DEPLOYED.
+## V14.9 — 6–7 October 2026 — THE LANDING PAGE CUT BY HALF, THE COMPARISON TABLE MOVED TO ITS OWN `/features` PAGE, AND SIX HERO ARRANGEMENTS TRIED AND REJECTED IN FAVOUR OF THE ONE ALREADY LIVE. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 **The hatchgrab.com landing page trimmed from 1,911 to 879 visible words (390px); the feature comparison
 table moved verbatim to a new indexable `/features` page; the order-ticket section deleted; plan-card
@@ -281,7 +336,7 @@ landing trim".
 - ⚠️ **WHITE TEXT ON THE ORANGE BUTTONS IS A RECORDED DECISION**, accepted knowing it measures 2.50:1 —
   below both the 4.5:1 AA floor and the 3:1 large-text floor.
 
-## V14.8 — 18 October 2026 — A PLACE HAS A PICTURE **LIBRARY**, AND BOTH DESIGNS CAN USE IT. STILL NOT DEPLOYED. **SQL NOT RUN.**
+## V14.8 — 18 October 2026 — A PLACE HAS A PICTURE **LIBRARY**, AND BOTH DESIGNS CAN USE IT. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8). **SQL NOT RUN.**
 
 **Status — read this first.**
 - 🔴 **ON `main`, LOCAL, NOTHING PUSHED.**
@@ -359,7 +414,7 @@ landing trim".
 
 ---
 
-## V14.7 — 6 October 2026 — A 1,819-FONT LIBRARY, UPLOADED FONTS, AND REAL ITALICS. STILL NOT DEPLOYED. **SQL NOT RUN.**
+## V14.7 — 6 October 2026 — A 1,819-FONT LIBRARY, UPLOADED FONTS, AND REAL ITALICS. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8). **SQL NOT RUN.**
 
 **Status — read this first.**
 - 🔴 **ON `main`, LOCAL, NOTHING PUSHED.**
@@ -455,7 +510,7 @@ landing trim".
 
 ---
 
-## V14.6 — 6 October 2026 — ONE SHARED DESIGN EDITOR FOR ALL THREE DESIGN SCREENS; A LOCALE TABLE FOR DATES AND TIMES; "Show private events" ON THE WEEKLY MAKE SCREEN. STILL NOT DEPLOYED.
+## V14.6 — 6 October 2026 — ONE SHARED DESIGN EDITOR FOR ALL THREE DESIGN SCREENS; A LOCALE TABLE FOR DATES AND TIMES; "Show private events" ON THE WEEKLY MAKE SCREEN. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 **Status — read this first.**
 - 🔴 **ON `main`, LOCAL, NOTHING PUSHED.**
@@ -549,7 +604,7 @@ landing trim".
 
 ---
 
-## V14.5 — 6 October 2026 — ONE EMPTY STATE, THE DESIGNS BOXES, AND WORDING THAT SAYS WHAT EACH PICTURE IS FOR. STILL NOT DEPLOYED.
+## V14.5 — 6 October 2026 — ONE EMPTY STATE, THE DESIGNS BOXES, AND WORDING THAT SAYS WHAT EACH PICTURE IS FOR. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 **Status — read this first.**
 - 🔴 **ON `main`, LOCAL, NOTHING PUSHED.** `schedule-graphics` is fast-forwarded to match.
@@ -610,7 +665,7 @@ every one. The fault is intermittent on this machine, not fixed.
 
 ---
 
-## V14.4 — 6 October 2026 — SOCIAL POSTS MATCHES THE AGREED LAYOUT: SIDE BY SIDE FROM 900px, AND ONE READINESS PREDICATE. STILL NOT DEPLOYED.
+## V14.4 — 6 October 2026 — SOCIAL POSTS MATCHES THE AGREED LAYOUT: SIDE BY SIDE FROM 900px, AND ONE READINESS PREDICATE. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 **Status — read this first.**
 - 🔴 **ON `main`, LOCAL, NOTHING PUSHED.** `schedule-graphics` is fast-forwarded to match.
@@ -677,7 +732,7 @@ engines; the committed screenshots are WebKit's, in `docs/screenshots/social-pos
 
 ---
 
-## V14.3 — 6 October 2026 — SOCIAL POSTS BECOMES SIX BOXES, THE PLACES TAB IS DELETED, AND A PLACE'S TYPE IS SET FROM ADD EVENT. STILL NOT DEPLOYED.
+## V14.3 — 6 October 2026 — SOCIAL POSTS BECOMES SIX BOXES, THE PLACES TAB IS DELETED, AND A PLACE'S TYPE IS SET FROM ADD EVENT. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 **Status — read this first.**
 - 🔴 **ON `main`, LOCAL, NOTHING PUSHED.** `schedule-graphics` is fast-forwarded to match.
@@ -746,7 +801,7 @@ engines; only the PNGs are skipped, with a line saying so. The committed screens
 
 ---
 
-## V14.2 — 5 October 2026 — THE PLACES TAB TIDY-UP: THE EVENT TYPE AS A PILL ROW, HIDDEN PLACES BACK ON THE SCREEN, "Events here" AND "Your own pictures" DELETED, AND A LINK BUILDER. STILL NOT DEPLOYED.
+## V14.2 — 5 October 2026 — THE PLACES TAB TIDY-UP: THE EVENT TYPE AS A PILL ROW, HIDDEN PLACES BACK ON THE SCREEN, "Events here" AND "Your own pictures" DELETED, AND A LINK BUILDER. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 **Status — read this first.**
 - 🔴 **ON `main`, LOCAL, NOTHING PUSHED.** `schedule-graphics` is fast-forwarded to match.
@@ -820,7 +875,7 @@ two `evaluate` calls per page and takes no element screenshots, and it completes
 
 ---
 
-## V14.1 — 5 October 2026 — THE DASHBOARD CLEAN-UP: THE "This event" CARD DELETED, ITS CONTROLS RESTORED, THE EVENT TYPE IN THE HEADER, AND PER-EVENT PRICES IN MENU & STOCK. STILL NOT DEPLOYED.
+## V14.1 — 5 October 2026 — THE DASHBOARD CLEAN-UP: THE "This event" CARD DELETED, ITS CONTROLS RESTORED, THE EVENT TYPE IN THE HEADER, AND PER-EVENT PRICES IN MENU & STOCK. NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 **Status — read this first.**
 - 🔴 **ON `main`, LOCAL, NOTHING PUSHED.** `schedule-graphics` is fast-forwarded to match.
@@ -887,7 +942,7 @@ browser**. `HG_ENGINES` was added for exactly this: one sick browser must not me
 
 ---
 
-## V14.0 — 5 October 2026 — THE RELEASE: EVENT PRICING, PRIVATE EVENTS, THE PLACES TAB, EVENT TYPES AS A PILL, AND A PREVIEW KEY. MERGED INTO `main` LOCALLY; **DEPLOY DATE: ________**
+## V14.0 — 5 October 2026 — THE RELEASE: EVENT PRICING, PRIVATE EVENTS, THE PLACES TAB, EVENT TYPES AS A PILL, AND A PREVIEW KEY. MERGED INTO `main` LOCALLY; **DEPLOY DATE: not recorded — live by 9 October 2026 at the latest (`f4bd277`; corrected V15.8)**
 
 **Status — read this first.**
 - 🔴 **`schedule-graphics` IS MERGED INTO `main`, LOCALLY, AND NOTHING IS PUSHED.** Dominic deploys by
@@ -1005,7 +1060,7 @@ events on Pro, "Do you take cash?" per van, the new Add event, and the landing/B
 
 ---
 
-## V13.9 — 3–4 October 2026 — SINGLE-EVENT POSTS AND A DESIGN PER PLACE; EVENT TYPES (STAGES 1–2, ON A SECOND BRANCH); KITCHEN CAPACITY UNDER MENU; PILL SUB-TABS. NOTHING DEPLOYED.
+## V13.9 — 3–4 October 2026 — SINGLE-EVENT POSTS AND A DESIGN PER PLACE; EVENT TYPES (STAGES 1–2, ON A SECOND BRANCH); KITCHEN CAPACITY UNDER MENU; PILL SUB-TABS. NOTHING DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER (CORRECTED V15.8).
 
 **Status — read this first.**
 - **Nothing in this block is live.** 🔴 **AMENDED 5 OCTOBER — THERE IS NOW ONE BRANCH.** `event-types`
@@ -1134,7 +1189,7 @@ carried are resolved — see `docs/reference-manual-v13-9-report.md` for the fou
 
 ---
 
-## V13.8 — 1–3 October 2026 — OUTREACH FIXES; AND A LARGE BODY OF OPERATOR WORK ON THE `schedule-graphics` BRANCH (NOT DEPLOYED): PLACES, A NEW ADD EVENT, SUB-TAB NAVIGATION, SETTINGS AS ONE LIST, PER-VAN CAPACITY, AND THE WEEKLY SCHEDULE POST
+## V13.8 — 1–3 October 2026 — OUTREACH FIXES; AND A LARGE BODY OF OPERATOR WORK ON THE `schedule-graphics` BRANCH (NOT DEPLOYED WHEN WRITTEN; LIVE IN `f4bd277` SINCE 9 OCTOBER — CORRECTED V15.8): PLACES, A NEW ADD EVENT, SUB-TAB NAVIGATION, SETTINGS AS ONE LIST, PER-VAN CAPACITY, AND THE WEEKLY SCHEDULE POST
 
 **Status — read this first.**
 - The **outreach fixes of 1–2 October** are on `main` and **deployed**.
@@ -7556,7 +7611,7 @@ All business calculations live in lib/. These are the only places these calculat
 
 - **lib/ratelimit.ts** (V6.3) — Upstash Redis rate-limit configuration and tier helpers. See Section 28.
 
-- **lib/time-utils.ts** (V4, extended V6.4) — canonical time formatter. formatTime(t) strips seconds from HH:MM:SS to HH:MM. localTodayIso() (V6.4) is the single local-Y-M-D helper used by every "is this event today / has this slot passed" floor (never toISOString — Section 6). These are the only implementations; never inline t.slice(0,5) or a parallel date floor. **localDateOfInstant(instant: Date|string, tz='Europe/London') (V7.7)** — returns the LOCAL 'YYYY-MM-DD' date of an ARBITRARY instant in tz (getLocalDateInTz only handles "now"). Mirrors getLocalDateInTz's Intl pattern so the two produce directly comparable strings; used by the WhatsApp once-per-day greeting (Section 20). The shared primitive for "what local day did this timestamp fall on" — never hand-roll a parallel Intl call.
+- **lib/time-utils.ts** (V4, extended V6.4; **rewritten Phase 2B, corrected V15.8**) — the one module for a truck's time and for how a time or a date looks. Every display helper takes the truck's `TimeSettings` (zone, locale, 12h/24h, date order, week start — built by `lib/truck-time.ts`): `formatTime(t, ts)` (HH:MM, or the 12-hour style), `formatSlot`, `formatTimeRange`, `formatYmd`, `formatInstant`. "Now" and "today" take the zone **explicitly** — `getNowMinsInTz(tz)`, and `getLocalDateInTz(tz)`, the single local-Y-M-D floor used by every "is this event today / has this slot passed" check (never toISOString — Section 6). ⛔ `localTodayIso()` is gone: it answered London's date whatever the truck. **localDateOfInstant(instant: Date|string, tz) (V7.7)** returns the LOCAL 'YYYY-MM-DD' date of an ARBITRARY instant in tz — the zone is now **required** (it defaulted to Europe/London) — and mirrors getLocalDateInTz's Intl pattern so the two give directly comparable strings; used by the WhatsApp once-per-day greeting (Section 20). The date-word path — ordinals, weekday and month names — lives here too (§77.4). These are the only implementations: never inline t.slice(0,5), a parallel date floor or a parallel Intl call.
 
 - **lib/modifier-utils.ts** (V4) — client-safe modifier helpers. isModifierAvailable(opt) returns opt.available !== false. Used to filter modifier options in both the customer page and the operator Add Order panel. undefined and null mean available — backward-compatible against rows where the column wasn't set.
 
@@ -11450,9 +11505,18 @@ despite coming through the manual path on a truck whose default reads `true` tod
 explanation is that the default was `false` at creation and was turned on afterwards — and it could not
 be confirmed, because settings changes are not audited (§27).** Two future rows were corrected directly.
 
-### 🔴 THE TIMEZONE COLUMN GOVERNS NOTHING (V11.52)
+### 🔴 THE TIMEZONE COLUMN NOW GOVERNS OPENING AND CLOSING — IN CODE, NOT YET DEPLOYED (V11.52, CORRECTED V15.8)
 
-**READ: `trucks.timezone` is NULL on every truck, and nothing reads it.** The `auto-event-scheduler`
+**CORRECTED V15.8 (Phase 2B, `docs/time-and-dates-report.md`).**
+- **The zone rule.** A truck's zone is `trucks.timezone` when it is a zone the runtime knows, else its country's `country_settings.default_timezone` (`lib/truck-time.ts`). An unknown zone is logged and the default is used.
+- **`auto-event-scheduler`** opens and closes **each event in its own truck's zone**. It inlines that rule, because Deno cannot import `lib/`. A truck whose zone cannot be resolved is **logged and skipped**, never opened or closed on a guessed clock; Start and Close still work. GB decisions were proven identical.
+- **`heartbeat-monitor`** never used a clock for a decision; its London log line is gone.
+- 🔴 **Deploy-coupled.** This is repository code. The deployed functions still compute one London "now" until they are deployed, **after** Vercel (§49).
+- `trucks.timezone` is still NULL on every truck (not backfilled), so every truck resolves to GB's `Europe/London`. That is correct for every truck today.
+
+*What V11.52 found, kept for the record — still true of the DEPLOYED functions until that deploy:*
+
+**READ (V11.52): `trucks.timezone` is NULL on every truck, and nothing reads it.** The `auto-event-scheduler`
 Edge Function **hardcodes `Europe/London`** in its own `londonNow()` helper and **never queries the
 `trucks` table at all** — its only reads are from `truck_events`, so it could not use a per-truck zone
 even if one were populated.
@@ -11467,7 +11531,8 @@ coincidence of the customer base, not a mechanism.**
 🔴 **THE CEILING THIS PLACES ON ONBOARDING.** A non-GB truck would open and close at **UK local time,
 silently**. Nothing logs a mismatch and nothing compares the truck's country to the assumed zone; **the
 only symptom would be an operator reporting that customers could not order.** **This must be resolved
-BEFORE the first non-GB truck is onboarded, not after.**
+BEFORE the first non-GB truck is onboarded, not after.** ✅ **Resolved in code by Phase 2B (V15.8); it
+holds once the two functions are deployed after Vercel.**
 
 ⚠️ **STANDING CAUTION: do not reason about opening behaviour from the timezone column.** It looks
 authoritative and is inert. **And the scheduler is an Edge Function, so the deployed bundle may differ
@@ -17024,6 +17089,30 @@ verification, and a fix in the repository is not a fix in production.** §36, §
   share card never seen in a WhatsApp bubble; and **the eventless-order path, still unverified and still
   on the outreach critical path.**
 
+## Added V15.8 — international, payments, security and languages (14 October 2026)
+
+- **Google Maps key:** Geocoding API + Places API (New), restricted; needed in Vercel, `.env.local` and as a GitHub Actions secret. Then Part B, in this order:
+  - Google geocoding;
+  - venue creation;
+  - a far-from-base review flag;
+  - the scraper, migrated last, with a UK before/after comparison.
+- Re-run `_16` after deploy (§49). Add a migration file for the 12 October function revokes (§35).
+- Country on the `discovery_events` unique key (§33).
+- US plan prices — needed before the US can be switched on, and before a US prospect's plans PDF works
+  (§76.1, §76.7).
+- **Phase 5:** deferred-intent checkout, the credit-only card surcharge, and Manage › Payments "who pays the card fee". Mockups first.
+- **Service fee:** who keeps it (Dominic decides), and a home for a truck's own service fee in tax-inclusive countries.
+- Platform fee charging: `application_fee_amount` at capture, with a food-only clawback (§37).
+- **Legal text per country,** with a lawyer before the first non-UK signup: UK GDPR, the ICO, English law, the £100 cap, the sterling/VAT clause, six-year retention.
+- **Language phases 1a onwards (§77.3).** Also:
+  - US screenshots and testimonial; US marketing URLs and hreflang; the demo provisioned in the visitor's country;
+  - from the Phase 0 report: give the Reports 'Other' line an id (1d); store reject and cancel reasons as codes (1b);
+  - route the ~8 `formatYmd(…, { month: 'short' })` sites that still write "Sept" through `monthName` (a named visible change);
+  - switch on next-intl's `precompile` once messages are many.
+- 🔴 The WhatsApp allergen floor made Unicode-aware before any non-English truck (§77.1).
+- Email sender on hatchgrab.com; US App Store link; support hours; CAN-SPAM postal address for US outreach.
+- Privacy policy date mismatch: the page says "5 September 2026", `PRIVACY_UPDATED = '6 August 2026'`.
+
 # 28. Anti-scraping and rate limiting (V6.3)
 
 Layered protection against bulk scraping of the public discovery and event data, without ever throttling real ordering.
@@ -17790,6 +17879,44 @@ from the per-row tickboxes.
 placement rather than hiding a truck — and it locks a non-admin operator out of `/dashboard`, the KDS
 and the native app while `/manage` does not gate on it at all. **The admin branch of `/dashboard` runs
 first, so an admin cannot reproduce the lockout.** Hiding is `excluded` + the `show_on_*` pair.
+
+## Schedules, discovery and the scraper by country (V15.8 — 10 October 2026)
+
+⚠️ The scraper's own pipeline is documented in `docs/scraper-reference-manual.md` (front matter). This entry
+records the country rules that cross into the app; the scraper-only lines (Pass A/B, the prompts file, the
+Apps Script) belong in that manual too.
+
+- **OBSERVED** `discovery_trucks`, `venues`, `discovery_events` and `discovery_exclusion_terms` each have
+  `country` (NOT NULL default 'GB', FK `country_settings`); `venues.region` added. **The 'GB' default stays
+  on purpose:** the scraper and the Apps Script write without a country.
+- **OBSERVED** **Matching never crosses countries.** Every comparison stays within one country:
+  - the gate and the bridge (`/api/inbound-schedule`);
+  - scraper Pass A/B;
+  - the venue matcher;
+  - exclusions and graduation;
+  - outreach tokens;
+  - the admin orphan flag;
+  - screenshot → prospect.
+
+  Non-GB events are written hidden on both sites. **Village Foodie shows GB rows only.**
+- **OBSERVED** `_15` added the country-scoped unique keys: `discovery_trucks (country, name)`, the normalised-name key, and `venues (country, name, village)`. `_16` drops the old global keys and **must run only after Vercel and the scraper are on the new code**.
+- 🔴 **OBSERVED** **`_16` was run early on 10 October**, which would have broken the live (old) code's
+  upserts. It was reversed the same day by re-adding `discovery_trucks_name_key`, `venues_name_village_key`
+  and `discovery_trucks_norm_name_uniq` by hand. **`_16` must be re-run after deploy** (§49). The class is
+  §35.ag.
+- **OBSERVED** `discovery_events` is still unique on (event_date, truck_name, venue_name) without country. A
+  same-key US event is **skipped** by the gate rather than overwriting the UK row. Adding country to that key
+  is open (§27).
+- **OBSERVED** **Admin › Screenshots requires a country.** The picker is kept in sessionStorage and resets after 30 minutes idle.
+  - The AI returns Country / CountryConfidence / CountryReasons.
+  - A high- or medium-confidence mismatch is held as "Check country", with Add as / Keep as / Dismiss.
+  - Nothing is written until Add or Keep.
+- **OBSERVED** The operator schedule importer gets truck context (base town, region, recent towns). The
+  scraper prompts moved unchanged to `scripts/scraper-prompts.js`.
+- **OBSERVED** Apps Script newsletter: add `"&country=eq.GB" +` after the `?select=` line in `runEmailJob`
+  (outside the repo; Dominic does this by hand).
+- **DECIDED 10 Oct** The Hatches Up importer is out of scope. Google Maps replaces the Gemini geocoder in
+  Part B (waiting on the key).
 
 # Operator outreach from the discovery list (V12.1)
 
@@ -19951,6 +20078,34 @@ such case the revoke reports success having changed nothing. **The verification 
 request that leaked.** Belongs with the existing family: a fix in the repo is not deployed; a clean log is
 not verification.
 
+## 🔴 A FUNCTION'S DEFAULT GRANT IS PUBLIC — THREE ANON-CALLABLE FUNCTIONS CLOSED (V15.8)
+
+**The class (invariant).** Postgres grants EXECUTE on every new function to `PUBLIC` by default, and Supabase
+also grants it to `anon` and `authenticated`. It is the function-side twin of the omitted-`TO`-clause policy
+above. 🔴 **Every new function must revoke from public, anon and authenticated, and grant only to what calls
+it.** Check with `has_function_privilege('anon', …)`.
+
+🔴 **OBSERVED 11–12 October (live SQL):** three functions in `public` were executable by the anon key:
+- `place_order_atomic(jsonb, text, text, uuid, text, date, jsonb)` — SECURITY INVOKER, default PUBLIC grant;
+- `find_stranded_authorisations(integer, integer)` — **SECURITY DEFINER**; with the public key it returned
+  every truck's unpaid card `order_key`s, enough to open those orders and sometimes cancel them;
+- `purge_order_drafts()` — SECURITY DEFINER, deletes expired drafts.
+
+**OBSERVED** All three were revoked from public, anon and authenticated, with explicit grants to `service_role` (and `postgres` for the two definer functions).
+- Verified false / false / true.
+- A live pay-at-the-truck order on Pizza Kitchen succeeded afterwards, and the stranded-capture cron returned 200.
+
+**SWEEP: CLOSED for SECURITY DEFINER functions** — a sweep of every SECURITY DEFINER function in `public`
+executable by anon returns **zero rows**. 🔴 **OPEN: the revokes were run by hand and are not in
+`supabase/migrations/`** — a migration file recording them is needed so a rebuilt database matches (§27).
+That is the same lesson as the policies above: a grep of the migrations directory is not an inventory of the
+database.
+
+**OBSERVED (audit fixes, same period):**
+- `/api/menu` no longer sends discount codes to the public. It sent every active code with its value, and nothing in the browser used them.
+- `update_event_deal` now checks that both the event and the bundle belong to the truck (404 "Event not found").
+- A fixed-amount code can no longer store more than the subtotal.
+
 ## ⚠️ A WRONG VALUE DERIVED FROM A CORRECT VARIABLE READS AS CORRECT (V12.1)
 
 The share card's `og:image:alt` was built from the branched site-name variable, so the page labelled a
@@ -20163,6 +20318,21 @@ Editor work is proved with **mounted components and fixtures**; anything that ne
 Dominic's to check. ⚠️ **AN AGENT THAT CANNOT REACH A SCREEN MUST SAY SO** rather than infer the screen
 from the source — and must not go looking for credentials to get there (§ the standing rule at the head
 of this manual).
+
+## 35.ag 🔴 INTERNATIONAL AND DEPLOY INVARIANTS (V15.8)
+
+- 🔴 **"Run after deploy" SQL run early breaks the live code.** The old code still names what the migration
+  removes. Undo by re-adding, then re-run after deploy. *(Precedent: `_16` on 10 October, §33.)*
+- 🔴 **A localhost test proves the new code, not the live code,** even though both use the live database.
+- **Intl output is device data.** The same `Intl` call can give different strings on different devices and
+  runtimes ("Sept" vs "Sep" for en-GB September). Anything that must be byte-identical everywhere cannot
+  depend on it (§77.4's short-month rule).
+- **Check a storage unit holds the precision the rule needs** (basis points cannot hold 8.875%; §37).
+- **A snapshot rule and a "new columns are 0 or null" proof cannot both hold.** State which values a
+  snapshot writes.
+- **English labels are not keys.** Compare ids or codes; translate at display (§77).
+- *A function's default grants are PUBLIC — revoke on creation:* recorded with its sweep above, beside the
+  V12.1 policy class, rather than repeated here.
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -22932,6 +23102,59 @@ it was not. Same class as the success-reporting writes already recorded. **OPEN.
 
 ---
 
+## Tax, tips and fees (V15.8 — Phase 3, 10–13 October 2026)
+
+### Engine and storage
+- **OBSERVED** **One pure engine,** `lib/order-charges.ts`, in integer minor units. It turns food after discount into tax, tip, service fee, card surcharge and grand total, and produces a 13-column snapshot.
+  - **One server-only resolver,** `lib/order-charge-rules.ts` (country + truck; **no event argument**).
+  - The browser sends only the tip choice; the server recomputes every amount.
+- **OBSERVED** **Columns:**
+  - **`orders` and `order_drafts`:** `food_minor` (the platform-fee base), `tax_minor`, `tax_rate_milli`, `tax_inclusive`, `tax_label`, `tip_minor`, `tip_pct_bps`, `service_fee_minor`, `service_fee_recipient`, `card_surcharge_minor`, `card_funding`, `card_fee_payer`, `application_fee_minor`.
+  - **`order_payments`:** `application_fee_minor`, `application_fee_refunded_minor`, `card_funding`.
+  - **`trucks`:** `tax_rate_milli`, `tipping_enabled`, `card_fee_payer`, `service_fee_enabled`, `service_fee_bps`, `service_fee_fixed_minor`.
+- 🔴 **Invariant:** `total_minor` means the **grand total** everywhere: food + tax + tip + service fee +
+  surcharge.
+- **OBSERVED** **Tax rates are stored in thousandths of a percent** (8.875% = 8875; CHECK 0–20000), because
+  basis points cannot hold three-decimal rates such as New York City's 8.875%. Tax is rounded once per
+  order, half away from zero. The old `tax_rate_bps` columns are retired, kept not dropped (§76.1).
+- **OBSERVED** On a UK order the only non-null new values are `food_minor` (= total), `tax_inclusive` true,
+  `tax_label` 'VAT', `card_fee_payer` 'truck'.
+- **OBSERVED** Pay-at-the-truck orders go through `place_order_atomic_v2` (service-role only). The old
+  `place_order_atomic` is untouched and still used by the live code until deploy; **never drop it** (its
+  grants were closed on 12 October — §35).
+- **OBSERVED** **No platform fee is charged anywhere:** `application_fee_amount` is deliberately never sent
+  to Stripe (consistent with the omission recorded above). `platform_fee_enabled` stores a switch only; the
+  Countries page says "Not charged yet".
+- **OBSERVED** The card surcharge is supported by the engine but always 0: the card's credit/debit type is
+  never known before the amount is fixed (the PaymentIntent is created at Place order). It needs the
+  deferred-intent checkout (Phase 5).
+
+### Decisions (DECIDED 10–13 Oct)
+- **Sales tax:** the truck sets **one** rate (Manage › Payments). There is no per-event rate (12 Oct), and it is not Stripe Tax.
+- **What gets taxed:**
+  - the discount comes off before tax;
+  - event price changes count as food;
+  - walk-up orders are taxed;
+  - fees are taxed only where `fees_taxed` says so (default: not).
+- **Tips:**
+  - online card orders only, with the country's presets;
+  - a custom tip is capped at 100% of food;
+  - a tip is a percentage of food before tax;
+  - an edit keeps the percentage, never going above the original amount;
+  - tips print on the ticket.
+- **Online service fee:**
+  - online orders only; dropped if the order switches to pay at the truck;
+  - who keeps it is a per-country setting (truck or HatchGrab). Dominic will decide later; likely HatchGrab takes a % (12 Oct).
+- **Platform fee:** on food only, taken at capture, clawed back on the food part only — when it is built.
+- **UK rule:** a mandatory online fee must be inside the price customers first see (DMCC drip pricing).
+
+### Screens
+- **OBSERVED** These show Subtotal / {tax label} {rate}% / Online service fee / Tip, with only non-zero lines: the customer order page, confirmation, status page, every email, the ticket, the dashboard card, KDS, reports and the Orders CSV. **UK output byte-identical.**
+- **OBSERVED** **Manage › Payments now holds everything about taking money:** Online payments → **Tax, tips and
+  fees** (tax-on-top countries only) → **Taking payment** (moved from Settings, unchanged) → Walk-up payments.
+- **OBSERVED** Offline walk-up totals use the same engine (`truck.charge_rules` in the dashboard snapshot).
+- **OBSERVED** The Items CSV is unchanged on purpose: tax, tips and fees are order-level.
+
 # 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
 
 Provenance is stated per claim: **live-verified** (seen rendered on screen), **read from code**, or **computed** (arithmetic, unobserved).
@@ -24655,6 +24878,18 @@ the word "thermal" is gone. ⚠️ **HOLD those files until both app store updat
 **Still true: nothing has ever printed on paper.**
 
 **`/dev` is now gated by `app/dev/layout.tsx`, which `notFound()`s in production** — the **directory**, so future dev pages are covered by default. ⚠️ Known limit: **a layout does not gate Route Handlers.**
+
+## Printed text is folded to plain letters (V15.8)
+
+- **OBSERVED** **`printableText` folds text before layout,** in this order:
+  1. NFC;
+  2. ß→ss, æ→ae, ø→o, œ→oe, curly quotes and dashes straightened, "…"→"...", € → "EUR";
+  3. accents stripped;
+  4. "?" only for whatever is left.
+- "£" stays byte 0xA3, and `ESC t 16` is unchanged. "Jalapeños" prints "Jalapenos".
+- Emoji still print "?", but no longer shift the price column, because layout now measures the cleaned text.
+- **REASONED** Real Latin-1 accents (the code page already sent) are possible later behind a per-device
+  switch; non-Latin scripts need the ticket printed as an image (§77.1).
 
 # 43. Legal, email and domain (V11.4)
 
@@ -26410,7 +26645,8 @@ Recorded so they are not briefed again.
   - On a host with no brand (`localhost`) it is also a 404.
   - On a HatchGrab host it is a 200.
 - **OBSERVED** — indexing, **unlike `/compare`, which is `noindex`**: `robots: index, follow`; canonical
-  `https://www.hatchgrab.com/features`; title `Plans & features compared — HatchGrab UK`, set with
+  `https://www.hatchgrab.com/features`; title `Plans & features compared — HatchGrab {country}` — "UK" for GB, byte-identical;
+  since V15.8 the country word, OG/Twitter tags and `og:locale` follow the visitor's resolved country (§76.5) — set with
   `title: { absolute: … }` because `app/layout.tsx` carries a `'%s | HatchGrab'` template and a bare
   string gets the brand twice.
 - **REASONED — why it is indexable:** this content was public on the **indexed** landing page, and
@@ -26685,7 +26921,35 @@ Recorded so they are not briefed again.
 - ⚠️ **HARNESS FLAKINESS:** `event-types-render.cjs` failed once inside a full sweep running alongside a
   local `next start`, and **passed on its own**. Treat it as resource contention unless it recurs.
 
-# 49. Deploy posture as of V11.58
+# 49. Deploy posture (current at V15.8; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V15.8 — LIVE IS `f4bd277`; NOTHING FROM 10–14 OCTOBER IS DEPLOYED
+
+- **OBSERVED** Live is `f4bd277` ("social media fixes", 9 October), which is `origin/main`. It carries
+  everything up to V15.7.
+- **OBSERVED** **Local checkpoint commits on `main`, none pushed:**
+  1. `3033a53` — international phases 1–2D-2 and audit fixes;
+  2. `e54c7ea` — Phase 3 foundations and screens (tax, tips, fees);
+  3. `234b6a2` — US readiness sweep.
+
+  Language Phase 0 is **uncommitted** on top. Pushing `main` sends all three. Push one at a time with `git push origin <hash>:main` if deploying in stages.
+- **OBSERVED** Migrations `20261010_01` … `_18` have all been run on the live database. `_16` was reversed by
+  hand and **must be re-run after deploy** (§33). The three function revokes (§35) were run by hand and have
+  no migration file yet.
+- **Deploy order:**
+  1. Vercel (or the push Vercel builds from);
+  2. the push the GitHub Actions scraper uses;
+  3. the edge functions: `npx supabase functions deploy auto-event-scheduler --project-ref ffphgwonshgxamtvefcv`, then `heartbeat-monitor`;
+  4. the read-only index check;
+  5. `_16`;
+  6. its verify.
+- **Before deploying:** run the localhost checklist in `docs/phases-3-6-audit-report.md` Part 8.4, on Pizza
+  Kitchen only. Run the card test only if `.env.local` holds `sk_test_` keys.
+- **REASONED** Localhost runs the new code against the live database, so a localhost test does not prove
+  the live (old) code path. Test the live site separately after any database change the old code depends
+  on (§35.ag).
+
+### Deploy posture as of V11.58
 
 ✅ **EVERYTHING FROM BOTH DAYS IS DEPLOYED.** **OBSERVED after deploy: no 500s, no 504s, customer ordering
 pages working.**
@@ -29442,9 +29706,12 @@ would be missing in production. `font-list.ts` (pure data) is split from `fonts.
 - **Several events in a day:** stacked by start time, shrunk to fit; lines dropped (and reported) rather
   than overflowing.
 - Statuses confirmed, unconfirmed and **closed** all trade.
-- **Week:** Monday–Sunday, Europe/London, calendar arithmetic at UTC noon. Picker defaults to **next week
-  from Friday**. The clocks always change at 02:00 on a **Sunday** — the last day of the week — so a
-  Monday-start week can never lose a day to DST, whatever arithmetic is used (failure class 8).
+- **Week (corrected V15.8):** the truck's own zone and its country's week start (`country_settings.week_start`
+  — Monday–Sunday for GB, Sunday–Saturday for US; the fixed Europe/London `WEEK_TZ` is gone), calendar
+  arithmetic at UTC noon. Picker defaults to **next week from Friday**. In the UK the clocks change at 02:00
+  on a **Sunday** — the last day of a Monday-start week — so a Monday-start week can never lose a day to
+  DST, whatever arithmetic is used (failure class 8). **REASONED:** a Sunday-start week contains its own
+  clock change, and it is the UTC-noon arithmetic that keeps it whole.
 - **"Powered by HatchGrab"** always, bottom centre.
 
 ## 67.5 Fitting and readability
@@ -30838,6 +31105,243 @@ the other line up on a **vertical** edge, the case that could not fire.
 - **US readiness** review started 9 October 2026 in a separate chat. ⚠️ A truck's country is **not yet
   recorded**; the post locale table (`lib/weekly-post/locale.ts`, `countryForTruck()`) already includes US
   formats.
+
+---
+
+# 76. International readiness — country settings (V15.8 — 9–14 October 2026)
+
+*New at V15.8: the manual had no section for this. Sources: `docs/international-audit-report.md`,
+`country-settings-sql-report.md`, `country-settings-code-report.md`, `countries-page-report.md`,
+`money-sweep-report.md`, `time-and-dates-report.md`, `phone-numbers-report.md`,
+`phone-check-setting-report.md`, `signup-and-landing-country-report.md`, `remove-travel-distance-report.md`,
+`us-readiness-sweep-report.md`. Schedules and discovery by country are in §33; tax, tips and fees in §37;
+languages in §77.*
+
+## 76.1 The table
+- **OBSERVED** `public.country_settings` has one row per ISO country (`country_code` PK).
+  - RLS on with **no policies** and all grants revoked: service-role only (the V12.1 lesson applied).
+  - Read only through the server loader `lib/country-settings.ts` (60-second cache, `clearCountrySettingsCache`).
+  - 🔴 **The loader fails loudly; it never falls back to GB.**
+- **OBSERVED** **GB row** (switched on):
+
+  | Setting | Value |
+  |---|---|
+  | Plans | £0 / £29 / £49 |
+  | Included online orders | £1,500 / £2,000 |
+  | Platform fee | 0.99% |
+  | Card fees | online 1.50% + 20p; in-person 1.40% + 10p; Tap to Pay +10p |
+  | Card label | "UK cards" |
+  | Tax | prices include tax, label "VAT" |
+  | Surcharge | not allowed |
+  | Tipping | off |
+
+- **OBSERVED** **US row** (switched **off**):
+
+  | Setting | Value |
+  |---|---|
+  | Plan prices | **NULL** |
+  | Card fees | online 2.90% + 30¢; in-person 2.70% + 5¢; Tap to Pay +10¢ |
+  | Tax | prices exclude tax, label "Sales tax" |
+  | Surcharge | allowed, cap 3%, credit only, excluded regions {CT, MA, PR} |
+  | Tipping | on, presets {10, 15, 20} |
+  | Allergen set | `us9` |
+  | Service fee | allowed |
+
+- **OBSERVED** A CHECK refuses switching a country on while any plan price is NULL. **The US cannot be
+  switched on until US plan prices are set** (§27).
+- **OBSERVED** **Columns added later:**
+  - `short_name`, `phone_example`, `phone_check` ('length' | 'strict' | 'off');
+  - `service_fee_recipient` ('truck' | 'hatchgrab', default 'truck'), `service_fee_hatchgrab_bps`, `service_fee_hatchgrab_fixed_minor`, `service_fee_truck_max_bps`, `service_fee_truck_max_fixed_minor`;
+  - `platform_fee_enabled` (default false), `fees_taxed` (default false).
+- **OBSERVED** **Retired, kept not dropped** (commented "RETIRED … never read or written"):
+  - the competitor columns;
+  - `distance_unit`;
+  - `trucks.travel_radius_km`;
+  - every `tax_rate_bps` (trucks, orders, order_drafts, truck_events) — replaced by `tax_rate_milli` (§37).
+- **OBSERVED** `trucks.country` is an FK to `country_settings`. Every truck today is GB.
+- **Admin › Countries** (`components/admin/CountriesTab.tsx`): one column per country, Save per country.
+  Testing rule: touch only the US column, add and remove a throwaway country; 🔴 **never press Save on
+  GB**.
+
+## 76.2 Client-safe formatting
+- **OBSERVED** `lib/money-format.ts` (Intl, the country's locale). UK strings are byte-identical to the old ones.
+- **OBSERVED** `lib/payments/currency.ts`: `ledgerCurrency` is upper-case ('GBP'), `stripeCurrency` lower-case ('gbp').
+- **OBSERVED** `orders.currency` and `orders.country` are stamped by the BEFORE INSERT trigger
+  `orders_fill_currency_country` (SECURITY DEFINER, revoked from public/anon/authenticated in its own
+  migration). `order_payments` has an upper-case currency CHECK.
+
+## 76.3 Truck time
+- **OBSERVED** `lib/truck-time.ts`: a truck's zone is `trucks.timezone`, else its country's
+  `default_timezone`. `lib/time-utils.ts` is the one formatting module (§3). `LEGACY_UK_TIME_SETTINGS`
+  keeps old offline snapshots working.
+- **OBSERVED** Both edge functions (`auto-event-scheduler`, `heartbeat-monitor`) now open and close events in
+  each truck's own zone (§15). 🔴 **Deploy-coupled:** deploy them after Vercel (§49).
+
+## 76.4 Phone numbers
+- **OBSERVED** `lib/phone.ts` on libphonenumber-js 1.13.13 ("min" metadata):
+  - `isPlausiblePhone(number, country, mode)`;
+  - generic rules only: right length, mobile or landline;
+  - per-country mode on the Countries page: Strict / Standard / Off.
+- **DECIDED 10 Oct** Don't over-engineer phone rules per country.
+
+## 76.5 Signup and landing by country
+- **DECIDED 10 Oct** Each truck trades in one country.
+  - Country, base town (and zone, where the country has several) are captured at signup and on Manage › Settings › Where you trade.
+  - **No travel-distance question.**
+- **OBSERVED** **Base columns:** `trucks.base_place_id`, `base_place_name`, `base_region`, `base_lat`, `base_lng` (all nullable; typed free text keeps only the name). `trucks.base_region_code` holds a two-letter state code where Places gives one (US only).
+- **OBSERVED** **Place lookup** is Google Places API (New), server-side only (`lib/places.ts`, `/api/places/suggest`, `/api/places/details`).
+  - Key: `GOOGLE_MAPS_API_KEY`, never `NEXT_PUBLIC_`.
+  - With the key missing, the town box takes free text.
+  - **The key is not set up yet** (§27).
+- **OBSERVED** **Landing country:** `lib/visitor-country.ts` resolves `?country=` → cookie `hg_country` → `x-vercel-ip-country` → `MARKETING_COUNTRY` ('GB'), switched-on countries only.
+  - A flag selector sits in the header (laptop) and footer (all widths), never a pop-up. Flags come from country-flag-icons 1.6.20.
+  - The pricing section's copy never changes; only its values follow the country.
+- **OBSERVED** Landing and `/features` titles, OG/Twitter tags, and JSON-LD `areaServed` / `inLanguage` follow
+  the resolved country (`lib/marketing-meta.ts`); GB is byte-identical (§48).
+
+## 76.6 Allergens by country
+- **OBSERVED** `lib/allergens.ts` holds two lists:
+  - **UK 14:** verbatim, in order;
+  - **US 9:** Milk, Eggs, Fish, Crustacean shellfish, Tree nuts, Peanuts, Wheat, Soybeans, Sesame.
+
+  Every place that offers, checks or prompts for allergens uses the truck's `allergen_set`. Stored values are label strings, so US labels are their own keys; no data change was needed.
+- **US generic families:**
+  - "Nuts" → Tree nuts / Peanuts;
+  - "Shellfish" → Crustacean shellfish;
+  - a bare "Gluten" → Wheat (with a warning).
+
+## 76.7 Plans PDF by prospect country
+- **OBSERVED** The outreach plans-PDF attachment uses the prospect's `discovery_trucks.country`, falling back
+  to GB. A US prospect's PDF is refused with the existing message until US plan prices are set —
+  deliberately, so no £ price list goes to a US prospect.
+
+---
+
+# 77. Languages (V15.8 — 14 October 2026)
+
+*New at V15.8. Sources: `docs/language-readiness-audit-report.md` (the audit) and
+`docs/language-phase-0-report.md` (Phase 0 as built).*
+
+## 77.1 Facts (OBSERVED, language readiness audit)
+- There was no language layer: about 7,000 user-facing strings in 358 files, all literal UK English.
+  `country_settings.locale` (en-GB / en-US) drove formatting only.
+- About 75 distinct words or phrases differ for US English. Examples:
+  - basket → cart, collection → pickup, hatch → window, van → truck, postcode → ZIP code;
+  - cancelled → canceled, authorised → authorized;
+  - dates like "Saturday 14th June".
+
+  The full table is in `docs/language-readiness-audit-report.md` §4.4.
+- **Hazards for other languages:**
+  - about 230 sentences built from pieces;
+  - about 80 hand-written plurals;
+  - about 220 case changes in CSS or code;
+  - English labels used as keys;
+  - English sentences built on the server;
+  - fixed widths;
+  - text in images;
+  - posters and tickets that cannot draw non-Latin scripts.
+- 🔴 **Safety, before any non-English truck goes live:** the WhatsApp allergen safety floor
+  (`mentionsAllergen`) only recognises English words and strips non a–z characters (§27).
+- **SEO:** once US marketing is on, Google (crawling mostly from US addresses) would index the US landing
+  page for UK searchers. US marketing needs its own URLs (e.g. `/us/`) with hreflang, or noindex, before it is
+  switched on.
+- The demo is always provisioned as a GB truck.
+
+## 77.2 Decisions (DECIDED 14 Oct)
+- **next-intl, with no URL routing for the app.**
+  - `messages/en-GB.json` is the full base.
+  - `messages/en-US.json` holds only the differences and is deep-merged over it.
+  - Later languages are full files.
+- **Who sees which language:**
+  - a truck's screens, tickets, kitchen and emails use its country's locale, falling back to en-GB;
+  - customers see the truck's language for now;
+  - marketing follows the visitor's country.
+- "Pay at Hatch" stays a brand name in every country.
+- The US word table is agreed in principle; Dominic reviews it before phase 2.
+- Short month names (English): **option A** — see §77.4.
+
+## 77.3 The phases
+0 foundations → 1a customer → 1b kitchen → 1c onboarding → 1d Manage → 1e marketing → 2 en-US → 3 each
+later language. Each phase proves UK output byte-identical. **Before the first US truck:** 0, 1a, 1b, 1c and
+the matching parts of 2.
+
+## 77.4 Phase 0 — built (OBSERVED, `docs/language-phase-0-report.md`; uncommitted on top of `234b6a2`)
+- **next-intl 4.14.8**, exact version, in no-URL-routing mode:
+  - no `[locale]` segment, no next-intl middleware, no URL changed;
+  - `next.config.ts` registers `./lib/i18n/request.ts`;
+  - ⚠️ 4.14 brings `@swc/core`, `@parcel/watcher` and `next-intl-swc-plugin-extractor` as hard dependencies, for message extraction, which is unused (about 780 lockfile lines).
+- **Messages:**
+  - `messages/en-GB.json` is the full base. Phase 0 holds two keys: `order.tipHeading` and `plansPdf.title`.
+  - `messages/en-US.json` is `{}`.
+  - The deep merge in `lib/i18n/messages.ts` means **a missing US key shows the UK text, never a raw key**.
+- **One resolver,** `lib/i18n/locales.ts`: en-GB or en-US on an exact match, anything else en-GB.
+- **Typed keys:**
+  - `lib/i18n/app-config.d.ts` sets the types;
+  - `lib/i18n/typecheck.ts` holds a missing key and a missing namespace under `@ts-expect-error`, so `tsc` fails if keys ever stop being checked.
+- **Providers:**
+  - **`I18nProvider`** (`lib/i18n/client.tsx`) is in the layouts of the order page, confirmation/status, dashboard, KDS (both routes), Manage and setup.
+  - It renders `NextIntlClientProvider` with only that surface's namespaces (`lib/i18n/namespaces.ts`), beside the existing `CountrySettingsProvider`.
+  - It starts in en-GB and switches when the page reports the truck's locale (`useTruckLocale`). Setup's country list now carries `locale` for this.
+- **How code asks for words:**
+  - **Client components use `useT(namespace)`, not next-intl's `useTranslations`.** It reads the same messages and ICU, with the same typed keys, but falls back to en-GB with no provider instead of throwing.
+  - **Code with no request and no React** (emails, PDFs, API responses, tickets, crons) uses `translatorFor(locale, namespace)` (`lib/i18n/translator.ts`, client-safe).
+  - **Server components** use `getTranslations` via `lib/i18n/request.ts`. It is configured and tested, but no server component uses it yet; that comes with Phase 1e.
+- **End to end, today's UK text:** the order page's tip heading (client) and the plans PDF heading (server).
+- **Keys separated from labels** (stored values unchanged).
+
+  **Done:**
+  - plan-table rows have typed ids;
+  - "Coming soon" cells are decided by state;
+  - the pricing card's "/mo" comes from `planPriceParts`;
+  - the cost calculator's zero test is `roundsToZero`;
+  - contact topics use `contactHref(id)`;
+  - Walk-up uses `WALK_UP_NAME` / `isWalkUp`;
+  - the Private type uses one helper;
+  - the demo kitchen's categories are named by id;
+  - the 'mains' default is one constant (13 sites).
+
+  **Partly done:**
+  - price words have one definition (`PRICE_WORD`), but the mask still recognises a word by its text;
+  - the Reports **'Other' line is one constant, not yet an id**, because the split changes merging and sorting (a Phase 1d decision).
+
+  **Left, with reasons:** reject and cancel reasons (stored and emailed), cuisines (stored), the WhatsApp 'Other' fallback (reply text), the plan word 'Demo', and Manage's channel labels.
+- **One date-word path** in `lib/time-utils.ts`:
+  - one ordinal (`ordinalSuffix` / `ordinalDay`);
+  - `weekdayName` / `monthName` through `Intl.formatToParts`, pinned to UTC;
+  - eight hand-written name lists in five files replaced, and `lib/weekly-post/locale.ts` moved onto `formatToParts`;
+  - three admin/dev lists left.
+
+  **Short months, English only (DECIDED 14 Oct, option A):**
+  - the first three letters of Intl's full month name ("Sep");
+  - why: Intl's own en-GB short form is "Sept", every screen had written "Sep", and Intl data varies by device;
+  - ⛔ the rule fails in other languages (French "juin" / "juillet" both give "jui"), so each later language defines its own form in `SHORT_MONTH_RULES`, and until then gets Intl's own;
+  - ⚠️ about eight existing `formatYmd(…, { month: 'short' })` sites still write "Sept"; they were left byte-identical (§27).
+- **Proof:**
+  - 48,823 UK and US date answers matched the baseline on the server, in Chromium and in WebKit;
+  - `language-phase-0` passes 168/168;
+  - two new registered harnesses: `messages-parity` (valid ICU, apostrophes, every en-US key in en-GB, every message renders) and `ui-literals` (a file outside the 140-file baseline must carry no inline UI text);
+  - nine older harness pins were updated to name the new forms.
+- **Rules files:** `.cursor/rules/` is now a folder.
+  - The old rules note moved inside unchanged, as `working-rules.mdc` (with an `alwaysApply` header).
+  - `language.mdc` (always applied) holds the rules below.
+- **Bundle:** client JavaScript grows about 12 KB gzipped on pages with the provider; the landing page is unchanged.
+
+## 77.5 Rules for all new code (as in `.cursor/rules/language.mdc`)
+1. No new user-facing text written inline. New words go in `messages/en-GB.json` and are read with `useT`,
+   `getTranslations` or `translatorFor`; `scripts/ui-literals.cjs` fails a new file that carries inline UI text.
+   US wording goes in `messages/en-US.json` only where it differs.
+2. Whole sentences only; never build a sentence from pieces.
+3. No hand-written plurals (use ICU `plural`).
+4. No case changes on translatable or user text.
+5. Dates, times, numbers and money only through `lib/time-utils.ts` and `lib/money-format.ts` (the short
+   month is an English-only rule — §77.4).
+6. Display text is never a key.
+7. Servers send codes and values; screens supply the words; never a sentence in a URL.
+8. Store codes, not sentences.
+9. Leave room for longer text.
+10. AI prompts state the output language and keep the menu's own language.
+11. Prefer words that work in both countries in new copy; existing UK text stays byte-identical until its
+    phase.
 
 ---
 

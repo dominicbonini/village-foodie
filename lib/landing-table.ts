@@ -23,7 +23,7 @@
 // display; it may not feed them back into the source.
 import type { CountrySettings } from '@/lib/country-settings-types'
 import {
-  planPrices,
+  planPrices, PAY_AT_HATCH_ROW, type PlanRowId,
   type FeatureValue,
   type FeatureRow,
   type FeatureSection,
@@ -37,29 +37,31 @@ export const PLAN_SUB: Record<TablePlan, string> = { trial: '', starter: 'free f
 // A function of the settings since 10 October 2026: the prices are the country's (see lib/plan-features.ts).
 export function planPriceLabels(s: CountrySettings): Record<TablePlan, string> {
   const p = planPrices(s)
-  return { trial: 'Free', starter: p.starter, pro: p.pro, max: p.max }
+  return { trial: PRICE_WORD.free, starter: p.starter, pro: p.pro, max: p.max }
 }
 
 // Trial mirrors Billing exactly: it includes everything Max has, and pay-at-hatch is always available. EXCEPT
 // SMS order alerts — a paid add-on that isn't part of the free trial, so the Trial column shows "—" (not the
 // Coming-soon marker Max/Pro carry).
-export function trialFeatureValue(row: { name: string; max: FeatureValue }): FeatureValue {
-  if (row.name === 'Online ordering — Pay at Hatch') return true
-  if (row.name === 'SMS order alerts') return false
+export function trialFeatureValue(row: { id: PlanRowId; max: FeatureValue }): FeatureValue {
+  // 🔴 KEYED ON THE ROW'S ID (Language Phase 0) — rewording a row's name can no longer change its trial cell.
+  if (row.id === PAY_AT_HATCH_ROW) return true
+  if (row.id === 'sms_order_alerts') return false
   return row.max
 }
 
 // RENDER-ONLY feature-row description overrides for the landing table, keyed by row name. The shared
 // FEATURE_SECTIONS details (lib/plan-features.ts) are NOT modified — Billing/Admin keep the original text.
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+import { PRICE_WORD } from '@/lib/price-words'
 
-export const DETAIL_OVERRIDES: Record<string, string> = {
+export const DETAIL_OVERRIDES: Partial<Record<PlanRowId, string>> = {   // keyed on row ids (Language Phase 0)
   // 🔴 THIS STRING IS PRINTED BY THE LANDING TABLE AND THE PDF AND EXISTS IN NO ROW DEFINITION.
   // It overrides the shared detail in lib/plan-features.ts, so a grep of that file for "Android coming
   // soon" would have come back clean while the compare table and the PDF both still said it. That is
   // the exact class of miss the census was told to hunt for — a DERIVED label, not a matched one.
   // 🟢 "(Android coming soon)" removed 5 September 2026: the Android app is live on Google Play.
-  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+  offline_protection: "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
   // 🔴 THE MERGED AUTO-REPLIES OVERRIDE WAS REMOVED 4 September 2026, WHEN WHATSAPP WENT LIVE.
   // It read: 'Auto-reply to enquiries about your menu and schedule on WhatsApp, Messenger and Instagram.'
   // That sentence described a MERGED row and is false of the WhatsApp row on its own — Messenger and
@@ -70,7 +72,7 @@ export const DETAIL_OVERRIDES: Record<string, string> = {
   //    08ac368, verbatim — it describes the MERGED row that NAME_OVERRIDES and HIDDEN_ROWS below
   //    recreate in the same state, so all three move together or the table contradicts itself.
   ...(WHATSAPP_LIVE ? {} : {
-    'WhatsApp auto-replies': 'Auto-reply to enquiries about your menu and schedule on WhatsApp, Messenger and Instagram.',
+    whatsapp_auto_replies: 'Auto-reply to enquiries about your menu and schedule on WhatsApp, Messenger and Instagram.',
   }),
 }
 
@@ -84,12 +86,12 @@ export const DETAIL_OVERRIDES: Record<string, string> = {
 // the only live channel: 'WhatsApp auto-replies' ✓/✓ and a separate 'Messenger & Instagram
 // auto-replies' reading Coming soon.
 // ⚠️ Kept as an empty map rather than deleted: `rowName()` and both renderers import it.
-export const NAME_OVERRIDES: Record<string, string> = WHATSAPP_LIVE ? {} : {
+export const NAME_OVERRIDES: Partial<Record<PlanRowId, string>> = WHATSAPP_LIVE ? {} : {
   // 🔴 THE MERGE, RESTORED WHILE THE SWITCH IS OFF — verbatim from 08ac368. Permissible ONLY because
   //    in this state both rows carry identical cells again (starter:false, pro/max 'coming_soon',
   //    footnote '4'), which is the precondition the comment above demands. Flipping the switch to true
   //    makes them diverge and empties this map in the same edit.
-  'WhatsApp auto-replies': 'WhatsApp, Messenger & Instagram auto-replies',
+  whatsapp_auto_replies: 'WhatsApp, Messenger & Instagram auto-replies',
 }
 
 // 🔴 ROWS THE LANDING TABLE DOES NOT PRINT. EMPTY SINCE 4 September 2026 — nothing is hidden.
@@ -108,25 +110,25 @@ export const NAME_OVERRIDES: Record<string, string> = WHATSAPP_LIVE ? {} : {
 // override in the first place: merging in lib/plan-features.ts would drop 'instagram_messenger_replies'
 // from the name→key map findPlanParityViolations walks, and would silently change Billing and Admin too.
 // ⚠️ Kept as an empty Set rather than deleted: `visibleRows()` and both renderers import it.
-export const HIDDEN_ROWS = new Set<string>(WHATSAPP_LIVE ? [] : [
+export const HIDDEN_ROWS = new Set<PlanRowId>(WHATSAPP_LIVE ? [] : [
   // 🔴 Hidden while the switch is off, so the merged row above prints ONE social auto-replies line —
   //    exactly as production does at 08ac368.
-  'Messenger & Instagram auto-replies',
+  'messenger_instagram_replies',
 ])
 
 /** The rows the landing (and anything rendering the landing's view of the table) actually prints. */
 export function visibleRows(section: FeatureSection): FeatureRow[] {
-  return section.rows.filter(row => !HIDDEN_ROWS.has(row.name))
+  return section.rows.filter(row => !HIDDEN_ROWS.has(row.id))
 }
 
 /** The row name as the landing prints it. */
-export function rowName(row: { name: string }): string {
-  return NAME_OVERRIDES[row.name] ?? row.name
+export function rowName(row: { id: PlanRowId; name: string }): string {
+  return NAME_OVERRIDES[row.id] ?? row.name
 }
 
 /** The row description as the landing prints it, or '' when there is none. */
-export function rowDetail(row: { name: string; detail?: string }): string {
-  return DETAIL_OVERRIDES[row.name] ?? row.detail ?? ''
+export function rowDetail(row: { id: PlanRowId; detail?: string }): string {
+  return DETAIL_OVERRIDES[row.id] ?? row.detail ?? ''
 }
 
 /** 🔴 THE THREE CELL GLYPHS, IN ONE PLACE. Mirrors Billing: ✓ / — / Coming soon.

@@ -17,11 +17,17 @@ import { menuExtractAllergenLines, menuExtractAllergenExample, type AllergenSet 
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { currencySymbol, type MoneyFormat } from '@/lib/money-format'
 
-export const STANDARD_CATEGORIES = [
-  'Starters', 'Mains', 'Burgers', 'Pizza', 'Wraps & Sandwiches',
-  'Sides', 'Dips & Sauces', 'Desserts', 'Drinks', 'Kids Menu',
-  'Specials', 'Other',
-]
+/** 🔴 The standard menu categories, each with a CODE ID (Language Phase 0, 14 October 2026). The value is the
+ *  category NAME the importer writes into a truck's menu (stored data, in this order); code that needs to
+ *  recognise one (lib/demo-assumptions.ts) names it by id, never by its English words. */
+export const STANDARD_CATEGORY = {
+  starters: 'Starters', mains: 'Mains', burgers: 'Burgers', pizza: 'Pizza', wrapsSandwiches: 'Wraps & Sandwiches',
+  sides: 'Sides', dipsSauces: 'Dips & Sauces', desserts: 'Desserts', drinks: 'Drinks', kidsMenu: 'Kids Menu',
+  specials: 'Specials', other: 'Other',
+} as const
+export type StandardCategoryId = keyof typeof STANDARD_CATEGORY
+
+export const STANDARD_CATEGORIES: string[] = Object.values(STANDARD_CATEGORY)
 
 
 export interface ExtractedOption { name: string; price: number; allergens: string[]; dietary: string[] }

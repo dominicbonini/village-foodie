@@ -6,6 +6,7 @@ import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { formatSlot, instantOfLocal, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { ChargeRows } from '@/components/ChargeRows'
 import type { ChargeLineSource } from '@/lib/order-charge-lines'
+import { useTruckLocale } from '@/lib/i18n/client'
 
 type OrderState = {
   /** 🔴 THE ORDER'S OWN currency and locale, from /api/orders/[id]. Missing ⇒ figures with no symbol. */
@@ -33,6 +34,7 @@ type OrderState = {
 export default function ManageOrderPage() {
   const { id } = useParams<{ id: string }>()
   const [order, setOrder] = useState<OrderState | null>(null)
+  useTruckLocale(order?.time?.locale)   // Language Phase 0: the truck's language, from the order's own settings
   const amount = (major: number) => formatMajorOrBare(major, order?.money, 'order receipt')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

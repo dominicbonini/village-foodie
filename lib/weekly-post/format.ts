@@ -20,26 +20,10 @@
 // ORDINALS
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-/**
- * 1st, 2nd, 3rd, 4th … and the three that catch everyone: 11th, 12th, 13th.
- *
- * 🔴 THE TEENS ARE CHECKED FIRST AND THAT IS THE WHOLE BUG. `n % 10 === 1 ? 'st'` gives "11st",
- * "12nd" and "13rd" — wrong three days in every month, on artwork a truck posts to its customers.
- * 21st/22nd/23rd and 31st must still take the short suffix, which is why the teen test is `n % 100`
- * between 11 and 13 rather than `n < 20`.
- */
-export function ordinalSuffix(n: number): 'st' | 'nd' | 'rd' | 'th' {
-  const mod100 = Math.abs(Math.trunc(n)) % 100
-  if (mod100 >= 11 && mod100 <= 13) return 'th'
-  switch (Math.abs(Math.trunc(n)) % 10) {
-    case 1: return 'st'
-    case 2: return 'nd'
-    case 3: return 'rd'
-    default: return 'th'
-  }
-}
-
-export const ordinal = (n: number): string => `${n}${ordinalSuffix(n)}`
+/* 🔴 ONE ORDINAL FOR THE PRODUCT (Language Phase 0, 14 October 2026). The rule — teens first, so 11th/12th/
+ * 13th and never "11st" — moved to lib/time-utils.ts (`ordinalSuffix`, `ordinalDay`), which every date path
+ * now shares; this module keeps its two names so the poster's callers are untouched. */
+export { ordinalSuffix, ordinalDay as ordinal } from '@/lib/time-utils'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // DATES

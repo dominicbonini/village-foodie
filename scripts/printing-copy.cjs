@@ -37,7 +37,8 @@ console.log('\n── marketing mentions say "Bluetooth or wired" ────�
   // 🔴 THE CARD NAMES THE FEATURE; THE TABLE CARRIES THE DETAIL. Asserted as AGREEMENT with the row's own
   // `name` rather than as a literal, so the two cannot drift — which is exactly what the landing page's
   // own comment warns about ("this bullet is hand-written and nothing checks it"). Now something does.
-  const rowName = (pf.match(/\{ name: '(Kitchen ticket printing)',/) || [])[1]
+  // Language Phase 0 (14 October 2026): each row now opens with its code id, `{ id: 'ticket_printing', name: … }`.
+  const rowName = (pf.match(/\{ id: 'ticket_printing', name: '(Kitchen ticket printing)',/) || [])[1]
   const landing = noComments(read('app/landing/page.tsx'))
   check(!!rowName, `the comparison table still has a row named ${JSON.stringify(rowName ?? null)}`)
   check(landing.includes(`<li>${rowName}</li>`), `the pricing card's bullet is that name exactly: "${rowName}"`)

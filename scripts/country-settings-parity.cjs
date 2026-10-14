@@ -170,7 +170,9 @@ async function moduleView() {
   v.TAP_TO_PAY_SURCHARGE_LABEL = after ? P.tapToPaySurchargeLabel(GB) : P.TAP_TO_PAY_SURCHARGE_LABEL
   v.TRANSACTION_ROWS = after ? P.transactionRows(GB) : P.TRANSACTION_ROWS
   v.FOOTNOTES = after ? P.footnotes(GB) : P.FOOTNOTES
-  v.FEATURE_SECTIONS = P.FEATURE_SECTIONS
+  // Language Phase 0 (14 October 2026): each row gained a code `id` — a lookup key that is never displayed
+  // (scripts/language-phase-0.cjs checks it). The snapshot compares what the rows SAY, so the id is left out.
+  v.FEATURE_SECTIONS = P.FEATURE_SECTIONS.map(sec => ({ ...sec, rows: sec.rows.map(r => { const row = { ...r }; delete row.id; return row }) }))
   v.PLAN_PRICE_LABEL = after ? T.planPriceLabels(GB) : T.PLAN_PRICE_LABEL
   v.PLAN_SUB = T.PLAN_SUB
   v.parity = P.findPlanParityViolations()

@@ -1,5 +1,6 @@
 import { requirePlanPrice, moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
-import { perMonthLabel } from '@/lib/money-format'
+import { perMonthLabel, formatAmount } from '@/lib/money-format'
+import { PRICE_WORD } from '@/lib/price-words'
 
 export type Plan = 'starter' | 'pro' | 'max' | 'trial' | 'tester' | 'demo'
 
@@ -288,18 +289,26 @@ export const PLAN_META: Record<Plan, {
 }
 
 /**
- * The plan's price as shown: "£29/mo" for pro and max, from the settings.
- * ⚠️ THE WORDS ARE LOAD-BEARING. 'Free', 'Free trial', 'Lifetime' and 'Demo' are matched by EXACT
- * STRING in lib/pricing.ts's NON_SECRET_PRICE, which is what exempts them from the pre-launch mask.
- * A starter tier that one day costs money renders as an amount, and is then masked like any other.
+ * The plan's price in its two parts: the amount (or a word) and whether it is per month. 🔴 The pricing cards
+ * draw the parts separately ("£29" big, "per truck / month" below) — they used to split the finished
+ * "£29/mo" back apart on its "/mo", which a reworded or translated unit would have broken (Language Phase 0).
+ * ⚠️ 'Free', 'Free trial' and 'Lifetime' are PRICE_WORDs (lib/price-words.ts), which the pre-launch mask
+ * exempts; 'Demo' is not, as before. A starter tier that one day costs money is an amount, masked like any other.
  */
-export function planPrice(plan: Plan, s: CountrySettings): string {
-  if (plan === 'trial') return 'Free trial'
-  if (plan === 'tester') return 'Lifetime'
-  if (plan === 'demo') return 'Demo'
+export type PlanPriceParts = { amount: string; perMonth: false } | { amount: string; perMonth: true; minor: number }
+export function planPriceParts(plan: Plan, s: CountrySettings): PlanPriceParts {
+  if (plan === 'trial') return { amount: PRICE_WORD.freeTrial, perMonth: false }
+  if (plan === 'tester') return { amount: PRICE_WORD.lifetime, perMonth: false }
+  if (plan === 'demo') return { amount: 'Demo', perMonth: false }
   const minor = planMonthlyMinor(plan, s)
-  if (plan === 'starter' && minor === 0) return 'Free'
-  return perMonthLabel(minor, moneyFormatOf(s))
+  if (plan === 'starter' && minor === 0) return { amount: PRICE_WORD.free, perMonth: false }
+  return { amount: formatAmount(minor, moneyFormatOf(s)), perMonth: true, minor }
+}
+
+/** The plan's price as shown: "£29/mo" for pro and max, from the settings (perMonthLabel's form). */
+export function planPrice(plan: Plan, s: CountrySettings): string {
+  const p = planPriceParts(plan, s)
+  return p.perMonth ? perMonthLabel(p.minor, moneyFormatOf(s)) : p.amount
 }
 
 // Maximum vans allowed per plan

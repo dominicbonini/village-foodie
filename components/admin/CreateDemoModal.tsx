@@ -97,9 +97,9 @@ export default function CreateDemoModal({ prospect, onClose, onCreated }: {
       else if (file) fd.append('file', file)
       else fd.append('text', text.trim())
       fd.append('discoveryTruckId', prospect.discovery_truck_id)
-      // 🔴 REBUILD = the SAME truck. provisionDemo's `existingTruckId` path keeps the menu, the link and
-      // the dashboard token and re-provisions the event and the board — which is exactly "change the
-      // settings and try again" for a demo that cannot be un-created.
+      // 🔴 REBUILD = the SAME truck. provisionDemo's `existingTruckId` path keeps the link and the dashboard
+      // token, clears every old order and event, and builds the board again. A menu sent with it REPLACES
+      // the old menu (read first; the old one is cleared only once the new one has items); none keeps it.
       if (prospect.demoTruckId) fd.append('existingTruckId', prospect.demoTruckId)
       fd.append('collection_interval_mins', String(intervalMins))
       fd.append('cook_mins', cookMins.trim())
@@ -239,8 +239,9 @@ export default function CreateDemoModal({ prospect, onClose, onCreated }: {
               </div>
               {rebuilding
                 ? <p className="text-xs text-slate-500">
-                    Rebuilding this prospect&apos;s demo: the link and the menu stay as they are, and the
-                    board is built again with the numbers above. Add a menu below only to replace it.
+                    Rebuilding this prospect&apos;s demo: the link stays the same, every old order and event is
+                    cleared, and the board is built again with the numbers above. Add a menu below to replace
+                    the menu too; leave it empty to keep the current one.
                   </p>
                 : null}
               <MenuUploadFields file={file} onFile={setFile} text={text} onText={setText} disabled={busy} accent="app" />

@@ -59,6 +59,7 @@ import { WebOfflineBanner } from '@/components/WebOfflineBanner'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
+import { useTruckLocale } from '@/lib/i18n/client'
 
 // View mode driven by ?view= query param
 // /kds           → window view (default, for the main iPad at the hatch)
@@ -135,6 +136,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   // device's clock), and its style writes every time and date. Before the truck loads, GB's stand in.
   const kdsTime = useMemo(() => (truck ? timeSettingsOr(truck.time, 'kds') : LEGACY_UK_TIME_SETTINGS), [truck])
   const kdsTz = kdsTime.timeZone
+  useTruckLocale(kdsTime.locale)   // Language Phase 0: the truck's country's locale for the kitchen screen's words
   // Van-level "show cooking step" preference (Settings). Gates the cook view's "Start
   // cooking" button. Defaults off (matches the Settings toggle default) until loaded.
   const [showCookingStep, setShowCookingStep] = useState(false)

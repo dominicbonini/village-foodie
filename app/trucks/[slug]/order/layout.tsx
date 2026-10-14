@@ -32,8 +32,13 @@
 // ⚠️ `force-dynamic` IS KEPT DELIBERATELY THOUGH NO SERVER WORK REMAINS. Removing it would let this
 // segment be statically prerendered, which is a rendering-mode change this workstream has no way to
 // verify under a deploy freeze. It costs a prerender, not a request.
+import { I18nProvider } from '@/lib/i18n/client'
+import { NAMESPACES } from '@/lib/i18n/namespaces'
+
 export const dynamic = 'force-dynamic'
 
+// Language Phase 0: the customer sees the truck's language (its country's locale, set by the page once the truck
+// loads), with only the order page's message namespaces sent to the browser.
 export default function OrderLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return <I18nProvider namespaces={NAMESPACES.order}>{children}</I18nProvider>
 }

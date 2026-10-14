@@ -38,8 +38,9 @@ import {
   cardFees,
 } from '@/lib/plan-features'
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { toMajor, formatMajor, smallFeeLabel, minorDigits, type MoneyFormat } from '@/lib/money-format'
+import { toMajor, formatMajor, smallFeeLabel, minorDigits, roundsToZero, type MoneyFormat } from '@/lib/money-format'
 import { moneyFormatOf } from '@/lib/country-settings-types'
+import { contactHref } from '@/lib/contact-topics'
 
 const ORANGE = '#EF8B2C'
 
@@ -177,11 +178,12 @@ function freeMonthsLine(n: number): string | null {
 // save £0 →". The obvious fix is a threshold like `>= 1`, and it is the wrong one: it hard-codes the
 // formatter's rounding in a second place, so changing gbp() to 2dp would silently make the two disagree
 // again, in the other direction.
-// ⚠️ THIS COMPARES gbp(n) TO gbp(0). The decision is therefore made on THE STRING THE OPERATOR WILL
-// ACTUALLY SEE, so the display and the claim cannot diverge by construction — whatever gbp() does later,
-// this follows it. There is no magic number to drift.
+// ⚠️ IT ASKS THE FORMATTER'S OWN ROUNDING (roundsToZero, lib/money-format.ts) at gbp()'s precision — the
+// same rounding gbp() prints with, so the display and the claim still cannot diverge, and there is no magic
+// number to drift. 🔴 It used to compare gbp(n) to gbp(0) as STRINGS; Language Phase 0 (14 October 2026)
+// moved it to the number, because a formatted string is display text and must never be a key.
 function rendersAsZeroIn(f: MoneyFormat, n: number): boolean {
-  return gbpIn(f, n) === gbpIn(f, 0)
+  return roundsToZero(Number.isFinite(n) ? n : 0, f, 0)
 }
 
 /** Do we announce a SAVING? Only when it is positive AND survives formatting. */
@@ -922,7 +924,7 @@ export default function CostComparison({ settings }: {
                     saving, and there is no saving here to carry. */}
                 <div className="flex flex-col gap-2 p-4 sm:flex-row sm:gap-3">
                   <DemoCta className={`${CTA_PRIMARY} flex-1 px-6 py-4 text-lg`}>Upload my menu →</DemoCta>
-                  <a href="/contact?topic=Cost%20Comparison" className={`${CTA_SECONDARY} flex-1 px-6 py-4 text-lg`}>
+                  <a href={contactHref('costComparison')} className={`${CTA_SECONDARY} flex-1 px-6 py-4 text-lg`}>
                     Ask us a question
                   </a>
                 </div>
@@ -1274,7 +1276,7 @@ export default function CostComparison({ settings }: {
                     Case, %20-encoded, matching those four exactly.
                     ⚠️ An enquiry from this page is now identifiable in Tally without anyone asking
                     "where did you come from?" in the form itself. */}
-                <a href="/contact?topic=Cost%20Comparison" className={`${CTA_SECONDARY} flex-1 px-6 py-4 text-lg`}>
+                <a href={contactHref('costComparison')} className={`${CTA_SECONDARY} flex-1 px-6 py-4 text-lg`}>
                   Ask us a question
                 </a>
               </div>

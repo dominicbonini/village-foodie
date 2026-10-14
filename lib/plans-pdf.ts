@@ -26,6 +26,8 @@ import { HATCHGRAB_NAVY_HEX, HATCHGRAB_ORANGE_HEX, HATCHGRAB_WORDMARK_SVG } from
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { maskPrice, PRICING_PUBLISHED } from '@/lib/pricing'
+// Language Phase 0: the document's words in the country's locale — its first message, the heading.
+import { translatorFor } from '@/lib/i18n/translator'
 import {
   TABLE_PLANS, type TablePlan, PLAN_SUB, planPriceLabels,
   trialFeatureValue, visibleRows, rowName, rowDetail, cellLabel,
@@ -108,7 +110,7 @@ const TICK = '<svg class="tick" viewBox="0 0 12 12" role="img" aria-label="Inclu
  *  written back. It is left as text deliberately — it IS in the production font. */
 function cellHtml(value: FeatureValue): string {
   const label = cellLabel(value)
-  const cls = label === '✓' ? 'yes' : label === 'Coming soon' ? 'soon' : 'no'
+  const cls = value === true ? 'yes' : value === 'coming_soon' ? 'soon' : 'no'   // the state, not the words (Language Phase 0)
   return `<td class="c ${cls}">${label === '✓' ? TICK : esc(label)}</td>`
 }
 
@@ -234,7 +236,7 @@ export function buildPlansPdfHtml(s: CountrySettings): string {
   </style></head><body>
     <div class="doc-head">
       ${wordmark ? `<img class="mark" src="${wordmark}" width="${WORDMARK_W}" height="${WORDMARK_H}" alt="HatchGrab">` : ''}
-      <h1>Plans and features</h1>
+      <h1>${esc(translatorFor(s.locale, 'plansPdf')('title'))}</h1>
       <span class="gen">Generated ${new Date().toISOString().slice(0, 10)}</span>
     </div>
     <table>

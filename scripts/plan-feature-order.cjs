@@ -175,8 +175,9 @@ head('2 · order only — the same rows, the same cells, the same keys')
    * the guard `continue`s past an unmapped row rather than failing, which is the quiet way for a table
    * to start promising Pro a Max feature. ⛔ READ FROM THE SOURCE because the map is not exported. */
   t('⚠️ …and both still map to their feature keys',
-    /'Private events': 'private_events',/.test(PLAN_FEATURES_SRC)
-    && /'Custom event types & pricing': 'event_types',/.test(PLAN_FEATURES_SRC))
+    /* Language Phase 0 (14 October 2026): keyed on the rows' CODE IDS now, never their names. */
+    /\n  private_events: 'private_events',/.test(PLAN_FEATURES_SRC)
+    && /\n  event_types: 'event_types',/.test(PLAN_FEATURES_SRC))
   /* ══ 🔴 'Social media posts' SAYS "COMING SOON" THE WAY EVERY OTHER UNBUILT ROW DOES ═════════════
    * ⛔ `'coming_soon'` CELLS, NOT `true` CELLS WITH A BADGE. The first attempt at this row ticked Pro
    * and Max and put a new badge beside the name; it was corrected on the grounds that matter here:
@@ -214,9 +215,10 @@ head('2 · order only — the same rows, the same cells, the same keys')
     /* ⚠️ `trialFeatureValue()` RETURNS `row.max` for every row but two, and this is not one of them —
      * so Trial follows Max here. Asserted by naming the two exceptions rather than trusting the rule. */
     const src = fs.readFileSync(path.join(REPO, 'lib/landing-table.ts'), 'utf8')
+    /* Language Phase 0 (14 October 2026): the two exceptions are named by row ID now, never by name. */
     return /return row\.max/.test(src)
-      && /row\.name === 'Online ordering — Pay at Hatch'/.test(src)
-      && /row\.name === 'SMS order alerts'/.test(src)
+      && /row\.id === PAY_AT_HATCH_ROW/.test(src)
+      && /row\.id === 'sms_order_alerts'/.test(src)
   })())
   /* ══ 🔴 THE EXCEPTION IS CLOSED — 10 OCTOBER 2026, AT LAUNCH ════════════════════════════════════
    * ⛔ **THIS CHECK USED TO ASSERT THE OPPOSITE, AND ITS OWN NOTE SAID WHEN TO DELETE IT**: *"if the
@@ -231,10 +233,11 @@ head('2 · order only — the same rows, the same cells, the same keys')
    * `canAccess('pro', 'places_posts_preview')` was false.
    * ⚠️ BOTH HALVES MOVED IN ONE EDIT: `schedule_graphics` into `PRO_FEATURES`, and the map entry in. */
   t('🔴 the row is MAPPED now, and the guard checks the promise it makes', (() => {
-    const at = PLAN_FEATURES_SRC.indexOf('const ROW_FEATURE_MAP: Record<string, Feature> = {')
+    /* Language Phase 0 (14 October 2026): the map is keyed on row IDS now (`social_media_posts`), never names. */
+    const at = PLAN_FEATURES_SRC.indexOf('const ROW_FEATURE_MAP: Partial<Record<PlanRowId, Feature>> = {')
     const map = at < 0 ? '' : PLAN_FEATURES_SRC.slice(at)
     return at > 0
-      && /'Social media posts': 'schedule_graphics',/.test(map)
+      && /\n  social_media_posts: 'schedule_graphics',/.test(map)
       /* ⛔ AND THE GUARD IS **RUN**, not read. It is what the landing, /features, Billing and Admin
        * depend on at module load, so a violation here is four broken surfaces. */
       && Array.isArray(findPlanParityViolations()) && findPlanParityViolations().length === 0
@@ -267,7 +270,8 @@ head('3 · one source, and nobody re-sorts it on the way to a screen')
     const landing = /if \(value === 'coming_soon'\) return 'Coming soon'/.test(read('lib/landing-table.ts'))
     const billing = /val === 'coming_soon' && \(/.test(read('app/manage/[token]/page.tsx'))
     const admin = /val === 'coming_soon' && <span/.test(read('app/admin/page.tsx'))
-    const pdf = /label === 'Coming soon' \? 'soon'/.test(read('lib/plans-pdf.ts'))
+    // Language Phase 0 (14 October 2026): the PDF decides the class by the cell's STATE now, not its words.
+    const pdf = /value === 'coming_soon' \? 'soon'/.test(read('lib/plans-pdf.ts'))
     return landing && billing && admin && pdf
   })())
 
@@ -317,7 +321,8 @@ head('3 · one source, and nobody re-sorts it on the way to a screen')
   /* ⚠️ THE LANDING FILTERS, AND THAT IS ALL IT DOES. `visibleRows` drops a row while a flag is off; a
    * filter preserves order, which is why it is allowed where a sort is not. */
   t('⚠️ the landing\'s `visibleRows` filters and does not reorder',
-    /export function visibleRows\(section: FeatureSection\): FeatureRow\[\] \{\s*\n\s*return section\.rows\.filter\(row => !HIDDEN_ROWS\.has\(row\.name\)\)\s*\n\}/
+    // Language Phase 0 (14 October 2026): the hidden set holds row IDS now, never names.
+    /export function visibleRows\(section: FeatureSection\): FeatureRow\[\] \{\s*\n\s*return section\.rows\.filter\(row => !HIDDEN_ROWS\.has\(row\.id\)\)\s*\n\}/
       .test(read('lib/landing-table.ts')))
   /* ⚠️ BILLING DOES NOT EVEN FILTER — it maps `section.rows` straight through, so if the landing page
    * renders this order (it does; see docs/feature-order-report.md) Billing necessarily does too. */

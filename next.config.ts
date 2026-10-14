@@ -1,4 +1,10 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+// 🔴 LANGUAGE PHASE 0 (docs/language-phase-0-report.md): next-intl's request configuration, for server components
+// (`getTranslations`). NO URL ROUTING and NO MIDDLEWARE — nothing in a URL names a language; the locale is
+// resolved from the truck's country, or the visitor's for marketing (lib/i18n/locales.ts).
+const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   // @sparticuz/chromium ships the Chromium binary as files that must NOT be bundled/tree-shaken by
@@ -26,4 +32,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

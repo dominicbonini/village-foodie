@@ -3,6 +3,7 @@
 
 import { getCatConfig, type CatConfig } from '@/lib/prep-utils'
 import { normaliseOrderLines } from '@/lib/slot-bookings'
+import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 
 export type QtyByCat = Record<string, number>
 
@@ -12,7 +13,7 @@ export function orderItemsToQtyByCat(
 ): QtyByCat {
   const byCat: QtyByCat = {}
   items.forEach(i => {
-    const cat = (itemCatMap[i.name] || 'mains').toLowerCase()
+    const cat = (itemCatMap[i.name] || DEFAULT_CATEGORY_KEY).toLowerCase()
     byCat[cat] = (byCat[cat] || 0) + (parseInt(String(i.quantity)) || 1)
   })
   return byCat

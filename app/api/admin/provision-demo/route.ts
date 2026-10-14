@@ -113,6 +113,8 @@ export async function POST(req: NextRequest) {
   try {
     const result = await provisionDemo(supabase, {
       file, text, template, existingTruckId, kitchen,
+      // An admin rebuild clears every old event and order on the demo, not just today's (lib/provision-demo.ts).
+      replaceBoard: !!existingTruckId,
       ...(discoveryTruckId ? { discoveryTruckId, name, logoUrl } : {}),
     })
 

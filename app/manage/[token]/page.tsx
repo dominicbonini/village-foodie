@@ -44,7 +44,8 @@ import { PaymentsTab } from '@/components/manage/PaymentsTab'
 //  SettingsTab, and lib/legal.ts for the surface list. If a link is ever added to this page, import the
 //  routes from lib/legal.ts — never type them inline.)
 import type { Plan, Feature } from '@/lib/features'
-import { planPrices, PLAN_DESCRIPTIONS, transactionRows, FEATURE_SECTIONS, footnotes, vanAddonMonthlyMinor } from '@/lib/plan-features'
+import { PRICE_WORD } from '@/lib/price-words'
+import { planPrices, PLAN_DESCRIPTIONS, transactionRows, FEATURE_SECTIONS, footnotes, vanAddonMonthlyMinor, PAY_AT_HATCH_ROW, type PlanRowId } from '@/lib/plan-features'
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
 import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 // 🔴 THE REPLY CAP'S PER-CUSTOMER LIMIT, READ FROM THE MODULE THAT DECIDES IT rather than typed into the
@@ -167,6 +168,8 @@ import {
   type SocialSection,
   type ScheduleSection,
 } from '@/lib/manage-links'
+import { isWalkUp } from '@/lib/walk-up'
+import { useTruckLocale } from '@/lib/i18n/client'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }
@@ -598,6 +601,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // The truck's own country settings, from the same authenticated /api/manage response (never read by the
   // browser directly). Every price below the CountrySettingsProvider reads them. See the provider's header.
   const [countrySettings, setCountrySettings] = useState<CountrySettings | null>(null)
+  useTruckLocale(countrySettings?.locale)   // Language Phase 0: Manage's words in the truck's country's locale
   const [whatsappConnection, setWhatsappConnection] = useState<WhatsAppConnectionView | null>(null)
   const [whatsappUsage, setWhatsappUsage] = useState<{ used: number; limit: number; resetsOn: string; atLimit: boolean } | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
@@ -10349,7 +10353,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
 // auto-replies" as a single row with a comment forbidding a re-merge with WhatsApp. So one lookup
 // drives both rows below; there is no per-channel flag to read and inventing one here would be a
 // second source of truth.
-const MESSENGER_INSTAGRAM_ROW = 'Messenger & Instagram auto-replies'
+const MESSENGER_INSTAGRAM_ROW: PlanRowId = 'messenger_instagram_replies'   // the row's code id (Language Phase 0), not its name
 
 // ── 🔴 THE ONE SWITCH FOR WHATSAPP. FLIP IT TO true WHEN META APPROVES. ────────────────────────────
 // Operator decision, 21 August 2026: WhatsApp auto-replies are shown as "Coming soon" and greyed out
@@ -10366,9 +10370,9 @@ const MESSENGER_INSTAGRAM_ROW = 'Messenger & Instagram auto-replies'
 // ⚠️ The `boolean` annotation stays where it is declared, for the reason the note above gives:
 // it keeps both JSX branches type-checked while the switch is off.
 
-function isRowComingSoon(rowName: string): boolean {
+function isRowComingSoon(rowId: PlanRowId): boolean {
   for (const section of FEATURE_SECTIONS) {
-    const row = section.rows.find(r => r.name === rowName)
+    const row = section.rows.find(r => r.id === rowId)
     if (row) return row.pro === 'coming_soon' || row.max === 'coming_soon'
   }
   // 🔴 ROW NOT FOUND => TREAT AS COMING SOON, AND THE DIRECTION IS DELIBERATE. This is keyed on a row
@@ -14348,7 +14352,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 wrap — not the numbers. `sm:text-xl` is untouched, so nothing changes from 640px up. */}
             <p className={`text-[13px] sm:text-xl font-bold mt-1 whitespace-nowrap ${
               isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
-            }`}>{px(p === 'trial' ? 'Free' : prices[p])}</p>
+            }`}>{px(p === 'trial' ? PRICE_WORD.free : prices[p])}</p>
             <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
               {/* ── 🔴 THE TRIAL COLUMN'S RULE LINES UP NOW, AND THE COMPENSATION DANCE IS GONE. ──────
                   This read `{p === 'trial' ? <span className="invisible">&nbsp;</span> : …}` — ONE
@@ -14441,7 +14445,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               </div>
               {billingPlans.map(p => {
                 const val = p === 'trial'
-                  ? (row.name === 'Online ordering — Pay at Hatch' ? true : row.max)
+                  ? (row.id === PAY_AT_HATCH_ROW ? true : row.max)
                   : row[p as 'starter' | 'pro' | 'max']
                 return (
                   <div key={p} className="w-14 sm:w-28 text-center">
@@ -14829,7 +14833,7 @@ function explodeOrderItems(
     const ev = resolveEvent(o)
     const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
     const collectionTime = o.slot ? formatTime(o.slot, ts) : 'ASAP'
-    const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'
+    const customerName = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : 'Unknown'
     const orderType = o.customer_email ? 'Customer online' : 'Placed by truck'
     const dealItemMap: Record<string, string> = {}
     for (const d of (Array.isArray(o.deals) ? o.deals : []))
@@ -14853,6 +14857,12 @@ function explodeOrderItems(
   }
   return rows
 }
+
+/* 🔴 THE REVENUE BREAKDOWN'S CATCH-ALL LINE (Language Phase 0, 14 October 2026). It is a KEY in the per-category
+ * sums and, today, also the line's label — and it deliberately MERGES with a truck's own category called "Other"
+ * and sorts among the categories by that name, exactly as before. ⚠️ Separating its key from its label is a
+ * Phase 1d decision (a translated label would otherwise re-sort the line and stop merging); one constant until then. */
+const OTHER_REVENUE_BUCKET = 'Other'
 
 function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: any) => Promise<any> }) {
   const hasAdvanced = truck
@@ -14966,7 +14976,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
         const modSum = (item.modifiers || []).reduce((s: number, m: any) => s + (m.price || 0), 0)
         mods += modSum * qty
         if (dealItemNames.has(item.name)) continue   // deal member → its value is in the deal price
-        const cat = itemCategories[item.name] || 'Other'
+        const cat = itemCategories[item.name] || OTHER_REVENUE_BUCKET
         catBase[cat] = (catBase[cat] || 0) + ((item.unit_price || 0) - modSum) * qty
       }
     }
@@ -14988,7 +14998,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     // Reconcile: categories MUST sum to `base` (so categories + dealRev + mods === total). Any drift
     // (e.g. deal-member modifiers, which `mods` counts but the category loop skips) is absorbed into 'Other'.
     const drift = base - Object.values(catBase).reduce((s, v) => s + v, 0)
-    if (Math.abs(drift) > 0.005) catBase['Other'] = (catBase['Other'] || 0) + drift
+    if (Math.abs(drift) > 0.005) catBase[OTHER_REVENUE_BUCKET] = (catBase[OTHER_REVENUE_BUCKET] || 0) + drift
     const ordered = [
       ...categoryOrder.filter((c: string) => catBase[c] !== undefined),
       ...Object.keys(catBase).filter((c: string) => !categoryOrder.includes(c)).sort(),
@@ -15071,7 +15081,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
       const ev = resolveEvent(o)
       const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
       const collectionTime = o.slot ? formatTime(o.slot, ts) : 'ASAP'
-      const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'
+      const customerName = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : 'Unknown'
       // customer_email IS NULL is the best available signal for operator-placed orders (no source column yet)
       const orderType = o.customer_email ? 'Customer online' : 'Placed by truck'
       const itemStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => `${i.quantity || 1}× ${i.name}`).join('; ')
@@ -15455,7 +15465,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                   const ev = resolveEvent(o)
                   const venueName = ev?.venue_name ?? null
                   const orderType = o.customer_email ? 'Online' : 'Walk-up'
-                  const customerLabel = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : '—'
+                  const customerLabel = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : '—'
                   const itemSummary = (Array.isArray(o.items) ? o.items : [])
                     .map((i: any) => `${i.quantity || 1}× ${i.name}`).join(', ')
                   const qtyTotal = (Array.isArray(o.items) ? o.items : []).reduce((s: number, i: any) => s + (i.quantity || 1), 0)

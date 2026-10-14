@@ -9,6 +9,7 @@ import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
 import { formatFriendlyDate, venueGroupKey } from '@/lib/utils'; 
 import { hrefFromStoredUrl } from '@/lib/url-normalise';
+import { contactHref } from '@/lib/contact-topics';
 
 export default function VenueClient({ slug }: { slug: string }) {
   const posthog = usePostHog();
@@ -151,7 +152,7 @@ export default function VenueClient({ slug }: { slug: string }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent pointer-events-none" />
 
                 <Link 
-                    href={`/contact?topic=ClaimVenue&venue=${encodeURIComponent(venueInfo.name)}`}
+                    href={contactHref('claimVenue', { venue: venueInfo.name })}
                     className="absolute top-3 right-3 bg-black/40 backdrop-blur-md text-white/80 hover:text-white hover:bg-black/60 border border-white/10 text-[10px] font-medium px-2.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 z-10 shadow-sm"
                     title="Own this venue? Click to update your profile"
                 >

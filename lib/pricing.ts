@@ -4,6 +4,8 @@
 // test trucks don't see/share real pricing before launch. Free / 0% / Pay at Hatch / Lifetime /
 // Free trial are not commercially sensitive and always show as-is. Flips on at launch via env,
 // no code change. Used by the Billing page, FeatureGate upgrade CTAs, and the per-van add-on.
+import { isPriceWord } from '@/lib/price-words'   // the price words, one definition (Language Phase 0)
+
 export const PRICING_PUBLISHED = process.env.NEXT_PUBLIC_PRICING_PUBLISHED === 'true'
 
 // ⚠️ `Unlimited` and `—` ADDED WITH THE THREE-ROW FEE TABLE (lib/plan-features.ts). Neither is a price:
@@ -12,14 +14,13 @@ export const PRICING_PUBLISHED = process.env.NEXT_PUBLIC_PRICING_PUBLISHED === '
 // carry no commercial information and blanking them to 'TBC' would read as broken", and an em dash
 // rendered as "TBC" is precisely that. The two allowance amounts and the 0.99% rate are deliberately NOT
 // here and are still masked until pricing is published.
-const NON_SECRET_PRICE = new Set(['Free', 'Free trial', 'Lifetime', '0%', 'Pay at Hatch', 'Unlimited', '—'])
 
 /** Real price string when published; otherwise "TBC" (unless it's a non-sensitive value).
  *  ⚠️ GLOBAL ONLY — it has no truck context and cannot honour `trucks.hide_pricing`. Kept as the
  *  primitive `maskPriceFor` is built on. **Do not call it from a component**: use `usePriceMask()` from
  *  components/PricingPolicy.tsx, which knows which truck is on screen. */
 export function maskPrice(val: string): string {
-  return (PRICING_PUBLISHED || NON_SECRET_PRICE.has(val)) ? val : 'TBC'
+  return (PRICING_PUBLISHED || isPriceWord(val)) ? val : 'TBC'
 }
 
 /** ── THE RULE (V11.2, per-truck suppression) ────────────────────────────────────────────────────────
@@ -36,6 +37,6 @@ export function pricesVisibleFor(hidePricing: boolean): boolean {
 
 /** Per-truck maskPrice. `hidePricing` false ⇒ identical to `maskPrice`. */
 export function maskPriceFor(val: string, hidePricing: boolean): string {
-  if (NON_SECRET_PRICE.has(val)) return val
+  if (isPriceWord(val)) return val
   return pricesVisibleFor(hidePricing) ? val : 'TBC'
 }

@@ -7,6 +7,7 @@
 // event-tz "now" via getNowMinsInTz/getLocalDateInTz; this file NEVER reads the clock or constructs a
 // Date from a local wall-clock string + compares across timezones (the §V7.4 device-local trap that
 // getBundleAvailabilityMessage falls into — deliberately NOT copied here).
+import { weekdayName, monthName } from '@/lib/time-utils'
 
 /** Per-item pre-order config — maps to the menu_items_db columns:
  *  preorder_enabled / preorder_deadline_type / preorder_deadline_value / preorder_past_action. */
@@ -113,10 +114,11 @@ export function isPreorderDeadlinePassed(
   return { isPreorder: true, passed, pastAction: cfg.pastAction }
 }
 
-// Fixed month/weekday abbreviations — NEVER new Date().toLocale… (device-local trap, §V7.4). The
-// label is computed server-side in event-tz; only the calendar Y/M/D is read back here.
-const PREORDER_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-const PREORDER_WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] // getUTCDay() index: 0=Sun
+// Month/weekday abbreviations from lib/time-utils.ts (Intl on the calendar date, pinned to UTC — never a
+// device-local `new Date().toLocale…`, §V7.4; the short month by its English rule, "Sep" not "Sept"). The
+// label is computed server-side in event-tz; only the calendar Y/M/D is read here. ⚠️ `locale` defaults to
+// en-GB: the label is English in every country today, as it always was (Language Phase 1a moves its words).
+const shortDay = (ymd: string, locale: string) => `${weekdayName(ymd, locale, 'short')} ${Number(ymd.split('-')[2])} ${monthName(ymd, locale, 'short')}`
 
 /**
  * Customer-facing pre-order label — PURE formatting, NO device-local time. The caller supplies the
@@ -136,18 +138,13 @@ export function formatPreorderLabel(
   mins: number,
   date: string,
   eventDate: string,
+  locale = 'en-GB',
 ): string {
   if (state === 'closed_pending') return 'Pre-orders closed. Kitchen to approve.'
   const hh = String(Math.floor(mins / 60)).padStart(2, '0')
   const mm = String(mins % 60).padStart(2, '0')
   let label = `Pre-order by ${hh}:${mm}`
-  if (date !== eventDate) {
-    const [y, m, d] = date.split('-').map(Number)
-    // UTC-noon anchor (same basis as addDaysToDateStr) so getUTCDay is tz/DST-independent — NOT a
-    // device-local getDay() on a wall-clock-parsed string (§V7.4 trap).
-    const wd = new Date(Date.UTC(y, (m || 1) - 1, d || 1, 12)).getUTCDay()
-    label += `, ${PREORDER_WEEKDAYS[wd]} ${d} ${PREORDER_MONTHS[(m || 1) - 1]}`
-  }
+  if (date !== eventDate) label += `, ${shortDay(date, locale)}`
   return label
 }
 
@@ -179,12 +176,10 @@ export function isPreorderOpenYet(rule: string | null | undefined, eventDate: st
 
 /** Customer/operator label "Pre-orders open Ddd D Mon" — null for 'on_confirm'/unset (no future open).
  *  Pure formatting, NO device-local (UTC-noon anchor → tz/DST-independent weekday, same basis as the deadline). */
-export function formatPreorderOpenLabel(rule: string | null | undefined, eventDate: string): string | null {
+export function formatPreorderOpenLabel(rule: string | null | undefined, eventDate: string, locale = 'en-GB'): string | null {
   const openDate = preorderOpenDate(rule, eventDate)
   if (openDate == null) return null
-  const [y, m, d] = openDate.split('-').map(Number)
-  const wd = new Date(Date.UTC(y, (m || 1) - 1, d || 1, 12)).getUTCDay()
-  return `Pre-orders open ${PREORDER_WEEKDAYS[wd]} ${d} ${PREORDER_MONTHS[(m || 1) - 1]}`
+  return `Pre-orders open ${shortDay(openDate, locale)}`
 }
 
 /** Operator-facing description of the open rule (for the Settings card). */

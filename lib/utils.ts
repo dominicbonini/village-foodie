@@ -1,6 +1,7 @@
 // lib/utils.ts
 
 import { VillageEvent } from '@/types';
+import { ordinalDay } from '@/lib/time-utils';
 
 // ==========================================
 // --- GEOGRAPHY UTILITIES ---
@@ -65,12 +66,7 @@ export function formatFriendlyDate(dateStr: string): string {
   const monthName = date.toLocaleDateString('en-GB', { month: 'long' });
   const dayNum = date.getDate();
 
-  let suffix = 'th';
-  if (dayNum === 1 || dayNum === 21 || dayNum === 31) suffix = 'st';
-  else if (dayNum === 2 || dayNum === 22) suffix = 'nd';
-  else if (dayNum === 3 || dayNum === 23) suffix = 'rd';
-
-  const standardDate = `${dayName} ${dayNum}${suffix} ${monthName}`;
+  const standardDate = `${dayName} ${ordinalDay(dayNum)} ${monthName}`;   // the product's one ordinal (lib/time-utils.ts)
 
   // Add Prefix
   if (checkDate.getTime() === today.getTime()) {

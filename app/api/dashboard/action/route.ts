@@ -64,6 +64,7 @@ import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-sto
 import { INTERVAL_CHOICES, isIntervalChoice } from '@/lib/slot-interval'
 import { writeCookingReservation, writeReservationRecord, admitForManual } from '@/lib/orders/cooking-reservation'
 import { resolveBatchReservations } from '@/lib/features'
+import { WALK_UP_NAME } from '@/lib/walk-up'
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
 // OPERATOR WRITES. Most handlers are fast DB writes, but this route imports captureOnConfirmation
@@ -923,7 +924,7 @@ export async function POST(req: NextRequest) {
         // Customer contact — all optional; blank clears to null. Preserve when not sent.
         // Blank name → the "Walk-up" sentinel (same default as the manual insert), so a
         // walk-up edited with the name left empty still reads "Walk-up", not blank.
-        customer_name:  customerName  !== undefined ? ((customerName || '').trim() || 'Walk-up') : order.customer_name,
+        customer_name:  customerName  !== undefined ? ((customerName || '').trim() || WALK_UP_NAME) : order.customer_name,
         customer_email: customerEmail !== undefined ? (customerEmail || null) : order.customer_email,
         customer_phone: customerPhone !== undefined ? (customerPhone || null) : order.customer_phone,
         total:       newTotal,
@@ -1704,7 +1705,7 @@ export async function POST(req: NextRequest) {
         const clientOrderKey: string | undefined = typeof manualOrder?.order_key === 'string' ? manualOrder.order_key : undefined
         const insertPayload: Record<string, any> = {
           id: newOrderId, truck_id: truck.id,
-          customer_name: customerName || 'Walk-up', customer_phone: customerPhone || null,
+          customer_name: customerName || WALK_UP_NAME, customer_phone: customerPhone || null,
           customer_email: customerEmail || null,
           slot: slot || null, order_type: 'collection', event_date: eventDate,
           event_id: orderEventId,
@@ -1919,7 +1920,7 @@ export async function POST(req: NextRequest) {
           money: walkUpMoney,
           time: await truckTimeSettings(truck),
           orderId: newOrderId,
-          customerName: customerName || 'Walk-up',
+          customerName: customerName || WALK_UP_NAME,
           customerPhone: customerPhone || null,
           slot: slot || null,
           items: manualEmailItems,

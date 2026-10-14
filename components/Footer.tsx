@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { contactHref } from '@/lib/contact-topics';
 
 interface FooterProps {
   onOpenTally: () => void;
@@ -32,15 +33,15 @@ export default function Footer({ onOpenTally }: FooterProps) {
                 Hire a Food Truck
               </Link>
               <span className="text-slate-600">|</span>
-              <Link href="/contact?topic=General%20Enquiry" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
+              <Link href={contactHref('general')} className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
                 General Enquiry
               </Link>
               <span className="text-slate-600">|</span>
-              <Link href="/contact?topic=Add%20Business" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
+              <Link href={contactHref('addBusiness')} className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
                 Add my Business
               </Link>
               <span className="text-slate-600">|</span>
-              <Link href="/contact?topic=Report%20Issue" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
+              <Link href={contactHref('reportIssue')} className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
                 Report Issue
               </Link>
               {/* 👇 NEW TRUCK DIRECTORY LINK 👇 */}

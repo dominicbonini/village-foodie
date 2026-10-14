@@ -12,14 +12,13 @@
 //
 // ⚠️ PURE. No clock of its own, no database, no network.
 
-import { localDateOfInstant } from '@/lib/time-utils'
+import { localDateOfInstant, weekdayName } from '@/lib/time-utils'
 import { formatOneTime, type TimeStyle } from './format'
-import { WEEKDAY_NAMES, weekdayOf } from './week'
 /* 🔴 THE CAPTION ASKS THE SAME LOCALE TABLE THE POSTER DOES (6 October 2026). It used to carry its own
  * `SHORT_DAYS`/`SHORT_MONTHS` arrays and spell "Tue 13 Oct" out in the UK's order — a third copy of
  * "how is a date written", after the renderer's and the formatter's. ⚠️ GB OUTPUT IS UNCHANGED, which
  * is checked: the caption an operator copies today reads exactly as it did. */
-import { dateTextFor, shortDateTextFor, DEFAULT_COUNTRY, type CountryCode } from './locale'
+import { dateTextFor, shortDateTextFor, DEFAULT_COUNTRY, intlLocaleFor, type CountryCode } from './locale'
 import type { WeekData, DayEntry } from './week-data'
 
 /** "Tue 13 Oct". ⚠️ The country is optional because every existing caller is a GB truck. */
@@ -151,7 +150,7 @@ export function weekCaption(input: WeekCaptionInput): string {
   lines.push('')
   for (const day of week.days) {
     if (day.isDayOff) continue
-    const name = WEEKDAY_NAMES[weekdayOf(day.date)]
+    const name = weekdayName(day.date, intlLocaleFor(DEFAULT_COUNTRY), 'long')   // this caption names no country: GB's words, as it always has
     for (const e of day.entries) {
       const where = e.town && !e.name.includes(e.town) ? `${e.name}, ${e.town}` : e.name
       if (e.status === 'cancelled') {

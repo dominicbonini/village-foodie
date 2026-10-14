@@ -25,8 +25,8 @@ import { localDateOfInstant } from '@/lib/time-utils'
  *  default: every caller names the truck's (WEEK_TZ, a fixed Europe/London, is gone). */
 export interface WeekConfig { timeZone: string; weekStart: 'monday' | 'sunday' }
 
-/** Monday-first, because the week is Monday–Sunday. ⚠️ NOT `Date.getDay()`'s Sunday-first numbering. */
-export const WEEKDAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const
+/* ⛔ `WEEKDAY_NAMES` IS GONE (Language Phase 0, 14 October 2026): a day's NAME comes from Intl through
+ * lib/time-utils.ts `weekdayName`; `weekdayOf` below still gives the Monday-first INDEX. */
 export type WeekdayIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
 export type WeekChoice = 'this' | 'next'

@@ -17,6 +17,7 @@ export async function signupCountries(): Promise<SignupCountry[]> {
     shortName: c.shortName,
     timezones: [...c.timezones],
     defaultTimezone: c.defaultTimezone,
+    locale: c.locale,
     phone: phoneCopyOf(c),
     flag: flagDataUri(c.countryCode),
   }))

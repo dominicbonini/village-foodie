@@ -21,8 +21,8 @@
 
 import type { TimeStyle } from './format'
 import { formatOneTime } from './format'
-import { WEEKDAY_NAMES, weekdayOf } from './week'
-import { dateTextFor, shortDateTextFor, DEFAULT_COUNTRY, type CountryCode } from './locale'
+import { weekdayName } from '@/lib/time-utils'
+import { dateTextFor, shortDateTextFor, DEFAULT_COUNTRY, intlLocaleFor, type CountryCode } from './locale'
 /* 🔴 THE SAME RELATIVE PHRASE THE PRODUCT ALREADY WRITES — imported, not re-derived. A second copy of
  * "when does an event count as tonight" is a second rule that would drift. */
 import { whenPhrase } from './caption'
@@ -319,7 +319,7 @@ export function weekCaptionValues(input: {
   const lines: string[] = []
   for (const day of week.days) {
     if (day.isDayOff) continue
-    const name = WEEKDAY_NAMES[weekdayOf(day.date)]
+    const name = weekdayName(day.date, intlLocaleFor(country), 'long')
     for (const e of day.entries) {
       const where = e.town && !e.name.includes(e.town) ? `${e.name}, ${e.town}` : e.name
       if (e.status === 'cancelled') { lines.push(`${name} — ${where} — CANCELLED, sorry`); continue }

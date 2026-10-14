@@ -37,6 +37,8 @@ import { MoneyProvider } from '@/components/MoneyContext'
 import { computeOrderCharges, rulesFromCheckout, applyBps, type CheckoutRules, type TipChoice } from '@/lib/order-charges'
 import { ChargeRows } from '@/components/ChargeRows'
 import { formatRateBps, type ChargeLineSource } from '@/lib/order-charge-lines'
+import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
+import { useT, useTruckLocale } from '@/lib/i18n/client'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -731,6 +733,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     ? timeSettingsOr(truck.time ?? eventsTime, 'order page')
     : (eventsTime ?? LEGACY_UK_TIME_SETTINGS)
   const eventTz = slotsTz ?? pageTs.timeZone
+  // Language Phase 0: the customer sees the truck's language — its country's locale (TimeSettings carry it).
+  useTruckLocale(pageTs.locale)
+  const tOrder = useT('order')
   // Live clock tick (every 30s) so ASAP + the selectable list RE-DERIVE as time passes — never
   // cached at fetch. `asapSlot` is now a useMemo (below), NOT useState (the staleness bug).
   const [nowTick, setNowTick] = useState(0)
@@ -1684,7 +1689,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const tipOverCap = tipSel === 'other' && tipOtherMinor > foodMinor
   const tipBlockEl = checkout?.tipping ? (
     <div className="mt-4" data-tip-block>
-      <p className="text-sm font-bold text-slate-900 mb-2">Add a tip for the truck?</p>
+      <p className="text-sm font-bold text-slate-900 mb-2">{tOrder('tipHeading')}</p>
       <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${tipPresets.length + 2}, minmax(0, 1fr))` }}>
         <button type="button" onClick={() => setTipSel('none')} className={tipBtn(tipSel === 'none')} aria-pressed={tipSel === 'none'}>No tip</button>
         {tipPresets.map(bps => (
@@ -1759,13 +1764,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     // Count basket items by category
     const newByCat: Record<string, number> = {}
     basket.forEach(b => {
-      const cat = b.menuItem.category?.toLowerCase() || 'mains'
+      const cat = b.menuItem.category?.toLowerCase() || DEFAULT_CATEGORY_KEY
       newByCat[cat] = (newByCat[cat] || 0) + b.quantity
     })
     appliedDeals.forEach(d => {
       Object.values(d.slots).filter(Boolean).forEach(name => {
         const item = menu.items.find(m => m.name === name)
-        const cat = item?.category?.toLowerCase() || 'mains'
+        const cat = item?.category?.toLowerCase() || DEFAULT_CATEGORY_KEY
         newByCat[cat] = (newByCat[cat] || 0) + 1
       })
     })
@@ -1836,10 +1841,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // the SAME engine (fitOrderBackward) as the operator/server, fed by /api/slots capacityInputs.
   const basketByCat = useMemo(() => {
     const m: Record<string, number> = {}
-    basket.forEach(b => { const c = b.menuItem.category?.toLowerCase() || 'mains'; m[c] = (m[c] || 0) + b.quantity })
+    basket.forEach(b => { const c = b.menuItem.category?.toLowerCase() || DEFAULT_CATEGORY_KEY; m[c] = (m[c] || 0) + b.quantity })
     appliedDeals.forEach(d => Object.values(d.slots).filter(Boolean).forEach(name => {
       const item = menu?.items.find(mi => mi.name === name)
-      const c = item?.category?.toLowerCase() || 'mains'
+      const c = item?.category?.toLowerCase() || DEFAULT_CATEGORY_KEY
       m[c] = (m[c] || 0) + 1
     }))
     return m
@@ -3064,7 +3069,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   // MORE fit, folding THIS order's basket per axis. itemBasketQty = this item's qty; catBasketQty
                   // = the whole category's in-progress qty (basketByCat, deal-slots already folded) — so a
                   // category cap can't be over-filled by adding 4 of each item. addable<=0 ⟺ the + disables.
-                  const catBasketQty = basketByCat[item.category?.toLowerCase() || 'mains'] || 0
+                  const catBasketQty = basketByCat[item.category?.toLowerCase() || DEFAULT_CATEGORY_KEY] || 0
                   const { addable: stockAddable, bound: stockBoundEff } = calcAddableRemaining({
                     itemRem: item.item_remaining ?? null,
                     catRem: item.category_remaining ?? null,

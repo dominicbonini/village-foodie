@@ -155,6 +155,7 @@ export interface TicketLine {
 }
 
 import { formatMajorOrBare, formatMinorOrBare, formatMajorNumber, toMajor, type MoneyFormat } from '@/lib/money-format'
+import { WALK_UP_NAME } from '@/lib/walk-up'
 
 const colsFor = (w: PaperWidth): number => (w === 58 ? 32 : 48)   // chars/line at normal size
 
@@ -295,7 +296,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   // A wrapped name loses nothing. And the fallback puts the phone on its OWN line rather than wrapping
   // the combined string, because "07700 900123" contains a space — a greedy wrap would happily break it
   // across two lines, which is the same wrong-number failure by another route.
-  const custName = order.customer_name || 'Walk-up'
+  const custName = order.customer_name || WALK_UP_NAME
   const custPhone = config.show_phone && order.customer_phone ? order.customer_phone : ''
   if (custPhone && custName.length + custPhone.length + 1 <= width) {
     lines.push({ text: padBetween(custName, custPhone, width) })

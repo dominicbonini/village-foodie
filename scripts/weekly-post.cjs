@@ -2073,7 +2073,9 @@ async function variants(ctx) {
 
   // V1 — the teens
   {
-    const p = patch('lib/weekly-post/format.ts',
+    // Language Phase 0 (14 October 2026): the product's ONE ordinal rule lives in lib/time-utils.ts now, and
+    // weekly-post/format.ts re-exports it — so the variant breaks it THERE, and the poster must still catch it.
+    const p = patch('lib/time-utils.ts',
       '  if (mod100 >= 11 && mod100 <= 13) return \'th\'', '')
     let detected = true
     if (p) { const V = build(p); detected = V.format.ordinalSuffix(11) !== 'th' || V.format.ordinalSuffix(12) !== 'th' }
