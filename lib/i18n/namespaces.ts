@@ -6,7 +6,7 @@ import type { AppNamespace } from './translator'
 export const NAMESPACES = {
   order: ['order'],
   confirmation: ['order'],
-  dashboard: [],
+  dashboard: ['dashboard'],
   kds: [],
   manage: [],
   setup: [],

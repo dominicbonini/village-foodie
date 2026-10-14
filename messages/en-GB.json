@@ -4,5 +4,8 @@
   },
   "plansPdf": {
     "title": "Plans and features"
+  },
+  "dashboard": {
+    "demoSettingUp": "Setting up your demo…"
   }
 }

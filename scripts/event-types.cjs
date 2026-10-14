@@ -2512,7 +2512,15 @@ head('5b · THE MODAL AND THE CARD')
        * `DEFAULT_CATEGORY_KEY` (lib/category-key.ts). Same values; each replacement is asserted below. */
       /^customer_name:m\.customerName\|\|'Walk-up',/, /^setEditName\(order\.customer_name&&order\.customer_name!=='Walk-up'\?/,
       /^const cat=truckMenu\?\.items\.find\(m=>m\.name===name\)\?\.category\|\|'mains'$/,
+      /* ⚠️ DEMO "SETTING UP" GATE (14 October 2026, Reset for sending) — while a demo is being set up, the ended
+       * card, the welcome and the loop-complete baseline stand down. Each replacement is asserted below. */
+      /^const demoEndedCard=demoServiceEnded\?\($/, /^\{isDemo&&<DemoWelcome token=\{token\}/, /^loaded=\{!loading&&!!truck\}$/,
     ]
+    t('⚠️ …and the demo setting-up gate is present on all three (ended card, welcome, loop-complete baseline)', (() => {
+      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
+      return /const demoEndedCard=demoServiceEnded&&!demoSettingUp\?\(/.test(pg) && /\{isDemo&&!demoSettingUp&&<DemoWelcome token=\{token\}/.test(pg)
+        && /loaded=\{!loading&&!!truck&&!demoSettingUp\}/.test(pg)
+    })())
     t('⚠️ …and the Language Phase 0 replacements are present (walk-up helper, default category constant)', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
       return /customer_name:m\.customerName\|\|WALK_UP_NAME,/.test(pg) && /order\.customer_name&&!isWalkUp\(order\.customer_name\)\?/.test(pg)

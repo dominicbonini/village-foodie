@@ -148,7 +148,8 @@ import { decideRead, classifyReadFailure, nextDegraded, degradedBanner, type Rea
 import { PrivateLinkPanel, type PrivateLinkData } from '@/components/manage/PrivateLinkPanel'
 import { WALK_UP_NAME, isWalkUp } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
-import { useTruckLocale } from '@/lib/i18n/client'
+import { useT, useTruckLocale } from '@/lib/i18n/client'
+import { clearDemoWelcomeSeen } from '@/lib/demo-board-build'   // a restarted service re-introduces itself
 
 /** The ONLY list of valid ?tab= values, shared by the tab bar and the URL validator — so a tab cannot be
  *  added to the UI without becoming linkable, or removed without ceasing to be. */
@@ -1947,6 +1948,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         localStorage.removeItem(`hg_demo_seen_orders_${token}`)
         localStorage.removeItem(`hg_demo_loop_${token}`)
       }catch{/* private mode — the baseline just re-records itself */}
+      // 🔴 AND THE NEW SERVICE INTRODUCES ITSELF AGAIN (14 October 2026). The welcome's "seen" flag lives in
+      // sessionStorage and survives this reload; it used to be cleared only when DemoLoopComplete spotted a
+      // REPLACED board — which the line above makes impossible, by deleting the baseline that spotting needs.
+      // So a tab that had dismissed the welcome once never saw it again after a restart (Dominic, Chrome).
+      clearDemoWelcomeSeen(token)
       // SUCCESS, and only now. `restarting` is deliberately NOT cleared: the button stays disabled and
       // reading "Setting up…" until the document is replaced, so it is never pressable again in the gap.
       window.location.reload()
@@ -3406,6 +3412,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // never has a pending first open and the effect falls straight through to T1 — no state write, and an
   // admin previewing a DEAD demo still gets the not-live restart they should get.
   const demoFirstOpenPending=!!(isDemo&&!isAdmin&&demoSession&&demoSession.discovery_truck_id&&!demoSession.first_opened_at)
+  // ── 🔴 WHILE A DEMO IS BEING SET UP, NOTHING OF THE OLD BOARD IS SHOWN (14 October 2026) ──────────────
+  // OBSERVED (Dominic, Chrome): the first open showed "This service has ended", then the page refreshed onto
+  // the new event — and the new board said "That's exactly how a real order lands". Both came from the OLD
+  // board being live on screen while its replacement was built:
+  //   • the ended card and the old orders were drawn under a restart that was already in flight;
+  //   • DemoLoopComplete recorded its "already on the board" baseline from orders ARRIVING mid-restart, so
+  //     the rest of the freshly seeded orders read as the visitor's own and the prompt fired.
+  // So while the first-open claim is unanswered, or any restart is in flight, the screen shows one
+  // "Setting up your demo…" panel, the ended card, the welcome and the loop-complete prompt stand down, and
+  // the prompt's baseline is not written. The page reloads onto the new board when the restart succeeds; a
+  // declined claim (an admin, an already-opened link) clears it at once.
+  const demoSettingUp=!!(isDemo&&(restarting||(demoFirstOpenPending&&!firstOpenChecked)))
+  const tDash=useT('dashboard')
 
   // ── DEMO — AUTO-RESTART ON LOAD ──────────────────────────────────────────────────────────────────
   // A prospect who opens a demo link two days after it was built should land on a working service, not
@@ -3768,7 +3787,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // never returns it) resolves nothing. Copying the JSX into both arms is how the two copies drift, and
   // this card is the demo's only route out of a dead board.
   // Null for an operator truck and for a live demo, so `{demoEndedCard}` is a no-op on both.
-  const demoEndedCard=demoServiceEnded?(
+  const demoEndedCard=demoServiceEnded&&!demoSettingUp?(
                 <div className="bg-white border-2 border-slate-300 rounded-2xl px-4 py-4 mb-4 shadow-sm text-center">
                   <p className="text-base font-black text-slate-900">This service has ended</p>
                   <p className="text-sm text-slate-600 mt-1">
@@ -4005,7 +4024,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           'branded' — so the welcome QR and the fullscreen QR cannot disagree. Unbranded demos pass null. */}
       {/* completionPresses/takesCash: the SAME resolvePaidStep values the order cards use, so the
           introduction's "Hit <label> on an order" bullet cannot name a button that is not on screen. */}
-      {isDemo&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={demoSession?.extraction_source==='template'}
+      {demoSettingUp&&(
+        <div className="fixed inset-0 z-[90] bg-slate-50 flex items-center justify-center" role="status" aria-live="polite">
+          <p className="text-base font-black text-slate-700">{tDash('demoSettingUp')}</p>
+        </div>
+      )}
+      {isDemo&&!demoSettingUp&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={demoSession?.extraction_source==='template'}
         completionPresses={effectiveCompletionPresses} takesCash={effectiveTakesCash}
         logoUrl={(demoBranded&&truck&&hasFeature(truck.plan,'branded_qr_code')&&truck.qr_code_style==='branded')?(truck.logo||null):null}/>}
       {/* Keep-screen-on prompt — full-width shrink-0 bar in the app-shell (visible on the service screen, not
@@ -4393,7 +4417,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   phone={truck?.phone??null}
                   orderKeys={orders.map(o=>o.order_key)}
                   orders={orders}
-                  loaded={!loading&&!!truck}
+                  loaded={!loading&&!!truck&&!demoSettingUp}
                   onHighlight={setHighlightOrderKey}
                   isAdmin={isAdmin}
                   extractionSource={demoSession?.extraction_source??null}

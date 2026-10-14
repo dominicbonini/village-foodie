@@ -1818,9 +1818,9 @@ function FilesCard({ timeline, prospectId, onOpen }: {
 function DemoCard({ p, onReload, onInsert }: { p: Prospect; onReload: () => Promise<void>; onInsert: (url: string) => void }) {
   const [creating, setCreating] = useState(false)
   // ── "RESET FOR SENDING" (14 October 2026) ─────────────────────────────────────────────────────────
-  // Re-arms the demo's first-open restart (/api/admin/demo-reset): whenever the truck next opens the link,
-  // the event and the demo orders start fresh around that moment, and every setting made while checking the
-  // demo is kept. Press it last, after checking, just before sending.
+  // /api/admin/demo-reset: starts the demo's service afresh NOW (so any browser that loads it shows the fresh
+  // board) and re-arms its first-open restart (so whenever the truck first opens the link it starts fresh
+  // again, from that moment). Every setting made while checking the demo is kept. Press it just before sending.
   const [resetting, setResetting] = useState(false)
   const [resetError, setResetError] = useState<string | null>(null)
   const firstOpenedAt = p.demo?.firstOpenedAt ?? null
@@ -1878,7 +1878,7 @@ function DemoCard({ p, onReload, onInsert }: { p: Prospect; onReload: () => Prom
               {p.demo?.truckId && <button onClick={() => setCreating(true)} className="hover:underline">Rebuild</button>}
               {p.demo?.truckId && (
                 <button onClick={() => void resetForSending()} disabled={resetting} className="hover:underline disabled:opacity-40"
-                  title="Whenever they open the link, the event and demo orders start fresh from that moment. Your settings are kept.">
+                  title="Starts the demo fresh now, and again from the moment they first open the link. Your settings are kept.">
                   {resetting ? 'Resetting…' : 'Reset for sending'}
                 </button>
               )}
@@ -1888,7 +1888,7 @@ function DemoCard({ p, onReload, onInsert }: { p: Prospect; onReload: () => Prom
                   Opened {formatInstant(firstOpenedAt, DISCOVERY_TIME_SETTINGS, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} — press Reset for sending so it starts fresh when they open it.
                 </p>
               : <p className="text-[11px] text-emerald-700">
-                  Fresh on next open — the event and orders start when they open the link. Opening it yourself while signed out uses this up.
+                  Fresh on their first open — the event and orders start when they open the link. Checking it while signed in as admin does not use this up; opening it signed out does.
                 </p>)}
             {resetError && <p className="text-[11px] font-semibold text-red-600">{resetError}</p>}
             {expiresSoon != null && (

@@ -1,14 +1,20 @@
 // app/api/admin/demo-reset/route.ts — "Reset for sending" on an outreach prospect's demo (14 October 2026).
 //
-// Re-arms the demo's first-open restart (lib/demo-session.ts `rearmDemoFirstOpen`): whenever the truck next
-// opens the link, the event and the demo orders are built afresh around that moment, with the menu, the
-// truck's settings and the current event's settings kept. Nothing is deleted or rebuilt HERE — the restart
-// happens on that open, so a link scanner or a late open can never see a stale board, and an admin who checks
-// the demo again while signed in does not use it up (/api/demo/restart refuses an admin's claim).
+// TWO THINGS, both keeping the menu, the truck's settings and the current event's settings:
+//   1. STARTS THE SERVICE AFRESH NOW (lib/demo-restart.ts `restartDemoService`) — so ANY browser that loads
+//      the demo after the reset, Dominic's signed-in Safari included, shows the fresh board (Dominic,
+//      14 October 2026: "when i reset, then any browser should show the fresh order info");
+//   2. RE-ARMS THE FIRST-OPEN RESTART (lib/demo-session.ts `rearmDemoFirstOpen`) — so whenever the truck
+//      first opens the link, hours later, it is built afresh again around THAT moment. An admin who checks
+//      the demo while signed in does not use that up (/api/demo/restart refuses an admin's claim).
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { rearmDemoFirstOpen } from '@/lib/demo-session'
+import { restartDemoService, DemoRestartError } from '@/lib/demo-restart'
+
+// Rebuilding the board seeds the demo orders — seconds, not milliseconds.
+export const maxDuration = 60
 
 const supabase = createClient(
   (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
@@ -21,7 +27,15 @@ export async function POST(req: NextRequest) {
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Bad JSON' }, { status: 400 }) }
   const truckId = typeof body.truckId === 'string' ? body.truckId.trim() : ''
   if (!truckId) return NextResponse.json({ error: 'truckId required' }, { status: 400 })
+  // Re-arm FIRST: it is also the check that this is an outreach demo (a demo- truck with a prospect), so
+  // nothing is rebuilt on a truck it refuses.
   const r = await rearmDemoFirstOpen(supabase, truckId)
   if (!r.rearmed) return NextResponse.json({ ok: false, error: `Could not reset this demo: ${r.reason}` }, { status: 409 })
-  return NextResponse.json({ ok: true })
+  try {
+    const restart = await restartDemoService(supabase, truckId)
+    return NextResponse.json({ ok: true, event: restart.event, seededOrders: restart.seededOrders, warnings: restart.warnings })
+  } catch (err) {
+    const msg = err instanceof DemoRestartError || err instanceof Error ? err.message : 'unknown'
+    return NextResponse.json({ ok: false, error: `The demo is set to start fresh when they open it, but it could not be refreshed now: ${msg}` }, { status: 500 })
+  }
 }

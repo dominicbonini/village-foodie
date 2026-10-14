@@ -103,11 +103,55 @@ const fixture = (over = {}) => ({
   head('4 · the wiring: an admin-only route, the button, and a rebuild that re-arms')
   const read = f => require('fs').readFileSync(require('path').join(kit.REPO, f), 'utf8')
   const route = read('app/api/admin/demo-reset/route.ts')
-  t('POST /api/admin/demo-reset checks verifyAdmin first and only re-arms', /if \(!await verifyAdmin\(req\)\)/.test(route) && /rearmDemoFirstOpen\(supabase, truckId\)/.test(route) && !/\.delete\(\)/.test(route))
+  t('POST /api/admin/demo-reset checks verifyAdmin first, re-arms (the outreach-demo check), THEN starts the service afresh now',
+    /if \(!await verifyAdmin\(req\)\)/.test(route) && route.indexOf('rearmDemoFirstOpen(supabase, truckId)') > 0
+    && route.indexOf('restartDemoService(supabase, truckId)') > route.indexOf('rearmDemoFirstOpen(supabase, truckId)')
+    && /if \(!r\.rearmed\) return/.test(route) && !/\.delete\(\)/.test(route))
   const ws = read('components/admin/ProspectWorkspace.tsx')
-  t('the prospect page has "Reset for sending" beside Rebuild, and shows whether the next open is fresh', /'Reset for sending'/.test(ws) && /Fresh on next open/.test(ws) && /fetch\('\/api\/admin\/demo-reset'/.test(ws))
+  t('the prospect page has "Reset for sending" beside Rebuild, and shows whether the next open is fresh', /'Reset for sending'/.test(ws) && /Fresh on their first open/.test(ws) && /fetch\('\/api\/admin\/demo-reset'/.test(ws))
   t('the prospect list carries first_opened_at', /first_opened_at'\)/.test(read('app/api/admin/outreach/route.ts')) || /public_ref, expires_at, created_at, first_opened_at/.test(read('app/api/admin/outreach/route.ts')))
   t('an admin rebuild re-arms the first open too', /if \(input\.replaceBoard\) \{\s*const r = await rearmDemoFirstOpen\(supabase, truckId\)/.test(read('lib/provision-demo.ts')))
+
+  head('5 · while a demo is being set up, the old board is not shown and the "real order" prompt cannot fire')
+  const dash = read('app/dashboard/[token]/page.tsx')
+  t('one "setting up" flag: a restart in flight, or a first-open claim not yet answered',
+    /const demoSettingUp=!!\(isDemo&&\(restarting\|\|\(demoFirstOpenPending&&!firstOpenChecked\)\)\)/.test(dash))
+  t('…the "This service has ended" card stands down while it is set', /const demoEndedCard=demoServiceEnded&&!demoSettingUp\?\(/.test(dash))
+  t('…the welcome stands down while it is set', /\{isDemo&&!demoSettingUp&&<DemoWelcome/.test(dash))
+  t('…the loop-complete prompt is not "loaded", so it writes no baseline mid-restart', /loaded=\{!loading&&!!truck&&!demoSettingUp\}/.test(dash))
+  t('…and one full-screen "Setting up your demo…" panel is shown instead, from messages/', /\{demoSettingUp&&\(\s*<div className="fixed inset-0 z-\[90\][^>]*>\s*<p[^>]*>\{tDash\('demoSettingUp'\)\}<\/p>/.test(dash)
+    && JSON.parse(read('messages/en-GB.json')).dashboard.demoSettingUp === 'Setting up your demo…')
+
+  t('a successful restart clears the welcome\'s "seen" flag before reloading, so the new service introduces itself',
+    /clearDemoWelcomeSeen\(token\)\s*\n[\s\S]{0,800}?window\.location\.reload\(\)/.test(dash))
+
+  // The prompt itself, mounted for real (react-dom/client on the mini DOM, effects running), replaying what
+  // Chrome did: the first seeded orders ARRIVE on the old page mid-restart, then the reload shows them all.
+  const { installMiniDom } = require('./_mini-dom.cjs')
+  const React = require(require('path').join(kit.REPO, 'node_modules/react')); const { act } = React
+  const { createRoot } = require(require('path').join(kit.REPO, 'node_modules/react-dom/client'))
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true
+  const L = await kit.bundle('drs-loop', "export { DemoLoopComplete } from '@/components/dashboard/DemoLoopComplete'\nexport { markDemoWelcomeSeen } from '@/lib/demo-board-build'")
+  const replay = async (loadedMidRestart) => {
+    const dom = installMiniDom(); localStorage.clear()
+    L.markDemoWelcomeSeen && sessionStorage?.setItem?.('hg_demo_welcome_tok-demo', 'seen')
+    const root = createRoot(dom.container)
+    const order = k => ({ order_key: k, id: k, customer_name: k, total: 5, items: [], status: 'pending' })
+    const mount = async (keys, loaded) => { await act(async () => { root.render(React.createElement(L.DemoLoopComplete, { token: 'tok-demo', orderKeys: keys, orders: keys.map(order), loaded, onHighlight() {} })) }); await act(async () => { await new Promise(r => setTimeout(r, 5)) }) }
+    await mount(['s1'], loadedMidRestart)                 // mid-restart: the first seeded order has arrived
+    await act(async () => root.unmount())                // the reload
+    const root2 = createRoot(dom.container)
+    await act(async () => { root2.render(React.createElement(L.DemoLoopComplete, { token: 'tok-demo', orderKeys: ['s1', 's2', 's3'], orders: ['s1', 's2', 's3'].map(order), loaded: true, onHighlight() {} })) })
+    await act(async () => { await new Promise(r => setTimeout(r, 5)) })
+    const text = dom.container.textContent
+    await act(async () => root2.unmount()); dom.teardown()
+    return text
+  }
+  globalThis.sessionStorage = globalThis.sessionStorage || (() => { const m = new Map(); return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k), clear: () => m.clear() } })()
+  const before = await kit.quietAsync(() => replay(true))
+  const after = await kit.quietAsync(() => replay(false))
+  t('CONTROL — fed the arriving orders mid-restart (the old wiring), the prompt fires on the seeded board', /exactly how a real order lands/.test(before), before.slice(0, 160))
+  t('with the setting-up gate, the reloaded seeded board is just the baseline — no prompt', !/exactly how a real order lands/.test(after), after.slice(0, 160))
 
   delete globalThis.__harnessDb
   console.log(`\n${fail ? '✗' : '✓'} demo-reset-for-sending: ${pass} passed, ${fail} failed`)
