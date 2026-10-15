@@ -133,10 +133,10 @@ import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory, collect
 import { intervalExample } from '@/lib/slot-generation'
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
-import { formatTime, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, instantOfLocal, clockOfInstantInTz, formatInstantClock, formatSlot, timeSettingsOr, LEGACY_UK_TIME_SETTINGS } from '@/lib/time-utils'
+import { formatTime, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, instantOfLocal, clockOfInstantInTz, formatInstantClock, formatSlot, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, formatLongDate, localDateOfInstant } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_DARK } from '@/lib/event-display'
 import { useAndroidBack } from '@/lib/native/backHandler'
-import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
@@ -2310,7 +2310,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // Durably queued. The optimistic patch already applied above and its guard HOLDS — do not drop
         // it here, or the next poll would revert the cell while the op is still waiting to replay.
         showToast(buzzerNumber==null
-          ?tDash('buzzer.removedNumber',{number:String(prior??'')})
+          ?(prior!=null?tDash('buzzer.removedNumber',{number:String(prior)}):tDash('buzzer.removed'))
           :tDash('buzzer.saved',{number:String(buzzerNumber)}))
         if(!keepOpen)setBuzzerTarget(null)
         setSavingBuzzer(false)
@@ -2342,7 +2342,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setOrders(prev=>prev.map(o=>o.order_key in priorByKey?{...o,buzzer_number:priorByKey[o.order_key]}:o))
       const who={target:buzzerTarget?.id?'order':'none',id:String(buzzerTarget?.id??'')}
       showToast(buzzerNumber==null
-        ?tDash('buzzer.removeFailed',{...who,prior:String(prior)})
+        ?tDash('buzzer.removeFailed',{...who,has:prior!=null?'yes':'no',prior:String(prior??'')})
         :tDash('buzzer.giveFailed',{...who,number:String(buzzerNumber),has:prior!=null?'yes':'no',prior:String(prior)}),'error')
     }
     finally{setSavingBuzzer(false)}
@@ -4223,10 +4223,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
                 {/* "Change" button removed — event-switching lives in Manage event ▾ → "📅 Change event"
                     (redundant here on every viewport). The no-event "Select event" path below is unaffected. */}
-                {/* Status label — the words and the branch order live in lib/event-display, shared with the
-                    KDS; only the palette is per-surface (this header is dark). Output is unchanged. */}
+                {/* Status label — the branch order lives in lib/event-display, shared with the KDS; only the
+                    palette is per-surface (this header is dark). Language Phase 2: the words are the message
+                    dashboard.eventBar.status, selected by the TONE (en-GB identical to the old label). */}
                 {(()=>{const st=eventStatusDisplay(activeEvent.status,paused);return(
-                  <span className={`text-xs font-medium ${EVENT_STATUS_TEXT_ON_DARK[st.tone]} flex-shrink-0`}>{st.label}</span>
+                  <span className={`text-xs font-medium ${EVENT_STATUS_TEXT_ON_DARK[st.tone]} flex-shrink-0`}>{tDash('eventBar.status',{tone:st.tone})}</span>
                 )})()}
                 {/* ══ 🔴 THE EVENT'S TYPE, RIGHT AFTER THE STATUS (5 October 2026) ══════════════════
                     🔴 STANDARD SHOWS **NOTHING**, and that is the whole design. Standard is what every
@@ -4822,7 +4823,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         )}
                         <div className="flex items-center gap-2">
                           <span className="font-black text-slate-700 text-sm">#{o.id}</span>
-                          <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${STATUS[o.status]?.bg||'bg-slate-100'} ${STATUS[o.status]?.text||'text-slate-500'}`}>{STATUS[o.status]?.label||o.status}</span>
+                          <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${STATUS[o.status]?.bg||'bg-slate-100'} ${STATUS[o.status]?.text||'text-slate-500'}`}>{STATUS[o.status]?tDash('orders.status',{status:o.status}):o.status}</span>
                           {o.slot&&<span className="text-xs text-slate-700">🕐 {o.slot}</span>}
                         </div>
                         <p className="text-slate-500 text-xs mt-0.5 truncate">{o.customer_name} · {Object.entries(getAllDayCounts([o])).map(([name,qty])=>`${qty}× ${name}`).join(', ')}</p>
@@ -5452,9 +5453,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 every tab. Do not add an auto-expiry.
                 ⚠️ NOT GATED ON activeEvent, unlike every toggle above. A truck-wide switch must be
                 reachable during an incident whether or not an event is selected.
-                ⚠️ THE DATE IS RENDERED FROM THE ISO STRING BY SLICE, not toLocaleString: this is a
-                client component that also renders on the server, and a locale-formatted date is a
-                hydration mismatch. The switch stores WHEN so this line can exist at all.
+                ⚠️ THE DATE IS NEVER toLocaleString: this is a client component that also renders on the
+                server, and a device-locale/device-zone date is a hydration mismatch. Language Phase 2: it is
+                the instant's date on the TRUCK's clock in its country's long form (lib/time-utils
+                `formatLongDate` — explicit locale, explicit zone, so server and browser agree): GB
+                "27 October 2026", US "October 27, 2026" (was the raw UTC ISO "2026-10-27"). The switch
+                stores WHEN so this line can exist at all.
 
                 ── 🔴 THE GATE HAS TWO ARMS AND BOTH ARE LOAD-BEARING ─────────────────────────────
                 (a) truck.stripe_charges_enabled — the truck can actually take cards. Without this arm
@@ -5487,7 +5491,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   </p>
                   {truck?.online_payments_paused_at&&(
                     <p className="text-xs font-semibold text-amber-700 mt-1.5">
-                      {tDash('settings.cardsOffSince',{date:String(truck.online_payments_paused_at).slice(0,10)})}
+                      {tDash('settings.cardsOffSince',{date:formatLongDate(localDateOfInstant(String(truck.online_payments_paused_at),dashTime.timeZone),dashTime)})}
                     </p>
                   )}
                 </div>
@@ -5757,8 +5761,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   {kitchenCapacityNeedsPrepWarning(kitchenCapacity, truckMenu?.categories)&&(
                     <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
                   )}
-                  <p className="text-xs text-slate-400 mt-2">{KITCHEN_CAPACITY_DESC}</p>
-                  <p className="text-xs text-slate-400 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
+                  {/* Language Phase 2: the explainer is messages dashboard.settings.capacityDesc / capacityExample —
+                      en-GB word for word lib/kitchen-capacity's KITCHEN_CAPACITY_DESC / _EXAMPLE, which Manage
+                      still renders inline until Language Phase 1d. */}
+                  <p className="text-xs text-slate-400 mt-2">{tDash('settings.capacityDesc')}</p>
+                  <p className="text-xs text-slate-400 mt-1">{tDash('settings.capacityExample')}</p>
                 </div>
               </div>
             )}

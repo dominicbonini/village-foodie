@@ -1,1 +1,7 @@
-{}
+{
+  "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add orders at the window; you’ll be asked to confirm.",
+  "savedToast": "Order {id} saved{paid, select, cash { — paid in cash} card { — paid on your card reader} other {}}",
+  "confirmedToast": "Order #{id} confirmed{paid, select, cash { — paid in cash} card { — paid on your card reader} other {}}",
+  "addAnywayConfirm": "{detail}\n\nAdd anyway (at the window)?\n\nOK = add anyway   ·   Cancel = edit the order",
+  "cashIcon": "💵"
+}

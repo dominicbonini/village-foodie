@@ -5,10 +5,10 @@
   "reject": {
     "title": "Reject order #{orderId}?",
     "reasonLabel": "Reason — required (shown to the customer)",
-    "reason": "{reason, select, sold_out {Sold out of an item} too_busy {Too busy — can't make it in time} closing_soon {Closing soon} other {Other}}",
+    "reason": "{reason, select, sold_out {Sold out of an item} too_busy {Too busy — can’t make it in time} closing_soon {Closing soon} other {Other}}",
     "noteRequired": "Reason — required",
     "noteOptional": "Additional note — optional",
-    "notePlaceholder": "Add more detail for the customer...",
+    "notePlaceholder": "Add more detail for the customer…",
     "keep": "Keep order",
     "confirm": "Reject order"
   },
@@ -18,13 +18,13 @@
     "reasonLabel": "Reason — optional",
     "reason": "{reason, select, vehicle_breakdown {Vehicle breakdown} weather {Weather} venue_issue {Venue issue} personal_emergency {Personal emergency} other {Other}}",
     "messageLabel": "Message to customers — optional",
-    "messagePlaceholder": "e.g. Sorry, our trailer broke down on the way to the venue...",
+    "messagePlaceholder": "e.g. Sorry, our trailer broke down on the way to the venue…",
     "keep": "Keep event",
     "cancelling": "Cancelling…",
     "confirm": "Cancel event"
   },
   "actions": {
-    "startEvent": "{restart, select, yes {Restart Event} other {Start Event}}",
+    "startEvent": "{restart, select, yes {Restart event} other {Start event}}",
     "changeEvent": "Change event",
     "changeEventType": "Change event type…",
     "privateLink": "Private link & QR code",
@@ -42,7 +42,7 @@
     "confirmTitle": "Change finish time?",
     "willFinish": "This event will finish at <b>{selected}</b>{hasCurrent, select, yes { instead of <b>{current}</b>} other {}}.",
     "dueAfter": "<b>{n, plural, one {{count} order is} other {{count} orders are}} due after {selected}.</b> {n, plural, one {It stays} other {They stay}} on the board and still {n, plural, one {needs} other {need}} making. Changing the finish time only stops NEW orders being placed for later times.",
-    "saving": "Saving...",
+    "saving": "Saving…",
     "confirm": "Change finish time",
     "keepCurrent": "Keep {current}",
     "keepAsIs": "Keep as is",
@@ -62,6 +62,7 @@
   },
   "picker": {
     "reconnect": "Reconnect to load",
-    "selected": "Selected"
+    "selected": "Selected",
+    "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
   }
 }

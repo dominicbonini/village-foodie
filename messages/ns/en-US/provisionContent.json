@@ -1,0 +1,24 @@
+{
+  "firstVanName": "Truck 1",
+  "demoCategories": {
+    "mains": "Entrées"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pizza truck",
+      "items": {
+        "gardenVeg": "Garden Veggie",
+        "rocketParmesan": "Arugula & Parmesan"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burger truck"
+    },
+    "curries": {
+      "label": "🍛 Curry truck",
+      "items": {
+        "pilauRice": "Pulao Rice"
+      }
+    }
+  }
+}

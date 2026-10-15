@@ -22,7 +22,11 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { provisionTruck, ProvisionError } from '@/lib/provision-truck'
 import { extractMenu, MenuExtractionError, type MenuExtraction } from '@/lib/menu-extract'
 import { moneyFormatForTruck } from '@/lib/money-server'
-import { countrySettingsForTruck } from '@/lib/country-settings'
+import { countrySettingsForTruck, getCountrySettings } from '@/lib/country-settings'
+import { MARKETING_COUNTRY } from '@/lib/marketing-country'
+import { localeOfCountry, DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { demoTemplateIn } from '@/lib/demo-templates'
+import type { StandardCategoryId } from '@/lib/menu-extract'
 import { commitMenu, clearMenu, type CommitMenuResult } from '@/lib/menu-commit'
 import { buildDemoAssumptions } from '@/lib/demo-assumptions'
 import type { DemoKitchen } from '@/lib/demo-kitchen'
@@ -78,7 +82,9 @@ export interface ProvisionDemoInput {
   file?: File | null
   text?: string | null
   /** Fixed template menu, used when extraction fails or when no upload is supplied. Pizza first (§11). */
-  template?: { name: string; categories: string[]; items: { name: string; price: number; category: string }[] } | null
+  template?: { name: string; categories: string[]; items: { name: string; price: number; category: string }[]
+    /** lib/demo-templates.ts's id (`getDemoTemplate` sets it): the menu is then stored in the TRUCK's country's words. */
+    id?: string } | null
   /** Re-provision INTO an existing demo truck (return-visit path) instead of creating a new one. */
   existingTruckId?: string
   /** 🔴 ADMIN REBUILD (14 October 2026): with `existingTruckId`, clear EVERY old event, order and stock
@@ -103,6 +109,25 @@ export interface ProvisionDemoInput {
    *  demo is built exactly as it was before this existed: no van write, no category write, the
    *  assumptions' own constants. Only `/api/admin/provision-demo` supplies them. */
   kitchen?: DemoKitchen | null
+  /** 🔴 THE DEMO'S COUNTRY (Language Phase 2): the visitor's resolved country on the landing page (/api/demo), the
+   *  prospect's discovery country on an outreach demo (/api/admin/provision-demo). It decides the truck's currency,
+   *  allergens, zone and the words its sample menu and first van are stored in. Absent, unknown or switched off →
+   *  GB (the marketing country), so a demo is never refused for its country. Ignored with `existingTruckId`: a
+   *  rebuilt demo keeps the country it was built in. */
+  country?: string | null
+}
+
+/** The country a NEW demo truck is built in: `code` when it names a switched-on country, else GB. Never throws —
+ *  provisionTruck refuses a switched-off country loudly, and a visitor must never be refused a demo for that. */
+async function demoCountry(code: string | null | undefined): Promise<string> {
+  const c = String(code ?? '').trim().toUpperCase()
+  if (!c || c === MARKETING_COUNTRY) return MARKETING_COUNTRY
+  try {
+    const s = await getCountrySettings(c)
+    return s.enabled ? s.countryCode : MARKETING_COUNTRY
+  } catch {
+    return MARKETING_COUNTRY
+  }
 }
 
 export class ProvisionDemoError extends Error {
@@ -148,12 +173,13 @@ export async function provisionDemo(
     try {
       const provisioned = await provisionTruck(supabase, {
         kind: 'demo',
-        // 🔴 'GB', EXPLICITLY — demos are UK until the visitor's country picker exists.
-        country: 'GB',
+        // 🔴 THE VISITOR'S (or prospect's) COUNTRY, switched-on only, else GB — see `demoCountry`.
+        country: await demoCountry(input.country),
         // OUTREACH: the prospect's real name. Undefined (not null) on the anonymous path so the option is
         // ABSENT and provisionTruck's `Demo Kitchen (xxxxxx)` default applies exactly as before.
         ...(input.name && input.name.trim() ? { name: input.name.trim() } : {}),
-        van: { name: 'Van 1', kitchen_capacity: DEMO_VAN_CAPACITY },
+        // The van's name is provisionTruck's own first-van name in the truck's country's words ("Van 1" / "Truck 1").
+        van: { kitchen_capacity: DEMO_VAN_CAPACITY },
       })
       truckId = provisioned.truck.id
       slug = provisioned.truck.slug
@@ -470,16 +496,26 @@ async function buildMenu(
   // responsible for TELLING the visitor honestly that we couldn't read their menu — this function only
   // supplies the substitute; it must never be presented as their own.
   if (input.template) {
+    // 🔴 A SAMPLE MENU IN THE TRUCK'S COUNTRY'S WORDS (Language Phase 2). A template the caller took from
+    // lib/demo-templates.ts carries its `id`, so it is rebuilt here in the truck's locale (a GB truck: the same
+    // words, byte for byte) along with each category's standard id — the prep assumptions key by that id, never by
+    // the word. Any other template shape is used exactly as given.
+    const tplId = input.template.id
+    const locale = tplId
+      ? await countrySettingsForTruck(truckRow ?? {}).then(localeOfCountry).catch(() => DEFAULT_LOCALE)
+      : DEFAULT_LOCALE
+    const local = tplId ? demoTemplateIn(tplId, locale) : null
+    const template = local?.template ?? input.template
     const extraction: MenuExtraction = {
-      categories: input.template.categories,
-      items: input.template.items.map(i => ({
+      categories: template.categories,
+      items: template.items.map(i => ({
         name: i.name, description: null, price: i.price, price_missing: false,
         category: i.category, allergens: [], dietary: [], spiciness: null,
       })),
       existing_categories: [],
     }
     await readyToCommit()
-    const result = await commitExtraction(supabase, truck, extraction, warnings, input.kitchen)
+    const result = await commitExtraction(supabase, truck, extraction, warnings, input.kitchen, local?.categoryIds)
     if (result.inserted > 0) {
       // Persist the template extraction too (the return path re-provisions from it, so Pizza stays Pizza),
       // but tag it 'template' — a SAMPLE the visitor picked, NOT their own menu. Signup ignores this so a
@@ -571,11 +607,13 @@ async function commitExtraction(
   extraction: MenuExtraction,
   warnings: string[],
   kitchen?: DemoKitchen | null,
+  /** A sample menu's category name → standard id (lib/demo-templates.ts), so the assumptions key by id. */
+  categoryIds?: Record<string, StandardCategoryId> | null,
 ): Promise<CommitMenuResult> {
   // The numbers ride IN the assumptions rather than being written over the categories afterwards, so the
   // menu is committed once, with its final prep and batch, and there is no window in which a demo's
   // categories hold 5/4 and something reads them.
-  const assumptions = buildDemoAssumptions(extraction.categories, extraction.items, kitchen)
+  const assumptions = buildDemoAssumptions(extraction.categories, extraction.items, kitchen, categoryIds)
   if (assumptions.usedFallback) warnings.push(`Category inference: ${assumptions.note}`)
 
   // ── INFERRED VARIANT GROUPS ARE REQUIRED + SINGLE-SELECT ──────────────────────────────────────────

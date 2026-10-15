@@ -487,11 +487,13 @@ function fakeDb(opts = {}) {
        * from 00:00 to 01:00 BST) and its dates and times are written in the truck's style. ⛔ The bridge
        * is untouched: no column written, no admission rule, no filter other than that "today". */
       "import { truckTimeSettings } from '@/lib/truck-time'",
-      "import { getLocalDateInTz, formatYmd, formatTime } from '@/lib/time-utils'",
+      // Language Phase 2 (15 October 2026): the dates' short month by the product's rule ("Sep", never Intl's
+      // en-GB "Sept") — formatYmd became formatYmdShortMonth on these two lines; the old forms are below.
+      "import { getLocalDateInTz, formatYmdShortMonth, formatTime } from '@/lib/time-utils'",
       ".select('contact_email, name, dashboard_token, timezone, country')",
       "const ts = await truckTimeSettings(truck)",
       ".gte('event_date', getLocalDateInTz(ts.timeZone))",
-      "const fmtDate = (iso: string) => formatYmd(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })",
+      "const fmtDate = (iso: string) => formatYmdShortMonth(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })",
       "const a = st ? formatTime(String(st), ts) : ''",
       "const b = et ? formatTime(String(et), ts) : ''",
     ]
@@ -514,6 +516,9 @@ function fakeDb(opts = {}) {
       "return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })",
       "const a = st ? String(st).slice(0, 5) : ''",
       "const b = et ? String(et).slice(0, 5) : ''",
+      // Language Phase 2 — the Phase 2B forms of the two lines it changed.
+      "import { getLocalDateInTz, formatYmd, formatTime } from '@/lib/time-utils'",
+      "const fmtDate = (iso: string) => formatYmd(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })",
     ]
     if (gitClean(f)) return true
     let diff = ''

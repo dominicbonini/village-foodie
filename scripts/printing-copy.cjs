@@ -82,7 +82,8 @@ console.log('\n── Bluetooth-only sentences appear ONLY inside the Bluetooth 
   // The PIN refusal is wired-only copy and says what IS true, not what cannot be checked. Its words are
   // `printing.say.guard.pin`, reached through the guard code — which the Bluetooth branch never renders.
   const SAY = JSON.parse(read('messages/en-GB.json')).printing.say
-  check(SAY.guard && SAY.guard.pin === "Wired printing isn't available on dashboards with a PIN yet.", 'printing.say.guard.pin — the exact sentence (was NET_GUARD_COPY.pin)')
+  // ⚠️ RE-PINNED (Language Phase 2, Part 3 — the wrong-English fixes, scripts/fixtures/language-phase-2-gb-named.json): typographic apostrophe.
+  check(SAY.guard && SAY.guard.pin === "Wired printing isn’t available on dashboards with a PIN yet.", 'printing.say.guard.pin — the exact sentence (was NET_GUARD_COPY.pin)')
   check(!/code: 'guard'|guard\b/.test(noComments(bleBranch)), 'the PIN sentence never appears in the Bluetooth branch')
   // The choice itself lives in its own file BECAUSE it is gated on the running binary carrying the
   // plugin — scripts/printing-gating.cjs renders it both ways. Here we only check its words.

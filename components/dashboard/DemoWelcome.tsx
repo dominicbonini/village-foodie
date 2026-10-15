@@ -43,7 +43,7 @@ import { useEffect, useState, useSyncExternalStore } from 'react'
 import { demoWelcomeSeen, markDemoWelcomeSeen, subscribeDemoWelcome } from '@/lib/demo-board-build'
 import { completionLabel } from '@/lib/order-completion-label'
 import type { CompletionPresses } from '@/lib/payments/paid-step'
-import { useT } from '@/lib/i18n/use-t'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/demo'
 
 export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
@@ -70,6 +70,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
   // The server snapshot is `true` (seen) so nothing flashes during hydration; the client's first read
   // decides. See lib/demo-board-build for why the state is session-scoped rather than stored or server-side.
   const t = useT('demo')
+  const locale = useAppLocale()
   const seen = useSyncExternalStore(
     subscribeDemoWelcome,
     () => demoWelcomeSeen(token),
@@ -81,8 +82,8 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
   // authorisation, so the first two branches never apply here and the setting decides. The cash split is
   // resolved above the shared helper, exactly as OrderCard resolves it.
   const completionButtonText = takesCash && completionPresses === 'one'
-    ? `💷 ${t('cashAndCollected')}`
-    : completionLabel({ paid: false, heldAuthorisation: false, completionPresses, partPaid: false })
+    ? `${t('cashIcon')} ${t('cashAndCollected')}`
+    : completionLabel({ paid: false, heldAuthorisation: false, completionPresses, partPaid: false, locale })
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const [qrFailed, setQrFailed] = useState(false)
   // The words drawn into the QR's logo plate — a STRING, not the translator, so the effect below re-runs only if

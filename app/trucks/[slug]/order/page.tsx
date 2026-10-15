@@ -2785,7 +2785,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     // in the FUTURE (rule + event date, derived — no new data). Don't fork TruckListCard.
                     const poOpenDate = preorderOpenDate(truck?.preorder_open_rule, e.date_iso)
                     const poNotOpenYet = poOpenDate != null && getLocalDateInTz(pageTs.timeZone) < poOpenDate
-                    const poLabel = poNotOpenYet ? formatPreorderOpenLabel(truck?.preorder_open_rule, e.date_iso) : null
+                    const poLabel = poNotOpenYet ? formatPreorderOpenLabel(truck?.preorder_open_rule, e.date_iso, pageTs) : null
                     return (
                       <div key={e.id}>
                         <TruckListCard event={eventToVillage(e, truckName)} slug={slug} time={pageTs} forceOrderButton />

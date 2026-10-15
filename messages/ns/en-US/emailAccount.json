@@ -1,1 +1,5 @@
-{}
+{
+  "deletionScheduled": {
+    "cannotCancel": "<b>This cannot be canceled from inside the app.</b> If this was not you, or you have\n    changed your mind, reply to this email as soon as possible."
+  }
+}

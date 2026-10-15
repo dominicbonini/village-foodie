@@ -13,12 +13,15 @@ import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 // Language Phase 1c (docs/language-phase-1c-report.md): a refusal of ours is `{ error, code, params }`
 // (lib/i18n/onboarding-errors.ts) — en-GB until the demo truck is found, then the truck's language, which the email
 // and the "saved, not sent" sentence (messages/en-GB.json `demoSaveEmail`) are written in too.
-// ⚠️ The deletion date is still formatted 'en-GB' and "(1 days)" is still possible — both kept byte-identical here
-// and listed for Phase 2 (docs/language-readiness-audit-report.md §4.3).
+// ⚠️ "(1 days)" is still possible — kept byte-identical here and listed for later (docs/language-readiness-audit-report.md
+// §4.3). Language Phase 2: the deletion date is the demo truck's — its country's long date ("27 October 2026" GB,
+// "October 27, 2026" US) on its own clock (lib/truck-time.ts), no longer an 'en-GB' literal on the server's clock.
 import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
+import { truckTimeSettings } from '@/lib/truck-time'
+import { formatLongDate, localDateOfInstant, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import '@/lib/i18n/catalog/demoSaveEmail'
 
 const supabase = createClient(
@@ -28,8 +31,9 @@ const supabase = createClient(
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+/** The instant's date on the truck's clock, in its country's long form: GB "27 October 2026", US "October 27, 2026". */
+function formatDate(iso: string, time: TimeSettings): string {
+  return formatLongDate(localDateOfInstant(iso, time.timeZone), time)
 }
 
 export async function POST(req: NextRequest) {
@@ -58,7 +62,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'not_available'), { status: 403 })
   }
 
-  const lookup = supabase.from('trucks').select('id, dashboard_token, country')
+  const lookup = supabase.from('trucks').select('id, dashboard_token, country, timezone')
   const { data: truck } = token
     ? await lookup.eq('dashboard_token', token).single()
     : await lookup.eq('slug', slug).single()
@@ -74,7 +78,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(onboardingErrorBody(locale, 'demo_save_failed'), { status: 500 })
   }
 
-  const deletionDate = formatDate(saved.expiresAt)
+  // A country the loader refuses falls back to the UK's settings (timeSettingsOr logs it), as the words fall back to en-GB.
+  const time = timeSettingsOr(await truckTimeSettings(truck).catch(() => null), 'demo save-email')
+  const deletionDate = formatDate(saved.expiresAt, time)
   // expires_at is MONOTONIC (lib/demo-session.ts): an outreach demo on its 30-day tier keeps that date, so
   // the window stated in the email is derived from the date actually stored, never assumed to be 14 days.
   const daysLeft = Math.max(1, Math.round((new Date(saved.expiresAt).getTime() - Date.now()) / 86_400_000))

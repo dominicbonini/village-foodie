@@ -11,7 +11,7 @@
   },
   "allergensItemsUnverified": {
     "title": "{n, plural, one {Confirm allergens on {count} dish} other {Confirm allergens on {count} dishes}}",
-    "detail": "{n, plural, other {{unverified} of your {total} dishes are hidden from customers until you confirm their allergens. A dish shown without confirmed allergens reads as \"contains none\", so the menu hides it rather than risk that.}}",
+    "detail": "{n, plural, one {Your dish is hidden from customers until you confirm its allergens.} other {{u, plural, one {{unverified} of your {total} dishes is hidden from customers until you confirm its allergens.} other {{unverified} of your {total} dishes are hidden from customers until you confirm their allergens.}}}} A dish shown without confirmed allergens reads as \"contains none\", so the menu hides it rather than risk that.",
     "where": "Menu → Allergens"
   },
   "noVan": {
@@ -23,7 +23,7 @@
     "title": "Set your kitchen capacity",
     "detail": "No capacity is set for {vans}. Without it we will keep promising customers collection times your kitchen has no way to hit.",
     "where": "Menu → Kitchen capacity",
-    "unnamedVan": "unnamed van"
+    "unnamedVan": "Unnamed van"
   },
   "noPrepBearingCategory": {
     "title": "Tell us how long your food takes",
@@ -37,7 +37,7 @@
   },
   "emailUnknown": {
     "title": "Email confirmation status unknown",
-    "detail": "Email verification is not wired up yet (Phase 4 Step 2), so this cannot be evaluated. It blocks by design rather than passing silently.",
+    "detail": "Email verification is not wired up yet, so this cannot be evaluated. It blocks by design rather than passing silently.",
     "where": "—"
   }
 }

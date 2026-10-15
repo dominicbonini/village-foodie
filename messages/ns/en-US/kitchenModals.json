@@ -1,1 +1,15 @@
-{}
+{
+  "eventCancel": {
+    "affected": "{n, plural, one {{count} order} other {{count} orders}} will be canceled and customers notified.",
+    "cancelling": "Canceling…"
+  },
+  "actions": {
+    "notePlaceholder": "e.g. Park in the main parking lot, look for the orange tent"
+  },
+  "extraWait": {
+    "hint": "Adds to the pickup time quoted on new orders. It does not change the event finish time."
+  },
+  "picker": {
+    "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Canceled} other {Not started}}"
+  }
+}

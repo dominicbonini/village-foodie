@@ -719,9 +719,18 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     t('⚠️ …Language Phase 1a\'s two refusals carry a code, and both replacements are there',
       /return NextResponse\.json\(customerErrorBody\(DEFAULT_LOCALE, 'truck_not_found'\), \{ status: 404 \}\)/.test(now)
       && /return NextResponse\.json\(customerErrorBody\(await localeForTruck\(truck\), 'event_not_confirmed', \{\}, \{\n\s*event_status: explicitEvent\.status,\n\s*ordering_available: false,\n\s*\}\), \{ status: 404 \}\)/.test(now))
+    /* ⚠️ LANGUAGE PHASE 2 (docs/language-phase-2-report.md, Part 2 — pre-order labels in the truck's settings): the
+     * three label calls gained the truck's TimeSettings as their last argument. Excused BY COUNT; the companion check
+     * requires each replacement — none of them is on the price leg. */
+    const PHASE_2_REMOVED = new Map([["if (clock) preorderBeforeLabel = formatPreorderLabel('before', clock.mins, clock.date, preorderEventDate as string)", 1],
+      ["const preorderClosedLabel = formatPreorderLabel('closed_pending', 0, '', '')", 1], ["? formatPreorderOpenLabel((truck as any).preorder_open_rule, preorderEventDate as string)", 1]])
+    t('⚠️ …Language Phase 2\'s three pre-order label calls pass the truck\'s settings, and all three replacements are there',
+      /formatPreorderLabel\('before', clock\.mins, clock\.date, preorderEventDate as string, truckTime\)/.test(now)
+      && /formatPreorderLabel\('closed_pending', 0, '', '', truckTime\)/.test(now)
+      && /formatPreorderOpenLabel\(\(truck as any\)\.preorder_open_rule, preorderEventDate as string, truckTime\)/.test(now))
     const removed = []
     for (const [l, n] of mb) {
-      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0) - (PHASE_1A_REMOVED.get(l.trim()) || 0)
+      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0) - (PHASE_1A_REMOVED.get(l.trim()) || 0) - (PHASE_2_REMOVED.get(l.trim()) || 0)
       if (k > 0 && l.trim() && !PHASE_2B_REMOVED.has(l.trim())) removed.push([l.trim(), k])
     }
     t('⚠️ audit D31: the public menu neither reads nor sends discount codes', !/discount_codes_db/.test(now.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n')) && !/codes: \(codes/.test(now))

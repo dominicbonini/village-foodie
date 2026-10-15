@@ -22,6 +22,10 @@ import { DEMO_PREFIX } from '@/lib/demo'
 import { emojiForCuisine } from '@/lib/cuisines'
 import { getCountrySettings } from '@/lib/country-settings'
 import { checkTradeArea, TRADE_AREA_ERRORS, type TradeAreaValues } from '@/lib/trade-area'
+// Language Phase 2: the first van's name is stored in the truck's country's words ("Van 1" / "Truck 1").
+import '@/lib/i18n/catalog/provisionContent'
+import { translatorFor } from '@/lib/i18n/translator'
+import { localeOfCountry } from '@/lib/i18n/locales'
 
 // ── Reserved prefix ──────────────────────────────────────────────────────────────────────────────────
 // proxy.ts grants `/dashboard/demo-*` an exception from the session gate, so for a demo the TOKEN ALONE is
@@ -244,7 +248,7 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
 
 // ── Public types ─────────────────────────────────────────────────────────────────────────────────────
 export interface ProvisionVanOptions {
-  name?: string                   // default 'Van 1' — NOT NULL, no DB default
+  name?: string                   // default `provisionContent.firstVanName` in the truck's country's words ("Van 1" / "Truck 1") — NOT NULL, no DB default
   /** Default 5. Pass an EXPLICIT null to leave it unset — a demo does that deliberately so the per-category
    *  batch is the only ceiling (see lib/provision-demo). Omitting the key still gets the default. */
   kitchen_capacity?: number | null
@@ -586,7 +590,9 @@ export async function provisionTruck(
       .from('truck_vans')
       .insert({
         truck_id: truckId,
-        name: vanOpts.name?.trim() || 'Van 1',       // NOT NULL, no default
+        // NOT NULL, no default. Absent → the first van's name in the truck's country's words (Language Phase 2):
+        // "Van 1" for a GB truck (exactly as before), "Truck 1" for a US one.
+        name: vanOpts.name?.trim() || translatorFor(localeOfCountry(countrySettings), 'provisionContent')('firstVanName'),
         active: true,
         // `?? 5` would coerce an intentional null back to 5, so distinguish "omitted" from "explicitly
         // null": omitted → 5 (a real truck wants a ceiling), explicit null → null (demo: batch-only).

@@ -11,11 +11,11 @@
       "menuUnavailable": "This truck is not currently taking orders.",
       "cardFormLoadFailed": "We could not load the card form — check your connection and try again. Your basket is saved, and you have not been charged."
     },
-    "confirmMissing": "We couldn&apos;t find that order.",
+    "confirmMissing": "We couldn’t find that order.",
     "yourNamedDeal": "your {name} deal",
     "code": "Code: {code}",
     "total": "Total",
-    "taxNotice": "Menu prices don't include {tax}. It's added below.",
+    "taxNotice": "Menu prices don’t include {tax}. It’s added below.",
     "noServiceFee": "No service fee.",
     "tipInPerson": "Tip the truck in person if you like.",
     "noTip": "No tip",
@@ -34,13 +34,13 @@
     "cardSetupFallback": "We could not set up card payment just now, so your order has not been placed and you have not been charged.",
     "orderFailed": "Order failed",
     "somethingWrong": "Something went wrong. Please try again.",
-    "loadingOrder": "Loading your order...",
+    "loadingOrder": "Loading your order…",
     "backToTruckPage": "← Back to truck page",
-    "loadingMenu": "Loading menu...",
+    "loadingMenu": "Loading menu…",
     "notAvailableTitle": "Online ordering not available",
     "walkUpOnly": "This truck takes walk-up orders at the hatch.",
     "back": "← Back",
-    "eventsLoadFailed": "We couldn't load this truck's events.",
+    "eventsLoadFailed": "We couldn’t load this truck’s events.",
     "eventsRetryHint": "Give it a moment, then tap to try again.",
     "retrying": "Retrying…",
     "retry": "Retry",
@@ -54,14 +54,14 @@
     "pausedOfflineTitle": "Online ordering temporarily unavailable",
     "pausedTitle": "Orders are temporarily paused",
     "pausedClosingBody": "Online ordering has closed. Please contact them directly if you need to get in touch.",
-    "pausedOfflineBody": "We're having a connection issue but you can still order at the window. Check back soon!",
+    "pausedOfflineBody": "We’re having a connection issue but you can still order at the window. Check back soon!",
     "pausedBody": "Check back shortly or order at the window when you arrive.",
     "checking": "Checking…",
     "checkAgain": "Check again",
     "notOpenTitle": "Orders not open yet",
-    "notOpenBody": "{truck} hasn't confirmed this event yet. Check back closer to the date or follow them on social media for updates.",
+    "notOpenBody": "{truck} hasn’t confirmed this event yet. Check back closer to the date or follow them on social media for updates.",
     "orderFrom": "Order from {truck}",
-    "loadingEvents": "Loading events...",
+    "loadingEvents": "Loading events…",
     "noEventsTitle": "No upcoming events in the next 2 weeks",
     "noEventsBody": "Check back soon or visit the truck page for updates",
     "privateEvent": "Private event",
@@ -79,7 +79,7 @@
     "yourDeal": "Your deal",
     "remove": "Remove",
     "menu": "Menu",
-    "allergenInfo": "ⓘ Allergen Info",
+    "allergenInfo": "ⓘ Allergen info",
     "soldOut": "Sold out",
     "stockOnlyLeft": "{withNoun, select, yes {Only {count} {noun} left!} other {Only {count} left!}}",
     "stockLeft": "{withNoun, select, yes {{count} {noun} left} other {{count} left}}",
@@ -103,7 +103,7 @@
     "cardHeldUntil": "Your card is held, not charged, until {withTruck, select, yes {{truck}} other {the truck}} confirms your order.",
     "itemCount": "{n, plural, one {{count} item} other {{count} items}}",
     "collectionTimeTitle": "Collection time",
-    "loadingTimes": "Loading available times...",
+    "loadingTimes": "Loading available times…",
     "asap": "⚡ ASAP",
     "around": "Around {time}",
     "unavailable": "Unavailable",
@@ -125,12 +125,12 @@
     "phonePlaceholder": "e.g. {example}",
     "notesLabel": "Special instructions",
     "notesPlaceholder": "Allergies, no onion, extra crispy…",
-    "stockNotice": "Sorry — {detail} now. We've updated your order — please review and confirm.",
+    "stockNotice": "Sorry — {detail} now. We’ve updated your order — please review and confirm.",
     "payNowByCard": "Pay now by card",
     "payNowByCardHint": "Secure payment through Stripe",
     "payAtTruck": "Pay at the truck",
     "payAtTruckHint": "No card details needed",
-    "placingOrder": "Placing order...",
+    "placingOrder": "Placing order…",
     "noEvent": "No event available",
     "placeOrder": "Place order",
     "payByCardLine": "You’ll pay securely by card on this page · Apple Pay and Google Pay supported",
@@ -151,7 +151,7 @@
     "allergenSevere": "If you have a severe allergy, please contact the vendor directly before ordering.",
     "orderConfirmed": "Order confirmed!",
     "orderReceived": "Order received!",
-    "thanksReady": "Thanks! We've received your order and it'll be ready soon.",
+    "thanksReady": "Thanks! We’ve received your order and it’ll be ready soon.",
     "willConfirm": "<b>{truck}</b> will confirm your order shortly.",
     "orderNumber": "Order #{id}",
     "readyAt": "Ready at {time}",
@@ -164,7 +164,7 @@
     "dealSave": "save {amount}",
     "payment": "Payment",
     "paidByCard": "Paid by card",
-    "cardFallback": "We couldn't start the card payment, so your order is set to pay at the truck instead. Your order is placed — nothing has been charged.",
+    "cardFallback": "We couldn’t start the card payment, so your order is set to pay at the truck instead. Your order is placed — nothing has been charged.",
     "confirmationSentTo": "Confirmation sent to {email}",
     "backTo": "Back to {truck}",
     "notePlaceholderCompact": "Any requests? e.g. no onions",
@@ -179,7 +179,7 @@
     "toast": {
       "usualSetting": "Back to your usual setting for this event",
       "intervalsSaved": "Collection times saved for this event",
-      "notOnBoard": "That order is not on this board - check the event",
+      "notOnBoard": "That order is not on this board — check the event",
       "orderUrlMissing": "Order URL not available — slug not set",
       "printMode": "{mode, select, onConfirmed {Tickets will print when you accept an order} other {Tickets will print shortly before collection}}",
       "saveFailed": "Failed to save",
@@ -216,20 +216,20 @@
     },
     "gate": {
       "invalidAccessLink": "Invalid access link",
-      "loading": "Loading dashboard...",
+      "loading": "Loading dashboard…",
       "accessDenied": "Access denied",
-      "cantTakeOrders": "Can't take orders on this device right now",
-      "noOrdersSaved": "We couldn't reach your orders, and there's nothing saved on this device yet.",
-      "openOnceOnline": "Open the app once while you're connected and it will work offline after that."
+      "cantTakeOrders": "Can’t take orders on this device right now",
+      "noOrdersSaved": "We couldn’t reach your orders, and there’s nothing saved on this device yet.",
+      "openOnceOnline": "Open the app once while you’re connected and it will work offline after that."
     },
     "demo": {
       "restartFailed": "Could not start a new service — try again.",
       "endedTitle": "This service has ended",
-      "endedBody": "Start a new one and we'll set up a fresh service for right now — your menu stays as it is.",
+      "endedBody": "Start a new one and we’ll set up a fresh service for right now — your menu stays as it is.",
       "settingUp": "Setting up…",
       "startNew": "Start a new service",
       "lockBody": "This is where you start and close a service, pause orders when the queue gets long, or switch to a different event.",
-      "lockWhy": "We keep one event running in the demo so there's always something to play with. You get full control when you sign up.",
+      "lockWhy": "We keep one event running in the demo so there’s always something to play with. You get full control when you sign up.",
       "gotIt": "Got it"
     },
     "qr": {
@@ -240,7 +240,7 @@
       "tapToClose": "Tap anywhere to close"
     },
     "pin": {
-      "unreachable": "Can't reach the server right now. Your PIN is fine — try again in a moment.",
+      "unreachable": "Can’t reach the server right now. Your PIN is fine — try again in a moment.",
       "incorrect": "Incorrect PIN",
       "linkInvalid": "This link is no longer valid.",
       "failed": "Something went wrong. Try again.",
@@ -254,13 +254,13 @@
       "removed": "Buzzer removed",
       "assigned": "Buzzer {number} assigned",
       "assignedTakenFrom": "Buzzer {number} assigned (taken from #{from})",
-      "removeFailed": "{target, select, order {Could not remove buzzer {prior} — it is still on order #{id}} other {Could not remove buzzer {prior} — it is still on this order}}",
+      "removeFailed": "{has, select, no {{target, select, order {Could not remove the buzzer from order #{id}} other {Could not remove the buzzer from this order}}} other {{target, select, order {Could not remove buzzer {prior} — it is still on order #{id}} other {Could not remove buzzer {prior} — it is still on this order}}}}",
       "giveFailed": "{target, select, order {Could not give buzzer {number} to order #{id} — {has, select, yes {it still has buzzer {prior}} other {it still has no buzzer}}} other {Could not give buzzer {number} to this order — {has, select, yes {it still has buzzer {prior}} other {it still has no buzzer}}}}"
     },
     "refund": {
       "failed": "That refund could not be sent.",
       "pending": "{amount} refund sent. Stripe is processing it — the order will show as refunded once the money has actually gone back.",
-      "settled": "{amount} has been refunded to the customer's card.",
+      "settled": "{amount} has been refunded to the customer’s card.",
       "unreachable": "We could not reach the payment system, so nothing was refunded. Check your connection and try again."
     },
     "cancelReasons": {
@@ -275,28 +275,28 @@
     "cancelModal": {
       "chooseReason": "Choose a reason for the refund.",
       "title": "Cancel order #{id}?",
-      "refundQuestion": "Cancel this order and refund {amount} to the customer's card?",
+      "refundQuestion": "Cancel this order and refund {amount} to the customer’s card?",
       "refundTick": "Refund {amount} to their card",
       "reasonRecorded": "The reason you give below is recorded against the refund.",
-      "noRefund": "The order will be cancelled and the {amount} will stay with you. Nothing goes back to the customer's card.",
+      "noRefund": "The order will be cancelled and the {amount} will stay with you. Nothing goes back to the customer’s card.",
       "held": "Their card is <b>held, not charged</b> — no money has been taken, so there is nothing to refund. Cancelling releases the hold straight away.",
       "cash": "{amount} was taken in person. There is no card payment to refund — hand the money back at the truck, and use the PAID chip on the order to remove the record.",
       "reason": "{required, select, yes {Reason — required} other {Reason — optional}}",
       "selectReason": "Select a reason",
       "noteLabel": "Additional note — optional",
-      "notePlaceholder": "Add more detail for the customer...",
+      "notePlaceholder": "Add more detail for the customer…",
       "keep": "Keep order",
       "refunding": "Refunding…",
       "confirm": "Cancel order"
     },
-    "switchEventConfirm": "You're currently serving at {current}. Switch to {next}? Tap the current event to switch back.",
+    "switchEventConfirm": "You’re currently serving at {current}. Switch to {next}? Tap the current event to switch back.",
     "extraWait": {
       "activeTapToClear": "+{mins}m active · Tap to clear",
       "add": "Add extra wait",
       "option": "+{mins} min"
     },
     "banner": {
-      "boardUnavailable": "Couldn't load today's orders. You can still take new orders on this device.",
+      "boardUnavailable": "Couldn’t load today’s orders. You can still take new orders on this device.",
       "menuSnapshot": "Menu saved on this tablet at {time}. Check prices before taking payment.",
       "cardPaymentsOff": "Card payments are off — customers are paying at the hatch. This stays off, on every event, until you turn it back on.",
       "turnBackOn": "Turn back on",
@@ -325,12 +325,13 @@
     "eventBar": {
       "manageEvent": "Manage event",
       "noEvent": "No event selected",
-      "selectEvent": "Select event"
+      "selectEvent": "Select event",
+      "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
     },
     "orders": {
       "noEvent": "No event selected — select an event to view orders",
       "prepBannerTitle": "Set your prep times before going live",
-      "prepBannerBody": "Your menu is using default prep times. Update them in Manage so your kitchen doesn't get overwhelmed with orders.",
+      "prepBannerBody": "Your menu is using default prep times. Update them in Manage so your kitchen doesn’t get overwhelmed with orders.",
       "editCategories": "Edit categories",
       "eventFinishedAt": "Event finished · {venue} ended at {time}",
       "statNew": "New",
@@ -350,20 +351,21 @@
       "emptyUnavailable": "Couldn’t load today’s orders.",
       "emptyNone": "No orders yet today",
       "emptyAllDone": "All orders complete!",
-      "updated": "Updated {time}"
+      "updated": "Updated {time}",
+      "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Cancelled} cooking {Cooking} ready {Ready} collected {Collected} other {{status}}}"
     },
     "prep": {
-      "buttonTitle": "Today's prep list",
+      "buttonTitle": "Today’s prep list",
       "button": "Prep",
       "title": "Prep needed now",
       "nothing": "Nothing to prep right now",
       "kitchen": "Kitchen — start now (in order)",
       "assembly": "Assembly",
       "comingUp": "Coming up",
-      "startBy": "Start by {time} · {far, select, yes {in {hours}h} other {{mins}min}}"
+      "startBy": "Start by {time} · {far, select, yes {in {hours}h} other {{mins} min}}"
     },
     "addTab": {
-      "noMenuSaved": "Your menu isn't saved on this device, so there's nothing to build an order from."
+      "noMenuSaved": "Your menu isn’t saved on this device, so there’s nothing to build an order from."
     },
     "settings": {
       "offlineStillWorks": "Printer & notification settings still work offline.",
@@ -375,7 +377,7 @@
       "layoutTabs": "Separate categories",
       "layoutTabsHelp": "Show one category at a time. Tap a category to switch. Best for longer menus, where every item stays in the same place.",
       "layoutScroll": "One page",
-      "layoutScrollHelp": "Show every item in one scrolling list, with a heading for each category. There are no category buttons - you scroll to move around. Best for shorter menus, where you can see most of it at once.",
+      "layoutScrollHelp": "Show every item in one scrolling list, with a heading for each category. There are no category buttons — you scroll to move around. Best for shorter menus, where you can see most of it at once.",
       "privateLinkDialog": "Private link and QR code",
       "paidStepTitle": "Take orders without payment",
       "paidStepHelp": "Adds a Confirm button when you add an order yourself, so you can place it now and take payment later.",
@@ -403,10 +405,10 @@
       "dueSoundTitle": "Sound when an order is due to be cooked",
       "dueSoundHelp": "Sounds when a ticket turns amber.",
       "intervalsTitle": "Collection times",
-      "intervalsHelp": "How far apart collection times are. This doesn't change kitchen capacity or prep times.",
+      "intervalsHelp": "How far apart collection times are. This doesn’t change kitchen capacity or prep times.",
       "intervalsUnavailable": "Collection times are unavailable right now.",
       "customerTimes": "Customer Collection Times",
-      "everyMinutes": "{n, plural, other {Every {count} minutes}}",
+      "everyMinutes": "{n, plural, one {Every minute} other {Every {count} minutes}}",
       "canPick": "{who, select, customers {Customers can pick {example}} other {You and your customers can pick {example}}}",
       "differentTimes": "Use different times for orders I add",
       "yourTimes": "Your Collection Times",
@@ -429,7 +431,9 @@
       "windowAria": "Capacity window (minutes)",
       "windowEvery": "every {duration}",
       "assignTruck": "Assign a truck to this event before setting kitchen capacity.",
-      "setCapacityFirst": "Set a capacity to choose which categories count."
+      "setCapacityFirst": "Set a capacity to choose which categories count.",
+      "capacityDesc": "The most items your kitchen can turn out at once, across all the categories you’ve ticked. Each category’s own batch size still applies on top.",
+      "capacityExample": "Example: if you can cook 4 mains in 5 minutes, then set it to 4 items every 5 minutes. The total capacity limits orders across all selected categories so if you want to only sell a maximum of 10 starters and mains every 5 minutes, then set Total Capacity to 10 items every 5 minutes and select Starters and Mains tickbox. This will still keep your mains restricted to 4 items every 5 minutes."
     },
     "common": {
       "saving": "Saving…",
@@ -437,7 +441,7 @@
       "ok": "OK",
       "yes": "Yes",
       "cancel": "Cancel",
-      "savingDots": "Saving...",
+      "savingDots": "Saving…",
       "save": "Save"
     },
     "stock": {
@@ -461,14 +465,14 @@
       "followsCategoryTitle": "Following category total — type a number to cap",
       "itemStockTitle": "Item stock",
       "availableAria": "Available — {item}",
-      "loadingMenu": "Loading menu...",
+      "loadingMenu": "Loading menu…",
       "optionsTitle": "Options — standing stock",
-      "optionsHelp": "Shared across all dishes that use them. This count does <b>not</b> reset per event — it's a running total for the whole service.",
+      "optionsHelp": "Shared across all dishes that use them. This count does <b>not</b> reset per event — it’s a running total for the whole service.",
       "standingTitle": "Standing stock — blank = unlimited",
       "howTitle": "How it works",
       "howCategory": "<b>Category total</b> is a shared pool across every item in that category (e.g. 30 starters tonight).",
       "howItem": "<b>Item limit</b> caps just that one item within the pool (e.g. only 8 Pepperoni) — leave it blank to draw from the pool with no cap of its own.",
-      "howFirst": "Whichever runs out first applies — the category pool or the item's own limit.",
+      "howFirst": "Whichever runs out first applies — the category pool or the item’s own limit.",
       "howAvailable": "<b>Available</b>: green = on sale, grey = sold out (hidden from customers).",
       "howEdit": "Edit: configure prep time, batch size, and notes per category."
     },
@@ -478,12 +482,12 @@
     },
     "finish": {
       "title": "End event?",
-      "early": "This event isn't scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
+      "early": "This event isn’t scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
       "body": "Finish this event? No more orders will be taken."
     },
     "pause": {
       "title": "Pause online orders",
-      "body": "Customers can still browse the menu but won't be able to order.",
+      "body": "Customers can still browse the menu but won’t be able to order.",
       "minutes": "{n, plural, one {{count} minute} other {{count} minutes}}",
       "indefinite": "Until I turn it back on"
     },
@@ -496,7 +500,7 @@
     },
     "kds": {
       "title": "Open kitchen screen",
-      "body": "Choose which van's kitchen screen to open:"
+      "body": "Choose which van’s kitchen screen to open:"
     },
     "profile": {
       "title": "Edit profile",
@@ -504,7 +508,7 @@
       "email": "Email"
     },
     "edit": {
-      "title": "Edit Order #{id}",
+      "title": "Edit order #{id}",
       "addItems": "Add items",
       "order": "Order",
       "original": "Original",
@@ -523,7 +527,7 @@
       "phonePlaceholder": "Phone number",
       "notes": "Notes",
       "repriceTitle": "Not on the menu",
-      "repriceBody": "These are new to this order and aren't on the menu, so the price couldn't be checked. Everything already on the order keeps its original price. Nothing has been saved yet.",
+      "repriceBody": "These are new to this order and aren’t on the menu, so the price couldn’t be checked. Everything already on the order keeps its original price. Nothing has been saved yet.",
       "repriceLine": "{name}{hasOn, select, yes { (on {on})} other {}} — kept at <b>{amount}</b>",
       "orderTotal": "Order total",
       "saveAt": "Save at {amount}",
@@ -581,8 +585,8 @@
     "spiceLevel": "Spice level {level} of {max}"
   },
   "errorsCustomer": {
-    "sold_out_paying": "{names} sold out while you were paying. We've removed {count, plural, one {it} other {them}} and have not taken any money — please check your order before placing it again.",
-    "sold_out_ordering": "{names} sold out while you were ordering. We've removed {count, plural, one {it} other {them}} — please check your order before placing it again.",
+    "sold_out_paying": "{names} sold out while you were paying. We’ve removed {count, plural, one {it} other {them}} and have not taken any money — please check your order before placing it again.",
+    "sold_out_ordering": "{names} sold out while you were ordering. We’ve removed {count, plural, one {it} other {them}} — please check your order before placing it again.",
     "missing_fields": "Missing required fields",
     "truck_not_found": "Truck not found",
     "account_closing": "This business is no longer accepting online orders.",
@@ -609,7 +613,7 @@
     "order_not_found": "Order not found",
     "cancellations_not_accepted": "This truck does not accept cancellations",
     "cannot_cancel": "This order can no longer be cancelled",
-    "cancel_window_passed": "{n, plural, other {Orders can no longer be cancelled within {count} minutes of collection}}",
+    "cancel_window_passed": "{n, plural, one {Orders can no longer be cancelled within {count} minute of collection} other {Orders can no longer be cancelled within {count} minutes of collection}}",
     "cancel_failed": "Failed to cancel order",
     "something_went_wrong": "Something went wrong",
     "event_not_confirmed": "This event is not yet confirmed",
@@ -643,7 +647,7 @@
     "categoryFrom": "{category} from {price}",
     "listTwo": "{first} and {second}",
     "listMany": "{init}, and {last}",
-    "menuSummary": "{opener}We've got {summary}. Check out the full menu and order ahead here: {url} — {truck} {emoji}",
+    "menuSummary": "{opener}We’ve got {summary}. Check out the full menu and order ahead here: {url} — {truck} {emoji}",
     "allergenCaveat": "Please double-check the full menu for allergen info — this is an automated reply.",
     "specificFallback": "{opener}Check out our latest schedule here: {url}\n\n{truck} {emoji}"
   },
@@ -651,7 +655,7 @@
     "loadFailed": "Could not load order",
     "confirmCancel": "Are you sure you want to cancel this order?",
     "cancelFailed": "Failed to cancel order",
-    "loading": "Loading your order...",
+    "loading": "Loading your order…",
     "errorTitle": "Something went wrong",
     "cancelledTitle": "Order cancelled",
     "cancelledBody": "Your order has been cancelled. If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.",
@@ -679,9 +683,9 @@
     },
     "itemLine": "{quantity}× {name}",
     "total": "Total",
-    "cancelling": "Cancelling...",
+    "cancelling": "Cancelling…",
     "cancelOrder": "Cancel order",
-    "cutoffNote": "{n, plural, other {Cancellations accepted up to {count} minutes before pickup}}"
+    "cutoffNote": "{n, plural, one {Cancellations accepted up to {count} minute before pickup} other {Cancellations accepted up to {count} minutes before pickup}}"
   },
   "privateLink": {
     "guestLabel": "PRIVATE EVENT",
@@ -722,10 +726,10 @@
       "heldShortTextFigures": "Your card is held for {held}, which {truck} takes when they confirm your order. {owing} of this order is still to pay when you collect.",
       "heldShortShort": "Card held for part of this order",
       "heldShortShortOwing": "Card held for part of this order, {owing} still to pay",
-      "unknownTitle": "We're still confirming your payment",
+      "unknownTitle": "We’re still confirming your payment",
       "unknownBody": "Your card was authorised, so please do not pay again — {truck} will confirm at the hatch.",
-      "unknownText": "We're still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm at the hatch.",
-      "unknownReady": "We're still confirming your payment — please do not pay again.",
+      "unknownText": "We’re still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm at the hatch.",
+      "unknownReady": "We’re still confirming your payment — please do not pay again.",
       "hatchTitle": "Pay at the truck on collection",
       "hatchText": "Pay at the truck on collection.",
       "hatchReady": "Pay at the truck."
@@ -741,7 +745,7 @@
       "collectionTime": "Collection time: {time}",
       "seeYou": "See you at the hatch!",
       "preferredTime": "Preferred collection time: {time}",
-      "weWillConfirm": "We'll confirm your collection time when we accept your order.",
+      "weWillConfirm": "We’ll confirm your collection time when we accept your order.",
       "specialInstructions": "<b>Special instructions:</b> {notes}",
       "questions": "Questions about your order?",
       "contactCall": "Call us",
@@ -753,13 +757,13 @@
       "contactEmail": "Email us",
       "contactLink": "{label} →",
       "contactValue": "{label}: {value}",
-      "cancelLine": "{n, plural, other {Need to cancel?<link>Cancel your order</link>(up to {count} minutes before your pickup time)}}",
+      "cancelLine": "{n, plural, one {Need to cancel?<link>Cancel your order</link>(up to {count} minute before your pickup time)} other {Need to cancel?<link>Cancel your order</link>(up to {count} minutes before your pickup time)}}",
       "headingReady": "Your order is ready! 🎉",
       "headingConfirmed": "Order confirmed!",
       "headingReceived": "Order received!",
       "leadReady": "Your order is ready for collection — come and collect from {truck}.",
-      "leadConfirmed": "Thanks! We've received your order and we're getting it ready.",
-      "leadReceived": "Thanks! We've received your order — we'll let you know once it's confirmed.",
+      "leadConfirmed": "Thanks! We’ve received your order and we’re getting it ready.",
+      "leadReceived": "Thanks! We’ve received your order — we’ll let you know once it’s confirmed.",
       "orderNumber": "Order #{id}",
       "total": "Total",
       "poweredBy": "Powered by <brand>HatchGrab</brand>",
@@ -771,7 +775,7 @@
       "textSlotUpdated": "Collection time updated to {time} (was {previous}).",
       "textSlotTaken": "Ready at {time}. Your {requested} slot was just taken — this is the next available time.",
       "textCollection": "Collection time: {time}. See you at the hatch!",
-      "textPreferred": "Preferred collection: {time} — we'll confirm when we accept your order.",
+      "textPreferred": "Preferred collection: {time} — we’ll confirm when we accept your order.",
       "textNotes": "Notes: {notes}",
       "textWhatsApp": "Questions? Message us on WhatsApp: {value}",
       "textEmail": "Questions? Email us: {value}",
@@ -794,7 +798,7 @@
     },
     "common": {
       "hi": "Hi {withName, select, yes {{name}} other {there}},",
-      "sorry": "We're sorry for any inconvenience.",
+      "sorry": "We’re sorry for any inconvenience.",
       "poweredByDot": "Powered by HatchGrab · hatchgrab.com",
       "poweredByText": "Powered by HatchGrab — hatchgrab.com"
     },
@@ -813,9 +817,9 @@
     },
     "eventCancellation": {
       "subject": "{truck} at {withLocation, select, yes {{location}} other {your event}} — cancelled",
-      "body": "Unfortunately <b>{truck}</b>'s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled.",
+      "body": "Unfortunately <b>{truck}</b>’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled.",
       "orderCancelled": "Your order <b>#{id}</b> has been cancelled.",
-      "textLead": "Hi {withName, select, yes {{name}} other {there}}, unfortunately {truck}'s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled. Your order #{id} has been cancelled."
+      "textLead": "Hi {withName, select, yes {{name}} other {there}}, unfortunately {truck}’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled. Your order #{id} has been cancelled."
     },
     "rejection": {
       "subject": "Order #{id} update",
@@ -826,7 +830,7 @@
       "textLead": "Unfortunately {truck} is unable to fulfil order #{id}."
     },
     "updated": {
-      "subjectTotalMoved": "Order #{id} updated - now {total} (was {previous})",
+      "subjectTotalMoved": "Order #{id} updated — now {total} (was {previous})",
       "subject": "Order #{id} updated",
       "subjectSlotMoved": "Your order #{id} has been updated"
     }
@@ -846,7 +850,7 @@
     "service_unavailable": "Service unavailable",
     "unauthorised": "Unauthorised",
     "invalid_pin": "Invalid PIN",
-    "conflict": "conflict",
+    "conflict": "This order has changed — check it and try again.",
     "order_not_found": "Order not found",
     "busy_retry_edit": "Someone else is updating orders right now. Please try again.",
     "edit_save_failed": "Could not save the changes to this order",
@@ -858,8 +862,8 @@
     "refund_not_card": "Nothing was taken by card on this order, so there is nothing to refund here.",
     "refund_fully_refunded": "This order has already been fully refunded.",
     "refund_only_left": "Only {amount} is left to refund on this order.",
-    "item_name_required": "itemName required",
-    "event_id_required": "event_id required",
+    "item_name_required": "Something went wrong — refresh the page and try again.",
+    "event_id_required": "Something went wrong — refresh the page and try again.",
     "live_event_needs_times": "A live event needs a start and end time — add them before saving.",
     "items_required": "Items required",
     "busy_retry": "We are handling a lot of orders right now — please try again",
@@ -869,41 +873,41 @@
     "order_id_failed": "Failed to generate order ID",
     "order_number_used": "Order number {number} is already used on this event.",
     "save_failed": "Failed to save order",
-    "option_id_required": "optionId required",
+    "option_id_required": "Something went wrong — refresh the page and try again.",
     "not_found": "Not found",
-    "category_required": "category required",
+    "category_required": "Something went wrong — refresh the page and try again.",
     "invalid": "Invalid",
     "no_slot": "No slot",
-    "missing_event_id": "Missing eventId",
-    "value_bool_or_clear": "value must be true, false, or null to clear",
-    "value_presses_or_clear": "value must be 'one', 'two', or null to clear",
-    "missing_order_key": "Missing order_key",
+    "missing_event_id": "Something went wrong — refresh the page and try again.",
+    "value_bool_or_clear": "Something went wrong — refresh the page and try again.",
+    "value_presses_or_clear": "Something went wrong — refresh the page and try again.",
+    "missing_order_key": "Something went wrong — refresh the page and try again.",
     "invalid_buzzer_number": "Invalid buzzer number",
     "buzzer_save_failed": "Could not save the buzzer number",
     "already_paid_by_card": "This customer has already paid by card. Their card is authorised for this order and is charged automatically when you confirm it, so taking payment here would charge them twice. Nothing has been recorded.",
-    "value_bool": "value must be true or false",
+    "value_bool": "Something went wrong — refresh the page and try again.",
     "invalid_layout": "Invalid layout",
-    "eventid_required": "eventId required",
-    "value_bool_or_null": "value must be true, false, or null",
+    "eventid_required": "Something went wrong — refresh the page and try again.",
+    "value_bool_or_null": "Something went wrong — refresh the page and try again.",
     "intervals_choices": "Collection times must be every {choices} minutes.",
     "intervals_customer_first": "Set the customer collection times before setting your own.",
     "intervals_save_failed": "Collection times could not be saved right now.",
-    "category_id_required": "categoryId required",
+    "category_id_required": "Something went wrong — refresh the page and try again.",
     "unknown_action": "Unknown action",
     "something_went_wrong": "Something went wrong",
     "sign_in_check_failed": "Could not check your sign-in right now",
-    "device_id_required": "device_id required",
+    "device_id_required": "Something went wrong — refresh the page and try again.",
     "bad_request": "Bad request",
-    "no_van_for_device": "This device isn't set to a van yet, so wired printing isn't available.",
+    "no_van_for_device": "This device isn’t set to a van yet, so wired printing isn’t available.",
     "wired_save_failed": "Wired printing could not be saved right now.",
-    "van_not_for_truck": "van not found for this truck",
-    "invalid_default_screen": "invalid default_screen",
-    "device_and_truck_required": "device_id and target_truck_id required",
-    "not_truck_member": "not a member of that truck",
-    "van_not_for_target": "van not found for target truck",
+    "van_not_for_truck": "Van not found for this truck",
+    "invalid_default_screen": "Something went wrong — refresh the page and try again.",
+    "device_and_truck_required": "Something went wrong — refresh the page and try again.",
+    "not_truck_member": "Not a member of that truck",
+    "van_not_for_target": "Van not found for the target truck",
     "item_sold_out": "Sorry, {item} is sold out.",
     "choose_group": "Please choose {group} for {item}.",
-    "net_address_invalid": "Enter the printer's address as 192.168.1.50 or 192.168.1.50:9100."
+    "net_address_invalid": "Enter the printer’s address as 192.168.1.50 or 192.168.1.50:9100."
   },
   "kitchenModals": {
     "close": "Close",
@@ -912,10 +916,10 @@
     "reject": {
       "title": "Reject order #{orderId}?",
       "reasonLabel": "Reason — required (shown to the customer)",
-      "reason": "{reason, select, sold_out {Sold out of an item} too_busy {Too busy — can't make it in time} closing_soon {Closing soon} other {Other}}",
+      "reason": "{reason, select, sold_out {Sold out of an item} too_busy {Too busy — can’t make it in time} closing_soon {Closing soon} other {Other}}",
       "noteRequired": "Reason — required",
       "noteOptional": "Additional note — optional",
-      "notePlaceholder": "Add more detail for the customer...",
+      "notePlaceholder": "Add more detail for the customer…",
       "keep": "Keep order",
       "confirm": "Reject order"
     },
@@ -925,13 +929,13 @@
       "reasonLabel": "Reason — optional",
       "reason": "{reason, select, vehicle_breakdown {Vehicle breakdown} weather {Weather} venue_issue {Venue issue} personal_emergency {Personal emergency} other {Other}}",
       "messageLabel": "Message to customers — optional",
-      "messagePlaceholder": "e.g. Sorry, our trailer broke down on the way to the venue...",
+      "messagePlaceholder": "e.g. Sorry, our trailer broke down on the way to the venue…",
       "keep": "Keep event",
       "cancelling": "Cancelling…",
       "confirm": "Cancel event"
     },
     "actions": {
-      "startEvent": "{restart, select, yes {Restart Event} other {Start Event}}",
+      "startEvent": "{restart, select, yes {Restart event} other {Start event}}",
       "changeEvent": "Change event",
       "changeEventType": "Change event type…",
       "privateLink": "Private link & QR code",
@@ -949,7 +953,7 @@
       "confirmTitle": "Change finish time?",
       "willFinish": "This event will finish at <b>{selected}</b>{hasCurrent, select, yes { instead of <b>{current}</b>} other {}}.",
       "dueAfter": "<b>{n, plural, one {{count} order is} other {{count} orders are}} due after {selected}.</b> {n, plural, one {It stays} other {They stay}} on the board and still {n, plural, one {needs} other {need}} making. Changing the finish time only stops NEW orders being placed for later times.",
-      "saving": "Saving...",
+      "saving": "Saving…",
       "confirm": "Change finish time",
       "keepCurrent": "Keep {current}",
       "keepAsIs": "Keep as is",
@@ -969,7 +973,8 @@
     },
     "picker": {
       "reconnect": "Reconnect to load",
-      "selected": "Selected"
+      "selected": "Selected",
+      "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
     }
   },
   "ticket": {
@@ -1005,12 +1010,12 @@
       "notPaired": "No printer paired yet",
       "bleNotConnected": "{name} is not connected",
       "statusUnchecked": "The printer connection could not be checked",
-      "addressHelp": "Enter the printer's address as 192.168.1.50 or 192.168.1.50:9100.",
+      "addressHelp": "Enter the printer’s address as 192.168.1.50 or 192.168.1.50:9100.",
       "netPermission": "HatchGrab needs permission to reach your printer. Turn on Local Network for HatchGrab in Settings.",
-      "netRefused": "Can't reach the printer at {address} — it isn't accepting connections.",
-      "netTimeout": "Can't reach the printer at {address} — it didn't answer in time.",
-      "netUnreachable": "Can't reach the printer at {address} — check it's on the same network.",
-      "netCantReach": "Can't reach the printer at {address}",
+      "netRefused": "Can’t reach the printer at {address} — it isn’t accepting connections.",
+      "netTimeout": "Can’t reach the printer at {address} — it didn’t answer in time.",
+      "netUnreachable": "Can’t reach the printer at {address} — check it’s on the same network.",
+      "netCantReach": "Can’t reach the printer at {address}",
       "notPrinterNoChannel": "That device does not look like a printer — it has no channel a ticket could be sent on",
       "notPrinterRefused": "That device does not look like a printer — it refused a printer command",
       "couldNotConnect": "Could not connect",
@@ -1027,39 +1032,39 @@
       "testPartial": "The test ticket may have printed only partly.{withDetail, select, yes { {detail}} other {}}",
       "guard": {
         "other": "Printing is on another device. Move printing to this device?",
-        "unknown": "Can't check which device is printing right now.",
-        "unbound": "This device isn't set to a van yet, so wired printing isn't available.",
-        "pin": "Wired printing isn't available on dashboards with a PIN yet."
+        "unknown": "Can’t check which device is printing right now.",
+        "unbound": "This device isn’t set to a van yet, so wired printing isn’t available.",
+        "pin": "Wired printing isn’t available on dashboards with a PIN yet."
       },
       "guardMove": "Move printing to this device"
     },
     "card": {
       "title": "Kitchen ticket printing",
-      "description": "Automatically print a kitchen ticket for each order when it's due.",
+      "description": "Automatically print a kitchen ticket for each order when it’s due.",
       "badgeConnected": "Connected",
       "connectedTo": "<b>Connected</b> to {hasName, select, yes {{name}} other {your printer}}. Tickets will print automatically.",
       "disconnect": "Disconnect",
       "noPrinter": "<b>No printer connected.</b> {withDetail, select, yes {{detail}. } other {}}Connect a Bluetooth receipt printer to start printing tickets.",
       "waitingBle": "{n, plural, one {{count} ticket is waiting} other {{count} tickets are waiting}} and will print once a printer is connected. Nothing has been lost.",
       "waitingNet": "{n, plural, one {{count} ticket is waiting} other {{count} tickets are waiting}} and will print once this device is printing. Nothing has been lost.",
-      "scanning": "Scanning...",
+      "scanning": "Scanning…",
       "scan": "Scan for printers",
       "scanningHint": "Looking for nearby printers — this takes a few seconds.",
       "bluetoothOff": "Bluetooth is switched off on this device. Turn it on in Settings, then scan again.",
       "bluetoothUnauthorised": "HatchGrab needs permission to use Bluetooth. Allow it in Settings → HatchGrab → Bluetooth, then scan again.",
       "bluetoothUnsupported": "Printing needs the HatchGrab app — a web browser cannot reach a Bluetooth printer.",
       "noneFound": "No printers found. Check the printer is switched on, has paper, and is close to this device — most receipt printers only appear for a minute or two after you turn them on.",
-      "connecting": "Connecting...",
+      "connecting": "Connecting…",
       "connect": "Connect",
       "likelyHeading": "Likely printers — tap to connect:",
       "noneRecognised": "No printers recognised yet. Everything nearby is listed below — if your printer is there, tap it and HatchGrab will check whether it can print.",
       "hideOther": "Hide other devices",
       "showOther": "Other devices ({count})",
       "otherHint": "These do not look like printers, but you can still try one.",
-      "wiredUnavailable": "Wired printing isn't available right now.",
+      "wiredUnavailable": "Wired printing isn’t available right now.",
       "addressLabel": "Printer address",
-      "addressHint": "Print the printer's settings page to find its address. Ask whoever set up your router to keep this address fixed.",
-      "printing": "Printing...",
+      "addressHint": "Print the printer’s settings page to find its address. Ask whoever set up your router to keep this address fixed.",
+      "printing": "Printing…",
       "printTest": "Print test ticket",
       "wiredAppOnly": "Printing needs the HatchGrab app.",
       "summaryOnConfirmed": "Print <b>when accepted</b> · {paper}mm paper",
@@ -1080,12 +1085,12 @@
   },
   "kds": {
     "docTitle": "{truck} Kitchen",
-    "loading": "Loading kitchen...",
+    "loading": "Loading kitchen…",
     "pin": {
       "title": "Enter PIN",
       "placeholder": "PIN",
       "unlock": "Unlock",
-      "unreachable": "Can't reach the server right now. Your PIN is fine — try again in a moment.",
+      "unreachable": "Can’t reach the server right now. Your PIN is fine — try again in a moment.",
       "incorrect": "Incorrect PIN",
       "generic": "Something went wrong. Try again."
     },
@@ -1095,8 +1100,8 @@
       "truckNotFound": "Truck not found"
     },
     "degraded": {
-      "at": "⚠️ Can't reach the server. Showing tickets from {time}. NEW ORDERS MAY BE MISSING.",
-      "earlier": "⚠️ Can't reach the server. Showing tickets from earlier. NEW ORDERS MAY BE MISSING."
+      "at": "⚠️ Can’t reach the server. Showing tickets from {time}. NEW ORDERS MAY BE MISSING.",
+      "earlier": "⚠️ Can’t reach the server. Showing tickets from earlier. NEW ORDERS MAY BE MISSING."
     },
     "header": {
       "dashboard": "Dashboard",
@@ -1123,7 +1128,8 @@
       "manageEvent": "Manage event",
       "manageEventTitle": "Manage event — start, pause, change or finish it",
       "soundSettings": "Sound settings",
-      "soundSettingsTitle": "Which sounds fire on this device"
+      "soundSettingsTitle": "Which sounds fire on this device",
+      "cashIcon": "💷"
     },
     "panel": {
       "viewSettings": "View settings",
@@ -1150,8 +1156,9 @@
       "clear": "Clear",
       "toMake": "To make",
       "today": "Today · {range}",
-      "startEvent": "Start Event",
-      "recentlyClosed": "Event finished · {venue} ended at {time}"
+      "startEvent": "Start event",
+      "recentlyClosed": "Event finished · {venue} ended at {time}",
+      "eventStatus": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
     },
     "board": {
       "queueClear": "Queue clear",
@@ -1174,7 +1181,7 @@
       "waitActive": "⏱ +{mins}m active · Tap to clear",
       "addWait": "⏱ Add extra wait",
       "endTitle": "End event?",
-      "endEarly": "This event isn't scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
+      "endEarly": "This event isn’t scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
       "endNow": "Finish this event? No more orders will be taken.",
       "yes": "Yes",
       "started": "Event started",
@@ -1187,8 +1194,8 @@
     },
     "intro": {
       "title": "This is the kitchen screen",
-      "p1": "It's the cook's view — the orders you need to make, in the order to make them. The screen by the grill shows this while the counter uses the orders dashboard.",
-      "p2": "Cards move across as you tap them, so whoever's cooking always knows what's next and nobody has to shout. Everything here is your demo data — have a play.",
+      "p1": "It’s the cook’s view — the orders you need to make, in the order to make them. The screen by the grill shows this while the counter uses the orders dashboard.",
+      "p2": "Cards move across as you tap them, so whoever’s cooking always knows what’s next and nobody has to shout. Everything here is your demo data — have a play.",
       "gotIt": "Got it"
     },
     "toast": {
@@ -1199,7 +1206,7 @@
       "buzzerRemovedNone": "Buzzer removed",
       "buzzerAssigned": "Buzzer {n} assigned",
       "buzzerAssignedFrom": "Buzzer {n} assigned (taken from #{from})",
-      "buzzerRemoveFailed": "Could not remove buzzer {n} — it is still on {target, select, order {order #{id}} other {this order}}",
+      "buzzerRemoveFailed": "{had, select, no {Could not remove the buzzer from {target, select, order {order #{id}} other {this order}}} other {Could not remove buzzer {n} — it is still on {target, select, order {order #{id}} other {this order}}}}",
       "buzzerAssignFailed": "Could not give buzzer {n} to {target, select, order {order #{id}} other {this order}} — {had, select, yes {it still has buzzer {prior}} other {it still has no buzzer}}"
     }
   },
@@ -1216,7 +1223,7 @@
       "collected": "Order #{id} {paidToo, select, yes {paid and collected} other {collected}}",
       "ready": "Order #{id} ready",
       "readyBuzzer": "Order #{id} ready · <pill></pill>",
-      "status": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {collected} undo_collected {restored} cancel {cancelled} other {{action}}}"
+      "status": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {collected} undo_collected {restored} cancel {cancelled} other {updated}}"
     },
     "conflicts": {
       "more": "+{count} more",
@@ -1225,29 +1232,29 @@
     },
     "banner": {
       "paymentTitle": "⚠ PAYMENT NOT RECORDED",
-      "paymentBody": "{orders} — marked paid on this device only. It hasn't gone through.",
+      "paymentBody": "{orders} — marked paid on this device only. It hasn’t gone through.",
       "paymentCheck": "Check the order and take payment again if it is still owed.",
       "dismiss": "Dismiss",
       "confirmChecked": "Confirm you have checked {orders}",
       "confirmHides": "This hides the warning. The record is kept on this device either way.",
       "notYet": "Not yet",
-      "iveChecked": "I've checked {orders}",
-      "statusBody": "⚠ {orders} — this change didn't go through. Check the order.",
-      "offline": "📴 No connection — {n, plural, one {{count} change} other {{count} changes}} saved on this device. They'll be sent when you're back online. Settings are locked.",
+      "iveChecked": "I’ve checked {orders}",
+      "statusBody": "⚠ {orders} — this change didn’t go through. Check the order.",
+      "offline": "📴 No connection — {n, plural, one {{count} change saved on this device. It’ll be sent when you’re back online.} other {{count} changes saved on this device. They’ll be sent when you’re back online.}} Settings are locked.",
       "syncing": "Back online — sending {n, plural, one {{count} change} other {{count} changes}}…",
       "synced": "All changes sent.",
-      "stillQueued": "{n, plural, one {{count} change} other {{count} changes}} saved on this device. Still trying to send them."
+      "stillQueued": "{n, plural, one {{count} change saved on this device. Still trying to send it.} other {{count} changes saved on this device. Still trying to send them.}}"
     },
     "lock": {
       "locked": "HatchGrab is locked",
       "verifying": "Verifying…",
       "unlock": "Unlock",
-      "cantUseBiometric": "Can't use Face / Touch ID?",
+      "cantUseBiometric": "Can’t use Face / Touch ID?",
       "enterPin": "Enter your backup PIN",
       "wrongPin": "Wrong PIN — try again.",
       "checking": "Checking…",
       "tryBiometric": "Try Face / Touch ID instead",
-      "forgot": "Forgot your PIN? You'll need to reinstall the app."
+      "forgot": "Forgot your PIN? You’ll need to reinstall the app."
     },
     "notify": {
       "title": "🔔 Notifications",
@@ -1260,7 +1267,7 @@
     },
     "van": {
       "label": "Van",
-      "loadRetry": "Couldn't load · Retry",
+      "loadRetry": "Couldn’t load · Retry",
       "select": "Select…"
     },
     "deviceSave": {
@@ -1268,8 +1275,8 @@
       "server": "Couldn’t save that just now. Please try again."
     },
     "setup": {
-      "fetchErrorTitle": "Couldn't load device setup",
-      "fetchErrorBody": "We couldn't reach the server to set up <b>this device</b>. Check the connection and try again — your orders and settings are unaffected.",
+      "fetchErrorTitle": "Couldn’t load device setup",
+      "fetchErrorBody": "We couldn’t reach the server to set up <b>this device</b>. Check the connection and try again — your orders and settings are unaffected.",
       "retry": "Retry",
       "later": "Later",
       "noVanTitle": "No active van",
@@ -1288,8 +1295,8 @@
     },
     "device": {
       "title": "This device",
-      "viewing": "You're viewing: <b>{truck}</b>",
-      "viewingVan": "You're viewing: <b>{truck}</b> — <b>{van}</b>",
+      "viewing": "You’re viewing: <b>{truck}</b>",
+      "viewingVan": "You’re viewing: <b>{truck}</b> — <b>{van}</b>",
       "only": "This device only — other devices are set separately. (ID: {id}…)",
       "truck": "Truck",
       "van": "Van",
@@ -1298,7 +1305,7 @@
       "patchFailed": "{setting, select, van {Van} defaultScreen {Default screen} other {Order notifications}} didn’t save. {reason}",
       "requireBiometric": "Require fingerprint or face unlock to open",
       "pinTitle": "Set a backup PIN (4–6 digits)",
-      "pinHelp": "Your way in if fingerprint or face unlock won't work — it's the only fallback, so don't forget it (a forgotten PIN means reinstalling the app). Works offline.",
+      "pinHelp": "Your way in if fingerprint or face unlock won’t work — it’s the only fallback, so don’t forget it (a forgotten PIN means reinstalling the app). Works offline.",
       "pinPlaceholder": "PIN",
       "confirmPinPlaceholder": "Confirm PIN",
       "pinTooShort": "Use at least 4 digits.",
@@ -1325,8 +1332,8 @@
     },
     "offlineAlert": {
       "pausedTitle": "Ordering paused",
-      "pausedBody": "You're offline — customer ordering is paused.",
-      "offlineTitle": "You're offline",
+      "pausedBody": "You’re offline — customer ordering is paused.",
+      "offlineTitle": "You’re offline",
       "offlineBody": "This device has lost its connection."
     }
   },
@@ -1343,11 +1350,11 @@
     "titleBlocking": "Buzzer for order #{id}?",
     "title": "Choose a buzzer",
     "subtitle": "{hasTarget, select, yes {Order #{id}} other {This order}}{hasCurrent, select, yes { · currently buzzer {current}} other {}}",
-    "allTaken": "All {count} buzzers are out. Tap one to take it from another order.",
+    "allTaken": "{n, plural, one {The buzzer is out. Tap it to take it from another order.} other {All {count} buzzers are out. Tap one to take it from another order.}}",
     "thisOrder": "This order",
     "noBuzzer": "No buzzer",
     "done": "Done",
-    "lostTitle": "Order #{id} doesn't have a buzzer",
+    "lostTitle": "Order #{id} doesn’t have a buzzer",
     "lostBody": "{hasName, select, yes {{name} — } other {}}another order claimed the same buzzer while you were offline. Give them a different one.",
     "dismiss": "Dismiss",
     "assign": "Assign"
@@ -1364,15 +1371,15 @@
     "dismiss": "Dismiss",
     "kitchenCapacity": "Kitchen capacity",
     "overCapacity": "Over capacity",
-    "wakeUnsupported": "This device can't keep the screen on.",
-    "wakeInsecure": "The screen can't be kept on from this address.",
+    "wakeUnsupported": "This device can’t keep the screen on.",
+    "wakeInsecure": "The screen can’t be kept on from this address.",
     "wakeRetry": "Keep screen on — tap to try again",
     "wakeAcquire": "Keep screen on"
   },
   "demo": {
     "notAvailable": "Not available in demo",
     "demoMode": "DEMO MODE",
-    "loopLands": "That's exactly how a real order lands",
+    "loopLands": "That’s exactly how a real order lands",
     "showMe": "Show me",
     "noCard": "{sub} No card needed.",
     "notYet": "Not yet",
@@ -1394,7 +1401,8 @@
     "signupOffer": {
       "heading": "Sign up for your free month now",
       "sub": "The clock doesn’t start until you decide to go live."
-    }
+    },
+    "cashIcon": "💷"
   },
   "userMenu": {
     "menuLabel": "User menu",
@@ -1424,7 +1432,7 @@
     "orderTitle": "Order #{orderId}",
     "done": "Done",
     "offlineTitle": "Payment changes need a connection",
-    "offlineBody": "Payment changes can't be made while offline. Refunds and removing a recorded payment both have to reach the payment provider, so they can't be saved on this device and sent later.",
+    "offlineBody": "Payment changes can’t be made while offline. Refunds and removing a recorded payment both have to reach the payment provider, so they can’t be saved on this device and sent later.",
     "offlineUnchanged": "Order <b>#{orderId}</b> is unchanged. Reconnect and open this again.",
     "gotIt": "Got it",
     "removeTitle": "Remove payment?",
@@ -1432,7 +1440,7 @@
     "cancel": "Cancel",
     "removeConfirm": "Remove payment",
     "paidByCardTitle": "Paid by card",
-    "paidByCardBody": "Order <b>#{orderId}</b> was paid by card, so there is no payment record to remove here — the money is already on the customer's card.",
+    "paidByCardBody": "Order <b>#{orderId}</b> was paid by card, so there is no payment record to remove here — the money is already on the customer’s card.",
     "alreadyRefunded": "{refunded} of {charged} has already been refunded, so there is nothing left to refund on this order.",
     "refundTitle": "Refund order #{orderId}",
     "refundSummary": "{charged} was paid by card{hasRefunded, select, yes {, {refunded} already refunded} other {}}.<b> {refundable} can be refunded.</b>",
@@ -1447,7 +1455,7 @@
     "notePlaceholderOptional": "Anything worth recording",
     "refunding": "Refunding…",
     "refund": "Refund {amount}",
-    "footer": "This sends the money back to the customer's card. It cannot be undone from here."
+    "footer": "This sends the money back to the customer’s card. It cannot be undone from here."
   },
   "orderCard": {
     "tapToOverride": "Tap to override price",
@@ -1486,14 +1494,16 @@
     "undo": "Undo",
     "contactTitle": "Tap for contact details",
     "conflictPayment": "PAYMENT NOT RECORDED — check before releasing",
-    "conflictStatus": "Last update didn't sync",
+    "conflictStatus": "Last update didn’t sync",
     "otherCategory": "Other",
     "deals": "Deals",
     "edit": "Edit",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "markPaidAndCollected": "Mark paid & collected",
+    "cashIcon": "💷"
   },
   "addOrder": {
-    "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add for the hatch; you'll be asked to confirm.",
+    "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add for the hatch; you’ll be asked to confirm.",
     "optionLeftToast": "Only {count} {option} left — shared across all dishes",
     "optionLeftTitle": "Only {count} {option} left (shared)",
     "savedToast": "Order {id} saved{paid, select, cash { — paid in cash} card { — paid on your card machine} other {}}",
@@ -1509,8 +1519,8 @@
     "somethingNotOnMenu": "Something on this order is no longer on the menu",
     "saveAtConfirm": "{detail}\n\nSave at {amount}?\n\nOK = save at this total   ·   Cancel = edit the order",
     "anOption": "an option",
-    "optionOversellConfirm": "Only a limited amount of \"{option}\" left — and it's shared across ALL dishes that use it.\n\nProceed anyway (oversell)?\n\nOK = proceed anyway   ·   Cancel = edit the order",
-    "offlineNotSent": "Couldn't reach the server — you appear to be offline. The order was NOT sent. Keep this panel open and retry when you reconnect.",
+    "optionOversellConfirm": "Only a limited amount of \"{option}\" left — and it’s shared across ALL dishes that use it.\n\nProceed anyway (oversell)?\n\nOK = proceed anyway   ·   Cancel = edit the order",
+    "offlineNotSent": "Couldn’t reach the server — you appear to be offline. The order was NOT sent. Keep this panel open and retry when you reconnect.",
     "paymentNotRecorded": "⚠ Order #{id} added — PAYMENT NOT RECORDED. Take payment again on the order card.",
     "failed": "Failed",
     "buzzerSaveFailed": "Could not save the buzzer number — add it from the order card",
@@ -1532,7 +1542,7 @@
     "total": "Total",
     "namePlaceholder": "Customer name — optional",
     "confirming": "Confirming…",
-    "confirmingDots": "Confirming...",
+    "confirmingDots": "Confirming…",
     "selectAnEvent": "Select an event",
     "selectEventToConfirm": "Select an event to confirm",
     "placeOrder": "Place order",
@@ -1556,19 +1566,19 @@
     "today": "Today",
     "tomorrow": "Tomorrow",
     "change": "Change",
-    "startEvent": "{restart, select, yes {Restart Event} other {Start Event}}",
+    "startEvent": "{restart, select, yes {Restart event} other {Start event}}",
     "noEventSelected": "No event selected",
     "selectEvent": "Select event",
     "futureEventSelected": "{date} event selected. Orders will appear on the order screen when the event opens.",
-    "todayNotOpen": "Today's event — not yet open for orders. Orders will be queued and visible when you open the event.",
-    "eventEnded": "This event has ended — you're adding an order after close. Make sure you've selected the right event.",
+    "todayNotOpen": "Today’s event — not yet open for orders. Orders will be queued and visible when you open the event.",
+    "eventEnded": "This event has ended — you’re adding an order after close. Make sure you’ve selected the right event.",
     "loadingMenu": "Loading menu…",
     "tapItems": "Tap items to build order",
     "itemCount": "{n, plural, one {{count} item} other {{count} items}}",
     "reviewOrder": "Review order",
     "confirmOrder": "Confirm order",
     "anotherOrderCameIn": "Another order came in while you were adding this one.",
-    "staleCheck": "Checked against the last data this device downloaded -- you're offline, so a newer order may not be counted.",
+    "staleCheck": "Checked against the last data this device downloaded — you’re offline, so a newer order may not be counted.",
     "pickAnotherTime": "Pick another time",
     "placeAnyway": "Place it anyway",
     "basePrice": "{amount} base",
@@ -1577,7 +1587,8 @@
     "chooseRequired": "Choose required options",
     "addLine": "{edit, select, yes {Save changes} other {Add}} · {amount}",
     "done": "Done",
-    "noUpcomingEvents": "No upcoming events found"
+    "noUpcomingEvents": "No upcoming events found",
+    "cashIcon": "💷"
   },
   "emailOperator": {
     "newOrder": {
@@ -1596,25 +1607,25 @@
   "alertsOperator": {
     "hi": "Hi {name},",
     "limit80": {
-      "subject": "You've used 80% of this month's WhatsApp replies",
+      "subject": "You’ve used 80% of this month’s WhatsApp replies",
       "used": "Your automatic WhatsApp replies have used <b>{used} of {limit}</b> for this month.",
-      "nothingStopped": "Nothing has stopped. When you reach {limit}, automatic replies pause until your allowance resets on <b>{reset}</b> — customers can still message you, and you'll still see everything they send.",
+      "nothingStopped": "Nothing has stopped. When you reach {limit}, automatic replies pause until your allowance resets on <b>{reset}</b> — customers can still message you, and you’ll still see everything they send.",
       "raise": "You can raise your monthly limit in Settings whenever you like.",
       "raiseLink": "You can raise your monthly limit in Settings whenever you like:",
       "button": "Open Settings"
     },
     "limit100": {
       "subject": "Your WhatsApp auto-replies have paused for this month",
-      "usedAll": "You've used all {limit} of this month's automatic WhatsApp replies, so they've paused.",
-      "stillReach": "<b>Customers can still message you as normal, and every message still reaches you.</b> The only thing that's stopped is the automatic reply going back out.",
-      "startAgain": "They'll start again on <b>{reset}</b>, or straight away if you raise your monthly limit in Settings.",
-      "startAgainLink": "They'll start again on {reset}, or straight away if you raise your monthly limit in Settings:",
+      "usedAll": "You’ve used all {limit} of this month’s automatic WhatsApp replies, so they’ve paused.",
+      "stillReach": "<b>Customers can still message you as normal, and every message still reaches you.</b> The only thing that’s stopped is the automatic reply going back out.",
+      "startAgain": "They’ll start again on <b>{reset}</b>, or straight away if you raise your monthly limit in Settings.",
+      "startAgainLink": "They’ll start again on {reset}, or straight away if you raise your monthly limit in Settings:",
       "button": "Raise my limit"
     },
     "paymentBlocked": {
       "subject": "WhatsApp needs a payment method before it can send",
-      "stopped": "WhatsApp has stopped your automatic replies going out because there's no working payment method on your WhatsApp Business account.",
-      "stillMessage": "<b>Customers can still message you, and you'll still see everything they send</b> — but the replies aren't reaching them.",
+      "stopped": "WhatsApp has stopped your automatic replies going out because there’s no working payment method on your WhatsApp Business account.",
+      "stillMessage": "<b>Customers can still message you, and you’ll still see everything they send</b> — but the replies aren’t reaching them.",
       "payDirect": "You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager rather than in HatchGrab. Add or update a card there and replies start again on their own.",
       "payDirectLink": "You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager rather than in HatchGrab. Add or update a card there and replies start again on their own:",
       "button": "Open WhatsApp Manager",
@@ -1634,14 +1645,14 @@
     "loadingCountries": "Loading…",
     "verify": {
       "ok": "Email confirmed — thank you.",
-      "expired": "That confirmation link has expired. Get in touch and we'll sort it before you go live.",
-      "invalid": "That confirmation link didn't work. Get in touch and we'll sort it before you go live."
+      "expired": "That confirmation link has expired. Get in touch and we’ll sort it before you go live.",
+      "invalid": "That confirmation link didn’t work. Get in touch and we’ll sort it before you go live."
     },
     "identity": {
-      "heading": "What's your truck called?",
+      "heading": "What’s your truck called?",
       "intro": "This is the name customers see. Nothing goes public until you choose to go live.",
       "nameLabel": "Truck name",
-      "namePlaceholder": "Bob's Burgers",
+      "namePlaceholder": "Bob’s Burgers",
       "phoneLabel": "Phone",
       "whatsappTick": "This number is on WhatsApp",
       "phoneHelp": "Customers see this on their order confirmation so they can ask about an order. The tick decides whether that reads “Call us” or “WhatsApp us”. You can change both in Settings."
@@ -1684,7 +1695,7 @@
     },
     "allergensItemsUnverified": {
       "title": "{n, plural, one {Confirm allergens on {count} dish} other {Confirm allergens on {count} dishes}}",
-      "detail": "{n, plural, other {{unverified} of your {total} dishes are hidden from customers until you confirm their allergens. A dish shown without confirmed allergens reads as \"contains none\", so the menu hides it rather than risk that.}}",
+      "detail": "{n, plural, one {Your dish is hidden from customers until you confirm its allergens.} other {{u, plural, one {{unverified} of your {total} dishes is hidden from customers until you confirm its allergens.} other {{unverified} of your {total} dishes are hidden from customers until you confirm their allergens.}}}} A dish shown without confirmed allergens reads as \"contains none\", so the menu hides it rather than risk that.",
       "where": "Menu → Allergens"
     },
     "noVan": {
@@ -1696,7 +1707,7 @@
       "title": "Set your kitchen capacity",
       "detail": "No capacity is set for {vans}. Without it we will keep promising customers collection times your kitchen has no way to hit.",
       "where": "Menu → Kitchen capacity",
-      "unnamedVan": "unnamed van"
+      "unnamedVan": "Unnamed van"
     },
     "noPrepBearingCategory": {
       "title": "Tell us how long your food takes",
@@ -1710,12 +1721,12 @@
     },
     "emailUnknown": {
       "title": "Email confirmation status unknown",
-      "detail": "Email verification is not wired up yet (Phase 4 Step 2), so this cannot be evaluated. It blocks by design rather than passing silently.",
+      "detail": "Email verification is not wired up yet, so this cannot be evaluated. It blocks by design rather than passing silently.",
       "where": "—"
     }
   },
   "walkthrough": {
-    "intro": "Manage is where you set your truck up and see how it's doing. The Dashboard is where you take orders and run each event as it happens.",
+    "intro": "Manage is where you set your truck up and see how it’s doing. The Dashboard is where you take orders and run each event as it happens.",
     "ariaLabel": "Dashboard walkthrough",
     "step": "{current} of {total}",
     "skip": "Skip",
@@ -1725,11 +1736,11 @@
     "stops": {
       "menu": {
         "title": "Menu",
-        "body": "Your dishes, prices and allergens. Change anything here and it's live straight away."
+        "body": "Your dishes, prices and allergens. Change anything here and it’s live straight away."
       },
       "schedule": {
         "title": "Schedule",
-        "body": "Where and when you're trading. Add an event here and customers can order for it."
+        "body": "Where and when you’re trading. Add an event here and customers can order for it."
       },
       "build": {
         "title": "Deals and Extras & upsells",
@@ -1737,7 +1748,7 @@
       },
       "settings": {
         "title": "Settings",
-        "body": "Your truck's details and how customers pay."
+        "body": "Your truck’s details and how customers pay."
       },
       "billing": {
         "title": "Billing",
@@ -1754,7 +1765,7 @@
     },
     "signup": {
       "title": "Create your account",
-      "subtitle": "Your free month doesn't start until you go live.",
+      "subtitle": "Your free month doesn’t start until you go live.",
       "emailPlaceholder": "you@yourtruck.co.uk",
       "codeLabel": "Have a code? <optional>(optional)</optional>",
       "codePlaceholder": "Enter it here",
@@ -1774,16 +1785,16 @@
       "emailChanged": "Email address updated. Please sign in with your new email address.",
       "errorFallback": "Incorrect email or password. Please try again.",
       "submit": "Sign in",
-      "submitting": "Signing in...",
+      "submitting": "Signing in…",
       "forgot": "Forgot your password?"
     },
     "forgot": {
       "sentTitle": "Check your email",
-      "sentBody": "If an account exists with that email address, you'll receive a reset link shortly. Check your spam folder if it doesn't arrive within a few minutes.",
+      "sentBody": "If an account exists with that email address, you’ll receive a reset link shortly. Check your spam folder if it doesn’t arrive within a few minutes.",
       "title": "Reset your password",
-      "subtitle": "Enter your email and we'll send a reset link",
+      "subtitle": "Enter your email and we’ll send a reset link",
       "submit": "Send reset link",
-      "sending": "Sending...",
+      "sending": "Sending…",
       "back": "Back to sign in"
     },
     "reset": {
@@ -1791,7 +1802,7 @@
       "invalidBody": "This link is invalid or has expired.",
       "requestNew": "Request a new reset link",
       "mismatch": "Passwords do not match",
-      "tooShort": "Password must be at least 8 characters",
+      "tooShort": "Password must be at least 8 characters.",
       "errorFallback": "Something went wrong. Please try again.",
       "titleFirstLogin": "Set your password",
       "titleReset": "Choose a new password",
@@ -1801,7 +1812,7 @@
       "confirmPassword": "Confirm password",
       "confirmPlaceholder": "Repeat your password",
       "submit": "Set password",
-      "saving": "Saving..."
+      "saving": "Saving…"
     },
     "verifyEmail": {
       "goToLogin": "Go to login",
@@ -1829,16 +1840,16 @@
       "thanks": "{hasTruck, select, yes {Thanks for setting up {truck} on HatchGrab.} other {Thanks for setting up your truck on HatchGrab.}}",
       "button": "Confirm my email address",
       "buttonText": "Confirm my email address: {url}",
-      "why": "This is the address you'll log in with, and where order alerts go — so it's worth doing now.",
-      "next": "Once it's confirmed I'll send you everything you need to get going.",
+      "why": "This is the address you’ll log in with, and where order alerts go — so it’s worth doing now.",
+      "next": "Once it’s confirmed I’ll send you everything you need to get going.",
       "carryOn": "You can carry on setting up in the meantime.",
       "stuck": "Stuck on anything? Just reply to this — I answer these myself.",
-      "fallbackLink": "If the button doesn't work, paste this in: {url}"
+      "fallbackLink": "If the button doesn’t work, paste this in: {url}"
     },
     "welcome": {
       "subject": "{hasName, select, yes {Welcome to HatchGrab, {name}} other {Welcome to HatchGrab}}",
-      "intro": "{hasTruck, select, yes {I'm really pleased to welcome {truck} to HatchGrab.} other {I'm really pleased to welcome your truck to HatchGrab.}}",
-      "setup": "If you haven't already, setting up is straightforward and takes about fifteen minutes.",
+      "intro": "{hasTruck, select, yes {I’m really pleased to welcome {truck} to HatchGrab.} other {I’m really pleased to welcome your truck to HatchGrab.}}",
+      "setup": "If you haven’t already, setting up is straightforward and takes about fifteen minutes.",
       "button": "Open your dashboard",
       "bookmark": "Worth bookmarking. It works on any device.",
       "stuck": "Just reply to this if you get stuck — I answer these myself.",
@@ -1865,7 +1876,7 @@
     "account_finish_failed": "Could not finish creating your account — please try again.",
     "unauthorised": "Unauthorised",
     "unauthenticated": "Unauthenticated",
-    "change_id_required": "changeId required",
+    "change_id_required": "Something went wrong — refresh the page and try again.",
     "operator_not_found": "Operator not found",
     "cancel_change_failed": "Failed to cancel change",
     "email_required": "Email required",
@@ -1878,7 +1889,7 @@
     "email_send_failed": "Failed to send email. Please try again.",
     "reset_email_failed": "Failed to send reset email",
     "token_and_password_required": "Token and password required",
-    "new_password_too_short": "Password must be at least {min, plural, one {# character} other {# characters}}",
+    "new_password_too_short": "Password must be at least {min, plural, one {# character} other {# characters}}.",
     "reset_link_invalid": "Invalid or expired reset link. Please request a new one.",
     "reset_link_used": "This reset link has already been used. Please request a new one.",
     "reset_link_expired": "This reset link has expired. Please request a new one.",
@@ -1917,13 +1928,13 @@
     "changeEmail": {
       "requested": "You requested to change your HatchGrab email address to this address.",
       "click": "Click the button below to verify. This link expires in 24 hours.",
-      "ignore": "If you didn't request this change, you can safely ignore this email.",
+      "ignore": "If you didn’t request this change, you can safely ignore this email.",
       "stillActive": "Your current email address remains active."
     },
     "resendVerification": {
       "requested": "You requested to change your HatchGrab email to this address.",
       "click": "Click below to verify. This link expires in 24 hours.",
-      "ignore": "If you didn't request this, ignore this email.",
+      "ignore": "If you didn’t request this, ignore this email.",
       "stillActive": "Your current email remains active."
     },
     "passwordReset": {
@@ -1932,18 +1943,18 @@
       "requested": "We received a request to reset the password for your HatchGrab account.",
       "click": "Click the button below to choose a new password. This link expires in 1 hour.",
       "button": "Reset password",
-      "ignore": "If you didn't request this, you can safely ignore this email.",
-      "unchanged": "Your password won't change until you click the link above."
+      "ignore": "If you didn’t request this, you can safely ignore this email.",
+      "unchanged": "Your password won’t change until you click the link above."
     },
     "deletionScheduled": {
       "subject": "Your HatchGrab account is scheduled for deletion",
       "received": "We have received a request to delete this HatchGrab account.",
       "orderingStopped": "<b>Online ordering has stopped immediately</b> on: {trucks}.",
       "noTrucks": "(no trucks)",
-      "readable": "Your dashboard stays\n    available to read for the next {days, plural, other {# days}}.",
+      "readable": "Your dashboard stays\n    available to read for the next {days, plural, one {# day} other {# days}}.",
       "scheduled": "The account is scheduled for deletion on <b>{date}</b>.",
       "cannotCancel": "<b>This cannot be cancelled from inside the app.</b> If this was not you, or you have\n    changed your mind, reply to this email as soon as possible.",
-      "kept": "When the account is deleted we remove your personal details and your customers' details. We keep\n    anonymous accounting records, which we are legally required to retain."
+      "kept": "When the account is deleted we remove your personal details and your customers’ details. We keep\n    anonymous accounting records, which we are legally required to retain."
     }
   },
   "demoSaveEmail": {
@@ -1952,7 +1963,7 @@
     "intro": "Here’s your link back to the demo with your menu in it. No login needed — just tap it.",
     "button": "Open my demo",
     "freshDay": "Each time you come back we’ll set up a fresh day’s trading so there’s something to play with.",
-    "deletion": "This is a demo, so we don’t keep it forever — we’ll delete it and the menu on\n                <b>{date}</b> ({days, plural, other {# days}}). If you sign up before\n                then, your menu comes with you.",
+    "deletion": "This is a demo, so we don’t keep it forever — we’ll delete it and the menu on\n                <b>{date}</b> ({days, plural, one {# day} other {# days}}). If you sign up before\n                then, your menu comes with you.",
     "notSent": "Saved, but we couldn’t send the email just now."
   },
   "demoGetStarted": {
@@ -1960,19 +1971,19 @@
       "bannerButton": "Save my menu →",
       "heading": "Set up your truck",
       "sub": "Your menu carries straight over.",
-      "privacy": "We'll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
+      "privacy": "We’ll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
     },
     "sample": {
       "bannerButton": "Set up my truck →",
       "heading": "Set up your truck",
       "sub": "You’ll upload your own menu next — takes a minute.",
-      "privacy": "We'll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
+      "privacy": "We’ll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
     },
     "saveOnly": {
       "bannerButton": "Save my menu →",
       "heading": "Save your demo",
       "sub": "We’ll keep it for 14 days and email you a link straight back.",
-      "privacy": "We'll only use this to send your demo link — see our <link>privacy policy</link>."
+      "privacy": "We’ll only use this to send your demo link — see our <link>privacy policy</link>."
     },
     "confirmationHeading": "You’re all set",
     "postSaveButton": "Set up my truck →",
@@ -1996,8 +2007,8 @@
       "kitchen": "Kitchen setup",
       "schedule": "Schedule"
     },
-    "confirmEmailed": "We've emailed you a link straight back to this demo — no login needed.",
-    "confirmKeepUntil": "We'll keep it until <b>{date}</b>. Your menu comes with you when you set up properly.",
+    "confirmEmailed": "We’ve emailed you a link straight back to this demo — no login needed.",
+    "confirmKeepUntil": "We’ll keep it until <b>{date}</b>. Your menu comes with you when you set up properly.",
     "loading": "Loading…",
     "firstName": "First name",
     "lastName": "Last name",
@@ -2009,8 +2020,8 @@
     "changeLogo": "Change logo",
     "removeLogo": "Remove",
     "uploadLogo": "📷 Upload logo",
-    "readyTitle": "Your account's ready",
-    "readyBody": "Now let's finish setting up your truck — your menu, allergens and kitchen.",
+    "readyTitle": "Your account’s ready",
+    "readyBody": "Now let’s finish setting up your truck — your menu, allergens and kitchen.",
     "hangTight": "Hang tight — setting everything up.",
     "stage": {
       "account": "Creating your account",
@@ -2037,7 +2048,7 @@
     "promoLabel": "Have a code? <opt>(optional)</opt>",
     "promoPlaceholder": "Enter it here",
     "agreeTerms": "I agree to the <terms>Terms</terms> and <privacy>Privacy Policy</privacy>.",
-    "freeMonth": "Setting up won't start your free month. That begins when you pick your first live event — whenever you're ready.",
+    "freeMonth": "Setting up won’t start your free month. That begins when you pick your first live event — whenever you’re ready.",
     "fieldError": {
       "firstName": "Tell us your first name.",
       "lastName": "And your last name.",
@@ -2054,7 +2065,7 @@
       "unreachable": "Couldn’t reach us just now — try again.",
       "createAccountFailed": "Could not create your account.",
       "truckCreateFailed": "Your account’s ready, but we couldn’t create your truck. Try again.",
-      "truckUnreachable": "Your account’s ready, but we couldn’t reach us to create your truck. Try again.",
+      "truckUnreachable": "Your account’s ready, but we couldn’t create your truck just now. Try again.",
       "truckNoToken": "Your truck is set up, but we couldn’t open it just now. Try again."
     }
   },
@@ -2096,7 +2107,7 @@
     "emailPlaceholder": "you@yourtruck.co.uk",
     "sending": "…",
     "send": "Send",
-    "noPhoto": "Haven't got a menu photo to hand?",
+    "noPhoto": "Haven’t got a menu photo to hand?",
     "noPhotoBody": "Look round with a sample truck instead — you can upload yours any time.",
     "build": "Build my demo →",
     "nothingPublished": "Nothing is published — only you can see it.",
@@ -2104,6 +2115,63 @@
       "somethingWrong": "Something went wrong. Please try again.",
       "serverUnreachable": "We couldn’t reach the server. Check your connection and try again.",
       "sendFailed": "Couldn’t send that — try again."
+    }
+  },
+  "provisionContent": {
+    "firstVanName": "Van 1",
+    "demoCategories": {
+      "pizza": "Pizza",
+      "burgers": "Burgers",
+      "mains": "Mains",
+      "sides": "Sides",
+      "drinks": "Drinks"
+    },
+    "demoTemplates": {
+      "pizza": {
+        "label": "🍕 Pizza van",
+        "items": {
+          "margherita": "Margherita",
+          "pepperoni": "Pepperoni",
+          "ndujaHoney": "Nduja & Honey",
+          "fourCheese": "Four Cheese",
+          "gardenVeg": "Garden Veg",
+          "garlicBread": "Garlic Bread",
+          "rocketParmesan": "Rocket & Parmesan",
+          "olives": "Olives",
+          "sanPellegrino": "San Pellegrino",
+          "coke": "Coke"
+        }
+      },
+      "burgers": {
+        "label": "🍔 Burger van",
+        "items": {
+          "classicCheeseburger": "Classic Cheeseburger",
+          "doubleBacon": "Double Bacon",
+          "buttermilkChicken": "Buttermilk Chicken",
+          "halloumiStack": "Halloumi Stack",
+          "smashBurger": "Smash Burger",
+          "skinOnFries": "Skin-on Fries",
+          "loadedCheeseFries": "Loaded Cheese Fries",
+          "onionRings": "Onion Rings",
+          "craftLemonade": "Craft Lemonade",
+          "coke": "Coke"
+        }
+      },
+      "curries": {
+        "label": "🍛 Curry van",
+        "items": {
+          "chickenTikkaMasala": "Chicken Tikka Masala",
+          "lambRoganJosh": "Lamb Rogan Josh",
+          "chanaMasala": "Chana Masala",
+          "butterChicken": "Butter Chicken",
+          "saagPaneer": "Saag Paneer",
+          "pilauRice": "Pilau Rice",
+          "garlicNaan": "Garlic Naan",
+          "onionBhaji": "Onion Bhaji",
+          "mangoLassi": "Mango Lassi",
+          "coke": "Coke"
+        }
+      }
     }
   }
 }

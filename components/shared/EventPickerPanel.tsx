@@ -143,7 +143,7 @@ export function EventPickerPanel<T extends PickableEvent>({
                         </span>
                       )}
                       <span className={`text-[10px] font-bold bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0 ${EVENT_STATUS_TEXT_ON_LIGHT[status.tone]}`}>
-                        {status.label}
+                        {t('picker.status', { tone: status.tone })}
                       </span>
                     </div>
                     {venue && <p className="text-xs text-slate-500 mt-0.5">{venue}</p>}

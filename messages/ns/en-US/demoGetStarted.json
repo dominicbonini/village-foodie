@@ -1,1 +1,10 @@
-{}
+{
+  "upload": {
+    "sub": "Your menu carries right over."
+  },
+  "saveOnly": {
+    "sub": "We’ll keep it for 14 days and email you a link right back."
+  },
+  "confirmEmailed": "We’ve emailed you a link right back to this demo — no login needed.",
+  "emailPlaceholder": "you@yourtruck.com"
+}

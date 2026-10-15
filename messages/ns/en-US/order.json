@@ -1,1 +1,22 @@
-{}
+{
+  "state": {
+    "confirmCancelled": "This order has been canceled.",
+    "cardFormLoadFailed": "We could not load the card form — check your connection and try again. Your cart is saved, and you have not been charged."
+  },
+  "tipNote": "100% of your tip goes to the truck. Calculated on the food, before tax.",
+  "authFailed": "That payment could not be authorized. You have not been charged — please try another card, or choose Pay at the truck.",
+  "couldNotPlace": "We could not place your order. You have not been charged.",
+  "paymentThrew": "Something went wrong taking that payment. You have not been charged — please try again, or choose Pay at the truck.",
+  "walkUpOnly": "This truck takes walk-up orders at the window.",
+  "mealDeals": "🎁 Combos",
+  "setupPending": "Setup pending",
+  "authorising": "Authorizing…",
+  "collectionTimeTitle": "Pickup time",
+  "collectionTimeChosen": "✓ Pickup time: {time}",
+  "payAtTruckLine": "Pay at the truck at pickup · No card details needed",
+  "modalAdd": "Add to cart · {amount}",
+  "collectionTime": "Pickup time: {time}",
+  "seeYou": "See you at the window!",
+  "preferredCollection": "Preferred pickup: {time}",
+  "willConfirmTime": "{truck} will confirm your pickup time when they accept your order."
+}

@@ -38,9 +38,14 @@ export function fitMins(m: number): string {
  *                   the truck's own spelling, so the caller — which holds that map — supplies it. The
  *                   fallback capitalises, which is only ever reached for a category that has vanished
  *                   from the menu between the fit and the render.
+ * @param clock      "HH:MM" → the truck's style (Language Phase 2): the caller passes lib/time-utils `formatTime` with
+ *                   the truck's settings, so the window times read GB "18:15" exactly as before and US "6:15 PM". The
+ *                   caller formats `slotLabel` the same way (formatSlot). Without it the windows read as the engine's
+ *                   24-hour "HH:MM", as they always did. (A function, not the settings, so this module stays import-free.)
  */
-export function buildFitMessage(args: { slotLabel: string; why: FitWhy; catLabel?: (cat: string) => string }): FitMessage {
+export function buildFitMessage(args: { slotLabel: string; why: FitWhy; catLabel?: (cat: string) => string; clock?: (hhmm: string) => string }): FitMessage {
   const { slotLabel, why } = args
+  const clock = (m: number) => (args.clock ? args.clock(fitMins(m)) : fitMins(m))
   const label = (cat: string) => args.catLabel?.(cat) || (cat.charAt(0).toUpperCase() + cat.slice(1))
   const lines: string[] = []
 
@@ -63,13 +68,13 @@ export function buildFitMessage(args: { slotLabel: string; why: FitWhy; catLabel
         lines.push(`This order needs ${N} batches to be ready by ${slotLabel}, but only ${M} have room.`)
       }
       for (const win of w.windows) {
-        const span = `${fitMins(win.startMins)}–${fitMins(win.endMins)} · ${Cat}`
+        const span = `${clock(win.startMins)}–${clock(win.endMins)} · ${Cat}`
         if (win.free <= 0) lines.push(`${span} · Full`)
         else if (win.free >= win.share) lines.push(`${span} · ${win.free} free`)
         else lines.push(`${span} · ${win.free} free, needs ${win.share}`)
       }
     } else if (w.kind === 'kitchen') {
-      lines.push(`Your kitchen cooks up to ${w.cap} items at a time. Between ${fitMins(w.startMins)} and ${fitMins(w.endMins)} it's already cooking ${w.existing}, and this order needs ${w.add} more.`)
+      lines.push(`Your kitchen cooks up to ${w.cap} items at a time. Between ${clock(w.startMins)} and ${clock(w.endMins)} it's already cooking ${w.existing}, and this order needs ${w.add} more.`)
     } else {
       lines.push(`${label(w.cat)} for ${slotLabel} would need to start cooking before your event opens.`)
     }

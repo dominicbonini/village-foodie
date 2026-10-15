@@ -7,16 +7,16 @@
     "thanks": "{hasTruck, select, yes {Thanks for setting up {truck} on HatchGrab.} other {Thanks for setting up your truck on HatchGrab.}}",
     "button": "Confirm my email address",
     "buttonText": "Confirm my email address: {url}",
-    "why": "This is the address you'll log in with, and where order alerts go — so it's worth doing now.",
-    "next": "Once it's confirmed I'll send you everything you need to get going.",
+    "why": "This is the address you’ll log in with, and where order alerts go — so it’s worth doing now.",
+    "next": "Once it’s confirmed I’ll send you everything you need to get going.",
     "carryOn": "You can carry on setting up in the meantime.",
     "stuck": "Stuck on anything? Just reply to this — I answer these myself.",
-    "fallbackLink": "If the button doesn't work, paste this in: {url}"
+    "fallbackLink": "If the button doesn’t work, paste this in: {url}"
   },
   "welcome": {
     "subject": "{hasName, select, yes {Welcome to HatchGrab, {name}} other {Welcome to HatchGrab}}",
-    "intro": "{hasTruck, select, yes {I'm really pleased to welcome {truck} to HatchGrab.} other {I'm really pleased to welcome your truck to HatchGrab.}}",
-    "setup": "If you haven't already, setting up is straightforward and takes about fifteen minutes.",
+    "intro": "{hasTruck, select, yes {I’m really pleased to welcome {truck} to HatchGrab.} other {I’m really pleased to welcome your truck to HatchGrab.}}",
+    "setup": "If you haven’t already, setting up is straightforward and takes about fifteen minutes.",
     "button": "Open your dashboard",
     "bookmark": "Worth bookmarking. It works on any device.",
     "stuck": "Just reply to this if you get stuck — I answer these myself.",

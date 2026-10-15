@@ -234,7 +234,9 @@ console.log('\n── THE SHIPPED CODE MATCHES WHAT WAS MODELLED (source-level) 
     check(/if \(!doesNotFit \|\| tone === 'red'\) return ''/.test(fn), 'the formatter renders nothing on a red dot, and nothing when the order fits')
     check(/hasLabel \? ' · Not enough time' : ' Not enough time'/.test(fn), '…" · Not enough time" after a label, " Not enough time" after a bare dot (no dash)')
   }
-  check(/buildFitMessage\(\{ slotLabel: effectiveSlot, why: fit\.why, catLabel: catLabelFor \}\)/.test(panel), 'the popup is built from fit.why alone')
+  // Language Phase 2: the slot and the window times are written in the truck's style (formatSlot / formatTime); the
+  // popup's CONTENT is still fit.why alone.
+  check(/buildFitMessage\(\{ slotLabel: String\(formatSlot\(effectiveSlot, panelTime\)\), why: fit\.why, catLabel: catLabelFor, clock: hm => formatTime\(hm, panelTime\) \}\)/.test(panel), 'the popup is built from fit.why alone')
   // The popup and the label must feed the engine the SAME arguments, or they could disagree.
   for (const arg of ['basketByCat', 'capacityInputs.kitchenCapacity ?? null', 'capacityInputs.eventStartMins', 'capacityInputs.capacityWindowMins ?? 5'])
     check(panel.includes(arg), `the memo passes ${arg}`)

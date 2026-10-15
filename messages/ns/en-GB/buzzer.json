@@ -5,11 +5,11 @@
   "titleBlocking": "Buzzer for order #{id}?",
   "title": "Choose a buzzer",
   "subtitle": "{hasTarget, select, yes {Order #{id}} other {This order}}{hasCurrent, select, yes { · currently buzzer {current}} other {}}",
-  "allTaken": "All {count} buzzers are out. Tap one to take it from another order.",
+  "allTaken": "{n, plural, one {The buzzer is out. Tap it to take it from another order.} other {All {count} buzzers are out. Tap one to take it from another order.}}",
   "thisOrder": "This order",
   "noBuzzer": "No buzzer",
   "done": "Done",
-  "lostTitle": "Order #{id} doesn't have a buzzer",
+  "lostTitle": "Order #{id} doesn’t have a buzzer",
   "lostBody": "{hasName, select, yes {{name} — } other {}}another order claimed the same buzzer while you were offline. Give them a different one.",
   "dismiss": "Dismiss",
   "assign": "Assign"

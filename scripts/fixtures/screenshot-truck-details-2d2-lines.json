@@ -3,7 +3,7 @@
  "app/api/inbound-schedule/route.ts": {
   "added": [
    "import { truckTimeSettings } from '@/lib/truck-time'",
-   "import { getLocalDateInTz, formatYmd, formatTime } from '@/lib/time-utils'",
+   "import { getLocalDateInTz, formatYmdShortMonth, formatTime } from '@/lib/time-utils'",
    "import { normaliseCountry, inCountry, countryOf } from '@/lib/discovery-country'",
    "const country = normaliseCountry(body?.country)",
    "const givenTruckId = typeof body?.hatchgrab_truck_id === 'string' && body.hatchgrab_truck_id.trim() ? body.hatchgrab_truck_id.trim() : null",
@@ -32,7 +32,7 @@
    "if (countryOf(truck) !== country) return",
    "const ts = await truckTimeSettings(truck)",
    ".gte('event_date', getLocalDateInTz(ts.timeZone))",
-   "const fmtDate = (iso: string) => formatYmd(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })",
+   "const fmtDate = (iso: string) => formatYmdShortMonth(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })",
    "const a = st ? formatTime(String(st), ts) : ''",
    "const b = et ? formatTime(String(et), ts) : ''"
   ],

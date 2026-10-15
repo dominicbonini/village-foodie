@@ -3,19 +3,19 @@
     "bannerButton": "Save my menu →",
     "heading": "Set up your truck",
     "sub": "Your menu carries straight over.",
-    "privacy": "We'll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
+    "privacy": "We’ll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
   },
   "sample": {
     "bannerButton": "Set up my truck →",
     "heading": "Set up your truck",
     "sub": "You’ll upload your own menu next — takes a minute.",
-    "privacy": "We'll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
+    "privacy": "We’ll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
   },
   "saveOnly": {
     "bannerButton": "Save my menu →",
     "heading": "Save your demo",
     "sub": "We’ll keep it for 14 days and email you a link straight back.",
-    "privacy": "We'll only use this to send your demo link — see our <link>privacy policy</link>."
+    "privacy": "We’ll only use this to send your demo link — see our <link>privacy policy</link>."
   },
   "confirmationHeading": "You’re all set",
   "postSaveButton": "Set up my truck →",
@@ -39,8 +39,8 @@
     "kitchen": "Kitchen setup",
     "schedule": "Schedule"
   },
-  "confirmEmailed": "We've emailed you a link straight back to this demo — no login needed.",
-  "confirmKeepUntil": "We'll keep it until <b>{date}</b>. Your menu comes with you when you set up properly.",
+  "confirmEmailed": "We’ve emailed you a link straight back to this demo — no login needed.",
+  "confirmKeepUntil": "We’ll keep it until <b>{date}</b>. Your menu comes with you when you set up properly.",
   "loading": "Loading…",
   "firstName": "First name",
   "lastName": "Last name",
@@ -52,8 +52,8 @@
   "changeLogo": "Change logo",
   "removeLogo": "Remove",
   "uploadLogo": "📷 Upload logo",
-  "readyTitle": "Your account's ready",
-  "readyBody": "Now let's finish setting up your truck — your menu, allergens and kitchen.",
+  "readyTitle": "Your account’s ready",
+  "readyBody": "Now let’s finish setting up your truck — your menu, allergens and kitchen.",
   "hangTight": "Hang tight — setting everything up.",
   "stage": {
     "account": "Creating your account",
@@ -80,7 +80,7 @@
   "promoLabel": "Have a code? <opt>(optional)</opt>",
   "promoPlaceholder": "Enter it here",
   "agreeTerms": "I agree to the <terms>Terms</terms> and <privacy>Privacy Policy</privacy>.",
-  "freeMonth": "Setting up won't start your free month. That begins when you pick your first live event — whenever you're ready.",
+  "freeMonth": "Setting up won’t start your free month. That begins when you pick your first live event — whenever you’re ready.",
   "fieldError": {
     "firstName": "Tell us your first name.",
     "lastName": "And your last name.",
@@ -97,7 +97,7 @@
     "unreachable": "Couldn’t reach us just now — try again.",
     "createAccountFailed": "Could not create your account.",
     "truckCreateFailed": "Your account’s ready, but we couldn’t create your truck. Try again.",
-    "truckUnreachable": "Your account’s ready, but we couldn’t reach us to create your truck. Try again.",
+    "truckUnreachable": "Your account’s ready, but we couldn’t create your truck just now. Try again.",
     "truckNoToken": "Your truck is set up, but we couldn’t open it just now. Try again."
   }
 }

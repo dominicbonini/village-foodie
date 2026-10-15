@@ -57,3 +57,26 @@ export async function resolveVisitorCountry(query?: string | string[] | null): P
     menu: { current: optionOf(settings), options, remember: picked.fromQuery ? settings.countryCode : null },
   }
 }
+
+/**
+ * The visitor's country CODE for a ROUTE HANDLER (Language Phase 2: the landing page's demo, /api/demo) — the same
+ * sources and the same switched-on rule as `resolveVisitorCountry`, read off the request itself (its URL's ?country,
+ * the hg_country cookie, x-vercel-ip-country). 🔴 NEVER THROWS: a country list that cannot be read is the marketing
+ * country (GB), so a visitor is never refused a demo over it. While the US is switched off this is always GB.
+ */
+export async function visitorCountryCodeOf(req: {
+  nextUrl: { searchParams: URLSearchParams }
+  cookies: { get(name: string): { value: string } | undefined }
+  headers: { get(name: string): string | null }
+}): Promise<string> {
+  try {
+    const all = await listCountrySettingsCached()
+    return pickVisitorCountry(all.filter(c => c.enabled).map(c => c.countryCode), {
+      query: req.nextUrl.searchParams.get('country'),
+      cookie: req.cookies.get(VISITOR_COUNTRY_COOKIE)?.value,
+      ip: req.headers.get('x-vercel-ip-country'),
+    }).code
+  } catch {
+    return MARKETING_COUNTRY
+  }
+}

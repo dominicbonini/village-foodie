@@ -55,6 +55,18 @@ if (RECAPTURE) {
 // ── a frozen clock and zone: "12m late", "today" and printed times are the same on every run ──
 process.env.TZ = 'Europe/London'
 
+// ── RE-PINNED FOR LANGUAGE PHASE 2 (docs/language-phase-2-report.md) ─────────────────────────────────────────
+// This harness proves that MOVING the words into messages/ was invisible. Phase 2 then CHANGES words on purpose
+// (US English, the wrong-English fixes), which language-phase-2.cjs proves. So the comparison runs with the words as
+// they stood before Phase 2 (HG_MESSAGES_FROZEN, scripts/_lp2-frozen.cjs) — the AFTER code with the BEFORE words —
+// and keeps asserting exactly what it asserted. A capture (--capture-to) reads the catalogue as it is.
+if (!CAPTURE_TO && !('HG_MESSAGES_FROZEN' in process.env)) process.env.HG_MESSAGES_FROZEN = 'scripts/fixtures/language-phase-2-messages-before.json'
+// Views Language Phase 2's CODE changes on purpose are compared with BEFORE + that NAMED change (the same table
+// language-phase-2 proves them with, scripts/_lp2-named.cjs: "Sep" not "Sept", long dates, the US 12-hour clock, the
+// buzzer line) — so everything else in those views is still byte-identical. Only a view the table LISTS (a US ticket,
+// whose header padding moves with a longer time) is excluded here; language-phase-2 checks it.
+const PHASE2 = require('./_lp2-named.cjs')
+
 function diffJson(a, b, p = '') {
   if (JSON.stringify(a) === JSON.stringify(b)) return null
   if (a && b && typeof a === 'object' && typeof b === 'object') {
@@ -69,6 +81,7 @@ function diffJson(a, b, p = '') {
 
 ;(async () => {
   let pass = 0, fail = 0
+  const phase2Skipped = [], phase2Named = {}
   const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  ✗ ${name}${detail ? `\n      ${String(detail).slice(0, 900)}` : ''}`) } }
   const head = s => console.log(`\n── ${s}`)
   for (const area of ONLY) {
@@ -96,6 +109,9 @@ function diffJson(a, b, p = '') {
     const before = JSON.parse(zlib.gunzipSync(fs.readFileSync(file))).views
     head(`${area} · byte-identical to BEFORE (GB and US)${mod.compare ? ', apart from the named difference' : ''}`)
     for (const k of Object.keys(before)) {
+      const p2 = PHASE2.apply(`1b/${area}/${k}`, before[k])
+      if (p2.listed) { phase2Skipped.push(`${area} · ${k} (${p2.touched.join('+')})`); continue }
+      if (p2.touched.length) { phase2Named[p2.touched.join('+')] = (phase2Named[p2.touched.join('+')] || 0) + 1; before[k] = p2.expected }
       if (!(k in views)) { t(`${area} · ${k}: still rendered`, false); continue }
       if (mod.compare && mod.compare(k, before[k], views[k], ctx)) continue   // the module proved (or failed) this view itself
       const d = diffJson(before[k], views[k]); t(`${area} · ${k}`, d === null, d)
@@ -103,6 +119,8 @@ function diffJson(a, b, p = '') {
     if (AFTER_CODE && mod.after) await mod.after({ ...ctx, before, views })
   }
   if (CAPTURE_TO) return
+  if (Object.keys(phase2Named).length) console.log(`\n  Language Phase 2's named code changes, applied to BEFORE (scripts/_lp2-named.cjs): ${Object.entries(phase2Named).map(([k, n]) => `${k} ${n}`).join(' · ')}`)
+  if (phase2Skipped.length) console.log(`  ${phase2Skipped.length} view(s) LISTED as changed by Language Phase 2 and checked there instead: ${phase2Skipped.slice(0, 6).join(', ')}${phase2Skipped.length > 6 ? ' …' : ''}`)
   console.log(`\n${fail ? '✗' : '✓'} language-phase-1b: ${pass} passed, ${fail} failed`)
   if (fail) process.exit(1)
 })().catch(e => { console.error(e); process.exit(1) })

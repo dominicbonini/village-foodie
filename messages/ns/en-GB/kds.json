@@ -1,11 +1,11 @@
 {
   "docTitle": "{truck} Kitchen",
-  "loading": "Loading kitchen...",
+  "loading": "Loading kitchen…",
   "pin": {
     "title": "Enter PIN",
     "placeholder": "PIN",
     "unlock": "Unlock",
-    "unreachable": "Can't reach the server right now. Your PIN is fine — try again in a moment.",
+    "unreachable": "Can’t reach the server right now. Your PIN is fine — try again in a moment.",
     "incorrect": "Incorrect PIN",
     "generic": "Something went wrong. Try again."
   },
@@ -15,8 +15,8 @@
     "truckNotFound": "Truck not found"
   },
   "degraded": {
-    "at": "⚠️ Can't reach the server. Showing tickets from {time}. NEW ORDERS MAY BE MISSING.",
-    "earlier": "⚠️ Can't reach the server. Showing tickets from earlier. NEW ORDERS MAY BE MISSING."
+    "at": "⚠️ Can’t reach the server. Showing tickets from {time}. NEW ORDERS MAY BE MISSING.",
+    "earlier": "⚠️ Can’t reach the server. Showing tickets from earlier. NEW ORDERS MAY BE MISSING."
   },
   "header": {
     "dashboard": "Dashboard",
@@ -43,7 +43,8 @@
     "manageEvent": "Manage event",
     "manageEventTitle": "Manage event — start, pause, change or finish it",
     "soundSettings": "Sound settings",
-    "soundSettingsTitle": "Which sounds fire on this device"
+    "soundSettingsTitle": "Which sounds fire on this device",
+    "cashIcon": "💷"
   },
   "panel": {
     "viewSettings": "View settings",
@@ -70,8 +71,9 @@
     "clear": "Clear",
     "toMake": "To make",
     "today": "Today · {range}",
-    "startEvent": "Start Event",
-    "recentlyClosed": "Event finished · {venue} ended at {time}"
+    "startEvent": "Start event",
+    "recentlyClosed": "Event finished · {venue} ended at {time}",
+    "eventStatus": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
   },
   "board": {
     "queueClear": "Queue clear",
@@ -94,7 +96,7 @@
     "waitActive": "⏱ +{mins}m active · Tap to clear",
     "addWait": "⏱ Add extra wait",
     "endTitle": "End event?",
-    "endEarly": "This event isn't scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
+    "endEarly": "This event isn’t scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
     "endNow": "Finish this event? No more orders will be taken.",
     "yes": "Yes",
     "started": "Event started",
@@ -107,8 +109,8 @@
   },
   "intro": {
     "title": "This is the kitchen screen",
-    "p1": "It's the cook's view — the orders you need to make, in the order to make them. The screen by the grill shows this while the counter uses the orders dashboard.",
-    "p2": "Cards move across as you tap them, so whoever's cooking always knows what's next and nobody has to shout. Everything here is your demo data — have a play.",
+    "p1": "It’s the cook’s view — the orders you need to make, in the order to make them. The screen by the grill shows this while the counter uses the orders dashboard.",
+    "p2": "Cards move across as you tap them, so whoever’s cooking always knows what’s next and nobody has to shout. Everything here is your demo data — have a play.",
     "gotIt": "Got it"
   },
   "toast": {
@@ -119,7 +121,7 @@
     "buzzerRemovedNone": "Buzzer removed",
     "buzzerAssigned": "Buzzer {n} assigned",
     "buzzerAssignedFrom": "Buzzer {n} assigned (taken from #{from})",
-    "buzzerRemoveFailed": "Could not remove buzzer {n} — it is still on {target, select, order {order #{id}} other {this order}}",
+    "buzzerRemoveFailed": "{had, select, no {Could not remove the buzzer from {target, select, order {order #{id}} other {this order}}} other {Could not remove buzzer {n} — it is still on {target, select, order {order #{id}} other {this order}}}}",
     "buzzerAssignFailed": "Could not give buzzer {n} to {target, select, order {order #{id}} other {this order}} — {had, select, yes {it still has buzzer {prior}} other {it still has no buzzer}}"
   }
 }

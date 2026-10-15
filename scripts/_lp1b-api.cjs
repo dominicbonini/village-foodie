@@ -175,7 +175,7 @@ function compare(key, B, A, ctx) {
   try { b = JSON.parse(B.body); a = JSON.parse(A.body) } catch { t(`api · ${key}: body byte-identical`, A.body === B.body, `${B.body} · ${A.body}`); return true }
   const ours = b && typeof b.error === 'string' && !('code' in b) && a && 'code' in a
   if (!ours) { t(`api · ${key}: not one of our refusals — body byte-identical`, A.body === B.body, `BEFORE ${B.body}\n      AFTER  ${A.body}`); return true }
-  const MESSAGES = JSON.parse(ctx.read('messages/en-GB.json'))
+  const MESSAGES = require('./_lp2-frozen.cjs').enGBForNode()   // the frozen words under HG_MESSAGES_FROZEN (Language Phase 2 re-pin)
   const { createTranslator } = require(path.join(ctx.REPO, 'node_modules/next-intl'))
   const tr = l => createTranslator({ locale: l, messages: MESSAGES, namespace: 'errorsKitchen' })
   t(`api · ${key}: the BEFORE body is the exact prefix of the AFTER body`, A.body.startsWith(B.body.slice(0, -1) + ','), `BEFORE ${B.body}\n      AFTER  ${A.body}`)

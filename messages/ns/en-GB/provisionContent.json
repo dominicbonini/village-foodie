@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Van 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burgers",
+    "mains": "Mains",
+    "sides": "Sides",
+    "drinks": "Drinks"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pizza van",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja & Honey",
+        "fourCheese": "Four Cheese",
+        "gardenVeg": "Garden Veg",
+        "garlicBread": "Garlic Bread",
+        "rocketParmesan": "Rocket & Parmesan",
+        "olives": "Olives",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coke"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burger van",
+      "items": {
+        "classicCheeseburger": "Classic Cheeseburger",
+        "doubleBacon": "Double Bacon",
+        "buttermilkChicken": "Buttermilk Chicken",
+        "halloumiStack": "Halloumi Stack",
+        "smashBurger": "Smash Burger",
+        "skinOnFries": "Skin-on Fries",
+        "loadedCheeseFries": "Loaded Cheese Fries",
+        "onionRings": "Onion Rings",
+        "craftLemonade": "Craft Lemonade",
+        "coke": "Coke"
+      }
+    },
+    "curries": {
+      "label": "🍛 Curry van",
+      "items": {
+        "chickenTikkaMasala": "Chicken Tikka Masala",
+        "lambRoganJosh": "Lamb Rogan Josh",
+        "chanaMasala": "Chana Masala",
+        "butterChicken": "Butter Chicken",
+        "saagPaneer": "Saag Paneer",
+        "pilauRice": "Pilau Rice",
+        "garlicNaan": "Garlic Naan",
+        "onionBhaji": "Onion Bhaji",
+        "mangoLassi": "Mango Lassi",
+        "coke": "Coke"
+      }
+    }
+  }
+}

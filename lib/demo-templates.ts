@@ -15,10 +15,27 @@
 //
 // Category names are drawn from STANDARD_CATEGORIES (lib/menu-extract) so the main-category lookup hits its
 // primary signal rather than falling back to most-populated.
+//
+// 🔴 THE WORDS ARE THE DEMO TRUCK'S COUNTRY'S (Language Phase 2). Every name a template writes into a truck's menu
+// — category, item, and the chooser label — is a message in `provisionContent.demo…` (messages/en-GB.json, with the
+// US words in messages/en-US.json), read in the truck's locale: a US demo's curry truck sells "Pulao Rice" under
+// "Entrées". Only ids, prices and order live here. en-GB is today's exact words, so a GB demo stores the same bytes.
+// ⚠️ A CATEGORY IS RECOGNISED BY ITS ID, NEVER ITS WORD: `demoTemplateIn` hands provisionDemo each category name's
+// standard id, and buildDemoAssumptions (lib/demo-assumptions.ts) decides which ones cook from the id — so "Entrées"
+// cooks exactly as "Mains" does.
+import '@/lib/i18n/catalog/provisionContent'
+import { translatorFor } from '@/lib/i18n/translator'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import type { StandardCategoryId } from '@/lib/menu-extract'
+import type { Messages } from 'next-intl'
+
+export type DemoTemplateId = 'pizza' | 'burgers' | 'curries'
+/** The standard categories the templates use — their words are `provisionContent.demoCategories.<id>`. */
+export type DemoCategoryId = Extract<StandardCategoryId, 'pizza' | 'burgers' | 'mains' | 'sides' | 'drinks'>
 
 export interface DemoTemplate {
   /** Stable key used by the API and the UI. */
-  id: 'pizza' | 'burgers' | 'curries'
+  id: DemoTemplateId
   /** Shown on the fallback chooser. */
   label: string
   /** Passed to provisionDemo as template.name; surfaces in the result for logging. */
@@ -27,65 +44,104 @@ export interface DemoTemplate {
   items: { name: string; price: number; category: string }[]
 }
 
+/** A template as ids: each item's key is its message key under `provisionContent.demoTemplates.<id>.items` (typed,
+ *  so a key with no message fails the type check). */
+type ItemKey<T extends DemoTemplateId> = keyof Messages['provisionContent']['demoTemplates'][T]['items'] & string
+type DemoTemplateSpec = { [T in DemoTemplateId]: {
+  id: T
+  name: string
+  categories: DemoCategoryId[]
+  items: { key: ItemKey<T>; price: number; category: DemoCategoryId }[]
+} }[DemoTemplateId]
+
 // Pizza FIRST (§11) — build order and the order the chooser offers them in.
-export const DEMO_TEMPLATES: DemoTemplate[] = [
+const SPECS: DemoTemplateSpec[] = [
   {
     id: 'pizza',
-    label: '🍕 Pizza van',
     name: 'Pizza',
-    categories: ['Pizza', 'Sides', 'Drinks'],
+    categories: ['pizza', 'sides', 'drinks'],
     items: [
-      { name: 'Margherita',            price: 9.00,  category: 'Pizza' },
-      { name: 'Pepperoni',             price: 10.50, category: 'Pizza' },
-      { name: 'Nduja & Honey',         price: 12.00, category: 'Pizza' },
-      { name: 'Four Cheese',           price: 11.50, category: 'Pizza' },
-      { name: 'Garden Veg',            price: 10.00, category: 'Pizza' },
-      { name: 'Garlic Bread',          price: 5.00,  category: 'Sides' },
-      { name: 'Rocket & Parmesan',     price: 4.50,  category: 'Sides' },
-      { name: 'Olives',                price: 3.50,  category: 'Sides' },
-      { name: 'San Pellegrino',        price: 2.50,  category: 'Drinks' },
-      { name: 'Coke',                  price: 2.00,  category: 'Drinks' },
+      { key: 'margherita',          price: 9.00,  category: 'pizza' },
+      { key: 'pepperoni',           price: 10.50, category: 'pizza' },
+      { key: 'ndujaHoney',          price: 12.00, category: 'pizza' },
+      { key: 'fourCheese',          price: 11.50, category: 'pizza' },
+      { key: 'gardenVeg',           price: 10.00, category: 'pizza' },
+      { key: 'garlicBread',         price: 5.00,  category: 'sides' },
+      { key: 'rocketParmesan',      price: 4.50,  category: 'sides' },
+      { key: 'olives',              price: 3.50,  category: 'sides' },
+      { key: 'sanPellegrino',       price: 2.50,  category: 'drinks' },
+      { key: 'coke',                price: 2.00,  category: 'drinks' },
     ],
   },
   {
     id: 'burgers',
-    label: '🍔 Burger van',
     name: 'Burgers',
-    categories: ['Burgers', 'Sides', 'Drinks'],
+    categories: ['burgers', 'sides', 'drinks'],
     items: [
-      { name: 'Classic Cheeseburger',  price: 8.50,  category: 'Burgers' },
-      { name: 'Double Bacon',          price: 11.00, category: 'Burgers' },
-      { name: 'Buttermilk Chicken',    price: 9.50,  category: 'Burgers' },
-      { name: 'Halloumi Stack',        price: 9.00,  category: 'Burgers' },
-      { name: 'Smash Burger',          price: 8.00,  category: 'Burgers' },
-      { name: 'Skin-on Fries',         price: 4.00,  category: 'Sides' },
-      { name: 'Loaded Cheese Fries',   price: 6.00,  category: 'Sides' },
-      { name: 'Onion Rings',           price: 4.50,  category: 'Sides' },
-      { name: 'Craft Lemonade',        price: 3.00,  category: 'Drinks' },
-      { name: 'Coke',                  price: 2.00,  category: 'Drinks' },
+      { key: 'classicCheeseburger', price: 8.50,  category: 'burgers' },
+      { key: 'doubleBacon',         price: 11.00, category: 'burgers' },
+      { key: 'buttermilkChicken',   price: 9.50,  category: 'burgers' },
+      { key: 'halloumiStack',       price: 9.00,  category: 'burgers' },
+      { key: 'smashBurger',         price: 8.00,  category: 'burgers' },
+      { key: 'skinOnFries',         price: 4.00,  category: 'sides' },
+      { key: 'loadedCheeseFries',   price: 6.00,  category: 'sides' },
+      { key: 'onionRings',          price: 4.50,  category: 'sides' },
+      { key: 'craftLemonade',       price: 3.00,  category: 'drinks' },
+      { key: 'coke',                price: 2.00,  category: 'drinks' },
     ],
   },
   {
     id: 'curries',
-    label: '🍛 Curry van',
     name: 'Curries',
-    categories: ['Mains', 'Sides', 'Drinks'],
+    categories: ['mains', 'sides', 'drinks'],
     items: [
-      { name: 'Chicken Tikka Masala',  price: 10.50, category: 'Mains' },
-      { name: 'Lamb Rogan Josh',       price: 11.50, category: 'Mains' },
-      { name: 'Chana Masala',          price: 9.00,  category: 'Mains' },
-      { name: 'Butter Chicken',        price: 10.50, category: 'Mains' },
-      { name: 'Saag Paneer',           price: 9.50,  category: 'Mains' },
-      { name: 'Pilau Rice',            price: 3.50,  category: 'Sides' },
-      { name: 'Garlic Naan',           price: 3.50,  category: 'Sides' },
-      { name: 'Onion Bhaji',           price: 4.00,  category: 'Sides' },
-      { name: 'Mango Lassi',           price: 3.50,  category: 'Drinks' },
-      { name: 'Coke',                  price: 2.00,  category: 'Drinks' },
+      { key: 'chickenTikkaMasala',  price: 10.50, category: 'mains' },
+      { key: 'lambRoganJosh',       price: 11.50, category: 'mains' },
+      { key: 'chanaMasala',         price: 9.00,  category: 'mains' },
+      { key: 'butterChicken',       price: 10.50, category: 'mains' },
+      { key: 'saagPaneer',          price: 9.50,  category: 'mains' },
+      { key: 'pilauRice',           price: 3.50,  category: 'sides' },
+      { key: 'garlicNaan',          price: 3.50,  category: 'sides' },
+      { key: 'onionBhaji',          price: 4.00,  category: 'sides' },
+      { key: 'mangoLassi',          price: 3.50,  category: 'drinks' },
+      { key: 'coke',                price: 2.00,  category: 'drinks' },
     ],
   },
 ]
 
-export function getDemoTemplate(id: string | null | undefined): DemoTemplate | null {
+/** One template in one locale's words, with the standard id of each category name it uses. */
+function build(spec: DemoTemplateSpec, locale: string): { template: DemoTemplate; categoryIds: Record<string, DemoCategoryId> } {
+  const t = translatorFor(locale, 'provisionContent')
+  const cat = (id: DemoCategoryId) => t(`demoCategories.${id}`)
+  const categoryIds: Record<string, DemoCategoryId> = {}
+  for (const id of spec.categories) categoryIds[cat(id)] = id
+  return {
+    template: {
+      id: spec.id,
+      label: t(`demoTemplates.${spec.id}.label`),
+      name: spec.name,
+      categories: spec.categories.map(cat),
+      // (the key is checked by ItemKey above; the per-template path is beyond what the translator's key type can follow)
+      items: (spec.items as { key: string; price: number; category: DemoCategoryId }[])
+        .map(i => ({ name: t(`demoTemplates.${spec.id}.items.${i.key}` as never), price: i.price, category: cat(i.category) })),
+    },
+    categoryIds,
+  }
+}
+
+/** The templates in en-GB — the chooser's list (components/landing/DemoUpload.tsx reads only the ids). */
+export const DEMO_TEMPLATES: DemoTemplate[] = SPECS.map(s => build(s, DEFAULT_LOCALE).template)
+
+/** A template by id, in `locale`'s words (en-GB when none is given). */
+export function getDemoTemplate(id: string | null | undefined, locale: string = DEFAULT_LOCALE): DemoTemplate | null {
+  return demoTemplateIn(id, locale)?.template ?? null
+}
+
+/** A template by id in `locale`'s words, and each of its category names → its standard category id (for code that
+ *  must recognise a category: key by the id, never by the word). Null for an unknown id. */
+export function demoTemplateIn(id: string | null | undefined, locale: string):
+  { template: DemoTemplate; categoryIds: Record<string, DemoCategoryId> } | null {
   if (!id) return null
-  return DEMO_TEMPLATES.find(t => t.id === id) ?? null
+  const spec = SPECS.find(s => s.id === id)
+  return spec ? build(spec, locale) : null
 }

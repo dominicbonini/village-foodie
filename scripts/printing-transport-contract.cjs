@@ -34,7 +34,8 @@ check(typeof net.reconnect === 'function' && typeof ble.reconnect === 'function'
 console.log('\n── NET: connect to an unreachable target ───────────────────────────────────────────────')
 {
   g.netProbe = async () => ({ ok: false, error: 'refused', errorCode: 'refused' })
-  const r = await net.connect('192.168.1.50'); check(r.ok === false && /Can't reach the printer at 192.168.1.50:9100/.test(say(r.error)), `connect('192.168.1.50') → ok:false "${say(r.error)}"`)
+  // ⚠️ RE-PINNED (Language Phase 2, Part 3 — the wrong-English fixes, scripts/fixtures/language-phase-2-gb-named.json): typographic apostrophe.
+  const r = await net.connect('192.168.1.50'); check(r.ok === false && /Can’t reach the printer at 192.168.1.50:9100/.test(say(r.error)), `connect('192.168.1.50') → ok:false "${say(r.error)}"`)
   check(!g.prefs.has('hg_net_printer_address'), 'nothing stored after a failed probe')
   const s = await net.status(); check(s.connected === false, 'status stays not connected')
   const bad = await net.connect('not an address!'); check(bad.ok === false && /192\.168\.1\.50/.test(say(bad.error)), `invalid address → "${say(bad.error)}"`)
@@ -49,7 +50,7 @@ console.log('\n── NET: a successful probe, then status, then a failed send �
   let s = await net.status(); check(s.connected === true && s.printerName === '192.168.1.50:9100', `status → connected, "${s.printerName}"`)
   g.netSend = async () => ({ ok: false, bytesWritten: 0, error: 'refused', errorCode: 'refused' })
   const r2 = await net.sendBytes(new Uint8Array([1])); check(r2.ok === false, 'a refused send → ok:false')
-  s = await net.status(); check(s.connected === false && /Can't reach the printer at 192.168.1.50:9100/.test(say(s.detail)), `…and status is no longer connected: "${say(s.detail)}"`)
+  s = await net.status(); check(s.connected === false && /Can’t reach the printer at 192.168.1.50:9100/.test(say(s.detail)), `…and status is no longer connected: "${say(s.detail)}"`)
   await net.disconnect(); check(!g.prefs.has('hg_net_printer_address'), 'disconnect clears the stored address')
 }
 console.log('\n── NET: iOS Local Network refusal → availability unauthorised ──────────────────────────')

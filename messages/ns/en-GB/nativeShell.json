@@ -11,7 +11,7 @@
     "collected": "Order #{id} {paidToo, select, yes {paid and collected} other {collected}}",
     "ready": "Order #{id} ready",
     "readyBuzzer": "Order #{id} ready · <pill></pill>",
-    "status": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {collected} undo_collected {restored} cancel {cancelled} other {{action}}}"
+    "status": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {collected} undo_collected {restored} cancel {cancelled} other {updated}}"
   },
   "conflicts": {
     "more": "+{count} more",
@@ -20,29 +20,29 @@
   },
   "banner": {
     "paymentTitle": "⚠ PAYMENT NOT RECORDED",
-    "paymentBody": "{orders} — marked paid on this device only. It hasn't gone through.",
+    "paymentBody": "{orders} — marked paid on this device only. It hasn’t gone through.",
     "paymentCheck": "Check the order and take payment again if it is still owed.",
     "dismiss": "Dismiss",
     "confirmChecked": "Confirm you have checked {orders}",
     "confirmHides": "This hides the warning. The record is kept on this device either way.",
     "notYet": "Not yet",
-    "iveChecked": "I've checked {orders}",
-    "statusBody": "⚠ {orders} — this change didn't go through. Check the order.",
-    "offline": "📴 No connection — {n, plural, one {{count} change} other {{count} changes}} saved on this device. They'll be sent when you're back online. Settings are locked.",
+    "iveChecked": "I’ve checked {orders}",
+    "statusBody": "⚠ {orders} — this change didn’t go through. Check the order.",
+    "offline": "📴 No connection — {n, plural, one {{count} change saved on this device. It’ll be sent when you’re back online.} other {{count} changes saved on this device. They’ll be sent when you’re back online.}} Settings are locked.",
     "syncing": "Back online — sending {n, plural, one {{count} change} other {{count} changes}}…",
     "synced": "All changes sent.",
-    "stillQueued": "{n, plural, one {{count} change} other {{count} changes}} saved on this device. Still trying to send them."
+    "stillQueued": "{n, plural, one {{count} change saved on this device. Still trying to send it.} other {{count} changes saved on this device. Still trying to send them.}}"
   },
   "lock": {
     "locked": "HatchGrab is locked",
     "verifying": "Verifying…",
     "unlock": "Unlock",
-    "cantUseBiometric": "Can't use Face / Touch ID?",
+    "cantUseBiometric": "Can’t use Face / Touch ID?",
     "enterPin": "Enter your backup PIN",
     "wrongPin": "Wrong PIN — try again.",
     "checking": "Checking…",
     "tryBiometric": "Try Face / Touch ID instead",
-    "forgot": "Forgot your PIN? You'll need to reinstall the app."
+    "forgot": "Forgot your PIN? You’ll need to reinstall the app."
   },
   "notify": {
     "title": "🔔 Notifications",
@@ -55,7 +55,7 @@
   },
   "van": {
     "label": "Van",
-    "loadRetry": "Couldn't load · Retry",
+    "loadRetry": "Couldn’t load · Retry",
     "select": "Select…"
   },
   "deviceSave": {
@@ -63,8 +63,8 @@
     "server": "Couldn’t save that just now. Please try again."
   },
   "setup": {
-    "fetchErrorTitle": "Couldn't load device setup",
-    "fetchErrorBody": "We couldn't reach the server to set up <b>this device</b>. Check the connection and try again — your orders and settings are unaffected.",
+    "fetchErrorTitle": "Couldn’t load device setup",
+    "fetchErrorBody": "We couldn’t reach the server to set up <b>this device</b>. Check the connection and try again — your orders and settings are unaffected.",
     "retry": "Retry",
     "later": "Later",
     "noVanTitle": "No active van",
@@ -83,8 +83,8 @@
   },
   "device": {
     "title": "This device",
-    "viewing": "You're viewing: <b>{truck}</b>",
-    "viewingVan": "You're viewing: <b>{truck}</b> — <b>{van}</b>",
+    "viewing": "You’re viewing: <b>{truck}</b>",
+    "viewingVan": "You’re viewing: <b>{truck}</b> — <b>{van}</b>",
     "only": "This device only — other devices are set separately. (ID: {id}…)",
     "truck": "Truck",
     "van": "Van",
@@ -93,7 +93,7 @@
     "patchFailed": "{setting, select, van {Van} defaultScreen {Default screen} other {Order notifications}} didn’t save. {reason}",
     "requireBiometric": "Require fingerprint or face unlock to open",
     "pinTitle": "Set a backup PIN (4–6 digits)",
-    "pinHelp": "Your way in if fingerprint or face unlock won't work — it's the only fallback, so don't forget it (a forgotten PIN means reinstalling the app). Works offline.",
+    "pinHelp": "Your way in if fingerprint or face unlock won’t work — it’s the only fallback, so don’t forget it (a forgotten PIN means reinstalling the app). Works offline.",
     "pinPlaceholder": "PIN",
     "confirmPinPlaceholder": "Confirm PIN",
     "pinTooShort": "Use at least 4 digits.",
@@ -120,8 +120,8 @@
   },
   "offlineAlert": {
     "pausedTitle": "Ordering paused",
-    "pausedBody": "You're offline — customer ordering is paused.",
-    "offlineTitle": "You're offline",
+    "pausedBody": "You’re offline — customer ordering is paused.",
+    "offlineTitle": "You’re offline",
     "offlineBody": "This device has lost its connection."
   }
 }

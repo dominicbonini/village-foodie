@@ -11,14 +11,14 @@
   "loadingCountries": "Loading…",
   "verify": {
     "ok": "Email confirmed — thank you.",
-    "expired": "That confirmation link has expired. Get in touch and we'll sort it before you go live.",
-    "invalid": "That confirmation link didn't work. Get in touch and we'll sort it before you go live."
+    "expired": "That confirmation link has expired. Get in touch and we’ll sort it before you go live.",
+    "invalid": "That confirmation link didn’t work. Get in touch and we’ll sort it before you go live."
   },
   "identity": {
-    "heading": "What's your truck called?",
+    "heading": "What’s your truck called?",
     "intro": "This is the name customers see. Nothing goes public until you choose to go live.",
     "nameLabel": "Truck name",
-    "namePlaceholder": "Bob's Burgers",
+    "namePlaceholder": "Bob’s Burgers",
     "phoneLabel": "Phone",
     "whatsappTick": "This number is on WhatsApp",
     "phoneHelp": "Customers see this on their order confirmation so they can ask about an order. The tick decides whether that reads “Call us” or “WhatsApp us”. You can change both in Settings."

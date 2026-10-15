@@ -1,1 +1,10 @@
-{}
+{
+  "sold_out_paying": "{names} sold out while you were paying. We’ve removed {count, plural, one {it} other {them}} and you have not been charged — please check your order before placing it again.",
+  "private_link_only": "This event takes orders by private link only. Please use the organizer’s link or QR code.",
+  "card_unavailable": "We could not set up card payment just now, so your order has not been placed and you have not been charged. Your cart is saved — please try again, or choose Pay at the truck.",
+  "cannot_cancel": "This order can no longer be canceled",
+  "cancel_window_passed": "{n, plural, one {Orders can no longer be canceled within {count} minute of pickup} other {Orders can no longer be canceled within {count} minutes of pickup}}",
+  "order_not_placed": "Sorry — we could not place your order. You have not been charged.",
+  "truck_not_taking_orders": "This truck is no longer taking orders. You have not been charged.",
+  "category_closed_paying": "Sorry — {category} closed while you were paying, so we could not place your order. You have not been charged."
+}

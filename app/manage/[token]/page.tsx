@@ -90,7 +90,7 @@ import { AppLink } from '@/components/native/AppLink'   // internal-route anchor
 import { useDragDrop } from '@/lib/useDragDrop'
 import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
 import { ImageDropSlot } from '@/components/manage/ImageDropSlot'
-import { formatTime, formatSlot, getLocalDateInTz, addDaysYmd, instantOfLocal, localDateOfInstant, clockOfInstantInTz, formatYmd, formatInstant, formatInstantClock, formatNumericDate, formatNumericDayMonth, formatShortOrdinalDate, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
+import { formatTime, formatSlot, getLocalDateInTz, addDaysYmd, instantOfLocal, localDateOfInstant, clockOfInstantInTz, formatYmd, formatInstant, formatInstantClock, formatNumericDate, formatNumericDayMonth, formatShortOrdinalDate, formatYmdShortMonth, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { matchCardEntries, mergeAllergensUnion, cardEntryKey, type CardEntry, type DishRef, type CardMatchResult } from '@/lib/allergen-card-match'
 import { isExcluded } from '@/lib/schedule-extract'
 import { detectEventConflicts } from '@/lib/event-conflicts'
@@ -8024,7 +8024,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return ''
     const [y, m, d] = ymd.split('-').map(Number)
     void y; void m; void d
-    return formatYmd(ymd, ts, { weekday: 'short', day: 'numeric', month: 'short' })
+    return formatYmdShortMonth(ymd, ts, { weekday: 'short', day: 'numeric', month: 'short' })
   }
 
   /** Which place an event resolves to — the shared rule, over the places the modal already has. */
@@ -8510,7 +8510,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     // A calendar date in the truck's words (Phase 2B) — GB "FRI 9 OCT", US the same words in en-US.
     const dayName = formatYmd(event.event_date, ts, { weekday: 'short' }).toUpperCase()
     const dayNum = Number(event.event_date.slice(8, 10))
-    const month = formatYmd(event.event_date, ts, { month: 'short' }).toUpperCase()
+    const month = formatYmdShortMonth(event.event_date, ts, { month: 'short' }).toUpperCase()
 
     return (
       <Card key={event.id}>
@@ -8754,7 +8754,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     <p>{c.message}</p>
                     <p className="text-xs text-amber-700 mt-0.5">
                       Already on your schedule: <strong>{c.event.venue_name || 'Unnamed venue'}</strong>
-                      {` · ${formatYmd(c.event.event_date, ts, { day: 'numeric', month: 'short' })}`}
+                      {` · ${formatYmdShortMonth(c.event.event_date, ts, { day: 'numeric', month: 'short' })}`}
                       {(c.event.start_time || c.event.end_time) ? ` · ${formatSlot((c.event.start_time || '').slice(0, 5), ts)}–${formatSlot((c.event.end_time || '').slice(0, 5), ts)}` : ''}
                       {c.event.postcode ? ` · ${c.event.postcode}` : ''}
                       {` (${c.event.status})`}
@@ -15047,7 +15047,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     if (!orders.length || filterMode !== 'event' || !reportEventId) return null
     const ev = recentEvents.find(e => e.id === reportEventId)
     const dateStr = ev?.event_date
-      ? formatYmd(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
+      ? formatYmdShortMonth(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
       : ''
     return [ev?.venue_name, dateStr].filter(Boolean).join(' · ')
   }, [orders, filterMode, reportEventId, recentEvents, ts]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -15172,7 +15172,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
             <option value="">Select an event…</option>
             {recentEvents.map(ev => {
-              const evDate = formatYmd(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
+              const evDate = formatYmdShortMonth(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
               return <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} · {evDate}</option>
             })}
           </select>
@@ -15236,7 +15236,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                   className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white w-[320px]">
                   <option value="">Select an event…</option>
                   {recentEvents.map(ev => {
-                    const evDate = formatYmd(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
+                    const evDate = formatYmdShortMonth(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
                     return <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} · {evDate}</option>
                   })}
                 </select>

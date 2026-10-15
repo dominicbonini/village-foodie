@@ -19,6 +19,11 @@
 // phase3-screens, order-charges and the rest of the sweep, which this phase must leave passing unchanged.)
 
 const fs = require('fs'); const path = require('path'); const zlib = require('zlib')
+// ── RE-PINNED FOR LANGUAGE PHASE 2 (docs/language-phase-2-report.md) ─────────────────────────────────────────
+// This harness proves that separating keys from labels was invisible. Phase 2 then changes words on purpose (en-US
+// is filled; the wrong-English fixes), proven by scripts/language-phase-2.cjs — so the comparison renders with the
+// words as they stood before Phase 2 (HG_MESSAGES_FROZEN, scripts/_lp2-frozen.cjs), and asserts what it asserted.
+if (!process.argv.includes('--capture') && !('HG_MESSAGES_FROZEN' in process.env)) process.env.HG_MESSAGES_FROZEN = 'scripts/fixtures/language-phase-2-messages-before.json'
 const kit = require('./_render-kit.cjs')({ cacheTag: 'language-phase-0' })
 const { REPO } = kit
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')

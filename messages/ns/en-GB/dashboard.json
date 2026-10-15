@@ -3,7 +3,7 @@
   "toast": {
     "usualSetting": "Back to your usual setting for this event",
     "intervalsSaved": "Collection times saved for this event",
-    "notOnBoard": "That order is not on this board - check the event",
+    "notOnBoard": "That order is not on this board — check the event",
     "orderUrlMissing": "Order URL not available — slug not set",
     "printMode": "{mode, select, onConfirmed {Tickets will print when you accept an order} other {Tickets will print shortly before collection}}",
     "saveFailed": "Failed to save",
@@ -40,20 +40,20 @@
   },
   "gate": {
     "invalidAccessLink": "Invalid access link",
-    "loading": "Loading dashboard...",
+    "loading": "Loading dashboard…",
     "accessDenied": "Access denied",
-    "cantTakeOrders": "Can't take orders on this device right now",
-    "noOrdersSaved": "We couldn't reach your orders, and there's nothing saved on this device yet.",
-    "openOnceOnline": "Open the app once while you're connected and it will work offline after that."
+    "cantTakeOrders": "Can’t take orders on this device right now",
+    "noOrdersSaved": "We couldn’t reach your orders, and there’s nothing saved on this device yet.",
+    "openOnceOnline": "Open the app once while you’re connected and it will work offline after that."
   },
   "demo": {
     "restartFailed": "Could not start a new service — try again.",
     "endedTitle": "This service has ended",
-    "endedBody": "Start a new one and we'll set up a fresh service for right now — your menu stays as it is.",
+    "endedBody": "Start a new one and we’ll set up a fresh service for right now — your menu stays as it is.",
     "settingUp": "Setting up…",
     "startNew": "Start a new service",
     "lockBody": "This is where you start and close a service, pause orders when the queue gets long, or switch to a different event.",
-    "lockWhy": "We keep one event running in the demo so there's always something to play with. You get full control when you sign up.",
+    "lockWhy": "We keep one event running in the demo so there’s always something to play with. You get full control when you sign up.",
     "gotIt": "Got it"
   },
   "qr": {
@@ -64,7 +64,7 @@
     "tapToClose": "Tap anywhere to close"
   },
   "pin": {
-    "unreachable": "Can't reach the server right now. Your PIN is fine — try again in a moment.",
+    "unreachable": "Can’t reach the server right now. Your PIN is fine — try again in a moment.",
     "incorrect": "Incorrect PIN",
     "linkInvalid": "This link is no longer valid.",
     "failed": "Something went wrong. Try again.",
@@ -78,13 +78,13 @@
     "removed": "Buzzer removed",
     "assigned": "Buzzer {number} assigned",
     "assignedTakenFrom": "Buzzer {number} assigned (taken from #{from})",
-    "removeFailed": "{target, select, order {Could not remove buzzer {prior} — it is still on order #{id}} other {Could not remove buzzer {prior} — it is still on this order}}",
+    "removeFailed": "{has, select, no {{target, select, order {Could not remove the buzzer from order #{id}} other {Could not remove the buzzer from this order}}} other {{target, select, order {Could not remove buzzer {prior} — it is still on order #{id}} other {Could not remove buzzer {prior} — it is still on this order}}}}",
     "giveFailed": "{target, select, order {Could not give buzzer {number} to order #{id} — {has, select, yes {it still has buzzer {prior}} other {it still has no buzzer}}} other {Could not give buzzer {number} to this order — {has, select, yes {it still has buzzer {prior}} other {it still has no buzzer}}}}"
   },
   "refund": {
     "failed": "That refund could not be sent.",
     "pending": "{amount} refund sent. Stripe is processing it — the order will show as refunded once the money has actually gone back.",
-    "settled": "{amount} has been refunded to the customer's card.",
+    "settled": "{amount} has been refunded to the customer’s card.",
     "unreachable": "We could not reach the payment system, so nothing was refunded. Check your connection and try again."
   },
   "cancelReasons": {
@@ -99,28 +99,28 @@
   "cancelModal": {
     "chooseReason": "Choose a reason for the refund.",
     "title": "Cancel order #{id}?",
-    "refundQuestion": "Cancel this order and refund {amount} to the customer's card?",
+    "refundQuestion": "Cancel this order and refund {amount} to the customer’s card?",
     "refundTick": "Refund {amount} to their card",
     "reasonRecorded": "The reason you give below is recorded against the refund.",
-    "noRefund": "The order will be cancelled and the {amount} will stay with you. Nothing goes back to the customer's card.",
+    "noRefund": "The order will be cancelled and the {amount} will stay with you. Nothing goes back to the customer’s card.",
     "held": "Their card is <b>held, not charged</b> — no money has been taken, so there is nothing to refund. Cancelling releases the hold straight away.",
     "cash": "{amount} was taken in person. There is no card payment to refund — hand the money back at the truck, and use the PAID chip on the order to remove the record.",
     "reason": "{required, select, yes {Reason — required} other {Reason — optional}}",
     "selectReason": "Select a reason",
     "noteLabel": "Additional note — optional",
-    "notePlaceholder": "Add more detail for the customer...",
+    "notePlaceholder": "Add more detail for the customer…",
     "keep": "Keep order",
     "refunding": "Refunding…",
     "confirm": "Cancel order"
   },
-  "switchEventConfirm": "You're currently serving at {current}. Switch to {next}? Tap the current event to switch back.",
+  "switchEventConfirm": "You’re currently serving at {current}. Switch to {next}? Tap the current event to switch back.",
   "extraWait": {
     "activeTapToClear": "+{mins}m active · Tap to clear",
     "add": "Add extra wait",
     "option": "+{mins} min"
   },
   "banner": {
-    "boardUnavailable": "Couldn't load today's orders. You can still take new orders on this device.",
+    "boardUnavailable": "Couldn’t load today’s orders. You can still take new orders on this device.",
     "menuSnapshot": "Menu saved on this tablet at {time}. Check prices before taking payment.",
     "cardPaymentsOff": "Card payments are off — customers are paying at the hatch. This stays off, on every event, until you turn it back on.",
     "turnBackOn": "Turn back on",
@@ -149,12 +149,13 @@
   "eventBar": {
     "manageEvent": "Manage event",
     "noEvent": "No event selected",
-    "selectEvent": "Select event"
+    "selectEvent": "Select event",
+    "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
   },
   "orders": {
     "noEvent": "No event selected — select an event to view orders",
     "prepBannerTitle": "Set your prep times before going live",
-    "prepBannerBody": "Your menu is using default prep times. Update them in Manage so your kitchen doesn't get overwhelmed with orders.",
+    "prepBannerBody": "Your menu is using default prep times. Update them in Manage so your kitchen doesn’t get overwhelmed with orders.",
     "editCategories": "Edit categories",
     "eventFinishedAt": "Event finished · {venue} ended at {time}",
     "statNew": "New",
@@ -174,20 +175,21 @@
     "emptyUnavailable": "Couldn’t load today’s orders.",
     "emptyNone": "No orders yet today",
     "emptyAllDone": "All orders complete!",
-    "updated": "Updated {time}"
+    "updated": "Updated {time}",
+    "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Cancelled} cooking {Cooking} ready {Ready} collected {Collected} other {{status}}}"
   },
   "prep": {
-    "buttonTitle": "Today's prep list",
+    "buttonTitle": "Today’s prep list",
     "button": "Prep",
     "title": "Prep needed now",
     "nothing": "Nothing to prep right now",
     "kitchen": "Kitchen — start now (in order)",
     "assembly": "Assembly",
     "comingUp": "Coming up",
-    "startBy": "Start by {time} · {far, select, yes {in {hours}h} other {{mins}min}}"
+    "startBy": "Start by {time} · {far, select, yes {in {hours}h} other {{mins} min}}"
   },
   "addTab": {
-    "noMenuSaved": "Your menu isn't saved on this device, so there's nothing to build an order from."
+    "noMenuSaved": "Your menu isn’t saved on this device, so there’s nothing to build an order from."
   },
   "settings": {
     "offlineStillWorks": "Printer & notification settings still work offline.",
@@ -199,7 +201,7 @@
     "layoutTabs": "Separate categories",
     "layoutTabsHelp": "Show one category at a time. Tap a category to switch. Best for longer menus, where every item stays in the same place.",
     "layoutScroll": "One page",
-    "layoutScrollHelp": "Show every item in one scrolling list, with a heading for each category. There are no category buttons - you scroll to move around. Best for shorter menus, where you can see most of it at once.",
+    "layoutScrollHelp": "Show every item in one scrolling list, with a heading for each category. There are no category buttons — you scroll to move around. Best for shorter menus, where you can see most of it at once.",
     "privateLinkDialog": "Private link and QR code",
     "paidStepTitle": "Take orders without payment",
     "paidStepHelp": "Adds a Confirm button when you add an order yourself, so you can place it now and take payment later.",
@@ -227,10 +229,10 @@
     "dueSoundTitle": "Sound when an order is due to be cooked",
     "dueSoundHelp": "Sounds when a ticket turns amber.",
     "intervalsTitle": "Collection times",
-    "intervalsHelp": "How far apart collection times are. This doesn't change kitchen capacity or prep times.",
+    "intervalsHelp": "How far apart collection times are. This doesn’t change kitchen capacity or prep times.",
     "intervalsUnavailable": "Collection times are unavailable right now.",
     "customerTimes": "Customer Collection Times",
-    "everyMinutes": "{n, plural, other {Every {count} minutes}}",
+    "everyMinutes": "{n, plural, one {Every minute} other {Every {count} minutes}}",
     "canPick": "{who, select, customers {Customers can pick {example}} other {You and your customers can pick {example}}}",
     "differentTimes": "Use different times for orders I add",
     "yourTimes": "Your Collection Times",
@@ -253,7 +255,9 @@
     "windowAria": "Capacity window (minutes)",
     "windowEvery": "every {duration}",
     "assignTruck": "Assign a truck to this event before setting kitchen capacity.",
-    "setCapacityFirst": "Set a capacity to choose which categories count."
+    "setCapacityFirst": "Set a capacity to choose which categories count.",
+    "capacityDesc": "The most items your kitchen can turn out at once, across all the categories you’ve ticked. Each category’s own batch size still applies on top.",
+    "capacityExample": "Example: if you can cook 4 mains in 5 minutes, then set it to 4 items every 5 minutes. The total capacity limits orders across all selected categories so if you want to only sell a maximum of 10 starters and mains every 5 minutes, then set Total Capacity to 10 items every 5 minutes and select Starters and Mains tickbox. This will still keep your mains restricted to 4 items every 5 minutes."
   },
   "common": {
     "saving": "Saving…",
@@ -261,7 +265,7 @@
     "ok": "OK",
     "yes": "Yes",
     "cancel": "Cancel",
-    "savingDots": "Saving...",
+    "savingDots": "Saving…",
     "save": "Save"
   },
   "stock": {
@@ -285,14 +289,14 @@
     "followsCategoryTitle": "Following category total — type a number to cap",
     "itemStockTitle": "Item stock",
     "availableAria": "Available — {item}",
-    "loadingMenu": "Loading menu...",
+    "loadingMenu": "Loading menu…",
     "optionsTitle": "Options — standing stock",
-    "optionsHelp": "Shared across all dishes that use them. This count does <b>not</b> reset per event — it's a running total for the whole service.",
+    "optionsHelp": "Shared across all dishes that use them. This count does <b>not</b> reset per event — it’s a running total for the whole service.",
     "standingTitle": "Standing stock — blank = unlimited",
     "howTitle": "How it works",
     "howCategory": "<b>Category total</b> is a shared pool across every item in that category (e.g. 30 starters tonight).",
     "howItem": "<b>Item limit</b> caps just that one item within the pool (e.g. only 8 Pepperoni) — leave it blank to draw from the pool with no cap of its own.",
-    "howFirst": "Whichever runs out first applies — the category pool or the item's own limit.",
+    "howFirst": "Whichever runs out first applies — the category pool or the item’s own limit.",
     "howAvailable": "<b>Available</b>: green = on sale, grey = sold out (hidden from customers).",
     "howEdit": "Edit: configure prep time, batch size, and notes per category."
   },
@@ -302,12 +306,12 @@
   },
   "finish": {
     "title": "End event?",
-    "early": "This event isn't scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
+    "early": "This event isn’t scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
     "body": "Finish this event? No more orders will be taken."
   },
   "pause": {
     "title": "Pause online orders",
-    "body": "Customers can still browse the menu but won't be able to order.",
+    "body": "Customers can still browse the menu but won’t be able to order.",
     "minutes": "{n, plural, one {{count} minute} other {{count} minutes}}",
     "indefinite": "Until I turn it back on"
   },
@@ -320,7 +324,7 @@
   },
   "kds": {
     "title": "Open kitchen screen",
-    "body": "Choose which van's kitchen screen to open:"
+    "body": "Choose which van’s kitchen screen to open:"
   },
   "profile": {
     "title": "Edit profile",
@@ -328,7 +332,7 @@
     "email": "Email"
   },
   "edit": {
-    "title": "Edit Order #{id}",
+    "title": "Edit order #{id}",
     "addItems": "Add items",
     "order": "Order",
     "original": "Original",
@@ -347,7 +351,7 @@
     "phonePlaceholder": "Phone number",
     "notes": "Notes",
     "repriceTitle": "Not on the menu",
-    "repriceBody": "These are new to this order and aren't on the menu, so the price couldn't be checked. Everything already on the order keeps its original price. Nothing has been saved yet.",
+    "repriceBody": "These are new to this order and aren’t on the menu, so the price couldn’t be checked. Everything already on the order keeps its original price. Nothing has been saved yet.",
     "repriceLine": "{name}{hasOn, select, yes { (on {on})} other {}} — kept at <b>{amount}</b>",
     "orderTotal": "Order total",
     "saveAt": "Save at {amount}",

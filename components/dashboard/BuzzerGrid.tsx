@@ -214,7 +214,7 @@ export function BuzzerGrid({
               legitimate move (that customer may have already been served), so the grid stays live. */}
           {allTaken && (
             <p className="mx-5 mb-3 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-              {t('allTaken', { count: String(buzzerCount) })}
+              {t('allTaken', { n: buzzerCount, count: String(buzzerCount) })}
             </p>
           )}
 

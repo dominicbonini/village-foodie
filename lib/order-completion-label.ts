@@ -12,6 +12,8 @@
 // genuinely differ there. Folding cash in would change what the placeholder renders, which is a behaviour
 // change and not what this is for. Callers that care about cash decide it themselves, above this call.
 import type { CompletionPresses } from '@/lib/payments/paid-step'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/orderCard'
 
 export function completionLabel(a: {
   /** getOrderBalance's verdict: paid or refunded in full. */
@@ -24,12 +26,16 @@ export function completionLabel(a: {
   partPaid: boolean
   /** The outstanding balance, already formatted (e.g. "£8.50"). Only read on the part-paid branch. */
   balanceLabel?: string
+  /** The truck's locale (its country's `locale`, Language Phase 2); en-GB when absent. The words are
+   *  messages `orderCard` — "Collected", "Mark paid & collected", "Mark {amount} paid", "Mark paid". */
+  locale?: string | null
 }): string {
+  const t = translatorFor(a.locale, 'orderCard')
   // 🔴 SAME BRANCH ORDER AS OrderCard's completionBtn: paid-ness FIRST, the setting second. Whether money
   // has been recorded is a fact about the ORDER; the setting is a preference of the truck, and it may not
   // overrule the fact. A settled order reads "Collected" whatever the truck is configured to do.
-  if (a.paid || a.heldAuthorisation) return 'Collected'
-  if (a.completionPresses === 'one') return 'Mark paid & collected'
-  if (a.partPaid) return `Mark ${a.balanceLabel ?? ''} paid`.replace('  ', ' ')
-  return 'Mark paid'
+  if (a.paid || a.heldAuthorisation) return t('collected')
+  if (a.completionPresses === 'one') return t('markPaidAndCollected')
+  if (a.partPaid) return t('markAmountPaid', { amount: a.balanceLabel ?? '' }).replace('  ', ' ')
+  return t('markPaid')
 }

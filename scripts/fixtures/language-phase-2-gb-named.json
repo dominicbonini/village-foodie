@@ -1,0 +1,1036 @@
+{
+  "order.confirmMissing": {
+    "before": "We couldn&apos;t find that order.",
+    "after": "We couldn’t find that order."
+  },
+  "order.taxNotice": {
+    "before": "Menu prices don't include {tax}. It's added below.",
+    "after": "Menu prices don’t include {tax}. It’s added below."
+  },
+  "order.loadingOrder": {
+    "before": "Loading your order...",
+    "after": "Loading your order…"
+  },
+  "order.loadingMenu": {
+    "before": "Loading menu...",
+    "after": "Loading menu…"
+  },
+  "order.eventsLoadFailed": {
+    "before": "We couldn't load this truck's events.",
+    "after": "We couldn’t load this truck’s events."
+  },
+  "order.pausedOfflineBody": {
+    "before": "We're having a connection issue but you can still order at the window. Check back soon!",
+    "after": "We’re having a connection issue but you can still order at the window. Check back soon!"
+  },
+  "order.notOpenBody": {
+    "before": "{truck} hasn't confirmed this event yet. Check back closer to the date or follow them on social media for updates.",
+    "after": "{truck} hasn’t confirmed this event yet. Check back closer to the date or follow them on social media for updates."
+  },
+  "order.loadingEvents": {
+    "before": "Loading events...",
+    "after": "Loading events…"
+  },
+  "order.allergenInfo": {
+    "before": "ⓘ Allergen Info",
+    "after": "ⓘ Allergen info"
+  },
+  "order.loadingTimes": {
+    "before": "Loading available times...",
+    "after": "Loading available times…"
+  },
+  "order.stockNotice": {
+    "before": "Sorry — {detail} now. We've updated your order — please review and confirm.",
+    "after": "Sorry — {detail} now. We’ve updated your order — please review and confirm."
+  },
+  "order.placingOrder": {
+    "before": "Placing order...",
+    "after": "Placing order…"
+  },
+  "order.thanksReady": {
+    "before": "Thanks! We've received your order and it'll be ready soon.",
+    "after": "Thanks! We’ve received your order and it’ll be ready soon."
+  },
+  "order.cardFallback": {
+    "before": "We couldn't start the card payment, so your order is set to pay at the truck instead. Your order is placed — nothing has been charged.",
+    "after": "We couldn’t start the card payment, so your order is set to pay at the truck instead. Your order is placed — nothing has been charged."
+  },
+  "dashboard.toast.notOnBoard": {
+    "before": "That order is not on this board - check the event",
+    "after": "That order is not on this board — check the event"
+  },
+  "dashboard.gate.loading": {
+    "before": "Loading dashboard...",
+    "after": "Loading dashboard…"
+  },
+  "dashboard.gate.cantTakeOrders": {
+    "before": "Can't take orders on this device right now",
+    "after": "Can’t take orders on this device right now"
+  },
+  "dashboard.gate.noOrdersSaved": {
+    "before": "We couldn't reach your orders, and there's nothing saved on this device yet.",
+    "after": "We couldn’t reach your orders, and there’s nothing saved on this device yet."
+  },
+  "dashboard.gate.openOnceOnline": {
+    "before": "Open the app once while you're connected and it will work offline after that.",
+    "after": "Open the app once while you’re connected and it will work offline after that."
+  },
+  "dashboard.demo.endedBody": {
+    "before": "Start a new one and we'll set up a fresh service for right now — your menu stays as it is.",
+    "after": "Start a new one and we’ll set up a fresh service for right now — your menu stays as it is."
+  },
+  "dashboard.demo.lockWhy": {
+    "before": "We keep one event running in the demo so there's always something to play with. You get full control when you sign up.",
+    "after": "We keep one event running in the demo so there’s always something to play with. You get full control when you sign up."
+  },
+  "dashboard.pin.unreachable": {
+    "before": "Can't reach the server right now. Your PIN is fine — try again in a moment.",
+    "after": "Can’t reach the server right now. Your PIN is fine — try again in a moment."
+  },
+  "dashboard.buzzer.removeFailed": {
+    "before": "{target, select, order {Could not remove buzzer {prior} — it is still on order #{id}} other {Could not remove buzzer {prior} — it is still on this order}}",
+    "after": "{has, select, no {{target, select, order {Could not remove the buzzer from order #{id}} other {Could not remove the buzzer from this order}}} other {{target, select, order {Could not remove buzzer {prior} — it is still on order #{id}} other {Could not remove buzzer {prior} — it is still on this order}}}}"
+  },
+  "dashboard.refund.settled": {
+    "before": "{amount} has been refunded to the customer's card.",
+    "after": "{amount} has been refunded to the customer’s card."
+  },
+  "dashboard.cancelModal.refundQuestion": {
+    "before": "Cancel this order and refund {amount} to the customer's card?",
+    "after": "Cancel this order and refund {amount} to the customer’s card?"
+  },
+  "dashboard.cancelModal.noRefund": {
+    "before": "The order will be cancelled and the {amount} will stay with you. Nothing goes back to the customer's card.",
+    "after": "The order will be cancelled and the {amount} will stay with you. Nothing goes back to the customer’s card."
+  },
+  "dashboard.cancelModal.notePlaceholder": {
+    "before": "Add more detail for the customer...",
+    "after": "Add more detail for the customer…"
+  },
+  "dashboard.switchEventConfirm": {
+    "before": "You're currently serving at {current}. Switch to {next}? Tap the current event to switch back.",
+    "after": "You’re currently serving at {current}. Switch to {next}? Tap the current event to switch back."
+  },
+  "dashboard.banner.boardUnavailable": {
+    "before": "Couldn't load today's orders. You can still take new orders on this device.",
+    "after": "Couldn’t load today’s orders. You can still take new orders on this device."
+  },
+  "dashboard.orders.prepBannerBody": {
+    "before": "Your menu is using default prep times. Update them in Manage so your kitchen doesn't get overwhelmed with orders.",
+    "after": "Your menu is using default prep times. Update them in Manage so your kitchen doesn’t get overwhelmed with orders."
+  },
+  "dashboard.prep.buttonTitle": {
+    "before": "Today's prep list",
+    "after": "Today’s prep list"
+  },
+  "dashboard.prep.startBy": {
+    "before": "Start by {time} · {far, select, yes {in {hours}h} other {{mins}min}}",
+    "after": "Start by {time} · {far, select, yes {in {hours}h} other {{mins} min}}"
+  },
+  "dashboard.addTab.noMenuSaved": {
+    "before": "Your menu isn't saved on this device, so there's nothing to build an order from.",
+    "after": "Your menu isn’t saved on this device, so there’s nothing to build an order from."
+  },
+  "dashboard.settings.layoutScrollHelp": {
+    "before": "Show every item in one scrolling list, with a heading for each category. There are no category buttons - you scroll to move around. Best for shorter menus, where you can see most of it at once.",
+    "after": "Show every item in one scrolling list, with a heading for each category. There are no category buttons — you scroll to move around. Best for shorter menus, where you can see most of it at once."
+  },
+  "dashboard.settings.intervalsHelp": {
+    "before": "How far apart collection times are. This doesn't change kitchen capacity or prep times.",
+    "after": "How far apart collection times are. This doesn’t change kitchen capacity or prep times."
+  },
+  "dashboard.settings.everyMinutes": {
+    "before": "{n, plural, other {Every {count} minutes}}",
+    "after": "{n, plural, one {Every minute} other {Every {count} minutes}}"
+  },
+  "dashboard.common.savingDots": {
+    "before": "Saving...",
+    "after": "Saving…"
+  },
+  "dashboard.stock.loadingMenu": {
+    "before": "Loading menu...",
+    "after": "Loading menu…"
+  },
+  "dashboard.stock.optionsHelp": {
+    "before": "Shared across all dishes that use them. This count does <b>not</b> reset per event — it's a running total for the whole service.",
+    "after": "Shared across all dishes that use them. This count does <b>not</b> reset per event — it’s a running total for the whole service."
+  },
+  "dashboard.stock.howFirst": {
+    "before": "Whichever runs out first applies — the category pool or the item's own limit.",
+    "after": "Whichever runs out first applies — the category pool or the item’s own limit."
+  },
+  "dashboard.finish.early": {
+    "before": "This event isn't scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
+    "after": "This event isn’t scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?"
+  },
+  "dashboard.pause.body": {
+    "before": "Customers can still browse the menu but won't be able to order.",
+    "after": "Customers can still browse the menu but won’t be able to order."
+  },
+  "dashboard.kds.body": {
+    "before": "Choose which van's kitchen screen to open:",
+    "after": "Choose which van’s kitchen screen to open:"
+  },
+  "dashboard.edit.title": {
+    "before": "Edit Order #{id}",
+    "after": "Edit order #{id}"
+  },
+  "dashboard.edit.repriceBody": {
+    "before": "These are new to this order and aren't on the menu, so the price couldn't be checked. Everything already on the order keeps its original price. Nothing has been saved yet.",
+    "after": "These are new to this order and aren’t on the menu, so the price couldn’t be checked. Everything already on the order keeps its original price. Nothing has been saved yet."
+  },
+  "errorsCustomer.sold_out_paying": {
+    "before": "{names} sold out while you were paying. We've removed {count, plural, one {it} other {them}} and have not taken any money — please check your order before placing it again.",
+    "after": "{names} sold out while you were paying. We’ve removed {count, plural, one {it} other {them}} and have not taken any money — please check your order before placing it again."
+  },
+  "errorsCustomer.sold_out_ordering": {
+    "before": "{names} sold out while you were ordering. We've removed {count, plural, one {it} other {them}} — please check your order before placing it again.",
+    "after": "{names} sold out while you were ordering. We’ve removed {count, plural, one {it} other {them}} — please check your order before placing it again."
+  },
+  "errorsCustomer.cancel_window_passed": {
+    "before": "{n, plural, other {Orders can no longer be cancelled within {count} minutes of collection}}",
+    "after": "{n, plural, one {Orders can no longer be cancelled within {count} minute of collection} other {Orders can no longer be cancelled within {count} minutes of collection}}"
+  },
+  "whatsappCustomer.menuSummary": {
+    "before": "{opener}We've got {summary}. Check out the full menu and order ahead here: {url} — {truck} {emoji}",
+    "after": "{opener}We’ve got {summary}. Check out the full menu and order ahead here: {url} — {truck} {emoji}"
+  },
+  "orderStatus.loading": {
+    "before": "Loading your order...",
+    "after": "Loading your order…"
+  },
+  "orderStatus.cancelling": {
+    "before": "Cancelling...",
+    "after": "Cancelling…"
+  },
+  "orderStatus.cutoffNote": {
+    "before": "{n, plural, other {Cancellations accepted up to {count} minutes before pickup}}",
+    "after": "{n, plural, one {Cancellations accepted up to {count} minute before pickup} other {Cancellations accepted up to {count} minutes before pickup}}"
+  },
+  "emailCustomer.payNote.unknownTitle": {
+    "before": "We're still confirming your payment",
+    "after": "We’re still confirming your payment"
+  },
+  "emailCustomer.payNote.unknownText": {
+    "before": "We're still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm at the hatch.",
+    "after": "We’re still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm at the hatch."
+  },
+  "emailCustomer.payNote.unknownReady": {
+    "before": "We're still confirming your payment — please do not pay again.",
+    "after": "We’re still confirming your payment — please do not pay again."
+  },
+  "emailCustomer.confirmation.weWillConfirm": {
+    "before": "We'll confirm your collection time when we accept your order.",
+    "after": "We’ll confirm your collection time when we accept your order."
+  },
+  "emailCustomer.confirmation.cancelLine": {
+    "before": "{n, plural, other {Need to cancel?<link>Cancel your order</link>(up to {count} minutes before your pickup time)}}",
+    "after": "{n, plural, one {Need to cancel?<link>Cancel your order</link>(up to {count} minute before your pickup time)} other {Need to cancel?<link>Cancel your order</link>(up to {count} minutes before your pickup time)}}"
+  },
+  "emailCustomer.confirmation.leadConfirmed": {
+    "before": "Thanks! We've received your order and we're getting it ready.",
+    "after": "Thanks! We’ve received your order and we’re getting it ready."
+  },
+  "emailCustomer.confirmation.leadReceived": {
+    "before": "Thanks! We've received your order — we'll let you know once it's confirmed.",
+    "after": "Thanks! We’ve received your order — we’ll let you know once it’s confirmed."
+  },
+  "emailCustomer.confirmation.textPreferred": {
+    "before": "Preferred collection: {time} — we'll confirm when we accept your order.",
+    "after": "Preferred collection: {time} — we’ll confirm when we accept your order."
+  },
+  "emailCustomer.common.sorry": {
+    "before": "We're sorry for any inconvenience.",
+    "after": "We’re sorry for any inconvenience."
+  },
+  "emailCustomer.eventCancellation.body": {
+    "before": "Unfortunately <b>{truck}</b>'s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled.",
+    "after": "Unfortunately <b>{truck}</b>’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled."
+  },
+  "emailCustomer.eventCancellation.textLead": {
+    "before": "Hi {withName, select, yes {{name}} other {there}}, unfortunately {truck}'s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled. Your order #{id} has been cancelled.",
+    "after": "Hi {withName, select, yes {{name}} other {there}}, unfortunately {truck}’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled. Your order #{id} has been cancelled."
+  },
+  "emailCustomer.updated.subjectTotalMoved": {
+    "before": "Order #{id} updated - now {total} (was {previous})",
+    "after": "Order #{id} updated — now {total} (was {previous})"
+  },
+  "errorsKitchen.conflict": {
+    "before": "conflict",
+    "after": "This order has changed — check it and try again."
+  },
+  "errorsKitchen.item_name_required": {
+    "before": "itemName required",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.event_id_required": {
+    "before": "event_id required",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.option_id_required": {
+    "before": "optionId required",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.category_required": {
+    "before": "category required",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.missing_event_id": {
+    "before": "Missing eventId",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.value_bool_or_clear": {
+    "before": "value must be true, false, or null to clear",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.value_presses_or_clear": {
+    "before": "value must be 'one', 'two', or null to clear",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.missing_order_key": {
+    "before": "Missing order_key",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.value_bool": {
+    "before": "value must be true or false",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.eventid_required": {
+    "before": "eventId required",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.value_bool_or_null": {
+    "before": "value must be true, false, or null",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.category_id_required": {
+    "before": "categoryId required",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.device_id_required": {
+    "before": "device_id required",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.no_van_for_device": {
+    "before": "This device isn't set to a van yet, so wired printing isn't available.",
+    "after": "This device isn’t set to a van yet, so wired printing isn’t available."
+  },
+  "errorsKitchen.van_not_for_truck": {
+    "before": "van not found for this truck",
+    "after": "Van not found for this truck"
+  },
+  "errorsKitchen.invalid_default_screen": {
+    "before": "invalid default_screen",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.device_and_truck_required": {
+    "before": "device_id and target_truck_id required",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsKitchen.not_truck_member": {
+    "before": "not a member of that truck",
+    "after": "Not a member of that truck"
+  },
+  "errorsKitchen.van_not_for_target": {
+    "before": "van not found for target truck",
+    "after": "Van not found for the target truck"
+  },
+  "errorsKitchen.net_address_invalid": {
+    "before": "Enter the printer's address as 192.168.1.50 or 192.168.1.50:9100.",
+    "after": "Enter the printer’s address as 192.168.1.50 or 192.168.1.50:9100."
+  },
+  "kitchenModals.reject.reason": {
+    "before": "{reason, select, sold_out {Sold out of an item} too_busy {Too busy — can't make it in time} closing_soon {Closing soon} other {Other}}",
+    "after": "{reason, select, sold_out {Sold out of an item} too_busy {Too busy — can’t make it in time} closing_soon {Closing soon} other {Other}}"
+  },
+  "kitchenModals.reject.notePlaceholder": {
+    "before": "Add more detail for the customer...",
+    "after": "Add more detail for the customer…"
+  },
+  "kitchenModals.eventCancel.messagePlaceholder": {
+    "before": "e.g. Sorry, our trailer broke down on the way to the venue...",
+    "after": "e.g. Sorry, our trailer broke down on the way to the venue…"
+  },
+  "kitchenModals.actions.startEvent": {
+    "before": "{restart, select, yes {Restart Event} other {Start Event}}",
+    "after": "{restart, select, yes {Restart event} other {Start event}}"
+  },
+  "kitchenModals.finish.saving": {
+    "before": "Saving...",
+    "after": "Saving…"
+  },
+  "printing.say.addressHelp": {
+    "before": "Enter the printer's address as 192.168.1.50 or 192.168.1.50:9100.",
+    "after": "Enter the printer’s address as 192.168.1.50 or 192.168.1.50:9100."
+  },
+  "printing.say.netRefused": {
+    "before": "Can't reach the printer at {address} — it isn't accepting connections.",
+    "after": "Can’t reach the printer at {address} — it isn’t accepting connections."
+  },
+  "printing.say.netTimeout": {
+    "before": "Can't reach the printer at {address} — it didn't answer in time.",
+    "after": "Can’t reach the printer at {address} — it didn’t answer in time."
+  },
+  "printing.say.netUnreachable": {
+    "before": "Can't reach the printer at {address} — check it's on the same network.",
+    "after": "Can’t reach the printer at {address} — check it’s on the same network."
+  },
+  "printing.say.netCantReach": {
+    "before": "Can't reach the printer at {address}",
+    "after": "Can’t reach the printer at {address}"
+  },
+  "printing.say.guard.unknown": {
+    "before": "Can't check which device is printing right now.",
+    "after": "Can’t check which device is printing right now."
+  },
+  "printing.say.guard.unbound": {
+    "before": "This device isn't set to a van yet, so wired printing isn't available.",
+    "after": "This device isn’t set to a van yet, so wired printing isn’t available."
+  },
+  "printing.say.guard.pin": {
+    "before": "Wired printing isn't available on dashboards with a PIN yet.",
+    "after": "Wired printing isn’t available on dashboards with a PIN yet."
+  },
+  "printing.card.description": {
+    "before": "Automatically print a kitchen ticket for each order when it's due.",
+    "after": "Automatically print a kitchen ticket for each order when it’s due."
+  },
+  "printing.card.scanning": {
+    "before": "Scanning...",
+    "after": "Scanning…"
+  },
+  "printing.card.connecting": {
+    "before": "Connecting...",
+    "after": "Connecting…"
+  },
+  "printing.card.wiredUnavailable": {
+    "before": "Wired printing isn't available right now.",
+    "after": "Wired printing isn’t available right now."
+  },
+  "printing.card.addressHint": {
+    "before": "Print the printer's settings page to find its address. Ask whoever set up your router to keep this address fixed.",
+    "after": "Print the printer’s settings page to find its address. Ask whoever set up your router to keep this address fixed."
+  },
+  "printing.card.printing": {
+    "before": "Printing...",
+    "after": "Printing…"
+  },
+  "kds.loading": {
+    "before": "Loading kitchen...",
+    "after": "Loading kitchen…"
+  },
+  "kds.pin.unreachable": {
+    "before": "Can't reach the server right now. Your PIN is fine — try again in a moment.",
+    "after": "Can’t reach the server right now. Your PIN is fine — try again in a moment."
+  },
+  "kds.degraded.at": {
+    "before": "⚠️ Can't reach the server. Showing tickets from {time}. NEW ORDERS MAY BE MISSING.",
+    "after": "⚠️ Can’t reach the server. Showing tickets from {time}. NEW ORDERS MAY BE MISSING."
+  },
+  "kds.degraded.earlier": {
+    "before": "⚠️ Can't reach the server. Showing tickets from earlier. NEW ORDERS MAY BE MISSING.",
+    "after": "⚠️ Can’t reach the server. Showing tickets from earlier. NEW ORDERS MAY BE MISSING."
+  },
+  "kds.banner.startEvent": {
+    "before": "Start Event",
+    "after": "Start event"
+  },
+  "kds.event.endEarly": {
+    "before": "This event isn't scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
+    "after": "This event isn’t scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?"
+  },
+  "kds.intro.p1": {
+    "before": "It's the cook's view — the orders you need to make, in the order to make them. The screen by the grill shows this while the counter uses the orders dashboard.",
+    "after": "It’s the cook’s view — the orders you need to make, in the order to make them. The screen by the grill shows this while the counter uses the orders dashboard."
+  },
+  "kds.intro.p2": {
+    "before": "Cards move across as you tap them, so whoever's cooking always knows what's next and nobody has to shout. Everything here is your demo data — have a play.",
+    "after": "Cards move across as you tap them, so whoever’s cooking always knows what’s next and nobody has to shout. Everything here is your demo data — have a play."
+  },
+  "kds.toast.buzzerRemoveFailed": {
+    "before": "Could not remove buzzer {n} — it is still on {target, select, order {order #{id}} other {this order}}",
+    "after": "{had, select, no {Could not remove the buzzer from {target, select, order {order #{id}} other {this order}}} other {Could not remove buzzer {n} — it is still on {target, select, order {order #{id}} other {this order}}}}"
+  },
+  "nativeShell.gate.status": {
+    "before": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {collected} undo_collected {restored} cancel {cancelled} other {{action}}}",
+    "after": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {collected} undo_collected {restored} cancel {cancelled} other {updated}}"
+  },
+  "nativeShell.banner.paymentBody": {
+    "before": "{orders} — marked paid on this device only. It hasn't gone through.",
+    "after": "{orders} — marked paid on this device only. It hasn’t gone through."
+  },
+  "nativeShell.banner.iveChecked": {
+    "before": "I've checked {orders}",
+    "after": "I’ve checked {orders}"
+  },
+  "nativeShell.banner.statusBody": {
+    "before": "⚠ {orders} — this change didn't go through. Check the order.",
+    "after": "⚠ {orders} — this change didn’t go through. Check the order."
+  },
+  "nativeShell.banner.offline": {
+    "before": "📴 No connection — {n, plural, one {{count} change} other {{count} changes}} saved on this device. They'll be sent when you're back online. Settings are locked.",
+    "after": "📴 No connection — {n, plural, one {{count} change saved on this device. It’ll be sent when you’re back online.} other {{count} changes saved on this device. They’ll be sent when you’re back online.}} Settings are locked."
+  },
+  "nativeShell.banner.stillQueued": {
+    "before": "{n, plural, one {{count} change} other {{count} changes}} saved on this device. Still trying to send them.",
+    "after": "{n, plural, one {{count} change saved on this device. Still trying to send it.} other {{count} changes saved on this device. Still trying to send them.}}"
+  },
+  "nativeShell.lock.cantUseBiometric": {
+    "before": "Can't use Face / Touch ID?",
+    "after": "Can’t use Face / Touch ID?"
+  },
+  "nativeShell.lock.forgot": {
+    "before": "Forgot your PIN? You'll need to reinstall the app.",
+    "after": "Forgot your PIN? You’ll need to reinstall the app."
+  },
+  "nativeShell.van.loadRetry": {
+    "before": "Couldn't load · Retry",
+    "after": "Couldn’t load · Retry"
+  },
+  "nativeShell.setup.fetchErrorTitle": {
+    "before": "Couldn't load device setup",
+    "after": "Couldn’t load device setup"
+  },
+  "nativeShell.setup.fetchErrorBody": {
+    "before": "We couldn't reach the server to set up <b>this device</b>. Check the connection and try again — your orders and settings are unaffected.",
+    "after": "We couldn’t reach the server to set up <b>this device</b>. Check the connection and try again — your orders and settings are unaffected."
+  },
+  "nativeShell.device.viewing": {
+    "before": "You're viewing: <b>{truck}</b>",
+    "after": "You’re viewing: <b>{truck}</b>"
+  },
+  "nativeShell.device.viewingVan": {
+    "before": "You're viewing: <b>{truck}</b> — <b>{van}</b>",
+    "after": "You’re viewing: <b>{truck}</b> — <b>{van}</b>"
+  },
+  "nativeShell.device.pinHelp": {
+    "before": "Your way in if fingerprint or face unlock won't work — it's the only fallback, so don't forget it (a forgotten PIN means reinstalling the app). Works offline.",
+    "after": "Your way in if fingerprint or face unlock won’t work — it’s the only fallback, so don’t forget it (a forgotten PIN means reinstalling the app). Works offline."
+  },
+  "nativeShell.offlineAlert.pausedBody": {
+    "before": "You're offline — customer ordering is paused.",
+    "after": "You’re offline — customer ordering is paused."
+  },
+  "nativeShell.offlineAlert.offlineTitle": {
+    "before": "You're offline",
+    "after": "You’re offline"
+  },
+  "buzzer.allTaken": {
+    "before": "All {count} buzzers are out. Tap one to take it from another order.",
+    "after": "{n, plural, one {The buzzer is out. Tap it to take it from another order.} other {All {count} buzzers are out. Tap one to take it from another order.}}"
+  },
+  "buzzer.lostTitle": {
+    "before": "Order #{id} doesn't have a buzzer",
+    "after": "Order #{id} doesn’t have a buzzer"
+  },
+  "dashboardBanners.wakeUnsupported": {
+    "before": "This device can't keep the screen on.",
+    "after": "This device can’t keep the screen on."
+  },
+  "dashboardBanners.wakeInsecure": {
+    "before": "The screen can't be kept on from this address.",
+    "after": "The screen can’t be kept on from this address."
+  },
+  "demo.loopLands": {
+    "before": "That's exactly how a real order lands",
+    "after": "That’s exactly how a real order lands"
+  },
+  "paymentActions.offlineBody": {
+    "before": "Payment changes can't be made while offline. Refunds and removing a recorded payment both have to reach the payment provider, so they can't be saved on this device and sent later.",
+    "after": "Payment changes can’t be made while offline. Refunds and removing a recorded payment both have to reach the payment provider, so they can’t be saved on this device and sent later."
+  },
+  "paymentActions.paidByCardBody": {
+    "before": "Order <b>#{orderId}</b> was paid by card, so there is no payment record to remove here — the money is already on the customer's card.",
+    "after": "Order <b>#{orderId}</b> was paid by card, so there is no payment record to remove here — the money is already on the customer’s card."
+  },
+  "paymentActions.footer": {
+    "before": "This sends the money back to the customer's card. It cannot be undone from here.",
+    "after": "This sends the money back to the customer’s card. It cannot be undone from here."
+  },
+  "orderCard.conflictStatus": {
+    "before": "Last update didn't sync",
+    "after": "Last update didn’t sync"
+  },
+  "addOrder.catClosed": {
+    "before": "{cat} is closed for online orders this event — hidden from customers. You can still add for the hatch; you'll be asked to confirm.",
+    "after": "{cat} is closed for online orders this event — hidden from customers. You can still add for the hatch; you’ll be asked to confirm."
+  },
+  "addOrder.optionOversellConfirm": {
+    "before": "Only a limited amount of \"{option}\" left — and it's shared across ALL dishes that use it.\n\nProceed anyway (oversell)?\n\nOK = proceed anyway   ·   Cancel = edit the order",
+    "after": "Only a limited amount of \"{option}\" left — and it’s shared across ALL dishes that use it.\n\nProceed anyway (oversell)?\n\nOK = proceed anyway   ·   Cancel = edit the order"
+  },
+  "addOrder.offlineNotSent": {
+    "before": "Couldn't reach the server — you appear to be offline. The order was NOT sent. Keep this panel open and retry when you reconnect.",
+    "after": "Couldn’t reach the server — you appear to be offline. The order was NOT sent. Keep this panel open and retry when you reconnect."
+  },
+  "addOrder.confirmingDots": {
+    "before": "Confirming...",
+    "after": "Confirming…"
+  },
+  "addOrder.startEvent": {
+    "before": "{restart, select, yes {Restart Event} other {Start Event}}",
+    "after": "{restart, select, yes {Restart event} other {Start event}}"
+  },
+  "addOrder.todayNotOpen": {
+    "before": "Today's event — not yet open for orders. Orders will be queued and visible when you open the event.",
+    "after": "Today’s event — not yet open for orders. Orders will be queued and visible when you open the event."
+  },
+  "addOrder.eventEnded": {
+    "before": "This event has ended — you're adding an order after close. Make sure you've selected the right event.",
+    "after": "This event has ended — you’re adding an order after close. Make sure you’ve selected the right event."
+  },
+  "addOrder.staleCheck": {
+    "before": "Checked against the last data this device downloaded -- you're offline, so a newer order may not be counted.",
+    "after": "Checked against the last data this device downloaded — you’re offline, so a newer order may not be counted."
+  },
+  "alertsOperator.limit80.subject": {
+    "before": "You've used 80% of this month's WhatsApp replies",
+    "after": "You’ve used 80% of this month’s WhatsApp replies"
+  },
+  "alertsOperator.limit80.nothingStopped": {
+    "before": "Nothing has stopped. When you reach {limit}, automatic replies pause until your allowance resets on <b>{reset}</b> — customers can still message you, and you'll still see everything they send.",
+    "after": "Nothing has stopped. When you reach {limit}, automatic replies pause until your allowance resets on <b>{reset}</b> — customers can still message you, and you’ll still see everything they send."
+  },
+  "alertsOperator.limit100.usedAll": {
+    "before": "You've used all {limit} of this month's automatic WhatsApp replies, so they've paused.",
+    "after": "You’ve used all {limit} of this month’s automatic WhatsApp replies, so they’ve paused."
+  },
+  "alertsOperator.limit100.stillReach": {
+    "before": "<b>Customers can still message you as normal, and every message still reaches you.</b> The only thing that's stopped is the automatic reply going back out.",
+    "after": "<b>Customers can still message you as normal, and every message still reaches you.</b> The only thing that’s stopped is the automatic reply going back out."
+  },
+  "alertsOperator.limit100.startAgain": {
+    "before": "They'll start again on <b>{reset}</b>, or straight away if you raise your monthly limit in Settings.",
+    "after": "They’ll start again on <b>{reset}</b>, or straight away if you raise your monthly limit in Settings."
+  },
+  "alertsOperator.limit100.startAgainLink": {
+    "before": "They'll start again on {reset}, or straight away if you raise your monthly limit in Settings:",
+    "after": "They’ll start again on {reset}, or straight away if you raise your monthly limit in Settings:"
+  },
+  "alertsOperator.paymentBlocked.stopped": {
+    "before": "WhatsApp has stopped your automatic replies going out because there's no working payment method on your WhatsApp Business account.",
+    "after": "WhatsApp has stopped your automatic replies going out because there’s no working payment method on your WhatsApp Business account."
+  },
+  "alertsOperator.paymentBlocked.stillMessage": {
+    "before": "<b>Customers can still message you, and you'll still see everything they send</b> — but the replies aren't reaching them.",
+    "after": "<b>Customers can still message you, and you’ll still see everything they send</b> — but the replies aren’t reaching them."
+  },
+  "setup.verify.expired": {
+    "before": "That confirmation link has expired. Get in touch and we'll sort it before you go live.",
+    "after": "That confirmation link has expired. Get in touch and we’ll sort it before you go live."
+  },
+  "setup.verify.invalid": {
+    "before": "That confirmation link didn't work. Get in touch and we'll sort it before you go live.",
+    "after": "That confirmation link didn’t work. Get in touch and we’ll sort it before you go live."
+  },
+  "setup.identity.heading": {
+    "before": "What's your truck called?",
+    "after": "What’s your truck called?"
+  },
+  "setup.identity.namePlaceholder": {
+    "before": "Bob's Burgers",
+    "after": "Bob’s Burgers"
+  },
+  "goLive.allergensItemsUnverified.detail": {
+    "before": "{n, plural, other {{unverified} of your {total} dishes are hidden from customers until you confirm their allergens. A dish shown without confirmed allergens reads as \"contains none\", so the menu hides it rather than risk that.}}",
+    "after": "{n, plural, one {Your dish is hidden from customers until you confirm its allergens.} other {{u, plural, one {{unverified} of your {total} dishes is hidden from customers until you confirm its allergens.} other {{unverified} of your {total} dishes are hidden from customers until you confirm their allergens.}}}} A dish shown without confirmed allergens reads as \"contains none\", so the menu hides it rather than risk that."
+  },
+  "goLive.kitchenCapacityUnset.unnamedVan": {
+    "before": "unnamed van",
+    "after": "Unnamed van"
+  },
+  "goLive.emailUnknown.detail": {
+    "before": "Email verification is not wired up yet (Phase 4 Step 2), so this cannot be evaluated. It blocks by design rather than passing silently.",
+    "after": "Email verification is not wired up yet, so this cannot be evaluated. It blocks by design rather than passing silently."
+  },
+  "walkthrough.intro": {
+    "before": "Manage is where you set your truck up and see how it's doing. The Dashboard is where you take orders and run each event as it happens.",
+    "after": "Manage is where you set your truck up and see how it’s doing. The Dashboard is where you take orders and run each event as it happens."
+  },
+  "walkthrough.stops.menu.body": {
+    "before": "Your dishes, prices and allergens. Change anything here and it's live straight away.",
+    "after": "Your dishes, prices and allergens. Change anything here and it’s live straight away."
+  },
+  "walkthrough.stops.schedule.body": {
+    "before": "Where and when you're trading. Add an event here and customers can order for it.",
+    "after": "Where and when you’re trading. Add an event here and customers can order for it."
+  },
+  "walkthrough.stops.settings.body": {
+    "before": "Your truck's details and how customers pay.",
+    "after": "Your truck’s details and how customers pay."
+  },
+  "auth.signup.subtitle": {
+    "before": "Your free month doesn't start until you go live.",
+    "after": "Your free month doesn’t start until you go live."
+  },
+  "auth.login.submitting": {
+    "before": "Signing in...",
+    "after": "Signing in…"
+  },
+  "auth.forgot.sentBody": {
+    "before": "If an account exists with that email address, you'll receive a reset link shortly. Check your spam folder if it doesn't arrive within a few minutes.",
+    "after": "If an account exists with that email address, you’ll receive a reset link shortly. Check your spam folder if it doesn’t arrive within a few minutes."
+  },
+  "auth.forgot.subtitle": {
+    "before": "Enter your email and we'll send a reset link",
+    "after": "Enter your email and we’ll send a reset link"
+  },
+  "auth.forgot.sending": {
+    "before": "Sending...",
+    "after": "Sending…"
+  },
+  "auth.reset.tooShort": {
+    "before": "Password must be at least 8 characters",
+    "after": "Password must be at least 8 characters."
+  },
+  "auth.reset.saving": {
+    "before": "Saving...",
+    "after": "Saving…"
+  },
+  "emailSignup.verify.why": {
+    "before": "This is the address you'll log in with, and where order alerts go — so it's worth doing now.",
+    "after": "This is the address you’ll log in with, and where order alerts go — so it’s worth doing now."
+  },
+  "emailSignup.verify.next": {
+    "before": "Once it's confirmed I'll send you everything you need to get going.",
+    "after": "Once it’s confirmed I’ll send you everything you need to get going."
+  },
+  "emailSignup.verify.fallbackLink": {
+    "before": "If the button doesn't work, paste this in: {url}",
+    "after": "If the button doesn’t work, paste this in: {url}"
+  },
+  "emailSignup.welcome.intro": {
+    "before": "{hasTruck, select, yes {I'm really pleased to welcome {truck} to HatchGrab.} other {I'm really pleased to welcome your truck to HatchGrab.}}",
+    "after": "{hasTruck, select, yes {I’m really pleased to welcome {truck} to HatchGrab.} other {I’m really pleased to welcome your truck to HatchGrab.}}"
+  },
+  "emailSignup.welcome.setup": {
+    "before": "If you haven't already, setting up is straightforward and takes about fifteen minutes.",
+    "after": "If you haven’t already, setting up is straightforward and takes about fifteen minutes."
+  },
+  "errorsOnboarding.change_id_required": {
+    "before": "changeId required",
+    "after": "Something went wrong — refresh the page and try again."
+  },
+  "errorsOnboarding.new_password_too_short": {
+    "before": "Password must be at least {min, plural, one {# character} other {# characters}}",
+    "after": "Password must be at least {min, plural, one {# character} other {# characters}}."
+  },
+  "emailAccount.changeEmail.ignore": {
+    "before": "If you didn't request this change, you can safely ignore this email.",
+    "after": "If you didn’t request this change, you can safely ignore this email."
+  },
+  "emailAccount.resendVerification.ignore": {
+    "before": "If you didn't request this, ignore this email.",
+    "after": "If you didn’t request this, ignore this email."
+  },
+  "emailAccount.passwordReset.ignore": {
+    "before": "If you didn't request this, you can safely ignore this email.",
+    "after": "If you didn’t request this, you can safely ignore this email."
+  },
+  "emailAccount.passwordReset.unchanged": {
+    "before": "Your password won't change until you click the link above.",
+    "after": "Your password won’t change until you click the link above."
+  },
+  "emailAccount.deletionScheduled.readable": {
+    "before": "Your dashboard stays\n    available to read for the next {days, plural, other {# days}}.",
+    "after": "Your dashboard stays\n    available to read for the next {days, plural, one {# day} other {# days}}."
+  },
+  "emailAccount.deletionScheduled.kept": {
+    "before": "When the account is deleted we remove your personal details and your customers' details. We keep\n    anonymous accounting records, which we are legally required to retain.",
+    "after": "When the account is deleted we remove your personal details and your customers’ details. We keep\n    anonymous accounting records, which we are legally required to retain."
+  },
+  "demoSaveEmail.deletion": {
+    "before": "This is a demo, so we don’t keep it forever — we’ll delete it and the menu on\n                <b>{date}</b> ({days, plural, other {# days}}). If you sign up before\n                then, your menu comes with you.",
+    "after": "This is a demo, so we don’t keep it forever — we’ll delete it and the menu on\n                <b>{date}</b> ({days, plural, one {# day} other {# days}}). If you sign up before\n                then, your menu comes with you."
+  },
+  "demoGetStarted.upload.privacy": {
+    "before": "We'll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>.",
+    "after": "We’ll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
+  },
+  "demoGetStarted.sample.privacy": {
+    "before": "We'll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>.",
+    "after": "We’ll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
+  },
+  "demoGetStarted.saveOnly.privacy": {
+    "before": "We'll only use this to send your demo link — see our <link>privacy policy</link>.",
+    "after": "We’ll only use this to send your demo link — see our <link>privacy policy</link>."
+  },
+  "demoGetStarted.confirmEmailed": {
+    "before": "We've emailed you a link straight back to this demo — no login needed.",
+    "after": "We’ve emailed you a link straight back to this demo — no login needed."
+  },
+  "demoGetStarted.confirmKeepUntil": {
+    "before": "We'll keep it until <b>{date}</b>. Your menu comes with you when you set up properly.",
+    "after": "We’ll keep it until <b>{date}</b>. Your menu comes with you when you set up properly."
+  },
+  "demoGetStarted.readyTitle": {
+    "before": "Your account's ready",
+    "after": "Your account’s ready"
+  },
+  "demoGetStarted.readyBody": {
+    "before": "Now let's finish setting up your truck — your menu, allergens and kitchen.",
+    "after": "Now let’s finish setting up your truck — your menu, allergens and kitchen."
+  },
+  "demoGetStarted.freeMonth": {
+    "before": "Setting up won't start your free month. That begins when you pick your first live event — whenever you're ready.",
+    "after": "Setting up won’t start your free month. That begins when you pick your first live event — whenever you’re ready."
+  },
+  "demoGetStarted.error.truckUnreachable": {
+    "before": "Your account’s ready, but we couldn’t reach us to create your truck. Try again.",
+    "after": "Your account’s ready, but we couldn’t create your truck just now. Try again."
+  },
+  "demoUpload.noPhoto": {
+    "before": "Haven't got a menu photo to hand?",
+    "after": "Haven’t got a menu photo to hand?"
+  },
+  "dashboard.eventBar.status": {
+    "before": null,
+    "after": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "dashboard.orders.status": {
+    "before": null,
+    "after": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Cancelled} cooking {Cooking} ready {Ready} collected {Collected} other {{status}}}",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "dashboard.settings.capacityDesc": {
+    "before": "The most items your kitchen can turn out at once, across all the categories you've ticked. Each category's own batch size still applies on top.",
+    "after": "The most items your kitchen can turn out at once, across all the categories you’ve ticked. Each category’s own batch size still applies on top.",
+    "kind": "new key; its text was inline at 460ba55 in lib/kitchen-capacity.ts (KITCHEN_CAPACITY_DESC) and is reworded"
+  },
+  "dashboard.settings.capacityExample": {
+    "before": null,
+    "after": "Example: if you can cook 4 mains in 5 minutes, then set it to 4 items every 5 minutes. The total capacity limits orders across all selected categories so if you want to only sell a maximum of 10 starters and mains every 5 minutes, then set Total Capacity to 10 items every 5 minutes and select Starters and Mains tickbox. This will still keep your mains restricted to 4 items every 5 minutes.",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "kitchenModals.picker.status": {
+    "before": null,
+    "after": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "kds.header.cashIcon": {
+    "before": null,
+    "after": "💷",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "kds.banner.eventStatus": {
+    "before": null,
+    "after": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "demo.cashIcon": {
+    "before": null,
+    "after": "💷",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "orderCard.markPaidAndCollected": {
+    "before": null,
+    "after": "Mark paid & collected",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "orderCard.cashIcon": {
+    "before": null,
+    "after": "💷",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "addOrder.cashIcon": {
+    "before": null,
+    "after": "💷",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.firstVanName": {
+    "before": null,
+    "after": "Van 1",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoCategories.pizza": {
+    "before": null,
+    "after": "Pizza",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoCategories.burgers": {
+    "before": null,
+    "after": "Burgers",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoCategories.mains": {
+    "before": null,
+    "after": "Mains",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoCategories.sides": {
+    "before": null,
+    "after": "Sides",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoCategories.drinks": {
+    "before": null,
+    "after": "Drinks",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.label": {
+    "before": null,
+    "after": "🍕 Pizza van",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.items.margherita": {
+    "before": null,
+    "after": "Margherita",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.items.pepperoni": {
+    "before": null,
+    "after": "Pepperoni",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.items.ndujaHoney": {
+    "before": null,
+    "after": "Nduja & Honey",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.items.fourCheese": {
+    "before": null,
+    "after": "Four Cheese",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.items.gardenVeg": {
+    "before": null,
+    "after": "Garden Veg",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.items.garlicBread": {
+    "before": null,
+    "after": "Garlic Bread",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.items.rocketParmesan": {
+    "before": null,
+    "after": "Rocket & Parmesan",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.items.olives": {
+    "before": null,
+    "after": "Olives",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.items.sanPellegrino": {
+    "before": null,
+    "after": "San Pellegrino",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.pizza.items.coke": {
+    "before": null,
+    "after": "Coke",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.label": {
+    "before": null,
+    "after": "🍔 Burger van",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.items.classicCheeseburger": {
+    "before": null,
+    "after": "Classic Cheeseburger",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.items.doubleBacon": {
+    "before": null,
+    "after": "Double Bacon",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.items.buttermilkChicken": {
+    "before": null,
+    "after": "Buttermilk Chicken",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.items.halloumiStack": {
+    "before": null,
+    "after": "Halloumi Stack",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.items.smashBurger": {
+    "before": null,
+    "after": "Smash Burger",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.items.skinOnFries": {
+    "before": null,
+    "after": "Skin-on Fries",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.items.loadedCheeseFries": {
+    "before": null,
+    "after": "Loaded Cheese Fries",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.items.onionRings": {
+    "before": null,
+    "after": "Onion Rings",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.items.craftLemonade": {
+    "before": null,
+    "after": "Craft Lemonade",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.burgers.items.coke": {
+    "before": null,
+    "after": "Coke",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.label": {
+    "before": null,
+    "after": "🍛 Curry van",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.items.chickenTikkaMasala": {
+    "before": null,
+    "after": "Chicken Tikka Masala",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.items.lambRoganJosh": {
+    "before": null,
+    "after": "Lamb Rogan Josh",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.items.chanaMasala": {
+    "before": null,
+    "after": "Chana Masala",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.items.butterChicken": {
+    "before": null,
+    "after": "Butter Chicken",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.items.saagPaneer": {
+    "before": null,
+    "after": "Saag Paneer",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.items.pilauRice": {
+    "before": null,
+    "after": "Pilau Rice",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.items.garlicNaan": {
+    "before": null,
+    "after": "Garlic Naan",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.items.onionBhaji": {
+    "before": null,
+    "after": "Onion Bhaji",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.items.mangoLassi": {
+    "before": null,
+    "after": "Mango Lassi",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  },
+  "provisionContent.demoTemplates.curries.items.coke": {
+    "before": null,
+    "after": "Coke",
+    "kind": "new key; GB text unchanged — proven: F (which renders it) equals BEFORE wherever a view shows it"
+  }
+}

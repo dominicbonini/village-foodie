@@ -1,1 +1,9 @@
-{}
+{
+  "verify": {
+    "next": "Once it’s confirmed I’ll send you everything you need to get started.",
+    "carryOn": "You can continue setting up in the meantime."
+  },
+  "welcome": {
+    "lookingForward": "{hasTruck, select, yes {Looking forward to seeing {truck} serving customers.} other {Looking forward to seeing your truck serving customers.}}"
+  }
+}

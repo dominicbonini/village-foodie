@@ -1,1 +1,15 @@
-{}
+{
+  "header": {
+    "fullTitle": "Full cards — prices and payment details, as the window sees them.",
+    "cashIcon": "💵"
+  },
+  "event": {
+    "cancelled": "Event canceled"
+  },
+  "intro": {
+    "p2": "Cards move across as you tap them, so whoever’s cooking always knows what’s next and nobody has to shout. Everything here is your demo data — try it out."
+  },
+  "banner": {
+    "eventStatus": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Canceled} other {Not started}}"
+  }
+}

@@ -10,8 +10,8 @@
   "dismiss": "Dismiss",
   "kitchenCapacity": "Kitchen capacity",
   "overCapacity": "Over capacity",
-  "wakeUnsupported": "This device can't keep the screen on.",
-  "wakeInsecure": "The screen can't be kept on from this address.",
+  "wakeUnsupported": "This device can’t keep the screen on.",
+  "wakeInsecure": "The screen can’t be kept on from this address.",
   "wakeRetry": "Keep screen on — tap to try again",
   "wakeAcquire": "Keep screen on"
 }

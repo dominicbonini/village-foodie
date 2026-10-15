@@ -1327,7 +1327,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         // Queued durably. The optimistic guard HOLDS until replay — dropping it would let the next poll
         // revert a pager that is already in a customer's hand.
         showToast(buzzerNumber == null
-          ? tRef.current('toast.buzzerRemoved', { n: String(prior ?? '') })
+          ? (prior != null ? tRef.current('toast.buzzerRemoved', { n: String(prior) }) : tRef.current('toast.buzzerRemovedNone'))
           : tRef.current('toast.buzzerSaved', { n: String(buzzerNumber) }))
         if (!keepOpen) setBuzzerTarget(null)
         setSavingBuzzer(false)
@@ -1352,7 +1352,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       const target = buzzerTarget?.id ? 'order' : 'this'
       const id = String(buzzerTarget?.id ?? '')
       showToast(buzzerNumber == null
-        ? tRef.current('toast.buzzerRemoveFailed', { n: String(prior), target, id })
+        ? tRef.current('toast.buzzerRemoveFailed', { n: String(prior ?? ''), target, id, had: prior != null ? 'yes' : 'no' })
         : tRef.current('toast.buzzerAssignFailed', { n: String(buzzerNumber), target, id, had: prior != null ? 'yes' : 'no', prior: String(prior) }), 'error')
     } finally { setSavingBuzzer(false) }
   }, [token, pin, showToast, orders, buzzerTarget])
@@ -2186,7 +2186,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                 handoverOn ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
               }`}
             >
-              <span aria-hidden>💷</span>
+              <span aria-hidden>{t('header.cashIcon')}</span>
               {/* ⚠️ "Payment & handover" NAMES WHAT THIS SCREEN DOES, not two of our status values. It was
                   "Payment/Collected" — two internal statuses and a slash that reads as "or". The buttons an
                   operator sees are still the ones this names —
@@ -2754,7 +2754,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           {/* ⚠️ THE SECOND COPY OF THIS CHAIN IS GONE. Words and branch order come from
               lib/event-display, shared with the dashboard; only the palette below is this surface's,
               because this header is white where the dashboard's is dark. */}
-          <span className={`text-xs font-medium ${EVENT_STATUS_TEXT_ON_LIGHT[eventStatus.tone]} flex-shrink-0`}>{eventStatus.label}</span>
+          <span className={`text-xs font-medium ${EVENT_STATUS_TEXT_ON_LIGHT[eventStatus.tone]} flex-shrink-0`}>{t('banner.eventStatus', { tone: eventStatus.tone })}</span>
           {/* FIX 3 — DEMO removes it. Same reasoning as the dashboard's Manage event menu: extend/finish/
               cancel/note are operator event-lifecycle controls with nothing to offer a prospect, and
               several of them can leave the demo looking broken.

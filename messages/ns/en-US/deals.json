@@ -1,1 +1,4 @@
-{}
+{
+  "inYourBasket": "── In your cart ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (in cart){state, select, used { — already in a deal} taken { — selected in another slot} other {}}"
+}

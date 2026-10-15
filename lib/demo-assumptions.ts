@@ -24,11 +24,14 @@ export const MAIN_BATCH_SIZE = 4
 // of its own (the "existing menu" prompt block drops out when the truck is empty) — so for the demo path
 // this really is a CLOSED vocabulary. That makes a lookup table strictly better than any price/count
 // heuristic: it can't be fooled by a cheap main or a menu with more drinks than dishes.
-const KNOWN_MAIN_CATEGORIES = namesOf(['mains', 'burgers', 'pizza', 'wrapsSandwiches'])
+const MAIN_IDS: StandardCategoryId[] = ['mains', 'burgers', 'pizza', 'wrapsSandwiches']
 // Things that come out of a fridge or a bag: no cook time, no batch.
-const KNOWN_INSTANT_CATEGORIES = namesOf(['sides', 'dipsSauces', 'drinks', 'desserts'])
+const INSTANT_IDS: StandardCategoryId[] = ['sides', 'dipsSauces', 'drinks', 'desserts']
 // Escape hatches the model uses when a menu doesn't fit — they carry NO signal either way.
-const NO_SIGNAL_CATEGORIES = namesOf(['specials', 'other'])
+const NO_SIGNAL_IDS: StandardCategoryId[] = ['specials', 'other']
+const KNOWN_MAIN_CATEGORIES = namesOf(MAIN_IDS)
+const KNOWN_INSTANT_CATEGORIES = namesOf(INSTANT_IDS)
+const NO_SIGNAL_CATEGORIES = namesOf(NO_SIGNAL_IDS)
 
 export interface AssumptionResult {
   categoryPrep: CategoryPrep
@@ -55,8 +58,17 @@ export function buildDemoAssumptions(
   items: Pick<ExtractedItem, 'category'>[],
   /** ADMIN Create Demo only (lib/demo-kitchen). Absent ⇒ the constants above, i.e. today's demo. */
   kitchen?: { prepSecs?: number | null; batchSize?: number | null } | null,
+  /** 🔴 Language Phase 2: each category NAME → its standard category id, when the caller knows it (a sample menu,
+   *  lib/demo-templates.ts `demoTemplateIn`). A name listed here is recognised BY ITS ID, so a US demo's "Entrées"
+   *  cooks exactly as a UK demo's "Mains" does; a name not listed (an AI-read menu) is recognised by the standard
+   *  English names, as before. Absent ⇒ today's behaviour, byte for byte. */
+  categoryIds?: Record<string, StandardCategoryId> | null,
 ): AssumptionResult {
   const cats = categories.filter(Boolean)
+  const is = (c: string, ids: StandardCategoryId[], names: Set<string>) => {
+    const id = categoryIds?.[c]
+    return id ? ids.includes(id) : names.has(c)
+  }
   const prep: CategoryPrep = {}
 
   const counts = new Map<string, number>()
@@ -65,7 +77,7 @@ export function buildDemoAssumptions(
     if (c) counts.set(c, (counts.get(c) ?? 0) + 1)
   }
 
-  const mains = cats.filter(c => KNOWN_MAIN_CATEGORIES.has(c))
+  const mains = cats.filter(c => is(c, MAIN_IDS, KNOWN_MAIN_CATEGORIES))
   let usedFallback = false
   let note: string
 
@@ -75,7 +87,7 @@ export function buildDemoAssumptions(
     // Most-populated category wins, excluding ones we KNOW are instant (a coffee van whose biggest
     // category is Drinks should not have its drinks "cooked"). Ties break on the extractor's own ordering,
     // which is stable enough for a demo.
-    const candidates = cats.filter(c => !KNOWN_INSTANT_CATEGORIES.has(c))
+    const candidates = cats.filter(c => !is(c, INSTANT_IDS, KNOWN_INSTANT_CATEGORIES))
     const pool = candidates.length > 0 ? candidates : cats
     let best: string | null = null
     let bestCount = -1
@@ -86,7 +98,7 @@ export function buildDemoAssumptions(
     if (best) {
       mains.push(best)
       usedFallback = true
-      note = `no known main category (${cats.filter(c => NO_SIGNAL_CATEGORIES.has(c)).length} no-signal categories present) — fell back to most-populated: "${best}" (${bestCount} items)`
+      note = `no known main category (${cats.filter(c => is(c, NO_SIGNAL_IDS, NO_SIGNAL_CATEGORIES)).length} no-signal categories present) — fell back to most-populated: "${best}" (${bestCount} items)`
     } else {
       note = 'no categories at all — no prep applied'
     }

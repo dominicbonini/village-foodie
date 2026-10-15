@@ -1,1 +1,7 @@
-{}
+{
+  "emailPlaceholder": "you@yourtruck.com",
+  "sampleWhileYouWait": "Or look around with a sample menu while you wait",
+  "orSample": "Or look around with a sample menu",
+  "noPhoto": "Don’t have a menu photo handy?",
+  "noPhotoBody": "Look around with a sample truck instead — you can upload yours any time."
+}

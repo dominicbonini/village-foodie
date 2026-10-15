@@ -1,0 +1,1352 @@
+# Language Phase 2 — every US view that differs from BEFORE (2149 US views; 1350 changed). Written by scripts/language-phase-2.cjs.
+# view id	why (named code change in F, or words only)
+1a/orderPage/US|loading	words
+1a/orderPage/US|eventsError	words
+1a/orderPage/US|eventLoading	words
+1a/orderPage/US|menu	code: P2-us-clock + words
+1a/orderPage/US|menuAllergens	code: P2-us-clock + words
+1a/orderPage/US|menuPaused	code: P2-us-clock + words
+1a/orderPage/US|menuOffline	code: P2-us-clock + words
+1a/orderPage/US|menuClosing	code: P2-us-clock + words
+1a/orderPage/US|menuUnavailable	code: P2-us-clock + words
+1a/orderPage/US|menuNoTimes	words
+1a/orderPage/US|menuClosed	code: P2-us-clock + words
+1a/orderPage/US|menuUnconfirmed	code: P2-us-clock + words
+1a/orderPage/US|menuEnded	code: P2-us-clock + words
+1a/orderPage/US|menuPrivate	code: P2-us-clock + words
+1a/orderPage/US|multiEvent	code: P2-us-clock
+1a/orderPage/US|basket	code: P2-us-clock + words
+1a/orderPage/US|basketExpanded	code: P2-us-clock + words
+1a/orderPage/US|discounted	code: P2-us-clock + words
+1a/orderPage/US|itemModal	code: P2-us-clock + words
+1a/orderPage/US|itemModalEmpty	code: P2-us-clock + words
+1a/orderPage/US|dealModal	code: P2-us-clock + words
+1a/orderPage/US|sheet	code: P2-us-clock + words
+1a/orderPage/US|sheetCard	code: P2-us-clock + words
+1a/orderPage/US|sheetHatch	code: P2-us-clock + words
+1a/orderPage/US|sheetTip15	code: P2-us-clock + words
+1a/orderPage/US|sheetTipOther	code: P2-us-clock + words
+1a/orderPage/US|sheetNoCard	code: P2-us-clock + words
+1a/orderPage/US|sheetSlots	code: P2-us-clock + words
+1a/orderPage/US|sheetSlotsLoading	code: P2-us-clock + words
+1a/orderPage/US|sheetPhone	code: P2-us-clock + words
+1a/orderPage/US|notices	code: P2-us-clock + words
+1a/orderPage/US|paymentFailed	code: P2-us-clock + words
+1a/orderPage/US|submitting	code: P2-us-clock + words
+1a/orderPage/US|payReady	code: P2-us-clock + words
+1a/orderPage/US|payFailed	code: P2-us-clock + words
+1a/orderPage/US|payProcessing	code: P2-us-clock + words
+1a/orderPage/US|submittedAuto	code: P2-us-clock + words
+1a/orderPage/US|submittedChanged	code: P2-us-clock + words
+1a/orderPage/US|confirmLoading	words
+1a/orderPage/US|confirmPaid	words
+1a/orderPage/US|confirmCancelled	words
+1a/orderPage/US|confirmErrCancelled	words
+1a/orderPage/US|confirmMissing	words
+1a/orderPage/US|payFormFailed	code: P2-us-clock + words
+1a/orderPage/US|payAuthorising	code: P2-us-clock + words
+1a/orderPage/US|submittedFallback	words
+1a/orderPage/US|privateNamed	code: P2-us-clock + words
+1a/orderPage/US|privateUnnamed	code: P2-us-clock + words
+1a/orderPage/US|closedAtTime	code: P2-us-clock + words
+1a/orderPage/US|demoClosed	words
+1a/orderPage/US|itemModalEdit	code: P2-us-clock + words
+1a/orderPage/US|itemModalUpsell	code: P2-us-clock + words
+1a/orderPage/US|sheetEmailError	code: P2-us-clock + words
+1a/orderPage/US|sheetNoTimeSelection	code: P2-us-clock + words
+1a/orderPage/US|sheetChosen	code: P2-us-clock + words
+1a/orderPage/US|sheetDiscount	code: P2-us-clock + words
+1a/orderPage/US|paymentFailedUrl	code: P2-us-clock + words
+1a/statusPage/US|loading	words
+1a/statusPage/US|pending	code: P2-us-clock
+1a/statusPage/US|confirmed	code: P2-us-clock
+1a/statusPage/US|modified	code: P2-us-clock
+1a/statusPage/US|ready	code: P2-us-clock + words
+1a/statusPage/US|collected	code: P2-us-clock + words
+1a/statusPage/US|cancelled	code: P2-us-clock + words
+1a/statusPage/US|rejected	code: P2-us-clock
+1a/statusPage/US|paid	code: P2-us-clock
+1a/statusPage/US|partPaid	code: P2-us-clock
+1a/statusPage/US|noCancel	code: P2-us-clock
+1a/statusPage/US|cutoff0	code: P2-us-clock
+1a/statusPage/US|cancelling	code: P2-us-clock + words
+1a/statusPage/US|cancelledNow	words
+1a/shared/deals|US|fromBasket	words
+1a/shared/dealSlots|US|unmet	words
+1a/shared/dealSlots|US|met	words
+1a/shared/dealSlots|US|allFilledUnmet	words
+1a/shared/dealSlots|US|units	words
+1a/shared/dealSlots|US|unitsSaving	words
+1a/emails/confirm|US|plain	code: P2-us-clock + words
+1a/emails/confirm|US|auto	code: P2-us-clock + words
+1a/emails/confirm|US|pendingSlot	words
+1a/emails/confirm|US|asap	words
+1a/emails/confirm|US|changed	code: P2-us-clock + words
+1a/emails/confirm|US|adjusted	code: P2-us-clock + words
+1a/emails/confirm|US|held	code: P2-us-clock + words
+1a/emails/confirm|US|captured	code: P2-us-clock + words
+1a/emails/confirm|US|heldState	code: P2-us-clock + words
+1a/emails/confirm|US|heldShort	code: P2-us-clock + words
+1a/emails/confirm|US|hatch	code: P2-us-clock + words
+1a/emails/confirm|US|unknown	code: P2-us-clock + words
+1a/emails/confirm|US|partPaid	code: P2-us-clock + words
+1a/emails/confirm|US|partPaidNoFig	code: P2-us-clock + words
+1a/emails/confirm|US|contactWa	code: P2-us-clock + words
+1a/emails/confirm|US|contactPhone	code: P2-us-clock + words
+1a/emails/confirm|US|contactEmail	code: P2-us-clock + words
+1a/emails/confirm|US|social	code: P2-us-clock + words
+1a/emails/confirm|US|noNotes	code: P2-us-clock + words
+1a/emails/confirm|US|noVenue	code: P2-us-clock + words
+1a/emails/confirm|US|noCancel	code: P2-us-clock + words
+1a/emails/confirm|US|cutoff0	code: P2-us-clock + words
+1a/emails/confirm|US|noBase	code: P2-us-clock + words
+1a/emails/confirm|US|ready	words
+1a/emails/confirm|US|readyCaptured	words
+1a/emails/confirm|US|readyHeldShort	words
+1a/emails/confirm|US|readyPartPaid	words
+1a/emails/confirm|US|readyUnknown	words
+1a/emails/confirm|US|readyHatch	words
+1a/emails/confirm|US|noDeals	code: P2-us-clock + words
+1a/emails/confirm|US|oneItem	code: P2-us-clock + words
+1a/emails/note|US|held_short|figures	words
+1a/emails/note|US|held_short|noHeld	words
+1a/emails/note|US|held_short|none	words
+1a/emails/note|US|hatch|figures	words
+1a/emails/note|US|hatch|noHeld	words
+1a/emails/note|US|hatch|none	words
+1a/emails/note|US|unknown|figures	words
+1a/emails/note|US|unknown|noHeld	words
+1a/emails/note|US|unknown|none	words
+1a/emails/note|US|part_paid|figures	words
+1a/emails/note|US|part_paid|noHeld	words
+1a/emails/note|US|part_paid|none	words
+1a/emails/cancelSentence|US|held|{}	words
+1a/emails/cancelSentence|US|held_short|{}	words
+1a/emails/sent|US|2	words
+1a/emails/sent|US|3	words
+1a/emails/sent|US|4	words
+1a/emails/sent|US|5	words
+1a/emails/sent|US|6	words
+1a/emails/sent|US|7	words
+1a/emails/sent|US|8	words
+1a/whatsapp/US|menuDeterministic	words
+1a/api/US|submit|private	words
+1a/api/US|submit|soldOutItem	words
+1a/api/US|submit|placed	code: P2-us-clock + words
+1a/api/US|cancel|tooLateStatus	words
+1a/api/US|cancel|cutoff	words
+1a/api/US|cancel|ok	words
+1a/api/US|action|confirm	code: P2-us-clock + words
+1a/api/US|action|reject	words
+1a/api/US|action|rejectNoReason	words
+1a/api/US|action|cancel	words
+1a/api/US|action|cancelRefunded	words
+1a/api/US|action|cancelDeclined	words
+1a/api/US|action|ready	words
+1a/api/US|action|edit	code: P2-us-clock + words
+1a/api/US|action|editSame	code: P2-us-clock + words
+1a/api/US|action|adjustSlot	code: P2-us-clock + words
+1b/api/US|action|conflict	words
+1b/api/US|action|itemAvail|noItem	words
+1b/api/US|action|itemAvail|noEvent	words
+1b/api/US|action|optAvail|noOption	words
+1b/api/US|action|optAvail|noEvent	words
+1b/api/US|action|optStock|noOption	words
+1b/api/US|action|optStock|noEvent	words
+1b/api/US|action|stock|noItem	words
+1b/api/US|action|stock|noEvent	words
+1b/api/US|action|catStock|noCat	words
+1b/api/US|action|catStock|noEvent	words
+1b/api/US|action|catAvail|noCat	words
+1b/api/US|action|catAvail|noEvent	words
+1b/api/US|action|paidStep|noEvent	words
+1b/api/US|action|paidStep|badValue	words
+1b/api/US|action|presses|noEvent	words
+1b/api/US|action|presses|badValue	words
+1b/api/US|action|buzzerPrompt|noEvent	words
+1b/api/US|action|buzzer|noOrder	words
+1b/api/US|action|takesCash|noEvent	words
+1b/api/US|action|takesCash|badValue	words
+1b/api/US|action|onlinePaused|badValue	words
+1b/api/US|action|offline|noEvent	words
+1b/api/US|action|offline|badValue	words
+1b/api/US|action|intervals|noEvent	words
+1b/api/US|action|intervals|bad	words
+1b/api/US|action|intervals|badOp	words
+1b/api/US|action|intervals|opFirst	words
+1b/api/US|action|orderReady|noEvent	words
+1b/api/US|action|orderReady|badValue	words
+1b/api/US|action|extraWait|noEvent	words
+1b/api/US|action|category|noId	words
+1b/api/US|action|markPaid|held	words
+1b/api/US|printing|getNoDevice	words
+1b/api/US|printing|postNoDevice	words
+1b/api/US|printing|noVan	words
+1b/api/US|printing|badAddress	words
+1b/api/US|bind|noDevice	words
+1b/api/US|bind|vanNotForTruck	words
+1b/api/US|bind|badScreen	words
+1b/components/US|card|card_paid|dash	code: P2-us-clock + words
+1b/components/US|card|card_paid|dashReady	code: P2-us-clock
+1b/components/US|card|card_paid|dashCook	code: P2-us-clock
+1b/components/US|card|card_paid|kdsWindow	code: P2-us-clock + words
+1b/components/US|card|card_paid|kdsWindowReady	code: P2-us-clock
+1b/components/US|card|card_paid|kdsCook	code: P2-us-clock
+1b/components/US|card|card_paid|kdsWindowCookStyle	code: P2-us-clock + words
+1b/components/US|card|card_paid|kdsNoPay	code: P2-us-clock
+1b/components/US|card|card_paid|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|card_paid|kdsWindowReady|oneCash	code: P2-us-clock
+1b/components/US|card|card_paid|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|card_paid|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|card_paid|kdsWindowReady|oneNoCash	code: P2-us-clock
+1b/components/US|card|card_paid|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|card_paid|dash|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|card_paid|kdsWindowReady|twoNoCash	code: P2-us-clock
+1b/components/US|card|card_paid|kdsWindow|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|card_paid|removePayment	code: P2-us-clock + words
+1b/components/US|card|card_paid|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|card_paid|contact	code: P2-us-clock + words
+1b/components/US|card|card_held|dash	code: P2-us-clock + words
+1b/components/US|card|card_held|dashReady	code: P2-us-clock + words
+1b/components/US|card|card_held|dashCook	code: P2-us-clock
+1b/components/US|card|card_held|kdsWindow	code: P2-us-clock + words
+1b/components/US|card|card_held|kdsWindowReady	code: P2-us-clock + words
+1b/components/US|card|card_held|kdsCook	code: P2-us-clock
+1b/components/US|card|card_held|kdsWindowCookStyle	code: P2-us-clock
+1b/components/US|card|card_held|kdsNoPay	code: P2-us-clock
+1b/components/US|card|card_held|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|card_held|kdsWindowReady|oneCash	code: P2-us-clock + words
+1b/components/US|card|card_held|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|card_held|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|card_held|kdsWindowReady|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|card_held|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|card_held|dash|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|card_held|kdsWindowReady|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|card_held|kdsWindow|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|card_held|removePayment	code: P2-us-clock + words
+1b/components/US|card|card_held|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|card_held|contact	code: P2-us-clock + words
+1b/components/US|card|pay_at_hatch|dash	code: P2-us-clock + words
+1b/components/US|card|pay_at_hatch|dashReady	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|dashCook	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|kdsWindow	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|kdsWindowReady	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|kdsCook	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|kdsWindowCookStyle	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|kdsNoPay	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|pay_at_hatch|kdsWindowReady|oneCash	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|pay_at_hatch|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|pay_at_hatch|kdsWindowReady|oneNoCash	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|pay_at_hatch|dash|twoNoCash	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|kdsWindowReady|twoNoCash	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|kdsWindow|twoNoCash	code: P2-us-clock
+1b/components/US|card|pay_at_hatch|removePayment	code: P2-us-clock + words
+1b/components/US|card|pay_at_hatch|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|pay_at_hatch|contact	code: P2-us-clock + words
+1b/components/US|card|part_paid|dash	code: P2-us-clock + words
+1b/components/US|card|part_paid|dashReady	code: P2-us-clock + words
+1b/components/US|card|part_paid|dashCook	code: P2-us-clock
+1b/components/US|card|part_paid|kdsWindow	code: P2-us-clock + words
+1b/components/US|card|part_paid|kdsWindowReady	code: P2-us-clock + words
+1b/components/US|card|part_paid|kdsCook	code: P2-us-clock
+1b/components/US|card|part_paid|kdsWindowCookStyle	code: P2-us-clock + words
+1b/components/US|card|part_paid|kdsNoPay	code: P2-us-clock
+1b/components/US|card|part_paid|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|part_paid|kdsWindowReady|oneCash	code: P2-us-clock + words
+1b/components/US|card|part_paid|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|part_paid|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|part_paid|kdsWindowReady|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|part_paid|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|part_paid|dash|twoNoCash	code: P2-us-clock
+1b/components/US|card|part_paid|kdsWindowReady|twoNoCash	code: P2-us-clock
+1b/components/US|card|part_paid|kdsWindow|twoNoCash	code: P2-us-clock
+1b/components/US|card|part_paid|removePayment	code: P2-us-clock + words
+1b/components/US|card|part_paid|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|part_paid|contact	code: P2-us-clock + words
+1b/components/US|card|refunded|dash	code: P2-us-clock + words
+1b/components/US|card|refunded|dashReady	code: P2-us-clock + words
+1b/components/US|card|refunded|dashCook	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsWindow	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsWindowReady	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsCook	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsWindowCookStyle	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsNoPay	code: P2-us-clock + words
+1b/components/US|card|refunded|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsWindowReady|oneCash	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|refunded|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsWindowReady|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|refunded|dash|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsWindowReady|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|refunded|kdsWindow|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|refunded|removePayment	code: P2-us-clock + words
+1b/components/US|card|refunded|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|refunded|contact	code: P2-us-clock + words
+1b/components/US|card|part_refunded|dash	code: P2-us-clock + words
+1b/components/US|card|part_refunded|dashReady	code: P2-us-clock + words
+1b/components/US|card|part_refunded|dashCook	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsWindow	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsWindowReady	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsCook	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsWindowCookStyle	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsNoPay	code: P2-us-clock + words
+1b/components/US|card|part_refunded|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsWindowReady|oneCash	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|part_refunded|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsWindowReady|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|part_refunded|dash|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsWindowReady|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|part_refunded|kdsWindow|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|part_refunded|removePayment	code: P2-us-clock + words
+1b/components/US|card|part_refunded|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|part_refunded|contact	code: P2-us-clock + words
+1b/components/US|card|cancelled|dash	code: P2-us-clock + words
+1b/components/US|card|cancelled|dashReady	code: P2-us-clock + words
+1b/components/US|card|cancelled|dashCook	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsWindow	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsWindowReady	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsCook	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsWindowCookStyle	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsNoPay	code: P2-us-clock + words
+1b/components/US|card|cancelled|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsWindowReady|oneCash	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|cancelled|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsWindowReady|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|cancelled|dash|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsWindowReady|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|cancelled|kdsWindow|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|cancelled|removePayment	code: P2-us-clock + words
+1b/components/US|card|cancelled|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|cancelled|contact	code: P2-us-clock + words
+1b/components/US|card|cooking|dash	code: P2-us-clock
+1b/components/US|card|cooking|dashReady	code: P2-us-clock
+1b/components/US|card|cooking|dashCook	code: P2-us-clock
+1b/components/US|card|cooking|kdsWindow	code: P2-us-clock
+1b/components/US|card|cooking|kdsWindowReady	code: P2-us-clock
+1b/components/US|card|cooking|kdsCook	code: P2-us-clock
+1b/components/US|card|cooking|kdsWindowCookStyle	code: P2-us-clock
+1b/components/US|card|cooking|kdsNoPay	code: P2-us-clock
+1b/components/US|card|cooking|dash|oneCash	code: P2-us-clock
+1b/components/US|card|cooking|kdsWindowReady|oneCash	code: P2-us-clock
+1b/components/US|card|cooking|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|cooking|dash|oneNoCash	code: P2-us-clock
+1b/components/US|card|cooking|kdsWindowReady|oneNoCash	code: P2-us-clock
+1b/components/US|card|cooking|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|cooking|dash|twoNoCash	code: P2-us-clock
+1b/components/US|card|cooking|kdsWindowReady|twoNoCash	code: P2-us-clock
+1b/components/US|card|cooking|kdsWindow|twoNoCash	code: P2-us-clock
+1b/components/US|card|cooking|removePayment	code: P2-us-clock + words
+1b/components/US|card|cooking|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|cooking|contact	code: P2-us-clock
+1b/components/US|card|modified|dash	code: P2-us-clock + words
+1b/components/US|card|modified|dashReady	code: P2-us-clock
+1b/components/US|card|modified|dashCook	code: P2-us-clock
+1b/components/US|card|modified|kdsWindow	code: P2-us-clock
+1b/components/US|card|modified|kdsWindowReady	code: P2-us-clock
+1b/components/US|card|modified|kdsCook	code: P2-us-clock
+1b/components/US|card|modified|kdsWindowCookStyle	code: P2-us-clock
+1b/components/US|card|modified|kdsNoPay	code: P2-us-clock
+1b/components/US|card|modified|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|modified|kdsWindowReady|oneCash	code: P2-us-clock
+1b/components/US|card|modified|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|modified|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|modified|kdsWindowReady|oneNoCash	code: P2-us-clock
+1b/components/US|card|modified|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|modified|dash|twoNoCash	code: P2-us-clock
+1b/components/US|card|modified|kdsWindowReady|twoNoCash	code: P2-us-clock
+1b/components/US|card|modified|kdsWindow|twoNoCash	code: P2-us-clock
+1b/components/US|card|modified|removePayment	code: P2-us-clock + words
+1b/components/US|card|modified|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|modified|contact	code: P2-us-clock + words
+1b/components/US|card|edited_down|dash	code: P2-us-clock + words
+1b/components/US|card|edited_down|dashReady	code: P2-us-clock
+1b/components/US|card|edited_down|dashCook	code: P2-us-clock
+1b/components/US|card|edited_down|kdsWindow	code: P2-us-clock + words
+1b/components/US|card|edited_down|kdsWindowReady	code: P2-us-clock
+1b/components/US|card|edited_down|kdsCook	code: P2-us-clock
+1b/components/US|card|edited_down|kdsWindowCookStyle	code: P2-us-clock + words
+1b/components/US|card|edited_down|kdsNoPay	code: P2-us-clock
+1b/components/US|card|edited_down|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|edited_down|kdsWindowReady|oneCash	code: P2-us-clock
+1b/components/US|card|edited_down|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|edited_down|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|edited_down|kdsWindowReady|oneNoCash	code: P2-us-clock
+1b/components/US|card|edited_down|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|edited_down|dash|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|edited_down|kdsWindowReady|twoNoCash	code: P2-us-clock
+1b/components/US|card|edited_down|kdsWindow|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|edited_down|removePayment	code: P2-us-clock + words
+1b/components/US|card|edited_down|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|edited_down|contact	code: P2-us-clock + words
+1b/components/US|card|rejected|dash	code: P2-us-clock
+1b/components/US|card|rejected|dashReady	code: P2-us-clock
+1b/components/US|card|rejected|dashCook	code: P2-us-clock
+1b/components/US|card|rejected|kdsWindow	code: P2-us-clock
+1b/components/US|card|rejected|kdsWindowReady	code: P2-us-clock
+1b/components/US|card|rejected|kdsCook	code: P2-us-clock
+1b/components/US|card|rejected|kdsWindowCookStyle	code: P2-us-clock
+1b/components/US|card|rejected|kdsNoPay	code: P2-us-clock
+1b/components/US|card|rejected|dash|oneCash	code: P2-us-clock
+1b/components/US|card|rejected|kdsWindowReady|oneCash	code: P2-us-clock
+1b/components/US|card|rejected|kdsWindow|oneCash	code: P2-us-clock
+1b/components/US|card|rejected|dash|oneNoCash	code: P2-us-clock
+1b/components/US|card|rejected|kdsWindowReady|oneNoCash	code: P2-us-clock
+1b/components/US|card|rejected|kdsWindow|oneNoCash	code: P2-us-clock
+1b/components/US|card|rejected|dash|twoNoCash	code: P2-us-clock
+1b/components/US|card|rejected|kdsWindowReady|twoNoCash	code: P2-us-clock
+1b/components/US|card|rejected|kdsWindow|twoNoCash	code: P2-us-clock
+1b/components/US|card|rejected|removePayment	code: P2-us-clock + words
+1b/components/US|card|rejected|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|rejected|contact	code: P2-us-clock
+1b/components/US|card|walk_up|dash	code: P2-us-clock + words
+1b/components/US|card|walk_up|dashReady	code: P2-us-clock + words
+1b/components/US|card|walk_up|dashCook	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsWindow	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsWindowReady	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsCook	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsWindowCookStyle	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsNoPay	code: P2-us-clock + words
+1b/components/US|card|walk_up|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsWindowReady|oneCash	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|walk_up|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsWindowReady|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|walk_up|dash|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsWindowReady|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|walk_up|kdsWindow|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|walk_up|removePayment	code: P2-us-clock + words
+1b/components/US|card|walk_up|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|walk_up|contact	code: P2-us-clock + words
+1b/components/US|card|asap|dash	code: P2-us-clock
+1b/components/US|card|asap|dashReady	code: P2-us-clock
+1b/components/US|card|asap|dashCook	code: P2-us-clock
+1b/components/US|card|asap|kdsWindow	code: P2-us-clock
+1b/components/US|card|asap|kdsWindowReady	code: P2-us-clock
+1b/components/US|card|asap|kdsCook	code: P2-us-clock
+1b/components/US|card|asap|kdsWindowCookStyle	code: P2-us-clock
+1b/components/US|card|asap|kdsNoPay	code: P2-us-clock
+1b/components/US|card|asap|dash|oneCash	code: P2-us-clock
+1b/components/US|card|asap|kdsWindowReady|oneCash	code: P2-us-clock
+1b/components/US|card|asap|kdsWindow|oneCash	code: P2-us-clock
+1b/components/US|card|asap|dash|oneNoCash	code: P2-us-clock
+1b/components/US|card|asap|kdsWindowReady|oneNoCash	code: P2-us-clock
+1b/components/US|card|asap|kdsWindow|oneNoCash	code: P2-us-clock
+1b/components/US|card|asap|dash|twoNoCash	code: P2-us-clock
+1b/components/US|card|asap|kdsWindowReady|twoNoCash	code: P2-us-clock
+1b/components/US|card|asap|kdsWindow|twoNoCash	code: P2-us-clock
+1b/components/US|card|asap|removePayment	code: P2-us-clock + words
+1b/components/US|card|asap|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|asap|contact	code: P2-us-clock
+1b/components/US|card|big|dash	code: P2-us-clock + words
+1b/components/US|card|big|dashReady	code: P2-us-clock
+1b/components/US|card|big|dashCook	code: P2-us-clock
+1b/components/US|card|big|kdsWindow	code: P2-us-clock + words
+1b/components/US|card|big|kdsWindowReady	code: P2-us-clock
+1b/components/US|card|big|kdsCook	code: P2-us-clock
+1b/components/US|card|big|kdsWindowCookStyle	code: P2-us-clock + words
+1b/components/US|card|big|kdsNoPay	code: P2-us-clock
+1b/components/US|card|big|dash|oneCash	code: P2-us-clock + words
+1b/components/US|card|big|kdsWindowReady|oneCash	code: P2-us-clock
+1b/components/US|card|big|kdsWindow|oneCash	code: P2-us-clock + words
+1b/components/US|card|big|dash|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|big|kdsWindowReady|oneNoCash	code: P2-us-clock
+1b/components/US|card|big|kdsWindow|oneNoCash	code: P2-us-clock + words
+1b/components/US|card|big|dash|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|big|kdsWindowReady|twoNoCash	code: P2-us-clock
+1b/components/US|card|big|kdsWindow|twoNoCash	code: P2-us-clock + words
+1b/components/US|card|big|removePayment	code: P2-us-clock + words
+1b/components/US|card|big|removePayment|offline	code: P2-us-clock + words
+1b/components/US|card|big|contact	code: P2-us-clock + words
+1b/components/US|card|pendingSync	code: P2-us-clock
+1b/components/US|card|pendingSync|kds	code: P2-us-clock
+1b/components/US|card|conflict|payment	code: P2-us-clock
+1b/components/US|card|conflict|status	code: P2-us-clock + words
+1b/components/US|card|pendingPaid	code: P2-us-clock
+1b/components/US|card|pendingUnpaid	code: P2-us-clock
+1b/components/US|card|buzzer|none|dash	code: P2-us-clock + words
+1b/components/US|card|buzzer|7|dash	code: P2-us-clock + words
+1b/components/US|card|slot|late|dash	code: P2-us-clock + words
+1b/components/US|card|slot|now|dash	code: P2-us-clock + words
+1b/components/US|card|slot|in2h|dash	code: P2-us-clock + words
+1b/components/US|card|slot|inMins|dash	code: P2-us-clock + words
+1b/components/US|card|slot|asap|dash	code: P2-us-clock + words
+1b/components/US|card|slot|farPast|dash	code: P2-us-clock + words
+1b/components/US|card|noContact|dash	code: P2-us-clock + words
+1b/components/US|card|grouped|dash	code: P2-us-clock + words
+1b/components/US|card|noDeals|dash	code: P2-us-clock + words
+1b/components/US|card|buzzer|none|kdsWindow	code: P2-us-clock
+1b/components/US|card|buzzer|7|kdsWindow	code: P2-us-clock
+1b/components/US|card|slot|late|kdsWindow	code: P2-us-clock
+1b/components/US|card|slot|now|kdsWindow	code: P2-us-clock
+1b/components/US|card|slot|in2h|kdsWindow	code: P2-us-clock
+1b/components/US|card|slot|inMins|kdsWindow	code: P2-us-clock
+1b/components/US|card|slot|asap|kdsWindow	code: P2-us-clock
+1b/components/US|card|slot|farPast|kdsWindow	code: P2-us-clock
+1b/components/US|card|noContact|kdsWindow	code: P2-us-clock
+1b/components/US|card|grouped|kdsWindow	code: P2-us-clock
+1b/components/US|card|noDeals|kdsWindow	code: P2-us-clock
+1b/components/US|card|buzzer|none|kdsCook	code: P2-us-clock
+1b/components/US|card|buzzer|7|kdsCook	code: P2-us-clock
+1b/components/US|card|slot|late|kdsCook	code: P2-us-clock
+1b/components/US|card|slot|now|kdsCook	code: P2-us-clock
+1b/components/US|card|slot|in2h|kdsCook	code: P2-us-clock
+1b/components/US|card|slot|inMins|kdsCook	code: P2-us-clock
+1b/components/US|card|slot|asap|kdsCook	code: P2-us-clock
+1b/components/US|card|slot|farPast|kdsCook	code: P2-us-clock
+1b/components/US|card|noContact|kdsCook	code: P2-us-clock
+1b/components/US|card|grouped|kdsCook	code: P2-us-clock
+1b/components/US|card|noDeals|kdsCook	code: P2-us-clock
+1b/components/US|card|pub	code: P2-us-clock
+1b/components/US|card|emoji	code: P2-us-clock
+1b/components/US|card|loading|confirm	code: P2-us-clock
+1b/components/US|card|loading|cancel	code: P2-us-clock + words
+1b/components/US|card|vanNoCash	code: P2-us-clock
+1b/components/US|card|vanCash	code: P2-us-clock + words
+1b/components/US|pay|refund	words
+1b/components/US|pay|refund|partRefunded	words
+1b/components/US|pay|refund|partial	words
+1b/components/US|pay|refund|partialOver	words
+1b/components/US|pay|refund|partialEmpty	words
+1b/components/US|pay|refund|reasonOther	words
+1b/components/US|pay|refund|reasonOtherNote	words
+1b/components/US|pay|refund|reason	words
+1b/components/US|pay|refund|busy	words
+1b/components/US|pay|refund|error	words
+1b/components/US|pay|offline	words
+1b/components/US|pay|offline|mixed	words
+1b/components/US|pay|remove|card	words
+1b/components/US|pay|remove|unknown	words
+1b/components/US|pay|remove|mixedMethods	words
+1b/components/US|pay|paidByCard|noRefund	words
+1b/components/US|pay|paidByCard|fullyRefunded	words
+1b/components/US|pay|paidByCard|noCharges	words
+1b/components/US|add|tabs|empty	code: P2-us-clock + words
+1b/components/US|add|tabs|basket|paidStep	code: P2-us-clock + words
+1b/components/US|add|tabs|basket|noCash	code: P2-us-clock
+1b/components/US|add|tabs|basket|noPaidStep	code: P2-us-clock + words
+1b/components/US|add|tabs|basket|noPaidStepNoCash	code: P2-us-clock
+1b/components/US|add|tabs|closedCat	code: P2-us-clock + words
+1b/components/US|add|tabs|stock	code: P2-us-clock + words
+1b/components/US|add|tabs|stockUnknown	code: P2-us-clock + words
+1b/components/US|add|tabs|stockStale	code: P2-us-clock + words
+1b/components/US|add|tabs|stockStaleNoTime	code: P2-us-clock + words
+1b/components/US|add|tabs|noMenu	code: P2-us-clock + words
+1b/components/US|add|scroll|empty	code: P2-us-clock + words
+1b/components/US|add|scroll|basket|paidStep	code: P2-us-clock + words
+1b/components/US|add|scroll|basket|noCash	code: P2-us-clock
+1b/components/US|add|scroll|basket|noPaidStep	code: P2-us-clock + words
+1b/components/US|add|scroll|basket|noPaidStepNoCash	code: P2-us-clock
+1b/components/US|add|scroll|closedCat	code: P2-us-clock + words
+1b/components/US|add|scroll|stock	code: P2-us-clock + words
+1b/components/US|add|scroll|stockUnknown	code: P2-us-clock + words
+1b/components/US|add|scroll|stockStale	code: P2-us-clock + words
+1b/components/US|add|scroll|stockStaleNoTime	code: P2-us-clock + words
+1b/components/US|add|scroll|noMenu	code: P2-us-clock + words
+1b/components/US|add|submitting|plain	code: P2-us-clock + words
+1b/components/US|add|submitting|plain|noPaidStep	code: P2-us-clock + words
+1b/components/US|add|submitting|plain|noPaidStepNoCash	code: P2-us-clock + words
+1b/components/US|add|submitting|take	code: P2-us-clock + words
+1b/components/US|add|submitting|take|noPaidStep	code: P2-us-clock + words
+1b/components/US|add|submitting|take|noPaidStepNoCash	code: P2-us-clock + words
+1b/components/US|add|submitting|cash	code: P2-us-clock
+1b/components/US|add|submitting|cash|noPaidStep	code: P2-us-clock
+1b/components/US|add|submitting|cash|noPaidStepNoCash	code: P2-us-clock + words
+1b/components/US|add|submitting|card	code: P2-us-clock + words
+1b/components/US|add|submitting|card|noPaidStep	code: P2-us-clock + words
+1b/components/US|add|submitting|card|noPaidStepNoCash	code: P2-us-clock + words
+1b/components/US|add|noEvent	code: P2-us-clock + words
+1b/components/US|add|noEvent|noPaidStep	code: P2-us-clock
+1b/components/US|add|noEvent|noPaidStepNoCash	code: P2-us-clock
+1b/components/US|add|noEvent|noPaidStepEmpty	code: P2-us-clock
+1b/components/US|add|event|tomorrow	code: P2-us-clock + words
+1b/components/US|add|event|tomorrow|demo	code: P2-us-clock + words
+1b/components/US|add|event|later	code: P2-us-clock + words
+1b/components/US|add|event|later|demo	code: P2-us-clock + words
+1b/components/US|add|event|todayConfirmed	code: P2-us-clock + words
+1b/components/US|add|event|todayConfirmed|demo	code: P2-us-clock + words
+1b/components/US|add|event|ended	code: P2-us-clock + words
+1b/components/US|add|event|ended|demo	code: P2-us-clock + words
+1b/components/US|add|event|closed	code: P2-us-clock + words
+1b/components/US|add|event|closed|demo	code: P2-us-clock + words
+1b/components/US|add|slots|empty	code: P2-us-clock + words
+1b/components/US|add|slots|basket	code: P2-us-clock + words
+1b/components/US|add|slots|capacity	code: P2-us-clock + words
+1b/components/US|add|slots|capacityEmpty	code: P2-us-clock + words
+1b/components/US|add|slots|chosen	code: P2-us-clock + words
+1b/components/US|add|ready|mins	code: P2-us-clock + words
+1b/components/US|add|ready|oneMin	code: P2-us-clock + words
+1b/components/US|add|slots|noFit	code: P2-us-clock + words
+1b/components/US|add|ready|wait	code: P2-us-clock + words
+1b/components/US|add|ready|hours	code: P2-us-clock + words
+1b/components/US|add|ready|hour	code: P2-us-clock + words
+1b/components/US|add|ready|future	code: P2-us-clock + words
+1b/components/US|add|buzzer|none	code: P2-us-clock + words
+1b/components/US|add|buzzer|3	code: P2-us-clock + words
+1b/components/US|add|buzzer|picker	code: P2-us-clock + words
+1b/components/US|add|buzzer|prompt	code: P2-us-clock + words
+1b/components/US|add|sheet	code: P2-us-clock + words
+1b/components/US|add|sheet|one	code: P2-us-clock + words
+1b/components/US|add|itemModal	code: P2-us-clock + words
+1b/components/US|add|itemModal|edit	code: P2-us-clock + words
+1b/components/US|add|itemModal|required	code: P2-us-clock + words
+1b/components/US|add|capacity|over	code: P2-us-clock + words
+1b/components/US|add|capacity|filled	code: P2-us-clock + words
+1b/components/US|add|capacity|stale	code: P2-us-clock + words
+1b/components/US|add|picker	code: P2-us-clock + words
+1b/components/US|add|picker|loading	code: P2-us-clock + words
+1b/components/US|add|picker|empty	code: P2-us-clock + words
+1b/components/US|add|picker|offline	code: P2-us-clock + words
+1b/components/US|add|offline	code: P2-us-clock + words
+1b/components/US|add|optionStock	code: P2-us-clock + words
+1b/components/US|reject|none|noNote	words
+1b/components/US|reject|none|note	words
+1b/components/US|reject|sold_out|noNote	words
+1b/components/US|reject|sold_out|note	words
+1b/components/US|reject|too_busy|noNote	words
+1b/components/US|reject|too_busy|note	words
+1b/components/US|reject|closing_soon|noNote	words
+1b/components/US|reject|closing_soon|note	words
+1b/components/US|reject|other|noNote	words
+1b/components/US|reject|other|note	words
+1b/components/US|stored|reject|too_busy|noNote	words
+1b/components/US|stored|reject|too_busy|note	words
+1b/components/US|cancel|none|noNote	code: P2-us-clock + words
+1b/components/US|cancel|none|note	code: P2-us-clock + words
+1b/components/US|cancel|vehicle_breakdown|noNote	code: P2-us-clock + words
+1b/components/US|cancel|vehicle_breakdown|note	code: P2-us-clock + words
+1b/components/US|cancel|weather|noNote	code: P2-us-clock + words
+1b/components/US|cancel|weather|note	code: P2-us-clock + words
+1b/components/US|cancel|venue_issue|noNote	code: P2-us-clock + words
+1b/components/US|cancel|venue_issue|note	code: P2-us-clock + words
+1b/components/US|cancel|personal_emergency|noNote	code: P2-us-clock + words
+1b/components/US|cancel|personal_emergency|note	code: P2-us-clock + words
+1b/components/US|cancel|other|noNote	code: P2-us-clock + words
+1b/components/US|cancel|other|note	code: P2-us-clock + words
+1b/components/US|cancel|count1	code: P2-us-clock + words
+1b/components/US|cancel|count0	code: P2-us-clock + words
+1b/components/US|cancel|busy	code: P2-us-clock + words
+1b/components/US|cancel|noTown	words
+1b/components/US|actions|open|all	code: P2-us-clock + words
+1b/components/US|actions|open|paused	code: P2-us-clock + words
+1b/components/US|actions|open|none	code: P2-us-clock + words
+1b/components/US|actions|confirmed|all	code: P2-us-clock + words
+1b/components/US|actions|confirmed|paused	code: P2-us-clock + words
+1b/components/US|actions|confirmed|none	code: P2-us-clock + words
+1b/components/US|actions|closed|all	code: P2-us-clock + words
+1b/components/US|actions|closed|paused	code: P2-us-clock + words
+1b/components/US|actions|closed|none	code: P2-us-clock + words
+1b/components/US|actions|bare	words
+1b/components/US|actions|dateOnly	words
+1b/components/US|finish|confirm|busy	words
+1b/components/US|extraWait	words
+1b/components/US|picker|list	code: P2-us-clock
+1b/components/US|picker|blocked	code: P2-us-clock
+1b/components/US|buzzerLost	words
+1b/components/US|dayLoad|strip	code: P2-us-clock
+1b/components/US|dayLoad|strip|breached	code: P2-us-clock
+1b/components/US|dayLoad|sidebar	code: P2-us-clock
+1b/components/US|dayLoad|sidebar|breached	code: P2-us-clock
+1b/components/US|demoLoop|one	words
+1b/components/US|demoLoop|ambiguous	words
+1b/components/US|demoLoop|unknown	words
+1b/components/US|demoLoop|sample	words
+1b/components/US|demoWelcome|own	words
+1b/components/US|demoWelcome|sample	words
+1b/components/US|demoWelcome|noUrl	words
+1b/components/US|demoWelcome|qr	words
+1b/components/US|demoWelcome|qrFailed	words
+1b/components/US|demoWelcome|oneCash	words
+1b/components/US|demoWelcome|oneNoCash	words
+1b/components/US|keepAwake|unsupported	words
+1b/components/US|keepAwake|insecure	words
+1b/dashboard/US|loading	words
+1b/dashboard/US|boardUnavailableNoTruck	words
+1b/dashboard/US|orders	code: P2-us-clock + words
+1b/dashboard/US|ordersCollapsed	code: P2-us-clock + words
+1b/dashboard/US|ordersUnrecorded	code: P2-us-clock + words
+1b/dashboard/US|ordersEmpty	code: P2-us-clock + words
+1b/dashboard/US|ordersAllDone	code: P2-us-clock + words
+1b/dashboard/US|ordersNoCancelled	code: P2-us-clock + words
+1b/dashboard/US|boardUnavailable	code: P2-us-clock + words
+1b/dashboard/US|degradedUnreachable	code: P2-us-clock + words
+1b/dashboard/US|degradedServer	code: P2-us-clock + words
+1b/dashboard/US|menuSnapshot	code: P2-us-clock + words
+1b/dashboard/US|pausedManual	code: P2-us-clock + words
+1b/dashboard/US|pausedIndefinite	code: P2-us-clock + words
+1b/dashboard/US|pausedOffline	code: P2-us-clock + words
+1b/dashboard/US|extraWait	code: P2-us-clock + words
+1b/dashboard/US|prepBanner	code: P2-us-clock + words
+1b/dashboard/US|recentlyClosed	code: P2-us-clock + words
+1b/dashboard/US|cardsOff	code: P2-us-clock + words
+1b/dashboard/US|breach	code: P2-us-clock + words
+1b/dashboard/US|buzzerLoss	code: P2-us-clock + words
+1b/dashboard/US|header|soundOff	code: P2-us-clock + words
+1b/dashboard/US|header|private	code: P2-us-clock + words
+1b/dashboard/US|header|privateUnnamed	code: P2-us-clock + words
+1b/dashboard/US|header|eventType	code: P2-us-clock + words
+1b/dashboard/US|header|eventPaused	code: P2-us-clock + words
+1b/dashboard/US|prep	code: P2-us-clock + words
+1b/dashboard/US|prepEmpty	code: P2-us-clock + words
+1b/dashboard/US|prepAsapLater	code: P2-us-clock + words
+1b/dashboard/US|addTab	code: P2-us-clock
+1b/dashboard/US|addTabNoMenu	code: P2-us-clock + words
+1b/dashboard/US|settings	code: P2-us-clock + words
+1b/dashboard/US|settings|offline	code: P2-us-clock + words
+1b/dashboard/US|settings|saving	code: P2-dashboard-off-since+P2-us-clock + words
+1b/dashboard/US|settings|buzzer	code: P2-us-clock + words
+1b/dashboard/US|settings|scroll	code: P2-us-clock + words
+1b/dashboard/US|settings|offlineProtection	code: P2-us-clock + words
+1b/dashboard/US|settings|offlineNoAuto	code: P2-us-clock + words
+1b/dashboard/US|settings|intervalsOverride	code: P2-us-clock + words
+1b/dashboard/US|settings|intervalsEventOnly	code: P2-us-clock + words
+1b/dashboard/US|settings|intervalsVanSplit	code: P2-us-clock + words
+1b/dashboard/US|settings|intervalsUnavailable	code: P2-us-clock + words
+1b/dashboard/US|settings|capacity	code: P2-us-clock + words
+1b/dashboard/US|settings|capacity1	code: P2-us-clock + words
+1b/dashboard/US|settings|noVan	code: P2-us-clock + words
+1b/dashboard/US|settings|noEvent	words
+1b/dashboard/US|settings|privateLink	code: P2-us-clock + words
+1b/dashboard/US|stock	code: P2-us-clock + words
+1b/dashboard/US|stock|options	code: P2-us-clock + words
+1b/dashboard/US|stock|priceEditing	code: P2-us-clock + words
+1b/dashboard/US|stock|priceSaving	code: P2-us-clock + words
+1b/dashboard/US|stock|loading	code: P2-us-clock + words
+1b/dashboard/US|stock|noMenu	code: P2-us-clock + words
+1b/dashboard/US|modal|offlinePausedNotice	code: P2-us-clock + words
+1b/dashboard/US|modal|finishEarly	code: P2-us-clock + words
+1b/dashboard/US|modal|finish	code: P2-us-clock + words
+1b/dashboard/US|modal|pause	code: P2-us-clock + words
+1b/dashboard/US|modal|screenOff	code: P2-us-clock + words
+1b/dashboard/US|modal|kds	code: P2-us-clock + words
+1b/dashboard/US|modal|profile	code: P2-us-clock + words
+1b/dashboard/US|modal|profileSaving	code: P2-us-clock + words
+1b/dashboard/US|modal|qr	code: P2-us-clock + words
+1b/dashboard/US|modal|qrLoading	code: P2-us-clock + words
+1b/dashboard/US|modal|eventMenu	code: P2-us-clock + words
+1b/dashboard/US|modal|eventMenuWait	code: P2-us-clock + words
+1b/dashboard/US|modal|finishTime	code: P2-us-clock + words
+1b/dashboard/US|modal|eventCancel	code: P2-us-clock + words
+1b/dashboard/US|modal|extraWait	code: P2-us-clock + words
+1b/dashboard/US|modal|typePicker	code: P2-us-clock + words
+1b/dashboard/US|modal|typeConfirm	code: P2-us-clock + words
+1b/dashboard/US|modal|typeToPrivate	code: P2-us-clock + words
+1b/dashboard/US|modal|typeFromPrivate	code: P2-us-clock + words
+1b/dashboard/US|modal|privateLink	code: P2-us-clock + words
+1b/dashboard/US|modal|buzzer	code: P2-us-clock + words
+1b/dashboard/US|modal|payment	code: P2-us-clock + words
+1b/dashboard/US|cancel|card_paid	code: P2-us-clock + words
+1b/dashboard/US|cancel|card_paid|noRefund	code: P2-us-clock + words
+1b/dashboard/US|cancel|card_paid|busy	code: P2-us-clock + words
+1b/dashboard/US|cancel|card_paid|error	code: P2-us-clock + words
+1b/dashboard/US|cancel|part_refunded	code: P2-us-clock + words
+1b/dashboard/US|cancel|part_paid	code: P2-us-clock + words
+1b/dashboard/US|cancel|card_held	code: P2-us-clock + words
+1b/dashboard/US|cancel|pay_at_hatch	code: P2-us-clock + words
+1b/dashboard/US|cancel|reason|customer_cancelled	code: P2-us-clock + words
+1b/dashboard/US|cancel|reason|item_unavailable	code: P2-us-clock + words
+1b/dashboard/US|cancel|reason|not_collected	code: P2-us-clock + words
+1b/dashboard/US|cancel|reason|wrong_or_missing_item	code: P2-us-clock + words
+1b/dashboard/US|cancel|reason|quality_issue	code: P2-us-clock + words
+1b/dashboard/US|cancel|reason|duplicate_payment	code: P2-us-clock + words
+1b/dashboard/US|cancel|reason|other	code: P2-us-clock + words
+1b/dashboard/US|reject|card_held	code: P2-us-clock + words
+1b/dashboard/US|reject|big	code: P2-us-clock + words
+1b/dashboard/US|edit	code: P2-us-clock + words
+1b/dashboard/US|edit|down	code: P2-us-clock + words
+1b/dashboard/US|edit|same	code: P2-us-clock + words
+1b/dashboard/US|edit|graceCurrent	code: P2-us-clock + words
+1b/dashboard/US|edit|slotsLoading	code: P2-us-clock + words
+1b/dashboard/US|edit|noSlots	code: P2-us-clock + words
+1b/dashboard/US|edit|saving	code: P2-us-clock + words
+1b/dashboard/US|ordersRecording	code: P2-us-clock + words
+1b/dashboard/US|edit|itemModal	code: P2-us-clock + words
+1b/dashboard/US|edit|itemModalPlain	code: P2-us-clock + words
+1b/dashboard/US|edit|dealModal	code: P2-us-clock + words
+1b/dashboard/US|edit|reprice	code: P2-us-clock + words
+1b/dashboard/US|edit|repriceStale	code: P2-us-clock + words
+1b/dashboard/US|demo	code: P2-us-clock + words
+1b/dashboard/US|demo|settingUp	code: P2-us-clock + words
+1b/dashboard/US|demo|ended	code: P2-us-clock + words
+1b/dashboard/US|demo|endedRestarting	code: P2-us-clock + words
+1b/dashboard/US|demo|endedNoEvent	code: P2-us-clock + words
+1b/dashboard/US|demo|eventLock	code: P2-us-clock + words
+1b/dashboard/US|demo|settings	code: P2-us-clock + words
+1b/dashboard/US|demo|qr	code: P2-us-clock + words
+1b/dashboard/US|demo|extraWait	code: P2-us-clock + words
+1b/dashboard/US|demo|branded	code: P2-us-clock + words
+1b/dashboard/US|handler|openOrderFromPush	words
+1b/dashboard/US|handler|submitPin|s503	words
+1b/dashboard/US|handler|printMode|lead_time	words
+1b/dashboard/US|handler|cardsPaused|true	words
+1b/dashboard/US|handler|intervals|set	words
+1b/dashboard/US|handler|intervals|refusedBare	words
+1b/dashboard/US|handler|intervals|refusedNoJson	words
+1b/dashboard/US|handler|refund|settled	words
+1b/dashboard/US|handler|cancelEvent|ok	words
+1b/dashboard/US|handler|switchEvent	words
+1b/kds/US|loading	words
+1b/kds/US|windowList	code: P2-us-clock + words
+1b/kds/US|windowGrid	code: P2-us-clock + words
+1b/kds/US|windowCookCards	code: P2-us-clock + words
+1b/kds/US|readyAndHandover	code: P2-us-clock + words
+1b/kds/US|cookBoard	code: P2-us-clock + words
+1b/kds/US|cookBoardFullCards	code: P2-us-clock + words
+1b/kds/US|paidStepOff	code: P2-us-clock + words
+1b/kds/US|empty	code: P2-us-clock + words
+1b/kds/US|vanName	code: P2-us-clock + words
+1b/kds/US|oneVan	code: P2-us-clock + words
+1b/kds/US|degraded	code: P2-us-clock + words
+1b/kds/US|degradedNoRefresh	code: P2-us-clock + words
+1b/kds/US|mismatch	code: P2-us-clock + words
+1b/kds/US|mismatchNoEvent	words
+1b/kds/US|pausedManual	code: P2-us-clock + words
+1b/kds/US|pausedOffline	code: P2-us-clock + words
+1b/kds/US|offline0	code: P2-us-clock + words
+1b/kds/US|offline1	code: P2-us-clock + words
+1b/kds/US|offline3	code: P2-us-clock + words
+1b/kds/US|extraWait	code: P2-us-clock + words
+1b/kds/US|startEvent	code: P2-us-clock + words
+1b/kds/US|notStarted	code: P2-us-clock + words
+1b/kds/US|recentlyClosed	code: P2-us-clock + words
+1b/kds/US|cancelledEvent	code: P2-us-clock + words
+1b/kds/US|noEvent	code: P2-us-clock + words
+1b/kds/US|phoneOpen	code: P2-us-clock + words
+1b/kds/US|phoneOpenAll	code: P2-us-clock + words
+1b/kds/US|deviceSheet	code: P2-us-clock + words
+1b/kds/US|deviceSheetAll	code: P2-us-clock + words
+1b/kds/US|screenOff0	code: P2-us-clock + words
+1b/kds/US|screenOff1	code: P2-us-clock + words
+1b/kds/US|screenOff2	code: P2-us-clock + words
+1b/kds/US|eventMenu	code: P2-us-clock + words
+1b/kds/US|eventMenuWait	code: P2-us-clock + words
+1b/kds/US|eventMenuPaused	code: P2-us-clock + words
+1b/kds/US|eventPicker	code: P2-us-clock + words
+1b/kds/US|eventPickerOffline	code: P2-us-clock + words
+1b/kds/US|extraWaitPicker	code: P2-us-clock + words
+1b/kds/US|finishEarly	code: P2-us-clock + words
+1b/kds/US|finishLate	code: P2-us-clock + words
+1b/kds/US|reject	code: P2-us-clock + words
+1b/kds/US|kdsToast	code: P2-us-clock + words
+1b/kds/US|buzzer	code: P2-us-clock + words
+1b/kds/US|eventCancel	code: P2-us-clock + words
+1b/kds/US|finishTime	code: P2-us-clock + words
+1b/kds/US|toasts	code: P2-us-clock + words
+1b/kds/US|payFailure	code: P2-us-clock + words
+1b/kds/US|hidePaymentsDone	code: P2-us-clock + words
+1b/kds/US|demoIntro	code: P2-us-clock + words
+1b/kds/US|demoPausedMenu	code: P2-us-clock + words
+1b/kds/US|action|gate|collected	words
+1b/kds/US|action|gate|collected_cash	words
+1b/kds/US|action|gate|undo_collected	words
+1b/kds/US|action|gate|cancel	words
+1b/kds/US|action|gate|start_cooking	words
+1b/kds/US|action|gate|collected|booksPayment	words
+1b/kds/US|action|event|cancel	words
+1b/kds/US|action|pin|503	words
+1b/native/US|gate|fetchError	words
+1b/native/US|gate|noVan	words
+1b/native/US|gate|picker	words
+1b/native/US|gate|pickerKds	words
+1b/native/US|gate|saving	words
+1b/native/US|gate|saveFailedServer	words
+1b/native/US|gate|saveFailedNetwork	words
+1b/native/US|device|bare	words
+1b/native/US|device|full	words
+1b/native/US|device|patchError	words
+1b/native/US|device|pinSetup	words
+1b/native/US|device|pinMismatch	words
+1b/native/US|banner|offline0	words
+1b/native/US|banner|offline1	words
+1b/native/US|banner|offline3	words
+1b/native/US|banner|stillQueued1	words
+1b/native/US|banner|payment1	words
+1b/native/US|banner|paymentMany	words
+1b/native/US|banner|paymentConfirm	words
+1b/native/US|banner|statusUnresolved1	words
+1b/native/US|banner|statusUnresolved2	words
+1b/native/US|banner|both	words
+1b/native/US|lock|locked	words
+1b/native/US|lock|verifying	words
+1b/native/US|lock|pinOffered	words
+1b/native/US|lock|pinWrong	words
+1b/native/US|lock|pinChecking	words
+1b/native/US|van|loadError	words
+1b/native/US|van|single	words
+1b/native/US|van|none	words
+1b/native/US|van|multi	words
+1b/native/US|van|unbound	words
+1b/native/US|van|switchFailed	words
+1b/operatorMail/new|US|card_paid	code: P2-us-clock + words
+1b/operatorMail/new|US|card_paid|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|card_paid|bare	code: P2-us-clock + words
+1b/operatorMail/new|US|card_paid|postcode	code: P2-us-clock + words
+1b/operatorMail/new|US|card_paid|townOnly	code: P2-us-clock + words
+1b/operatorMail/new|US|card_paid|noLines	code: P2-us-clock + words
+1b/operatorMail/new|US|card_held	code: P2-us-clock + words
+1b/operatorMail/new|US|card_held|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|pay_at_hatch	code: P2-us-clock + words
+1b/operatorMail/new|US|pay_at_hatch|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|part_paid	code: P2-us-clock + words
+1b/operatorMail/new|US|part_paid|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|refunded	code: P2-us-clock + words
+1b/operatorMail/new|US|refunded|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|part_refunded	code: P2-us-clock + words
+1b/operatorMail/new|US|part_refunded|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|cancelled	code: P2-us-clock + words
+1b/operatorMail/new|US|cancelled|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|cooking	code: P2-us-clock + words
+1b/operatorMail/new|US|cooking|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|modified	code: P2-us-clock + words
+1b/operatorMail/new|US|modified|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|edited_down	code: P2-us-clock + words
+1b/operatorMail/new|US|edited_down|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|rejected	code: P2-us-clock + words
+1b/operatorMail/new|US|rejected|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|walk_up	code: P2-us-clock + words
+1b/operatorMail/new|US|walk_up|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|walk_up|bare	code: P2-us-clock + words
+1b/operatorMail/new|US|walk_up|postcode	code: P2-us-clock + words
+1b/operatorMail/new|US|walk_up|townOnly	code: P2-us-clock + words
+1b/operatorMail/new|US|walk_up|noLines	code: P2-us-clock + words
+1b/operatorMail/new|US|big	code: P2-us-clock + words
+1b/operatorMail/new|US|big|auto	code: P2-us-clock + words
+1b/operatorMail/new|US|big|bare	code: P2-us-clock + words
+1b/operatorMail/new|US|big|postcode	code: P2-us-clock + words
+1b/operatorMail/new|US|big|townOnly	code: P2-us-clock + words
+1b/operatorMail/new|US|big|noLines	code: P2-us-clock + words
+1b/operatorMail/alert|US|limit80	words
+1b/operatorMail/alert|US|limit80big	words
+1b/operatorMail/alert|US|limit100	words
+1b/operatorMail/alert|US|limit100big	words
+1b/operatorMail/alert|US|paymentBlocked	words
+1b/printing/ticket|US|card_paid|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|pay_at_hatch|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|pay_at_hatch|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|pay_at_hatch|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|pay_at_hatch|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|refunded|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|refunded|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|refunded|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|refunded|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_refunded|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_refunded|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_refunded|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_refunded|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|cancelled|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|cancelled|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|cancelled|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|cancelled|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|cooking|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|cooking|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|cooking|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|cooking|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|modified|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|modified|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|modified|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|modified|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|edited_down|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|edited_down|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|edited_down|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|edited_down|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|rejected|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|rejected|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|rejected|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|rejected|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|asap|58|phone=true	words
+1b/printing/ticket|US|asap|58|phone=false	words
+1b/printing/ticket|US|asap|80|phone=true	words
+1b/printing/ticket|US|asap|80|phone=false	words
+1b/printing/ticket|US|big|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|big|58|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|big|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|big|80|phone=false	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|dup2|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|dup2|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|dup1|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|dup1|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|retryClean|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|reprint|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|reprint|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|buzzer|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|buzzer|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|noPaidStep|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|noPaidStep|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|bare|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|bare|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_paid|noName|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|asap|dup2|58|phone=true	words
+1b/printing/ticket|US|asap|dup2|80|phone=true	words
+1b/printing/ticket|US|asap|dup1|58|phone=true	words
+1b/printing/ticket|US|asap|dup1|80|phone=true	words
+1b/printing/ticket|US|asap|retryClean|80|phone=true	words
+1b/printing/ticket|US|asap|reprint|58|phone=true	words
+1b/printing/ticket|US|asap|reprint|80|phone=true	words
+1b/printing/ticket|US|asap|buzzer|58|phone=true	words
+1b/printing/ticket|US|asap|buzzer|80|phone=true	words
+1b/printing/ticket|US|asap|noPaidStep|58|phone=true	words
+1b/printing/ticket|US|asap|noPaidStep|80|phone=true	words
+1b/printing/ticket|US|asap|bare|58|phone=true	words
+1b/printing/ticket|US|asap|bare|80|phone=true	words
+1b/printing/ticket|US|asap|noName|58|phone=true	words
+1b/printing/ticket|US|card_held|dup2|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|dup2|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|dup1|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|dup1|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|retryClean|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|reprint|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|reprint|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|buzzer|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|buzzer|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|noPaidStep|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|noPaidStep|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|bare|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|bare|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|card_held|noName|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|dup2|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|dup2|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|dup1|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|dup1|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|retryClean|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|reprint|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|reprint|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|buzzer|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|buzzer|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|noPaidStep|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|noPaidStep|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|bare|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|bare|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|walk_up|noName|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|dup2|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|dup2|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|dup1|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|dup1|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|retryClean|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|reprint|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|reprint|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|buzzer|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|buzzer|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|noPaidStep|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|noPaidStep|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|bare|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|bare|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|part_paid|noName|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|refund_due|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|refund_due|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|failed|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|failed|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|refunded|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|refunded|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|part_refunded|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|part_refunded|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|unpaid|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|unpaid|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|held|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|held|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|longId|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|longId|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|longName|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|longName|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|noMoney|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|noMoney|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|euro|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|euro|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|truckData|58|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|truckData|80|phone=true	code: P2-us-clock-tickets + words
+1b/printing/ticket|US|hand|asapNoPhone|58|phone=true	words
+1b/printing/ticket|US|hand|asapNoPhone|80|phone=true	words
+1b/printing/preview|US|card_paid|58	code: P2-us-clock-tickets + words
+1b/printing/preview|US|card_paid|80	code: P2-us-clock-tickets + words
+1b/printing/preview|US|dup|58	code: P2-us-clock-tickets + words
+1b/printing/preview|US|dup|80	code: P2-us-clock-tickets + words
+1b/printing/preview|US|data|58	code: P2-us-clock-tickets + words
+1b/printing/preview|US|data|80	code: P2-us-clock-tickets + words
+1b/printing/test|US|58	code: P2-us-clock-tickets + words
+1b/printing/test|US|58|noName	code: P2-us-clock-tickets + words
+1b/printing/test|US|80	code: P2-us-clock-tickets + words
+1b/printing/test|US|80|noName	code: P2-us-clock-tickets + words
+1c/api/US|cancel-email-change|noChangeId	words
+1c/api/US|change-email|brevoFails	words
+1c/api/US|change-email|ok	words
+1c/api/US|forgot-password|brevoFails	words
+1c/api/US|forgot-password|ok	words
+1c/api/US|resend-verification|noChangeId	words
+1c/api/US|resend-verification|brevoFails	words
+1c/api/US|resend-verification|ok	words
+1c/api/US|reset-password|short	words
+1c/api/US|save-email|ok	code: P2-save-email-date-US + words
+1c/api/US|save-email|okBySlug	code: P2-save-email-date-US + words
+1c/api/US|save-email|okOneDay	code: P2-save-email-date-US + words
+1c/api/US|save-email|okOutreach	code: P2-save-email-date-US + words
+1c/api/US|save-email|brevoThrows	code: P2-save-email-date-US + words
+1c/api/US|save-email|noBrevo	code: P2-save-email-date-US
+1c/api/US|deletion|post|ok	code: P2-deletion-email-date + words
+1c/api/US|deletion|post|okNoTrucks	code: P2-deletion-email-date + words
+1c/auth/US|signup|empty	words
+1c/auth/US|signup|empty|demo	words
+1c/auth/US|signup|typing|noAt	words
+1c/auth/US|signup|typing|short	words
+1c/auth/US|signup|typing|ready	words
+1c/auth/US|signup|typing|marketing	words
+1c/auth/US|signup|typing|promo	words
+1c/auth/US|signup|busy	words
+1c/auth/US|signup|error	words
+1c/auth/US|signup|error|existing	words
+1c/auth/US|login|loading	words
+1c/auth/US|forgot|empty	words
+1c/auth/US|forgot|typing	words
+1c/auth/US|forgot|sending	words
+1c/auth/US|forgot|sent	words
+1c/auth/US|reset|token|saving	words
+1c/auth/US|reset|firstLogin|saving	words
+1c/auth/US|submit|reset|short	words
+1c/auth/US|mail|verify|named|truck	words
+1c/auth/US|mail|welcome|named|truck	words
+1c/auth/US|mail|verify|named|escaped	words
+1c/auth/US|mail|welcome|named|escaped	words
+1c/auth/US|mail|verify|named|none	words
+1c/auth/US|mail|welcome|named|none	words
+1c/auth/US|mail|verify|none|truck	words
+1c/auth/US|mail|welcome|none|truck	words
+1c/auth/US|mail|verify|none|escaped	words
+1c/auth/US|mail|welcome|none|escaped	words
+1c/auth/US|mail|verify|none|none	words
+1c/auth/US|mail|welcome|none|none	words
+1c/auth/US|mail|welcome|escapedName	words
+1c/auth/US|mail|verify|escapedName	words
+1c/demo/US|gs|landing|slug	words
+1c/demo/US|gs|landing|slug|email	words
+1c/demo/US|gs|landing|slug|busy	words
+1c/demo/US|gs|landing|slug|serverError	words
+1c/demo/US|gs|landing|slug|saveFailed	words
+1c/demo/US|gs|landing|slug|unreachable	words
+1c/demo/US|gs|confirm|slug	words
+1c/demo/US|gs|confirm|slug|noDate	words
+1c/demo/US|gs|confirm|slug|warning	words
+1c/demo/US|gs|confirm|slug|savedNoEmail	words
+1c/demo/US|gs|landing|tokenOnly	words
+1c/demo/US|gs|landing|tokenOnly|email	words
+1c/demo/US|gs|landing|tokenOnly|busy	words
+1c/demo/US|gs|landing|tokenOnly|serverError	words
+1c/demo/US|gs|landing|tokenOnly|saveFailed	words
+1c/demo/US|gs|landing|tokenOnly|unreachable	words
+1c/demo/US|gs|confirm|tokenOnly	words
+1c/demo/US|gs|confirm|tokenOnly|noDate	words
+1c/demo/US|gs|confirm|tokenOnly|warning	words
+1c/demo/US|gs|confirm|tokenOnly|savedNoEmail	words
+1c/demo/US|gs|landing|upload	words
+1c/demo/US|gs|landing|upload|email	words
+1c/demo/US|gs|landing|upload|busy	words
+1c/demo/US|gs|landing|upload|serverError	words
+1c/demo/US|gs|landing|upload|saveFailed	words
+1c/demo/US|gs|landing|upload|unreachable	words
+1c/demo/US|gs|confirm|upload	words
+1c/demo/US|gs|confirm|upload|noDate	words
+1c/demo/US|gs|confirm|upload|warning	words
+1c/demo/US|gs|confirm|upload|savedNoEmail	words
+1c/demo/US|gs|landing|sample	words
+1c/demo/US|gs|landing|sample|email	words
+1c/demo/US|gs|landing|sample|busy	words
+1c/demo/US|gs|landing|sample|serverError	words
+1c/demo/US|gs|landing|sample|saveFailed	words
+1c/demo/US|gs|landing|sample|unreachable	words
+1c/demo/US|gs|confirm|sample	words
+1c/demo/US|gs|confirm|sample|noDate	words
+1c/demo/US|gs|confirm|sample|warning	words
+1c/demo/US|gs|confirm|sample|savedNoEmail	words
+1c/demo/US|gs|landing|upload|reopenAfterSave	words
+1c/demo/US|gs|details	words
+1c/demo/US|gs|details|noPhoneCopy	words
+1c/demo/US|gs|details|filled	words
+1c/demo/US|gs|details|emailEdit	words
+1c/demo/US|gs|details|showPassword	words
+1c/demo/US|gs|details|errors|all	words
+1c/demo/US|gs|details|errors|all|filled	words
+1c/demo/US|gs|details|errors|phoneInvalid	words
+1c/demo/US|gs|details|errors|phoneInvalid|filled	words
+1c/demo/US|gs|details|errors|terms	words
+1c/demo/US|gs|details|errors|terms|filled	words
+1c/demo/US|gs|details|existing	words
+1c/demo/US|gs|details|serverError	words
+1c/demo/US|gs|details|createAccount	words
+1c/demo/US|gs|details|unreachable	words
+1c/demo/US|gs|details|truckCreate	words
+1c/demo/US|gs|details|truckUnreachable	words
+1c/demo/US|gs|details|noToken	words
+1c/demo/US|gs|progress|truckUnreachable	words
+1c/demo/US|gs|ready	words
+1c/demo/US|gs|ready|sample	words
+1c/demo/US|press|save|slug|refused	words
+1c/demo/US|press|save|slug|refusedWords	words
+1c/demo/US|press|save|slug|unreachable	words
+1c/demo/US|press|save|slug|saved	words
+1c/demo/US|press|save|slug|savedNoEmail	words
+1c/demo/US|press|save|slug|savedWarning	words
+1c/demo/US|press|save|upload|refused	words
+1c/demo/US|press|save|upload|refusedWords	words
+1c/demo/US|press|save|upload|unreachable	words
+1c/demo/US|press|save|upload|saved	words
+1c/demo/US|press|save|upload|savedNoEmail	words
+1c/demo/US|press|save|upload|savedWarning	words
+1c/demo/US|press|wizard|truckFilled	words
+1c/demo/US|press|wizard|detailsEmpty	words
+1c/demo/US|press|wizard|detailsBadEmail	words
+1c/demo/US|press|wizard|detailsBadPhone	words
+1c/demo/US|press|wizard|detailsNoPhoneCopy	words
+1c/demo/US|press|setup|truckUnreachable	words
+1c/demo/US|press|setup|truckRetry	words
+1c/demo/US|press|setup|ready	words
+1c/demo/US|press|setup|readyContinue	words
+1c/demo/US|press|setup|bestEffortFail	words
+1c/demo/US|up|idle	words
+1c/demo/US|up|idle|text	words
+1c/demo/US|up|idle|file	words
+1c/demo/US|up|error|server	words
+1c/demo/US|up|error|somethingWrong	words
+1c/demo/US|up|error|unreachable	words
+1c/demo/US|up|error|noMessage	words
+1c/demo/US|up|working|slowSample	words
+1c/demo/US|up|failed	words
+1c/demo/US|up|failed|text	words
+1c/demo/US|up|failed|email	words
+1c/demo/US|up|failed|busy	words
+1c/demo/US|up|failed|sent	words
+1c/demo/US|up|failed|serverMessage	words
+1c/demo/US|up|failed|sendFailed	words
+1c/demo/US|press|up|refused	words
+1c/demo/US|press|up|refusedWords	words
+1c/demo/US|press|up|unreachable	words
+1c/demo/US|press|up|menuFailed	words
+1c/demo/US|press|up|menuFailedRetry	words
+1c/demo/US|press|up|menuFailedOther	words
+1c/demo/US|press|up|sampleRefused	words
+1c/demo/US|press|up|buildRefused	words
+1c/demo/US|press|up|buildRefusedWords	words
+1c/demo/US|press|up|buildUnreachable	words
+1c/demo/US|press|up|buildSent	words
+1c/demo/US|loop|one	words
+1c/demo/US|loop|admin	words
+1c/demo/US|loop|sample	words
+1c/demo/US|loop|ambiguous	words
+1c/goLive/US|check|unverifiedOne	words
+1c/goLive/US|check|unverifiedOneOfOne	words
+1c/goLive/US|check|noVan	words
+1c/goLive/US|check|uncappedOne	words
+1c/goLive/US|check|uncappedSome	words
+1c/goLive/US|check|uncappedUnnamed	words
+1c/goLive/US|check|noPrep	words
+1c/goLive/US|check|emailUndefined	words
+1c/goLive/US|check|emailNull	words
+1c/goLive/US|check|everything	words
+1c/goLive/US|check|everythingNoVan	words
+1c/goLive/US|walkthrough|all|0|menu	words
+1c/goLive/US|walkthrough|all|1|schedule	words
+1c/goLive/US|walkthrough|all|2|build	words
+1c/goLive/US|walkthrough|all|3|settings	words
+1c/goLive/US|walkthrough|manager|0|menu	words
+1c/goLive/US|walkthrough|manager|1|schedule	words
+1c/goLive/US|walkthrough|manager|2|build	words
+1c/goLive/US|walkthrough|manager|3|settings	words
+1c/goLive/US|walkthrough|phone|0	words
+1c/goLive/US|manageDone|setup	words
+1c/setup/US|page|identity|plain	words
+1c/setup/US|page|identity|verify=ok	words
+1c/setup/US|page|based|verify=expired	words
+1c/setup/US|page|identity|verify=expired	words
+1c/setup/US|page|based|verify=invalid	words
+1c/setup/US|page|identity|verify=invalid	words
+1c/setup/US|page|identity|verify=other	words
+1c/setup/US|page|identity|named	words
+1c/setup/US|page|identity|oneChar	words
+1c/setup/US|page|identity|phone	words
+1c/setup/US|page|identity|whatsapp	words
+1c/setup/US|page|identity|busy	words
+1c/setup/US|page|identity|phoneRequired	words
+1c/setup/US|page|identity|serverError	words
+1c/setup/US|page|identity|otherCountry	words
+1c/setup/US|page|identity|noCountries	words
+1c/setup/US|provision|operator|minimal	words
+1c/setup/US|provision|operator|signup	words
+1c/setup/US|provision|operator|whatsapp	words
+1c/setup/US|provision|operator|regionCode	words
+1c/setup/US|provision|operator|public	words
+1c/setup/US|provision|operator|otherCuisine	words
+1c/setup/US|provision|demo	words
+1c/setup/US|provision|demo|seeded	words
+2/extra/US|preorder|0|before|same	code: P2-preorder-US
+2/extra/US|preorder|0|before|dayBefore	code: P2-preorder-US
+2/extra/US|preorder|0|before|september	code: P2-preorder-US
+2/extra/US|preorder|1|before|same	code: P2-preorder-US
+2/extra/US|preorder|1|before|dayBefore	code: P2-preorder-US
+2/extra/US|preorder|1|before|september	code: P2-preorder-US
+2/extra/US|preorder|75|before|same	code: P2-preorder-US
+2/extra/US|preorder|75|before|dayBefore	code: P2-preorder-US
+2/extra/US|preorder|75|before|september	code: P2-preorder-US
+2/extra/US|preorder|599|before|same	code: P2-preorder-US
+2/extra/US|preorder|599|before|dayBefore	code: P2-preorder-US
+2/extra/US|preorder|599|before|september	code: P2-preorder-US
+2/extra/US|preorder|720|before|same	code: P2-preorder-US
+2/extra/US|preorder|720|before|dayBefore	code: P2-preorder-US
+2/extra/US|preorder|720|before|september	code: P2-preorder-US
+2/extra/US|preorder|765|before|same	code: P2-preorder-US
+2/extra/US|preorder|765|before|dayBefore	code: P2-preorder-US
+2/extra/US|preorder|765|before|september	code: P2-preorder-US
+2/extra/US|preorder|990|before|same	code: P2-preorder-US
+2/extra/US|preorder|990|before|dayBefore	code: P2-preorder-US
+2/extra/US|preorder|990|before|september	code: P2-preorder-US
+2/extra/US|preorder|1050|before|same	code: P2-preorder-US
+2/extra/US|preorder|1050|before|dayBefore	code: P2-preorder-US
+2/extra/US|preorder|1050|before|september	code: P2-preorder-US
+2/extra/US|preorder|1439|before|same	code: P2-preorder-US
+2/extra/US|preorder|1439|before|dayBefore	code: P2-preorder-US
+2/extra/US|preorder|1439|before|september	code: P2-preorder-US
+2/extra/US|preorderOpen|day_of|oct	code: P2-preorder-US
+2/extra/US|preorderOpen|day_of|sep	code: P2-preorder-US
+2/extra/US|preorderOpen|1d|oct	code: P2-preorder-US
+2/extra/US|preorderOpen|1d|sep	code: P2-preorder-US
+2/extra/US|preorderOpen|2d|oct	code: P2-preorder-US
+2/extra/US|preorderOpen|2d|sep	code: P2-preorder-US
+2/extra/US|preorderOpen|3d|oct	code: P2-preorder-US
+2/extra/US|preorderOpen|3d|sep	code: P2-preorder-US
+2/extra/US|preorderOpen|4d|oct	code: P2-preorder-US
+2/extra/US|preorderOpen|4d|sep	code: P2-preorder-US
+2/extra/US|preorderOpen|5d|oct	code: P2-preorder-US
+2/extra/US|preorderOpen|5d|sep	code: P2-preorder-US
+2/extra/US|preorderOpen|6d|oct	code: P2-preorder-US
+2/extra/US|preorderOpen|6d|sep	code: P2-preorder-US
+2/extra/US|preorderOpen|7d|oct	code: P2-preorder-US
+2/extra/US|preorderOpen|7d|sep	code: P2-preorder-US
+2/extra/US|card|sep|full	code: P2-us-clock
+2/extra/US|card|sep|compact	code: P2-us-clock
+2/extra/US|card|oct|full	code: P2-us-clock
+2/extra/US|card|oct|compact	code: P2-us-clock
+2/extra/US|manage|schedule|cards	code: P2-us-clock
+2/extra/US|rows|demo|pizza	code: P2-demo-US + words
+2/extra/US|rows|demo|burgers	code: P2-demo-US + words
+2/extra/US|rows|demo|curries	code: P2-demo-US + words
+2/extra/US|rows|demo|outreach	code: P2-demo-US + words
+2/extra/US|rows|truck|operator	words
+2/extra/US|rows|truck|demo	words

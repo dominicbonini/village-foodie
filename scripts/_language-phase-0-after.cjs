@@ -32,10 +32,12 @@ module.exports = async function after(x) {
   const cases = [['en-GB', 'en-GB'], ['en-US', 'en-US'], ['fr-FR', 'en-GB'], ['en', 'en-GB'], ['en-us', 'en-GB'], ['', 'en-GB'], [null, 'en-GB'], [undefined, 'en-GB']]
   t('resolveLocale: en-GB and en-US only; anything else → en-GB', cases.every(([i, o]) => I.L.resolveLocale(i) === o), JSON.stringify(cases.map(([i]) => I.L.resolveLocale(i))))
   t('a country → its locale: GB → en-GB, US → en-US, none → en-GB', I.L.localeOfCountry(GB) === 'en-GB' && I.L.localeOfCountry(US_ON) === 'en-US' && I.L.localeOfCountry(null) === 'en-GB')
-  const enGB = JSON.parse(src('messages/en-GB.json')), enUS = JSON.parse(src('messages/en-US.json'))
+  // ⚠️ RE-PINNED (Language Phase 2): the catalogue this run renders with — the frozen pre-Phase-2 words under
+  // HG_MESSAGES_FROZEN (en-US {} then), which language-phase-0.cjs sets. Phase 2 fills messages/en-US.json on purpose.
+  const { 'en-GB': enGB, 'en-US': enUS } = require('./_lp2-frozen.cjs').catalogues()
   t('deep merge: a US string replaces the UK one, and every key the US file lacks stays UK',
     JSON.stringify(I.M.deepMerge({ a: { x: '1', y: '2' }, b: 'B' }, { a: { y: '3' } })) === JSON.stringify({ a: { x: '1', y: '3' }, b: 'B' }))
-  t('en-US today = en-GB with en-US merged over it (the US file overrides nothing yet)', JSON.stringify(I.M.messagesFor('en-US')) === JSON.stringify(I.M.deepMerge(enGB, enUS)) && JSON.stringify(enUS) === '{}')
+  t('en-US = en-GB with en-US merged over it (in the catalogue this run renders with, the US file overrides nothing)', JSON.stringify(I.M.messagesFor('en-US')) === JSON.stringify(I.M.deepMerge(enGB, enUS)) && JSON.stringify(enUS) === '{}')
   t('a missing US key shows the UK text, never a raw key', I.TR.translatorFor('en-US', 'order')('tipHeading') === 'Add a tip for the truck?')
   t('pickNamespaces sends only what a surface needs', JSON.stringify(Object.keys(I.M.pickNamespaces(I.M.messagesFor('en-GB'), ['order']))) === '["order"]')
   const rcUS = await I.requestConfig({ locale: 'en-US', requestLocale: Promise.resolve(undefined) })
@@ -126,7 +128,9 @@ module.exports = async function after(x) {
     && !/!==\s*'Walk-up'|===\s*'Walk-up'|\|\|\s*'Walk-up'/.test(['app/manage/[token]/page.tsx', 'app/dashboard/[token]/page.tsx', 'app/api/dashboard/action/route.ts', 'components/dashboard/AddOrderPanel.tsx', 'lib/printing/ticket.ts'].map(src).join('\n')))
   t('Private type: the stored name is matched in one helper', /function whereNamedPrivate/.test(src('lib/private-events/type.ts')) && (src('lib/private-events/type.ts').match(/\.ilike\('name', PRIVATE_TYPE_NAME\)/g) || []).length === 1)
   t("the 'Other' revenue line is one constant", /const OTHER_REVENUE_BUCKET = 'Other'/.test(src('app/manage/[token]/page.tsx')) && !/catBase\['Other'\]|\|\| 'Other'\n/.test(src('app/manage/[token]/page.tsx')))
-  const mainsLeft = require('child_process').execSync("grep -rn \"'mains'\" app components lib || true", { cwd: REPO, encoding: 'utf8' }).split('\n').filter(l => l && !/lib\/category-key\.ts|lib\/demo-assumptions\.ts|lib\/menu-extract\.ts/.test(l) && !/^\S+:\d+:\s*(\/\/|\*)/.test(l))
+  // Language Phase 2: lib/demo-templates.ts names its sample categories by STANDARD CATEGORY ID ('mains' there is the id
+  // menu-extract and demo-assumptions use, not the fallback config key), so it is exempt beside them.
+  const mainsLeft = require('child_process').execSync("grep -rn \"'mains'\" app components lib || true", { cwd: REPO, encoding: 'utf8' }).split('\n').filter(l => l && !/lib\/category-key\.ts|lib\/demo-assumptions\.ts|lib\/menu-extract\.ts|lib\/demo-templates\.ts/.test(l) && !/^\S+:\d+:\s*(\/\/|\*)/.test(l))
   t("the 'mains' default category key is one constant", mainsLeft.length === 0, mainsLeft.join(' | '))
   t('demo kitchen: categories recognised by id (no English category word typed in demo-assumptions)', !/new Set\(\['Mains'|new Set\(\['Sides'|new Set\(\['Specials'/.test(src('lib/demo-assumptions.ts')))
 

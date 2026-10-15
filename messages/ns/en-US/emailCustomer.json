@@ -1,1 +1,54 @@
-{}
+{
+  "payNote": {
+    "partPaidTitle": "Partially paid",
+    "partPaidTitleOwing": "Partially paid — {balance} still due",
+    "partPaidBody": "The rest is due when you pick up.",
+    "partPaidBodyFigures": "{paid} of this order is paid. The remaining {balance} is due when you pick up.",
+    "partPaidText": "Partially paid. Some of this order is still due when you pick up.",
+    "partPaidTextFigures": "Partially paid: {paid} received, {balance} still due when you pick up.",
+    "partPaidShortFigures": "{paid} paid, {balance} still due",
+    "stillToPay": "{amount} still due.",
+    "partStillToPay": "Part of this order is still due.",
+    "heldShortTitleOwing": "Your card is held for part of this order — {owing} still due",
+    "heldShortBody": "{truck} takes the amount held when they confirm your order. The rest is due when you pick up.",
+    "heldShortBodyFigures": "{truck} takes the {held} held when they confirm your order. The remaining {owing} is due when you pick up.",
+    "heldShortText": "Your card is held for part of this order. {truck} takes the amount held when they confirm your order, and the rest is due when you pick up.",
+    "heldShortTextFigures": "Your card is held for {held}, which {truck} takes when they confirm your order. {owing} of this order is still due when you pick up.",
+    "heldShortShortOwing": "Card held for part of this order, {owing} still due",
+    "unknownBody": "Your card was authorized, so please do not pay again — {truck} will confirm at the window.",
+    "unknownText": "We’re still confirming your payment. Your card was authorized, so please do not pay again — {truck} will confirm at the window.",
+    "hatchTitle": "Pay at the truck at pickup",
+    "hatchText": "Pay at the truck at pickup."
+  },
+  "confirmation": {
+    "slotUpdated": "Your pickup time has been updated",
+    "collectionTime": "Pickup time: {time}",
+    "seeYou": "See you at the window!",
+    "preferredTime": "Preferred pickup time: {time}",
+    "weWillConfirm": "We’ll confirm your pickup time when we accept your order.",
+    "leadReady": "Your order is ready for pickup — come pick it up from {truck}.",
+    "textTitleReady": "Order #{id} is ready to pick up — {truck}",
+    "textReady": "Your order is ready for pickup — come pick it up.",
+    "textSlotUpdated": "Pickup time updated to {time} (was {previous}).",
+    "textCollection": "Pickup time: {time}. See you at the window!",
+    "textPreferred": "Preferred pickup: {time} — we’ll confirm when we accept your order."
+  },
+  "cancelSentence": {
+    "heldReleased": "Your card was held for this order, not charged. That hold has been released and you have not been charged."
+  },
+  "cancellation": {
+    "subject": "Your order has been canceled — {truck}",
+    "body": "Your order <b>#{id}</b> from <b>{truck}</b> has been canceled.",
+    "textLead": "Hi {withName, select, yes {{name}} other {there}}, your order #{id} from {truck} has been canceled."
+  },
+  "eventCancellation": {
+    "subject": "{truck} at {withLocation, select, yes {{location}} other {your event}} — canceled",
+    "body": "Unfortunately <b>{truck}</b>’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been canceled.",
+    "orderCancelled": "Your order <b>#{id}</b> has been canceled.",
+    "textLead": "Hi {withName, select, yes {{name}} other {there}}, unfortunately {truck}’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been canceled. Your order #{id} has been canceled."
+  },
+  "rejection": {
+    "body": "Unfortunately <b>{truck}</b> is unable to fulfill order #{id}.",
+    "textLead": "Unfortunately {truck} is unable to fulfill order #{id}."
+  }
+}

@@ -26,6 +26,16 @@
 //   2. every customer-facing API error body gains "code" and "params"; "error" and every other field unchanged.
 
 const fs = require('fs'); const path = require('path'); const zlib = require('zlib')
+// ── RE-PINNED FOR LANGUAGE PHASE 2 (docs/language-phase-2-report.md) ─────────────────────────────────────────
+// This harness proves that MOVING the words into messages/ was invisible. Phase 2 then CHANGES words on purpose
+// (US English, the wrong-English fixes), which language-phase-2.cjs proves. So the comparison runs with the words as
+// they stood before Phase 2 (HG_MESSAGES_FROZEN, scripts/_lp2-frozen.cjs) — the AFTER code with the BEFORE words —
+// and keeps asserting exactly what it asserted. A capture (--capture) reads the catalogue as it is.
+if (!process.argv.includes('--capture') && !('HG_MESSAGES_FROZEN' in process.env)) process.env.HG_MESSAGES_FROZEN = 'scripts/fixtures/language-phase-2-messages-before.json'
+// Views Language Phase 2's CODE changes on purpose are compared with BEFORE + that NAMED change (the same table
+// language-phase-2 proves them with, scripts/_lp2-named.cjs) — so everything else in those views is still
+// byte-identical. Only a view the table LISTS is excluded here; language-phase-2 checks it.
+const PHASE2 = require('./_lp2-named.cjs')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'language-phase-1a' })
 const { makeFakePg } = require('./_fake-pg.cjs')
 const { REPO } = kit
@@ -43,6 +53,13 @@ let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  ✗ ${name}${detail ? `\n      ${String(detail).slice(0, 700)}` : ''}`) } }
 const head = s => console.log(`\n── ${s}`)
 const h = kit.h
+// ⚠️ RE-PINNED (Language Phase 2): a US page is rendered under the en-US locale, as its layout's provider holds it
+// once the page has told it the truck's locale (`useTruckLocale`, an effect a static render never runs). With
+// messages/en-US.json empty — and with the frozen words this harness compares with — that is byte-identical; it is
+// what lets language-phase-2 read the US words a US customer sees.
+const USE_T = fs.existsSync(path.join(REPO, 'lib/i18n/use-t.ts'))
+const I18N_EXPORT = USE_T ? "\nexport { I18nContext } from '@/lib/i18n/use-t'" : ''
+const inLocale = (m, cc, el) => (m.I18nContext && cc === 'US' ? h(m.I18nContext.Provider, { value: { locale: 'en-US', setLocale() {} } }, el) : el)
 
 // ══ the two fixture countries ═══════════════════════════════════════════════════════════════════════════════
 const C = {
@@ -182,7 +199,7 @@ function opFixtures(cc) {
 let OP_RENDER = null
 async function orderPage() {
   const F = 'app/trucks/[slug]/order/page.tsx'
-  const m = await kit.bundle('lp1a-op', `export { default as OrderPage } from '@/${F}'\nexport { MoneyProvider } from '@/components/MoneyContext'`, {
+  const m = await kit.bundle('lp1a-op', `export { default as OrderPage } from '@/${F}'\nexport { MoneyProvider } from '@/components/MoneyContext'` + I18N_EXPORT, {
     patches: [{ file: F, states: OP_STATES }, { file: F, from: 'const { slug } = use(params)', to: 'const { slug } = params' }],
   })
   const out = {}
@@ -191,7 +208,7 @@ async function orderPage() {
       const { __search, __after, __slug, ...st } = st0
       globalThis.__ms = AFTER_CODE && __after ? { ...st, ...__after } : st
       if (__search) globalThis.__msSearch = __search
-      try { out[`${cc}|${k}`] = kit.quiet(() => kit.renderStatic(h(m.OrderPage, { params: { slug: __slug || 'test-kitchen' } }))) }
+      try { out[`${cc}|${k}`] = kit.quiet(() => kit.renderStatic(inLocale(m, cc, h(m.OrderPage, { params: { slug: __slug || 'test-kitchen' } })))) }
       catch (e) { out[`${cc}|${k}`] = 'ERROR ' + String(e.message || e).slice(0, 300) }
       finally { delete globalThis.__ms; delete globalThis.__msSearch }
     }
@@ -203,7 +220,7 @@ async function orderPage() {
     // A payment_failed sentence that ARRIVES IN THE URL (the page seeds its notice from it).
     globalThis.__msSearch = 'payment_failed=' + encodeURIComponent('Sorry — we could not place your order. No money has been taken.')
     globalThis.__ms = { ...opFixtures(cc).sheet }; delete globalThis.__ms.paymentFailedNotice
-    try { out[`${cc}|paymentFailedUrl`] = kit.quiet(() => kit.renderStatic(h(m.OrderPage, { params: { slug: 'test-kitchen' } }))) } catch (e) { out[`${cc}|paymentFailedUrl`] = 'ERROR ' + String(e.message || e).slice(0, 300) }
+    try { out[`${cc}|paymentFailedUrl`] = kit.quiet(() => kit.renderStatic(inLocale(m, cc, h(m.OrderPage, { params: { slug: 'test-kitchen' } })))) } catch (e) { out[`${cc}|paymentFailedUrl`] = 'ERROR ' + String(e.message || e).slice(0, 300) }
     finally { delete globalThis.__ms; delete globalThis.__msSearch }
   }
   return out
@@ -212,7 +229,7 @@ async function orderPage() {
 // ══ 2 · the status page ═══════════════════════════════════════════════════════════════════════════════════════
 async function statusPage() {
   const F = 'app/order/[id]/manage/page.tsx'
-  const m = await kit.bundle('lp1a-status', `export { default as Receipt } from '@/${F}'`, { patches: [{ file: F, states: ['order', 'loading', 'error', 'cancelling', 'cancelled'] }] })
+  const m = await kit.bundle('lp1a-status', `export { default as Receipt } from '@/${F}'` + I18N_EXPORT, { patches: [{ file: F, states: ['order', 'loading', 'error', 'cancelling', 'cancelled'] }] })
   const out = {}
   for (const cc of ['GB', 'US']) {
     const c = C[cc]
@@ -236,7 +253,7 @@ async function statusPage() {
     for (const [k, st0] of Object.entries(cases)) {
       const { __after, ...st } = st0
       globalThis.__ms = AFTER_CODE && __after ? { ...st, ...__after } : st
-      try { out[`${cc}|${k}`] = kit.quiet(() => kit.renderStatic(h(m.Receipt))) } catch (e) { out[`${cc}|${k}`] = 'ERROR ' + String(e.message || e).slice(0, 300) } finally { delete globalThis.__ms }
+      try { out[`${cc}|${k}`] = kit.quiet(() => kit.renderStatic(inLocale(m, cc, h(m.Receipt)))) } catch (e) { out[`${cc}|${k}`] = 'ERROR ' + String(e.message || e).slice(0, 300) } finally { delete globalThis.__ms }
     }
   }
   return out
@@ -277,7 +294,7 @@ async function sharedPieces() {
     "export { SpiceLevel } from '@/components/SpiceLevel'", "export { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'",
     "export { ChargeRows } from '@/components/ChargeRows'", "export { DealsModal } from '@/components/dashboard/DealsModal'",
     "export { MoneyProvider } from '@/components/MoneyContext'",
-  ].join('\n'))
+  ].join('\n') + I18N_EXPORT)
   // Phase 1b moved phoneErrorMessage to lib/phone-message.ts (lib/phone.ts is imported by pages that only check a number).
   const PH = { ...m.PHB, ...(m.PHM || {}) }
   const out = {}
@@ -312,11 +329,11 @@ async function sharedPieces() {
     for (const [k, props] of Object.entries({
       one: { bundles: [bundle], basketItems: [] }, two: { bundles: [bundle, { ...bundle, id: 'b2', name: 'Family deal', bundle_price: 30 }], basketItems: [] },
       fromBasket: { bundles: [bundle], basketItems: [{ name: 'Margherita', quantity: 1, unit_price: 10.75, cartKey: 'm1', modifiers: [{ name: 'Extra cheese', price: 1.25 }] }] },
-    })) out[`deals|${cc}|${k}`] = kit.quiet(() => kit.renderStatic(h(m.MoneyProvider, { fmt: C[cc].fmt }, h(m.DealsModal, { ...props, menuItems, menuCategories: [{ name: 'Pizzas' }, { name: 'Drinks' }], onApply() {}, onClose() {} }))))
+    })) out[`deals|${cc}|${k}`] = kit.quiet(() => kit.renderStatic(inLocale(m, cc, h(m.MoneyProvider, { fmt: C[cc].fmt }, h(m.DealsModal, { ...props, menuItems, menuCategories: [{ name: 'Pizzas' }, { name: 'Drinks' }], onApply() {}, onClose() {} })))))
   }
   // the deal picker's slot states: chosen items, basket units (free, used by a deal, taken by another slot),
   // required and optional option groups met and unmet, the note field, the savings panel
-  const D = await kit.bundle('lp1a-deals', "export { DealsModal } from '@/components/dashboard/DealsModal'\nexport { MoneyProvider } from '@/components/MoneyContext'",
+  const D = await kit.bundle('lp1a-deals', "export { DealsModal } from '@/components/dashboard/DealsModal'\nexport { MoneyProvider } from '@/components/MoneyContext'" + I18N_EXPORT,
     { patches: [{ file: 'components/dashboard/DealsModal.tsx', states: ['selectedDeal', 'slotSelections', 'slotMods', 'slotNotes'] }] })
   const twoPizza = { ...bundle, id: 'b3', name: 'Two pizzas', bundle_price: 18, original_price: 22, slot_2_category: 'Pizzas' }
   const dealItems = [
@@ -338,8 +355,8 @@ async function sharedPieces() {
   for (const cc of ['GB', 'US']) for (const [k, st] of Object.entries(dealCases)) {
     globalThis.__ms = st
     try {
-      out[`dealSlots|${cc}|${k}`] = kit.quiet(() => kit.renderStatic(h(D.MoneyProvider, { fmt: C[cc].fmt }, h(D.DealsModal, { bundles: [bundle, twoPizza], menuItems: dealItems,
-        basketItems: basketUnits, menuCategories: [{ name: 'Pizzas', allowNotes: true }, { name: 'Drinks' }], existingDeals: [{ bundle, slots: {}, itemsTakenFromBasket: ['m2'] }], onApply() {}, onClose() {} }))))
+      out[`dealSlots|${cc}|${k}`] = kit.quiet(() => kit.renderStatic(inLocale(D, cc, h(D.MoneyProvider, { fmt: C[cc].fmt }, h(D.DealsModal, { bundles: [bundle, twoPizza], menuItems: dealItems,
+        basketItems: basketUnits, menuCategories: [{ name: 'Pizzas', allowNotes: true }, { name: 'Drinks' }], existingDeals: [{ bundle, slots: {}, itemsTakenFromBasket: ['m2'] }], onApply() {}, onClose() {} })))))
     } catch (e) { out[`dealSlots|${cc}|${k}`] = 'ERROR ' + String(e.message || e).slice(0, 200) } finally { delete globalThis.__ms }
   }
   return out
@@ -630,11 +647,29 @@ async function main() {
     return
   }
   const before = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(REPO, BEFORE_FILE)))).views
+  const PHASE2_LISTED = {}, phase2Named = {}
+  for (const sec of Object.keys(before)) for (const k of Object.keys(before[sec])) {
+    // `emails.sent` holds the GB senders' nine emails then the US senders' nine: each half is its country's view.
+    if (sec === 'emails' && k === 'sent') {
+      const n = before[sec][k].length / 2
+      before[sec][k] = before[sec][k].map((v, i) => { const p = PHASE2.apply(`1a/emails/sent|${i < n ? 'GB' : 'US'}|${i % n}`, v); if (p.touched.length) phase2Named[p.touched.join('+')] = (phase2Named[p.touched.join('+')] || 0) + 1; return p.listed ? v : p.expected })
+      continue
+    }
+    const p2 = PHASE2.apply(`1a/${sec}/${k}`, before[sec][k])
+    if (p2.listed) { PHASE2_LISTED[`${sec} · ${k}`] = p2.touched.join('+'); continue }
+    if (p2.touched.length) { phase2Named[p2.touched.join('+')] = (phase2Named[p2.touched.join('+')] || 0) + 1; before[sec][k] = p2.expected }
+  }
+  if (Object.keys(phase2Named).length) console.log(`  Language Phase 2's named code changes, applied to BEFORE (scripts/_lp2-named.cjs): ${Object.entries(phase2Named).map(([k, n]) => `${k} ${n}`).join(' · ')}`)
+  let phase2Skipped = 0
   head('1 · byte-identical to BEFORE (GB and US), section by section')
   for (const sec of Object.keys(before)) {
     if (sec === 'api' || sec === 'paymentReturn') continue
-    for (const k of Object.keys(before[sec])) { const d = diffJson(before[sec][k], got[sec][k]); t(`${sec} · ${k}`, d === null, d) }
+    for (const k of Object.keys(before[sec])) {
+      if (PHASE2_LISTED[`${sec} · ${k}`]) { phase2Skipped++; continue }
+      const d = diffJson(before[sec][k], got[sec][k]); t(`${sec} · ${k}`, d === null, d)
+    }
   }
+  if (phase2Skipped) console.log(`  (${phase2Skipped} view(s) LISTED as changed by Language Phase 2 and checked there instead: ${Object.keys(PHASE2_LISTED).join(', ')})`)
   if (AFTER_CODE) await require('./_language-phase-1a-after.cjs')({ kit, t, head, read, REPO, before, got, diffJson, renderOrderPage: OP_RENDER })
   else for (const sec of ['api', 'paymentReturn']) for (const k of Object.keys(before[sec])) { const d = diffJson(before[sec][k], got[sec][k]); t(`${sec} · ${k}`, d === null, d) }
   console.log(`\n${fail ? '✗' : '✓'} language-phase-1a: ${pass} passed, ${fail} failed`)

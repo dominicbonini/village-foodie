@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { truckTimeSettings } from '@/lib/truck-time'
-import { getLocalDateInTz, formatYmd, formatTime } from '@/lib/time-utils'
+import { getLocalDateInTz, formatYmdShortMonth, formatTime } from '@/lib/time-utils'
 import { manageTabHref } from '@/lib/manage-links'
 import { createClient } from '@supabase/supabase-js'
 import { sendConfirmationEmail } from '@/lib/email'
@@ -308,7 +308,8 @@ export async function POST(req: NextRequest) {
          * URL itself out of a template literal. */
         const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}${manageTabHref('schedule', { token: truck.dashboard_token })}`
 
-        const fmtDate = (iso: string) => formatYmd(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })
+        // Language Phase 2: the short month by the product's rule ("Sep", never Intl's en-GB "Sept").
+        const fmtDate = (iso: string) => formatYmdShortMonth(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })
         // start–end in the truck's style; omit cleanly if either is missing.
         const fmtTimeRange = (st?: string | null, et?: string | null) => {
           const a = st ? formatTime(String(st), ts) : ''

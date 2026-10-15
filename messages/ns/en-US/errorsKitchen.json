@@ -1,1 +1,10 @@
-{}
+{
+  "unauthorised": "Unauthorized",
+  "already_paid_by_card": "This customer has already paid by card. Their card is authorized for this order and is charged automatically when you confirm it, so taking payment here would charge them twice. Nothing has been recorded.",
+  "intervals_choices": "Pickup times must be every {choices} minutes.",
+  "intervals_customer_first": "Set the customer pickup times before setting your own.",
+  "intervals_save_failed": "Pickup times could not be saved right now.",
+  "no_van_for_device": "This device isn’t set to a truck yet, so wired printing isn’t available.",
+  "van_not_for_truck": "That truck isn’t part of this account",
+  "van_not_for_target": "That truck isn’t part of the account you’re switching to"
+}

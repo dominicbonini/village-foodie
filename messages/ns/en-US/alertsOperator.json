@@ -1,1 +1,6 @@
-{}
+{
+  "limit100": {
+    "startAgain": "They’ll start again on <b>{reset}</b>, or right away if you raise your monthly limit in Settings.",
+    "startAgainLink": "They’ll start again on {reset}, or right away if you raise your monthly limit in Settings:"
+  }
+}

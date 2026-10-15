@@ -181,7 +181,8 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
     if (!result.ok) throw new Error(data.error)
     // The past-tense word per action is a SELECT in the message (gate.status, Language Phase 1b) — confirm →
     // "confirmed", reject → "rejected", ready, collected, undo_collected → "restored", cancel → "cancelled", and
-    // any other action → its own name, exactly as the `labels[action] || action` map did.
+    // any other action → "updated" (Language Phase 2: it used to print the raw action id, as the
+    // `labels[action] || action` map did).
     const done = findOrder(orderKey)
     const num = done?.id ?? ''
     const id = String(num)

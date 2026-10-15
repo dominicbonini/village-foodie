@@ -1,1 +1,9 @@
-{}
+{
+  "verify": {
+    "expired": "That confirmation link has expired. Get in touch and we’ll fix it before you go live.",
+    "invalid": "That confirmation link didn’t work. Get in touch and we’ll fix it before you go live."
+  },
+  "identity": {
+    "phoneHelp": "Customers see this on their order confirmation so they can ask about an order. The checkbox decides whether that reads “Call us” or “WhatsApp us”. You can change both in Settings."
+  }
+}

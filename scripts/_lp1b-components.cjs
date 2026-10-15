@@ -282,7 +282,23 @@ async function views(ctx) {
 
     // ══ the shared kitchen modals ════════════════════════════════════════════════════════════════════
     const X = B.misc
+    // ⚠️ RE-PINNED (Language Phase 2): the modals' <select> VALUE is the reason's label AS RENDERED, so a state that
+    // stands for "the operator picked Too busy" must hold the label of the catalogue this run renders with — the
+    // frozen words for 1b's own comparison and BEFORE (exactly the literal below), the current words for
+    // language-phase-2's "A" run. A literal would stop matching the moment a word changed and the modal would drop
+    // the reason, which is a fixture artefact, not something an operator can do.
+    const LP2 = require('./_lp2-frozen.cjs')
+    const shown = (ns, id, literal) => {
+      if (!id) return literal
+      const cat = LP2.catalogues(LP2.mode())
+      const msgs = cc === 'US' ? deepMergeTrees(cat['en-GB'], cat['en-US']) : cat['en-GB']
+      const src = LP2.getPath(msgs, ns)
+      if (typeof src !== 'string') return literal
+      const { createTranslator } = require(require('path').join(REPO, 'node_modules/next-intl'))
+      return createTranslator({ locale: cc === 'US' ? 'en-US' : 'en-GB', messages: { x: { y: src } } })('x.y', { reason: id })
+    }
     const REJECT = [['', null], ['Sold out of an item', 'sold_out'], ["Too busy — can't make it in time", 'too_busy'], ['Closing soon', 'closing_soon'], ['Other', 'other']]
+      .map(([l, id]) => [shown('kitchenModals.reject.reason', id, l), id])
     const rejectProps = { orderId: 12, customerName: 'Sam Harness', totalLabel: ' · £43.90', onConfirm() {}, onDismiss() {} }
     for (const [label, id] of REJECT) {
       for (const note of ['', 'Sorry about this']) {
@@ -306,6 +322,7 @@ async function views(ctx) {
       }
     }
     const CANCEL = [['', null], ['Vehicle breakdown', 'vehicle_breakdown'], ['Weather', 'weather'], ['Venue issue', 'venue_issue'], ['Personal emergency', 'personal_emergency'], ['Other', 'other']]
+      .map(([l, id]) => [shown('kitchenModals.eventCancel.reason', id, l), id])
     const evFull = { ...C.EVENT, venue_name: 'The Green', town: 'Harnessville' }
     const cancelProps = { time: T.time, event: evFull, affectedOrderCount: 3, onKeep() {}, onConfirm() {} }
     for (const [label, id] of CANCEL) {
@@ -443,3 +460,10 @@ async function views(ctx) {
 }
 
 module.exports = { views }
+
+/** en-GB with a locale's file merged over it (lib/i18n/merge.ts's rule), for a label the run renders. */
+function deepMergeTrees(base, over) {
+  const out = { ...base }
+  for (const [k, v] of Object.entries(over || {})) out[k] = v && typeof v === 'object' && out[k] && typeof out[k] === 'object' ? deepMergeTrees(out[k], v) : v
+  return out
+}

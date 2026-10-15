@@ -85,8 +85,14 @@ const AREAS = [
   '_messages-parity-1a.cjs',   // Language Phase 1a — the customer-facing text (docs/language-phase-1a-report.md)
   '_messages-parity-1b.cjs',   // Language Phase 1b — the kitchen and operator text (docs/language-phase-1b-report.md)
   '_messages-parity-1c.cjs',   // Language Phase 1c — the onboarding text (docs/language-phase-1c-report.md)
+  '_messages-parity-2.cjs',    // Language Phase 2 — US English and the wrong-English fixes (docs/language-phase-2-report.md)
 ]
-if (AREAS.length) for (const a of AREAS) require(`./${a}`)({ t, head, msgs })
+// ⚠️ RE-PINNED (Language Phase 2): the 1a / 1b / 1c areas compare the strings the surfaces rendered BEFORE their text
+// moved into messages/ with the messages that move produced. Phase 2 then changes words on purpose (proven by its own
+// area and by scripts/language-phase-2.cjs), so those three read the en-GB catalogue as it stood before Phase 2
+// (scripts/fixtures/language-phase-2-messages-before.json = 460ba55's) — and keep asserting exactly what they asserted.
+const FROZEN_GB = JSON.parse(fs.readFileSync(path.join(REPO, 'scripts/fixtures/language-phase-2-messages-before.json'), 'utf8'))
+if (AREAS.length) for (const a of AREAS) require(`./${a}`)({ t, head, msgs: /_messages-parity-1[abc]\.cjs$/.test(a) ? { ...msgs, 'en-GB': FROZEN_GB, 'en-US': {} } : msgs })
 
 console.log(`\n${fail ? '✗' : '✓'} messages-parity: ${pass} passed, ${fail} failed`)
 if (fail) process.exit(1)

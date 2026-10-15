@@ -90,7 +90,11 @@ function installStub(kit) {
 async function views(ctx) {
   const { kit, h, html } = ctx
   installStub(kit)
-  const m = await kit.bundle('lp1b-dash', `export { default as Dash } from '@/${F}'\nexport { MoneyProvider } from '@/components/MoneyContext'`, {
+  // ⚠️ RE-PINNED (Language Phase 2): a US dashboard renders under the en-US locale — what its layout's provider holds
+  // once the page has told it the truck's locale (`useTruckLocale`, an effect a static render never runs). With the
+  // frozen words (en-US {}) this harness compares with, that is byte-identical; language-phase-2 reads the US words.
+  const useT = require('fs').existsSync(require('path').join(ctx.REPO, 'lib/i18n/use-t.ts'))
+  const m = await kit.bundle('lp1b-dash', `export { default as Dash } from '@/${F}'\nexport { MoneyProvider } from '@/components/MoneyContext'` + (useT ? "\nexport { I18nContext } from '@/lib/i18n/use-t'" : ''), {
     patches: [
       { file: F, states: STATES },
       { file: F, from: MS_USE_OLD, to: MS_USE_NEW },
@@ -125,7 +129,7 @@ async function views(ctx) {
       const base = { truck, orders, loading: false, authenticated: true, truckMenu: MENU, todayEvents: [EVENT], upcomingEvents: [EVENT], selectedEventId: 'ev-1',
         eventsLoaded: true, firstOpenChecked: true, fetchedStockKeys: new Set(['ev-1']), payments, heldAuthorisations: C.HELD, deviceOnline: true,
         categoryConfigs: { pizzas: { secs: 300, batch: 2 }, drinks: { secs: 0, batch: 1 }, sides: { secs: 0, batch: 1 } } }
-      const dash = token => h(m.Dash, { params: { token } })
+      const dash = token => (m.I18nContext && cc === 'US' ? h(m.I18nContext.Provider, { value: { locale: 'en-US', setLocale() {} } }, h(m.Dash, { params: { token } })) : h(m.Dash, { params: { token } }))
       const S = {}   // scenario → [state, token]
       const add = (k, st, token = 'harness') => { S[k] = [st, token] }
 
@@ -215,7 +219,9 @@ async function views(ctx) {
 
       // ── the page's own modals ──
       add('modal|offlinePausedNotice', { ...base, showOfflinePausedNotice: true })
-      add('modal|finishEarly', { ...base, finishConfirm: { eventId: 'ev-1', early: true, endTime: cc === 'US' ? '9:00pm' : '21:00' } })
+      // Language Phase 2: the US end time as formatTime now writes it (en-US "9:00 PM"; was "9:00pm") — this is the
+      // value the dashboard hands the modal, so it follows the clock's style. Only the string changed.
+      add('modal|finishEarly', { ...base, finishConfirm: { eventId: 'ev-1', early: true, endTime: cc === 'US' ? '9:00 PM' : '21:00' } })
       add('modal|finish', { ...base, finishConfirm: { eventId: 'ev-1', early: false, endTime: '' } })
       add('modal|pause', { ...base, showPauseModal: true })
       add('modal|screenOff', { ...base, showScreenOffWarning: true })

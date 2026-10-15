@@ -403,7 +403,7 @@ function compare(key, B, A, ctx) {
   try { b = JSON.parse(B.body); a = JSON.parse(A.body) } catch { t(`api · ${key}: body byte-identical`, A.body === B.body, `${B.body} · ${A.body}`); return true }
   const ours = b && typeof b.error === 'string' && !('code' in b) && a && 'code' in a
   if (!ours) { t(`api · ${key}: not one of our new refusal codes — body byte-identical`, A.body === B.body, `BEFORE ${B.body}\n      AFTER  ${A.body}`); return true }
-  const MESSAGES = JSON.parse(ctx.read('messages/en-GB.json'))
+  const MESSAGES = require('./_lp2-frozen.cjs').enGBForNode()   // the frozen words under HG_MESSAGES_FROZEN (Language Phase 2 re-pin)
   const { createTranslator } = require(path.join(ctx.REPO, 'node_modules/next-intl'))
   const tr = l => createTranslator({ locale: l, messages: MESSAGES, namespace: 'errorsOnboarding' })
   t(`api · ${key}: the BEFORE body is the exact prefix of the AFTER body`, A.body.startsWith(B.body.slice(0, -1) + ','), `BEFORE ${B.body}\n      AFTER  ${A.body}`)
@@ -449,7 +449,7 @@ async function after(ctx) {
     const left = words.filter(w => src.includes(w))
     t(`${f}: the email's sentences come from the message file`, left.length === 0, left.join(' · '))
   }
-  const msgs = JSON.parse(read('messages/en-GB.json'))
+  const msgs = require('./_lp2-frozen.cjs').enGBForNode()   // the frozen words under HG_MESSAGES_FROZEN (Language Phase 2 re-pin)
   t('errorsOnboarding.phone_invalid is word for word the phone box\'s own sentence (phone.invalidPhoneNumber)',
     msgs.errorsOnboarding?.phone_invalid === msgs.phone?.invalidPhoneNumber, `${msgs.errorsOnboarding?.phone_invalid} · ${msgs.phone?.invalidPhoneNumber}`)
   t('lib/i18n/onboarding-errors.ts is a wrapper over the one helper (lib/i18n/error-body.ts)',

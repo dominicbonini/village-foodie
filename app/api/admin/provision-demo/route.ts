@@ -100,13 +100,17 @@ export async function POST(req: NextRequest) {
   // so in `warnings`; it is never fetched.
   let name: string | null = null
   let logoUrl: string | null = null
+  // Language Phase 2: an outreach demo is built in the PROSPECT's country (discovery_trucks.country) — switched-on
+  // only; provisionDemo builds anything else in GB. Without a discovery row the demo is GB, as before.
+  let country: string | null = null
   if (discoveryTruckId) {
     const { data: row, error } = await supabase
-      .from('discovery_trucks').select('id, name, logo_url').eq('id', discoveryTruckId).maybeSingle()
+      .from('discovery_trucks').select('id, name, logo_url, country').eq('id', discoveryTruckId).maybeSingle()
     if (error) return NextResponse.json({ error: `Could not read the discovery truck: ${error.message}` }, { status: 500 })
     if (!row) return NextResponse.json({ error: 'Discovery truck not found' }, { status: 404 })
     name = nameOverride ?? str(row.name)
     logoUrl = str(row.logo_url)
+    country = str(row.country)
     if (!name) return NextResponse.json({ error: 'That discovery truck has no name to brand the demo with' }, { status: 400 })
   }
 
@@ -115,7 +119,7 @@ export async function POST(req: NextRequest) {
       file, text, template, existingTruckId, kitchen,
       // An admin rebuild clears every old event and order on the demo, not just today's (lib/provision-demo.ts).
       replaceBoard: !!existingTruckId,
-      ...(discoveryTruckId ? { discoveryTruckId, name, logoUrl } : {}),
+      ...(discoveryTruckId ? { discoveryTruckId, name, logoUrl, country } : {}),
     })
 
     // Counts read back from the DB rather than inferred — the point of this route is to verify what

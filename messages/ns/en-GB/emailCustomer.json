@@ -25,10 +25,10 @@
     "heldShortTextFigures": "Your card is held for {held}, which {truck} takes when they confirm your order. {owing} of this order is still to pay when you collect.",
     "heldShortShort": "Card held for part of this order",
     "heldShortShortOwing": "Card held for part of this order, {owing} still to pay",
-    "unknownTitle": "We're still confirming your payment",
+    "unknownTitle": "We’re still confirming your payment",
     "unknownBody": "Your card was authorised, so please do not pay again — {truck} will confirm at the hatch.",
-    "unknownText": "We're still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm at the hatch.",
-    "unknownReady": "We're still confirming your payment — please do not pay again.",
+    "unknownText": "We’re still confirming your payment. Your card was authorised, so please do not pay again — {truck} will confirm at the hatch.",
+    "unknownReady": "We’re still confirming your payment — please do not pay again.",
     "hatchTitle": "Pay at the truck on collection",
     "hatchText": "Pay at the truck on collection.",
     "hatchReady": "Pay at the truck."
@@ -44,7 +44,7 @@
     "collectionTime": "Collection time: {time}",
     "seeYou": "See you at the hatch!",
     "preferredTime": "Preferred collection time: {time}",
-    "weWillConfirm": "We'll confirm your collection time when we accept your order.",
+    "weWillConfirm": "We’ll confirm your collection time when we accept your order.",
     "specialInstructions": "<b>Special instructions:</b> {notes}",
     "questions": "Questions about your order?",
     "contactCall": "Call us",
@@ -56,13 +56,13 @@
     "contactEmail": "Email us",
     "contactLink": "{label} →",
     "contactValue": "{label}: {value}",
-    "cancelLine": "{n, plural, other {Need to cancel?<link>Cancel your order</link>(up to {count} minutes before your pickup time)}}",
+    "cancelLine": "{n, plural, one {Need to cancel?<link>Cancel your order</link>(up to {count} minute before your pickup time)} other {Need to cancel?<link>Cancel your order</link>(up to {count} minutes before your pickup time)}}",
     "headingReady": "Your order is ready! 🎉",
     "headingConfirmed": "Order confirmed!",
     "headingReceived": "Order received!",
     "leadReady": "Your order is ready for collection — come and collect from {truck}.",
-    "leadConfirmed": "Thanks! We've received your order and we're getting it ready.",
-    "leadReceived": "Thanks! We've received your order — we'll let you know once it's confirmed.",
+    "leadConfirmed": "Thanks! We’ve received your order and we’re getting it ready.",
+    "leadReceived": "Thanks! We’ve received your order — we’ll let you know once it’s confirmed.",
     "orderNumber": "Order #{id}",
     "total": "Total",
     "poweredBy": "Powered by <brand>HatchGrab</brand>",
@@ -74,7 +74,7 @@
     "textSlotUpdated": "Collection time updated to {time} (was {previous}).",
     "textSlotTaken": "Ready at {time}. Your {requested} slot was just taken — this is the next available time.",
     "textCollection": "Collection time: {time}. See you at the hatch!",
-    "textPreferred": "Preferred collection: {time} — we'll confirm when we accept your order.",
+    "textPreferred": "Preferred collection: {time} — we’ll confirm when we accept your order.",
     "textNotes": "Notes: {notes}",
     "textWhatsApp": "Questions? Message us on WhatsApp: {value}",
     "textEmail": "Questions? Email us: {value}",
@@ -97,7 +97,7 @@
   },
   "common": {
     "hi": "Hi {withName, select, yes {{name}} other {there}},",
-    "sorry": "We're sorry for any inconvenience.",
+    "sorry": "We’re sorry for any inconvenience.",
     "poweredByDot": "Powered by HatchGrab · hatchgrab.com",
     "poweredByText": "Powered by HatchGrab — hatchgrab.com"
   },
@@ -116,9 +116,9 @@
   },
   "eventCancellation": {
     "subject": "{truck} at {withLocation, select, yes {{location}} other {your event}} — cancelled",
-    "body": "Unfortunately <b>{truck}</b>'s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled.",
+    "body": "Unfortunately <b>{truck}</b>’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled.",
     "orderCancelled": "Your order <b>#{id}</b> has been cancelled.",
-    "textLead": "Hi {withName, select, yes {{name}} other {there}}, unfortunately {truck}'s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled. Your order #{id} has been cancelled."
+    "textLead": "Hi {withName, select, yes {{name}} other {there}}, unfortunately {truck}’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled. Your order #{id} has been cancelled."
   },
   "rejection": {
     "subject": "Order #{id} update",
@@ -129,7 +129,7 @@
     "textLead": "Unfortunately {truck} is unable to fulfil order #{id}."
   },
   "updated": {
-    "subjectTotalMoved": "Order #{id} updated - now {total} (was {previous})",
+    "subjectTotalMoved": "Order #{id} updated — now {total} (was {previous})",
     "subject": "Order #{id} updated",
     "subjectSlotMoved": "Your order #{id} has been updated"
   }

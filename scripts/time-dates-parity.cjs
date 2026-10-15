@@ -26,6 +26,13 @@
 //             prompt (its 14-day table)
 //   emails    the event-cancellation email's date, the confirmation's collection line
 
+// ── RE-PINNED FOR LANGUAGE PHASE 2 (docs/language-phase-2-report.md) ─────────────────────────────────────────
+// This harness's BEFORE snapshot was rendered with the words as they stood before Language Phase 2, and what it proves
+// is the CODE's behaviour, not the wording. Phase 2 changes words on purpose (US English in messages/en-US.json, the
+// wrong-English fixes in messages/en-GB.json) — proven by scripts/language-phase-2.cjs — so this run renders with the
+// pre-Phase-2 words (HG_MESSAGES_FROZEN, scripts/_lp2-frozen.cjs: the current keys at their 460ba55 text) and keeps
+// asserting exactly what it asserted. A capture reads the catalogue as it is.
+if (!process.argv.includes('--capture') && !('HG_MESSAGES_FROZEN' in process.env)) process.env.HG_MESSAGES_FROZEN = 'scripts/fixtures/language-phase-2-messages-before.json'
 const fs = require('fs'); const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'time-dates' })
 const { REPO, h } = kit
@@ -614,12 +621,14 @@ async function usView() {
     d.clock = helpers.T.formatInstantClock(new Date(), ts)
     const wk = { timeZone: ts.timeZone, weekStart: ts.weekStart }
     d.week = helpers.W.weekRange('this', new Date(), wk); d.weekToday = helpers.W.todayInWeekTz(new Date(), wk)
-    check(`${key}: 12-hour time`, d.time === '6:30pm' && d.timeHour === '6pm' && d.range === '5pm – 9:30pm', d)
+    // Language Phase 2 (15 October 2026): the US 12-hour clock is en-US's convention, "6:30 PM" / "6:00 PM" (lib/time-utils
+    // `clockOf` with the truck's locale; was "6:30pm" / "6pm"). Only these expected strings were re-pinned.
+    check(`${key}: 12-hour time`, d.time === '6:30 PM' && d.timeHour === '6:00 PM' && d.range === '5:00 PM – 9:30 PM', d)
     check(`${key}: month-first numeric date`, d.numeric === '10/09/2026', d.numeric)
     check(`${key}: month-first short date`, d.short === 'Fri, Oct 9', d.short)
     check(`${key}: "today" label on the truck's clock`, d.labelToday === 'Today, October 9th' && d.labelTomorrow === 'Tomorrow', d)
     check(`${key}: ordinal date`, d.ordinal === 'Wednesday, October 14th', d.ordinal)
-    check(`${key}: the clock now`, d.clock === '8pm', d.clock)
+    check(`${key}: the clock now`, d.clock === '8:00 PM', d.clock)
     check(`${key}: the week starts on Sunday`, d.week.start === '2026-10-04' && d.week.end === '2026-10-10' && d.weekToday === '2026-10-09', d.week)
     // the order page's event list (real route)
     globalThis.__harnessDb = kit.fakeDb({ trucks: [truck], country_settings: rowsFor(), truck_vans: [], private_event_links: [], truck_events: [
@@ -635,7 +644,7 @@ async function usView() {
     } finally { delete globalThis.__harnessDb }
     // an email and a ticket
     const conf = emailMod.E.formatConfirmationEmail({ orderId: '40', orderKey: 'k', truckName: 'Pizza Kitchen', customerName: 'Sam', slot: '18:30', items: [{ name: 'Margherita', quantity: 1, unit_price: 9.5, modifiers: [] }], deals: [], discountAmt: 0, total: 9.5, notes: null, venueName: 'Union Square', venueTown: 'NYC', allowCancellation: false, cancellationCutoffMins: 0, baseUrl: 'https://www.hatchgrab.com', truckSlug: truck.slug, variant: 'confirmation', autoAccepted: true, money: { currency: 'USD', locale: 'en-US' }, time: ts }).text
-    check(`${key}: the confirmation email's collection time`, conf.includes('Collection time: 6:30pm'), conf.split('\n').find(l => /Collection/.test(l)))
+    check(`${key}: the confirmation email's collection time`, conf.includes('Collection time: 6:30 PM'), conf.split('\n').find(l => /Collection/.test(l)))
     d.email = conf.split('\n').find(l => /Collection/.test(l))
     // the printed ticket and the kitchen's order card, for the same order
     const ui = await uiBundles()
@@ -644,10 +653,10 @@ async function usView() {
     const order = { ...ordersFor(D).paid, currency: 'USD', country: 'US' }
     const lines = ui.print.T.buildTicketLines(ui.print.MAP.mapOrderToTicket({ order, truck: usTruck, event: dashEvent(D), ledgerRows: CASES.paid.ledger, printedLabel: ui.print.__tdStamp(usTruck) }), { paper_width: 80, show_phone: true }).map(l => l.text).filter(Boolean)
     d.ticket = lines.find(l => /COLLECT/.test(l))
-    check(`${key}: the ticket's collection time`, /COLLECT 6:30pm/.test(d.ticket || ''), d.ticket)
-    check(`${key}: the ticket's printed-at stamp`, ui.print.__tdStamp(usTruck) === '8pm' && ui.print.__tdNowMins(usTruck) === 20 * 60, ui.print.__tdStamp(usTruck))
+    check(`${key}: the ticket's collection time`, /COLLECT 6:30 PM/.test(d.ticket || ''), d.ticket)
+    check(`${key}: the ticket's printed-at stamp`, ui.print.__tdStamp(usTruck) === '8:00 PM' && ui.print.__tdNowMins(usTruck) === 20 * 60, ui.print.__tdStamp(usTruck))
     const card = kit.textOf(kit.renderStatic(h(ui.cards.OrderCard, { order, truck: usTruck, event: dashEvent(D), slots: [], actionLoading: null, onAction() {}, onRefund: async () => ({ ok: true }), onEdit() {}, kdsMode: false, viewMode: 'solo', ledgerRows: CASES.paid.ledger, heldAuthorisation: false, effectiveOrderReady: true, readyStepOn: true, vanTakesCash: true }))).text
-    check(`${key}: the order card's collection time`, card.includes('6:30pm') && !card.includes('18:30'), card.slice(0, 200))
+    check(`${key}: the order card's collection time`, card.includes('6:30 PM') && !card.includes('18:30'), card.slice(0, 200))
     kit.setDeviceTz(SERVER)
     proof[key] = d
   }

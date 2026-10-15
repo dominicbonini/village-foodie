@@ -1,1 +1,13 @@
-{}
+{
+  "stops": {
+    "menu": {
+      "body": "Your dishes, prices and allergens. Change anything here and it’s live right away."
+    },
+    "schedule": {
+      "body": "Where and when you’re serving. Add an event here and customers can order for it."
+    },
+    "build": {
+      "body": "Deals, upsells, customizations and your kitchen capacity live under Menu — try them out."
+    }
+  }
+}

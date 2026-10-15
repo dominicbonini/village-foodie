@@ -1,1 +1,23 @@
-{}
+{
+  "gate": {
+    "undoneCollected": "Undone — order not picked up",
+    "collected": "Order #{id} {paidToo, select, yes {paid and picked up} other {picked up}}",
+    "status": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {picked up} undo_collected {restored} cancel {canceled} other {updated}}"
+  },
+  "van": {
+    "label": "Truck"
+  },
+  "setup": {
+    "noVanTitle": "No active truck",
+    "noVanBody": "This account has no active truck yet. Activate one in <b>Settings → Your trucks</b>, then this device sets up automatically — no further steps here.",
+    "goToVans": "Go to Settings → Your trucks",
+    "body": "One-time setup for <b>this device</b>: the screen it opens to and which truck it’s for. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → “This device”.",
+    "whichVan": "Which truck is this device for?",
+    "selectVan": "Select a truck…"
+  },
+  "device": {
+    "truck": "Business",
+    "van": "Truck",
+    "patchFailed": "{setting, select, van {Truck} defaultScreen {Default screen} other {Order notifications}} didn’t save. {reason}"
+  }
+}

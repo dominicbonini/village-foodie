@@ -7,13 +7,13 @@
   "changeEmail": {
     "requested": "You requested to change your HatchGrab email address to this address.",
     "click": "Click the button below to verify. This link expires in 24 hours.",
-    "ignore": "If you didn't request this change, you can safely ignore this email.",
+    "ignore": "If you didn’t request this change, you can safely ignore this email.",
     "stillActive": "Your current email address remains active."
   },
   "resendVerification": {
     "requested": "You requested to change your HatchGrab email to this address.",
     "click": "Click below to verify. This link expires in 24 hours.",
-    "ignore": "If you didn't request this, ignore this email.",
+    "ignore": "If you didn’t request this, ignore this email.",
     "stillActive": "Your current email remains active."
   },
   "passwordReset": {
@@ -22,17 +22,17 @@
     "requested": "We received a request to reset the password for your HatchGrab account.",
     "click": "Click the button below to choose a new password. This link expires in 1 hour.",
     "button": "Reset password",
-    "ignore": "If you didn't request this, you can safely ignore this email.",
-    "unchanged": "Your password won't change until you click the link above."
+    "ignore": "If you didn’t request this, you can safely ignore this email.",
+    "unchanged": "Your password won’t change until you click the link above."
   },
   "deletionScheduled": {
     "subject": "Your HatchGrab account is scheduled for deletion",
     "received": "We have received a request to delete this HatchGrab account.",
     "orderingStopped": "<b>Online ordering has stopped immediately</b> on: {trucks}.",
     "noTrucks": "(no trucks)",
-    "readable": "Your dashboard stays\n    available to read for the next {days, plural, other {# days}}.",
+    "readable": "Your dashboard stays\n    available to read for the next {days, plural, one {# day} other {# days}}.",
     "scheduled": "The account is scheduled for deletion on <b>{date}</b>.",
     "cannotCancel": "<b>This cannot be cancelled from inside the app.</b> If this was not you, or you have\n    changed your mind, reply to this email as soon as possible.",
-    "kept": "When the account is deleted we remove your personal details and your customers' details. We keep\n    anonymous accounting records, which we are legally required to retain."
+    "kept": "When the account is deleted we remove your personal details and your customers’ details. We keep\n    anonymous accounting records, which we are legally required to retain."
   }
 }

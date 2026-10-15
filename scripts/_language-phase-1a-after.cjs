@@ -4,7 +4,7 @@ const path = require('path')
 
 module.exports = async function after({ kit, t, head, read, REPO, before, got, diffJson, renderOrderPage }) {
   const { createTranslator } = require(path.join(REPO, 'node_modules/next-intl'))
-  const MESSAGES = JSON.parse(read('messages/en-GB.json'))
+  const MESSAGES = require('./_lp2-frozen.cjs').enGBForNode()   // the frozen words under HG_MESSAGES_FROZEN (Language Phase 2 re-pin)
   const CODES = MESSAGES.errorsCustomer || {}
   const tErr = createTranslator({ locale: 'en-GB', messages: MESSAGES, namespace: 'errorsCustomer' })
   const tErrUS = createTranslator({ locale: 'en-US', messages: MESSAGES, namespace: 'errorsCustomer' })
@@ -80,7 +80,9 @@ module.exports = async function after({ kit, t, head, read, REPO, before, got, d
     t(`NAMESPACES.order sends every namespace the order page and its components read (${[...orderUses].join(', ')})`, missing.length === 0, missing.join(', '))
     const statusUses = used(['app/order/[id]/manage/page.tsx'])
     t(`NAMESPACES.confirmation sends every namespace the status page reads (${[...statusUses].join(', ')})`, [...statusUses].every(n => m.NAMESPACES.confirmation.includes(n)))
-    t('messages/en-US.json is still {} — so US output is en-GB\'s, byte for byte', read('messages/en-US.json').trim() === '{}')
+    // ⚠️ RE-PINNED (Language Phase 2, docs/language-phase-2-report.md): Phase 2 fills messages/en-US.json on purpose
+    // (proven in language-phase-2). This run renders with the frozen words, whose en-US is {} — asserted on what it reads.
+    t('the en-US catalogue this run renders with is {} — so US output is en-GB\'s, byte for byte', JSON.stringify(require('./_lp2-frozen.cjs').catalogues()['en-US']) === '{}')
   }
 
   head('5 · the code that carries them')

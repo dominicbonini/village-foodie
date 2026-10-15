@@ -7,7 +7,7 @@
 // event-tz "now" via getNowMinsInTz/getLocalDateInTz; this file NEVER reads the clock or constructs a
 // Date from a local wall-clock string + compares across timezones (the §V7.4 device-local trap that
 // getBundleAvailabilityMessage falls into — deliberately NOT copied here).
-import { weekdayName, monthName } from '@/lib/time-utils'
+import { formatShortDate, formatTime, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/preorder'
 
@@ -116,11 +116,16 @@ export function isPreorderDeadlinePassed(
   return { isPreorder: true, passed, pastAction: cfg.pastAction }
 }
 
-// Month/weekday abbreviations from lib/time-utils.ts (Intl on the calendar date, pinned to UTC — never a
-// device-local `new Date().toLocale…`, §V7.4; the short month by its English rule, "Sep" not "Sept"). The
-// label is computed server-side in event-tz; only the calendar Y/M/D is read here. ⚠️ `locale` defaults to
-// en-GB: the label is English in every country today, as it always was (Language Phase 1a moves its words).
-const shortDay = (ymd: string, locale: string) => `${weekdayName(ymd, locale, 'short')} ${Number(ymd.split('-')[2])} ${monthName(ymd, locale, 'short')}`
+// 🔴 LANGUAGE PHASE 2 (15 October 2026): THE TRUCK'S SETTINGS, NOT en-GB. Both labels take the truck's TimeSettings
+// (lib/truck-time.ts `truckTimeSettings`) — its locale for the words (messages `preorder`), its time format for the
+// clock and its date order for the day: GB "Pre-order by 16:30, Sat 10 Oct" exactly as before, US "Pre-order by
+// 4:30 PM, Sat, Oct 10". The day is `formatShortDate` (lib/time-utils.ts: Intl's names on the calendar date pinned to
+// UTC, the short month by its English rule, "Sep" not "Sept") and the clock is `formatTime` — never a device-local
+// `new Date().toLocale…` (§V7.4), never a hand-built format here. The label is computed server-side in event-tz (the
+// menu route) and on the order page; only the calendar Y/M/D and the minutes are read here.
+// ⚠️ `ts` is optional only so the existing proof scripts still compile: every product caller passes the truck's, and
+// a call without it gets the UK's through `timeSettingsOr`, which logs a warning.
+const preorderTime = (ts: TimeSettings | null | undefined) => timeSettingsOr(ts, 'preorder label')
 
 /**
  * Customer-facing pre-order label — PURE formatting, NO device-local time. The caller supplies the
@@ -140,16 +145,15 @@ export function formatPreorderLabel(
   mins: number,
   date: string,
   eventDate: string,
-  locale = 'en-GB',
+  ts?: TimeSettings | null,
 ): string {
-  // The words: messages/en-GB.json `preorder` (Language Phase 1a). ⚠️ The clock is still written here as 24-hour
-  // HH:MM for every country — today's output, US included; moving it to the truck's time format is a visible
-  // change for the US and is listed in the Phase 1a report, not made here.
-  const t = translatorFor(locale, 'preorder')
+  // The words: messages/en-GB.json `preorder` (Language Phase 1a); the clock and the day: the truck's (Phase 2).
+  const s = preorderTime(ts)
+  const t = translatorFor(s.locale, 'preorder')
   if (state === 'closed_pending') return t('closedPending')
-  const hh = String(Math.floor(mins / 60)).padStart(2, '0')
-  const mm = String(mins % 60).padStart(2, '0')
-  return date !== eventDate ? t('deadlineOnDay', { time: `${hh}:${mm}`, day: shortDay(date, locale) }) : t('deadline', { time: `${hh}:${mm}` })
+  // The deadline as a stored-form "HH:MM" (minutes-of-day → the slot engine's form), then the truck's style.
+  const time = formatTime(`${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`, s)
+  return date !== eventDate ? t('deadlineOnDay', { time, day: formatShortDate(date, s) }) : t('deadline', { time })
 }
 
 // ── PRE-ORDER OPEN-WINDOW (V8.3) — the twin of the deadline above. WHEN pre-ordering OPENS. ───────────
@@ -180,10 +184,11 @@ export function isPreorderOpenYet(rule: string | null | undefined, eventDate: st
 
 /** Customer/operator label "Pre-orders open Ddd D Mon" — null for 'on_confirm'/unset (no future open).
  *  Pure formatting, NO device-local (UTC-noon anchor → tz/DST-independent weekday, same basis as the deadline). */
-export function formatPreorderOpenLabel(rule: string | null | undefined, eventDate: string, locale = 'en-GB'): string | null {
+export function formatPreorderOpenLabel(rule: string | null | undefined, eventDate: string, ts?: TimeSettings | null): string | null {
   const openDate = preorderOpenDate(rule, eventDate)
   if (openDate == null) return null
-  return translatorFor(locale, 'preorder')('opens', { day: shortDay(openDate, locale) })
+  const s = preorderTime(ts)
+  return translatorFor(s.locale, 'preorder')('opens', { day: formatShortDate(openDate, s) })
 }
 
 /** Operator-facing description of the open rule (for the Settings card). */

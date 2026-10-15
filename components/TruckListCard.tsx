@@ -6,7 +6,7 @@ import { GREEN_SOLID, ORANGE_SOLID } from '@/lib/ui-tokens';
 import Link from 'next/link';
 import { getVenueSlug } from '@/lib/utils';
 import { isHatchGrab } from '@/lib/domain';
-import { formatTimeRange, formatYmd, DISCOVERY_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils';
+import { formatTimeRange, formatYmdShortMonth, DISCOVERY_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils';
 import { useT } from '@/lib/i18n/use-t';
 import '@/lib/i18n/catalog/eventCard'
 
@@ -101,8 +101,9 @@ function formatStandardDate(dateStr: string, ts: TimeSettings) {
     if (parts.length === 3) {
         const [dd, mm, yyyy] = parts.map(p => parseInt(p));
         if (!isNaN(dd) && !isNaN(mm) && !isNaN(yyyy)) {
-            // The truck's words and order (Phase 2B): GB "Fri 9 Oct", US "Fri, Oct 9".
-            return formatYmd(`${yyyy}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`, ts, { weekday: 'short', day: 'numeric', month: 'short' });
+            // The truck's words and order (Phase 2B): GB "Fri 9 Oct", US "Fri, Oct 9". Language Phase 2: the short
+            // month by the product's rule — "Sep", never Intl's en-GB "Sept" (the one change; every other month is unchanged).
+            return formatYmdShortMonth(`${yyyy}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`, ts, { weekday: 'short', day: 'numeric', month: 'short' });
         }
     }
     return dateStr;

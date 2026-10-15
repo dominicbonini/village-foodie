@@ -23,6 +23,7 @@ import { demoRatelimit } from '@/lib/ratelimit'
 // `reason` (an honest-failure outcome, not a refusal) is passed on as lib/provision-demo.ts words it.
 import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { visitorCountryCodeOf } from '@/lib/visitor-country'
 
 // 🔴 THIS ROUTE BLOCKS FOR THE WHOLE PROVISION (Gemini extract + ~85-round-trip commit + event + seed +
 // rebuild) — ~40-80s. It had NO maxDuration, so it inherited the PLATFORM DEFAULT (10s on Hobby / 15s on
@@ -120,7 +121,11 @@ export async function POST(req: NextRequest) {
 
   // ── 4. Provision ──────────────────────────────────────────────────────────────────────────────────
   try {
-    const result = await provisionDemo(supabase, { file, text, template })
+    // 🔴 THE DEMO IS BUILT IN THE VISITOR'S COUNTRY (Language Phase 2) — the marketing pages' rule (?country → the
+    // hg_country cookie → where the request comes from), switched-on countries only, else GB. While the US is
+    // switched off this is always GB. provisionDemo falls back to GB again for anything it cannot use.
+    const country = await visitorCountryCodeOf(req)
+    const result = await provisionDemo(supabase, { file, text, template, country })
 
     // The honest-failure path (§11) is NOT an error — it is the product working correctly. 200 with a
     // machine-readable outcome so the client can offer templates / retry / build-for-me.

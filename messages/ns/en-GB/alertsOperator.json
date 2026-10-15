@@ -1,25 +1,25 @@
 {
   "hi": "Hi {name},",
   "limit80": {
-    "subject": "You've used 80% of this month's WhatsApp replies",
+    "subject": "You’ve used 80% of this month’s WhatsApp replies",
     "used": "Your automatic WhatsApp replies have used <b>{used} of {limit}</b> for this month.",
-    "nothingStopped": "Nothing has stopped. When you reach {limit}, automatic replies pause until your allowance resets on <b>{reset}</b> — customers can still message you, and you'll still see everything they send.",
+    "nothingStopped": "Nothing has stopped. When you reach {limit}, automatic replies pause until your allowance resets on <b>{reset}</b> — customers can still message you, and you’ll still see everything they send.",
     "raise": "You can raise your monthly limit in Settings whenever you like.",
     "raiseLink": "You can raise your monthly limit in Settings whenever you like:",
     "button": "Open Settings"
   },
   "limit100": {
     "subject": "Your WhatsApp auto-replies have paused for this month",
-    "usedAll": "You've used all {limit} of this month's automatic WhatsApp replies, so they've paused.",
-    "stillReach": "<b>Customers can still message you as normal, and every message still reaches you.</b> The only thing that's stopped is the automatic reply going back out.",
-    "startAgain": "They'll start again on <b>{reset}</b>, or straight away if you raise your monthly limit in Settings.",
-    "startAgainLink": "They'll start again on {reset}, or straight away if you raise your monthly limit in Settings:",
+    "usedAll": "You’ve used all {limit} of this month’s automatic WhatsApp replies, so they’ve paused.",
+    "stillReach": "<b>Customers can still message you as normal, and every message still reaches you.</b> The only thing that’s stopped is the automatic reply going back out.",
+    "startAgain": "They’ll start again on <b>{reset}</b>, or straight away if you raise your monthly limit in Settings.",
+    "startAgainLink": "They’ll start again on {reset}, or straight away if you raise your monthly limit in Settings:",
     "button": "Raise my limit"
   },
   "paymentBlocked": {
     "subject": "WhatsApp needs a payment method before it can send",
-    "stopped": "WhatsApp has stopped your automatic replies going out because there's no working payment method on your WhatsApp Business account.",
-    "stillMessage": "<b>Customers can still message you, and you'll still see everything they send</b> — but the replies aren't reaching them.",
+    "stopped": "WhatsApp has stopped your automatic replies going out because there’s no working payment method on your WhatsApp Business account.",
+    "stillMessage": "<b>Customers can still message you, and you’ll still see everything they send</b> — but the replies aren’t reaching them.",
     "payDirect": "You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager rather than in HatchGrab. Add or update a card there and replies start again on their own.",
     "payDirectLink": "You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager rather than in HatchGrab. Add or update a card there and replies start again on their own:",
     "button": "Open WhatsApp Manager",

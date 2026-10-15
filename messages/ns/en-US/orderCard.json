@@ -1,1 +1,11 @@
-{}
+{
+  "markPaidAndCollected": "Mark paid & picked up",
+  "collected": "Picked up",
+  "cashAndCollected": "Cash & picked up",
+  "cardAndCollected": "Card & picked up",
+  "refundedTitle": "Refunded in full. Nothing to charge.",
+  "partRefundedTitle": "Charged in full, then partially refunded. Nothing to charge.",
+  "cardHeldTitle": "Card authorized — do not charge. Payment is taken when you confirm.",
+  "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Canceled} cooking {Cooking} ready {Ready} collected {Picked up} other {New}}",
+  "cashIcon": "💵"
+}

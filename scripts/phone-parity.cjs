@@ -16,6 +16,13 @@
 // and the rendered UK order form and setup wizard, and a confirmation email with a WhatsApp contact.
 // Nothing reaches a database, the network or an inbox.
 
+// ── RE-PINNED FOR LANGUAGE PHASE 2 (docs/language-phase-2-report.md) ─────────────────────────────────────────
+// This harness's BEFORE snapshot was rendered with the words as they stood before Language Phase 2, and what it proves
+// is the CODE's behaviour, not the wording. Phase 2 changes words on purpose (US English in messages/en-US.json, the
+// wrong-English fixes in messages/en-GB.json) — proven by scripts/language-phase-2.cjs — so this run renders with the
+// pre-Phase-2 words (HG_MESSAGES_FROZEN, scripts/_lp2-frozen.cjs: the current keys at their 460ba55 text) and keeps
+// asserting exactly what it asserted. A capture reads the catalogue as it is.
+if (!process.argv.includes('--capture') && !('HG_MESSAGES_FROZEN' in process.env)) process.env.HG_MESSAGES_FROZEN = 'scripts/fixtures/language-phase-2-messages-before.json'
 const fs = require('fs'); const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'phone' })
 const { REPO, h } = kit

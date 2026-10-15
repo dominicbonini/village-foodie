@@ -28,7 +28,7 @@ export function goLiveIssueText(issue: GoLiveIssue, locale?: string | null): GoL
       const { unverified, total } = issue.params
       return {
         title: t('allergensItemsUnverified.title', { n: unverified, count: String(unverified) }),
-        detail: t('allergensItemsUnverified.detail', { n: total, unverified: String(unverified), total: String(total) }),
+        detail: t('allergensItemsUnverified.detail', { n: total, u: unverified, unverified: String(unverified), total: String(total) }),
         where: t('allergensItemsUnverified.where'),
       }
     }

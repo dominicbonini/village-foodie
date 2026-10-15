@@ -23,7 +23,7 @@
 // the request. Held authorisations behind cancelled orders are still stranded; that is a separate, parked
 // defect (docs/event-cancel-holds-report.md), and this modal is where its money summary will belong.
 import { useState } from 'react'
-import { formatTime, formatYmd, type TimeSettings } from '@/lib/time-utils'
+import { formatTime, formatYmdShortMonth, type TimeSettings } from '@/lib/time-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/kitchenModals'
@@ -32,7 +32,8 @@ import '@/lib/i18n/catalog/kitchenModals'
 /** The event's date in the truck's words and order (Phase 2B). ⚠️ formatYmd pins the date to UTC, so a
  *  device in another zone can no longer shift it a day (`new Date('YYYY-MM-DD')` is UTC midnight). */
 function fmtDate(d: string, time: TimeSettings | null | undefined) {
-  return formatYmd(d, time, { weekday: 'short', day: 'numeric', month: 'short' })
+  // Language Phase 2: the short month by the product's rule — "Sep", never Intl's en-GB "Sept".
+  return formatYmdShortMonth(d, time, { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
 /** The reasons, in display order — as IDS (Language Phase 1b); the words are messages

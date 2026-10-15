@@ -1,1 +1,6 @@
-{}
+{
+  "collect": "PICKUP {time}",
+  "collectAsap": "PICKUP ASAP",
+  "doNotCollect": "DO NOT CHARGE",
+  "paymentStatus": "{status, select, refunded {REFUNDED} part_refunded {PARTIALLY REFUNDED} refund_due {REFUND DUE} failed {FAILED} other {{status}}}"
+}

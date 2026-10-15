@@ -1,6 +1,6 @@
 {
-  "sold_out_paying": "{names} sold out while you were paying. We've removed {count, plural, one {it} other {them}} and have not taken any money — please check your order before placing it again.",
-  "sold_out_ordering": "{names} sold out while you were ordering. We've removed {count, plural, one {it} other {them}} — please check your order before placing it again.",
+  "sold_out_paying": "{names} sold out while you were paying. We’ve removed {count, plural, one {it} other {them}} and have not taken any money — please check your order before placing it again.",
+  "sold_out_ordering": "{names} sold out while you were ordering. We’ve removed {count, plural, one {it} other {them}} — please check your order before placing it again.",
   "missing_fields": "Missing required fields",
   "truck_not_found": "Truck not found",
   "account_closing": "This business is no longer accepting online orders.",
@@ -27,7 +27,7 @@
   "order_not_found": "Order not found",
   "cancellations_not_accepted": "This truck does not accept cancellations",
   "cannot_cancel": "This order can no longer be cancelled",
-  "cancel_window_passed": "{n, plural, other {Orders can no longer be cancelled within {count} minutes of collection}}",
+  "cancel_window_passed": "{n, plural, one {Orders can no longer be cancelled within {count} minute of collection} other {Orders can no longer be cancelled within {count} minutes of collection}}",
   "cancel_failed": "Failed to cancel order",
   "something_went_wrong": "Something went wrong",
   "event_not_confirmed": "This event is not yet confirmed",

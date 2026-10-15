@@ -1,7 +1,7 @@
 {
   "notAvailable": "Not available in demo",
   "demoMode": "DEMO MODE",
-  "loopLands": "That's exactly how a real order lands",
+  "loopLands": "That’s exactly how a real order lands",
   "showMe": "Show me",
   "noCard": "{sub} No card needed.",
   "notYet": "Not yet",
@@ -23,5 +23,6 @@
   "signupOffer": {
     "heading": "Sign up for your free month now",
     "sub": "The clock doesn’t start until you decide to go live."
-  }
+  },
+  "cashIcon": "💷"
 }

@@ -22,7 +22,7 @@ import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcAddableRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
-import { formatTime, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz, instantOfLocal, clockOfInstantInTz, formatYmd, formatSlot, formatInstantClock, addDaysYmd, timeSettingsOr } from '@/lib/time-utils'
+import { formatTime, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz, instantOfLocal, clockOfInstantInTz, formatYmdShortMonth, formatSlot, formatInstantClock, addDaysYmd, timeSettingsOr } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel } from '@/lib/event-display'
 import { EventPickerPanel } from '@/components/shared/EventPickerPanel'
 import { useAndroidBack } from '@/lib/native/backHandler'
@@ -1435,7 +1435,8 @@ setItemModal({ item, modGroups, editCartKey })
             setCapacityConfirm({
               slot: effectiveSlot,
               variant: fit.why.some(w => w.kind === 'preopen') ? 'toosoon' : (seenTone !== 'red' && freshTone === 'red') ? 'filled' : 'over',
-              message: buildFitMessage({ slotLabel: effectiveSlot, why: fit.why, catLabel: catLabelFor }),
+              // Language Phase 2: the slot and the window times in the truck's style (GB as before, US "6:45 PM").
+              message: buildFitMessage({ slotLabel: String(formatSlot(effectiveSlot, panelTime)), why: fit.why, catLabel: catLabelFor, clock: hm => formatTime(hm, panelTime) }),
               override,
               stale,
             })
@@ -1912,7 +1913,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
       ) : !manualSlot && readyTime && (() => {
         const isFutureDay = manualEvent && manualEvent.event_date > getLocalDateInTz(eventTz)
         const dateLabel = isFutureDay
-          ? formatYmd(manualEvent!.event_date, panelTime, { weekday: 'short', day: 'numeric', month: 'short' })
+          ? formatYmdShortMonth(manualEvent!.event_date, panelTime, { weekday: 'short', day: 'numeric', month: 'short' })
           : null
         // Sub-label time + minutes come from `readyTime`/`readyMinsFromNow`, anchored to the engine's
         // ASAP slot (adjustedAsapSlot): ready ALWAYS agrees with the dropdown slot — equal to it when
@@ -2033,7 +2034,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
               >
                 {submitting === 'take-cash' ? <span className="text-sm">{t('confirming')}</span> : (
-                  <><span className="text-sm">💷 {t('cash')}</span><span className="text-base font-black">{amount(manualTotal)}</span></>
+                  <><span className="text-sm">{`${t('cashIcon')} `}{t('cash')}</span><span className="text-base font-black">{amount(manualTotal)}</span></>
                 )}
               </button>
               <button
@@ -2069,7 +2070,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
           >
             {submitting === 'take-cash' ? <span className="text-sm">{t('confirming')}</span> : !manualEvent ? <span className="text-sm">{t('selectAnEvent')}</span> : (
-              <><span className="text-sm">💷 {t('cash')}</span><span className="text-base font-black">{amount(manualTotal)}</span></>
+              <><span className="text-sm">{`${t('cashIcon')} `}{t('cash')}</span><span className="text-base font-black">{amount(manualTotal)}</span></>
             )}
           </button>
           <button
@@ -2541,7 +2542,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 const todayYmd = getLocalDateInTz(eventTz)
                 const tmrw = addDaysYmd(todayYmd, 1)
                 const d = manualEvent.event_date
-                const label = d === todayYmd ? t('today') : d === tmrw ? t('tomorrow') : formatYmd(d, panelTime, { weekday: 'short', day: 'numeric', month: 'short' })
+                const label = d === todayYmd ? t('today') : d === tmrw ? t('tomorrow') : formatYmdShortMonth(d, panelTime, { weekday: 'short', day: 'numeric', month: 'short' })
                 return `${label} · ${formatTime(manualEvent.start_time, panelTime)}–${formatTime(manualEvent.end_time, panelTime)}`
               })()}</p>
             </div>

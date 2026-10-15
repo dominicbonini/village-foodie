@@ -8,7 +8,7 @@
 // ⚠️ THESE ARE PRESENTATION ONLY. Neither reads or writes anything, neither knows about status, and
 // neither is on a money path. They decide what an operator READS, and the two surfaces that show an
 // event bar must read the same thing or the same event looks like two events.
-import { getLocalDateInTz, addDaysYmd, formatYmd, formatOrdinalDate, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
+import { getLocalDateInTz, addDaysYmd, formatYmdShortMonth, formatOrdinalDate, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 
 /** "The Bell — Castle Hedingham", or just the venue when the town is already inside its name.
  *  ⚠️ LIFTED VERBATIM from app/dashboard/[token]/page.tsx — the em dash, the `toLowerCase().includes`
@@ -53,7 +53,8 @@ export function eventDateLabel(dateStr: string, ts: TimeSettings | null | undefi
   if (style === 'compact') {
     if (dateStr === todayStr) return 'Today'
     if (dateStr === tomorrowStr) return 'Tomorrow'
-    return formatYmd(dateStr, s, { weekday: 'short', day: 'numeric', month: 'short' })
+    // Language Phase 2: the short month by the product's rule — "Sep", never Intl's en-GB "Sept".
+    return formatYmdShortMonth(dateStr, s, { weekday: 'short', day: 'numeric', month: 'short' })
   }
   const dayLabel = formatOrdinalDate(dateStr, s, false)
   const sep = s.dateOrder === 'mdy' ? ', ' : ' '

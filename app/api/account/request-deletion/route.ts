@@ -18,8 +18,8 @@
 // confirmation copy therefore has to say so — an operator who believes they can undo it in Settings will
 // discover otherwise at the worst moment.
 import { NextRequest, NextResponse } from 'next/server'
-import { truckTimeZone } from '@/lib/truck-time'
-import { getLocalDateInTz } from '@/lib/time-utils'
+import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
+import { getLocalDateInTz, formatLongDate, localDateOfInstant, timeSettingsOr } from '@/lib/time-utils'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { HATCHGRAB_SENDER } from '@/lib/email-config'
@@ -30,7 +30,9 @@ import { DELETION_WINDOW_DAYS } from '@/lib/account-deletion'
 // ⚠️ Two refusals already carried their own `code` ('confirm_mismatch', 'partial_stamp'). Their bodies are unchanged;
 // their words now come from `errorsOnboarding` under that same code. The database's error is passed on as it came.
 // ⚠️ The [ACTION] notification goes to HatchGrab's own inbox, not to the operator: it stays in English, inline.
-// ⚠️ The due date is still the raw ISO date — kept byte-identical, listed for Phase 2.
+// Language Phase 2: the owners' email writes the due date as the first truck's country's long date on its clock (GB
+// "27 October 2026", US "October 27, 2026") — it was the raw ISO "2026-10-27". HatchGrab's own [ACTION] email keeps
+// the ISO date: it is ours, not the operator's.
 import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
@@ -195,7 +197,7 @@ export async function POST(req: NextRequest) {
   const now = new Date()
   const dueAt = new Date(now.getTime() + DELETION_WINDOW_DAYS * 24 * 60 * 60 * 1000)
 
-  const { data: trucks } = await supabase.from('trucks').select('id, name, country').eq('operator_id', operator.id)
+  const { data: trucks } = await supabase.from('trucks').select('id, name, country, timezone').eq('operator_id', operator.id)
   const truckIds = (trucks ?? []).map(t => t.id as string)
   const locale = await localeForTruck(trucks?.[0])
 
@@ -241,13 +243,17 @@ export async function POST(req: NextRequest) {
   }
 
   const dueLabel = dueAt.toISOString().slice(0, 10)
+  // The owners read the first truck's settings, as they read its words; an account with no truck (or a country the
+  // loader refuses) gets the UK's, which timeSettingsOr logs — the same fallback as the words' en-GB.
+  const ownerTime = timeSettingsOr(trucks?.[0] ? await truckTimeSettings(trucks[0]).catch(() => null) : null, 'request-deletion email')
+  const ownerDueLabel = formatLongDate(localDateOfInstant(dueAt, ownerTime.timeZone), ownerTime)
   const t = translatorFor(locale, 'emailAccount.deletionScheduled')
   const strong = (chunks: string) => `<strong>${chunks}</strong>`
   const truckList = (trucks ?? []).map(tr => tr.name).join(', ') || t('noTrucks')
   const ownerHtml = `
     <p>${t('received')}</p>
     <p>${t.markup('orderingStopped', { trucks: truckList, b: strong })} ${t('readable', { days: DELETION_WINDOW_DAYS })}</p>
-    <p>${t.markup('scheduled', { date: dueLabel, b: strong })}</p>
+    <p>${t.markup('scheduled', { date: ownerDueLabel, b: strong })}</p>
     <p>${t.markup('cannotCancel', { b: strong })}</p>
     <p>${t('kept')}</p>`
   for (const to of owners) await sendMail(to, t('subject'), ownerHtml)

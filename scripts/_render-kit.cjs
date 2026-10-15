@@ -19,8 +19,19 @@
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 
+// ── THE FROZEN CATALOGUE SWITCH (Language Phase 2, scripts/_lp2-frozen.cjs) ─────────────────────────────
+// HG_MESSAGES_FROZEN=<frozen en-GB.json> makes every bundle read "the AFTER code with the BEFORE words": each
+// `@/messages/ns/en-GB/<ns>.json` / `@/messages/en-GB.json` import resolves to the current catalogue with every key
+// the frozen file has set back to its frozen value, and the en-US ones to {}. HG_MESSAGES_SOURCE=1 resolves them
+// from the authored messages/*.json as they stand (what split-messages would generate). Off → the files on disk.
+// A plugin's onResolve sees the import BEFORE esbuild's `alias` option rewrites '@' (checked on esbuild's own
+// build), so these imports never reach the alias. Each switch state bundles into its own cache directory, and
+// HG_KIT_CACHE_SUFFIX separates runs that must not share one (language-phase-2's BEFORE / F / A captures).
+const LP2 = require('./_lp2-frozen.cjs')
+
 module.exports = function renderKit({ cacheTag }) {
-  const CACHE = path.join(REPO, 'node_modules/.cache', cacheTag)
+  const sw = LP2.mode()
+  const CACHE = path.join(REPO, 'node_modules/.cache', cacheTag + (sw ? (sw.mode === 'frozen' ? '-frozen' : '-source') : '') + (process.env.HG_KIT_CACHE_SUFFIX ? `-${process.env.HG_KIT_CACHE_SUFFIX}` : ''))
   fs.mkdirSync(CACHE, { recursive: true })
 
   // ── clock ──
@@ -101,6 +112,10 @@ export const redirect = () => { throw new Error('redirect') }`
     const plugin = {
       name: 'render-kit',
       setup(b) {
+        b.onResolve({ filter: /(^|\/)messages\/(ns\/)?en-(GB|US)(\/[A-Za-z0-9]+)?\.json$/ }, a => {
+          const abs = LP2.resolveMessages(a.path)
+          return abs ? { path: abs } : undefined
+        })
         b.onResolve({ filter: /^server-only$/ }, () => ({ path: 'server-only', namespace: 'stub' }))
         b.onResolve({ filter: /^next\/navigation$/ }, () => ({ path: 'nav', namespace: 'stub' }))
         b.onResolve({ filter: /^next\/(image|link)$/ }, a => ({ path: a.path, namespace: 'stub' }))

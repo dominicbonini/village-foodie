@@ -9,9 +9,18 @@
 //     answered for London is how a US truck would have got the wrong "today" every evening.
 //   • DISPLAY takes the whole TimeSettings: 24h/12h (`time_format`), d/m or m/d (`date_order`), the
 //     locale, and the week's first day. GB renders exactly what it always has — "18:30", "Fri 9 Oct",
-//     "09/10/2026"; a US truck gets "6:30pm", "Fri, Oct 9", "10/09/2026".
-//   • 🔴 ONE 12-HOUR STYLE: `clockOf` is the weekly post's own ("6pm", "6:30pm" — minutes only when not
-//     :00), moved here so the app and the poster cannot word a time two ways.
+//     "09/10/2026"; a US truck gets "6:30 PM", "Fri, Oct 9", "10/09/2026".
+//   • 🔴 ONE 12-HOUR FUNCTION, AND ITS STYLE FOLLOWS THE LOCALE'S CONVENTION (Language Phase 2, 15 October
+//     2026). `clockOf` is the only place a 12-hour time is written. With no locale, or any locale without
+//     its own rule, it writes the weekly post's style ("6pm", "6:30pm", "12am" — minutes only when not
+//     :00) exactly as before. en-US writes the US convention, "6:00 PM", "6:30 PM", "12:00 AM": always
+//     minutes, a space, upper-case AM/PM (Dominic's brief and docs/language-readiness-audit-report.md §4.4
+//     row 74) — "6pm" reads as British shorthand to a US customer. WHY A RULE TABLE, NOT Intl: Intl's
+//     en-US time puts a NARROW NO-BREAK SPACE (U+202F) before "PM" in newer ICU data and a plain space in
+//     older, so the same order would print differently on two devices (and a ticket printer folds U+202F
+//     to "?"). `CLOCK_12H_RULES` below holds each locale's form; a later language adds its own there.
+//     The weekly-post posters keep theirs: they have their own formatter (lib/weekly-post/format.ts
+//     `formatOneTime`) and never pass a locale here, so no poster changes.
 // Storage is untouched: times stay "HH:MM:SS", instants stay UTC.
 
 /** A truck's time, as the screens need it. From country_settings + trucks.timezone (lib/truck-time.ts). */
@@ -67,18 +76,28 @@ export function hhmm(time: string | null | undefined): string {
   return time?.slice(0, 5) ?? ''
 }
 
+/** A locale's own 12-hour form, by exact locale. A locale not listed gets the default (weekly-post) style. */
+const CLOCK_12H_RULES: Record<string, (h12: number, mm: string, pm: boolean) => string> = {
+  // US convention: "6:00 PM", "6:30 PM", "12:00 AM" — always minutes, an ASCII space, upper-case AM/PM.
+  'en-US': (h12, mm, pm) => `${h12}:${mm} ${pm ? 'PM' : 'AM'}`,
+}
+
 /**
- * One time in a style. 24h: "18:30". 12h: "6pm", and "6:30pm" when there are minutes — never "6:00pm";
- * midnight and noon are 12am / 12pm. ⚠️ The weekly post's style (lib/weekly-post/format.ts calls this).
+ * One time in a style. 24h: "18:30" (every locale). 12h, by the locale's convention (see the header):
+ * DEFAULT (no locale, en-GB, any locale without a rule) "6pm", and "6:30pm" when there are minutes — never
+ * "6:00pm"; midnight and noon are 12am / 12pm — the weekly post's style, byte-identical to before.
+ * en-US: "6:00 PM", "6:30 PM", "12:00 AM", "12:00 PM".
  */
-export function clockOf(t: string | null | undefined, style: TimeFormat): string {
+export function clockOf(t: string | null | undefined, style: TimeFormat, locale?: string | null): string {
   const m = /^(\d{1,2}):(\d{2})/.exec(String(t ?? '').trim())
   if (!m) return ''
   const h = Number(m[1]), mi = Number(m[2])
   if (h < 0 || h > 23 || mi < 0 || mi > 59) return ''
   if (style === '24h') return `${String(h).padStart(2, '0')}:${String(mi).padStart(2, '0')}`
-  const suffix = h < 12 ? 'am' : 'pm'
   const h12 = h % 12 || 12
+  const rule = locale ? CLOCK_12H_RULES[locale] : undefined
+  if (rule) return rule(h12, String(mi).padStart(2, '0'), h >= 12)
+  const suffix = h < 12 ? 'am' : 'pm'
   return mi === 0 ? `${h12}${suffix}` : `${h12}:${String(mi).padStart(2, '0')}${suffix}`
 }
 
@@ -86,18 +105,18 @@ export function clockOf(t: string | null | undefined, style: TimeFormat): string
 export function formatTime(time: string, ts: TimeSettings | null | undefined): string {
   const s = timeSettingsOr(ts, 'formatTime')
   if (s.timeFormat === '24h') return hhmm(time)
-  return clockOf(time, '12h') || hhmm(time)
+  return clockOf(time, '12h', s.locale) || hhmm(time)
 }
 
 /**
  * A slot string as stored or passed around ("18:30") for a screen, an email or a ticket. 24h: EXACTLY the
  * string given — these surfaces have always printed the value as it arrived, and a GB byte must not move.
- * 12h: the one 12-hour style ("6:30pm").
+ * 12h: `clockOf` in the truck's locale (US "6:30 PM").
  */
 export function formatSlot<T extends string | null | undefined>(slot: T, ts: TimeSettings | null | undefined): T | string {
   if (!slot) return slot
   const s = timeSettingsOr(ts, 'formatSlot')
-  return s.timeFormat === '24h' ? slot : (clockOf(slot, '12h') || slot)
+  return s.timeFormat === '24h' ? slot : (clockOf(slot, '12h', s.locale) || slot)
 }
 
 /**
@@ -277,11 +296,11 @@ export function formatInstant(instant: Date | string | number, ts: TimeSettings 
   return new Date(instant).toLocaleString(s.locale, { ...opts, timeZone: s.timeZone })
 }
 
-/** An instant's clock time in the truck's style: GB "15:20:00" (with seconds) / "15:20"; US "3:20pm". */
+/** An instant's clock time in the truck's style: GB "15:20:00" (with seconds) / "15:20"; US "3:20 PM". */
 export function formatInstantClock(instant: Date | string | number, ts: TimeSettings | null | undefined, withSeconds = false): string {
   const s = timeSettingsOr(ts, 'formatInstantClock')
   if (s.timeFormat === '24h') return withSeconds ? clockSecondsInTz(instant, s.timeZone) : clockOfInstantInTz(instant, s.timeZone)
-  return clockOf(clockOfInstantInTz(instant, s.timeZone), '12h')
+  return clockOf(clockOfInstantInTz(instant, s.timeZone), '12h', s.locale)
 }
 
 /** "09/10/2026" (d/m) or "10/09/2026" (m/d). `short` gives the two-digit year: "09/10/26". */
@@ -385,6 +404,43 @@ export function formatShortOrdinalDate(ymd: string, ts: TimeSettings | null | un
   const wd = weekdayName(ymd, s.locale, 'short')
   const mo = monthName(ymd, s.locale, 'short')
   return s.dateOrder === 'mdy' ? `${wd}, ${mo} ${ordinalDay(d)}` : `${wd} ${ordinalDay(d)} ${mo}`
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 LANGUAGE PHASE 2 (15 October 2026): THREE DATE SHAPES, SO NO SURFACE BUILDS ONE BY HAND
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+/**
+ * `formatYmd` whose SHORT MONTH is `monthName`'s English rule ("Sep"), never Intl's en-GB "Sept".
+ * 🔴 ONLY THE MONTH'S WORD IS REPLACED. The weekday, the day, the year, the separators and their order are
+ * exactly what Intl writes for these options in this engine (formatToParts joined is the formatted string),
+ * so against `formatYmd` the one difference anywhere in the year is September. Options without
+ * `month: 'short'` render exactly as `formatYmd` does. GB "Sat 5 Sep", US "Sat, Sep 5".
+ */
+export function formatYmdShortMonth(ymd: string, ts: TimeSettings | null | undefined, opts: Intl.DateTimeFormatOptions): string {
+  const s = timeSettingsOr(ts, 'formatYmdShortMonth')
+  if (opts.month !== 'short') return formatYmd(ymd, s, opts)
+  const [y, m, d] = ymd.split('-').map(Number)
+  const parts = new Intl.DateTimeFormat(s.locale, { ...opts, timeZone: 'UTC' }).formatToParts(new Date(Date.UTC(y, (m || 1) - 1, d || 1)))
+  return parts.map(p => (p.type === 'month' ? monthName(ymd, s.locale, 'short') : p.value)).join('')
+}
+
+/**
+ * "Sat 10 Oct" (d/m) or "Sat, Oct 10" (m/d) — the short day the pre-order labels write. Built from the
+ * one date-word path like `formatShortOrdinalDate` (no ordinal), so it reads the same on every engine: GB
+ * is byte-for-byte what lib/preorder.ts always wrote.
+ */
+export function formatShortDate(ymd: string, ts: TimeSettings | null | undefined): string {
+  const s = timeSettingsOr(ts, 'formatShortDate')
+  const d = Number(ymd.split('-')[2])
+  const wd = weekdayName(ymd, s.locale, 'short')
+  const mo = monthName(ymd, s.locale, 'short')
+  return s.dateOrder === 'mdy' ? `${wd}, ${mo} ${d}` : `${wd} ${d} ${mo}`
+}
+
+/** "27 October 2026" (GB) or "October 27, 2026" (US) — a whole date for an email or a settings line. */
+export function formatLongDate(ymd: string, ts: TimeSettings | null | undefined): string {
+  return formatYmd(ymd, timeSettingsOr(ts, 'formatLongDate'), { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 /** The week's first day as an index Monday=0 … Sunday=6 (the weekly post's convention). */

@@ -35,9 +35,11 @@
   "undo": "Undo",
   "contactTitle": "Tap for contact details",
   "conflictPayment": "PAYMENT NOT RECORDED — check before releasing",
-  "conflictStatus": "Last update didn't sync",
+  "conflictStatus": "Last update didn’t sync",
   "otherCategory": "Other",
   "deals": "Deals",
   "edit": "Edit",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "markPaidAndCollected": "Mark paid & collected",
+  "cashIcon": "💷"
 }

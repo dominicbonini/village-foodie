@@ -1,1 +1,5 @@
-{}
+{
+  "newOrder": {
+    "collection": "Pickup: {time}"
+  }
+}

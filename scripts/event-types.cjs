@@ -126,7 +126,11 @@ const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*
  * `kitchenModals.*`). A check that looked for an English sentence in the page now asserts BOTH halves:
  * (a) the message has EXACTLY that sentence, and (b) the page reads that key in the same place. `GB_MSG(path)` is
  * the en-GB text of a message, or undefined. */
-const GB_MESSAGES = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+/* ⚠️ RE-PINNED (Language Phase 2, docs/language-phase-2-report.md): Phase 2 Part 3 rewords en-GB on purpose (proven
+ * by scripts/language-phase-2.cjs). These checks prove where the dashboard's words WENT, so they read the catalogue
+ * as it stood before Phase 2: every current key at its 460ba55 text (scripts/_lp2-frozen.cjs), new keys as they are. */
+const LP2F = require('./_lp2-frozen.cjs')
+const GB_MESSAGES = LP2F.catalogues({ mode: 'frozen', file: LP2F.FROZEN_DEFAULT })['en-GB']
 const GB_MSG = (p) => p.split('.').reduce((o, k) => (o == null ? undefined : o[k]), GB_MESSAGES)
 
 function build(root, files, tag) {
@@ -2461,6 +2465,14 @@ head('5b · THE MODAL AND THE CARD')
     /* The five moved controls, the three inline offline expressions, the replaced mount and the
      * replaced state line — plus the structural closers they took with them. */
     const ALLOWED = [
+      /* ⚠️ LANGUAGE PHASE 2 (docs/language-phase-2-report.md — the kitchen US-words work): three lines whose WORDS moved
+       * into `dashboard` messages so the US can say them differently. Each is an edit, not a loss, and its replacement is
+       * asserted at the end of this check: the event bar's status reads `eventBar.status`, an order's status chip reads
+       * `orders.status`, and the capacity description and example read `settings.capacityDesc` / `settings.capacityExample`
+       * (which is why the import of KITCHEN_CAPACITY_DESC / _EXAMPLE left). */
+      /^import \{ KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs \} from '@\/lib\/kitchen-capacity'$/,
+      /^<span className=\{`text-xs font-medium \$\{EVENT_STATUS_TEXT_ON_DARK\[st\.tone\]\} flex-shrink-0`\}>\{st\.label\}<\/span>$/,
+      /^<span className=\{`text-xs font-bold px-1\.5 py-0\.5 rounded-full \$\{STATUS\[o\.status\]\?\.bg\|\|'bg-slate-100'\} \$\{STATUS\[o\.status\]\?\.text\|\|'text-slate-500'\}`\}>\{STATUS\[o\.status\]\?\.label\|\|o\.status\}<\/span>$/,
       /EventTypeDashboardControl/, /OFFLINE_PROTECTION_/, /OFFLINE_AUTO_REJECT_/, /offlineAutoRejectLabel/,
       /effectiveOfflineProtection=eventOfflineOverride/, /effectiveOfflineMode:OfflineProtectionMode=eventOfflineModeOverride/,
       /effectiveAutoRejectMins:number\|null=eventAutoRejectOverride/,
@@ -2716,6 +2728,10 @@ head('5b · THE MODAL AND THE CARD')
     }
     const phase1bWordsMoved = (line) => { const f = p1bFragments(line); return f.length > 0 && f.every(x => P1B_PIECES.some(pc => pc.includes(x))) }
     const unexplained = gone.filter(l => !ALLOWED.some(re => re.test(l)) && !phase1bWordsMoved(l))
+    // Language Phase 2's three moves (ALLOWED above), each present in its new form.
+    const lp2Moved = /tDash\('eventBar\.status',\s*\{\s*tone:\s*st\.tone\s*\}\)/.test(now) && /tDash\('orders\.status',\s*\{\s*status:\s*o\.status\s*\}\)/.test(now)
+      && /settings\.capacityDesc/.test(now) && /settings\.capacityExample/.test(now)
+    if (!lp2Moved) unexplained.push('(Language Phase 2: the status labels / capacity description are not read from `dashboard` messages)')
     if (unexplained.length) {
       console.log('      UNEXPLAINED LOSSES: ' + unexplained.length)
       for (const l of unexplained.slice(0, process.env.ET_SHOW_ALL ? 999 : 8)) console.log('        • ' + l.slice(0, process.env.ET_SHOW_ALL ? 400 : 100))

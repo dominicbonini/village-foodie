@@ -196,9 +196,13 @@ function wrapIndented(text: string, width: number, indent = '  '): string[] {
   return wrap(text, Math.max(1, width - indent.length)).map(w => indent + w)
 }
 
-/** Left label + right-aligned value on one line, filling `width`. */
+/** Left label + right-aligned value on one line, filling `width`.
+ *  🔴 RIGHT-ALIGN ALONE (`left` empty) NEEDS NO SEPARATING SPACE (Language Phase 2, 15 October 2026). The one-space
+ *  floor exists to keep a label and its value apart; with no label it pushed a value of EXACTLY the line's width one
+ *  column over the edge, and the printer wrapped its last character. US 12-hour times made that reachable: the 58mm
+ *  stacked header "COLLECT 12:00 AM" is exactly 16 double-width columns. Anything shorter than the line is unchanged. */
 function padBetween(left: string, right: string, width: number): string {
-  const gap = Math.max(1, width - left.length - right.length)
+  const gap = left ? Math.max(1, width - left.length - right.length) : Math.max(0, width - right.length)
   return left + ' '.repeat(gap) + right
 }
 

@@ -549,14 +549,15 @@ export async function GET(
         deadlineValue: (truck as any).preorder_deadline_value, pastAction: (truck as any).preorder_past_action },
       preorderEventDate as string, preorderEventStartMins as number,
     )
-    if (clock) preorderBeforeLabel = formatPreorderLabel('before', clock.mins, clock.date, preorderEventDate as string)
+    // Language Phase 2: in the truck's settings — GB "Pre-order by 16:30, Sat 10 Oct", US "Pre-order by 4:30 PM, Sat, Oct 10".
+    if (clock) preorderBeforeLabel = formatPreorderLabel('before', clock.mins, clock.date, preorderEventDate as string, truckTime)
   }
   // The post-cutoff force-pending string is config-independent (the helper ignores mins/date for it).
-  const preorderClosedLabel = formatPreorderLabel('closed_pending', 0, '', '')
+  const preorderClosedLabel = formatPreorderLabel('closed_pending', 0, '', '', truckTime)
   // OPEN-WINDOW (V8.3): "Pre-orders open Ddd D Mon" — the truck-level open rule, shared like the deadline.
   // null for 'on_confirm'/unset (open as soon as confirmed → no future-open label).
   const preorderOpenLabel = preorderActive
-    ? formatPreorderOpenLabel((truck as any).preorder_open_rule, preorderEventDate as string)
+    ? formatPreorderOpenLabel((truck as any).preorder_open_rule, preorderEventDate as string, truckTime)
     : null
 
   // ── Customer stock countdown: CATEGORY leg ──────────────────────────────────────────────────────

@@ -1,1 +1,5 @@
-{}
+{
+  "orderingOffBody": "This event isn’t taking orders online. Please order at the window.",
+  "replacedBody": "This link no longer works — {truck} has replaced it. Ask the organizer for the new link or QR code.",
+  "unknownBody": "This link doesn’t work. Check it with the organizer, or scan the QR code again."
+}

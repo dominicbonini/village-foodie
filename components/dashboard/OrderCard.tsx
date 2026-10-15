@@ -15,7 +15,7 @@ import { completionLabel } from '@/lib/order-completion-label'
 import { formatMajorOrBare, formatMinorOrBare, editableAmount, orderMoney, currencySymbolOrBare } from '@/lib/money-format'
 import { MoneyProvider, useMoney } from '@/components/MoneyContext'
 import { timeSettingsOr, formatInstantClock } from '@/lib/time-utils'
-import { useT } from '@/lib/i18n/use-t'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/orderCard'
 
 export type ViewMode = 'solo' | 'window' | 'cook'
@@ -291,6 +291,8 @@ export function OrderCard({
   // Cards always show their content — the collapse/triangle was removed (it only made the box look empty).
   const expanded = true
   const t = useT('orderCard')
+  // Language Phase 2: completionLabel reads its words (messages `orderCard`) in the truck's locale.
+  const locale = useAppLocale()
 
   /** Inline "Remove payment?" confirm, revealed by tapping the paid chip. Local and transient — it
    *  auto-clears whenever the order's payment state changes (see the effect below). */
@@ -496,7 +498,7 @@ export function OrderCard({
       if (takesCash) {
         return (
           <>
-            <Btn label={`💷 ${t('cashAndCollected')}`} colour="money" loading={isLoading('collected_cash')}
+            <Btn label={`${t('cashIcon')} ${t('cashAndCollected')}`} colour="money" loading={isLoading('collected_cash')}
               onClick={() => onAction('collected_cash', order.order_key)} />
             <Btn label={`💳 ${t('cardAndCollected')}`} colour="money" loading={isLoading('collected_card')}
               onClick={() => onAction('collected_card', order.order_key)} />
@@ -509,7 +511,7 @@ export function OrderCard({
       // ⚠️ THE CASH/CARD PAIR ABOVE NEEDS NO FLAG: `collected_cash` / `collected_card` say it in their
       // own names, and the handler tests those directly.
       // The CASH PAIR above is decided before this line; from here the label is the shared one.
-      return <Btn label={completionLabel({ paid: effectivePaid, heldAuthorisation, completionPresses, partPaid: effectivePartPaid, balanceLabel: money(balance.balanceMinor) })}
+      return <Btn label={completionLabel({ paid: effectivePaid, heldAuthorisation, completionPresses, partPaid: effectivePartPaid, balanceLabel: money(balance.balanceMinor), locale })}
         colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key, { booksPayment: true })} />
     }
     // ORANGE — a MONEY action, in the page's own brand colour. GREEN means a KITCHEN state advancing
@@ -536,7 +538,7 @@ export function OrderCard({
     if (takesCash) {
       return (
         <>
-          <Btn label={`💷 ${t('cash')}`} colour="money" loading={isLoading('mark_paid_cash')}
+          <Btn label={`${t('cashIcon')} ${t('cash')}`} colour="money" loading={isLoading('mark_paid_cash')}
             onClick={() => onAction('mark_paid_cash', order.order_key)} />
           <Btn label={`💳 ${t('card')}`} colour="money" loading={isLoading('mark_paid_card')}
             onClick={() => onAction('mark_paid_card', order.order_key)} />
@@ -787,7 +789,7 @@ export function OrderCard({
       {/* 🔴 ONE EXPRESSION, IN lib/order-completion-label. This branch used to be written out here AND in
           completionBtn, with a comment saying the two would drift; the demo introduction now names the
           same button, which would have made a third copy. Same order, same strings. */}
-      {completionLabel({ paid: effectivePaid, heldAuthorisation, completionPresses, partPaid: effectivePartPaid, balanceLabel: money(balance.balanceMinor) })}
+      {completionLabel({ paid: effectivePaid, heldAuthorisation, completionPresses, partPaid: effectivePartPaid, balanceLabel: money(balance.balanceMinor), locale })}
     </button>
   )
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})

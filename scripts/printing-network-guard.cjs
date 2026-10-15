@@ -44,7 +44,8 @@ console.log('\n── decideNetPrinting: every branch ────────�
   r = d({ ...base, vanId: null }); check(r.state === 'unbound', "device not bound to a van → 'unbound'")
   // Language Phase 1b (docs/language-phase-1b-report.md): the guard's words are messages — printing.say.guard.<state> and
   // printing.say.guardMove (they were NET_GUARD_COPY / NET_GUARD_MOVE_BUTTON in lib/printing/networkGuard.ts).
-  check(SAY.guard.other === 'Printing is on another device. Move printing to this device?' && SAY.guard.unknown === "Can't check which device is printing right now.", 'the two required sentences, verbatim')
+  // ⚠️ RE-PINNED (Language Phase 2, Part 3 — the wrong-English fixes, scripts/fixtures/language-phase-2-gb-named.json): typographic apostrophe.
+  check(SAY.guard.other === 'Printing is on another device. Move printing to this device?' && SAY.guard.unknown === "Can’t check which device is printing right now.", 'the two required sentences, verbatim')
   check(SAY.guardMove === 'Move printing to this device', 'the button label')
 }
 console.log('\n── cached claim: unreadable → the LAST KNOWN answer, never a new one ───────────────────')
@@ -69,7 +70,7 @@ console.log('\n── the route (source-level): validation, auth split, probed r
   check(/status: 503/.test(r) && /status: 401/.test(r), 'verifyToken keeps the 503 (cannot check) / 401 (refused) split')
   check(/action !== 'claim' && action !== 'release' && action !== 'set_address'/.test(r), 'POST action allow-list')
   // Language Phase 1b: the refusal is the kitchen code device_id_required — its words unchanged.
-  check((r.match(/'device_id_required'/g) || []).length >= 2 && JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).errorsKitchen.device_id_required === 'device_id required', 'device_id required on GET and POST')
+  check((r.match(/'device_id_required'/g) || []).length >= 2 && JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).errorsKitchen.device_id_required === 'Something went wrong — refresh the page and try again.', 'device_id required on GET and POST (its words: plain English since Language Phase 2 Part 3, was the raw "device_id required")')
   // Language Phase 1b: the route answers with the help line as the kitchen code net_address_invalid — the same words.
   const MSG = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
   check(/parseNetAddress\(body\.address\)/.test(r) && /'net_address_invalid'/.test(r) && MSG.errorsKitchen.net_address_invalid === MSG.printing.say.addressHelp, 'set_address validates through parseNetAddress and answers with the help line')
@@ -125,7 +126,8 @@ console.log('\n── the migration (NOT applied): nullable, additive, reloads t
   const st = await G.resolveNetGuard('tok', 'me')
   check(st === 'pin', `resolveNetGuard → '${st}'`)
   check(posts.length === 0, `NO claim was attempted (${posts.length} POSTs)`)
-  check(SAY.guard.pin === "Wired printing isn't available on dashboards with a PIN yet.", `the one sentence: "${SAY.guard.pin}"`)
+  // ⚠️ RE-PINNED (Language Phase 2, Part 3 — the wrong-English fixes, scripts/fixtures/language-phase-2-gb-named.json): typographic apostrophe.
+  check(SAY.guard.pin === "Wired printing isn’t available on dashboards with a PIN yet.", `the one sentence: "${SAY.guard.pin}"`)
 
   // A 401 WITHOUT requiresPin is a different thing (bad token) and must NOT read as 'pin'.
   global.fetch = async () => ({ ok: false, status: 401, json: async () => ({ error: 'Unauthorised', requiresPin: false }) })

@@ -1,1 +1,14 @@
-{}
+{
+  "say": {
+    "guard": {
+      "unbound": "This device isn’t set to a truck yet, so wired printing isn’t available."
+    }
+  },
+  "card": {
+    "noneRecognised": "No printers recognized yet. Everything nearby is listed below — if your printer is there, tap it and HatchGrab will check whether it can print.",
+    "summaryLead": "Print <b>{lead} min</b> before pickup · {paper}mm paper",
+    "modeLead": "A set time before pickup",
+    "leadLabel": "Minutes before the pickup time",
+    "modeOnConfirmedHint": "An advance pre-order prints when you accept it, which may be hours before the pickup time. Orders you have not accepted yet never print."
+  }
+}
