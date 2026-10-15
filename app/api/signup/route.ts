@@ -20,6 +20,12 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { signupRatelimit, signupEmailRatelimit } from '@/lib/ratelimit'
 import { sendSignupVerificationEmail, firstNameFrom } from '@/lib/email-signup'
 import { isDemoIdentifier } from '@/lib/demo'
+// Language Phase 1c: a refusal of ours is `{ ok: false, error, …, code, params }` (lib/i18n/onboarding-errors.ts).
+// Signup asks for no country, so its words are en-GB. ⚠️ Supabase's own message (a refused createUser) is passed on
+// as it came, without a code.
+import { onboardingErrorBody, type OnboardingErrorCode, type OnboardingErrorParams } from '@/lib/i18n/onboarding-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { localeForTruck } from '@/lib/i18n/server-locale'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,9 +40,14 @@ const TERMS_VERSION = 'holding-2026-07-23'
 const VERIFY_TTL_DAYS = 30
 const MIN_PASSWORD = 8
 
+/** `{ ok: false, error, …extra, code, params }` with the given status. */
+function refuse(code: OnboardingErrorCode, status: number, params: OnboardingErrorParams = {}, extra?: Record<string, unknown>) {
+  return NextResponse.json({ ok: false, ...onboardingErrorBody(DEFAULT_LOCALE, code, params, extra) }, { status })
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null)
-  if (!body) return NextResponse.json({ ok: false, error: 'Bad request' }, { status: 400 })
+  if (!body) return refuse('bad_request', 400)
 
   const email = String(body.email ?? '').trim().toLowerCase()
   const password = String(body.password ?? '')
@@ -56,10 +67,10 @@ export async function POST(req: NextRequest) {
   const lastName = String(body.last_name ?? '').trim().slice(0, 80) || null
 
   if (!email.includes('@') || email.length > 254) {
-    return NextResponse.json({ ok: false, error: 'Enter a valid email address.' }, { status: 400 })
+    return refuse('email_invalid', 400)
   }
   if (password.length < MIN_PASSWORD) {
-    return NextResponse.json({ ok: false, error: `Password must be at least ${MIN_PASSWORD} characters.` }, { status: 400 })
+    return refuse('password_too_short', 400, { min: MIN_PASSWORD })
   }
 
   // ── GATE ────────────────────────────────────────────────────────────────────────────────────────
@@ -70,7 +81,7 @@ export async function POST(req: NextRequest) {
       ? await supabase.from('operators').select('is_admin').eq('auth_user_id', user.id).maybeSingle()
       : { data: null }
     if (!caller?.is_admin) {
-      return NextResponse.json({ ok: false, error: 'Sign-up isn’t open yet.' }, { status: 403 })
+      return refuse('signup_closed', 403)
     }
   }
 
@@ -86,8 +97,7 @@ export async function POST(req: NextRequest) {
       signupEmailRatelimit.limit(`email:${email}`),
     ])
     if (!byIp.success || !byEmail.success) {
-      return NextResponse.json(
-        { ok: false, error: 'Too many attempts just now — please try again shortly.' }, { status: 429 })
+      return refuse('too_many_attempts', 429)
     }
   } catch { /* limiter unavailable → allow */ }
 
@@ -104,16 +114,16 @@ export async function POST(req: NextRequest) {
   })
 
   if (authError || !authData?.user) {
-    const msg = authError?.message ?? 'Could not create the account.'
+    // Supabase's own message, when it gave one — passed on as it came. Without one, our sentence (with a code).
+    const msg = authError?.message
     // Existing account: we tell them plainly. This leaks that the address is registered — accepted
     // deliberately (near-universal in B2B signup), because the alternative punishes the far commoner case
     // of someone who forgot they already have an account.
-    if (/already|registered|exists/i.test(msg)) {
-      return NextResponse.json(
-        { ok: false, error: 'There’s already an account with that email — sign in instead.', existing: true },
-        { status: 409 })
+    if (msg != null && /already|registered|exists/i.test(msg)) {
+      return refuse('account_exists', 409, {}, { existing: true })
     }
-    return NextResponse.json({ ok: false, error: msg }, { status: 400 })
+    if (msg != null) return NextResponse.json({ ok: false, error: msg }, { status: 400 })
+    return refuse('account_create_failed', 400)
   }
 
   const authUserId = authData.user.id
@@ -152,7 +162,7 @@ export async function POST(req: NextRequest) {
       console.error(`[signup] ORPHAN AUTH USER ${authUserId} — operators insert failed (${opError?.message}) ` +
         `and the compensating delete also failed (${undoError.message}). post-login will repair it.`)
     }
-    return NextResponse.json({ ok: false, error: 'Could not finish creating your account — please try again.' }, { status: 500 })
+    return refuse('account_finish_failed', 500)
   }
 
   // ── J2: RECORD THE PROMO CODE — A SEPARATE, BEST-EFFORT WRITE ───────────────────────────────────
@@ -183,11 +193,15 @@ export async function POST(req: NextRequest) {
   // truck, and this is the ONLY place a name exists at signup. No truck is created here (see the
   // header) — so unless the account came from a demo there is nothing to name, and the copy falls back.
   let demoTruckName: string | null = null
+  // Language Phase 1c: the verification email is written in the demo truck's language when the account came from
+  // one; otherwise the locale is left out and lib/email-signup.ts writes it in en-GB.
+  let demoLocale: string | undefined
   if (demoToken && isDemoIdentifier(demoToken)) {
     const { data: demoTruck } = await supabase
-      .from('trucks').select('id, name').eq('dashboard_token', demoToken).maybeSingle()
+      .from('trucks').select('id, name, country').eq('dashboard_token', demoToken).maybeSingle()
     if (demoTruck) {
       demoTruckName = (demoTruck.name ?? '').trim() || null
+      demoLocale = await localeForTruck(demoTruck)
       await supabase.from('demo_sessions')
         .update({ claimed_by_operator_id: operator.id }).eq('truck_id', demoTruck.id)
     }
@@ -225,6 +239,7 @@ export async function POST(req: NextRequest) {
       firstName: firstName ?? firstNameFrom(operatorName),
       truckName: demoTruckName,
       verifyUrl: link,
+      ...(demoLocale ? { locale: demoLocale } : {}),
     })
   }
 

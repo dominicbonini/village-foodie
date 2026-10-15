@@ -1390,7 +1390,11 @@
     "noLinkTitle": "Your customer order link",
     "noLinkBody": "Your ordering page link is in the menu, top right.",
     "asLive": "The ordering and kitchen flow is exactly as it runs live.",
-    "startExploring": "Start exploring"
+    "startExploring": "Start exploring",
+    "signupOffer": {
+      "heading": "Sign up for your free month now",
+      "sub": "The clock doesn’t start until you decide to go live."
+    }
   },
   "userMenu": {
     "menuLabel": "User menu",
@@ -1615,6 +1619,491 @@
       "payDirectLink": "You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager rather than in HatchGrab. Add or update a card there and replies start again on their own:",
       "button": "Open WhatsApp Manager",
       "settings": "Your HatchGrab settings: <link>{url}</link>"
+    }
+  },
+  "setup": {
+    "steps": {
+      "based": "Where you’re based",
+      "identity": "Your truck",
+      "menu": "Your menu",
+      "event": "First event"
+    },
+    "stepItem": "{number}. {label}",
+    "settingUp": "Setting up",
+    "loading": "Loading",
+    "loadingCountries": "Loading…",
+    "verify": {
+      "ok": "Email confirmed — thank you.",
+      "expired": "That confirmation link has expired. Get in touch and we'll sort it before you go live.",
+      "invalid": "That confirmation link didn't work. Get in touch and we'll sort it before you go live."
+    },
+    "identity": {
+      "heading": "What's your truck called?",
+      "intro": "This is the name customers see. Nothing goes public until you choose to go live.",
+      "nameLabel": "Truck name",
+      "namePlaceholder": "Bob's Burgers",
+      "phoneLabel": "Phone",
+      "whatsappTick": "This number is on WhatsApp",
+      "phoneHelp": "Customers see this on their order confirmation so they can ask about an order. The tick decides whether that reads “Call us” or “WhatsApp us”. You can change both in Settings."
+    },
+    "phoneRequired": "Add a phone number — customers and we both use it to reach you.",
+    "createFailed": "Could not create your truck.",
+    "unreachable": "Couldn’t reach us just now — please try again.",
+    "back": "Back",
+    "creating": "Creating your truck…",
+    "continue": "Continue"
+  },
+  "whereBased": {
+    "countriesFailed": "We couldn’t load the list of countries. Try again in a moment."
+  },
+  "cuisinePicker": {
+    "choose": "Choose a cuisine…",
+    "other": "Other…",
+    "otherPlaceholder": "Tell us your cuisine",
+    "addAnother": "+ Choose another",
+    "remove": "Remove {label}"
+  },
+  "priceControls": {
+    "change": "{label} — change",
+    "useRule": "{label} — use the rule instead",
+    "typePrice": "{label} — type a price",
+    "backToRule": "Back to the rule",
+    "diffUp": "(+{amount})",
+    "diffDown": "(−{amount})"
+  },
+  "goLive": {
+    "allergensUnanswered": {
+      "title": "Choose how you show allergen info",
+      "detail": "Until you choose, customers see none of your dishes — the menu protects itself by hiding anything whose allergens are unconfirmed, and right now that is everything.",
+      "where": "Menu → Allergens"
+    },
+    "allergensCardMissing": {
+      "title": "Add your allergen card",
+      "detail": "You have chosen to show an allergen card, but none is saved — so customers would be told allergen info is available and then find nothing.",
+      "where": "Menu → Allergens"
+    },
+    "allergensItemsUnverified": {
+      "title": "{n, plural, one {Confirm allergens on {count} dish} other {Confirm allergens on {count} dishes}}",
+      "detail": "{n, plural, other {{unverified} of your {total} dishes are hidden from customers until you confirm their allergens. A dish shown without confirmed allergens reads as \"contains none\", so the menu hides it rather than risk that.}}",
+      "where": "Menu → Allergens"
+    },
+    "noVan": {
+      "title": "Add a van",
+      "detail": "Events run against a van — without one there is nothing to take orders through.",
+      "where": "Settings → Vans"
+    },
+    "kitchenCapacityUnset": {
+      "title": "Set your kitchen capacity",
+      "detail": "No capacity is set for {vans}. Without it we will keep promising customers collection times your kitchen has no way to hit.",
+      "where": "Menu → Kitchen capacity",
+      "unnamedVan": "unnamed van"
+    },
+    "noPrepBearingCategory": {
+      "title": "Tell us how long your food takes",
+      "detail": "{categories, select, none {You have no menu categories yet, so we have no way to work out how long an order takes.} other {None of your categories has a cooking time set, so every order looks instant to us. We would keep giving customers collection times your kitchen has no chance of hitting, and the busier you get the further out they would be.}}",
+      "where": "Menu → Categories → Kitchen setup"
+    },
+    "emailUnverified": {
+      "title": "Confirm your email address",
+      "detail": "We send order notifications and account recovery to this address. If it is wrong, you find out when something has already gone wrong.",
+      "where": "Check your inbox for our confirmation link"
+    },
+    "emailUnknown": {
+      "title": "Email confirmation status unknown",
+      "detail": "Email verification is not wired up yet (Phase 4 Step 2), so this cannot be evaluated. It blocks by design rather than passing silently.",
+      "where": "—"
+    }
+  },
+  "walkthrough": {
+    "intro": "Manage is where you set your truck up and see how it's doing. The Dashboard is where you take orders and run each event as it happens.",
+    "ariaLabel": "Dashboard walkthrough",
+    "step": "{current} of {total}",
+    "skip": "Skip",
+    "back": "← Back",
+    "next": "Next →",
+    "done": "Done",
+    "stops": {
+      "menu": {
+        "title": "Menu",
+        "body": "Your dishes, prices and allergens. Change anything here and it's live straight away."
+      },
+      "schedule": {
+        "title": "Schedule",
+        "body": "Where and when you're trading. Add an event here and customers can order for it."
+      },
+      "build": {
+        "title": "Deals and Extras & upsells",
+        "body": "Deals, upsells, customisations and your kitchen capacity live under Menu — have a play around."
+      },
+      "settings": {
+        "title": "Settings",
+        "body": "Your truck's details and how customers pay."
+      },
+      "billing": {
+        "title": "Billing",
+        "body": "Where your plan, billing and feature information lives."
+      }
+    }
+  },
+  "auth": {
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "you@example.com",
+      "passwordHint": "At least 8 characters"
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Your free month doesn't start until you go live.",
+      "emailPlaceholder": "you@yourtruck.co.uk",
+      "codeLabel": "Have a code? <optional>(optional)</optional>",
+      "codePlaceholder": "Enter it here",
+      "marketing": "Email me occasional tips and product news. Nothing to do with your orders — you can stop any time.",
+      "signIn": "Sign in",
+      "submit": "Create my account",
+      "submitting": "Creating your account…",
+      "consent": "By creating an account you agree to our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>. No card needed. Nothing goes public until you say so.",
+      "haveAccount": "Already have an account? Sign in",
+      "errorFallback": "Could not create your account.",
+      "errorOffline": "Couldn’t reach us just now — please try again."
+    },
+    "login": {
+      "title": "Sign in to your kitchen",
+      "dashboardOf": "{brand} operator dashboard",
+      "resetSuccess": "Password updated successfully. Please sign in.",
+      "emailChanged": "Email address updated. Please sign in with your new email address.",
+      "errorFallback": "Incorrect email or password. Please try again.",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "forgot": "Forgot your password?"
+    },
+    "forgot": {
+      "sentTitle": "Check your email",
+      "sentBody": "If an account exists with that email address, you'll receive a reset link shortly. Check your spam folder if it doesn't arrive within a few minutes.",
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we'll send a reset link",
+      "submit": "Send reset link",
+      "sending": "Sending...",
+      "back": "Back to sign in"
+    },
+    "reset": {
+      "invalidTitle": "Invalid reset link",
+      "invalidBody": "This link is invalid or has expired.",
+      "requestNew": "Request a new reset link",
+      "mismatch": "Passwords do not match",
+      "tooShort": "Password must be at least 8 characters",
+      "errorFallback": "Something went wrong. Please try again.",
+      "titleFirstLogin": "Set your password",
+      "titleReset": "Choose a new password",
+      "subtitleFirstLogin": "Choose a password to secure your account",
+      "subtitleReset": "Your new password must be at least 8 characters",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "confirmPlaceholder": "Repeat your password",
+      "submit": "Set password",
+      "saving": "Saving..."
+    },
+    "verifyEmail": {
+      "goToLogin": "Go to login",
+      "failedTitle": "Verification failed",
+      "invalidTitle": "Invalid or expired link",
+      "invalidBody": "This verification link is invalid or has already expired.",
+      "verifiedTitle": "Already verified",
+      "verifiedBody": "This email address has already been verified.",
+      "expiredTitle": "Link expired",
+      "expiredBody": "This verification link has expired. Request a new one from your profile settings.",
+      "accountNotFound": "Account not found. Please contact support.",
+      "emailTaken": "This email address is already associated with another account. Please use a different email address.",
+      "updateFailed": "Failed to update email. Please try again.",
+      "loginUpdateFailed": "Failed to update login credentials. Your email has not been changed.",
+      "successTitle": "Email address updated",
+      "successBody": "Your email has been changed to <b>{email}</b>. Signing you out…"
+    }
+  },
+  "emailSignup": {
+    "greeting": "{hasName, select, yes {Hi {name},} other {Hi there,}}",
+    "signoffName": "Dominic",
+    "signoffRole": "Founder, HatchGrab",
+    "verify": {
+      "subject": "Confirm your email address",
+      "thanks": "{hasTruck, select, yes {Thanks for setting up {truck} on HatchGrab.} other {Thanks for setting up your truck on HatchGrab.}}",
+      "button": "Confirm my email address",
+      "buttonText": "Confirm my email address: {url}",
+      "why": "This is the address you'll log in with, and where order alerts go — so it's worth doing now.",
+      "next": "Once it's confirmed I'll send you everything you need to get going.",
+      "carryOn": "You can carry on setting up in the meantime.",
+      "stuck": "Stuck on anything? Just reply to this — I answer these myself.",
+      "fallbackLink": "If the button doesn't work, paste this in: {url}"
+    },
+    "welcome": {
+      "subject": "{hasName, select, yes {Welcome to HatchGrab, {name}} other {Welcome to HatchGrab}}",
+      "intro": "{hasTruck, select, yes {I'm really pleased to welcome {truck} to HatchGrab.} other {I'm really pleased to welcome your truck to HatchGrab.}}",
+      "setup": "If you haven't already, setting up is straightforward and takes about fifteen minutes.",
+      "button": "Open your dashboard",
+      "bookmark": "Worth bookmarking. It works on any device.",
+      "stuck": "Just reply to this if you get stuck — I answer these myself.",
+      "lookingForward": "{hasTruck, select, yes {Looking forward to seeing {truck} trading.} other {Looking forward to seeing your truck trading.}}"
+    }
+  },
+  "errorsOnboarding": {
+    "not_signed_in": "Not signed in",
+    "no_operator_record": "No operator record",
+    "bad_request": "Bad request",
+    "truck_name_missing": "Give your truck a name.",
+    "contact_phone_required": "A contact phone number is required.",
+    "phone_invalid": "{withName, select, yes {Enter a valid {name} phone number} other {Enter a valid phone number}}{withExample, select, yes { (e.g. {example})} other {}}.",
+    "truck_create_failed": "Could not create your truck.",
+    "unknown_step": "Unknown step",
+    "unknown_action": "Unknown action",
+    "countries_unavailable": "We couldn’t load the list of countries. Try again in a moment.",
+    "email_invalid": "Enter a valid email address.",
+    "password_too_short": "Password must be at least {min, plural, one {# character} other {# characters}}.",
+    "signup_closed": "Sign-up isn’t open yet.",
+    "too_many_attempts": "Too many attempts just now — please try again shortly.",
+    "account_exists": "There’s already an account with that email — sign in instead.",
+    "account_create_failed": "Could not create the account.",
+    "account_finish_failed": "Could not finish creating your account — please try again.",
+    "unauthorised": "Unauthorised",
+    "unauthenticated": "Unauthenticated",
+    "change_id_required": "changeId required",
+    "operator_not_found": "Operator not found",
+    "cancel_change_failed": "Failed to cancel change",
+    "email_required": "Email required",
+    "email_already_current": "That is already your current email",
+    "email_already_registered": "This email is already registered on HatchGrab",
+    "change_request_failed": "Failed to create change request",
+    "verification_email_failed": "Failed to send verification email",
+    "verification_request_not_found": "Verification request not found",
+    "email_already_verified": "Email already verified",
+    "email_send_failed": "Failed to send email. Please try again.",
+    "reset_email_failed": "Failed to send reset email",
+    "token_and_password_required": "Token and password required",
+    "new_password_too_short": "Password must be at least {min, plural, one {# character} other {# characters}}",
+    "reset_link_invalid": "Invalid or expired reset link. Please request a new one.",
+    "reset_link_used": "This reset link has already been used. Please request a new one.",
+    "reset_link_expired": "This reset link has expired. Please request a new one.",
+    "account_not_found": "Account not found.",
+    "password_update_failed": "Failed to update password. Please try again.",
+    "no_fields_to_update": "No fields to update",
+    "upload_unreadable": "Could not read your upload — please try again.",
+    "file_too_big": "That file is too big (max {mb} MB). A normal photo of your menu is fine.",
+    "file_type_unsupported": "That file type isn’t supported — send a photo or a PDF of your menu.",
+    "text_too_long": "That’s a lot of text — please paste just the menu.",
+    "menu_missing": "Add a photo of your menu, or paste it in.",
+    "demo_rate_limited": "You’ve built a few demos already. Try again in a little while, or get in touch and we’ll help.",
+    "demo_build_failed": "Something went wrong building your demo. Please try again.",
+    "request_unreadable": "Could not read that.",
+    "email_not_valid": "That doesn’t look like an email address.",
+    "try_again_shortly": "Please try again shortly.",
+    "invalid_request_body": "Invalid request body",
+    "not_demo_session": "Not a demo session",
+    "demo_not_found": "Demo not found",
+    "not_demo_truck": "Not a demo truck",
+    "new_service_failed": "Could not start a new service",
+    "not_available": "Not available.",
+    "demo_save_failed": "We couldn’t save that just now — please try again.",
+    "deletion_view_owner_only": "Only the account owner can view this.",
+    "deletion_sign_in": "Sign in to request account deletion.",
+    "deletion_owner_only": "Only the account owner can request deletion.",
+    "confirm_mismatch": "Type DELETE to confirm.",
+    "partial_stamp": "Your deletion request was recorded, but we could not stop ordering on every truck. Contact support."
+  },
+  "emailAccount": {
+    "newEmail": {
+      "subject": "Verify your new HatchGrab email address",
+      "heading": "Verify your email address",
+      "button": "Verify email address"
+    },
+    "changeEmail": {
+      "requested": "You requested to change your HatchGrab email address to this address.",
+      "click": "Click the button below to verify. This link expires in 24 hours.",
+      "ignore": "If you didn't request this change, you can safely ignore this email.",
+      "stillActive": "Your current email address remains active."
+    },
+    "resendVerification": {
+      "requested": "You requested to change your HatchGrab email to this address.",
+      "click": "Click below to verify. This link expires in 24 hours.",
+      "ignore": "If you didn't request this, ignore this email.",
+      "stillActive": "Your current email remains active."
+    },
+    "passwordReset": {
+      "subject": "Reset your HatchGrab password",
+      "heading": "Reset your password",
+      "requested": "We received a request to reset the password for your HatchGrab account.",
+      "click": "Click the button below to choose a new password. This link expires in 1 hour.",
+      "button": "Reset password",
+      "ignore": "If you didn't request this, you can safely ignore this email.",
+      "unchanged": "Your password won't change until you click the link above."
+    },
+    "deletionScheduled": {
+      "subject": "Your HatchGrab account is scheduled for deletion",
+      "received": "We have received a request to delete this HatchGrab account.",
+      "orderingStopped": "<b>Online ordering has stopped immediately</b> on: {trucks}.",
+      "noTrucks": "(no trucks)",
+      "readable": "Your dashboard stays\n    available to read for the next {days, plural, other {# days}}.",
+      "scheduled": "The account is scheduled for deletion on <b>{date}</b>.",
+      "cannotCancel": "<b>This cannot be cancelled from inside the app.</b> If this was not you, or you have\n    changed your mind, reply to this email as soon as possible.",
+      "kept": "When the account is deleted we remove your personal details and your customers' details. We keep\n    anonymous accounting records, which we are legally required to retain."
+    }
+  },
+  "demoSaveEmail": {
+    "subject": "Your HatchGrab demo — here’s your link back",
+    "heading": "Your demo is saved",
+    "intro": "Here’s your link back to the demo with your menu in it. No login needed — just tap it.",
+    "button": "Open my demo",
+    "freshDay": "Each time you come back we’ll set up a fresh day’s trading so there’s something to play with.",
+    "deletion": "This is a demo, so we don’t keep it forever — we’ll delete it and the menu on\n                <b>{date}</b> ({days, plural, other {# days}}). If you sign up before\n                then, your menu comes with you.",
+    "notSent": "Saved, but we couldn’t send the email just now."
+  },
+  "demoGetStarted": {
+    "upload": {
+      "bannerButton": "Save my menu →",
+      "heading": "Set up your truck",
+      "sub": "Your menu carries straight over.",
+      "privacy": "We'll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
+    },
+    "sample": {
+      "bannerButton": "Set up my truck →",
+      "heading": "Set up your truck",
+      "sub": "You’ll upload your own menu next — takes a minute.",
+      "privacy": "We'll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
+    },
+    "saveOnly": {
+      "bannerButton": "Save my menu →",
+      "heading": "Save your demo",
+      "sub": "We’ll keep it for 14 days and email you a link straight back.",
+      "privacy": "We'll only use this to send your demo link — see our <link>privacy policy</link>."
+    },
+    "confirmationHeading": "You’re all set",
+    "postSaveButton": "Set up my truck →",
+    "enterSetupButton": "Set up my truck →",
+    "emailOnlyLink": "Just email me a link to come back to this demo",
+    "sendLinkButton": "Send me the link",
+    "savingButton": "Saving…",
+    "continueButton": "Continue →",
+    "createAccountButton": "Create my account →",
+    "retryButton": "Try again",
+    "backToDemoButton": "Back to the demo",
+    "savedStatus": "{hasDate, select, yes {✓ Saved — kept until {date}} other {✓ Saved}}",
+    "back": "Back",
+    "close": "Close",
+    "truckStepHeading": "About your truck",
+    "detailsStepHeading": "Finish setting up",
+    "stepper": {
+      "details": "Your details",
+      "menu": "Menu",
+      "allergens": "Allergens",
+      "kitchen": "Kitchen setup",
+      "schedule": "Schedule"
+    },
+    "confirmEmailed": "We've emailed you a link straight back to this demo — no login needed.",
+    "confirmKeepUntil": "We'll keep it until <b>{date}</b>. Your menu comes with you when you set up properly.",
+    "loading": "Loading…",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "truckName": "Truck name",
+    "truckNamePlaceholder": "e.g. The Village Kitchen",
+    "cuisine": "Cuisine",
+    "logoLabel": "Logo <opt>(optional)</opt>",
+    "logoPreviewAlt": "Logo preview",
+    "changeLogo": "Change logo",
+    "removeLogo": "Remove",
+    "uploadLogo": "📷 Upload logo",
+    "readyTitle": "Your account's ready",
+    "readyBody": "Now let's finish setting up your truck — your menu, allergens and kitchen.",
+    "hangTight": "Hang tight — setting everything up.",
+    "stage": {
+      "account": "Creating your account",
+      "truck": "Setting up your truck",
+      "menu": "Loading your menu"
+    },
+    "stageState": {
+      "done": "done",
+      "recognised": "you already have an account",
+      "failed": "failed",
+      "active": "in progress",
+      "pending": "pending"
+    },
+    "signIn": "Sign in",
+    "phone": "Phone",
+    "onWhatsapp": "This number is on WhatsApp",
+    "email": "Email",
+    "emailPlaceholder": "you@yourtruck.co.uk",
+    "settingUpAs": "Setting up as <b>{email}</b> <change>change</change>",
+    "password": "Password",
+    "passwordPlaceholder": "At least 8 characters",
+    "hidePassword": "Hide password",
+    "showPassword": "Show password",
+    "promoLabel": "Have a code? <opt>(optional)</opt>",
+    "promoPlaceholder": "Enter it here",
+    "agreeTerms": "I agree to the <terms>Terms</terms> and <privacy>Privacy Policy</privacy>.",
+    "freeMonth": "Setting up won't start your free month. That begins when you pick your first live event — whenever you're ready.",
+    "fieldError": {
+      "firstName": "Tell us your first name.",
+      "lastName": "And your last name.",
+      "truck": "Give your truck a name.",
+      "cuisine": "Tell us what you cook.",
+      "phoneMissing": "Add a phone number — customers and we both use it to reach you.",
+      "email": "Enter a valid email address.",
+      "password": "Password must be at least 8 characters.",
+      "terms": "Please accept the terms to continue."
+    },
+    "error": {
+      "saveFailed": "Couldn’t save that — try again.",
+      "savedNoEmail": "Saved — but we couldn’t email the link just now.",
+      "unreachable": "Couldn’t reach us just now — try again.",
+      "createAccountFailed": "Could not create your account.",
+      "truckCreateFailed": "Your account’s ready, but we couldn’t create your truck. Try again.",
+      "truckUnreachable": "Your account’s ready, but we couldn’t reach us to create your truck. Try again.",
+      "truckNoToken": "Your truck is set up, but we couldn’t open it just now. Try again."
+    }
+  },
+  "demoUpload": {
+    "steps": {
+      "reading": "Reading your menu…",
+      "found": "Found your items…",
+      "kitchen": "Setting up your kitchen…",
+      "page": "Building your ordering page…",
+      "almost": "Almost ready…"
+    },
+    "templateSteps": {
+      "truck": "Building your sample truck…",
+      "menu": "Setting up the menu…",
+      "kitchen": "Setting up the kitchen…",
+      "page": "Building the ordering page…",
+      "almost": "Almost ready…"
+    },
+    "dialogLabel": "Upload your menu",
+    "heading": "✨ Upload your menu",
+    "failedHeading": "We couldn’t read that menu",
+    "close": "Close",
+    "intro": "A photo of your menu board, a screenshot, a PDF, or paste it as text. Our AI reads it and builds you a working ordering page — your items, your prices — in under 60 seconds. No sign-up, no card.",
+    "failedIntro": "Sometimes a photo is too dark, too angled, or handwritten. That’s ours to handle, not something you did wrong. A few ways forward:",
+    "usually": "This usually takes under 60 seconds.",
+    "slow": "This is taking longer than usual — big menus sometimes do.",
+    "keepWaiting": "Keep waiting",
+    "sampleWhileYouWait": "Or look round with a sample menu while you wait",
+    "standIn": "This <b>won’t be your menu</b> — it’s a stand-in so you can see how it works.",
+    "seeSample": "See sample menu",
+    "tryAgain": "Try again",
+    "tryPhotoAgain": "Try this photo again",
+    "tryDifferent": "Try a different photo",
+    "uploadAnother": "← Upload another photo",
+    "orSample": "Or look round with a sample menu",
+    "orBuild": "Or we’ll build it for you",
+    "buildSent": "✓ Thanks — we’ve got it. We’ll email you.",
+    "buildBody": "Leave your email and a real person will put your menu in and send you the link.",
+    "emailPlaceholder": "you@yourtruck.co.uk",
+    "sending": "…",
+    "send": "Send",
+    "noPhoto": "Haven't got a menu photo to hand?",
+    "noPhotoBody": "Look round with a sample truck instead — you can upload yours any time.",
+    "build": "Build my demo →",
+    "nothingPublished": "Nothing is published — only you can see it.",
+    "error": {
+      "somethingWrong": "Something went wrong. Please try again.",
+      "serverUnreachable": "We couldn’t reach the server. Check your connection and try again.",
+      "sendFailed": "Couldn’t send that — try again."
     }
   }
 }

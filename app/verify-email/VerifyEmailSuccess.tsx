@@ -1,9 +1,14 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { I18nContext, useT } from '@/lib/i18n/use-t'
+import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/auth'
 
-export default function VerifyEmailSuccess({ newEmail }: { newEmail: string }) {
+// Language Phase 1c: the words are `auth.verifyEmail`, in the locale the page resolved on the server (the operator's
+// truck's, else en-GB). This route has no provider, so the locale is handed down and provided here.
+export default function VerifyEmailSuccess({ newEmail, locale }: { newEmail: string; locale?: AppLocale }) {
   useEffect(() => {
     const supabase = createSupabaseBrowserClient()
     supabase.auth.signOut().then(() => {
@@ -11,13 +16,23 @@ export default function VerifyEmailSuccess({ newEmail }: { newEmail: string }) {
     })
   }, [])
 
+  const i18n = useMemo(() => ({ locale: locale ?? DEFAULT_LOCALE, setLocale: () => {} }), [locale])
+  return (
+    <I18nContext.Provider value={i18n}>
+      <Updated newEmail={newEmail} />
+    </I18nContext.Provider>
+  )
+}
+
+function Updated({ newEmail }: { newEmail: string }) {
+  const t = useT('auth.verifyEmail')
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
         <div className="text-4xl mb-4">✅</div>
-        <p className="text-lg font-semibold text-slate-900">Email address updated</p>
+        <p className="text-lg font-semibold text-slate-900">{t('successTitle')}</p>
         <p className="text-sm text-slate-500 mt-2">
-          Your email has been changed to <strong>{newEmail}</strong>. Signing you out…
+          {t.rich('successBody', { email: newEmail, b: c => <strong>{c}</strong> })}
         </p>
       </div>
     </div>

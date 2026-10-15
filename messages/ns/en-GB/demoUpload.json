@@ -1,0 +1,48 @@
+{
+  "steps": {
+    "reading": "Reading your menu…",
+    "found": "Found your items…",
+    "kitchen": "Setting up your kitchen…",
+    "page": "Building your ordering page…",
+    "almost": "Almost ready…"
+  },
+  "templateSteps": {
+    "truck": "Building your sample truck…",
+    "menu": "Setting up the menu…",
+    "kitchen": "Setting up the kitchen…",
+    "page": "Building the ordering page…",
+    "almost": "Almost ready…"
+  },
+  "dialogLabel": "Upload your menu",
+  "heading": "✨ Upload your menu",
+  "failedHeading": "We couldn’t read that menu",
+  "close": "Close",
+  "intro": "A photo of your menu board, a screenshot, a PDF, or paste it as text. Our AI reads it and builds you a working ordering page — your items, your prices — in under 60 seconds. No sign-up, no card.",
+  "failedIntro": "Sometimes a photo is too dark, too angled, or handwritten. That’s ours to handle, not something you did wrong. A few ways forward:",
+  "usually": "This usually takes under 60 seconds.",
+  "slow": "This is taking longer than usual — big menus sometimes do.",
+  "keepWaiting": "Keep waiting",
+  "sampleWhileYouWait": "Or look round with a sample menu while you wait",
+  "standIn": "This <b>won’t be your menu</b> — it’s a stand-in so you can see how it works.",
+  "seeSample": "See sample menu",
+  "tryAgain": "Try again",
+  "tryPhotoAgain": "Try this photo again",
+  "tryDifferent": "Try a different photo",
+  "uploadAnother": "← Upload another photo",
+  "orSample": "Or look round with a sample menu",
+  "orBuild": "Or we’ll build it for you",
+  "buildSent": "✓ Thanks — we’ve got it. We’ll email you.",
+  "buildBody": "Leave your email and a real person will put your menu in and send you the link.",
+  "emailPlaceholder": "you@yourtruck.co.uk",
+  "sending": "…",
+  "send": "Send",
+  "noPhoto": "Haven't got a menu photo to hand?",
+  "noPhotoBody": "Look round with a sample truck instead — you can upload yours any time.",
+  "build": "Build my demo →",
+  "nothingPublished": "Nothing is published — only you can see it.",
+  "error": {
+    "somethingWrong": "Something went wrong. Please try again.",
+    "serverUnreachable": "We couldn’t reach the server. Check your connection and try again.",
+    "sendFailed": "Couldn’t send that — try again."
+  }
+}

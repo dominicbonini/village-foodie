@@ -13,21 +13,19 @@
 // ⚠️ ONLY OUR OWN SENTENCES GET A CODE. A route that passes on text it did not write — a database error's message,
 // an exception's, Stripe's — sends it unchanged and without a code: there is no message to look up for it.
 import type enGB from '@/messages/en-GB.json'
-import { translatorFor } from './translator'
+import { errorBody } from './error-body'
 import '@/lib/i18n/catalog/errorsKitchen'
 
 export type KitchenErrorCode = keyof (typeof enGB)['errorsKitchen']
 export type KitchenErrorParams = Record<string, string | number>
 
-type Translate = (code: KitchenErrorCode, params?: KitchenErrorParams) => string
-
-/** The JSON body of a kitchen-facing refusal, in the truck's locale (en-GB before the truck is known). */
+/** The JSON body of a kitchen-facing refusal. ⚠️ Since Phase 1c a wrapper over the one helper,
+ *  lib/i18n/error-body.ts — same arguments, same output. */
 export function kitchenErrorBody<X extends Record<string, unknown>>(
   locale: string | null | undefined,
   code: KitchenErrorCode,
   params: KitchenErrorParams = {},
   extra?: X,
 ): { error: string } & X & { code: KitchenErrorCode; params: KitchenErrorParams } {
-  const t = translatorFor(locale, 'errorsKitchen') as unknown as Translate
-  return { error: t(code, params), ...(extra ?? ({} as X)), code, params }
+  return errorBody('errorsKitchen', locale, code, params, extra)
 }

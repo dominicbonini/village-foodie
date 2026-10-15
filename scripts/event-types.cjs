@@ -2084,7 +2084,12 @@ head('5b · THE MODAL AND THE CARD')
    * ⚠️ `origin/main` IS THE BASELINE BECAUSE IT IS WHAT IS LIVE. Comparing against this branch's own
    * previous tip would only prove the card was removed, not that what replaced it is what operators
    * already use. */
-  const LIVE_REF = 'origin/main'
+  /* ⚠️ RE-PINNED 15 October 2026 (docs/language-phase-1c-report.md): this read `origin/main`, a MOVING ref. The push of
+   * 15 October made `origin/main` the Phase 1b code, whose dashboard reads these words from `dashboard.*` messages,
+   * so the live side stopped carrying the literal lines and five checks failed with nothing in this branch changed.
+   * PINNED to `f4bd277` — the commit that was live from 9 to 15 October, the file operators actually knew — which is
+   * what "the baseline is what is live" meant when this was written. The repo's rule: pin a commit, not a ref. */
+  const LIVE_REF = 'f4bd277'
   const liveDash = execFileSync('git', ['show', `${LIVE_REF}:app/dashboard/[token]/page.tsx`],
     { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
 

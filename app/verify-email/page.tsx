@@ -1,20 +1,42 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import VerifyEmailSuccess from './VerifyEmailSuccess'
+import { translatorFor } from '@/lib/i18n/translator'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/auth'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-function ErrorUI({ message }: { message: string }) {
+/** Language Phase 1c: the words on this page are the operator's truck's language (its country's locale) once the
+ *  link has named the operator — their oldest truck's country. Before that (no such link), or
+ *  with no truck or any failure reading it, en-GB (DEFAULT_LOCALE). Words only: it never decides anything else. */
+async function operatorLocale(operatorId: string): Promise<AppLocale> {
+  try {
+    const { data } = await supabase
+      .from('trucks')
+      .select('country')
+      .eq('operator_id', operatorId)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+    return await localeForTruck(data)
+  } catch {
+    return DEFAULT_LOCALE
+  }
+}
+
+function ErrorUI({ title, message, login }: { title: string; message: string; login: string }) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
         <div className="text-4xl mb-4">❌</div>
-        <p className="text-lg font-semibold text-slate-900">Verification failed</p>
+        <p className="text-lg font-semibold text-slate-900">{title}</p>
         <p className="text-sm text-slate-500 mt-2">{message}</p>
-        <a href="/login" className="mt-4 inline-block text-orange-600 underline text-sm">Go to login</a>
+        <a href="/login" className="mt-4 inline-block text-orange-600 underline text-sm">{login}</a>
       </div>
     </div>
   )
@@ -35,26 +57,31 @@ export default async function VerifyEmailPage({
     .maybeSingle()
 
   if (!change) {
+    const t = translatorFor(DEFAULT_LOCALE, 'auth.verifyEmail')
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
           <div className="text-4xl mb-4">❌</div>
-          <p className="text-lg font-semibold text-slate-900">Invalid or expired link</p>
-          <p className="text-sm text-slate-500 mt-2">This verification link is invalid or has already expired.</p>
-          <a href="/login" className="mt-4 inline-block text-orange-600 underline text-sm">Go to login</a>
+          <p className="text-lg font-semibold text-slate-900">{t('invalidTitle')}</p>
+          <p className="text-sm text-slate-500 mt-2">{t('invalidBody')}</p>
+          <a href="/login" className="mt-4 inline-block text-orange-600 underline text-sm">{t('goToLogin')}</a>
         </div>
       </div>
     )
   }
+
+  const locale = await operatorLocale(change.operator_id)
+  const t = translatorFor(locale, 'auth.verifyEmail')
+  const fail = (message: string) => <ErrorUI title={t('failedTitle')} message={message} login={t('goToLogin')} />
 
   if (change.verified_at) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
           <div className="text-4xl mb-4">✅</div>
-          <p className="text-lg font-semibold text-slate-900">Already verified</p>
-          <p className="text-sm text-slate-500 mt-2">This email address has already been verified.</p>
-          <a href="/login" className="mt-4 inline-block text-orange-600 underline text-sm">Go to login</a>
+          <p className="text-lg font-semibold text-slate-900">{t('verifiedTitle')}</p>
+          <p className="text-sm text-slate-500 mt-2">{t('verifiedBody')}</p>
+          <a href="/login" className="mt-4 inline-block text-orange-600 underline text-sm">{t('goToLogin')}</a>
         </div>
       </div>
     )
@@ -65,9 +92,9 @@ export default async function VerifyEmailPage({
       <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
           <div className="text-4xl mb-4">⏰</div>
-          <p className="text-lg font-semibold text-slate-900">Link expired</p>
-          <p className="text-sm text-slate-500 mt-2">This verification link has expired. Request a new one from your profile settings.</p>
-          <a href="/login" className="mt-4 inline-block text-orange-600 underline text-sm">Go to login</a>
+          <p className="text-lg font-semibold text-slate-900">{t('expiredTitle')}</p>
+          <p className="text-sm text-slate-500 mt-2">{t('expiredBody')}</p>
+          <a href="/login" className="mt-4 inline-block text-orange-600 underline text-sm">{t('goToLogin')}</a>
         </div>
       </div>
     )
@@ -80,7 +107,7 @@ export default async function VerifyEmailPage({
     .single()
 
   if (!operator?.auth_user_id) {
-    return <ErrorUI message="Account not found. Please contact support." />
+    return fail(t('accountNotFound'))
   }
 
   // Pre-flight: block if another auth user already owns the new email
@@ -89,9 +116,7 @@ export default async function VerifyEmailPage({
     u => u.email === change.new_email && u.id !== operator.auth_user_id
   )
   if (conflict) {
-    return (
-      <ErrorUI message="This email address is already associated with another account. Please use a different email address." />
-    )
+    return fail(t('emailTaken'))
   }
 
   // 1. Update operators.email
@@ -102,7 +127,7 @@ export default async function VerifyEmailPage({
 
   if (opError) {
     console.error('[verify-email] operators update failed:', opError)
-    return <ErrorUI message="Failed to update email. Please try again." />
+    return fail(t('updateFailed'))
   }
 
   // 2. Update auth.users.email
@@ -117,7 +142,7 @@ export default async function VerifyEmailPage({
       .from('operators')
       .update({ email: change.old_email })
       .eq('id', change.operator_id)
-    return <ErrorUI message="Failed to update login credentials. Your email has not been changed." />
+    return fail(t('loginUpdateFailed'))
   }
 
   // 3. Update truck_users.email (non-critical)
@@ -135,5 +160,5 @@ export default async function VerifyEmailPage({
     .update({ verified_at: new Date().toISOString() })
     .eq('id', change.id)
 
-  return <VerifyEmailSuccess newEmail={change.new_email} />
+  return <VerifyEmailSuccess newEmail={change.new_email} locale={locale} />
 }

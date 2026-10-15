@@ -84,6 +84,7 @@ for (const loc of locales) {
 const AREAS = [
   '_messages-parity-1a.cjs',   // Language Phase 1a — the customer-facing text (docs/language-phase-1a-report.md)
   '_messages-parity-1b.cjs',   // Language Phase 1b — the kitchen and operator text (docs/language-phase-1b-report.md)
+  '_messages-parity-1c.cjs',   // Language Phase 1c — the onboarding text (docs/language-phase-1c-report.md)
 ]
 if (AREAS.length) for (const a of AREAS) require(`./${a}`)({ t, head, msgs })
 

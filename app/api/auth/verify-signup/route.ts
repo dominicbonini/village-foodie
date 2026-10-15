@@ -14,6 +14,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendOperatorWelcomeEmail, firstNameFrom } from '@/lib/email-signup'
 import { resolveOperatorTruck } from '@/lib/resolve-operator-truck'
+import { localeForTruck } from '@/lib/i18n/server-locale'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -114,6 +115,8 @@ export async function GET(req: NextRequest) {
         // operator with no truck to /setup itself, so the destination is decided at click time against
         // live state rather than baked into an email that may be days old.
         manageUrl: `${base}/manage`,
+        // Language Phase 1c: the operator's truck's language when they have one; left out (en-GB) otherwise.
+        ...(truck ? { locale: await localeForTruck(truck) } : {}),
       })
     } catch (e) {
       console.error('[verify-signup] welcome email failed (verification still succeeded):', e)

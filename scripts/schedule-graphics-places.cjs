@@ -1383,9 +1383,14 @@ function runWiringSuite(lib) {
     const W = read('lib/walkthrough.ts')
     // `Walkthrough` DROPS any stop whose tabIds resolve to nothing, so a stale id here is a silently
     // missing step rather than an error.
-    return /tabIds: \['menu'\],\s*\n\s*title: 'Deals and Extras & upsells'/.test(W)
+    /* ⚠️ RE-PINNED 15 October 2026 (Language Phase 1c, docs/language-phase-1c-report.md): the stop's title and
+     * body moved into messages/en-GB.json `walkthrough.stops.build`, so the stop is found by its id and its
+     * words are read from the message file — the same three facts, asserted where they now live. */
+    const WB = JSON.parse(read('messages/en-GB.json')).walkthrough.stops.build
+    return /id: 'build',[\s\S]{0,800}?tabIds: \['menu'\],/.test(W)
+      && WB.title === 'Deals and Extras & upsells'
       && !/tabIds: \['deals', 'modifiers'\]/.test(W)
-      && /live under Menu/.test(W)
+      && /live under Menu/.test(WB.body)
       && /stops\.filter\(s => measure\(s\.tabIds\) !== null\)/.test(read('components/manage/Walkthrough.tsx'))
   })())
   t('⚠️ neither retired tab carried a badge, so nothing moved with them',
@@ -2057,6 +2062,16 @@ function runWiringSuite(lib) {
         reason: "the revenue breakdown's catch-all line is one constant" },
       { was: "if (Math.abs(drift) > 0.005) catBase['Other'] = (catBase['Other'] || 0) + drift", now: 'if (Math.abs(drift) > 0.005) catBase[OTHER_REVENUE_BUCKET] = (catBase[OTHER_REVENUE_BUCKET] || 0) + drift', nowIn: 'app/manage/[token]/page.tsx',
         reason: "the revenue breakdown's catch-all line is one constant" },
+      /* ── Language Phase 1c, 15 October 2026 (docs/language-phase-1c-report.md) — the walkthrough's words moved into
+       * messages/en-GB.json `walkthrough`. The done screen's intro line is the same message, rendered by
+       * `WalkthroughIntro`; scripts/language-phase-1c.cjs (area goLive) proves that screen byte-identical. ── */
+      { was: "import { Walkthrough } from '@/components/manage/Walkthrough'", now: "import { Walkthrough, WalkthroughIntro } from '@/components/manage/Walkthrough'", nowIn: 'app/manage/[token]/page.tsx',
+        reason: 'the intro line is rendered by the walkthrough component that owns its message' },
+      { was: "import { WALKTHROUGH_STOPS, WALKTHROUGH_INTRO, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'",
+        now: "import { WALKTHROUGH_STOPS, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'", nowIn: 'app/manage/[token]/page.tsx',
+        reason: 'WALKTHROUGH_INTRO is the message walkthrough.intro now' },
+      { was: '{WALKTHROUGH_INTRO}', now: '<WalkthroughIntro />', nowIn: 'app/manage/[token]/page.tsx',
+        reason: 'the done screen shows the same intro line, from the message file' },
       /* 1-2 · SettingsTab gained ONE prop, `onOpenKitchenCapacity`, so that the pointer left behind in
        * Settings › Kitchen can open Menu › Kitchen capacity. Both the mount and the signature changed,
        * and both stay in page.tsx. */

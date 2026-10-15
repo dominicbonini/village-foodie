@@ -53,15 +53,20 @@ export function writeWalkthroughState(token: string, value: Exclude<WalkthroughS
 // walkthrough never calls setActiveTab, so there is no state to preserve, nothing to restore if it is
 // closed halfway, and no way for it to strand someone on a tab they did not choose.
 
+// ── THE WORDS (Language Phase 1c, docs/language-phase-1c-report.md) ─────────────────────────────────────
+// A stop is its id and its anchors. Its title and body are messages — messages/en-GB.json
+// `walkthrough.stops.<id>.title` / `.body` — read by components/manage/Walkthrough.tsx in the truck's language,
+// as is the intro line (`walkthrough.intro`, rendered by `WalkthroughIntro` there). The notes below on why each
+// line says what it says still govern those messages.
+export type WalkthroughStopId = 'menu' | 'schedule' | 'build' | 'settings' | 'billing'
+
 export interface WalkthroughStop {
-  id: string
+  id: WalkthroughStopId
   /** Tab ids from the Manage tab bar. More than one ⇒ the highlight spans them all. */
   tabIds: string[]
-  title: string
-  body: string
 }
 
-// ── Q9: MANAGE vs DASHBOARD, IN ONE LINE ─────────────────────────────────────────────────────────────
+// ── Q9: MANAGE vs DASHBOARD, IN ONE LINE (`walkthrough.intro`) ───────────────────────────────────────
 // Shown above the FIRST stop of the walkthrough and on the wizard's closing screen — the two moments an
 // operator meets both words without yet knowing they are different places.
 //
@@ -71,22 +76,15 @@ export interface WalkthroughStop {
 // The Dashboard half is accurate as given: its tabs are Orders, + Add order and Menu & Stock (per-event
 // stock, pauses and capacity), which is exactly taking orders and running the event in front of you.
 // "and see how it's doing" is the smallest honest addition that covers Reports.
-export const WALKTHROUGH_INTRO =
-  "Manage is where you set your truck up and see how it's doing. The Dashboard is where you take orders "
-  + 'and run each event as it happens.'
 
 export const WALKTHROUGH_STOPS: WalkthroughStop[] = [
   {
     id: 'menu',
     tabIds: ['menu'],
-    title: 'Menu',
-    body: "Your dishes, prices and allergens. Change anything here and it's live straight away.",
   },
   {
     id: 'schedule',
     tabIds: ['schedule'],
-    title: 'Schedule',
-    body: "Where and when you're trading. Add an event here and customers can order for it.",
   },
   {
     id: 'build',
@@ -96,7 +94,7 @@ export const WALKTHROUGH_STOPS: WalkthroughStop[] = [
      * here would have SILENTLY DROPPED this step from the tour — no error, one fewer stop, and the
      * operator never told the deals and extras screens exist. */
     tabIds: ['menu'],
-    title: 'Deals and Extras & upsells',
+    // `walkthrough.stops.build` — title 'Deals and Extras & upsells'; the body's history:
     // ⚠️ THE ORIGINAL DRAFT OF THIS LINE ENDED "…nothing you do here goes live until you want it to."
     // That clause was FALSE and was withdrawn before shipping. Verified against the code, for whoever
     // edits this next:
@@ -113,21 +111,16 @@ export const WALKTHROUGH_STOPS: WalkthroughStop[] = [
      * sub-card inside Settings › Kitchen, and the `settings` stop below said so. Naming it here is the
      * whole point of a walkthrough stop — an operator who has just been told capacity lives in
      * Settings will not find it. */
-    body: 'Deals, upsells, customisations and your kitchen capacity live under Menu — have a play around.',
   },
   {
     id: 'settings',
     tabIds: ['settings'],
-    title: 'Settings',
-    /* ⚠️ CAPACITY DROPPED FROM THIS LINE (October 2026) — it moved to Menu › Kitchen capacity and is
-     * named on the `menu` stop above. Leaving it here would send operators to the one screen that no
-     * longer has it. */
-    body: "Your truck's details and how customers pay.",
+    /* ⚠️ CAPACITY DROPPED FROM THIS LINE (`walkthrough.stops.settings.body`, October 2026) — it moved to
+     * Menu › Kitchen capacity and is named on the `build` stop above. Leaving it here would send operators
+     * to the one screen that no longer has it. */
   },
   {
     id: 'billing',
     tabIds: ['billing'],
-    title: 'Billing',
-    body: 'Where your plan, billing and feature information lives.',
   },
 ]

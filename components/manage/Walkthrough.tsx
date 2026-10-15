@@ -20,8 +20,15 @@
 // is clamped to the viewport rather than aligned to the anchor's left edge, which would push it off the
 // right-hand side for the last tab.
 
+//
+// ── THE WORDS (Language Phase 1c) ────────────────────────────────────────────────────────────────────
+// messages/en-GB.json `walkthrough`: each stop's title and body by its id, the intro line, the step count and
+// the buttons — in the truck's language (the Manage page's provider).
+
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
-import { WALKTHROUGH_INTRO, type WalkthroughStop } from '@/lib/walkthrough'
+import { type WalkthroughStop } from '@/lib/walkthrough'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/walkthrough'
 
 interface Box { top: number; left: number; width: number; height: number }
 
@@ -42,7 +49,15 @@ function measure(tabIds: string[]): Box | null {
   }
 }
 
+/** Q9: the Manage-vs-Dashboard line — the walkthrough's first stop opens with it, and the wizard's closing screen
+ *  (Manage's import done screen) shows it too. One message, read in one place. */
+export function WalkthroughIntro() {
+  const t = useT('walkthrough')
+  return <>{t('intro')}</>
+}
+
 export function Walkthrough({ stops, onClose }: { stops: WalkthroughStop[]; onClose: () => void }) {
+  const t = useT('walkthrough')
   // 🔴 RESOLVED ONCE, AT OPEN. Filtering on every render would let the tour change length underneath the
   // operator (a pending-count relabel re-renders the bar), and `index` would then point somewhere else.
   const [live] = useState<WalkthroughStop[]>(
@@ -96,7 +111,7 @@ export function Walkthrough({ stops, onClose }: { stops: WalkthroughStop[]; onCl
   return (
     // Click-outside closes: the backdrop owns the handler and the card stops propagation.
     <div className="fixed inset-0 z-[70] bg-black/50" onClick={close} role="dialog" aria-modal="true"
-      aria-label="Dashboard walkthrough">
+      aria-label={t('ariaLabel')}>
       {/* The highlight. pointer-events-none so it never eats the backdrop's click-outside. */}
       <div aria-hidden className="fixed rounded-lg ring-4 ring-orange-400 pointer-events-none transition-all duration-200"
         style={{ top: box.top - 3, left: box.left - 3, width: box.width + 6, height: box.height + 6 }} />
@@ -110,30 +125,30 @@ export function Walkthrough({ stops, onClose }: { stops: WalkthroughStop[]; onCl
             before any individual tab means anything — which of the two places they are in. Repeating
             it on every stop would just be noise once they know. */}
         {index === 0 && (
-          <p className="text-xs text-slate-600 mb-3 pb-3 border-b border-slate-100">{WALKTHROUGH_INTRO}</p>
+          <p className="text-xs text-slate-600 mb-3 pb-3 border-b border-slate-100"><WalkthroughIntro /></p>
         )}
         <p className="text-[11px] font-bold uppercase tracking-widest text-orange-600">
-          {index + 1} of {live.length}
+          {t('step', { current: String(index + 1), total: String(live.length) })}
         </p>
-        <h3 className="font-black text-slate-900 mt-0.5">{stop.title}</h3>
-        <p className="text-sm text-slate-600 mt-1">{stop.body}</p>
+        <h3 className="font-black text-slate-900 mt-0.5">{t(`stops.${stop.id}.title`)}</h3>
+        <p className="text-sm text-slate-600 mt-1">{t(`stops.${stop.id}.body`)}</p>
         <div className="flex items-center gap-2 mt-4">
           {/* Skip is on EVERY stop, including the last, where it sits beside Done — an operator who
               wants out should never have to work out which control ends it. */}
           <button type="button" onClick={close}
             className="text-xs font-bold text-slate-400 hover:text-slate-600">
-            Skip
+            {t('skip')}
           </button>
           <div className="flex-1" />
           {index > 0 && (
             <button type="button" onClick={() => setIndex(i => i - 1)}
               className="text-xs font-bold text-slate-500 px-3 py-2 rounded-lg hover:bg-slate-100">
-              ← Back
+              {t('back')}
             </button>
           )}
           <button type="button" onClick={() => (isLast ? close() : setIndex(i => i + 1))}
             className="bg-orange-600 hover:bg-orange-700 text-white text-xs font-black px-4 py-2 rounded-lg">
-            {isLast ? 'Done' : 'Next →'}
+            {isLast ? t('done') : t('next')}
           </button>
         </div>
       </div>

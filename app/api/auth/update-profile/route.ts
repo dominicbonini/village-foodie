@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+// Language Phase 1c: a refusal of ours is `{ error, code, params }` (lib/i18n/onboarding-errors.ts). No truck is
+// known on this route, so its words are en-GB (docs/language-phase-1c-report.md).
+import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
@@ -20,7 +24,7 @@ export async function POST(req: NextRequest) {
       if (bearerUser) user = bearerUser
     }
   }
-  if (!user) return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 })
+  if (!user) return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'unauthenticated'), { status: 401 })
 
   const { name, first_name, last_name, phone } = await req.json()
 
@@ -31,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (phone !== undefined) updates.phone = phone
 
   if (Object.keys(updates).length === 0) {
-    return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'no_fields_to_update'), { status: 400 })
   }
 
   // Update operators table if exists

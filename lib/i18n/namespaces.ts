@@ -8,14 +8,22 @@ import type { AppNamespace } from './translator'
 // catalogue for one that is not, so a missing entry here can never print keys (lib/i18n/client.tsx).
 export const NAMESPACES = {
   // The order page: its own words, the refusals it shows, and every shared piece it renders.
-  order: ['order', 'errorsCustomer', 'eventCard', 'orderLine', 'deals', 'menuBadges', 'demo'],
+  order: ['order', 'errorsCustomer', 'eventCard', 'orderLine', 'deals', 'menuBadges', 'demo',
+    // Language Phase 1c: the demo sign-up flow it can open (DemoGetStarted) and the pieces that flow renders.
+    'demoGetStarted', 'cuisinePicker', 'whereBased'],
   // The status / manage page.
   confirmation: ['orderStatus', 'errorsCustomer'],
   // Language Phase 1b: the kitchen surfaces and every shared piece they render (scripts/messages-split.cjs walks each
   // page's import graph and fails if an entry leaves out a namespace its components read).
   dashboard: ['dashboard', 'orderCard', 'addOrder', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'userMenu',
-    'orderLine', 'deals', 'menuBadges', 'printing', 'nativeShell'],
-  kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell'],
-  manage: ['eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell'],
-  setup: [],
+    'orderLine', 'deals', 'menuBadges', 'printing', 'nativeShell',
+    // Language Phase 1c: the demo sign-up flow with its pieces.
+    'demoGetStarted', 'cuisinePicker', 'whereBased'],
+  kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell',
+    'demoGetStarted', 'cuisinePicker', 'whereBased'],   // Language Phase 1c
+  manage: ['eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell',
+    // Language Phase 1c: the cuisine and price controls, the walkthrough, and the where-based step.
+    'cuisinePicker', 'priceControls', 'walkthrough', 'whereBased'],
+  // Language Phase 1c: the setup wizard.
+  setup: ['setup', 'whereBased'],
 } as const satisfies Record<string, readonly AppNamespace[]>

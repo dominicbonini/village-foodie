@@ -3,12 +3,18 @@
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/auth'
 
 function ResetPasswordForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
   const isFirstLogin = searchParams.get('firstLogin') === 'true'
+  // Language Phase 1c: `auth.reset` / `auth.fields`. This route has no provider and reads no truck, so en-GB
+  // (DEFAULT_LOCALE), as the page always did.
+  const t = useT('auth.reset')
+  const tField = useT('auth.fields')
 
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -24,14 +30,14 @@ function ResetPasswordForm() {
                         p-8 max-w-sm w-full text-center border-slate-100 shadow-xl">
           <div className="text-3xl mb-4">⚠️</div>
           <h2 className="text-lg font-semibold text-slate-900 mb-2">
-            Invalid reset link
+            {t('invalidTitle')}
           </h2>
           <p className="text-sm text-slate-500 mb-4">
-            This link is invalid or has expired.
+            {t('invalidBody')}
           </p>
           <a href="/forgot-password"
              className="text-sm text-orange-600 font-medium">
-            Request a new reset link
+            {t('requestNew')}
           </a>
         </div>
       </div>
@@ -41,11 +47,11 @@ function ResetPasswordForm() {
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
     if (password !== confirm) {
-      setError('Passwords do not match')
+      setError(t('mismatch'))
       return
     }
     if (password.length < 8) {
-      setError('Password must be at least 8 characters')
+      setError(t('tooShort'))
       return
     }
 
@@ -61,7 +67,7 @@ function ResetPasswordForm() {
       const data = await res.json()
 
       if (!res.ok || data.error) {
-        setError(data.error || 'Something went wrong. Please try again.')
+        setError(data.error || t('errorFallback'))
         setLoading(false)
         return
       }
@@ -111,12 +117,10 @@ function ResetPasswordForm() {
             className="h-12 w-auto mx-auto mb-4"
           />
           <h1 className="text-xl font-semibold text-slate-900">
-            {isFirstLogin ? 'Set your password' : 'Choose a new password'}
+            {isFirstLogin ? t('titleFirstLogin') : t('titleReset')}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            {isFirstLogin
-              ? 'Choose a password to secure your account'
-              : 'Your new password must be at least 8 characters'}
+            {isFirstLogin ? t('subtitleFirstLogin') : t('subtitleReset')}
           </p>
         </div>
 
@@ -124,13 +128,13 @@ function ResetPasswordForm() {
           <div>
             <label className="text-xs font-semibold text-slate-500
                              uppercase tracking-wide block mb-1">
-              New password
+              {t('newPassword')}
             </label>
             <input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="At least 8 characters"
+              placeholder={tField('passwordHint')}
               required
               minLength={8}
               autoComplete="new-password"
@@ -142,13 +146,13 @@ function ResetPasswordForm() {
           <div>
             <label className="text-xs font-semibold text-slate-500
                              uppercase tracking-wide block mb-1">
-              Confirm password
+              {t('confirmPassword')}
             </label>
             <input
               type="password"
               value={confirm}
               onChange={e => setConfirm(e.target.value)}
-              placeholder="Repeat your password"
+              placeholder={t('confirmPlaceholder')}
               required
               autoComplete="new-password"
               className="w-full border border-slate-200 rounded-xl px-3 py-3
@@ -168,7 +172,7 @@ function ResetPasswordForm() {
                        font-semibold py-3 rounded-xl transition-colors
                        disabled:opacity-40"
           >
-            {loading ? 'Saving...' : 'Set password'}
+            {loading ? t('saving') : t('submit')}
           </button>
         </form>
       </div>

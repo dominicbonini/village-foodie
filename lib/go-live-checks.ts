@@ -28,6 +28,12 @@
 // ── PURE BY DESIGN ─────────────────────────────────────────────────────────────────────────────────
 // No imports, no Supabase, no Next. The caller fetches; this decides. That keeps it trivially testable,
 // runnable from a standalone audit script, and impossible to accidentally couple to a request context.
+//
+// ── CODES, NOT WORDS (Language Phase 1c, docs/language-phase-1c-report.md) ────────────────────────────
+// An issue is a CODE and its values. The words an operator reads — title, detail, where — come from ONE
+// renderer, `goLiveIssueText(issue, locale)` in lib/go-live-text.ts (messages/en-GB.json `goLive`), in the
+// truck's language. The gate (Phase 5) needs only the code; the checklist (Phase 4) asks the renderer. So
+// this module stays import-free and the words can never be decided in two places.
 
 export type GoLiveCode =
   | 'allergens_unanswered'
@@ -38,16 +44,20 @@ export type GoLiveCode =
   | 'no_prep_bearing_category'
   | 'email_unverified'
 
-export interface GoLiveIssue {
-  code: GoLiveCode
-  /** Short, operator-facing. Names the thing, not the rule. */
-  title: string
-  /** The CONSEQUENCE of ignoring it, in the operator's terms — not a restatement of the check. Someone
-   *  who understands what breaks will fix it; someone told "this field is required" will resent it. */
-  detail: string
-  /** Where they go to resolve it. */
-  where: string
-}
+/** One go-live issue: its code and the values its words need. `goLiveIssueText` (lib/go-live-text.ts) turns it
+ *  into the operator's words — a short title that names the thing, not the rule; a detail that gives the
+ *  CONSEQUENCE of ignoring it in the operator's terms (someone who understands what breaks will fix it; someone
+ *  told "this field is required" will resent it); and where they go to resolve it. */
+export type GoLiveIssue =
+  | { code: 'allergens_unanswered' | 'allergens_card_missing' | 'no_van'; params: Record<string, never> }
+  /** `unverified` of the truck's `total` dishes are hidden from customers. */
+  | { code: 'allergens_items_unverified'; params: { unverified: number; total: number } }
+  /** Each uncapped van's name, in order; null for a van with no name. */
+  | { code: 'kitchen_capacity_unset'; params: { vans: (string | null)[] } }
+  /** 'none': no active categories at all; 'noPrep': categories, none of them prep-bearing. */
+  | { code: 'no_prep_bearing_category'; params: { categories: 'none' | 'noPrep' } }
+  /** 'unconfirmed': known not to be confirmed (a blocker); 'unknown': cannot be evaluated yet. */
+  | { code: 'email_unverified'; params: { status: 'unconfirmed' | 'unknown' } }
 
 export interface GoLiveInput {
   truck: {
@@ -97,35 +107,17 @@ export function checkGoLive(input: GoLiveInput): GoLiveResult {
     // over-warn-safe direction), which means a truck that skipped the allergen step behaves identically
     // to one that deliberately chose per-dish. That ambiguity is exactly what this check resolves: an
     // operator who has genuinely chosen per-dish has 'per_dish' stored, and passes below.
-    blockers.push({
-      code: 'allergens_unanswered',
-      title: 'Choose how you show allergen info',
-      detail:
-        'Until you choose, customers see none of your dishes — the menu protects itself by hiding ' +
-        'anything whose allergens are unconfirmed, and right now that is everything.',
-      where: 'Menu → Allergens',
-    })
+    // Words: until they choose, customers see none of their dishes (goLive.allergensUnanswered).
+    blockers.push({ code: 'allergens_unanswered', params: {} })
   } else {
     if ((mode === 'card' || mode === 'both') && !hasCard) {
-      blockers.push({
-        code: 'allergens_card_missing',
-        title: 'Add your allergen card',
-        detail:
-          'You have chosen to show an allergen card, but none is saved — so customers would be told ' +
-          'allergen info is available and then find nothing.',
-        where: 'Menu → Allergens',
-      })
+      // Words: customers would be told allergen info is available and find nothing (goLive.allergensCardMissing).
+      blockers.push({ code: 'allergens_card_missing', params: {} })
     }
     if ((mode === 'per_dish' || mode === 'both') && unverified > 0) {
-      blockers.push({
-        code: 'allergens_items_unverified',
-        title: `Confirm allergens on ${unverified} dish${unverified === 1 ? '' : 'es'}`,
-        detail:
-          `${unverified} of your ${input.items.length} dishes are hidden from customers until you ` +
-          'confirm their allergens. A dish shown without confirmed allergens reads as "contains none", ' +
-          'so the menu hides it rather than risk that.',
-        where: 'Menu → Allergens',
-      })
+      // Words: those dishes are hidden until confirmed, because unconfirmed reads as "contains none"
+      // (goLive.allergensItemsUnverified).
+      blockers.push({ code: 'allergens_items_unverified', params: { unverified, total: input.items.length } })
     }
   }
 
@@ -136,30 +128,19 @@ export function checkGoLive(input: GoLiveInput): GoLiveResult {
   // way to honour, and the operator finds out at the hatch. This is the single failure the capacity engine
   // exists to prevent, so a truck must not reach its first real service having never answered it.
   if (input.vans.length === 0) {
-    blockers.push({
-      code: 'no_van',
-      title: 'Add a van',
-      detail: 'Events run against a van — without one there is nothing to take orders through.',
-      where: 'Settings → Vans',
-    })
+    // Words: events run against a van (goLive.noVan).
+    blockers.push({ code: 'no_van', params: {} })
   } else {
     const uncapped = input.vans.filter(v => v.kitchen_capacity == null)
     if (uncapped.length > 0) {
       // Every van, not just one: an event scheduled on an uncapped van is uncapped, regardless of what
       // the others are set to.
-      const which = uncapped.map(v => v.name || 'unnamed van').join(', ')
-      blockers.push({
-        code: 'kitchen_capacity_unset',
-        title: 'Set your kitchen capacity',
-        detail:
-          `No capacity is set for ${which}. Without it we will keep promising customers collection ` +
-          'times your kitchen has no way to hit.',
-        /* ⚠️ RE-POINTED (October 2026): the capacity table moved from Settings › Kitchen to
-         * Menu › Kitchen capacity, so a blocker that still said "Settings" would send an operator
-         * to a screen that now only carries a pointer. The words a go-live blocker uses are the
-         * only directions it gives. */
-        where: 'Menu → Kitchen capacity',
-      })
+      // A van with no name (null or '') is null here; the renderer names it ("unnamed van").
+      /* ⚠️ RE-POINTED (October 2026): the capacity table moved from Settings › Kitchen to
+       * Menu › Kitchen capacity, so a blocker that still said "Settings" would send an operator
+       * to a screen that now only carries a pointer. The words a go-live blocker uses are the
+       * only directions it gives (goLive.kitchenCapacityUnset.where). */
+      blockers.push({ code: 'kitchen_capacity_unset', params: { vans: uncapped.map(v => v.name || null) } })
     }
   }
 
@@ -179,16 +160,8 @@ export function checkGoLive(input: GoLiveInput): GoLiveResult {
   const activeCats = input.categories.filter(c => c.is_active !== false)
   const prepBearing = activeCats.filter(c => (c.prep_secs ?? 0) > 0 || c.counts_toward_capacity === true)
   if (prepBearing.length === 0) {
-    blockers.push({
-      code: 'no_prep_bearing_category',
-      title: 'Tell us how long your food takes',
-      detail: activeCats.length === 0
-        ? 'You have no menu categories yet, so we have no way to work out how long an order takes.'
-        : 'None of your categories has a cooking time set, so every order looks instant to us. We would ' +
-          'keep giving customers collection times your kitchen has no chance of hitting, and the busier ' +
-          'you get the further out they would be.',
-      where: 'Menu → Categories → Kitchen setup',
-    })
+    // Words: with no cooking time, every order looks instant (goLive.noPrepBearingCategory).
+    blockers.push({ code: 'no_prep_bearing_category', params: { categories: activeCats.length === 0 ? 'none' : 'noPrep' } })
   }
 
   // ── OPERATOR EMAIL ───────────────────────────────────────────────────────────────────────────────
@@ -198,23 +171,9 @@ export function checkGoLive(input: GoLiveInput): GoLiveResult {
   if (input.operatorEmailVerified === true) {
     // pass
   } else if (input.operatorEmailVerified === false) {
-    blockers.push({
-      code: 'email_unverified',
-      title: 'Confirm your email address',
-      detail:
-        'We send order notifications and account recovery to this address. If it is wrong, you find ' +
-        'out when something has already gone wrong.',
-      where: 'Check your inbox for our confirmation link',
-    })
+    blockers.push({ code: 'email_unverified', params: { status: 'unconfirmed' } })    // goLive.emailUnverified
   } else {
-    unknown.push({
-      code: 'email_unverified',
-      title: 'Email confirmation status unknown',
-      detail:
-        'Email verification is not wired up yet (Phase 4 Step 2), so this cannot be evaluated. It blocks ' +
-        'by design rather than passing silently.',
-      where: '—',
-    })
+    unknown.push({ code: 'email_unverified', params: { status: 'unknown' } })         // goLive.emailUnknown
   }
 
   return { ok: blockers.length === 0 && unknown.length === 0, blockers, unknown }

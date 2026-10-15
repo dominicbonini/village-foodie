@@ -17,6 +17,11 @@ import { isDemoIdentifier } from '@/lib/demo'
 import { restartDemoService } from '@/lib/demo-restart'
 import { claimDemoFirstOpen } from '@/lib/demo-session'
 import { verifyAdmin } from '@/lib/auth/admin'
+// Language Phase 1c: a refusal of ours is `{ error, code, params }` (lib/i18n/onboarding-errors.ts) — en-GB until the
+// demo truck is found, then the truck's language (docs/language-phase-1c-report.md).
+import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 const supabase = createClient(
   (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
@@ -40,26 +45,26 @@ export async function POST(req: NextRequest) {
     token = typeof body?.token === 'string' ? body.token.trim() : null
     claimFirstOpen = body?.claimFirstOpen === true
   } catch {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'invalid_request_body'), { status: 400 })
   }
 
   // Cheap gate before touching the database: the token itself must look like a demo token.
   if (!token || !isDemoIdentifier(token)) {
-    return NextResponse.json({ error: 'Not a demo session' }, { status: 403 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'not_demo_session'), { status: 403 })
   }
 
   const { data: truck } = await supabase
-    .from('trucks').select('id').eq('dashboard_token', token).single()
+    .from('trucks').select('id, country').eq('dashboard_token', token).single()
 
   if (!truck) {
-    return NextResponse.json({ error: 'Demo not found' }, { status: 404 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'demo_not_found'), { status: 404 })
   }
 
   // 🔴 THE REAL GUARD — the resolved TRUCK ID, not the token that got us here. restartDemoService
   // asserts this again internally; both checks are deliberate. This one gives a clean 403 to a caller,
   // the inner one makes the library safe for any future caller that forgets.
   if (!isDemoIdentifier(truck.id as string)) {
-    return NextResponse.json({ error: 'Not a demo truck' }, { status: 403 })
+    return NextResponse.json(onboardingErrorBody(await localeForTruck(truck), 'not_demo_truck'), { status: 403 })
   }
 
   // ── T2 GATING — ADMIN PREVIEW FIRST, THEN THE CLAIM ────────────────────────────────────────────
@@ -128,6 +133,6 @@ export async function POST(req: NextRequest) {
     })
   } catch (err) {
     console.error('[demo] service restart failed:', err instanceof Error ? err.message : err)
-    return NextResponse.json({ error: 'Could not start a new service' }, { status: 500 })
+    return NextResponse.json(onboardingErrorBody(await localeForTruck(truck), 'new_service_failed'), { status: 500 })
   }
 }

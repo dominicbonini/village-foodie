@@ -6,12 +6,18 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { isNativeApp } from '@/lib/native/device'
 import { getNativeSupabase } from '@/lib/native/session'
 import { HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/auth'
 
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const next = searchParams.get('next') || '/dashboard'
   const message = searchParams.get('message')
+  // Language Phase 1c: `auth.login` / `auth.fields`. Nobody is known yet and this route has no provider, so the
+  // words read en-GB (DEFAULT_LOCALE), as the page always did.
+  const t = useT('auth.login')
+  const tField = useT('auth.fields')
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -35,7 +41,7 @@ function LoginForm() {
     })
 
     if (error) {
-      setError(error.message || 'Incorrect email or password. Please try again.')
+      setError(error.message || t('errorFallback'))
       setLoading(false)
       return
     }
@@ -96,26 +102,29 @@ function LoginForm() {
             className="h-12 w-auto mx-auto mb-4"
           />
           <h1 className="text-xl font-semibold text-slate-900">
-            Sign in to your kitchen
+            {t('title')}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            {typeof window !== 'undefined' && window.location.hostname.includes('hatchgrab')
-              ? 'HatchGrab'
-              : 'Village Foodie'} operator dashboard
+            {/* the brand names are names, never translated; the sentence around them is one message */}
+            {t('dashboardOf', {
+              brand: typeof window !== 'undefined' && window.location.hostname.includes('hatchgrab')
+                ? 'HatchGrab'
+                : 'Village Foodie',
+            })}
           </p>
         </div>
 
         {showResetSuccess && (
           <div className="bg-orange-50 border border-orange-200 rounded-xl
                           px-4 py-3 text-sm text-orange-700 text-center">
-            Password updated successfully. Please sign in.
+            {t('resetSuccess')}
           </div>
         )}
 
         {showEmailChanged && (
           <div className="bg-orange-50 border border-orange-200 rounded-xl
                           px-4 py-3 text-sm text-orange-700 text-center">
-            Email address updated. Please sign in with your new email address.
+            {t('emailChanged')}
           </div>
         )}
 
@@ -124,13 +133,13 @@ function LoginForm() {
           <div>
             <label className="text-xs font-semibold text-slate-500
                              uppercase tracking-wide block mb-1">
-              Email
+              {tField('email')}
             </label>
             <input
               type="email"
               value={email}
               onChange={e => { setEmail(e.target.value); setShowResetSuccess(false) }}
-              placeholder="you@example.com"
+              placeholder={tField('emailPlaceholder')}
               required
               autoComplete="email"
               className="w-full border border-slate-200 rounded-xl px-3 py-3
@@ -142,7 +151,7 @@ function LoginForm() {
           <div>
             <label className="text-xs font-semibold text-slate-500
                              uppercase tracking-wide block mb-1">
-              Password
+              {tField('password')}
             </label>
             <input
               type="password"
@@ -168,7 +177,7 @@ function LoginForm() {
                        font-semibold py-3 rounded-xl transition-colors
                        disabled:opacity-40"
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? t('submitting') : t('submit')}
           </button>
         </form>
 
@@ -178,7 +187,7 @@ function LoginForm() {
             href="/forgot-password"
             className="text-xs text-orange-500 hover:text-orange-600"
           >
-            Forgot your password?
+            {t('forgot')}
           </a>
         </div>
 

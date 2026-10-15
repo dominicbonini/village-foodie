@@ -26,6 +26,8 @@
 // slot carrying its original text, so it is VISIBLE, EDITABLE and resolves back to itself unchanged.
 // No new list plumbing, no injected pseudo-option — it reuses the escape hatch the wizard already had.
 import { CUISINES, CUISINE_OTHER } from '@/lib/cuisines'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/cuisinePicker'
 
 /** One row of the control: a dropdown value, plus the free text an "Other" row carries. */
 export type CuisineSlot = { value: string; other: string }
@@ -97,6 +99,9 @@ export function CuisinePicker({
     onChange(slots.length <= 1 ? slots : slots.filter((_, j) => j !== i))
 
   const resolved = resolveCuisines(slots)
+  // Language Phase 1c: the control's own words. The cuisine names are STORED values (trucks.cuisine_type, the
+  // discovery filter) and are shown as they are; CUISINE_OTHER is compared as an id, never as words.
+  const t = useT('cuisinePicker')
 
   return (
     <>
@@ -110,12 +115,12 @@ export function CuisinePicker({
               disabled={disabled}
               onChange={e => setValue(i, e.target.value)}
               className={`w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${invalid ? 'border-red-400' : 'border-slate-200'}`}>
-              <option value="">Choose a cuisine…</option>
-              {CUISINES.map(c => <option key={c} value={c}>{c === CUISINE_OTHER ? 'Other…' : c}</option>)}
+              <option value="">{t('choose')}</option>
+              {CUISINES.map(c => <option key={c} value={c}>{c === CUISINE_OTHER ? t('other') : c}</option>)}
             </select>
             {slot.value === CUISINE_OTHER && (
               <input type="text" value={slot.other} disabled={disabled} onChange={e => setOther(i, e.target.value)}
-                placeholder="Tell us your cuisine"
+                placeholder={t('otherPlaceholder')}
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
             )}
           </div>
@@ -123,7 +128,7 @@ export function CuisinePicker({
       </div>
       {slots.length < MAX_CUISINE_SLOTS && (
         <button type="button" onClick={addSlot} disabled={disabled}
-          className="mt-2 text-xs font-bold text-orange-600 hover:text-orange-700">+ Choose another</button>
+          className="mt-2 text-xs font-bold text-orange-600 hover:text-orange-700">{t('addAnother')}</button>
       )}
       {/* Chips — only once 2+ cuisines are chosen; each removable. */}
       {resolved.length >= 2 && (
@@ -134,7 +139,7 @@ export function CuisinePicker({
             return (
               <span key={i} className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200">
                 {label}
-                <button type="button" aria-label={`Remove ${label}`} onClick={() => removeSlot(i)} disabled={disabled}
+                <button type="button" aria-label={t('remove', { label })} onClick={() => removeSlot(i)} disabled={disabled}
                   className="text-orange-400 hover:text-orange-700 leading-none">×</button>
               </span>
             )

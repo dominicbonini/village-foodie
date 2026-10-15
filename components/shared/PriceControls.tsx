@@ -30,6 +30,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { CONTROL_BOX } from '@/lib/ui-tokens'
 import { formatMinorOrBare, currencySymbolOrBare, editableAmount, type MoneyFormat } from '@/lib/money-format'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/priceControls'
 import {
   priceModeChoices, priceRoundingChoices,
 } from '@/lib/copy/serviceSettings'
@@ -316,6 +318,7 @@ export function PriceCell({
 }) {
   // The engine works in the currency's minor units (toPence); the cell only lays them out.
   const minor = (m: number) => formatMinorOrBare(m, money, 'price cell')
+  const t = useT('priceControls')
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState('')
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -399,8 +402,9 @@ export function PriceCell({
    * ⛔ AND IT IS NOT RENDERED IN THE STANDARD COLUMN AT ALL: that column IS the menu price, so the
    * difference is always zero there. The grid passes `showDiff` only for a type column. */
   const diffPence = shownPence - menuPence
+  // Language Phase 1c: one message per direction, the amount already formatted (lib/money-format.ts).
   const diff = showDiff && diffPence !== 0
-    ? `(${diffPence > 0 ? '+' : '−'}${minor(Math.abs(diffPence))})`
+    ? t(diffPence > 0 ? 'diffUp' : 'diffDown', { amount: minor(Math.abs(diffPence)) })
     : null
 
   if (hasTyped) {
@@ -410,7 +414,7 @@ export function PriceCell({
        * and a per-event tag say the same thing in the same colour. */
       <span className="inline-flex items-center gap-1 rounded-lg border border-blue-300 bg-blue-50 pl-2 pr-1"
         style={styleFor(height)}>
-        <button type="button" disabled={disabled} aria-label={`${label} — change`}
+        <button type="button" disabled={disabled} aria-label={t('change', { label })}
           onClick={() => { setDraft(String(typed)); setEditing(true) }}
           className="text-sm font-semibold text-blue-800 tabular-nums disabled:text-slate-400">
           {minor(toPence(typed))}
@@ -418,8 +422,8 @@ export function PriceCell({
         {diff && <span className="shrink-0 text-[10px] text-blue-600 tabular-nums">{diff}</span>}
         {/* ⚠️ THE × IS ITS OWN BUTTON WITH ITS OWN LABEL. One control doing both would make "go back
           * to the rule" an accident waiting on a mis-tap. */}
-        <button type="button" disabled={disabled} aria-label={`${label} — use the rule instead`}
-          onClick={onClear} title="Back to the rule"
+        <button type="button" disabled={disabled} aria-label={t('useRule', { label })}
+          onClick={onClear} title={t('backToRule')}
           className="w-5 h-5 shrink-0 rounded text-blue-500 hover:bg-blue-100 disabled:text-slate-300 leading-none">
           ×
         </button>
@@ -431,7 +435,7 @@ export function PriceCell({
     /* ⚠️ THE DIFFERENCE IS **OUTSIDE** THE BUTTON. Inside it, pressing the brackets would open the
      * editor — and an operator reading the difference is reading, not editing. */
     <span className="inline-flex min-w-0 items-baseline gap-1">
-      <button type="button" disabled={disabled} aria-label={`${label} — type a price`}
+      <button type="button" disabled={disabled} aria-label={t('typePrice', { label })}
         onClick={() => { setDraft(editableAmount(toPounds(shownPence), money)); setEditing(true) }}
         className="text-sm text-slate-900 tabular-nums rounded px-1 hover:bg-slate-100 disabled:text-slate-400 disabled:hover:bg-transparent">
         {minor(shownPence)}

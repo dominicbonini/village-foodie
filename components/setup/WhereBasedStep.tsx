@@ -14,6 +14,8 @@ import { useEffect, useRef, useState } from 'react'
 import type { SignupCountry } from '@/lib/signup-country-types'
 import { checkTradeArea, TRADE_AREA_ERRORS } from '@/lib/trade-area'
 import { WHERE_YOU_TRADE_COPY as COPY } from '@/lib/settings-copy'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/whereBased'
 
 export interface BasePlace {
   placeId: string | null; name: string; region: string | null; lat: number | null; lng: number | null
@@ -67,19 +69,22 @@ export function baseAnswerErrors(a: BaseAnswer, countries: SignupCountry[]): Bas
 /** The switched-on countries and the guess, for a signup surface. Fetched once `enabled` turns true (the
  *  demo modal waits until the wizard is entered, so a demo page view costs no request). */
 export function useSignupCountries(enabled = true) {
+  const t = useT('whereBased')
   const [state, setState] = useState<{ countries: SignupCountry[]; guess: { code: string; fromLocation: boolean } } | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  // Language Phase 1c: set inside the effect, so it holds the server's own words or null — the render supplies
+  // ours (`whereBased.countriesFailed`), in the language of the moment.
+  const [error, setError] = useState<{ server: string | null } | null>(null)
   useEffect(() => {
     if (!enabled || state) return
     let cancelled = false
     fetch('/api/setup/countries').then(r => r.json()).then(d => {
       if (cancelled) return
       if (d?.ok && Array.isArray(d.countries) && d.countries.length) setState({ countries: d.countries, guess: d.guess })
-      else setError(d?.error || 'We couldn’t load the list of countries. Try again in a moment.')
-    }).catch(() => { if (!cancelled) setError('We couldn’t load the list of countries. Try again in a moment.') })
+      else setError({ server: d?.error || null })
+    }).catch(() => { if (!cancelled) setError({ server: null }) })
     return () => { cancelled = true }
   }, [enabled, state])
-  return { data: state, error }
+  return { data: state, error: error ? (error.server || t('countriesFailed')) : null }
 }
 
 const newSession = () => { try { return crypto.randomUUID() } catch { return `${Date.now()}-${Math.random().toString(36).slice(2)}` } }

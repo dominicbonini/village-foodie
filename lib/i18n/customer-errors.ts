@@ -11,23 +11,21 @@
 // ⚠️ `code` AND `params` GO LAST. The body's existing fields keep their order, so what the response said before
 // this phase is the unchanged prefix of what it says now (scripts/language-phase-1a.cjs proves it, per field).
 import type enGB from '@/messages/en-GB.json'
-import { translatorFor } from './translator'
+import { errorBody } from './error-body'
 import '@/lib/i18n/catalog/errorsCustomer'
 
 export type CustomerErrorCode = keyof (typeof enGB)['errorsCustomer']
 export type CustomerErrorParams = Record<string, string | number>
 
-type Translate = (code: CustomerErrorCode, params?: CustomerErrorParams) => string
-
-/** The JSON body of a customer-facing refusal, in the truck's locale (en-GB when the truck is not known yet). */
+/** The JSON body of a customer-facing refusal. ⚠️ Since Phase 1c a wrapper over the one helper,
+ *  lib/i18n/error-body.ts — same arguments, same output. */
 export function customerErrorBody<X extends Record<string, unknown>>(
   locale: string | null | undefined,
   code: CustomerErrorCode,
   params: CustomerErrorParams = {},
   extra?: X,
 ): { error: string } & X & { code: CustomerErrorCode; params: CustomerErrorParams } {
-  const t = translatorFor(locale, 'errorsCustomer') as unknown as Translate
-  return { error: t(code, params), ...(extra ?? ({} as X)), code, params }
+  return errorBody('errorsCustomer', locale, code, params, extra)
 }
 
 /** The words a screen shows for a refusal: the message for its code, or — for a body without one (a response

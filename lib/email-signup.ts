@@ -19,6 +19,17 @@
 
 import { HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { HATCHGRAB_ORANGE_HEX } from '@/lib/brand'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/emailSignup'
+
+// ── LANGUAGE PHASE 1c: THE WORDS ARE `emailSignup` (messages/en-GB.json) ──────────────────────────────
+// Each email takes an optional `locale` (default en-GB). Who passes what (docs/language-phase-1c-report.md):
+//   • the verification email is sent at account creation, before any truck exists — the locale is the demo
+//     truck's (when the account came from a demo, the same truck whose name the copy uses), else en-GB;
+//   • the welcome email is sent on verification — the operator's truck's locale when they have one, else en-GB.
+// The greeting's and the truck's fallbacks ("Hi there," / "your truck") are whole sentences in the messages
+// (a select on whether a name is held), so no English word is slotted into a sentence by code.
+type SignupT = ReturnType<typeof translatorFor<'emailSignup'>>
 
 // ⚠️ NOT LIVE YET. This mailbox must exist, and hatchgrab.com must be SPF/DKIM-verified in Brevo,
 // before the first real send. Defined ONCE — both emails read it, neither inlines it.
@@ -40,18 +51,13 @@ function esc(s: string): string {
 /**
  * First word of operators.name. That column is written at signup as the local part of the email
  * address (app/api/signup/route.ts), so this is usually a handle rather than a given name — it is
- * still the best thing we hold. Falls back to "there" so the greeting can never render "Hi ," or
- * "Hi undefined"; null-returning callers can then also drop the name from the subject line.
+ * still the best thing we hold. A null makes the greeting "Hi there," (emailSignup.greeting) so it can never
+ * render "Hi ," or "Hi undefined"; null-returning callers can then also drop the name from the subject line.
  */
 export function firstNameFrom(name: string | null | undefined): string | null {
   const first = (name ?? '').trim().split(/\s+/)[0]
   return first || null
 }
-
-export const GREETING_FALLBACK = 'there'
-/** Used wherever the copy names the truck and we do not have one — the verification email is sent
- *  before any truck exists unless the account came from a demo. */
-export const TRUCK_FALLBACK = 'your truck'
 
 function shell(inner: string): string {
   return `
@@ -88,8 +94,8 @@ function button(href: string, label: string): string {
       </p>`
 }
 
-const SIGNOFF_HTML = `<p style="margin-top:28px;">Dominic<br/>Founder, HatchGrab</p>`
-const SIGNOFF_TEXT = `Dominic\nFounder, HatchGrab`
+const signoffHtml = (t: SignupT) => `<p style="margin-top:28px;">${t('signoffName')}<br/>${t('signoffRole')}</p>`
+const signoffText = (t: SignupT) => `${t('signoffName')}\n${t('signoffRole')}`
 
 /**
  * Posts one email to Brevo. NEVER THROWS — both call sites are on paths (account creation, email
@@ -130,35 +136,40 @@ export async function sendSignupVerificationEmail(params: {
   firstName: string | null
   truckName: string | null
   verifyUrl: string
+  /** The demo truck's locale when the account came from one, else omitted (en-GB) — see the header. */
+  locale?: string | null
 }): Promise<void> {
-  const who = params.firstName ?? GREETING_FALLBACK
-  const truck = params.truckName ?? TRUCK_FALLBACK
+  const t = translatorFor(params.locale, 'emailSignup')
   const url = params.verifyUrl
+  const hasName = params.firstName != null ? 'yes' : 'no'
+  const hasTruck = params.truckName != null ? 'yes' : 'no'
+  const greeting = (name: string) => t('greeting', { hasName, name })
+  const thanks = (truck: string) => t('verify.thanks', { hasTruck, truck })
 
   const html = shell(`
-      <p>Hi ${esc(who)},</p>
-      <p>Thanks for setting up ${esc(truck)} on HatchGrab.</p>
-      ${button(url, 'Confirm my email address')}
-      <p>This is the address you'll log in with, and where order alerts go — so it's worth doing now.
-         Once it's confirmed I'll send you everything you need to get going.</p>
-      <p>You can carry on setting up in the meantime.</p>
-      <p>Stuck on anything? Just reply to this — I answer these myself.</p>
-      ${SIGNOFF_HTML}
+      <p>${greeting(esc(params.firstName ?? ''))}</p>
+      <p>${thanks(esc(params.truckName ?? ''))}</p>
+      ${button(url, t('verify.button'))}
+      <p>${t('verify.why')}
+         ${t('verify.next')}</p>
+      <p>${t('verify.carryOn')}</p>
+      <p>${t('verify.stuck')}</p>
+      ${signoffHtml(t)}
       <p style="color:#64748b;font-size:13px;margin-top:28px;">
-        If the button doesn't work, paste this in: ${url}</p>`)
+        ${t('verify.fallbackLink', { url })}</p>`)
 
   const text =
-    `Hi ${who},\n\n` +
-    `Thanks for setting up ${truck} on HatchGrab.\n\n` +
-    `Confirm my email address: ${url}\n\n` +
-    `This is the address you'll log in with, and where order alerts go — so it's worth doing now. ` +
-    `Once it's confirmed I'll send you everything you need to get going.\n\n` +
-    `You can carry on setting up in the meantime.\n\n` +
-    `Stuck on anything? Just reply to this — I answer these myself.\n\n` +
-    `${SIGNOFF_TEXT}\n\n` +
-    `If the button doesn't work, paste this in: ${url}`
+    `${greeting(params.firstName ?? '')}\n\n` +
+    `${thanks(params.truckName ?? '')}\n\n` +
+    `${t('verify.buttonText', { url })}\n\n` +
+    `${t('verify.why')} ` +
+    `${t('verify.next')}\n\n` +
+    `${t('verify.carryOn')}\n\n` +
+    `${t('verify.stuck')}\n\n` +
+    `${signoffText(t)}\n\n` +
+    `${t('verify.fallbackLink', { url })}`
 
-  await send({ to: params.to, subject: 'Confirm your email address', html, text })
+  await send({ to: params.to, subject: t('verify.subject'), html, text })
 }
 
 /**
@@ -177,13 +188,19 @@ export async function sendOperatorWelcomeEmail(params: {
   firstName: string | null
   truckName: string | null
   manageUrl: string
+  /** The operator's truck's locale when they have one, else omitted (en-GB) — see the header. */
+  locale?: string | null
 }): Promise<void> {
-  const who = params.firstName ?? GREETING_FALLBACK
-  const truck = params.truckName ?? TRUCK_FALLBACK
+  const t = translatorFor(params.locale, 'emailSignup')
   const url = params.manageUrl
+  const hasName = params.firstName != null ? 'yes' : 'no'
+  const hasTruck = params.truckName != null ? 'yes' : 'no'
+  const greeting = (name: string) => t('greeting', { hasName, name })
+  const intro = (truck: string) => t('welcome.intro', { hasTruck, truck })
+  const lookingForward = (truck: string) => t('welcome.lookingForward', { hasTruck, truck })
 
   // Name in the subject only when we have one — "Welcome to HatchGrab, there" reads worse than none.
-  const subject = params.firstName ? `Welcome to HatchGrab, ${params.firstName}` : 'Welcome to HatchGrab'
+  const subject = t('welcome.subject', { hasName: params.firstName ? 'yes' : 'no', name: params.firstName ?? '' })
 
   // ── D1/D3/D4: THE DASHBOARD BLOCK ────────────────────────────────────────────────────────────────
   // D1 — the URL line and "Worth bookmarking…" carried `color:#64748b;font-size:13px`, which rendered
@@ -202,26 +219,26 @@ export async function sendOperatorWelcomeEmail(params: {
   //      adventure. Padding never collapses, so the gap is 14px + the button's 28px = a real break, and
   //      the sentence closes its paragraph instead of introducing the button.
   const html = shell(`
-      <p>Hi ${esc(who)},</p>
-      <p>I'm really pleased to welcome ${esc(truck)} to HatchGrab.</p>
-      <p style="padding-bottom:14px;">If you haven't already, setting up is straightforward and takes about fifteen minutes.</p>
-      ${button(url, 'Open your dashboard')}
-      <p>${url}<br/>Worth bookmarking. It works on any device.</p>
-      <p>Just reply to this if you get stuck — I answer these myself.</p>
-      <p>Looking forward to seeing ${esc(truck)} trading.</p>
-      ${SIGNOFF_HTML}`)
+      <p>${greeting(esc(params.firstName ?? ''))}</p>
+      <p>${intro(esc(params.truckName ?? ''))}</p>
+      <p style="padding-bottom:14px;">${t('welcome.setup')}</p>
+      ${button(url, t('welcome.button'))}
+      <p>${url}<br/>${t('welcome.bookmark')}</p>
+      <p>${t('welcome.stuck')}</p>
+      <p>${lookingForward(esc(params.truckName ?? ''))}</p>
+      ${signoffHtml(t)}`)
 
   const text =
-    `Hi ${who},\n\n` +
-    `I'm really pleased to welcome ${truck} to HatchGrab.\n\n` +
-    `If you haven't already, setting up is straightforward and takes about fifteen minutes.\n\n` +
+    `${greeting(params.firstName ?? '')}\n\n` +
+    `${intro(params.truckName ?? '')}\n\n` +
+    `${t('welcome.setup')}\n\n` +
     // D3: the label goes from the plain-text alternative too, so the two versions cannot say
     // different things. There is no button here, so the URL simply stands on its own.
     `${url}\n` +
-    `Worth bookmarking. It works on any device.\n\n` +
-    `Just reply to this if you get stuck — I answer these myself.\n\n` +
-    `Looking forward to seeing ${truck} trading.\n\n` +
-    `${SIGNOFF_TEXT}`
+    `${t('welcome.bookmark')}\n\n` +
+    `${t('welcome.stuck')}\n\n` +
+    `${lookingForward(params.truckName ?? '')}\n\n` +
+    `${signoffText(t)}`
 
   await send({ to: params.to, subject, html, text })
 }

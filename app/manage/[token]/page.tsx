@@ -125,8 +125,8 @@ import { SERVICE_SETTING_LABELS } from '@/lib/copy/serviceSettings'
  * nullable and NULL means "follow `trucks.takes_cash`", so the switch's POSITION is resolved, never
  * read raw — otherwise a van following the truck would draw as off while the hatch split the button. */
 import { resolveVanTakesCash } from '@/lib/event-types/resolve'
-import { Walkthrough } from '@/components/manage/Walkthrough'
-import { WALKTHROUGH_STOPS, WALKTHROUGH_INTRO, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
+import { Walkthrough, WalkthroughIntro } from '@/components/manage/Walkthrough'
+import { WALKTHROUGH_STOPS, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
 import { isNativeApp } from '@/lib/native/device'
 // Both store badges, from one component — the order and the colour are vendor rules. See the card below.
@@ -6710,7 +6710,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     {n} item{n === 1 ? '' : 's'} across {m} categor{m === 1 ? 'y' : 'ies'}.
                   </p>
                   <p className="text-xs text-slate-500 mt-3 text-left bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-                    {WALKTHROUGH_INTRO}
+                    <WalkthroughIntro />
                   </p>
                 </>
               ) : (

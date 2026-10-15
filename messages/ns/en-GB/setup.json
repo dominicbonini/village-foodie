@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Where you’re based",
+    "identity": "Your truck",
+    "menu": "Your menu",
+    "event": "First event"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Setting up",
+  "loading": "Loading",
+  "loadingCountries": "Loading…",
+  "verify": {
+    "ok": "Email confirmed — thank you.",
+    "expired": "That confirmation link has expired. Get in touch and we'll sort it before you go live.",
+    "invalid": "That confirmation link didn't work. Get in touch and we'll sort it before you go live."
+  },
+  "identity": {
+    "heading": "What's your truck called?",
+    "intro": "This is the name customers see. Nothing goes public until you choose to go live.",
+    "nameLabel": "Truck name",
+    "namePlaceholder": "Bob's Burgers",
+    "phoneLabel": "Phone",
+    "whatsappTick": "This number is on WhatsApp",
+    "phoneHelp": "Customers see this on their order confirmation so they can ask about an order. The tick decides whether that reads “Call us” or “WhatsApp us”. You can change both in Settings."
+  },
+  "phoneRequired": "Add a phone number — customers and we both use it to reach you.",
+  "createFailed": "Could not create your truck.",
+  "unreachable": "Couldn’t reach us just now — please try again.",
+  "back": "Back",
+  "creating": "Creating your truck…",
+  "continue": "Continue"
+}

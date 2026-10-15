@@ -12,12 +12,18 @@ import { linkDiscoveryRowForSelfServe } from '@/lib/self-serve-discovery-link'
 // I4: the SAME phone check Manage Settings and the signup modal use (lib/phone.ts, Phase 2C) — one rule,
 // so a number the client accepts can never be rejected here.
 import { isPlausiblePhone } from '@/lib/phone'
-import { phoneErrorMessage } from '@/lib/phone-message'
 import { phoneCopyOf } from '@/lib/phone-copy'
 import { resolveOperatorTruck } from '@/lib/resolve-operator-truck'
 import { getCountrySettings } from '@/lib/country-settings'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import { checkSignupCountry, checkTradeArea } from '@/lib/trade-area'
+// Language Phase 1c: a refusal of ours is `{ ok: false, error, code, params }` (lib/i18n/onboarding-errors.ts). Its
+// words are en-GB until the chosen signup country is known, then that country's (docs/language-phase-1c-report.md).
+// ⚠️ PASSED ON AS THEY COME, WITHOUT A CODE: lib/trade-area.ts's country, zone and town sentences (that module returns
+// words, not reasons, and is shared with Manage), provisionTruck's exception message and the database's error.
+import { onboardingErrorBody, type OnboardingErrorCode, type OnboardingErrorParams } from '@/lib/i18n/onboarding-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 // 🔴 THE COUNTRY IS THE OPERATOR'S ANSWER (Phase 2D-1) — "Where's your truck based?", the wizard's first step.
 // The fixed signup country ('GB') is gone. The chosen country must be switched on (country_settings.enabled) and its zone
@@ -40,6 +46,11 @@ const supabase = createClient(
  * "demo-kitchen" → "demokitchen". Still readable, still theirs, no longer the reserved prefix, and no
  * explanation demanded of someone who does not care how our routing works.
  */
+/** `{ ok: false, error, code, params }` with the given status. */
+function refuse(locale: string, code: OnboardingErrorCode, status: number, params: OnboardingErrorParams = {}) {
+  return NextResponse.json({ ok: false, ...onboardingErrorBody(locale, code, params) }, { status })
+}
+
 function safeSlug(name: string): string {
   const base = createSlug(name)
   return base.startsWith(DEMO_PREFIX) ? base.replace('-', '') : base
@@ -48,21 +59,23 @@ function safeSlug(name: string): string {
 export async function POST(req: NextRequest) {
   const supabaseAuth = await createSupabaseServerClient()
   const { data: { user } } = await supabaseAuth.auth.getUser()
-  if (!user) return NextResponse.json({ ok: false, error: 'Not signed in' }, { status: 401 })
+  if (!user) return refuse(DEFAULT_LOCALE, 'not_signed_in', 401)
 
   const { data: operator } = await supabase
     .from('operators').select('id, email').eq('auth_user_id', user.id).maybeSingle()
-  if (!operator) return NextResponse.json({ ok: false, error: 'No operator record' }, { status: 401 })
+  if (!operator) return refuse(DEFAULT_LOCALE, 'no_operator_record', 401)
 
   const body = await req.json().catch(() => null)
-  if (!body) return NextResponse.json({ ok: false, error: 'Bad request' }, { status: 400 })
+  if (!body) return refuse(DEFAULT_LOCALE, 'bad_request', 400)
 
   // ── IDENTITY STEP → the truck comes into existence here ─────────────────────────────────────────
   if (body.action === 'create_truck') {
     const name = String(body.name ?? '').trim()
     const contactEmail = String(body.contact_email ?? '').trim() || operator.email || null
+    // The words of a refusal here: the chosen country's language (en-GB for a country we do not offer).
+    const signupLocale = () => localeForTruck({ country: String(body.country ?? '').trim().toUpperCase() || null })
     if (name.length < 2) {
-      return NextResponse.json({ ok: false, error: 'Give your truck a name.' }, { status: 400 })
+      return refuse(await signupLocale(), 'truck_name_missing', 400)
     }
 
     // ── I4: CONTACT PHONE IS REQUIRED AT SIGNUP ─────────────────────────────────────────────────
@@ -80,7 +93,7 @@ export async function POST(req: NextRequest) {
     // this checks length, not correctness.
     const contactPhone = String(body.contact_phone ?? '').trim()
     if (!contactPhone) {
-      return NextResponse.json({ ok: false, error: 'A contact phone number is required.' }, { status: 400 })
+      return refuse(await signupLocale(), 'contact_phone_required', 400)
     }
     // ── Phase 2D-1: THE COUNTRY AND WHERE THE TRUCK TRADES — before the phone, which is checked by it ──────
     const countryCode = String(body.country ?? '').trim().toUpperCase()
@@ -98,7 +111,11 @@ export async function POST(req: NextRequest) {
     // The chosen country's own phone check (country_settings.phone_check) decides, and its words refuse.
     const signupPhone = phoneCopyOf(countryRow)
     if (!isPlausiblePhone(contactPhone, signupPhone.phoneCountry, signupPhone.phoneCheck)) {
-      return NextResponse.json({ ok: false, error: phoneErrorMessage('phone_number', signupPhone) }, { status: 400 })
+      // The same sentence as the phone box's own (`phone.invalidPhoneNumber`, lib/phone-message.ts), as a code.
+      return refuse(await localeForTruck({ country: countryRow.countryCode }), 'phone_invalid', 400, {
+        withName: signupPhone.short_name ? 'yes' : 'no', name: signupPhone.short_name ?? '',
+        withExample: signupPhone.phone_example ? 'yes' : 'no', example: signupPhone.phone_example ?? '',
+      })
     }
 
     // Idempotence: a double-submit (or a retry after a flaky response) must not mint a second truck.
@@ -169,9 +186,14 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ ok: true, truck: result.truck, warnings: result.warnings, ...(discoveryLink ? { discoveryLink } : {}) })
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Could not create your truck.'
-      console.error('[setup] provisionTruck failed:', msg)
-      return NextResponse.json({ ok: false, error: msg }, { status: 400 })
+      // An exception's own message is passed on as it came; only our fallback carries a code.
+      if (e instanceof Error) {
+        console.error('[setup] provisionTruck failed:', e.message)
+        return NextResponse.json({ ok: false, error: e.message }, { status: 400 })
+      }
+      const refusal = onboardingErrorBody(await localeForTruck({ country: countryRow.countryCode }), 'truck_create_failed')
+      console.error('[setup] provisionTruck failed:', refusal.error)
+      return NextResponse.json({ ok: false, ...refusal }, { status: 400 })
     }
   }
 
@@ -180,7 +202,7 @@ export async function POST(req: NextRequest) {
     const step = String(body.step ?? '')
     const truckId = String(body.truck_id ?? '')
     if (!['identity', 'menu', 'event', 'done'].includes(step)) {
-      return NextResponse.json({ ok: false, error: 'Unknown step' }, { status: 400 })
+      return refuse(DEFAULT_LOCALE, 'unknown_step', 400)
     }
     // Scoped to the caller's own truck — a step marker must never be writable across tenants.
     const { error } = await supabase.from('trucks')
@@ -189,7 +211,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
-  return NextResponse.json({ ok: false, error: 'Unknown action' }, { status: 400 })
+  return refuse(DEFAULT_LOCALE, 'unknown_action', 400)
 }
 
 // ── GET: the stored demo extraction, for the wizard to re-commit FROM ──────────────────────────────
@@ -204,11 +226,11 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const supabaseAuth = await createSupabaseServerClient()
   const { data: { user } } = await supabaseAuth.auth.getUser()
-  if (!user) return NextResponse.json({ ok: false, error: 'Not signed in' }, { status: 401 })
+  if (!user) return refuse(DEFAULT_LOCALE, 'not_signed_in', 401)
 
   const { data: operator } = await supabase
     .from('operators').select('id').eq('auth_user_id', user.id).maybeSingle()
-  if (!operator) return NextResponse.json({ ok: false, error: 'No operator record' }, { status: 401 })
+  if (!operator) return refuse(DEFAULT_LOCALE, 'no_operator_record', 401)
 
   // ── ?check=truck — "does this operator already have a truck?" (A3) ───────────────────────────────
   // /setup used to render "What's your truck called?" with no lookup at all, so an operator who had

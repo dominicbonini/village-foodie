@@ -18,10 +18,16 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/auth'
 
 function SignupForm() {
   const router = useRouter()
   const params = useSearchParams()
+  // Language Phase 1c: the words are `auth.signup` / `auth.fields`. No truck exists yet and this route has no
+  // provider, so they read en-GB (DEFAULT_LOCALE), as the page always did.
+  const t = useT('auth.signup')
+  const tField = useT('auth.fields')
   // Carried from the demo's "Save my menu" CTA so the account can be linked to the demo it came from.
   const demo = params.get('demo')
 
@@ -45,7 +51,7 @@ function SignupForm() {
       })
       const data = await res.json()
       if (!data.ok) {
-        setError(data.error || 'Could not create your account.')
+        setError(data.error || t('errorFallback'))
         setExisting(!!data.existing)
         return
       }
@@ -56,7 +62,7 @@ function SignupForm() {
       if (signInErr) { router.push('/login?message=signed_up'); return }
       router.push('/setup')
     } catch {
-      setError('Couldn’t reach us just now — please try again.')
+      setError(t('errorOffline'))
     } finally {
       setBusy(false)
     }
@@ -67,23 +73,23 @@ function SignupForm() {
       <div className="bg-white rounded-2xl border border-slate-100 shadow-xl w-full max-w-sm p-8 flex flex-col gap-6">
         <div className="text-center">
           <div className="flex justify-center mb-4"><HatchGrabWordmark /></div>
-          <h1 className="text-xl font-black text-slate-900">Create your account</h1>
+          <h1 className="text-xl font-black text-slate-900">{t('title')}</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Your free month doesn&apos;t start until you go live.
+            {t('subtitle')}
           </p>
         </div>
 
         <form onSubmit={submit} className="flex flex-col gap-4">
           <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Email</label>
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{tField('email')}</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
-              autoComplete="email" placeholder="you@yourtruck.co.uk"
+              autoComplete="email" placeholder={t('emailPlaceholder')}
               className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
           </div>
           <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Password</label>
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{tField('password')}</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
-              autoComplete="new-password" minLength={8} placeholder="At least 8 characters"
+              autoComplete="new-password" minLength={8} placeholder={tField('passwordHint')}
               className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
           </div>
 
@@ -100,10 +106,10 @@ function SignupForm() {
               the great majority of people, who will not have one. */}
           <div>
             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">
-              Have a code? <span className="normal-case font-normal text-slate-400">(optional)</span>
+              {t.rich('codeLabel', { optional: c => <span className="normal-case font-normal text-slate-400">{c}</span> })}
             </label>
             <input type="text" value={promoCode} onChange={e => setPromoCode(e.target.value)}
-              maxLength={40} autoComplete="off" placeholder="Enter it here"
+              maxLength={40} autoComplete="off" placeholder={t('codePlaceholder')}
               className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
           </div>
 
@@ -112,34 +118,33 @@ function SignupForm() {
             <input type="checkbox" checked={marketing} onChange={e => setMarketing(e.target.checked)}
               className="mt-0.5 w-4 h-4 accent-orange-600" />
             <span className="text-xs text-slate-500">
-              Email me occasional tips and product news. Nothing to do with your orders — you can stop any time.
+              {t('marketing')}
             </span>
           </label>
 
           {error && (
             <p className="text-sm text-red-600 text-center">
               {error}{' '}
-              {existing && <a href="/login" className="underline font-semibold">Sign in</a>}
+              {existing && <a href="/login" className="underline font-semibold">{t('signIn')}</a>}
             </p>
           )}
 
           <button type="submit" disabled={busy || !email.includes('@') || password.length < 8}
             className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl transition-colors disabled:opacity-40">
-            {busy ? 'Creating your account…' : 'Create my account'}
+            {busy ? t('submitting') : t('submit')}
           </button>
 
           {/* Consent by conduct — directly under the action it refers to, which is what makes it consent. */}
           <p className="text-[11px] text-slate-400 text-center leading-relaxed">
-            By creating an account you agree to our{' '}
-            <a href={TERMS_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Terms</a>{' '}
-            and{' '}
-            <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Privacy Policy</a>.
-            No card needed. Nothing goes public until you say so.
+            {t.rich('consent', {
+              terms: c => <a href={TERMS_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{c}</a>,
+              privacy: c => <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{c}</a>,
+            })}
           </p>
         </form>
 
         <div className="text-center">
-          <a href="/login" className="text-xs text-orange-500 hover:text-orange-600">Already have an account? Sign in</a>
+          <a href="/login" className="text-xs text-orange-500 hover:text-orange-600">{t('haveAccount')}</a>
         </div>
       </div>
     </div>

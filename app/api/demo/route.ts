@@ -18,6 +18,11 @@ import { createClient } from '@supabase/supabase-js'
 import { provisionDemo, ProvisionDemoError } from '@/lib/provision-demo'
 import { getDemoTemplate } from '@/lib/demo-templates'
 import { demoRatelimit } from '@/lib/ratelimit'
+// Language Phase 1c: a refusal of ours is `{ error, …, code, params }` (lib/i18n/onboarding-errors.ts). The demo has no
+// truck yet when this route refuses, so its words are en-GB (docs/language-phase-1c-report.md). ⚠️ provisionDemo's
+// `reason` (an honest-failure outcome, not a refusal) is passed on as lib/provision-demo.ts words it.
+import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 // 🔴 THIS ROUTE BLOCKS FOR THE WHOLE PROVISION (Gemini extract + ~85-round-trip commit + event + seed +
 // rebuild) — ~40-80s. It had NO maxDuration, so it inherited the PLATFORM DEFAULT (10s on Hobby / 15s on
@@ -60,7 +65,7 @@ export async function POST(req: NextRequest) {
     const tpl = form.get('template')
     templateId = typeof tpl === 'string' && tpl.trim() ? tpl.trim() : null
   } catch {
-    return NextResponse.json({ error: 'Could not read your upload — please try again.' }, { status: 400 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'upload_unreadable'), { status: 400 })
   }
 
   // ── 2. Cheap rejections BEFORE the rate limit ─────────────────────────────────────────────────────
@@ -69,7 +74,7 @@ export async function POST(req: NextRequest) {
   if (file) {
     if (file.size > MAX_UPLOAD_BYTES) {
       return NextResponse.json(
-        { error: `That file is too big (max ${Math.round(MAX_UPLOAD_BYTES / 1024 / 1024)} MB). A normal photo of your menu is fine.` },
+        onboardingErrorBody(DEFAULT_LOCALE, 'file_too_big', { mb: Math.round(MAX_UPLOAD_BYTES / 1024 / 1024) }),
         { status: 413 },
       )
     }
@@ -77,18 +82,18 @@ export async function POST(req: NextRequest) {
     const accepted = ACCEPTED_PREFIXES.some(p => type.startsWith(p)) || ACCEPTED_EXACT.includes(type)
     if (!accepted) {
       return NextResponse.json(
-        { error: 'That file type isn’t supported — send a photo or a PDF of your menu.' },
+        onboardingErrorBody(DEFAULT_LOCALE, 'file_type_unsupported'),
         { status: 415 },
       )
     }
   }
   if (text && text.length > MAX_TEXT_CHARS) {
-    return NextResponse.json({ error: 'That’s a lot of text — please paste just the menu.' }, { status: 413 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'text_too_long'), { status: 413 })
   }
 
   const template = getDemoTemplate(templateId)
   if (!file && !text && !template) {
-    return NextResponse.json({ error: 'Add a photo of your menu, or paste it in.' }, { status: 400 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'menu_missing'), { status: 400 })
   }
 
   // ── 3. Rate limit ─────────────────────────────────────────────────────────────────────────────────
@@ -102,7 +107,7 @@ export async function POST(req: NextRequest) {
       const { success } = await demoRatelimit.limit(ip)
       if (!success) {
         return NextResponse.json(
-          { error: 'You’ve built a few demos already. Try again in a little while, or get in touch and we’ll help.', rateLimited: true },
+          onboardingErrorBody(DEFAULT_LOCALE, 'demo_rate_limited', {}, { rateLimited: true }),
           { status: 429, headers: { 'Retry-After': '3600' } },
         )
       }
@@ -157,7 +162,7 @@ export async function POST(req: NextRequest) {
     }
     // Deliberately vague to the visitor — internal failure detail helps them not at all.
     return NextResponse.json(
-      { ok: false, outcome: 'error', error: 'Something went wrong building your demo. Please try again.' },
+      { ok: false, outcome: 'error', ...onboardingErrorBody(DEFAULT_LOCALE, 'demo_build_failed') },
       { status: 500 },
     )
   }

@@ -22,8 +22,11 @@ translation file, never another sweep. Source: `docs/language-readiness-audit-re
      authored files by `node scripts/split-messages.cjs` (run by `npm run build` / `npm run dev`); never edit them by
      hand. `scripts/messages-split.cjs` fails if one is stale or a file reads a namespace it does not import
      (`--fix` adds the import).
-   - **A refusal a route sends is `{ error, …, code, params }`** — `customerErrorBody` (customers) or
-     `kitchenErrorBody` (the kitchen and operator); a screen shows `errorText(t, body, fallback)`.
+   - **A refusal a route sends is `{ error, …, code, params }`** — `customerErrorBody` (customers),
+     `kitchenErrorBody` (the kitchen and operator) or `onboardingErrorBody` (setup, signup, auth, demo); a screen
+     shows `errorText(t, body, fallback)`. All three are thin wrappers over ONE helper, `errorBody(namespace, …)` in
+     `lib/i18n/error-body.ts` (Language Phase 1c): a new surface adds a wrapper for its `errors…` namespace, never a
+     copy of the body-building code.
 2. **Whole sentences only.** Never build a sentence from pieces (`'Only ' + n + ' left'`, a prefix and a suffix
    around a control, a bold word split out). One message with placeholders, and rich-text tags for bold or links.
 3. **No hand-written plurals.** No `n === 1 ? … : …` and no added `'s'`. Use ICU `plural` in the message.

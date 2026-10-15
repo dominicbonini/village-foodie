@@ -19,5 +19,9 @@
   "noLinkTitle": "Your customer order link",
   "noLinkBody": "Your ordering page link is in the menu, top right.",
   "asLive": "The ordering and kitchen flow is exactly as it runs live.",
-  "startExploring": "Start exploring"
+  "startExploring": "Start exploring",
+  "signupOffer": {
+    "heading": "Sign up for your free month now",
+    "sub": "The clock doesn’t start until you decide to go live."
+  }
 }

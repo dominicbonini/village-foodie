@@ -270,8 +270,13 @@ async function checkAfter() {
     ['app/manage/[token]/page.tsx', /phoneErrorMessage\('phone', phoneCopy\)/], ['app/manage/[token]/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
     ['app/setup/page.tsx', /phoneErrorMessage\('phone_number', phoneCopy\)/], ['app/setup/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
     // Phase 2D-1: the demo modal words its box from the CHOSEN country (signupPhone), and the API from the chosen row.
-    ['components/DemoGetStarted.tsx', /phoneErrorMessage\('phone_number', signupPhone\)/], ['components/DemoGetStarted.tsx', /placeholder=\{phonePlaceholder\(signupPhone\)\}/],
-    ['app/api/setup/route.ts', /const signupPhone = phoneCopyOf\(countryRow\)[\s\S]{0,200}phoneErrorMessage\('phone_number', signupPhone\)/],
+    // Re-pinned 15 October 2026 (docs/language-phase-1c-report.md): the modal now holds the malformed-number error as
+    // the code 'phoneInvalid' and words it at render, in the wizard's language — still from the CHOSEN country (signupPhone).
+    ['components/DemoGetStarted.tsx', /phoneErrorMessage\('phone_number', signupPhone, wordsLocale\)/], ['components/DemoGetStarted.tsx', /placeholder=\{phonePlaceholder\(signupPhone\)\}/],
+    // Re-pinned 15 October 2026 (docs/language-phase-1c-report.md): the API's refusal is now the `errorsOnboarding`
+    // code 'phone_invalid' — word for word phone.invalidPhoneNumber (scripts/_lp1c-api.cjs pins the two equal) — still
+    // filled from the CHOSEN country's row (signupPhone): its name and example.
+    ['app/api/setup/route.ts', /const signupPhone = phoneCopyOf\(countryRow\)[\s\S]{0,600}'phone_invalid'[\s\S]{0,200}name: signupPhone\.short_name[\s\S]{0,160}example: signupPhone\.phone_example/],
   ]) if (!re.test(read(f))) fails.push(`${f} no longer words its phone box from the settings: ${re}`)
   // ── 3 · the rendered screens and emails, against BEFORE
   const opTruck = { id: 'test-truck', name: 'Pizza Kitchen', logo: null, mode: 'village', venue_name: null, time_selection_enabled: true, paused: false, plan: 'pro', ordering_available: true, card_payments_ready: false, money: FMT, time: GB_TS, country: 'GB', phone: GB }

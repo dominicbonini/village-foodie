@@ -24,6 +24,19 @@ import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { HATCHGRAB_SENDER } from '@/lib/email-config'
 import { DELETION_WINDOW_DAYS } from '@/lib/account-deletion'
+// Language Phase 1c (docs/language-phase-1c-report.md): a refusal of ours is `{ error, code, params }`
+// (lib/i18n/onboarding-errors.ts), en-GB until the account's trucks are read, then the first truck's language — which
+// the owners' email (messages/en-GB.json `emailAccount.deletionScheduled`) is written in too.
+// ⚠️ Two refusals already carried their own `code` ('confirm_mismatch', 'partial_stamp'). Their bodies are unchanged;
+// their words now come from `errorsOnboarding` under that same code. The database's error is passed on as it came.
+// ⚠️ The [ACTION] notification goes to HatchGrab's own inbox, not to the operator: it stays in English, inline.
+// ⚠️ The due date is still the raw ISO date — kept byte-identical, listed for Phase 2.
+import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/emailAccount'
+import '@/lib/i18n/catalog/errorsOnboarding'
 
 const supabase = createClient(
   (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
@@ -89,7 +102,7 @@ async function resolveOperator(req: NextRequest) {
 // several. Naming only the truck you happen to be looking at would understate what is being deleted.
 export async function GET(req: NextRequest) {
   const operator = await resolveOperator(req)
-  if (!operator) return NextResponse.json({ error: 'Only the account owner can view this.' }, { status: 403 })
+  if (!operator) return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'deletion_view_owner_only'), { status: 403 })
 
   const { data: trucks } = await supabase.from('trucks').select('id, name, timezone, country').eq('operator_id', operator.id)
 
@@ -151,7 +164,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  if (!authUserId) return NextResponse.json({ error: 'Sign in to request account deletion.' }, { status: 401 })
+  if (!authUserId) return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'deletion_sign_in'), { status: 401 })
 
   const { data: operator } = await supabase
     .from('operators')
@@ -160,7 +173,7 @@ export async function POST(req: NextRequest) {
     .maybeSingle()
   if (!operator) {
     // Staff and managers have an auth user but no operators row — they are not the account holder.
-    return NextResponse.json({ error: 'Only the account owner can request deletion.' }, { status: 403 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'deletion_owner_only'), { status: 403 })
   }
 
   // Idempotent: re-requesting must not restart the clock. The window is fixed at the FIRST request.
@@ -176,14 +189,15 @@ export async function POST(req: NextRequest) {
   // Typed confirmation, same principle as the admin hard-delete's Guard 1: prove you know what you are
   // doing, rather than proving you can click.
   if (typeof body.confirm !== 'string' || body.confirm.trim().toUpperCase() !== 'DELETE') {
-    return NextResponse.json({ error: 'Type DELETE to confirm.', code: 'confirm_mismatch' }, { status: 400 })
+    return NextResponse.json({ error: translatorFor(DEFAULT_LOCALE, 'errorsOnboarding')('confirm_mismatch'), code: 'confirm_mismatch' }, { status: 400 })
   }
 
   const now = new Date()
   const dueAt = new Date(now.getTime() + DELETION_WINDOW_DAYS * 24 * 60 * 60 * 1000)
 
-  const { data: trucks } = await supabase.from('trucks').select('id, name').eq('operator_id', operator.id)
+  const { data: trucks } = await supabase.from('trucks').select('id, name, country').eq('operator_id', operator.id)
   const truckIds = (trucks ?? []).map(t => t.id as string)
+  const locale = await localeForTruck(trucks?.[0])
 
   // ── Stamp the ACCOUNT RECORD first ───────────────────────────────────────────────────────────────
   // 🔴 ORDER MATTERS. The operator row is authoritative; the truck flags are a derived enforcement
@@ -207,7 +221,7 @@ export async function POST(req: NextRequest) {
       // customer can still order.
       console.error('[request-deletion] truck flags failed:', truckErr.message)
       return NextResponse.json(
-        { error: 'Your deletion request was recorded, but we could not stop ordering on every truck. Contact support.', code: 'partial_stamp' },
+        { error: translatorFor(locale, 'errorsOnboarding')('partial_stamp'), code: 'partial_stamp' },
         { status: 500 },
       )
     }
@@ -227,17 +241,16 @@ export async function POST(req: NextRequest) {
   }
 
   const dueLabel = dueAt.toISOString().slice(0, 10)
-  const truckList = (trucks ?? []).map(t => t.name).join(', ') || '(no trucks)'
+  const t = translatorFor(locale, 'emailAccount.deletionScheduled')
+  const strong = (chunks: string) => `<strong>${chunks}</strong>`
+  const truckList = (trucks ?? []).map(tr => tr.name).join(', ') || t('noTrucks')
   const ownerHtml = `
-    <p>We have received a request to delete this HatchGrab account.</p>
-    <p><strong>Online ordering has stopped immediately</strong> on: ${truckList}. Your dashboard stays
-    available to read for the next ${DELETION_WINDOW_DAYS} days.</p>
-    <p>The account is scheduled for deletion on <strong>${dueLabel}</strong>.</p>
-    <p><strong>This cannot be cancelled from inside the app.</strong> If this was not you, or you have
-    changed your mind, reply to this email as soon as possible.</p>
-    <p>When the account is deleted we remove your personal details and your customers' details. We keep
-    anonymous accounting records, which we are legally required to retain.</p>`
-  for (const to of owners) await sendMail(to, 'Your HatchGrab account is scheduled for deletion', ownerHtml)
+    <p>${t('received')}</p>
+    <p>${t.markup('orderingStopped', { trucks: truckList, b: strong })} ${t('readable', { days: DELETION_WINDOW_DAYS })}</p>
+    <p>${t.markup('scheduled', { date: dueLabel, b: strong })}</p>
+    <p>${t.markup('cannotCancel', { b: strong })}</p>
+    <p>${t('kept')}</p>`
+  for (const to of owners) await sendMail(to, t('subject'), ownerHtml)
 
   if (HATCHGRAB_SENDER.replyTo) {
     await sendMail(HATCHGRAB_SENDER.replyTo,

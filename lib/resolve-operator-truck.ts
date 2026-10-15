@@ -25,6 +25,8 @@ export interface ResolvedOperatorTruck {
   dashboard_token: string
   setup_step: string | null
   name: string | null
+  /** The truck's country — read so a caller can write to the operator in its language (Language Phase 1c). */
+  country: string | null
 }
 
 /**
@@ -40,7 +42,7 @@ export async function resolveOperatorTruck(
 ): Promise<ResolvedOperatorTruck | null> {
   const { data: trucks } = await supabase
     .from('trucks')
-    .select('dashboard_token, setup_step, name')
+    .select('dashboard_token, setup_step, name, country')
     .eq('operator_id', operatorId)
     .order('created_at', { ascending: true })
 

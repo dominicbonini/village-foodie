@@ -11,24 +11,31 @@
 // IT COMPILES AND IMPORTS THE REAL MODULE rather than reimplementing the rules. A second copy of the
 // predicate would answer a different question from the one the product actually enforces, which is worse
 // than having no audit — it would report "all clear" against rules nobody uses. There is no ts-node/tsx in
-// this project, so it shells out to the installed tsc and dynamic-imports the output.
+// this project, so it bundles the module with the installed esbuild and loads the output.
+// ⚠️ Language Phase 1c (docs/language-phase-1c-report.md, 15 October 2026): an issue is now a code and its values,
+// and its words come from lib/go-live-text.ts (the message files). That module imports the i18n catalogue, which a
+// single-file `tsc` cannot resolve, so the compile moved from tsc to an esbuild bundle of both modules. The lines
+// printed below are the same words as before.
 //
 // GET requests only. This script performs no writes of any kind.
 
-import { readFileSync, mkdtempSync, renameSync } from 'fs'
-import { execFileSync } from 'child_process'
+import { readFileSync, mkdtempSync, writeFileSync } from 'fs'
+import { createRequire } from 'module'
 import { tmpdir } from 'os'
 import { join } from 'path'
 
 const ROOT = new URL('..', import.meta.url).pathname
 
-// ── Compile lib/go-live-checks.ts → ESM, then import it ──────────────────────────────────────────────
-const out = mkdtempSync(join(tmpdir(), 'golive-'))
-execFileSync('npx', ['tsc', 'lib/go-live-checks.ts', '--outDir', out,
-  '--module', 'esnext', '--target', 'es2022', '--skipLibCheck'], { cwd: ROOT, stdio: 'inherit' })
-// tsc emits .js; this package is not type:module, so an .mjs extension is what makes it load as ESM.
-renameSync(join(out, 'go-live-checks.js'), join(out, 'go-live-checks.mjs'))
-const { checkGoLive } = await import(join(out, 'go-live-checks.mjs'))
+// ── Bundle lib/go-live-checks.ts and its words (lib/go-live-text.ts) → CommonJS, then load it ──────────
+const require = createRequire(import.meta.url)
+const { build } = require(join(ROOT, 'node_modules/esbuild'))
+const bundled = await build({
+  stdin: { contents: "export { checkGoLive } from '@/lib/go-live-checks'\nexport { goLiveIssueText } from '@/lib/go-live-text'", resolveDir: ROOT, loader: 'ts' },
+  bundle: true, write: false, platform: 'node', format: 'cjs', target: 'node20', alias: { '@': ROOT }, logLevel: 'silent',
+})
+const out = join(mkdtempSync(join(tmpdir(), 'golive-')), 'go-live.cjs')
+writeFileSync(out, bundled.outputFiles[0].text)
+const { checkGoLive, goLiveIssueText } = require(out)
 
 // ── Supabase (service role, read-only usage) ─────────────────────────────────────────────────────────
 const env = Object.fromEntries(readFileSync(join(ROOT, '.env.local'), 'utf8')
@@ -70,7 +77,7 @@ for (const { t, res } of results) {
   console.log(`${t.id.padEnd(30)} ${isLive(t) ? 'LIVE   ' : 'hidden '}${isDemo(t.id) ? '[demo] ' : '       '}` +
     `mode=${String(t.allergen_display_mode).padEnd(9)} items=${String((I[t.id] ?? []).length).padStart(3)} ` +
     `vans=${(V[t.id] ?? []).length}  ${tag}`)
-  for (const b of res.blockers) console.log(`      • [${b.code}] ${b.title}`)
+  for (const b of res.blockers) console.log(`      • [${b.code}] ${goLiveIssueText(b).title}`)
 }
 
 // The section that matters: a LIVE, non-demo truck with a blocker is a problem TODAY, not at Phase 5.
@@ -84,6 +91,6 @@ if (urgent.length === 0) {
   console.log(`\n🔴 ${urgent.length} LIVE operator truck(s) with blockers — these are live issues, not Phase 5 work:`)
   for (const { t, res } of urgent) {
     console.log(`\n  ${t.id} (${t.name})`)
-    for (const b of res.blockers) console.log(`     • ${b.title}\n       ${b.detail}`)
+    for (const b of res.blockers) { const w = goLiveIssueText(b); console.log(`     • ${w.title}\n       ${w.detail}`) }
   }
 }

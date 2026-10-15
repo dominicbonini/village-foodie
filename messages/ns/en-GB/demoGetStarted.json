@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Save my menu →",
+    "heading": "Set up your truck",
+    "sub": "Your menu carries straight over.",
+    "privacy": "We'll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
+  },
+  "sample": {
+    "bannerButton": "Set up my truck →",
+    "heading": "Set up your truck",
+    "sub": "You’ll upload your own menu next — takes a minute.",
+    "privacy": "We'll only use this to set up your truck and send your demo link — see our <link>privacy policy</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Save my menu →",
+    "heading": "Save your demo",
+    "sub": "We’ll keep it for 14 days and email you a link straight back.",
+    "privacy": "We'll only use this to send your demo link — see our <link>privacy policy</link>."
+  },
+  "confirmationHeading": "You’re all set",
+  "postSaveButton": "Set up my truck →",
+  "enterSetupButton": "Set up my truck →",
+  "emailOnlyLink": "Just email me a link to come back to this demo",
+  "sendLinkButton": "Send me the link",
+  "savingButton": "Saving…",
+  "continueButton": "Continue →",
+  "createAccountButton": "Create my account →",
+  "retryButton": "Try again",
+  "backToDemoButton": "Back to the demo",
+  "savedStatus": "{hasDate, select, yes {✓ Saved — kept until {date}} other {✓ Saved}}",
+  "back": "Back",
+  "close": "Close",
+  "truckStepHeading": "About your truck",
+  "detailsStepHeading": "Finish setting up",
+  "stepper": {
+    "details": "Your details",
+    "menu": "Menu",
+    "allergens": "Allergens",
+    "kitchen": "Kitchen setup",
+    "schedule": "Schedule"
+  },
+  "confirmEmailed": "We've emailed you a link straight back to this demo — no login needed.",
+  "confirmKeepUntil": "We'll keep it until <b>{date}</b>. Your menu comes with you when you set up properly.",
+  "loading": "Loading…",
+  "firstName": "First name",
+  "lastName": "Last name",
+  "truckName": "Truck name",
+  "truckNamePlaceholder": "e.g. The Village Kitchen",
+  "cuisine": "Cuisine",
+  "logoLabel": "Logo <opt>(optional)</opt>",
+  "logoPreviewAlt": "Logo preview",
+  "changeLogo": "Change logo",
+  "removeLogo": "Remove",
+  "uploadLogo": "📷 Upload logo",
+  "readyTitle": "Your account's ready",
+  "readyBody": "Now let's finish setting up your truck — your menu, allergens and kitchen.",
+  "hangTight": "Hang tight — setting everything up.",
+  "stage": {
+    "account": "Creating your account",
+    "truck": "Setting up your truck",
+    "menu": "Loading your menu"
+  },
+  "stageState": {
+    "done": "done",
+    "recognised": "you already have an account",
+    "failed": "failed",
+    "active": "in progress",
+    "pending": "pending"
+  },
+  "signIn": "Sign in",
+  "phone": "Phone",
+  "onWhatsapp": "This number is on WhatsApp",
+  "email": "Email",
+  "emailPlaceholder": "you@yourtruck.co.uk",
+  "settingUpAs": "Setting up as <b>{email}</b> <change>change</change>",
+  "password": "Password",
+  "passwordPlaceholder": "At least 8 characters",
+  "hidePassword": "Hide password",
+  "showPassword": "Show password",
+  "promoLabel": "Have a code? <opt>(optional)</opt>",
+  "promoPlaceholder": "Enter it here",
+  "agreeTerms": "I agree to the <terms>Terms</terms> and <privacy>Privacy Policy</privacy>.",
+  "freeMonth": "Setting up won't start your free month. That begins when you pick your first live event — whenever you're ready.",
+  "fieldError": {
+    "firstName": "Tell us your first name.",
+    "lastName": "And your last name.",
+    "truck": "Give your truck a name.",
+    "cuisine": "Tell us what you cook.",
+    "phoneMissing": "Add a phone number — customers and we both use it to reach you.",
+    "email": "Enter a valid email address.",
+    "password": "Password must be at least 8 characters.",
+    "terms": "Please accept the terms to continue."
+  },
+  "error": {
+    "saveFailed": "Couldn’t save that — try again.",
+    "savedNoEmail": "Saved — but we couldn’t email the link just now.",
+    "unreachable": "Couldn’t reach us just now — try again.",
+    "createAccountFailed": "Could not create your account.",
+    "truckCreateFailed": "Your account’s ready, but we couldn’t create your truck. Try again.",
+    "truckUnreachable": "Your account’s ready, but we couldn’t reach us to create your truck. Try again.",
+    "truckNoToken": "Your truck is set up, but we couldn’t open it just now. Try again."
+  }
+}

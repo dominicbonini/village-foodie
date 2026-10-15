@@ -1,0 +1,31 @@
+{
+  "intro": "Manage is where you set your truck up and see how it's doing. The Dashboard is where you take orders and run each event as it happens.",
+  "ariaLabel": "Dashboard walkthrough",
+  "step": "{current} of {total}",
+  "skip": "Skip",
+  "back": "← Back",
+  "next": "Next →",
+  "done": "Done",
+  "stops": {
+    "menu": {
+      "title": "Menu",
+      "body": "Your dishes, prices and allergens. Change anything here and it's live straight away."
+    },
+    "schedule": {
+      "title": "Schedule",
+      "body": "Where and when you're trading. Add an event here and customers can order for it."
+    },
+    "build": {
+      "title": "Deals and Extras & upsells",
+      "body": "Deals, upsells, customisations and your kitchen capacity live under Menu — have a play around."
+    },
+    "settings": {
+      "title": "Settings",
+      "body": "Your truck's details and how customers pay."
+    },
+    "billing": {
+      "title": "Billing",
+      "body": "Where your plan, billing and feature information lives."
+    }
+  }
+}

@@ -26,8 +26,13 @@ import { useState, useEffect, useRef, createContext, useContext, useCallback } f
 import { createPortal } from 'react-dom'
 import { DEMO_TEMPLATES } from '@/lib/demo-templates'
 import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/demoUpload'
 
 type Phase = 'idle' | 'working' | 'menu_failed' | 'error'
+/** A message this modal words itself (`demoUpload.error.<code>`), held in state as a code; a route's own words are
+ *  held as the string it sent (Language Phase 1c). */
+type UploadMessage = string | { code: 'somethingWrong' | 'serverUnreachable' | 'sendFailed' }
 
 // Framed around THEIR menu, not around us (spec Stage 2). No feature carousel, no tips.
 //
@@ -44,24 +49,26 @@ type Phase = 'idle' | 'working' | 'menu_failed' | 'error'
 // whole flush is capped at 2s total (min 1s/stage, shared when >2 remain). A response AFTER the schedule
 // completes (the normal ~40-45s case) redirects immediately with no added delay. This honours §2 ("degrade
 // gracefully if fast; never pad the wait"): a bounded 2s of visual completion, never an unbounded pad.
+// The words are `demoUpload.steps.<key>` (Language Phase 1c); the schedule stays here.
 const STEPS = [
-  { at: 0,      label: 'Reading your menu…' },
-  { at: 20_000, label: 'Found your items…' },
-  { at: 25_000, label: 'Setting up your kitchen…' },
-  { at: 30_000, label: 'Building your ordering page…' },
-  { at: 35_000, label: 'Almost ready…' },
-]
+  { at: 0,      key: 'reading' },
+  { at: 20_000, key: 'found' },
+  { at: 25_000, key: 'kitchen' },
+  { at: 30_000, key: 'page' },
+  { at: 35_000, key: 'almost' },
+] as const
 
 // A template provision makes NO Gemini call, so "Reading your menu…" would be a lie (§11 — never present a
 // sample as their own). SAME schedule (.at) as STEPS so the flush/timing logic is unchanged — only the
 // LABELS differ, and none claims to read anything. A template run finishes in ~10-15s, so most flush.
+// The words are `demoUpload.templateSteps.<key>`.
 const TEMPLATE_STEPS = [
-  { at: 0,      label: 'Building your sample truck…' },
-  { at: 20_000, label: 'Setting up the menu…' },
-  { at: 25_000, label: 'Setting up the kitchen…' },
-  { at: 30_000, label: 'Building the ordering page…' },
-  { at: 35_000, label: 'Almost ready…' },
-]
+  { at: 0,      key: 'truck' },
+  { at: 20_000, key: 'menu' },
+  { at: 25_000, key: 'kitchen' },
+  { at: 30_000, key: 'page' },
+  { at: 35_000, key: 'almost' },
+] as const
 
 // ONE unlabelled sample only (Pizza). Burger + Curry stay authored in lib/demo-templates.ts but are no
 // longer offered anywhere in this modal. The control never names the cuisine ("See sample menu", no 🍕) so
@@ -118,10 +125,11 @@ export function DemoCta({ id, className, children }: { id?: string; className?: 
 // ── The modal ───────────────────────────────────────────────────────────────────────────────────────
 export function DemoModal() {
   const { open, setOpen } = useDemoModal()
+  const t = useT('demoUpload')
   const [phase, setPhase] = useState<Phase>('idle')
   const [file, setFile] = useState<File | null>(null)
   const [text, setText] = useState('')
-  const [message, setMessage] = useState<string | null>(null)
+  const [message, setMessage] = useState<UploadMessage | null>(null)
   const [stepIdx, setStepIdx] = useState(0)
   const [slowPrompt, setSlowPrompt] = useState(false)   // 60s non-blocking reassurance (message, not cancel)
   const [sampleOffer, setSampleOffer] = useState(false) // 90s: add the sample-menu escape hatch to that prompt
@@ -233,14 +241,14 @@ export function DemoModal() {
       if (data.outcome === 'menu_failed') {
         setFailedTruckId(data.truckId ?? null); setPhase('menu_failed'); return
       }
-      setMessage(data.error || 'Something went wrong. Please try again.')
+      setMessage(data.error || { code: 'somethingWrong' })
       setPhase('error')
     } catch {
       // An AbortError here is EXPECTED when a sample replaced this fetch — the stale guard suppresses it
       // (the newer submit owns the modal). A genuine network error on the current request falls through.
       if (stale()) return
       timers.current.forEach(clearTimeout)
-      setMessage('We couldn’t reach the server. Check your connection and try again.')
+      setMessage({ code: 'serverUnreachable' })
       setPhase('error')
     }
   }
@@ -254,9 +262,9 @@ export function DemoModal() {
       })
       const data = await res.json()
       if (data.ok) setBuildSent(true)
-      else setMessage(data.error || 'Couldn’t send that — try again.')
+      else setMessage(data.error || { code: 'sendFailed' })
     } catch {
-      setMessage('Couldn’t send that — try again.')
+      setMessage({ code: 'sendFailed' })
     } finally {
       setBuildBusy(false)
     }
@@ -266,6 +274,9 @@ export function DemoModal() {
   // Which load labels to show. Same schedule either way (STEPS/TEMPLATE_STEPS share .at), so only the
   // working-view text changes — a template run never shows "Reading your menu…".
   const shownSteps = templateRun ? TEMPLATE_STEPS : STEPS
+  const stepLabel = (i: number) => (templateRun ? t(`templateSteps.${TEMPLATE_STEPS[i].key}`) : t(`steps.${STEPS[i].key}`))
+  /** The words of the message held in state: a route's own string as it came, or our code's sentence. */
+  const messageText = message == null ? null : typeof message === 'string' ? message : t(`error.${message.code}`)
   if (!open || typeof document === 'undefined') return null
 
   return createPortal(
@@ -280,7 +291,7 @@ export function DemoModal() {
       <div
         className="bg-white rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh] text-left"
         onClick={e => e.stopPropagation()}
-        role="dialog" aria-modal="true" aria-label="Upload your menu"
+        role="dialog" aria-modal="true" aria-label={t('dialogLabel')}
       >
         {/* ── Header (shrink-0) — matches Manage's h3 mb-1 + copy mb-5 ── */}
         <div className="px-6 pt-6 pb-5 shrink-0 relative">
@@ -288,25 +299,22 @@ export function DemoModal() {
               so the centring is true rather than centred-within-the-space-left-over. The FORM below stays
               left-aligned — labelled fields read wrong centred. */}
           <h3 className="font-black text-slate-900 mb-1 text-center px-6">
-            {phase === 'menu_failed' ? 'We couldn’t read that menu' : '✨ Upload your menu'}
+            {phase === 'menu_failed' ? t('failedHeading') : t('heading')}
           </h3>
           {phase !== 'working' && (
-            <button type="button" onClick={close} aria-label="Close"
+            <button type="button" onClick={close} aria-label={t('close')}
               className="absolute top-4 right-5 text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
           )}
           {(phase === 'idle' || phase === 'error') && (
             // NO "you review everything before it saves" — that's true in Manage, NOT here. The demo is
             // built and shown immediately, so promising a review step would be a promise we don't keep.
             <p className="text-slate-600 text-sm text-center">
-              A photo of your menu board, a screenshot, a PDF, or paste it as text. Our AI reads it and
-              builds you a working ordering page — your items, your prices — in under 60 seconds. No
-              sign-up, no card.
+              {t('intro')}
             </p>
           )}
           {phase === 'menu_failed' && (
             <p className="text-slate-600 text-sm text-center">
-              Sometimes a photo is too dark, too angled, or handwritten. That’s ours to handle, not
-              something you did wrong. A few ways forward:
+              {t('failedIntro')}
             </p>
           )}
         </div>
@@ -317,13 +325,13 @@ export function DemoModal() {
             // The one deliberately centred block: it's a progress indicator, not body copy.
             <div className="py-8 flex flex-col items-center gap-3 text-center" aria-live="polite" aria-busy="true">
               <div className="w-12 h-12 border-4 border-slate-200 border-t-[var(--orange)] rounded-full animate-spin" />
-              <p className="font-black text-slate-900">{shownSteps[stepIdx].label}</p>
+              <p className="font-black text-slate-900">{stepLabel(stepIdx)}</p>
               <div className="flex gap-1.5" aria-hidden>
                 {shownSteps.map((s, i) => (
                   <span key={s.at} className={`w-7 h-1 rounded-full transition-colors ${i <= stepIdx ? 'bg-[var(--orange)]' : 'bg-slate-200'}`} />
                 ))}
               </div>
-              <p className="text-slate-500 text-xs">This usually takes under 60 seconds.</p>
+              <p className="text-slate-500 text-xs">{t('usually')}</p>
 
               {/* 60s NON-BLOCKING reassurance. The in-flight /api/demo request is UNTOUCHED — "Keep waiting"
                   (the PRIMARY action) only dismisses this message; there is no cancel. At 90s (sampleOffer)
@@ -331,21 +339,21 @@ export function DemoModal() {
                   fetch and provisions the template instead (§11: unmistakably a sample, never a silent swap). */}
               {slowPrompt && (
                 <div className="mt-2 w-full bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-left">
-                  <p className="text-sm font-semibold text-amber-900">This is taking longer than usual — big menus sometimes do.</p>
+                  <p className="text-sm font-semibold text-amber-900">{t('slow')}</p>
                   <button type="button" onClick={() => { setSlowPrompt(false); setSampleOffer(false) }}
                     className="mt-1.5 text-xs font-bold text-amber-800 underline underline-offset-2 hover:text-amber-900">
-                    Keep waiting
+                    {t('keepWaiting')}
                   </button>
 
                   {sampleOffer && SAMPLE_TEMPLATE && (
                     <div className="mt-3 pt-3 border-t border-amber-200">
-                      <p className="text-xs font-bold text-amber-900 mb-1">Or look round with a sample menu while you wait</p>
+                      <p className="text-xs font-bold text-amber-900 mb-1">{t('sampleWhileYouWait')}</p>
                       <p className="text-xs text-amber-800/80 mb-2">
-                        This <strong>won’t be your menu</strong> — it’s a stand-in so you can see how it works.
+                        {t.rich('standIn', { b: c => <strong>{c}</strong> })}
                       </p>
                       <button type="button" onClick={() => submit({ templateId: SAMPLE_TEMPLATE.id })}
                         className="w-full border border-amber-300 bg-white text-slate-700 font-medium py-2 rounded-xl text-sm hover:bg-amber-50">
-                        See sample menu
+                        {t('seeSample')}
                       </button>
                     </div>
                   )}
@@ -361,20 +369,20 @@ export function DemoModal() {
                   Gemini timeout, so it leads and is the primary action. */}
               {canSubmit && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Try again</label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">{t('tryAgain')}</label>
                   <button type="button" onClick={() => submit()}
                     className="w-full bg-[var(--orange)] text-white font-black py-2.5 rounded-xl text-sm hover:bg-[var(--orange-deep)]">
-                    Try this photo again
+                    {t('tryPhotoAgain')}
                   </button>
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Try a different photo</label>
+                <label className="block text-xs font-bold text-slate-600 mb-1">{t('tryDifferent')}</label>
                 <button type="button"
                   onClick={() => { setFile(null); setText(''); setMessage(null); setPhase('idle') }}
                   className="w-full border border-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-sm hover:bg-slate-50">
-                  ← Upload another photo
+                  {t('uploadAnother')}
                 </button>
               </div>
 
@@ -383,50 +391,50 @@ export function DemoModal() {
                   no button that leads nowhere; it appears automatically once templates are authored. */}
               {SAMPLE_TEMPLATE && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Or look round with a sample menu</label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">{t('orSample')}</label>
                   {/* NEVER present a template as their own menu — for this audience a discovered deception
                       costs far more than a visible fallback (§11). */}
                   <p className="text-xs text-slate-600 mb-2">
-                    This <strong>won’t be your menu</strong> — it’s a stand-in so you can see how it works.
+                    {t.rich('standIn', { b: c => <strong>{c}</strong> })}
                   </p>
                   <button type="button" onClick={() => submit({ templateId: SAMPLE_TEMPLATE.id })}
                     className="w-full border border-slate-200 text-slate-700 font-medium py-2 rounded-xl text-sm hover:bg-slate-50">
-                    See sample menu
+                    {t('seeSample')}
                   </button>
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Or we’ll build it for you</label>
+                <label className="block text-xs font-bold text-slate-600 mb-1">{t('orBuild')}</label>
                 {buildSent ? (
-                  <p className="text-sm text-emerald-700 font-semibold">✓ Thanks — we’ve got it. We’ll email you.</p>
+                  <p className="text-sm text-emerald-700 font-semibold">{t('buildSent')}</p>
                 ) : (
                   <>
                     <p className="text-xs text-slate-600 mb-2">
-                      Leave your email and a real person will put your menu in and send you the link.
+                      {t('buildBody')}
                     </p>
                     <div className="flex gap-2">
                       <input type="email" inputMode="email" autoComplete="email"
                         value={buildEmail} onChange={e => setBuildEmail(e.target.value)}
-                        placeholder="you@yourtruck.co.uk"
+                        placeholder={t('emailPlaceholder')}
                         className="flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--orange)]" />
                       <button type="button" onClick={sendBuildRequest}
                         disabled={buildBusy || !buildEmail.includes('@')}
                         className="bg-[var(--orange)] text-white font-bold px-4 rounded-xl text-sm disabled:opacity-40 hover:bg-[var(--orange-deep)]">
-                        {buildBusy ? '…' : 'Send'}
+                        {buildBusy ? t('sending') : t('send')}
                       </button>
                     </div>
                   </>
                 )}
               </div>
-              {message && <p className="text-sm text-red-600">{message}</p>}
+              {message && <p className="text-sm text-red-600">{messageText}</p>}
             </div>
           )}
 
           {(phase === 'idle' || phase === 'error') && (
             <>
               {phase === 'error' && message && (
-                <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2 mb-4">{message}</p>
+                <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2 mb-4">{messageText}</p>
               )}
               {/* SHARED with Manage → Menu's importer — one dropzone, one set of section labels. */}
               <MenuUploadFields file={file} onFile={setFile} text={text} onText={setText} accent="landing" />
@@ -436,13 +444,13 @@ export function DemoModal() {
                   hand. §11: framed unmistakably as a sample, never a silent substitute. */}
               {SAMPLE_TEMPLATE && (
                 <div className="mt-4 pt-4 border-t border-slate-100 text-center">
-                  <p className="text-sm font-semibold text-slate-700">Haven&apos;t got a menu photo to hand?</p>
-                  <p className="text-xs text-slate-500 mt-0.5 mb-2">Look round with a sample truck instead — you can upload yours any time.</p>
+                  <p className="text-sm font-semibold text-slate-700">{t('noPhoto')}</p>
+                  <p className="text-xs text-slate-500 mt-0.5 mb-2">{t('noPhotoBody')}</p>
                   {/* One unlabelled, SUBORDINATE button (not full-width, muted) — the upload above stays the
                       obvious primary path. No cuisine named, so the sample can be re-themed without copy. */}
                   <button type="button" onClick={() => submit({ templateId: SAMPLE_TEMPLATE.id })}
                     className="inline-block border border-slate-200 text-slate-600 font-medium py-1.5 px-4 rounded-xl text-sm hover:bg-slate-50">
-                    See sample menu
+                    {t('seeSample')}
                   </button>
                 </div>
               )}
@@ -455,9 +463,9 @@ export function DemoModal() {
           <div className="px-6 pt-5 pb-6 shrink-0">
             <button type="button" onClick={() => submit()} disabled={!canSubmit}
               className="w-full bg-[var(--orange)] text-white font-black py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-[var(--orange-deep)]">
-              Build my demo →
+              {t('build')}
             </button>
-            <p className="text-xs text-slate-500 mt-2 text-center">Nothing is published — only you can see it.</p>
+            <p className="text-xs text-slate-500 mt-2 text-center">{t('nothingPublished')}</p>
           </div>
         )}
       </div>

@@ -32,18 +32,21 @@ import { phoneErrorMessage } from '@/lib/phone-message'
 // Phase 2D-1: "Where's your truck based?" comes FIRST — the same step the demo modal shows.
 import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
 import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'
-import { useTruckLocale } from '@/lib/i18n/use-t'
+import { useT, useTruckLocale } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/setup'
 
+// Language Phase 1c: the step names are messages (`setup.steps.<key>`); the keys stay the ids.
 const STEPS = [
-  { key: 'based', label: 'Where you’re based' },
-  { key: 'identity', label: 'Your truck' },
-  { key: 'menu', label: 'Your menu' },
-  { key: 'event', label: 'First event' },
+  { key: 'based' },
+  { key: 'identity' },
+  { key: 'menu' },
+  { key: 'event' },
 ] as const
 
 function SetupWizard() {
   const router = useRouter()
   const params = useSearchParams()
+  const t = useT('setup')
   const verify = params.get('verify')
 
   const [name, setName] = useState('')
@@ -136,9 +139,10 @@ function SetupWizard() {
   // same thing when they refuse one. ⚠️ If either copy changes, change both — nothing joins them.
   // 🟢 THE SECOND MESSAGE IS ALSO THE SERVER'S, WORD FOR WORD (app/api/setup/route.ts:75), so a
   // number that somehow reaches the server and is rejected there reads identically to one caught here.
+  // Language Phase 1c: the first sentence is now the message `setup.phoneRequired` (the demo modal reads its own copy).
   const validatePhone = (): boolean => {
     const v = contactPhone.trim()
-    if (!v) { setPhoneError('Add a phone number — customers and we both use it to reach you.'); return false }
+    if (!v) { setPhoneError(t('phoneRequired')); return false }
     if (phoneCopy && !isPlausiblePhone(contactPhone, phoneCopy.phoneCountry, phoneCopy.phoneCheck)) { setPhoneError(phoneErrorMessage('phone_number', phoneCopy)); return false }
     setPhoneError(null)
     return true
@@ -173,14 +177,14 @@ function SetupWizard() {
         }),
       })
       const data = await res.json()
-      if (!data.ok) { setError(data.error || 'Could not create your truck.'); return }
+      if (!data.ok) { setError(data.error || t('createFailed')); return }
       // MENU STEP — reuse the real import wizard, pre-loaded from the demo's stored extraction (?import=demo).
       // It re-commits into this new truck: grouped-vs-separate re-asked, price gate applied, allergens
       // re-decided. If there's no claimed demo/extraction the wizard simply shows a normal upload.
       // The EVENT step (Step 6) isn't built yet; finishing the menu wizard lands them on their dashboard.
       router.push(`/manage/${data.truck.dashboard_token}?import=demo`)
     } catch {
-      setError('Couldn’t reach us just now — please try again.')
+      setError(t('unreachable'))
     } finally {
       setBusy(false)
     }
@@ -194,11 +198,11 @@ function SetupWizard() {
         <header className="bg-slate-900 px-4 py-3 shrink-0">
           <div className="max-w-lg mx-auto flex items-center justify-between">
             <HatchGrabWordmark variant="dark" />
-            <span className="text-xs text-slate-400">Setting up</span>
+            <span className="text-xs text-slate-400">{t('settingUp')}</span>
           </div>
         </header>
         <div className="flex-1 min-h-0 flex items-center justify-center">
-          <span className="w-6 h-6 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" aria-label="Loading" />
+          <span className="w-6 h-6 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" aria-label={t('loading')} />
         </div>
       </div>
     )
@@ -210,7 +214,7 @@ function SetupWizard() {
       <header className="bg-slate-900 px-4 py-3 shrink-0">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <HatchGrabWordmark variant="dark" />
-          <span className="text-xs text-slate-400">Setting up</span>
+          <span className="text-xs text-slate-400">{t('settingUp')}</span>
         </div>
       </header>
 
@@ -219,7 +223,7 @@ function SetupWizard() {
         <div className="max-w-lg mx-auto">
           {verify === 'ok' && (
             <div className="mb-4 bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-800">
-              Email confirmed — thank you.
+              {t('verify.ok')}
             </div>
           )}
           {/* ⚠️ NO RESEND IS PROMISED, because there is no resend path for SIGNUP verification.
@@ -227,7 +231,7 @@ function SetupWizard() {
               different one. Saying "we'll send you a fresh one" named a mechanism that does not exist. */}
           {verify === 'expired' && (
             <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
-              That confirmation link has expired. Get in touch and we&apos;ll sort it before you go live.
+              {t('verify.expired')}
             </div>
           )}
           {/* 'invalid' previously rendered NOTHING, so a dead or malformed link looked exactly like a
@@ -235,7 +239,7 @@ function SetupWizard() {
               'expired' — both mean "that link did not work", neither blocks anything. (A2) */}
           {verify === 'invalid' && (
             <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
-              That confirmation link didn&apos;t work. Get in touch and we&apos;ll sort it before you go live.
+              {t('verify.invalid')}
             </div>
           )}
 
@@ -245,7 +249,7 @@ function SetupWizard() {
             {STEPS.map((s, i) => (
               <li key={s.key} className="flex items-center gap-2">
                 <span className={s.key === stage ? 'font-black text-slate-900' : 'text-slate-400'}>
-                  {i + 1}. {s.label}
+                  {t('stepItem', { number: String(i + 1), label: t(`steps.${s.key}`) })}
                 </span>
                 {i < STEPS.length - 1 && <span className="text-slate-300">›</span>}
               </li>
@@ -259,22 +263,22 @@ function SetupWizard() {
                 <WhereBasedStep countries={signupCountries.data.countries} guessedCode={signupCountries.data.guess.fromLocation ? signupCountries.data.guess.code : null}
                   value={base} errors={baseErrors} onChange={a => { setBase(a); setBaseErrors({}) }} />
               ) : (
-                <p className="text-sm text-slate-500">{signupCountries.error ?? 'Loading…'}</p>
+                <p className="text-sm text-slate-500">{signupCountries.error ?? t('loadingCountries')}</p>
               )}
             </div>
           ) : (
           <form onSubmit={submit} className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-5">
             <div>
-              <h1 className="text-lg font-black text-slate-900">What&apos;s your truck called?</h1>
+              <h1 className="text-lg font-black text-slate-900">{t('identity.heading')}</h1>
               <p className="text-sm text-slate-500 mt-1">
-                This is the name customers see. Nothing goes public until you choose to go live.
+                {t('identity.intro')}
               </p>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Truck name</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{t('identity.nameLabel')}</label>
               <input value={name} onChange={e => setName(e.target.value)} required maxLength={60}
-                placeholder="Bob&apos;s Burgers" autoFocus
+                placeholder={t('identity.namePlaceholder')} autoFocus
                 className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
               {/* The public ordering URL is deliberately NOT previewed here — it's noise at signup. It's
                   surfaced in Settings alongside the rename path, where changing it is the actual task.
@@ -295,7 +299,7 @@ function SetupWizard() {
                 no obvious reason to expect, so it says who uses it before they wonder. */}
             <div>
               <label htmlFor="setup-phone" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">
-                Phone
+                {t('identity.phoneLabel')}
               </label>
               <input
                 id="setup-phone" type="tel" autoComplete="tel" value={contactPhone}
@@ -306,7 +310,7 @@ function SetupWizard() {
               <label className="flex items-center gap-2 mt-2 text-sm text-slate-600 cursor-pointer">
                 <input type="checkbox" checked={phoneIsWhatsapp} onChange={e => setPhoneIsWhatsapp(e.target.checked)}
                   className="w-4 h-4 accent-orange-600 cursor-pointer" />
-                This number is on WhatsApp
+                {t('identity.whatsappTick')}
               </label>
               {/* 🔴 THIS SENTENCE WAS WRITTEN WRONG FIRST AND CHECKED SECOND. The draft said the number
                   "isn't shown to customers unless you choose to share it in Settings". THAT IS FALSE.
@@ -317,9 +321,7 @@ function SetupWizard() {
                   "Call us: <number>", or "WhatsApp us: <number>" linked to wa.me when the tick is on.
                   So it is customer-facing from the first order, and the copy has to say so. */}
               <p className="text-xs text-slate-500 mt-2">
-                Customers see this on their order confirmation so they can ask about an order. The tick
-                decides whether that reads &ldquo;Call us&rdquo; or &ldquo;WhatsApp us&rdquo;. You can
-                change both in Settings.
+                {t('identity.phoneHelp')}
               </p>
             </div>
 
@@ -341,11 +343,11 @@ function SetupWizard() {
           <div className="flex gap-2">
             <button type="button" onClick={() => setStage('based')} disabled={busy}
               className="shrink-0 border border-slate-200 text-slate-700 font-bold px-4 py-3 rounded-xl disabled:opacity-40 hover:bg-slate-50">
-              Back
+              {t('back')}
             </button>
             <button type="button" onClick={submit} disabled={busy || name.trim().length < 2}
               className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl disabled:opacity-40">
-              {busy ? 'Creating your truck…' : 'Continue'}
+              {busy ? t('creating') : t('continue')}
             </button>
           </div>
           )}

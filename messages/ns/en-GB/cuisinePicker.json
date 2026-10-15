@@ -1,0 +1,7 @@
+{
+  "choose": "Choose a cuisine…",
+  "other": "Other…",
+  "otherPlaceholder": "Tell us your cuisine",
+  "addAnother": "+ Choose another",
+  "remove": "Remove {label}"
+}

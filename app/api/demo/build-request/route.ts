@@ -14,6 +14,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { HATCHGRAB_SENDER } from '@/lib/email-config'
 import { demoRatelimit } from '@/lib/ratelimit'
+// Language Phase 1c: a refusal of ours is `{ error, …, code, params }` (lib/i18n/onboarding-errors.ts). No truck is
+// known when this route refuses, so its words are en-GB (docs/language-phase-1c-report.md).
+// ⚠️ The team notification below goes to HatchGrab's own inbox, not to the visitor: it stays in English, inline.
+import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 // Same shape as lib/contact-validation's rule, inlined to keep this route dependency-light.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -26,11 +31,11 @@ export async function POST(req: NextRequest) {
     email = typeof body.email === 'string' ? body.email.trim() : ''
     truckId = typeof body.truckId === 'string' ? body.truckId.trim() : ''
   } catch {
-    return NextResponse.json({ error: 'Could not read that.' }, { status: 400 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'request_unreadable'), { status: 400 })
   }
 
   if (!EMAIL_RE.test(email) || email.length > 320) {
-    return NextResponse.json({ error: 'That doesn’t look like an email address.' }, { status: 400 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'email_not_valid'), { status: 400 })
   }
 
   // Shares the demo bucket: this is reached from the same failure screen, and someone hammering it is the
@@ -41,7 +46,7 @@ export async function POST(req: NextRequest) {
   if (!isDev && fwd) {
     try {
       const { success } = await demoRatelimit.limit(`build:${ip}`)
-      if (!success) return NextResponse.json({ error: 'Please try again shortly.' }, { status: 429 })
+      if (!success) return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'try_again_shortly'), { status: 429 })
     } catch (err) {
       console.error('[demo/build-request] rate-limit check failed, allowing through:', err)
     }

@@ -1,0 +1,9 @@
+{
+  "subject": "Your HatchGrab demo — here’s your link back",
+  "heading": "Your demo is saved",
+  "intro": "Here’s your link back to the demo with your menu in it. No login needed — just tap it.",
+  "button": "Open my demo",
+  "freshDay": "Each time you come back we’ll set up a fresh day’s trading so there’s something to play with.",
+  "deletion": "This is a demo, so we don’t keep it forever — we’ll delete it and the menu on\n                <b>{date}</b> ({days, plural, other {# days}}). If you sign up before\n                then, your menu comes with you.",
+  "notSent": "Saved, but we couldn’t send the email just now."
+}

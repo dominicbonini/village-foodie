@@ -31,8 +31,11 @@ function editBlockOf(src) {
  * (errorsKitchen.busy_retry_edit) together with kitchenErrorBody's shape. */
 const BUSY = "await kErr('busy_retry_edit', {}, { retry: true }),\n          { status: 409 },"
 const GB_MESSAGES = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+// ⚠️ RE-PINNED 15 October 2026 (docs/language-phase-1c-report.md): the body is built by the ONE helper, lib/i18n/error-body.ts,
+// which kitchenErrorBody now wraps — the same line, asserted where it lives, plus the wrapper's delegation.
 const KERR_SHAPE = /return \{ error: t\(code, params\), \.\.\.\(extra \?\? \(\{\} as X\)\), code, params \}/
-  .test(fs.readFileSync(path.join(REPO, 'lib/i18n/kitchen-errors.ts'), 'utf8'))
+  .test(fs.readFileSync(path.join(REPO, 'lib/i18n/error-body.ts'), 'utf8'))
+  && /return errorBody\('errorsKitchen', locale, code, params, extra\)/.test(fs.readFileSync(path.join(REPO, 'lib/i18n/kitchen-errors.ts'), 'utf8'))
   && GB_MESSAGES.errorsKitchen.busy_retry_edit === 'Someone else is updating orders right now. Please try again.'
 /** The structural checks. Returns the list of failures (empty = holds). */
 function structure(block) {

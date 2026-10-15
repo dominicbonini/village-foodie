@@ -44,7 +44,7 @@
 import type { PhoneCopy } from '@/lib/phone'
 import { useState, useEffect } from 'react'
 import { demoBaselineKey, demoWelcomeSeen, boardWasReplaced, resetDemoBoardFlags } from '@/lib/demo-board-build'
-import { DemoGetStarted, SIGNUP_OFFER } from '@/components/DemoGetStarted'
+import { DemoGetStarted } from '@/components/DemoGetStarted'
 import type { Order } from '@/components/dashboard/types'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/demo'
@@ -217,15 +217,15 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
         )}
       </p>
 
-      {/* Lines 2-3 — the offer. SIGNUP_OFFER is the shared constant (components/DemoGetStarted.tsx), so
-          this card and the modal its button opens cannot drift apart. "No card needed" is appended;
+      {/* Lines 2-3 — the offer. `demo.signupOffer` is the one statement of it (it was the SIGNUP_OFFER constant in
+          components/DemoGetStarted.tsx until Language Phase 1c moved the words into the message file). "No card needed" is appended;
           "and nothing goes public until you say so" has gone — a third reassurance in a line that
           already carries two reads as protesting too much. */}
       <p className="text-base font-black text-slate-900 mt-2">
-        {SIGNUP_OFFER.heading}
+        {t('signupOffer.heading')}
       </p>
       <p className="text-sm text-slate-600 mt-1">
-        {t('noCard', { sub: SIGNUP_OFFER.sub })}
+        {t('noCard', { sub: t('signupOffer.sub') })}
       </p>
       <div className="mt-3 flex items-center justify-center gap-3">
         {/* SAME capture flow as the banner CTA — one path, two presentations, so they can't drift.

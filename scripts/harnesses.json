@@ -129,7 +129,8 @@
     "demo-reset-for-sending.cjs",
     "language-phase-1a.cjs",
     "messages-split.cjs",
-    "language-phase-1b.cjs"
+    "language-phase-1b.cjs",
+    "language-phase-1c.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -179,7 +180,14 @@
         "_lp1b-native.cjs",
         "_lp1b-operatorMail.cjs",
         "_lp1b-printing.cjs",
-        "_messages-parity-1b.cjs"
+        "_messages-parity-1b.cjs",
+        "_lp1c-fixtures.cjs",
+        "_lp1c-setup.cjs",
+        "_lp1c-auth.cjs",
+        "_lp1c-demo.cjs",
+        "_lp1c-goLive.cjs",
+        "_lp1c-api.cjs",
+        "_messages-parity-1c.cjs"
       ]
     },
     "fixture_generators": {

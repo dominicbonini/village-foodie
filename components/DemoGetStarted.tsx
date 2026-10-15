@@ -41,7 +41,7 @@
 // IDENTIFIER: token on the dashboard/KDS, slug on the customer order page (which never sees the token).
 // The endpoint accepts either; both are `demo-` prefixed and 130-bit random.
 
-import { useState, useEffect, useRef, Fragment } from 'react'
+import { useState, useEffect, useRef, useMemo, Fragment } from 'react'
 import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import { createPortal } from 'react-dom'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
@@ -56,26 +56,27 @@ import { phoneErrorMessage } from '@/lib/phone-message'
 // Phase 2D-1: the wizard's FIRST step, "Where's your truck based?" — shared with /setup.
 import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
 import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
+import { translatorFor } from '@/lib/i18n/translator'
+import { resolveLocale } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/demoGetStarted'
 
-/** THE signup offer, stated once. Every demo surface that makes the offer imports this rather than
- *  retyping it — the DEMO MODE banner already drifted into three copies of itself once, and an offer
- *  that says different things in different places is the one piece of copy you cannot afford to have
- *  drift. The two lines belong together: the heading is the offer, the sub is the reason it's safe. */
-export const SIGNUP_OFFER = {
-  heading: 'Sign up for your free month now',
-  sub: 'The clock doesn’t start until you decide to go live.',
-} as const
+// ── THE SIGNUP OFFER ─────────────────────────────────────────────────────────────────────────────────
+// Stated once, in messages/en-GB.json `demo.signupOffer` (Language Phase 1c): the loop-complete card reads it from
+// there. It used to be the `SIGNUP_OFFER` constant here, for the same reason it is one message now — the heading is
+// the offer, the sub is the reason it's safe, and an offer that says different things in different places is the
+// one piece of copy you cannot afford to have drift.
 
 /**
  * ── THE COPY, IN ONE PLACE, VARIANTS SIDE BY SIDE ───────────────────────────────────────────────────
  *
- * 🔴 THIS OBJECT EXISTS BECAUSE THE SCATTERING WAS THE BUG. These strings were inline ternaries spread
- * through the JSX — a heading here, a sub-line 300 lines away, a privacy clause 300 lines after that.
- * The copy diverged per surface FOUR times, and each time it was fixed in one place and not the others,
- * because nothing in the file made the other variants visible while you edited one. Keeping the variants
- * as sibling keys means an update to one leaves the other's staleness on screen, in the diff.
+ * 🔴 THE WORDS LIVE IN messages/en-GB.json `demoGetStarted` (Language Phase 1c), one sibling block per variant:
+ * `upload.*`, `sample.*`, `saveOnly.*` — bannerButton · heading · sub · privacy. They were the DEMO_COPY object here,
+ * which existed BECAUSE THE SCATTERING WAS THE BUG: the strings were inline ternaries spread through the JSX, and the
+ * copy diverged per surface FOUR times, each time fixed in one place and not the others. Keeping the variants as
+ * sibling keys still means an update to one leaves the other's staleness on screen, in the diff.
  *
- * ⚠️ DO NOT re-inline any of these, and DO NOT collapse `upload` and `sample` into one string because
+ * ⚠️ DO NOT re-inline any of these, and DO NOT collapse `upload` and `sample` into one message because
  * they "nearly match". They differ for a reason:
  *
  *   UPLOAD — they built something. They uploaded their own menu and watched it take orders, so there is
@@ -91,50 +92,22 @@ export const SIGNUP_OFFER = {
  *
  *   SAVE_ONLY — no setup path is on offer at all (canSetup false: signup closed, or the customer order
  *   page, which holds a slug and cannot drive the token lookup /api/signup needs). "Save your demo" is
- *   accurate here precisely because saving is genuinely all that happens. This variant is in the same
- *   object so it cannot drift either.
+ *   accurate here precisely because saving is genuinely all that happens. This variant sits beside the
+ *   other two so it cannot drift either.
+ *
+ * The words that are the same whatever the variant (the confirmation heading, the footer buttons) are their own
+ * keys beside them — never inline, because a label buried in one arm of a three-way structural ternary is precisely
+ * how the last four divergences hid.
  */
-const DEMO_COPY = {
-  upload: {
-    bannerButton: 'Save my menu →',
-    heading:      'Set up your truck',
-    sub:          'Your menu carries straight over.',
-    privacyUse:   'set up your truck and send your demo link',
-  },
-  sample: {
-    bannerButton: 'Set up my truck →',
-    heading:      'Set up your truck',
-    sub:          'You’ll upload your own menu next — takes a minute.',
-    privacyUse:   'set up your truck and send your demo link',
-  },
-  saveOnly: {
-    bannerButton: 'Save my menu →',
-    heading:      'Save your demo',
-    sub:          'We’ll keep it for 14 days and email you a link straight back.',
-    privacyUse:   'send your demo link',
-  },
-} as const
+type DemoCopyVariant = 'upload' | 'sample' | 'saveOnly'
 
-/** Strings that are the same whatever the variant. Here rather than inline so the file has ONE place to
- *  look for anything this component says — a string in the JSX would be the start of the next drift. */
-const DEMO_COPY_SHARED = {
-  confirmationHeading: 'You’re all set',
-  /** The post-save trigger: they have saved, so the only thing left to offer is the setup path. */
-  postSaveButton:      'Set up my truck →',
-  /** Footer actions. Variant-independent — the button that ENTERS setup says the same thing whether or
-   *  not they brought a menu — but held here rather than inline because a label buried in one arm of a
-   *  three-way structural ternary is precisely how the last four divergences hid. */
-  enterSetupButton:    'Set up my truck →',
-  emailOnlyLink:       'Just email me a link to come back to this demo',
-  sendLinkButton:      'Send me the link',
-  savingButton:        'Saving…',
-  continueButton:      'Continue →',
-  createAccountButton: 'Create my account →',
-  retryButton:         'Try again',
-  backToDemoButton:    'Back to the demo',
-} as const
-
-type DemoCopyVariant = keyof typeof DEMO_COPY
+/** A refusal this component words itself (its own fallback when a route gave no words) — held in state as a CODE
+ *  and worded at render (`demoGetStarted.error.<code>`). The route's own words, when it sent some, are held as the
+ *  string it sent and shown as they came. */
+type DemoErrorCode = 'saveFailed' | 'savedNoEmail' | 'unreachable' | 'createAccountFailed' | 'truckCreateFailed' | 'truckUnreachable' | 'truckNoToken'
+type DemoError = string | { code: DemoErrorCode }
+/** A field's problem, held as a code (`demoGetStarted.fieldError.<code>`; 'phoneInvalid' is the shared phone sentence). */
+type FieldErrorCode = 'firstName' | 'lastName' | 'truck' | 'cuisine' | 'phoneMissing' | 'phoneInvalid' | 'email' | 'password' | 'terms'
 
 export function DemoGetStarted({ token, slug, label, className, isAdmin = false, extractionSource = null, phone = null }: {
   token?: string
@@ -195,7 +168,8 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   const [email, setEmail] = useState('')
   const [busy, setBusy] = useState(false)
   const [savedUntil, setSavedUntil] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  // 🔴 A CODE when the words are ours, the route's own string when it sent one (Language Phase 1c) — see DemoError.
+  const [error, setError] = useState<DemoError | null>(null)
   // TRUE only immediately after a save-only action, while the modal is still open — it gates the "You’re all
   // set" confirmation view. Reset on close, so RE-opening the modal from the post-save CTA lands on the
   // setup form (email pre-filled), not the confirmation, and never re-asks to save.
@@ -222,6 +196,16 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   const [baseErrors, setBaseErrors] = useState<BaseErrors>({})
   const chosenCountry = signupCountries.data?.countries.find(c => c.code === base?.country) ?? null
   const signupPhone: PhoneCopy | null = chosenCountry?.phone ?? phone
+  // ── THE WORDS (Language Phase 1c) ─────────────────────────────────────────────────────────────────────
+  // The trigger, the landing view and the confirmation speak the PAGE's language (the demo truck's, from the
+  // provider). Once the wizard is entered and a country is chosen, its steps speak THAT country's language — the
+  // same rule as /setup: the signup is for the truck being set up, not for the demo's.
+  const tPage = useT('demoGetStarted')
+  const pageLocale = useAppLocale()
+  const wizardLocale = step !== 'landing' && chosenCountry ? resolveLocale(chosenCountry.locale) : null
+  const tWizard = useMemo(() => (wizardLocale ? translatorFor(wizardLocale, 'demoGetStarted') : null), [wizardLocale])
+  const t = tWizard ?? tPage
+  const wordsLocale = wizardLocale ?? pageLocale
   const validateBasedStep = (): boolean => {
     if (!base || !signupCountries.data) return false
     const errs = baseAnswerErrors(base, signupCountries.data.countries)
@@ -266,7 +250,8 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // they typed — the eye toggle inside the field flips it. Default hidden.
   const [showPassword, setShowPassword] = useState(false)
   // Per-field validation, all checked AT ONCE per step (never one-at-a-time). Cleared as each field is edited.
-  const [fieldErrors, setFieldErrors] = useState<{ truck?: string; cuisine?: string; firstName?: string; lastName?: string; phone?: string; password?: string; email?: string; terms?: string }>({})
+  // Each holds a CODE (FieldErrorCode), worded at render — so the sentence follows the language, never the moment.
+  const [fieldErrors, setFieldErrors] = useState<{ truck?: FieldErrorCode; cuisine?: FieldErrorCode; firstName?: FieldErrorCode; lastName?: FieldErrorCode; phone?: FieldErrorCode; password?: FieldErrorCode; email?: FieldErrorCode; terms?: FieldErrorCode }>({})
   // Refs so validation can FOCUS the first invalid field (the primary button stays enabled and validates on click).
   const truckRef = useRef<HTMLInputElement>(null)
   const cuisineRef = useRef<HTMLSelectElement>(null)
@@ -351,10 +336,14 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // does it matter whether they have a menu of their own to carry across.
   const copyVariant: DemoCopyVariant =
     !canSetup ? 'saveOnly' : extractionSource === 'template' ? 'sample' : 'upload'
-  const copy = DEMO_COPY[copyVariant]
   // An explicit `label` still wins — the loop-complete card passes its own, and that call site's wording
   // is its own decision. Omitted → the variant's button, which is what every banner uses.
-  const triggerLabel = label ?? copy.bannerButton
+  const triggerLabel = label ?? tPage(`${copyVariant}.bannerButton`)
+  /** The words of an error held in state: the route's own string as it came, or our code's sentence. */
+  const errorText = (e: DemoError | null): string | null => (e == null ? null : typeof e === 'string' ? e : t(`error.${e.code}`))
+  /** The words of a field's error code. The phone's malformed-number sentence is the shared one (lib/phone-message). */
+  const fieldErrorText = (c: FieldErrorCode | undefined): string | null =>
+    !c ? null : c === 'phoneInvalid' ? phoneErrorMessage('phone_number', signupPhone, wordsLocale) : t(`fieldError.${c}`)
 
   // Shared capture for the "just email me a link" fallback (saveOnly). POSTs the address (same call, same
   // body, same ok:false handling as before) and returns the deletion date on success, or null on failure with
@@ -369,18 +358,18 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
         body: JSON.stringify({ ...(token ? { token } : { slug }), email: email.trim() }),
       })
       const data = await res.json()
-      if (!data.ok) { setError(data.error || 'Couldn’t save that — try again.'); return null }
+      if (!data.ok) { setError(data.error || { code: 'saveFailed' }); return null }
       const until = data.deletionDate ?? ''
       try {
         localStorage.setItem(storeKey, until)
         localStorage.setItem(emailKey, email.trim())
       } catch { /* private mode */ }
       if (data.emailSent === false) {
-        setError(data.warning ?? 'Saved — but we couldn’t email the link just now.')
+        setError(data.warning ?? { code: 'savedNoEmail' })
       }
       return until
     } catch {
-      setError('Couldn’t reach us just now — try again.')
+      setError({ code: 'unreachable' })
       return null
     } finally {
       setBusy(false)
@@ -432,10 +421,10 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
     // first-name-only operator is someone we cannot address properly the first time it matters. It is
     // also two words at signup versus a data-quality problem that can never be repaired afterwards,
     // because a missing last name is indistinguishable from one nobody asked for.
-    if (operatorFirstName.trim().length < 2) errs.firstName = 'Tell us your first name.'
-    if (operatorLastName.trim().length < 2) errs.lastName = 'And your last name.'
-    if (truckName.trim().length < 2) errs.truck = 'Give your truck a name.'
-    if (resolvedCuisines.length === 0) errs.cuisine = 'Tell us what you cook.'
+    if (operatorFirstName.trim().length < 2) errs.firstName = 'firstName'
+    if (operatorLastName.trim().length < 2) errs.lastName = 'lastName'
+    if (truckName.trim().length < 2) errs.truck = 'truck'
+    if (resolvedCuisines.length === 0) errs.cuisine = 'cuisine'
     setFieldErrors(errs)
     if (errs.firstName || errs.lastName) nameRef.current?.focus()
     else if (errs.truck) truckRef.current?.focus()
@@ -453,11 +442,11 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // pass as the other three, so the operator sees everything wrong at once rather than one at a time.
   const validateDetailsStep = (): boolean => {
     const errs: typeof fieldErrors = {}
-    if (!contactPhone.trim()) errs.phone = 'Add a phone number — customers and we both use it to reach you.'
-    else if (signupPhone && !isPlausiblePhone(contactPhone, signupPhone.phoneCountry, signupPhone.phoneCheck)) errs.phone = phoneErrorMessage('phone_number', signupPhone)
-    if (!email.includes('@')) errs.email = 'Enter a valid email address.'
-    if (password.length < 8) errs.password = 'Password must be at least 8 characters.'
-    if (!termsAccepted) errs.terms = 'Please accept the terms to continue.'
+    if (!contactPhone.trim()) errs.phone = 'phoneMissing'
+    else if (signupPhone && !isPlausiblePhone(contactPhone, signupPhone.phoneCountry, signupPhone.phoneCheck)) errs.phone = 'phoneInvalid'
+    if (!email.includes('@')) errs.email = 'email'
+    if (password.length < 8) errs.password = 'password'
+    if (!termsAccepted) errs.terms = 'terms'
     setFieldErrors(errs)
     if (errs.email) setShowEmailEdit(true)   // reveal the hidden email so the error has somewhere to point
     if (errs.email) setTimeout(() => emailRef.current?.focus(), 0)   // input mounts once showEmailEdit flips
@@ -503,7 +492,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
           // 409 existing / 403 gate closed / validation — surface the real message and stay put. The account
           // was NOT created, so leaving the guard false is correct: the button becomes a normal retry.
           setStages(s => ({ ...s, account: 'error' }))
-          setError(data.error || 'Could not create your account.')
+          setError(data.error || { code: 'createAccountFailed' })
           setExisting(!!data.existing)
           setBusy(false); return
         }
@@ -512,7 +501,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
         setAccountCreated(true)
       } catch {
         setStages(s => ({ ...s, account: 'error' }))
-        setError('Couldn’t reach us just now — try again.')
+        setError({ code: 'unreachable' })
         setBusy(false); return
       }
     }
@@ -568,13 +557,13 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
       const data = await res.json().catch(() => ({}))
       if (!data.ok) {
         setStages(s => ({ ...s, truck: 'error' }))
-        setError(data.error || 'Your account’s ready, but we couldn’t create your truck. Try again.')
+        setError(data.error || { code: 'truckCreateFailed' })
         setBusy(false); return
       }
       dashboardToken = data.truck?.dashboard_token ?? null
     } catch {
       setStages(s => ({ ...s, truck: 'error' }))
-      setError('Your account’s ready, but we couldn’t reach us to create your truck. Try again.')
+      setError({ code: 'truckUnreachable' })
       setBusy(false); return
     }
 
@@ -582,7 +571,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
     // hand-off — surface it and keep them in the modal rather than navigating to a broken URL.
     if (!dashboardToken) {
       setStages(s => ({ ...s, truck: 'error' }))
-      setError('Your truck is set up, but we couldn’t open it just now. Try again.')
+      setError({ code: 'truckNoToken' })
       setBusy(false); return
     }
     // Truck row exists — mark it done ONLY now (after create_truck returned a token) and start the menu step.
@@ -669,13 +658,13 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
           onClick={() => { setJustSaved(false); setOpen(true) }}
           className={className ?? 'shrink-0 bg-orange-600 hover:bg-orange-700 text-white text-xs font-black px-4 py-1.5 rounded-lg whitespace-nowrap shadow-sm'}
         >
-          {DEMO_COPY_SHARED.postSaveButton}
+          {tPage('postSaveButton')}
         </button>
       )
     }
     return (
       <span className="text-xs font-bold text-slate-600 whitespace-nowrap">
-        ✓ Saved{savedUntil ? ` — kept until ${savedUntil}` : ''}
+        {tPage('savedStatus', { hasDate: savedUntil ? 'yes' : 'no', date: savedUntil })}
       </span>
     )
   }
@@ -738,14 +727,14 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                 {/* BACK — details→truck→landing, one step at a time. Hidden while busy AND once creation has
                     started (can't rewind mid-write, and the account/truck may already exist). */}
                 {!busy && !inProgress && (
-                  <button type="button" aria-label="Back"
+                  <button type="button" aria-label={t('back')}
                     onClick={() => setStep(step === 'details' ? 'truck' : step === 'truck' ? 'based' : 'landing')}
                     className="absolute top-4 left-4 text-slate-400 hover:text-slate-600 text-2xl leading-none">‹</button>
                 )}
                 <div className="flex items-start justify-between gap-3 pl-6">
-                  <h3 className="font-black text-slate-900">{step === 'based' ? WHERE_YOU_TRADE_COPY.stepHeading : step === 'truck' ? 'About your truck' : 'Finish setting up'}</h3>
+                  <h3 className="font-black text-slate-900">{step === 'based' ? WHERE_YOU_TRADE_COPY.stepHeading : step === 'truck' ? t('truckStepHeading') : t('detailsStepHeading')}</h3>
                   {!busy && (
-                    <button type="button" onClick={closeModal} aria-label="Close"
+                    <button type="button" onClick={closeModal} aria-label={t('close')}
                       className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0">×</button>
                   )}
                 </div>
@@ -755,13 +744,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                     the modal can't know whether extras exist, and a step appearing later beats one disappearing.
                     Scrolls horizontally in its own track (5 pills > max-w-md) so the modal body never does. */}
                 <div className="flex items-center gap-1.5 mt-2 overflow-x-auto -mx-1 px-1 pb-1">
-                  {[
-                    { key: 'details', label: 'Your details' },
-                    { key: 'menu', label: 'Menu' },
-                    { key: 'allergens', label: 'Allergens' },
-                    { key: 'kitchen', label: 'Kitchen setup' },
-                    { key: 'schedule', label: 'Schedule' },
-                  ].map((s, i, arr) => (
+                  {(['details', 'menu', 'allergens', 'kitchen', 'schedule'] as const).map(key => ({ key, label: t(`stepper.${key}`) })).map((s, i, arr) => (
                     <Fragment key={s.key}>
                       <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 ${s.key === 'details' ? 'bg-slate-900 text-white' : 'text-slate-400'}`}>
                         <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${s.key === 'details' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-600'}`}>{i + 1}</span>
@@ -776,15 +759,15 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
               // LANDING / CONFIRMATION HEADER — the lightweight capture, unchanged.
               <div className="px-6 pt-6 pb-4 shrink-0 relative">
                 <h3 className="font-black text-slate-900 text-center px-6">
-                  {showConfirmation ? DEMO_COPY_SHARED.confirmationHeading : copy.heading}
+                  {showConfirmation ? t('confirmationHeading') : t(`${copyVariant}.heading`)}
                 </h3>
                 {!showConfirmation && (
                   <p className="text-sm text-slate-600 text-center mt-1">
-                    {copy.sub}
+                    {t(`${copyVariant}.sub`)}
                   </p>
                 )}
                 {!busy && (
-                  <button type="button" onClick={closeModal} aria-label="Close"
+                  <button type="button" onClick={closeModal} aria-label={t('close')}
                     className="absolute top-4 right-5 text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
                 )}
               </div>
@@ -806,15 +789,14 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
               {showConfirmation ? (
                 <div className="space-y-3">
                   <p className="text-sm text-slate-600">
-                    We&apos;ve emailed you a link straight back to this demo — no login needed.
+                    {t('confirmEmailed')}
                   </p>
                   {savedUntil && (
                     <p className="text-sm text-slate-600">
-                      We&apos;ll keep it until <strong>{savedUntil}</strong>. Your menu comes with you when
-                      you set up properly.
+                      {t.rich('confirmKeepUntil', { date: savedUntil, b: c => <strong>{c}</strong> })}
                     </p>
                   )}
-                  {error && <p className="text-sm text-amber-700">{error}</p>}
+                  {error && <p className="text-sm text-amber-700">{errorText(error)}</p>}
                 </div>
               ) : step === 'based' ? (
                 // "Where's your truck based?" (Phase 2D-1) — client state only, like the truck step.
@@ -822,7 +804,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                   <WhereBasedStep countries={signupCountries.data.countries} guessedCode={signupCountries.data.guess.fromLocation ? signupCountries.data.guess.code : null}
                     value={base} errors={baseErrors} onChange={a => { setBase(a); setBaseErrors({}) }} />
                 ) : (
-                  <p className="text-sm text-slate-500">{signupCountries.error ?? 'Loading…'}</p>
+                  <p className="text-sm text-slate-500">{signupCountries.error ?? t('loading')}</p>
                 )
               ) : step === 'truck' ? (
                 // STEP 1 "About your truck" — client state only; nothing is written until step 2 submits.
@@ -831,38 +813,38 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       manager fills both correctly; a single "name" field made that a guess too. */}
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label htmlFor="demo-first-name" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">First name</label>
+                      <label htmlFor="demo-first-name" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{t('firstName')}</label>
                       <input
                         id="demo-first-name" ref={nameRef} type="text" autoComplete="given-name" value={operatorFirstName} autoFocus
                         onChange={e => { setOperatorFirstName(e.target.value); clearFieldErr('firstName') }}
-                        placeholder="First name"
+                        placeholder={t('firstName')}
                         className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.firstName ? 'border-red-400' : 'border-slate-200'}`}
                       />
                     </div>
                     <div>
-                      <label htmlFor="demo-last-name" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Last name</label>
+                      <label htmlFor="demo-last-name" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{t('lastName')}</label>
                       <input
                         id="demo-last-name" type="text" autoComplete="family-name" value={operatorLastName}
                         onChange={e => { setOperatorLastName(e.target.value); clearFieldErr('lastName') }}
-                        placeholder="Last name"
+                        placeholder={t('lastName')}
                         className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.lastName ? 'border-red-400' : 'border-slate-200'}`}
                       />
                     </div>
                     {(fieldErrors.firstName || fieldErrors.lastName) && (
-                      <p className="col-span-2 text-xs text-red-600 -mt-1">{fieldErrors.firstName || fieldErrors.lastName}</p>
+                      <p className="col-span-2 text-xs text-red-600 -mt-1">{fieldErrorText(fieldErrors.firstName || fieldErrors.lastName)}</p>
                     )}
                   </div>
 
                   {/* Truck name */}
                   <div>
-                    <label htmlFor="demo-truck" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Truck name</label>
+                    <label htmlFor="demo-truck" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{t('truckName')}</label>
                     <input
                       id="demo-truck" ref={truckRef} type="text" autoComplete="organization" value={truckName}
                       onChange={e => { setTruckName(e.target.value); clearFieldErr('truck') }}
-                      placeholder="e.g. The Village Kitchen"
+                      placeholder={t('truckNamePlaceholder')}
                       className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.truck ? 'border-red-400' : 'border-slate-200'}`}
                     />
-                    {fieldErrors.truck && <p className="text-xs text-red-600 mt-1">{fieldErrors.truck}</p>}
+                    {fieldErrors.truck && <p className="text-xs text-red-600 mt-1">{fieldErrorText(fieldErrors.truck)}</p>}
                   </div>
 
                   {/* Cuisine — up to 3 native selects (alphabetical), "+ Choose another" reveals the next, chips
@@ -870,7 +852,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       emoji is auto-derived from the FIRST cuisine at submit — no emoji field is shown here
                       (it's changeable later in Settings). */}
                   <div>
-                    <label htmlFor="demo-cuisine-0" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Cuisine</label>
+                    <label htmlFor="demo-cuisine-0" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{t('cuisine')}</label>
                     {/* ⚠️ EXTRACTED, NOT REWRITTEN. This markup moved verbatim into
                         components/shared/CuisinePicker so Settings offers the same control; the ids, the
                         classes, the "Other…" behaviour, the 3-row cap and the chips are byte-identical to
@@ -883,30 +865,30 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       firstSelectRef={cuisineRef}
                       invalid={!!fieldErrors.cuisine}
                     />
-                    {fieldErrors.cuisine && <p className="text-xs text-red-600 mt-1">{fieldErrors.cuisine}</p>}
+                    {fieldErrors.cuisine && <p className="text-xs text-red-600 mt-1">{fieldErrorText(fieldErrors.cuisine)}</p>}
                   </div>
 
                   {/* Logo — optional. NO placeholder tile: only the upload control shows until a file is picked
                       (an empty plate icon reads as a broken image). Once picked → preview + Change/Remove. */}
                   <div>
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Logo <span className="normal-case font-normal text-slate-400">(optional)</span></label>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{t.rich('logoLabel', { opt: c => <span className="normal-case font-normal text-slate-400">{c}</span> })}</label>
                     {logoPreview ? (
                       <div className="flex items-center gap-3">
                         <div className="w-14 h-14 rounded-xl border border-slate-200 overflow-hidden shrink-0">
                           {/* eslint-disable-next-line @next/next/no-img-element -- transient object-URL blob preview; next/image can't optimise it */}
-                          <img src={logoPreview} alt="Logo preview" className="w-full h-full object-contain p-1" />
+                          <img src={logoPreview} alt={t('logoPreviewAlt')} className="w-full h-full object-contain p-1" />
                         </div>
                         <label className="inline-flex items-center gap-2 text-sm font-semibold rounded-lg border border-slate-300 px-3 py-1.5 cursor-pointer hover:bg-slate-50">
-                          Change logo
+                          {t('changeLogo')}
                           <input type="file" accept="image/*" className="sr-only"
                             onChange={e => { onLogoPick(e.target.files?.[0] || null); e.currentTarget.value = '' }} />
                         </label>
                         <button type="button" onClick={() => onLogoPick(null)}
-                          className="text-xs text-slate-400 hover:text-slate-600 underline">Remove</button>
+                          className="text-xs text-slate-400 hover:text-slate-600 underline">{t('removeLogo')}</button>
                       </div>
                     ) : (
                       <label className="inline-flex items-center gap-2 text-sm font-semibold rounded-lg border border-slate-300 px-3 py-1.5 cursor-pointer hover:bg-slate-50">
-                        📷 Upload logo
+                        {t('uploadLogo')}
                         <input type="file" accept="image/*" className="sr-only"
                           onChange={e => { onLogoPick(e.target.files?.[0] || null); e.currentTarget.value = '' }} />
                       </label>
@@ -921,17 +903,13 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                 ready ? (
                   <div className="space-y-2 py-3 text-center">
                     <p className="text-4xl">✅</p>
-                    <h4 className="font-black text-slate-900 text-lg">Your account&apos;s ready</h4>
-                    <p className="text-sm text-slate-600">Now let&apos;s finish setting up your truck — your menu, allergens and kitchen.</p>
+                    <h4 className="font-black text-slate-900 text-lg">{t('readyTitle')}</h4>
+                    <p className="text-sm text-slate-600">{t('readyBody')}</p>
                   </div>
                 ) : inProgress ? (
                   <div className="space-y-3 py-2">
-                    <p className="text-sm text-slate-600 mb-1">Hang tight — setting everything up.</p>
-                    {([
-                      { key: 'account', label: 'Creating your account' },
-                      { key: 'truck', label: 'Setting up your truck' },
-                      { key: 'menu', label: 'Loading your menu' },
-                    ] as const).map(row => {
+                    <p className="text-sm text-slate-600 mb-1">{t('hangTight')}</p>
+                    {(['account', 'truck', 'menu'] as const).map(key => ({ key, label: t(`stage.${key}`) })).map(row => {
                       const st = stages[row.key]
                       // ── 🔴 "YOU ALREADY HAVE AN ACCOUNT" IS A RECOGNITION, NOT A FAILED STEP. ──────
                       // /api/signup answers 409 + { existing: true } for an address that already has an
@@ -953,7 +931,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       return (
                         <div key={row.key} className="flex items-start gap-3">
                           <span className="mt-0.5 w-5 h-5 shrink-0 flex items-center justify-center">
-                            {st === 'done' ? <span className="text-green-600 text-base font-bold" aria-label="done">✓</span>
+                            {st === 'done' ? <span className="text-green-600 text-base font-bold" aria-label={t('stageState.done')}>✓</span>
                               // ⚠️ BEFORE the generic error branch, so the recognition wins. An INFORMATION
                               // mark, not a cross in red: nothing failed, and nothing here should look as
                               // though it did. aria-label says the same thing the eye does — "failed" was
@@ -969,15 +947,15 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                               // ⚠️ Sized to match the ✓/✕ optically (14px against their 16px text glyph).
                               : recognised ? (
                                 <svg viewBox="0 0 16 16" width="14" height="14" className="text-slate-500" fill="currentColor"
-                                  role="img" aria-label="you already have an account">
+                                  role="img" aria-label={t('stageState.recognised')}>
                                   <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm0 1.5A5.5 5.5 0 1 1 8 13.5 5.5 5.5 0 0 1 8 2.5Z" />
                                   <circle cx="8" cy="4.9" r="1" />
                                   <path d="M7.15 6.9h1.7v5h-1.7z" />
                                 </svg>
                               )
-                              : st === 'error' ? <span className="text-red-600 text-base font-bold" aria-label="failed">✕</span>
-                              : st === 'active' ? <span className="w-4 h-4 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" aria-label="in progress" />
-                              : <span className="w-3.5 h-3.5 rounded-full border-2 border-slate-200" aria-label="pending" />}
+                              : st === 'error' ? <span className="text-red-600 text-base font-bold" aria-label={t('stageState.failed')}>✕</span>
+                              : st === 'active' ? <span className="w-4 h-4 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" aria-label={t('stageState.active')} />
+                              : <span className="w-3.5 h-3.5 rounded-full border-2 border-slate-200" aria-label={t('stageState.pending')} />}
                           </span>
                           <div className="min-w-0">
                             {/* ⚠️ `recognised` is tested BEFORE 'error' here too. Leaving the label red
@@ -995,7 +973,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                               // red made the one useful control on screen look like part of the warning;
                               // orange makes it read as the next step, which is exactly what it is.
                               <p className={`text-xs mt-0.5 ${recognised ? 'text-slate-600' : 'text-red-600'}`}>
-                                {error}{existing && <> <a href="/login" className={`underline font-semibold ${recognised ? 'text-orange-600' : ''}`}>Sign in</a></>}
+                                {errorText(error)}{existing && <> <a href="/login" className={`underline font-semibold ${recognised ? 'text-orange-600' : ''}`}>{t('signIn')}</a></>}
                               </p>
                             )}
                           </div>
@@ -1009,16 +987,16 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       `whatsapp` and `phone_is_whatsapp` are still derived exactly as before via
                       waFromPhone (Settings' exact rule); this item touches contact_phone alone. */}
                   <div>
-                    <label htmlFor="demo-phone" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Phone</label>
+                    <label htmlFor="demo-phone" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{t('phone')}</label>
                     <input
                       id="demo-phone" type="tel" autoComplete="tel" value={contactPhone}
                       onChange={e => { setContactPhone(e.target.value); clearFieldErr('phone') }} placeholder={phonePlaceholder(signupPhone)}
                       className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.phone ? 'border-red-400' : 'border-slate-200'}`} />
-                    {fieldErrors.phone && <p className="text-xs text-red-600 mt-1">{fieldErrors.phone}</p>}
+                    {fieldErrors.phone && <p className="text-xs text-red-600 mt-1">{fieldErrorText(fieldErrors.phone)}</p>}
                     <label className="flex items-center gap-2 mt-2 text-sm text-slate-600 cursor-pointer">
                       <input type="checkbox" checked={phoneIsWhatsapp} onChange={e => setPhoneIsWhatsapp(e.target.checked)}
                         className="w-4 h-4 accent-orange-600 cursor-pointer" />
-                      This number is on WhatsApp
+                      {t('onWhatsapp')}
                     </label>
                   </div>
 
@@ -1026,20 +1004,25 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       The hidden autocomplete="username" carrier sits just below, next to the password. */}
                   {showEmailEdit ? (
                     <div>
-                      <label htmlFor="demo-email" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Email</label>
+                      <label htmlFor="demo-email" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{t('email')}</label>
                       <input
                         id="demo-email" ref={emailRef} type="email" inputMode="email" autoComplete="email" value={email}
                         onChange={e => { setEmail(e.target.value); clearFieldErr('email') }}
-                        placeholder="you@yourtruck.co.uk"
+                        placeholder={t('emailPlaceholder')}
                         className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.email ? 'border-red-400' : 'border-slate-200'}`}
                       />
-                      {fieldErrors.email && <p className="text-xs text-red-600 mt-1">{fieldErrors.email}</p>}
+                      {fieldErrors.email && <p className="text-xs text-red-600 mt-1">{fieldErrorText(fieldErrors.email)}</p>}
                     </div>
                   ) : (
                     <p className="text-sm text-slate-600">
-                      Setting up as <strong className="text-slate-900">{email}</strong>{' '}
-                      <button type="button" onClick={() => setShowEmailEdit(true)}
-                        className="underline text-orange-600 hover:text-orange-700 text-xs font-semibold">change</button>
+                      {t.rich('settingUpAs', {
+                        email,
+                        b: c => <strong className="text-slate-900">{c}</strong>,
+                        change: c => (
+                          <button type="button" onClick={() => setShowEmailEdit(true)}
+                            className="underline text-orange-600 hover:text-orange-700 text-xs font-semibold">{c}</button>
+                        ),
+                      })}
                     </p>
                   )}
 
@@ -1057,20 +1040,20 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
 
                   {/* Password — with an in-field show/hide eye. */}
                   <div>
-                    <label htmlFor="demo-password" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Password</label>
+                    <label htmlFor="demo-password" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">{t('password')}</label>
                     <div className="relative">
                       <input
                         id="demo-password" ref={passwordRef} type={showPassword ? 'text' : 'password'} autoComplete="new-password" minLength={8} value={password}
                         onChange={e => { setPassword(e.target.value); if (fieldErrors.password) setFieldErrors(p => ({ ...p, password: undefined })) }}
                         onKeyDown={e => { if (e.key === 'Enter') runSetup() }}
-                        placeholder="At least 8 characters"
+                        placeholder={t('passwordPlaceholder')}
                         className={`w-full border rounded-xl px-3 py-2.5 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.password ? 'border-red-400' : 'border-slate-200'}`}
                       />
                       {/* type="button" is REQUIRED: an untyped button inside a form submits it. aria-label
                           reflects the current action so a screen reader announces "Show/Hide password". */}
                       <button
                         type="button" onClick={() => setShowPassword(v => !v)}
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                         aria-pressed={showPassword}
                         className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-600"
                       >
@@ -1090,7 +1073,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                         )}
                       </button>
                     </div>
-                    {fieldErrors.password && <p className="text-xs text-red-600 mt-1">{fieldErrors.password}</p>}
+                    {fieldErrors.password && <p className="text-xs text-red-600 mt-1">{fieldErrorText(fieldErrors.password)}</p>}
                   </div>
 
                   {/* ── J2: PROMO CODE — OPTIONAL, UNVALIDATED, UNACKNOWLEDGED ───────────────────────
@@ -1105,13 +1088,13 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       swallowed Enter would be a trap on the last step of a signup. */}
                   <div>
                     <label htmlFor="demo-promo" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">
-                      Have a code? <span className="normal-case font-normal text-slate-400">(optional)</span>
+                      {t.rich('promoLabel', { opt: c => <span className="normal-case font-normal text-slate-400">{c}</span> })}
                     </label>
                     <input
                       id="demo-promo" type="text" autoComplete="off" maxLength={40} value={promoCode}
                       onChange={e => setPromoCode(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') runSetup() }}
-                      placeholder="Enter it here"
+                      placeholder={t('promoPlaceholder')}
                       className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
                   </div>
 
@@ -1124,13 +1107,13 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                         onChange={e => { setTermsAccepted(e.target.checked); clearFieldErr('terms') }}
                         className="mt-0.5 w-4 h-4 accent-orange-600 cursor-pointer" />
                       <span className="text-xs text-slate-600">
-                        I agree to the{' '}
-                        <a href={TERMS_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">Terms</a>{' '}
-                        and{' '}
-                        <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">Privacy Policy</a>.
+                        {t.rich('agreeTerms', {
+                          terms: c => <a href={TERMS_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">{c}</a>,
+                          privacy: c => <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">{c}</a>,
+                        })}
                       </span>
                     </label>
-                    {fieldErrors.terms && <p className="text-xs text-red-600 mt-1">{fieldErrors.terms}</p>}
+                    {fieldErrors.terms && <p className="text-xs text-red-600 mt-1">{fieldErrorText(fieldErrors.terms)}</p>}
                   </div>
 
                   {/* Account-level error (409 existing / 403 gate / truck-create failure). */}
@@ -1143,15 +1126,14 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       failure — ARE REAL FAILURES AND STAY RED. Only `existing` changes. */}
                   {error && (
                     <p className={`text-sm ${existing ? 'text-slate-600' : 'text-red-600'}`}>
-                      {error}{' '}
-                      {existing && <a href="/login" className="underline font-semibold text-orange-600">Sign in</a>}
+                      {errorText(error)}{' '}
+                      {existing && <a href="/login" className="underline font-semibold text-orange-600">{t('signIn')}</a>}
                     </p>
                   )}
 
                   {/* The free-month line lives HERE — the view where the commitment actually happens (§4). */}
                   <p className="text-sm text-slate-600">
-                    Setting up won&apos;t start your free month. That begins when you pick your first live
-                    event — whenever you&apos;re ready.
+                    {t('freeMonth')}
                   </p>
                 </div>
                 )
@@ -1161,10 +1143,10 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                   {/* ONE email field, required for BOTH actions. */}
                   <input
                     type="email" inputMode="email" autoComplete="email" value={email}
-                    onChange={e => setEmail(e.target.value)} placeholder="you@yourtruck.co.uk"
+                    onChange={e => setEmail(e.target.value)} placeholder={t('emailPlaceholder')}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
-                  {error && <p className="text-sm text-red-600">{error}</p>}
+                  {error && <p className="text-sm text-red-600">{errorText(error)}</p>}
                   {/* NO free-month line here. It used to render on exactly this branch (`!canSetup`), which
                       is the branch where there IS NO SETUP BUTTON — the customer order page passes a slug,
                       not a token, so canSetup is false and the only action is "Send me the link". Promising
@@ -1180,10 +1162,9 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       removed just above — described a path this branch doesn't offer. A privacy notice
                       that overstates what you'll be contacted about is the one line that must not. */}
                   <p className="text-xs text-slate-400">
-                    We&apos;ll only use this to {copy.privacyUse} — see our{' '}
-                    <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">
-                      privacy policy
-                    </a>.
+                    {t.rich(`${copyVariant}.privacy`, {
+                      link: c => <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{c}</a>,
+                    })}
                   </p>
                 </div>
               )}
@@ -1193,7 +1174,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
               {showConfirmation ? (
                 <button type="button" onClick={closeModal}
                   className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl text-sm hover:bg-slate-800">
-                  {DEMO_COPY_SHARED.backToDemoButton}
+                  {t('backToDemoButton')}
                 </button>
               ) : step === 'based' ? (
                 <button type="button" onClick={() => { if (validateBasedStep()) { setError(null); setStep('truck') } }} disabled={busy || !base}
@@ -1204,7 +1185,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                 // STEP 1 → advance to "Your details". Validates step 1 on click (all at once); NO server write.
                 <button type="button" onClick={() => { if (validateTruckStep()) { setError(null); setStep('details') } }} disabled={busy}
                   className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
-                  {DEMO_COPY_SHARED.continueButton}
+                  {t('continueButton')}
                 </button>
               ) : step === 'details' ? (
                 // ready → the confirmation beat's Continue, the ONLY place the redirect fires. While a creation
@@ -1215,12 +1196,12 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                 ready ? (
                   <button type="button" onClick={openTruck}
                     className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm hover:bg-orange-700">
-                    {DEMO_COPY_SHARED.continueButton}
+                    {t('continueButton')}
                   </button>
                 ) : busy ? null : (
                   <button type="button" onClick={runSetup}
                     className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm hover:bg-orange-700">
-                    {inProgress ? DEMO_COPY_SHARED.retryButton : DEMO_COPY_SHARED.createAccountButton}
+                    {inProgress ? t('retryButton') : t('createAccountButton')}
                   </button>
                 )
               ) : canSetup ? (
@@ -1229,20 +1210,20 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                 <div className="space-y-2">
                   <button type="button" onClick={() => { setError(null); setStep('based') }} disabled={!email.includes('@')}
                     className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
-                    {DEMO_COPY_SHARED.enterSetupButton}
+                    {t('enterSetupButton')}
                   </button>
                   {/* SECONDARY — a text link, deliberately NOT a second solid button, so it reads as the
                       lower-intent fallback ("I'm not ready, just let me come back"). */}
                   <button type="button" onClick={saveOnly} disabled={busy || !email.includes('@')}
                     className="w-full text-slate-500 hover:text-slate-700 underline text-xs font-medium py-1 disabled:opacity-40">
-                    {DEMO_COPY_SHARED.emailOnlyLink}
+                    {t('emailOnlyLink')}
                   </button>
                 </div>
               ) : (
                 // Signup OFF (or slug-only surface) — email capture is the ONLY action, so it's the solid one.
                 <button type="button" onClick={saveOnly} disabled={busy || !email.includes('@')}
                   className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
-                  {busy ? DEMO_COPY_SHARED.savingButton : DEMO_COPY_SHARED.sendLinkButton}
+                  {busy ? t('savingButton') : t('sendLinkButton')}
                 </button>
               )}
             </div>

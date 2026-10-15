@@ -55,7 +55,12 @@ module.exports = function area({ t, head, msgs }) {
   let beforeKeys
   try { beforeKeys = new Set(leaves(JSON.parse(execSync(`git show ${BEFORE_REF}:messages/en-GB.json`, { cwd: REPO, encoding: 'utf8' }))).map(([k]) => k)) }
   catch { t(`messages/en-GB.json is readable at ${BEFORE_REF}`, false); return }
-  const added = leaves(msgs['en-GB']).filter(([k]) => !beforeKeys.has(k))
+  /* ⚠️ RE-PINNED (Language Phase 1c, docs/language-phase-1c-report.md): "added since 0914760" now also caught Phase 1c's
+   * messages. Phase 1b's own are those present at accbb61 (the head that carries 1b) and absent at 0914760. */
+  let endKeys
+  try { endKeys = new Set(leaves(JSON.parse(execSync(`git show accbb61:messages/en-GB.json`, { cwd: REPO, encoding: 'utf8' }))).map(([k]) => k)) }
+  catch { t('messages/en-GB.json is readable at accbb61', false); return }
+  const added = leaves(msgs['en-GB']).filter(([k]) => !beforeKeys.has(k) && endKeys.has(k))
   const changed = execSync(`git diff --name-only ${BEFORE_REF} -- app components lib`, { cwd: REPO, encoding: 'utf8' }).split('\n').filter(f => /\.(ts|tsx)$/.test(f))
   const raw = changed.map(f => { try { return execSync(`git show ${BEFORE_REF}:${JSON.stringify(f).slice(1, -1)}`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 }) } catch { return '' } }).join('\n')
   t(`the source of the ${changed.length} files this phase changed is read at ${BEFORE_REF}`, raw.length > 1000)

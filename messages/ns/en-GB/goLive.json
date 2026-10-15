@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Choose how you show allergen info",
+    "detail": "Until you choose, customers see none of your dishes — the menu protects itself by hiding anything whose allergens are unconfirmed, and right now that is everything.",
+    "where": "Menu → Allergens"
+  },
+  "allergensCardMissing": {
+    "title": "Add your allergen card",
+    "detail": "You have chosen to show an allergen card, but none is saved — so customers would be told allergen info is available and then find nothing.",
+    "where": "Menu → Allergens"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Confirm allergens on {count} dish} other {Confirm allergens on {count} dishes}}",
+    "detail": "{n, plural, other {{unverified} of your {total} dishes are hidden from customers until you confirm their allergens. A dish shown without confirmed allergens reads as \"contains none\", so the menu hides it rather than risk that.}}",
+    "where": "Menu → Allergens"
+  },
+  "noVan": {
+    "title": "Add a van",
+    "detail": "Events run against a van — without one there is nothing to take orders through.",
+    "where": "Settings → Vans"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Set your kitchen capacity",
+    "detail": "No capacity is set for {vans}. Without it we will keep promising customers collection times your kitchen has no way to hit.",
+    "where": "Menu → Kitchen capacity",
+    "unnamedVan": "unnamed van"
+  },
+  "noPrepBearingCategory": {
+    "title": "Tell us how long your food takes",
+    "detail": "{categories, select, none {You have no menu categories yet, so we have no way to work out how long an order takes.} other {None of your categories has a cooking time set, so every order looks instant to us. We would keep giving customers collection times your kitchen has no chance of hitting, and the busier you get the further out they would be.}}",
+    "where": "Menu → Categories → Kitchen setup"
+  },
+  "emailUnverified": {
+    "title": "Confirm your email address",
+    "detail": "We send order notifications and account recovery to this address. If it is wrong, you find out when something has already gone wrong.",
+    "where": "Check your inbox for our confirmation link"
+  },
+  "emailUnknown": {
+    "title": "Email confirmation status unknown",
+    "detail": "Email verification is not wired up yet (Phase 4 Step 2), so this cannot be evaluated. It blocks by design rather than passing silently.",
+    "where": "—"
+  }
+}

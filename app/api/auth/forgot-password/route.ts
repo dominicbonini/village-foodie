@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 import { HATCHGRAB_SENDER } from '@/lib/email-config'
+// Language Phase 1c: a refusal of ours is `{ error, code, params }` (lib/i18n/onboarding-errors.ts). No truck is
+// known on this route, so its words are en-GB (docs/language-phase-1c-report.md).
+import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+// The reset email's words: messages/en-GB.json `emailAccount` (Language Phase 1c), in en-GB — the operator's
+// language is not known on this route (docs/language-phase-1c-report.md). The markup and the link stay here.
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/emailAccount'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,7 +22,7 @@ export async function POST(req: NextRequest) {
   const { email } = await req.json()
 
   if (!email) {
-    return NextResponse.json({ error: 'Email required' }, { status: 400 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'email_required'), { status: 400 })
   }
 
   const { data: operator } = await supabase
@@ -50,23 +58,24 @@ export async function POST(req: NextRequest) {
 
   // Reset link points to HatchGrab (operator platform)
   const resetUrl = `${HG_URL}/reset-password?token=${token}`
+  const t = translatorFor(DEFAULT_LOCALE, 'emailAccount.passwordReset')
 
   const html = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
-      <h2 style="color:#0f172a;margin:0 0 16px;">Reset your password</h2>
-      <p>We received a request to reset the password for your HatchGrab account.</p>
-      <p>Click the button below to choose a new password. This link expires in 1 hour.</p>
+      <h2 style="color:#0f172a;margin:0 0 16px;">${t('heading')}</h2>
+      <p>${t('requested')}</p>
+      <p>${t('click')}</p>
       <p style="margin:32px 0;">
         <a href="${resetUrl}"
            style="background:#ea580c;color:white;padding:14px 28px;
                   text-decoration:none;border-radius:8px;font-weight:bold;
                   display:inline-block;">
-          Reset password
+          ${t('button')}
         </a>
       </p>
       <p style="color:#64748b;font-size:13px;">
-        If you didn't request this, you can safely ignore this email.
-        Your password won't change until you click the link above.
+        ${t('ignore')}
+        ${t('unchanged')}
       </p>
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;"/>
       <p style="color:#94a3b8;font-size:12px;">HatchGrab</p>
@@ -84,7 +93,7 @@ export async function POST(req: NextRequest) {
       sender: { name: HATCHGRAB_SENDER.name, email: HATCHGRAB_SENDER.email },
       to: [{ email: operator.email }],
       replyTo: { email: HATCHGRAB_SENDER.replyTo },
-      subject: 'Reset your HatchGrab password',
+      subject: t('subject'),
       htmlContent: html,
     }),
   })
@@ -94,7 +103,7 @@ export async function POST(req: NextRequest) {
     console.error('[forgot-password] Brevo send failed:', brevoRes.status, brevoError)
     // Clean up the token — email not sent, user can't use it, don't block retries
     await supabase.from('password_reset_tokens').delete().eq('token', token)
-    return NextResponse.json({ error: 'Failed to send reset email' }, { status: 500 })
+    return NextResponse.json(onboardingErrorBody(DEFAULT_LOCALE, 'reset_email_failed'), { status: 500 })
   }
 
   return NextResponse.json({ ok: true })

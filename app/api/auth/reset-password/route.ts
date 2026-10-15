@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+// Language Phase 1c: a refusal of ours is `{ error, code, params }` (lib/i18n/onboarding-errors.ts). No truck is
+// known on this route, so its words are en-GB (docs/language-phase-1c-report.md).
+import { onboardingErrorBody } from '@/lib/i18n/onboarding-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,14 +15,15 @@ export async function POST(req: NextRequest) {
 
   if (!token || !password) {
     return NextResponse.json(
-      { error: 'Token and password required' },
+      onboardingErrorBody(DEFAULT_LOCALE, 'token_and_password_required'),
       { status: 400 }
     )
   }
 
+  // ⚠️ This route's sentence has no full stop; signup's has one (app/api/signup/route.ts) — kept, two codes.
   if (password.length < 8) {
     return NextResponse.json(
-      { error: 'Password must be at least 8 characters' },
+      onboardingErrorBody(DEFAULT_LOCALE, 'new_password_too_short', { min: 8 }),
       { status: 400 }
     )
   }
@@ -31,21 +36,21 @@ export async function POST(req: NextRequest) {
 
   if (!resetToken) {
     return NextResponse.json(
-      { error: 'Invalid or expired reset link. Please request a new one.' },
+      onboardingErrorBody(DEFAULT_LOCALE, 'reset_link_invalid'),
       { status: 400 }
     )
   }
 
   if (resetToken.used_at) {
     return NextResponse.json(
-      { error: 'This reset link has already been used. Please request a new one.' },
+      onboardingErrorBody(DEFAULT_LOCALE, 'reset_link_used'),
       { status: 400 }
     )
   }
 
   if (new Date(resetToken.expires_at) < new Date()) {
     return NextResponse.json(
-      { error: 'This reset link has expired. Please request a new one.' },
+      onboardingErrorBody(DEFAULT_LOCALE, 'reset_link_expired'),
       { status: 400 }
     )
   }
@@ -58,7 +63,7 @@ export async function POST(req: NextRequest) {
 
   if (!operator?.auth_user_id) {
     return NextResponse.json(
-      { error: 'Account not found.' },
+      onboardingErrorBody(DEFAULT_LOCALE, 'account_not_found'),
       { status: 400 }
     )
   }
@@ -79,7 +84,7 @@ export async function POST(req: NextRequest) {
 
   if (updateError) {
     return NextResponse.json(
-      { error: 'Failed to update password. Please try again.' },
+      onboardingErrorBody(DEFAULT_LOCALE, 'password_update_failed'),
       { status: 500 }
     )
   }

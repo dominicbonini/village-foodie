@@ -84,6 +84,10 @@ module.exports = async function after({ kit, t, head, read, REPO, before, got, d
   }
 
   head('5 · the code that carries them')
-  const helper = read('lib/i18n/customer-errors.ts')
-  t('customerErrorBody puts code and params after every existing field', /\{ error: t\(code, params\), \.\.\.\(extra \?\? \(\{\} as X\)\), code, params \}/.test(helper))
+  // ⚠️ RE-PINNED (Language Phase 1c, docs/language-phase-1c-report.md): the body is built by the ONE helper,
+  // lib/i18n/error-body.ts, which customerErrorBody now wraps — the same line, asserted where it lives.
+  const helper = read('lib/i18n/customer-errors.ts') + '\n' + read('lib/i18n/error-body.ts')
+  t('customerErrorBody puts code and params after every existing field',
+    /return errorBody\('errorsCustomer', locale, code, params, extra\)/.test(helper)
+    && /\{ error: t\(code, params\), \.\.\.\(extra \?\? \(\{\} as X\)\), code, params \}/.test(helper))
 }

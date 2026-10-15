@@ -171,7 +171,10 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   ok(/type Step = 'landing' \| 'based' \| 'truck' \| 'details'/.test(demo) && /setStep\('based'\)/.test(demo), 'demo modal · "based" is the first wizard step (landing → based → truck → details)')
   ok(/const signupPhone: PhoneCopy \| null = chosenCountry\?\.phone \?\? phone/.test(demo) && /isPlausiblePhone\(contactPhone, signupPhone\.phoneCountry, signupPhone\.phoneCheck\)/.test(demo) && /phonePlaceholder\(signupPhone\)/.test(demo), 'demo modal · phone check, error and placeholder from the chosen country')
   ok(/\.\.\.\(base \? baseAnswerBody\(base\) : \{\}\)/.test(demo) && /\.\.\.\(base \? baseAnswerBody\(base\) : \{\}\)/.test(setup), 'both screens send the answer with create_truck')
-  ok(/\{ key: 'based', label: 'Where you’re based' \},\s*\{ key: 'identity'/.test(setup) && /useState<'based' \| 'identity'>\('based'\)/.test(setup), '/setup · "Where you’re based" is step 1, before the phone')
+  // Re-pinned 15 October 2026 (Language Phase 1c, docs/language-phase-1c-report.md): the step names moved into
+  // messages/en-GB.json (`setup.steps.<key>`), so the order is pinned on the keys and the words on the message.
+  ok(/\{ key: 'based' \},\s*\{ key: 'identity'/.test(setup) && /useState<'based' \| 'identity'>\('based'\)/.test(setup)
+    && JSON.parse(read('messages/en-GB.json')).setup.steps.based === 'Where you’re based', '/setup · "Where you’re based" is step 1, before the phone')
   ok(/countries\.find\(c => c\.code === base\?\.country\)\?\.phone/.test(setup) && !/data\?\.phone\b/.test(setup), '/setup · phone copy from the chosen country (no longer from ?check=truck)')
   ok(/checkTradeArea/.test(step) && /TRADE_AREA_ERRORS/.test(step), 'the step checks with the server’s own function (lib/trade-area.ts)')
   ok(/tz in|timezones\.length > 1/.test(step), 'the zone select appears only when the country has more than one')
