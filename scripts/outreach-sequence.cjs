@@ -297,7 +297,10 @@ function runCensus() {
   t('🔴 …and the SERVER re-derives it and overrules the client',
     /if \(step\.kind && !historyUnreadable && \(!replyParent \|\| !inConversation\)\) derivedKind = step\.kind/.test(SEND))
   t('🔴 the guards run in the send route, for every path', /evaluateGuards\(\{/.test(SEND))
-  t('🔴 …and a blocked send writes NOTHING and sends nothing',
+  /* ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): a blocked send still SENDS nothing; it is now RECORDED as a
+   * \`refused\` row (no email) so the prospect can be flagged — Send is instant and the window has closed.
+   * The literal answer below is the not-yet-migrated branch, and is unchanged. */
+  t('🔴 …and a blocked send sends nothing (answered as before; recorded as refused once migrated)',
     /return NextResponse\.json\(\{\s*ok: false, needsConfirm: true/.test(SEND))
   /* ── 🔴 RESTATED (1 October 2026) — NOT SILENTLY RE-POINTED ────────────────────────────────────
    * This required `await recordSendOverride(supabase, prospectId` — a waved guard written into the
@@ -323,14 +326,21 @@ function runCensus() {
     (SEND.match(/logOutreachContact\(/g) || []).length === 2 && (SEND.match(/nextStep\(/g) || []).length === 1)
 
   // ── ONE CLICK, ONE EMAIL (3c) ────────────────────────────────────────────────────────────────
-  t('🔴 the composer keys every message, and the key covers the subject, body, step and attachments',
-    /const key = hashKey\(JSON\.stringify\(\[\s*\n\s*finalSubject, isEmail \? doc : fullText, kindForSend, test,/.test(CW))
+  /* ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md). The key was a hash of the message, so "the same message
+   * twice" was one send. Send is instant now and the key is MADE AT THE PRESS — one press, one key — which
+   * is what the brief asks for: a retry or a double press of the SAME send can never send twice. */
+  t('🔴 the composer keys every send, made when Send is pressed, and the request carries it',
+    /const key = crypto\.randomUUID\(\)/.test(CW) && /is_test: test, idempotency_key: key,/.test(CW))
   t('🔴 the server claims the key BEFORE it builds anything…', /REFUSAL 6 · the idempotency key was already used/.test(read('app/api/admin/outreach/mail-send/route.ts')))
   t('🔴 …and a repeat returns the FIRST result rather than sending again',
     /return NextResponse\.json\(\{ ok: true, duplicate: true/.test(SEND))
   t('⚠️ …and the column that makes it true is unique',
     /idempotency_key text unique/.test(read('supabase/migrations/20260928_outreach_messages.sql')))
-  t('🔴 Send is disabled while a send is in flight', /disabled=\{!!sendBlock \|\| sending\}/.test(CW))
+  /* ⚠️ RE-PINNED 15 October 2026: the window CLOSES on Send, so there is no in-flight button left to disable;
+   * a second press inside the same tick is stopped by the ref gate before anything is queued. */
+  t('🔴 a second press cannot queue a second send (the in-flight gate, then the window closes)',
+    /if \(sendInFlight\.current\) return\n\s*if \(refusal\) \{ setSendError\(refusal\); return \}\n\s*sendInFlight\.current = true/.test(CW)
+    && /onQueued\?\.\(snapshot/.test(CW))
   return { ok, bad }
 }
 

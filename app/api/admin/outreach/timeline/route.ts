@@ -16,6 +16,7 @@ import { verifyAdmin } from '@/lib/auth/admin'
 import { isSnoozeOption, snoozeUntil } from '@/lib/outreach-attention'
 import { addNote, editNote, deleteNote, restoreNote } from '@/lib/outreach-events'
 import { previewOf, parseGuardOverride, type TimelineMessage, type TimelineContact, type TimelineEvent } from '@/lib/outreach-timeline'
+import { parseRefusal } from '@/lib/outreach-refusal'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
     /* ⚠️ `guard_override` IS SELECTED ONLY WHERE IT EXISTS, for the reason `updated_at` is below:
      * its migration is applied by hand, and naming a column that is not there fails the WHOLE read —
      * which here would answer `migrationApplied: false` and blank the entire CRM to add one grey line. */
-    .select(MESSAGE_COLS + (await messagesHaveGuardOverride() ? ', guard_override' : ''))
+    .select(MESSAGE_COLS + (await messagesHaveGuardOverride() ? ', guard_override' : '') + (await messagesHaveRefusalCol() ? ', refusal' : ''))
     .eq('prospect_id', prospectId)
     .order('created_at', { ascending: false })
     .limit(400)
@@ -55,6 +56,7 @@ export async function GET(req: NextRequest) {
    * The shape is asserted by `Raw` and nowhere else. */
   type Raw = TimelineMessage & {
     text_body?: string | null; attachments?: unknown; contact_id?: string | null; guard_override?: unknown
+    refusal?: unknown
   }
   const messages: TimelineMessage[] = ((mRows ?? []) as unknown as Raw[]).map(r => ({
     id: r.id,
@@ -80,6 +82,8 @@ export async function GET(req: NextRequest) {
      * shows the line only when there is something in it, so the two read the same and neither claims
      * the other happened. ⚠️ `parseGuardOverride` is what stops a malformed value reaching the panel. */
     guard_override: parseGuardOverride(r.guard_override),
+    // 🔴 A REFUSED SEND: the reason and the guard sentences — the request itself stays on the server.
+    refusal: (() => { const x = parseRefusal(r.refusal); return x ? { reason: x.reason, guards: x.guards } : null })(),
   }))
 
   // 🔴 `contact_id` IS THE LINK THAT DE-DUPLICATES. It lives on the message; the timeline reads it off
@@ -213,6 +217,13 @@ export async function POST(req: NextRequest) {
  * why the code is logged.
  */
 /** The columns this route has always read. Split out so the optional one is visibly optional. */
+/** 🔴 `outreach_messages.refusal` (20261015_outreach_messages_refused.sql, applied by hand) — selected only
+ *  when it exists, for the reason `guard_override` is: a missing column would blank the whole history. */
+async function messagesHaveRefusalCol(): Promise<boolean> {
+  const { error } = await supabase.from('outreach_messages').select('refusal').limit(1)
+  return !error
+}
+
 const MESSAGE_COLS = 'id, direction, status, is_test, source, subject, from_address, to_address, message_date, created_at, sent_copy, attempts, last_error, text_body, attachments, handled_at, snoozed_until, contact_id'
 
 /**

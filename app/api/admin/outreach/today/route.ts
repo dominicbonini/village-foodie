@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
 
   const { data: problemRows } = await supabase
     .from('outreach_messages')
-    .select('id, prospect_id, status, subject, message_date, last_error, is_test')
+    .select('id, prospect_id, status, subject, message_date, last_error, is_test, handled_at')
     .eq('direction', 'outbound')
     .in('status', PROBLEM_STATUSES as unknown as string[])
     .order('message_date', { ascending: false })
@@ -71,7 +71,9 @@ export async function GET(req: NextRequest) {
     last_error?: string | null; handled_at?: string | null; snoozed_until?: string | null
   }
   const inboundRows = (inbound ?? []) as MsgRow[]
-  const problemsRaw = ((problemRows ?? []) as MsgRow[]).filter(r => r.is_test !== true)
+  // ⚠️ A REFUSED SEND THAT WAS DISMISSED, OR ANSWERED WITH "Send anyway", IS DONE (`handled_at`).
+  const problemsRaw = ((problemRows ?? []) as MsgRow[])
+    .filter(r => r.is_test !== true && !(r.status === 'refused' && r.handled_at))
 
   // ── WHO THEY BELONG TO, AND WHICH OF THEM ARE CUSTOMERS ────────────────────────────────────────
   // 🔴 A LINKED HATCHGRAB TRUCK IS NOT A PROSPECT (§52). The poll already refuses to log for one; the

@@ -32,10 +32,12 @@ import {
   type Contact, type Prospect, type TimelinePayload,
 } from '@/components/admin/outreach-shared'
 import { createPortal } from 'react-dom'
+import { notSentLine } from '@/lib/outreach-refusal'
 
 /** The tone each badge carries. 🔴 Amber is "you", red is "it broke", grey is "for information". */
 const BADGE_TONE: Record<RowBadge, string> = {
   waiting: 'bg-amber-100 border-amber-300 text-amber-900',
+  refused: 'bg-red-50 border-red-300 text-red-800',
   bounced: 'bg-red-50 border-red-300 text-red-800',
   failed: 'bg-red-50 border-red-300 text-red-800',
   uncertain: 'bg-amber-50 border-amber-300 text-amber-800',
@@ -72,9 +74,12 @@ export interface TimelineActions {
   busyId: string | null
 }
 
-export default function ProspectTimeline({ prospect, data, actions, expandedId, onExpand }: {
+export default function ProspectTimeline({ prospect, data, actions, expandedId, onExpand, pending = [] }: {
   prospect: Prospect
   data: TimelinePayload | null
+  /** 🔴 SENDS HELD IN THE OUTBOX (instant Send, 15 October 2026) — shown as "Sending…" until the server
+   *  answers, when the real row replaces them. Nothing has been sent while one is listed here. */
+  pending?: { key: string; subject: string; to: string | null; test: boolean }[]
   actions: TimelineActions
   /** 🔴 HELD BY THE PAGE, not here: Esc closes it, and the page owns Esc. */
   expandedId: string | null
@@ -214,6 +219,15 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
             {items.length === 0 ? 'Nothing yet — no emails, contacts or notes.' : 'Nothing matches that.'}
           </p>
         )}
+
+        {/* 🔴 HELD SENDS FIRST, AS "Sending…" — the server has not answered yet; the real row replaces each. */}
+        {pending.map(ps => (
+          <div key={ps.key} data-sending className="px-3 py-2 flex items-center gap-3 bg-slate-50">
+            <span className="text-[11px] font-bold px-1.5 py-0.5 rounded border border-slate-300 bg-white text-slate-600">Sending…</span>
+            <span className="flex-1 min-w-0 truncate text-sm text-slate-800">{ps.subject || '(no subject)'}</span>
+            <span className="text-[11px] text-slate-400 whitespace-nowrap">{ps.test ? 'test to you' : ps.to ?? ''}</span>
+          </div>
+        ))}
 
         {shown.map(item => {
           // ── A NOTE OR A STAGE CHANGE: ONE LINE, AND IT DOES NOT EXPAND ──────────────────────
@@ -606,6 +620,34 @@ function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, o
           className="text-[12px] font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
           Save to Sent
         </button>
+      )}
+      {/* ── 🔴 A REFUSED SEND (15 October 2026): NOTHING WENT. The reason, and — when it was a guard that
+          asks — the same sentences and the same "Send anyway" the compose window used to show (dark: the
+          Send colour belongs to the composer's own Send and nothing else), which
+          re-runs every guard with those ids overridden (written to `guard_override`). Never Retry:
+          Retry re-sends a stored row without the guards. */}
+      {m.status === 'refused' && !m.handled_at && (
+        <span className="flex flex-col gap-1 min-w-0" data-refused>
+          <span className="text-[12px] text-red-800">{notSentLine(m.refusal?.reason ?? m.last_error ?? '')}</span>
+          {(m.refusal?.guards ?? []).length > 0 && (
+            <span className="flex flex-wrap items-center gap-2">
+              <button type="button" disabled={actions.busyId === m.id}
+                onClick={() => void actions.onMessageAction('send_refused', m.id, { override: (m.refusal?.guards ?? []).map(g => g.id) })}
+                title="Sends this message after all — every check runs again, and these warnings are recorded on the email."
+                className="text-[12px] font-bold px-2 py-1 rounded-lg bg-slate-900 text-white hover:bg-slate-700 disabled:opacity-40">
+                {(m.refusal?.guards ?? []).some(g => g.kind === 'refuse') ? 'Send it twice anyway' : 'Send anyway'}
+              </button>
+            </span>
+          )}
+          <span>
+            <button type="button" disabled={actions.busyId === m.id}
+              onClick={() => void actions.onMessageAction('dismiss_refused', m.id)}
+              title="Clears this from Today. Nothing is sent."
+              className="text-[12px] font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
+              Dismiss
+            </button>
+          </span>
+        </span>
       )}
       {(m.status === 'failed' || m.status === 'uncertain') && (
         <button type="button" disabled={actions.busyId === m.id}

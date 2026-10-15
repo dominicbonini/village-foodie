@@ -39,6 +39,8 @@ export interface TimelineMessage {
    *  only when there is something in it, so the two cases read identically and that is correct.
    *  ⚠️ IT REPLACED A `note` IN THE HISTORY. See the note at the head of lib/outreach-events.ts. */
   guard_override?: GuardOverride[] | null
+  /** Status `refused` only: why the server declined, and the guard sentences "Send anyway" answers. */
+  refusal?: { reason: string; guards: { id: string; kind: string; message: string }[] } | null
 }
 
 /** One waved guard, as stored. ⚠️ THE SENTENCE IS STORED, NOT RE-DERIVED: a guard's wording can change,
@@ -208,6 +210,8 @@ export function pairHandLoggedEmails(input: {
   for (const m of input.messages) {
     // ⚠️ A TEST SEND IS NOT CORRESPONDENCE and can never be the email somebody logged by hand.
     if (m.is_test === true) continue
+    // 🔴 A REFUSED SEND IS NOT AN EMAIL (15 October 2026): nothing went, so nobody logged it by hand.
+    if (m.status === 'refused') continue
     const day = londonDay(m.message_date ?? m.created_at)
     if (!day) continue
     const k = key(day, m.direction)

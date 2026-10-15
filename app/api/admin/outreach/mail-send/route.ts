@@ -21,7 +21,12 @@ import { OUTREACH_FROM_ADDRESS } from '@/lib/outreach-mail-config'
 import { composeRaw } from '@/lib/outreach-mail-envelope'
 // 🔴 THE SEND ITSELF MOVED OUT (29 September 2026) so the reply poll's automatic retry uses the same
 // code rather than a copy of it. This route still owns every refusal; it no longer owns the socket.
-import { deliver, fileSentCopy } from '@/lib/outreach-mail-deliver'
+import { deliver, fileSentCopy, sendRow, fileCopyAndRecord } from '@/lib/outreach-mail-deliver'
+// 🔴 INSTANT SEND (15 October 2026, docs/outreach-instant-send-report.md): the answer goes back as soon as
+// the mail server has the email; the Sent copy and the contact log run after it. A refusal is RECORDED.
+import { runAfter } from '@/lib/outreach-after'
+import { sendTimer } from '@/lib/outreach-send-timing'
+import { storedRequestOf, parseRefusal, type RefusalGuard } from '@/lib/outreach-refusal'
 import {
   buildMessage, newMessageId, replySubject,
   type QuotedMessage,
@@ -92,6 +97,16 @@ const messagesHaveGuardOverride = async (): Promise<boolean> => {
   const { error } = await supabase.from('outreach_messages').select('guard_override').limit(1)
   if (!error) return true
   console.warn('[admin/outreach/mail-send] outreach_messages.guard_override unavailable:', error.code, error.message)
+  return false
+}
+
+/** 🔴 DOES `outreach_messages.refusal` EXIST (20261015_outreach_messages_refused.sql, applied by hand)?
+ *  Until it does a refused send is answered exactly as before and recorded nowhere — the toast still says
+ *  why; the Today flag needs the migration. ⚠️ The column and the `refused` status ship in one migration. */
+const messagesHaveRefusal = async (): Promise<boolean> => {
+  const { error } = await supabase.from('outreach_messages').select('refusal').limit(1)
+  if (!error) return true
+  console.warn('[admin/outreach/mail-send] outreach_messages.refusal unavailable:', error.code, error.message)
   return false
 }
 
@@ -212,7 +227,7 @@ export async function GET(req: NextRequest) {
   if (prospectId) {
     const { data } = await supabase
       .from('outreach_messages')
-      .select('id, direction, status, is_test, source, subject, to_address, message_date, sent_copy, attempts, last_error, created_at')
+      .select('id, direction, status, is_test, source, subject, to_address, message_date, sent_copy, attempts, last_error, created_at, contact_id')
       .eq('prospect_id', prospectId)
       .order('created_at', { ascending: false })
     messages = data ?? []
@@ -244,7 +259,37 @@ export async function POST(req: NextRequest) {
   let body: Record<string, unknown>
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Bad body' }, { status: 400 }) }
 
-  const action = String(body.action ?? 'send')
+  let action = String(body.action ?? 'send')
+  /** Where the time goes. Off unless OUTREACH_SEND_TIMING=1 — see lib/outreach-send-timing.ts. */
+  const timer = sendTimer()
+
+  // ── 🔴 A REFUSED SEND, ANSWERED FROM THE FLAGGED PROSPECT (15 October 2026) ──────────────────────
+  // "Dismiss" clears the flag and sends nothing. "Send anyway" re-submits the STORED message through
+  // the WHOLE send path below — every refusal and every guard runs again, and the overrides it carries
+  // are the ids of the guard sentences the operator was shown, written to `guard_override` exactly as
+  // the compose window's own "Send anyway" does. It never re-sends a stored row the way Retry does.
+  /** The refused row this attempt answers; marked handled once the new attempt has a row of its own. */
+  let supersedes: string | null = null
+  if (action === 'dismiss_refused' || action === 'send_refused') {
+    const rowId = String(body.message_row_id ?? '')
+    const { data: rr } = await supabase.from('outreach_messages')
+      .select('id, prospect_id, status, is_test, idempotency_key, handled_at, refusal').eq('id', rowId).maybeSingle()
+    const r = rr as { id: string; prospect_id: string; status: string; is_test: boolean; idempotency_key: string | null; handled_at: string | null; refusal: unknown } | null
+    if (!r || r.status !== 'refused') return refuse('That refused send is not in the log any more.')
+    if (r.handled_at) return refuse('That refused send has already been dealt with.')
+    if (action === 'dismiss_refused') {
+      await supabase.from('outreach_messages').update({ handled_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', r.id)
+      return NextResponse.json({ ok: true, dismissed: true })
+    }
+    const stored = parseRefusal(r.refusal)
+    if (!stored || !stored.request.document) return refuse('That refused send has no stored message to send again — open the prospect and write it again.')
+    const override = Array.isArray(body.override) ? (body.override as unknown[]).filter((x): x is string => typeof x === 'string') : []
+    // ⚠️ ONE KEY PER ROW: a second press of Send anyway on the same row is the same send.
+    body = { ...stored.request, action: 'send', prospect_id: r.prospect_id, override, idempotency_key: `${r.id}:anyway` }
+    action = 'send'
+    supersedes = r.id
+  }
+
   const prospectId = String(body.prospect_id ?? '')
   const isTest = body.is_test === true
   const idempotencyKey = typeof body.idempotency_key === 'string' ? body.idempotency_key : null
@@ -252,6 +297,7 @@ export async function POST(req: NextRequest) {
   // ── REFUSAL 1a · the table ───────────────────────────────────────────────────────────────────────
   const probe = await messagesTable()
   if (!probe.ready) return refuse(probe.refusal, { migrationApplied: false })
+  timer.mark('table probe')
 
   // ── REFUSAL 1b · the credentials ─────────────────────────────────────────────────────────────────
   // 🔴 THE SEND ASKS FOR THE PRIMARY ACCOUNT AND CANNOT BE HANDED THE LEGACY ONE. `accountForSend`
@@ -506,6 +552,43 @@ export async function POST(req: NextRequest) {
     } | null
   }
   const truck = p.discovery_trucks
+  timer.mark('read prospect')
+
+  /* ── 🔴 EVERY REFUSAL FROM HERE ON IS RECORDED, AND THE PROSPECT FLAGGED (15 October 2026) ───────
+   * The compose window has closed by the time this answers (Send is instant, with Undo), so a refusal
+   * cannot be shown in it any more. It is written as a `refused` row — nothing was sent — which the
+   * Today screen's "Emails needing a look" lists with this reason, and the prospect's history shows with
+   * "Send anyway" when it was a guard that asks. The ANSWER is unchanged: the same refusal, the same
+   * `needsConfirm` and guard sentences, plus `recorded`.
+   * ⚠️ ORDER UNCHANGED: each check below runs exactly where it ran; only what a refusal leaves behind is new.
+   * ⚠️ Until the migration is applied nothing is recorded (see `messagesHaveRefusal`). */
+  const flagged = async (reason: string, extra: Record<string, unknown> = {}, guards: RefusalGuard[] = []) => {
+    if (!(await messagesHaveRefusal())) {
+      // Before the migration: answered exactly as before, and nothing written.
+      if (guards.length) return NextResponse.json({ ok: false, needsConfirm: true, refusal: reason, guards, ...extra }, { status: 200 })
+      return NextResponse.json({ ok: false, refusal: reason, ...extra }, { status: 200 })
+    }
+    const payload = guards.length
+      ? { ok: false, needsConfirm: true, refusal: reason, guards, ...extra }
+      : { ok: false, refusal: reason, ...extra }
+    const { data: rec, error: recErr } = await supabase.from('outreach_messages').insert({
+      prospect_id: prospectId, direction: 'outbound', status: 'refused', is_test: isTest, source: 'system',
+      account: sender.account,
+      message_id: newMessageId(), subject: String(body.subject ?? '').trim() || null,
+      from_address: OUTREACH_FROM_ADDRESS, to_address: (truck?.contact_email ?? '').trim() || null,
+      message_date: new Date().toISOString(), attempts: 0, attachments: [],
+      last_error: reason,
+      ...(idempotencyKey ? { idempotency_key: idempotencyKey } : {}),
+      refusal: { reason, guards, request: storedRequestOf(body) },
+    }).select('id').single()
+    if (recErr || !rec) {
+      // A repeat of the same key is the same refusal, already recorded.
+      console.error('[admin/outreach/mail-send] the refusal could not be recorded:', dbDetail(recErr))
+      return NextResponse.json(payload, { status: 200 })
+    }
+    if (supersedes) await supabase.from('outreach_messages').update({ handled_at: new Date().toISOString() }).eq('id', supersedes)
+    return NextResponse.json({ ...payload, recorded: true, id: (rec as { id: string }).id }, { status: 200 })
+  }
 
   // ── REFUSALS 2 AND 3 · do-not-contact, no address, and a linked HatchGrab truck ──────────────────
   // All three live in `lib/outreach-send-rules`, where the harness can run them. The linked-truck rule is
@@ -515,7 +598,7 @@ export async function POST(req: NextRequest) {
     contact_email: truck?.contact_email ?? null,
     hatchgrab_truck_id: truck?.hatchgrab_truck_id ?? null,
   })
-  if (blocked) return refuse(blocked.refusal)
+  if (blocked) return await flagged(blocked.refusal)
   let toAddress = (truck?.contact_email ?? '').trim()
 
   // ── A REPLY: WHICH MESSAGE, AND WHO IT GOES BACK TO ─────────────────────────────────────────────
@@ -536,7 +619,7 @@ export async function POST(req: NextRequest) {
       .eq('id', replyToId).maybeSingle()
     replyParent = (rp ?? null) as ReplyParent | null
     const stop = replyParentRefusal(replyParent, prospectId)
-    if (stop) return refuse(stop.refusal)
+    if (stop) return await flagged(stop.refusal)
 
     // The address the window showed, checked against what the server holds.
     const { data: inboundRows } = await supabase.from('outreach_messages')
@@ -547,7 +630,7 @@ export async function POST(req: NextRequest) {
       ? body.to.trim()
       : (replyRecipientFor(replyParent) ?? '')
     const bad = replyRecipientRefusal({ to: wanted, contactEmail: truck?.contact_email ?? null, knownInboundFroms: known })
-    if (bad) return refuse(bad.refusal)
+    if (bad) return await flagged(bad.refusal)
     toAddress = wanted.trim()
   }
 
@@ -560,15 +643,16 @@ export async function POST(req: NextRequest) {
   // ⚠️ THE EDITOR ENFORCES THE SAME SCHEMA, AND THAT IS NOT WHY THIS IS SAFE. The document arrives
   // over HTTP; this is the guard.
   const parsed = validateDoc(body.document)
-  if (!parsed.ok) return refuse(`That message could not be sent — ${parsed.error}.`)
+  if (!parsed.ok) return await flagged(`That message could not be sent — ${parsed.error}.`)
   const docIn = parsed.doc
   const bodyIn = docPlainText(docIn)
-  if (!bodyIn.trim()) return refuse('There is no message body to send.')
+  if (!bodyIn.trim()) return await flagged('There is no message body to send.')
 
   // 🔴 A LITERAL TOKEN IS A REFUSAL. Nothing expands `{{signature}}` at send time any more, so it
   // would be emailed as those thirteen characters.
+  timer.mark('reply checks + document')
   const literal = literalTokenRefusal(docIn)
-  if (literal) return refuse(literal)
+  if (literal) return await flagged(literal)
 
   // ── REFUSAL 4 · the §58 guards, IMPORTED, not re-implemented ─────────────────────────────────────
   // 🔴 `malformedTokensIn` KEYS OFF THE DELIMITERS, NOT THE TOKEN PATTERN — §58.2 records why: a guard
@@ -577,9 +661,9 @@ export async function POST(req: NextRequest) {
   // copy here would be a fourth reader of that same blind spot.
   const whole = `${subjectIn}\n${bodyIn}`   // `bodyIn` is the DOCUMENT's text — the guards are unchanged
   const malformed = malformedTokensIn(whole)
-  if (malformed.length) return refuse(`The message still contains a malformed token: ${malformed.join(', ')}`)
+  if (malformed.length) return await flagged(`The message still contains a malformed token: ${malformed.join(', ')}`)
   const mustResolve = unresolvedIn(whole).filter(isMustResolveToken)
-  if (mustResolve.length) return refuse(`The message needs a value that could not be resolved: ${mustResolve.join(', ')}`)
+  if (mustResolve.length) return await flagged(`The message needs a value that could not be resolved: ${mustResolve.join(', ')}`)
 
   // 🔴 THERE IS NO SEND-COUNT CHECK HERE, AND THERE IS NOT ONE ANYWHERE ELSE IN THIS FILE. A daily cap
   // of 30 stood between these two blocks until 29 September 2026; `lib/outreach-send-rules.ts` records
@@ -722,7 +806,10 @@ export async function POST(req: NextRequest) {
       id: string; direction: string | null; is_test: boolean | null; contact_id: string | null
       message_date: string | null; created_at: string | null; status: string | null
       text_body?: string | null
-    }[]).map(m => ({ ...m, preview: previewOf(m.text_body) }))
+    }[])
+      // 🔴 A REFUSED SEND IS NOT AN EMAIL: nothing went, so it is no prior, no "last email" and no pairing.
+      .filter(m => m.status !== 'refused')
+      .map(m => ({ ...m, preview: previewOf(m.text_body) }))
     /** Why the guards could not see this prospect's own rows, or null when they could. */
     const historyUnreadable = unreadable.length > 0 ? unreadable.join('; ') : null
 
@@ -804,7 +891,7 @@ export async function POST(req: NextRequest) {
           const { data: omRows } = await supabase
             .from('outreach_messages').select('prospect_id, message_date, created_at')
             .in('prospect_id', otherProspects.map(o => o.id))
-            .eq('direction', 'outbound').eq('is_test', false)
+            .eq('direction', 'outbound').eq('is_test', false).neq('status', 'refused')
           const om = (omRows ?? []) as { prospect_id: string; message_date: string | null; created_at: string | null }[]
           for (const o of otherProspects) {
             const last = om.filter(m => m.prospect_id === o.id)
@@ -821,6 +908,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    timer.mark('guard reads')
     firedGuards = evaluateGuards({
       // ⚠️ THE CONVERSATION EXEMPTION IS ABOUT WHO WROTE LAST, NOT ABOUT WHICH BUTTON WAS PRESSED.
       // It used to be `!!replyParent`, so replying to my OWN email would skip every guard — which is
@@ -834,11 +922,9 @@ export async function POST(req: NextRequest) {
     if (blocking.length > 0) {
       // 🔴 NOTHING IS SENT AND NOTHING IS WRITTEN. The client shows the sentences and, if Dominic
       // means it, re-submits with `override: [ids]` — a deliberate second act, recorded below.
-      return NextResponse.json({
-        ok: false, needsConfirm: true,
-        refusal: blocking.map(g => g.message).join(' '),
-        guards: blocking.map(g => ({ id: g.id, kind: g.kind, message: g.message })),
-      }, { status: 200 })
+      // 🔴 RECORDED NOW, WITH THE SENTENCES: "Send anyway" appears on the flagged prospect, in these words.
+      return await flagged(blocking.map(g => g.message).join(' '), {},
+        blocking.map(g => ({ id: g.id, kind: g.kind, message: g.message })))
     }
     /* ── 🔴 THE OVERRIDE IS NO LONGER WRITTEN HERE ─────────────────────────────────────────────────
      * It was `recordSendOverride(...)` at this point — before the send, so that a send which then
@@ -885,7 +971,7 @@ export async function POST(req: NextRequest) {
     // quotes OUR last email) would show the prospect a quote header attributing their message to us.
     const quotedHtml = sanitiseQuotedHtml(replyParent.html_body ?? '')
     if (!quotedHtml.trim()) {
-      return refuse('That message has no stored body to quote, so the reply would arrive without the conversation. Open it once to fetch and store it, then reply.')
+      return await flagged('That message has no stored body to quote, so the reply would arrive without the conversation. Open it once to fetch and store it, then reply.')
     }
     parent = {
       messageId: replyParent.message_id!,
@@ -909,7 +995,7 @@ export async function POST(req: NextRequest) {
     // is nothing to quote, so a parent whose body was never stored is no longer a reason to refuse a
     // chase — the threading headers come from the row, which is already in hand.
     if (!quotedHtml && includeQuote) {
-      return refuse("I can't find the earlier email to reply to — run Import past emails, or check this truck's email address.")
+      return await flagged("I can't find the earlier email to reply to — run Import past emails, or check this truck's email address.")
     }
     parent = {
       messageId: parentRow.message_id,
@@ -932,24 +1018,26 @@ export async function POST(req: NextRequest) {
   } else if (!firstContact && (emailedBefore ?? 0) > 0 && !isTest) {
     // 🔴 NEVER SILENTLY START A NEW THREAD. The log says this prospect has been emailed; a fresh subject
     // would arrive as an unrelated first approach, which is exactly the thing chasing in-thread avoids.
-    return refuse("I can't find the earlier email to reply to — run Import past emails, or check this truck's email address.")
+    return await flagged("I can't find the earlier email to reply to — run Import past emails, or check this truck's email address.")
   }
 
-  if (!parent && !subjectIn) return refuse('A first contact needs a subject.')
+  if (!parent && !subjectIn) return await flagged('A first contact needs a subject.')
 
   // ── THE ATTACHMENTS · PATHS IN, BYTES READ SERVER-SIDE ─────────────────────────────────────────
   // 🔴 `parseOutboundAttachments` IS THE GUARD, NOT A PARSER. It keeps only entries that carry a
   // `storagePath` and drops everything else, so a request containing base64 content, a data: URI or
   // a URL yields an empty list rather than an attachment — there is no field on this path through
   // which file bytes can reach the mail server.
+  timer.mark('guards + thread + quote')
   const declaredAttachments: OutboundAttachment[] = parseOutboundAttachments(body.attachments)
   const tooBig = attachmentSetRefusal(declaredAttachments)
-  if (tooBig) return refuse(tooBig.refusal)
+  if (tooBig) return await flagged(tooBig.refusal)
   // ⚠️ READ BEFORE THE ROW IS INSERTED. A missing file must refuse without leaving a `sending` row
   // behind for the stuck-send sweep to turn into `uncertain`.
   const loaded = await loadAttachments(supabase, declaredAttachments)
-  if (!loaded.ok) return refuse(loaded.refusal)
+  if (!loaded.ok) return await flagged(loaded.refusal)
 
+  timer.mark('attachments')
   // ── THE ROW GOES IN FIRST, WITH ITS Message-ID ───────────────────────────────────────────────────
   const messageId = newMessageId()
   const built = buildMessage({ doc: docIn, subject: subjectIn, messageId, parent, fromName })
@@ -1016,17 +1104,55 @@ export async function POST(req: NextRequest) {
     return refuse(`The message could not be recorded, so nothing was sent — ${dbDetail(insErr)}`)
   }
 
+  if (supersedes) await supabase.from('outreach_messages').update({ handled_at: new Date().toISOString() }).eq('id', supersedes)
+  timer.mark('record the row')
+
   // ⚠️ `from_name` RIDES ON THE ROW OBJECT, NOT IN THE TABLE. It is a setting, not a property of the
   // message, and storing a copy per row would mean a later retry used a stale name.
   // ⚠️ THE BYTES RIDE ON THE ROW OBJECT, NOT IN THE TABLE — like `from_name`. The table holds the
   // paths; these are what nodemailer turns into MIME parts.
-  const result = await deliver(supabase,
-    { ...(insertedRow as Row), attachments: loaded.attachments, from_name: fromName },
-    { mailUser, mailPass, isTest, testRecipient })
+  /* ── 🔴 THE SEND, THEN THE ANSWER — THE REST HAPPENS AFTER (15 October 2026) ──────────────────────
+   * `sendRow` is compose + SMTP + status: the moment it says `sent`, the prospect has the email and the
+   * answer goes back. The Sent copy (an IMAP session that can wait 3 s for the server's own filing) and
+   * the contact log do not decide whether the email may go, so they run in `runAfter` — Next's `after()`.
+   * ⚠️ THEIR FAILURES ARE RECORDED ON THE ROW, as they always were ('sent copy: …', 'sent, not logged: …'),
+   * which the history already turns into Save to Sent and "log it"; the toast reads the row a moment later. */
+  const sendable = { ...(insertedRow as Row), attachments: loaded.attachments, from_name: fromName }
+  const sent = await sendRow(supabase, sendable, { mailUser, mailPass, isTest, testRecipient })
+  const result = sent.result
+  timer.mark('SMTP send')
+  if (result.status !== 'sent' || !sent.raw) {
+    timer.log('not sent')
+    return NextResponse.json({ ...result.payload, ...(timer.read() ? { timing: timer.read() } : {}) })
+  }
+  const rowId = (insertedRow as Row).id
+  const raw = sent.raw
+  const sentAt = sent.date ?? new Date()
+  runAfter('Sent copy and contact log', async () => {
+    const after0 = performance.now()
+    try {
+      await fileCopyAndRecord(supabase, sendable, raw, sentAt, { mailUser, mailPass })
+    } catch (e) {
+      await supabase.from('outreach_messages').update({ last_error: `post-send: the Sent copy — ${sanitiseMailError(e)}`, updated_at: new Date().toISOString() }).eq('id', rowId)
+    }
+    const copyMs = Math.round(performance.now() - after0)
+    try {
+      await logAfterSend()
+    } catch (e) {
+      await supabase.from('outreach_messages').update({ last_error: `post-send: the contact log — ${e instanceof Error ? e.message : String(e)}`, updated_at: new Date().toISOString() }).eq('id', rowId)
+    }
+    if (process.env.OUTREACH_SEND_TIMING === '1') {
+      console.info('[send-timing] after', JSON.stringify({ 'Sent copy': copyMs, 'contact log': Math.round(performance.now() - after0) - copyMs }))
+    }
+  })
+  timer.log('sent')
+  return NextResponse.json({ ...result.payload, sent_copy: 'pending', post_steps: 'after', ...(timer.read() ? { timing: timer.read() } : {}) })
 
   // ── THE CONTACT LOG — the shared path, and only for a real send the server accepted ──────────────
   // ⚠️ A TEST LOGS NOTHING. It goes to Dominic, not a prospect; a rung for it would corrupt the ladder
   // §57 derives the next step from.
+  // 🔴 HOISTED: it runs AFTER the answer (see `runAfter` above), unchanged inside.
+  async function logAfterSend() {
   let logWarning: string | null = null
   if (!isTest && result.status === 'sent') {
     const kind = sendKind
@@ -1055,5 +1181,7 @@ export async function POST(req: NextRequest) {
       logWarning = logged.warning
     }
   }
-  return NextResponse.json({ ...result.payload, ...(logWarning ? { logWarning } : {}) })
+  // ⚠️ A lead-type or stage warning has no window to appear in any more; it is logged rather than lost.
+  if (logWarning) console.warn('[admin/outreach/mail-send] after send:', logWarning)
+  }
 }

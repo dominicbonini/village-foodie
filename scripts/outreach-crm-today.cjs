@@ -253,7 +253,14 @@ const reply = (over = {}) => ({ status: 'received', is_test: false, direction: '
     const writers = ['app/api/admin/outreach/mail-send/route.ts', 'lib/outreach-mail-poll.ts',
       'app/api/admin/outreach/route.ts', 'app/api/admin/outreach/today/route.ts']
     for (const f of writers) {
-      check(!/handled_at:/.test(readStripped(f)), `🔴 ${f} does not write handled_at`)
+      /* ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): the send route writes \`handled_at\` on ONE kind of row — a
+       * \`refused\` send it recorded, when it is dismissed or answered with "Send anyway" — never on a reply.
+       * Each of those writes is on a row selected by id and checked to be \`refused\` first. */
+      const src = readStripped(f)
+      const ok = f.endsWith('mail-send/route.ts')
+        ? (src.match(/handled_at:/g) || []).length === 4 && /if \(!r \|\| r\.status !== 'refused'\)/.test(src)
+        : !/handled_at:/.test(src)
+      check(ok, `🔴 ${f} does not write handled_at${f.endsWith('mail-send/route.ts') ? ' (except on its own refused rows)' : ''}`)
     }
     const TLROUTE = readStripped('app/api/admin/outreach/timeline/route.ts')
     check(/handled_at: nowIso/.test(TLROUTE) && /handled_at: null/.test(TLROUTE),
@@ -414,7 +421,8 @@ const reply = (over = {}) => ({ status: 'received', is_test: false, direction: '
     check(/Nothing waiting\. Nice\./.test(read('components/admin/OutreachPanel.tsx')),
       '…and the screen says so in words')
     eq(D.daysBetween('2026-09-29', '2026-09-20'), 0, '⚠️ "overdue" is never negative')
-    eq(D.PROBLEM_STATUSES.slice(), ['failed', 'uncertain', 'bounced'], 'the three statuses that need a person')
+    // ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): + \`refused\`, a send the server declined (nothing went).
+    eq(D.PROBLEM_STATUSES.slice(), ['failed', 'uncertain', 'bounced', 'refused'], 'the four statuses that need a person')
     check(/check the address/.test(D.PROBLEM_LABEL.bounced), "🔴 a bounce says what to DO about it")
   }
 

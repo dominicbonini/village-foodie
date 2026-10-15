@@ -95,6 +95,8 @@ import {
   EMPTY_OUTREACH_FILTER,
   type OutreachFilterState,
 } from '@/lib/outreach-filter'
+import OutboxToasts from '@/components/admin/OutboxToasts'
+import { notSentLine } from '@/lib/outreach-refusal'
 
 
 // ── SORTABLE COLUMNS ─────────────────────────────────────────────────────────────────────────────────
@@ -861,6 +863,8 @@ export default function OutreachPanel() {
 
   return (
     <div className="text-slate-900">
+      {/* 🔴 A SEND HELD OR ANSWERED WHILE THE LIST IS ON SCREEN (instant Send, 15 October 2026). */}
+      <OutboxToasts />
       {/* 🔴 THE PANEL KEEPS ITS OWN WIDTH, AND THIS IS THE REASON. The table's colgroup sums to 1510px and
           the table carries minWidth:1510px, so ANY container narrower than that puts the last columns
           off-screen — that is arithmetic, not a small-screen problem. The admin body wrapper is
@@ -2169,9 +2173,15 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
                 {e.prospect_name ?? '(no truck name)'}
               </button>
               <span className="flex-1 min-w-0 truncate text-[12px] text-slate-600" title={e.subject ?? ''}>{e.subject ?? '—'}</span>
-              <span className={`text-[11px] font-bold whitespace-nowrap ${e.status === 'uncertain' ? 'text-amber-800' : 'text-red-700'}`}>
+              <span className={`text-[11px] font-bold whitespace-nowrap ${e.status === 'uncertain' ? 'text-amber-800' : 'text-red-700'}`}
+                title={e.status === 'refused' ? notSentLine(e.last_error ?? '') : undefined}>
                 {PROBLEM_LABEL[e.status] ?? e.status}
               </span>
+              {/* 🔴 A REFUSED SEND SAYS WHY, IN PLAIN ENGLISH (15 October 2026): "Not sent: this prospect is
+                  marked do-not-contact". Open → the prospect, where "Send anyway" or "Dismiss" answers it. */}
+              {e.status === 'refused' && (
+                <span className="flex-1 min-w-0 truncate text-[11px] text-red-800" title={e.last_error ?? ''}>{e.last_error ?? ''}</span>
+              )}
               <span className="text-[11px] text-slate-400 whitespace-nowrap">{fmtDate(e.message_date)}</span>
               <button type="button" onClick={() => onOpen(e.prospect_id, problemsQueue)}
                 className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">

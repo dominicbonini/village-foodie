@@ -111,11 +111,18 @@ export interface DeliverResult {
   payload: Record<string, unknown>
 }
 
-export async function deliver(
+/**
+ * 🔴 THE SEND ALONE — compose, SMTP, status — and NOT the Sent copy (15 October 2026).
+ * The manual Send returns as soon as this answers and files the copy afterwards (`after()` in the
+ * route), because the copy is a second IMAP session that can include a fixed 3-second wait and it does
+ * not decide whether the email may go. `deliver` below is still both halves, in the same order, for the
+ * Retry button and the poll's automatic retry.
+ */
+export async function sendRow(
   supabase: SupabaseClient,
   row: DeliverRow,
   env: { mailUser: string; mailPass: string; isTest: boolean; testRecipient?: string },
-): Promise<DeliverResult> {
+): Promise<{ result: DeliverResult; raw?: Buffer; date?: Date }> {
   // 🔴 BOTH FROM `lib/outreach-mail-envelope`, which is what the harness composes its bytes from.
   const transporter = nodemailer.createTransport(smtpTransportOptions(env.mailUser, env.mailPass))
   const mail = mailFor(row)
@@ -127,10 +134,10 @@ export async function deliver(
     await supabase.from('outreach_messages')
       .update({ status: 'failed', last_error: `compose: ${sanitiseMailError(err)}`, updated_at: new Date().toISOString() })
       .eq('id', row.id)
-    return { ok: false, status: 'failed', payload: {
+    return { result: { ok: false, status: 'failed', payload: {
       ok: false, id: row.id, status: 'failed',
       error: sanitiseMailError(err), message: 'That message could not be built, so nothing was sent.',
-    } }
+    } } }
   }
   await supabase.from('outreach_messages')
     .update({ status: 'sending', attempts: (row.attempts ?? 0) + 1, updated_at: new Date().toISOString() })
@@ -148,17 +155,28 @@ export async function deliver(
     await supabase.from('outreach_messages')
       .update({ status: outcome, last_error: sanitiseMailError(err), updated_at: new Date().toISOString() }).eq('id', row.id)
     try { transporter.close() } catch { /* the verdict is already decided */ }
-    return { ok: false, status: outcome, payload: {
+    return { result: { ok: false, status: outcome, payload: {
       ok: false, id: row.id, status: outcome,
       error: sanitiseMailError(err),
       message: outcome === 'uncertain'
         ? 'May have been sent — check your Sent folder before retrying.'
         : 'That was refused by the mail server.',
-    } }
+    } } }
   }
   try { transporter.close() } catch { /* sent already */ }
+  return {
+    result: { ok: true, status: 'sent', payload: { ok: true, id: row.id, status: 'sent', subject: row.subject, threaded: !!row.in_reply_to } },
+    raw, date: (mail.date as Date) ?? new Date(),
+  }
+}
 
-  const copy = await fileSentCopy(row, raw, (mail.date as Date) ?? new Date(), env)
+/** The Sent copy, filed and recorded on the row. ⚠️ Never fatal: an absent copy records its reason. */
+export async function fileCopyAndRecord(
+  supabase: SupabaseClient,
+  row: DeliverRow, raw: Buffer, date: Date,
+  env: { mailUser: string; mailPass: string },
+): Promise<SentCopyResult> {
+  const copy = await fileSentCopy(row, raw, date, env)
   await supabase.from('outreach_messages').update({
     sent_copy: copy.sentCopy, mailbox: copy.mailbox, uid: copy.uid, uidvalidity: copy.uidvalidity,
     // 🔴 A MISSING COPY NOW SAYS WHY. `sent_copy: 'absent'` with `last_error: null` was the shape of
@@ -167,6 +185,18 @@ export async function deliver(
     ...(copy.sentCopy === 'absent' ? { last_error: `sent copy: ${copy.reason}` } : {}),
     updated_at: new Date().toISOString(),
   }).eq('id', row.id)
+  return copy
+}
+
+/** Send and file — both halves, in order. Retry and the poll's retry use this, unchanged in behaviour. */
+export async function deliver(
+  supabase: SupabaseClient,
+  row: DeliverRow,
+  env: { mailUser: string; mailPass: string; isTest: boolean; testRecipient?: string },
+): Promise<DeliverResult> {
+  const sent = await sendRow(supabase, row, env)
+  if (sent.result.status !== 'sent' || !sent.raw) return sent.result
+  const copy = await fileCopyAndRecord(supabase, row, sent.raw, sent.date ?? new Date(), env)
   const sentCopy = copy.sentCopy
 
   return { ok: true, status: 'sent', payload: {

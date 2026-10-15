@@ -1271,7 +1271,9 @@ const hdrs = (raw, extra = {}) => ({
     for (const caller of ['patch', 'messageAction', 'deleteContact']) {
       check(new RegExp(`${caller}[\\s\\S]{0,1400}?await reloadAll\\(\\)`).test(PAGE), `…called after ${caller}`)
     }
-    check(/onSent=\{async \(\) => \{ await reloadAll\(\); setResolved\(true\) \}\}/.test(PAGE), '…and after a send')
+    check(/* ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): `onSent` became the outbox's
+     * `onSettled` — the window has closed before the server answers. Same two effects. */
+    /getOutbox\(\)\.onSettled\(e => \{[\s\S]{0,120}void reloadAll\(\)\n\s*if \(e\.phase === 'sent' && !e\.test\) setResolved\(true\)/.test(PAGE), '…and after a send')
     // The three send actions survived the move from the Emails list to the timeline.
     /* 🔴 RESTATED (30 September 2026): `'log_only'` IS NO LONGER A STRING IN THE TIMELINE, and that
      * is the point of the change rather than a regression. The row's "log it" button — the repair

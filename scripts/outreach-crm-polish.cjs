@@ -271,7 +271,11 @@ function runCensus(over = {}) {
   // ── WHAT NONE OF THIS MAY TOUCH ──────────────────────────────────────────────────────────────
   t('🔴 still one nextStep call on the page', (PAGE.match(/nextStep\(/g) || []).length === 1)
   t('🔴 still one contact writer', /action: 'log_contact'/.test(PAGE) && !/outreach_contacts/.test(PAGE))
-  t('🔴 the sequence guards are still the composer\'s', /json\.needsConfirm === true/.test(CW))
+  /* ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): the window closes on Send, so the guards' question is answered
+   * where the send's answer arrives — the outbox reads \`needsConfirm\`, and the prospect's history offers
+   * "Send anyway" (\`send_refused\`, the same override write). Still asked, never silently skipped. */
+  t('🔴 the sequence guards are still answered by the operator', /json\.needsConfirm === true/.test(read('lib/outreach-outbox.ts'))
+    && /'send_refused'/.test(read('components/admin/ProspectTimeline.tsx')))
   t('🔴 EMAIL_FRAME_SANDBOX is unchanged',
     /sandbox=\{EMAIL_FRAME_SANDBOX\}/.test(SHARED) && !/allow-scripts/.test(SHARED))
   return { ok, bad }

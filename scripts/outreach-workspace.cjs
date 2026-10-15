@@ -392,7 +392,9 @@ const fakeStore = () => {
       '🔴 only a resolving action arms the "Done. Next" bar')
     check(/if \(j\.ok === true && RESOLVING\.has\(action\)\) setResolved\(true\)/.test(PAGE),
       '…and only when the server said it worked')
-    check(/onSent=\{async \(\) => \{ await reloadAll\(\); setResolved\(true\) \}\}/.test(PAGE),
+    check(/* ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): `onSent` became the outbox's
+     * `onSettled` — the window has closed before the server answers. Same two effects. */
+    /getOutbox\(\)\.onSettled\(e => \{[\s\S]{0,120}void reloadAll\(\)\n\s*if \(e\.phase === 'sent' && !e\.test\) setResolved\(true\)/.test(PAGE),
       '…a send arms it too')
     check(/onLogged=\{async \(\) => \{[^}]*setResolved\(true\)/.test(PAGE.replace(/\n/g, ' ')),
       '…and so does a log')

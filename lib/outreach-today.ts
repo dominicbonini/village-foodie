@@ -155,9 +155,12 @@ export function buildToday(input: {
   }
 }
 
-/** The outbound statuses that need a person. 🔴 The same three the Emails list already acts on. */
-export const PROBLEM_STATUSES = ['failed', 'uncertain', 'bounced'] as const
+/** The outbound statuses that need a person. 🔴 The same three the Emails list already acts on — and
+ *  `refused` (15 October 2026): a send the server declined, recorded because Send is instant now and the
+ *  compose window has closed by the time it answers. Its reason travels in `last_error`. */
+export const PROBLEM_STATUSES = ['failed', 'uncertain', 'bounced', 'refused'] as const
 export const PROBLEM_LABEL: Record<string, string> = {
+  refused: 'Not sent',
   failed: 'Failed — nothing reached them',
   uncertain: 'May have been sent — check Sent before retrying',
   bounced: 'Bounced — check the address',

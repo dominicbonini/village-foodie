@@ -306,7 +306,8 @@ head('3 · the button says "Send", and the suffix is not appended')
 {
   const code = codeOf(COMPOSE)
   t('🔴 the render calls `sendButtonLabel` with no suffix concatenated',
-    /\{sending \? 'Sending…' : sendButtonLabel\(\{ isReply: !!replyTo, step: stepKind \?\? null \}\)\}/.test(code))
+    // ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): no \`sending ?\` branch — the window closes on Send.
+    /\{sendButtonLabel\(\{ isReply: !!replyTo, step: stepKind \?\? null \}\)\}/.test(code))
   /* ⛔ THE PROP IS GONE ENTIRELY NOW (5 October 2026), not merely unrendered. It was kept for one
    * build as accepted-but-ignored, which left the page computing a string and passing it nowhere.
    * ⚠️ ASSERTED ACROSS BOTH FILES. "Not rendered in ComposeWindow" would still pass while the page

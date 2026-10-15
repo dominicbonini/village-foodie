@@ -28,6 +28,8 @@ import {
   EMPTY_DOC, type EmailDoc, type DocLine,
 } from '@/lib/outreach-doc'
 import RichEmailEditor, { type EditorApi } from '@/components/admin/RichEmailEditor'
+// 🔴 THE TAB'S OUTBOX — Send hands the message here and the window closes (instant Send, with Undo).
+import { getOutbox } from '@/components/admin/OutboxToasts'
 import {
   renderTemplate, unresolvedIn, malformedTokensIn, isMustResolveToken, applyPlaceholderFills, defaultFillsOf, fillSourceOf,
   type MessageTemplate, type TemplateContext,
@@ -63,6 +65,20 @@ export const QUOTE_BLOCK_ID = 'hg-previous-email'
 const MESSAGE_LABEL = (isEmail: boolean) => isEmail
   ? 'Message — this is the email. Exactly what is here is sent, signature and all.'
   : 'Message — exactly what will be sent.'
+
+/**
+ * 🔴 WHAT UNDO GIVES BACK (15 October 2026). Send closes the window at once and holds the message for five
+ * seconds; Undo re-opens the window from this — the same template, the same text and placeholder values,
+ * the same edited document, the same attachments and the same "include previous email". The reply target
+ * is held by the page, beside it.
+ */
+export interface ComposeSnapshot {
+  templateId: string; sourceSubject: string; sourceBody: string; subject: string; body: string
+  edited: boolean; fillsTouched: boolean
+  fills: Record<string, string>; fromDefault: Record<string, string | null>
+  fillSource: Record<string, 'snippet' | 'template' | null>
+  includeQuote: boolean; files: OutboundAttachment[]; editedDoc: EmailDoc | null
+}
 
 export interface ReplyTarget {
   /** The `outreach_messages` row id. The send route re-reads it and checks it belongs here. */
@@ -118,15 +134,7 @@ function seedFrom(id: string | null | undefined, offerable: MessageTemplate[], c
   }
 }
 
-/**
- * A short stable hash of a string — FNV-1a, hex. Used only to key the idempotency token to the exact
- * message; it is not a security primitive and does not need to be one.
- */
-function hashKey(s: string): string {
-  let h = 0x811c9dc5
-  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) }
-  return (h >>> 0).toString(16)
-}
+/* ⚠️ `hashKey` IS GONE (15 October 2026): the idempotency key is made at the press now, one per send. */
 
 /** "11 Sep 2026, 13:07" — enough to recognise which email, in the timezone the mail is read in. */
 function fmtWhen(iso: string): string {
@@ -155,9 +163,9 @@ interface Thread {
 
 export default function ComposeWindow({
   truckName, prospectId, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
-  whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, onSent, replyTo,
+  whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, replyTo,
   inline, onDirtyChange, followUpDate, hideCopyAndLog, contactName, stepKind, sequenceNote,
-  inConversation, apiRef,
+  inConversation, apiRef, restore, onQueued,
 }: {
   truckName: string
   /** 🔴 THE PROSPECT THE SERVER SENDS TO. The browser never names a recipient: it sends this id and the
@@ -195,8 +203,8 @@ export default function ComposeWindow({
   /** 🔴 THE SNIPPET LIBRARY, loaded once by the panel. A name with a non-blank value pre-fills its
    *  field; a blank one, or a name with no snippet, prompts exactly as before. */
   snippets?: Snippet[]
-  /** Fired after the server reports a real send, so the panel re-reads the list and the modal. */
-  onSent?: () => void | Promise<void>
+  /* ⚠️ `onSent` IS GONE (15 October 2026): this window has closed before the server answers. The page
+   * reacts to the outbox instead (`onSettled`), and re-reads its lists when a send settles. */
   /**
    * 🔴 REPLY MODE. Present ⇒ this window answers ONE specific message rather than composing the next
    * rung: the subject, the recipient and the thread all come from it, the rung is `reply`, and the
@@ -244,6 +252,14 @@ export default function ComposeWindow({
   /** 🔴 PASSED STRAIGHT THROUGH TO THE EDITOR, for "Insert in email". This window holds no document
    *  of its own to write into — the editor does — so it forwards the handle rather than proxying it. */
   apiRef?: React.MutableRefObject<EditorApi | null>
+  /** 🔴 UNDO: open the window exactly as it was when Send was pressed. Absent ⇒ a fresh window. */
+  restore?: ComposeSnapshot | null
+  /**
+   * 🔴 INSTANT SEND: called the moment Send has handed the message to the outbox, so the page closes this
+   * window at once. The server's verdict arrives ~5 s later in the toast and, for a refusal or a failure,
+   * on the prospect (Today's "Emails needing a look").
+   */
+  onQueued?: (snapshot: ComposeSnapshot, replyTo: ReplyTarget | null) => void
 }) {
   // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
   // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
@@ -269,7 +285,7 @@ export default function ComposeWindow({
   // same for every window that opens, so it comes from the table through the parent.
   const globalsSeed = useMemo(() => snippetMapOf(snippets ?? []), [snippets])
   const [seed] = useState(() => seedFrom(initialTemplateId, offerable, ctx, globalsSeed))
-  const [templateId, setTemplateId] = useState(seed.id)
+  const [templateId, setTemplateId] = useState(restore ? restore.templateId : seed.id)
   const [moreOpen, setMoreOpen] = useState(false)
   /** 🔴 The focused writing view. Esc returns — see the key handler below. */
   const [expanded, setExpanded] = useState(false)
@@ -278,13 +294,13 @@ export default function ComposeWindow({
   //   subject / body            — the editable message, which is the render with field values applied.
   // The pane you type in is the second one, so what is on screen is what will be sent. The first exists
   // only so a field can be changed or cleared and the message rebuilt from it — see `edited` below.
-  const [sourceSubject, setSourceSubject] = useState(seed.subject)
-  const [sourceBody, setSourceBody] = useState(seed.body)
-  const [subject, setSubject] = useState(seed.subject)
-  const [body, setBody] = useState(seed.body)
+  const [sourceSubject, setSourceSubject] = useState(restore ? restore.sourceSubject : seed.subject)
+  const [sourceBody, setSourceBody] = useState(restore ? restore.sourceBody : seed.body)
+  const [subject, setSubject] = useState(restore ? restore.subject : seed.subject)
+  const [body, setBody] = useState(restore ? restore.body : seed.body)
   // 🔴 THE PRECEDENCE FLAG. False: the fields drive the message. True: I have typed in the message and
   // the fields stop rewriting it. It is never set by anything except a keystroke in the subject or body.
-  const [edited, setEdited] = useState(false)
+  const [edited, setEdited] = useState(restore?.edited ?? false)
   // 🔴 HAS THE OPERATOR TYPED ANYTHING THAT RE-OPENING WOULD NOT REPRODUCE?
   //   `edited`      — a keystroke landed in the subject or body.
   //   `fillsTouched`— a placeholder field was typed into. Tracked SEPARATELY from `fills` itself
@@ -293,7 +309,7 @@ export default function ComposeWindow({
   // ⚠️ SELECTING A TEMPLATE ALONE IS NOT A DRAFT. The render is deterministic — re-opening the window
   // produces the identical text — so guarding on "body is non-empty" would make Escape useless the
   // moment a template was picked, which is every time the queue pre-selects one.
-  const [fillsTouched, setFillsTouched] = useState(false)
+  const [fillsTouched, setFillsTouched] = useState(restore?.fillsTouched ?? false)
   const dirty = edited || fillsTouched
   // 🔴 READ THROUGH A REF INSIDE THE ESCAPE HANDLER. That effect depends on `onClose` only — adding
   // `dirty` would tear down and re-register the window listener on every keystroke, which is exactly
@@ -308,17 +324,17 @@ export default function ComposeWindow({
   // Set when the re-render control is pressed once, so it can warn before discarding.
   const [confirmRerender, setConfirmRerender] = useState(false)
   // 🔴 PLACEHOLDER VALUES LIVE HERE, NOT IN THE BODY TEXT. See the note on applyFills below.
-  const [fills, setFills] = useState<Record<string, string>>(seed.fills)
+  const [fills, setFills] = useState<Record<string, string>>(restore ? restore.fills : seed.fills)
   // 🔴 WHICH VALUES CAME FROM A STORED DEFAULT RATHER THAN BEING TYPED, and when each was last changed
   // on the Templates tab. A stale default goes out in an email that LOOKS correctly filled — every guard
   // (the NEEDED chip, the still-to-fill banner, both confirmations) stays silent on it — so the only
   // protection is showing its provenance and its age on the field itself.
-  const [fromDefault, setFromDefault] = useState<Record<string, string | null>>(seed.fromDefault)
+  const [fromDefault, setFromDefault] = useState<Record<string, string | null>>(restore ? restore.fromDefault : seed.fromDefault)
   /** 🔴 READ ONCE, LAZILY. Re-reading localStorage mid-compose could change a field under the operator;
    *  the Templates tab is where it is edited, and the next compose window picks the new value up. */
   const globals = globalsSeed
   /** Which layer supplied each pre-filled value. Display only — see the badge. */
-  const [fillSource, setFillSource] = useState<Record<string, 'snippet' | 'template' | null>>(seed.fillSource)
+  const [fillSource, setFillSource] = useState<Record<string, 'snippet' | 'template' | null>>(restore ? restore.fillSource : seed.fillSource)
   // Which action is waiting on the unfilled-placeholder confirmation: null | 'send' | 'log'.
   const [pending, setPending] = useState<null | 'send' | 'test' | 'log'>(null)
   const [sendError, setSendError] = useState<string | null>(null)
@@ -348,10 +364,10 @@ export default function ComposeWindow({
    * the SAME stored body the server quotes. */
   const [quotedOpen, setQuotedOpen] = useState(false)
   /** "Include previous email" — on by default, and it never affects the threading headers. */
-  const [includeQuote, setIncludeQuote] = useState(true)
+  const [includeQuote, setIncludeQuote] = useState(restore?.includeQuote ?? true)
   const [quotedLoading, setQuotedLoading] = useState(false)
   /** The files this email will carry. Metadata only — the bytes are already in the bucket. */
-  const [files, setFiles] = useState<OutboundAttachment[]>([])
+  const [files, setFiles] = useState<OutboundAttachment[]>(restore?.files ?? [])
   const [fileBusy, setFileBusy] = useState<string | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -398,19 +414,9 @@ export default function ComposeWindow({
    * from it until the operator types in the editor, at which point `edited` is true and the existing
    * precedence rule ("your text wins") takes over, exactly as it always has for the textarea.
    */
-  const [editedDoc, setEditedDoc] = useState<EmailDoc | null>(null)
+  const [editedDoc, setEditedDoc] = useState<EmailDoc | null>(restore?.editedDoc ?? null)
   const [confirmSend, setConfirmSend] = useState<null | 'real' | 'test'>(null)
-  /** The server's guards, as returned, and which send they answered. Null ⇒ none are outstanding. */
-  const [guards, setGuards] = useState<null | { list: { id: string; kind: string; message: string }[]; test: boolean }>(null)
-  const [sending, setSending] = useState(false)
-  const [sentNote, setSentNote] = useState<string | null>(null)
-  /**
-   * 🔴 ONE KEY PER EXACT MESSAGE. The server refuses a second send carrying a key it has already seen
-   * and hands back the first one's verdict, so a double press — or a press after a reply that never
-   * arrived — cannot produce a second email. It is regenerated only when the text changes, because
-   * changed text is a different message and deserves to go.
-   */
-  const idemRef = useRef<{ forKey: string; value: string } | null>(null)
+  /* ⚠️ `idemRef` IS GONE: one key per press, made in `sendNow`. */
 
   useEffect(() => { setMounted(true) }, [])
   useEffect(() => { closeRef.current?.focus() }, [])
@@ -976,7 +982,8 @@ export default function ComposeWindow({
   }, [attachPlansPdf])
   useEffect(() => { attachPlansForTemplateRef.current = attachPlansForTemplate }, [attachPlansForTemplate])
   // A window OPENED with a template already chosen (from the due queue) asks once, on open.
-  const seedPlansAsked = useRef(false)
+  // ⚠️ A RESTORED window already carries its files; nothing is attached again.
+  const seedPlansAsked = useRef(!!restore)
   useEffect(() => {
     if (seedPlansAsked.current) return
     seedPlansAsked.current = true
@@ -995,83 +1002,51 @@ export default function ComposeWindow({
    * render, so two presses in one tick both read `false` and both proceed — the defect that logged two
    * contacts 0.755s apart. Here the same defect would send two emails.
    */
-  const sendNow = useCallback(async (test: boolean, override: string[] = []) => {
+  /* ══ 🔴 SEND IS INSTANT NOW: HELD FOR FIVE SECONDS WITH UNDO, THEN SENT ONCE (15 October 2026) ══════
+   * docs/outreach-instant-send-report.md. Pressing Send hands the message to the tab's outbox and closes
+   * this window at once; the toast says "Sending… Undo". Undo re-opens the window exactly as it was.
+   * After five seconds the request goes out — the SAME request this function always built.
+   * 🔴 THE KEY IS MADE AT THE PRESS, not hashed from the message: one press is one send, and the server
+   * refuses a repeat key, so a retry or a second press can never send twice.
+   * 🔴 THE SERVER STILL DECIDES. Every refusal and every guard runs there before the mail server is
+   * contacted. Because this window has closed by then, a refusal is RECORDED and the prospect flagged in
+   * Today's "Emails needing a look", with the reason — and a guard that asks ("Send anyway") asks there,
+   * in the same words, with the same override write. The toast says "Not sent — see <prospect>".
+   * ⚠️ Everything that refused BEFORE the press still refuses here, in this window: `refusal` (a token
+   * that would arrive as braces, a must-resolve value), the follow-up and placeholder warnings in `askSend`. */
+  const sendNow = useCallback((test: boolean, override: string[] = []) => {
     if (sendInFlight.current) return
     if (refusal) { setSendError(refusal); return }
     sendInFlight.current = true
-    setSending(true); setSendError(null); setConfirmSend(null)
-    try {
-      // 🔴 ONE KEY PER EXACT MESSAGE. It is now a hash of the DOCUMENT plus the subject, the rung and
-      // whether it is a test — the document is the message, so two sends of the same document are the
-      // same send and the second returns the first's verdict. Changing a single character of
-      // formatting changes the document and therefore the key, which is right: it is a different email.
-      // 🔴 THE ATTACHMENT PATHS ARE PART OF THE KEY. Adding the plans PDF to a message already
-      // submitted makes it a DIFFERENT email, and without the paths the second send would be
-      // recognised as a duplicate of the first and silently return its verdict — the prospect would
-      // never get the document.
-      const key = hashKey(JSON.stringify([
-        finalSubject, isEmail ? doc : fullText, kindForSend, test,
-        files.map(f => f.storagePath), replyTo?.messageId ?? null,
-      ]))
-      if (!idemRef.current || idemRef.current.forKey !== key) {
-        idemRef.current = { forKey: key, value: crypto.randomUUID() }
-      }
-      const { json } = await post({
-        action: 'send', subject: finalSubject, kind: kindForSend,
-        // The document for an email; the plain body for WhatsApp, which this route does not send.
-        ...(isEmail ? { document: doc } : { body: fullText }),
-        // ⚠️ PATHS AND METADATA ONLY. There is no field here through which bytes could travel, and
-        // the route drops any entry without a `storagePath` it recognises.
-        ...(files.length ? { attachments: files } : {}),
-        // 🔴 THE MESSAGE BEING ANSWERED, and the address it came from. The route checks both.
-        ...(replyTo ? { reply_to_message_id: replyTo.messageId, to: replyTo.fromAddress ?? '' } : {}),
-        is_test: test, idempotency_key: idemRef.current.value,
-        // ⚠️ THE TICKBOX TRAVELS WITH THE SEND. Absent ⇒ true, which is what the server assumes.
-        include_quote: includeQuote,
-        // ⚠️ THE OVERRIDES TRAVEL WITH THE SEND, and they are the ids of guards the operator has
-        // just been shown and has answered. An empty array is the ordinary case.
-        ...(override.length ? { override } : {}),
-      })
-      // ── 🔴 THE SERVER'S GUARDS. A refusal that can be answered, not a dead end ─────────────────
-      // The route returns `needsConfirm` with the sentences and the ids; nothing has been sent and
-      // nothing written. Pressing "Send anyway" re-submits the SAME message with `override: [ids]`,
-      // which the server records as a note in the history before it sends.
-      if (json.needsConfirm === true) {
-        const gs = (Array.isArray(json.guards) ? json.guards : []) as { id: string; kind: string; message: string }[]
-        setGuards({ list: gs, test })
-        return
-      }
-      if (json.duplicate === true) {
-        setSendError(`This exact message was already submitted — it is recorded as “${String(json.status ?? 'unknown')}”. Use the message list on the prospect to retry it.`)
-        return
-      }
-      if (json.ok !== true) {
-        // 🔴 `uncertain` IS NOT A FAILURE AND MUST NOT READ LIKE ONE. Telling the operator it failed is
-        // what produces the second copy: they press Send again.
-        // ⚠️ AND THE REFUSAL IS SHOWN WHOLE. It now carries the database's own code where one applies,
-        // which is the difference between "could not be recorded" and a diagnosable screen.
-        setSendError(String(json.refusal ?? json.message ?? 'That was not sent.'))
-        return
-      }
-      const copy = String(json.sent_copy ?? '')
-      setSentNote([
-        test ? 'Test sent to your own address.' : `Sent to ${toEmail ?? 'the prospect'}.`,
-        copy === 'absent' ? 'It is NOT in your Sent folder — check the mailbox.' : 'A copy is in your Sent folder.',
-        typeof json.logWarning === 'string' ? json.logWarning : '',
-      ].filter(Boolean).join(' '))
-      if (!test) {
-        setLogged(true)
-        await onSent?.()
-      }
-    } catch {
-      // 🔴 A DEAD BROWSER CONNECTION SAYS NOTHING ABOUT THE EMAIL. The route may well have sent it and
-      // logged it; the row is the truth, so the operator is sent to look rather than told it failed.
-      setSendError('The connection dropped before the server answered. It may have been sent — check the messages on this prospect before sending again.')
-    } finally {
-      sendInFlight.current = false
-      setSending(false)
+    setSendError(null); setConfirmSend(null)
+    const key = crypto.randomUUID()
+    const request: Record<string, unknown> = {
+      action: 'send', prospect_id: prospectId, subject: finalSubject, kind: kindForSend,
+      // The document for an email; the plain body for WhatsApp, which this route does not send.
+      ...(isEmail ? { document: doc } : { body: fullText }),
+      // ⚠️ PATHS AND METADATA ONLY. There is no field here through which bytes could travel.
+      ...(files.length ? { attachments: files } : {}),
+      // 🔴 THE MESSAGE BEING ANSWERED, and the address it came from. The route checks both.
+      ...(replyTo ? { reply_to_message_id: replyTo.messageId, to: replyTo.fromAddress ?? '' } : {}),
+      is_test: test, idempotency_key: key,
+      // ⚠️ THE TICKBOX TRAVELS WITH THE SEND. Absent ⇒ true, which is what the server assumes.
+      include_quote: includeQuote,
+      ...(override.length ? { override } : {}),
     }
-  }, [refusal, post, finalSubject, fullText, doc, isEmail, kindForSend, toEmail, onSent, files, replyTo, includeQuote])
+    const snapshot: ComposeSnapshot = {
+      templateId, sourceSubject, sourceBody, subject, body, edited, fillsTouched,
+      fills, fromDefault, fillSource, includeQuote, files, editedDoc,
+    }
+    getOutbox().queue({
+      key, prospectId, prospectName: truckName, test, subject: finalSubject,
+      to: test ? null : (replyTo?.fromAddress ?? toEmail ?? null),
+      request, snapshot: { compose: snapshot, replyTo: replyTo ?? null },
+    })
+    // 🔴 CLOSES AT ONCE. The page drops this window; the outbox owns the send from here.
+    onQueued?.(snapshot, replyTo ?? null)
+  }, [refusal, prospectId, finalSubject, kindForSend, isEmail, doc, fullText, files, replyTo, includeQuote,
+    templateId, sourceSubject, sourceBody, subject, body, edited, fillsTouched, fills, fromDefault, fillSource,
+    editedDoc, truckName, toEmail, onQueued])
 
   // ── THE mailto: PATH, AND WHY IT IS NOT HERE ANY MORE ───────────────────────────────────────────
   // It lived here from the first version of this window and carried two measured limits and a defect it
@@ -1802,43 +1777,15 @@ export default function ComposeWindow({
             </p>
           )}
 
-          {sentNote && (
-            <p className="text-[12px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-              {sentNote}
-            </p>
-          )}
-
           {/* ── THE CONFIRM, WHICH NAMES THE RECIPIENT ───────────────────────────────────────────
               🔴 THE ADDRESS IS IN THE CONFIRM SENTENCE. "Are you sure?" prevents nothing; the mistake
               this catches is sending the right email to the wrong prospect, and only the address on
               screen at the moment of pressing can catch that. */}
-          {/* ── 🔴 THE SERVER'S GUARDS ───────────────────────────────────────────────────────────
-              Nothing has been sent and nothing has been written: the route answered with the reasons
-              and stopped. "Send anyway" re-submits the identical message with those ids overridden,
-              and the server writes a line in this prospect's history saying so before it sends.
-              ⚠️ A REFUSAL AND A QUESTION LOOK DIFFERENT. `refuse` is the step having already gone —
-              red, and the button says "Send it twice anyway". `confirm` is early, shared or past the
-              final chase — amber, and the button says "Send anyway". */}
-          {guards && (
-            <div className={`rounded-lg border px-3 py-2 ${guards.list.some(g => g.kind === 'refuse')
-              ? 'border-red-300 bg-red-50' : 'border-amber-300 bg-amber-50'}`}>
-              {guards.list.map(g => (
-                <p key={g.id + g.message} className="text-[13px] text-slate-900">{g.message}</p>
-              ))}
-              <div className="mt-2 flex justify-end gap-2">
-                <button onClick={() => setGuards(null)}
-                  className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-white">
-                  Don&rsquo;t send
-                </button>
-                <button
-                  onClick={() => { const g = guards; setGuards(null); void sendNow(g.test, g.list.map(x => x.id)) }}
-                  disabled={sending}
-                  className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50">
-                  {guards.list.some(g => g.kind === 'refuse') ? 'Send it twice anyway' : 'Send anyway'}
-                </button>
-              </div>
-            </div>
-          )}
+          {/* ── 🔴 THE SERVER'S GUARDS ARE ANSWERED ON THE PROSPECT NOW (15 October 2026) ──────────────
+              The window closes when Send is pressed, so a guard that asks cannot ask here any more. The
+              server records the send as `refused` with the guard sentences, Today lists it under
+              "Emails needing a look", and the prospect's history offers "Send anyway" in the same words
+              — re-running every guard, with the same override write (`guard_override`). */}
 
           {confirmSend && (
             <div className="rounded-lg border border-orange-300 bg-orange-50 px-3 py-2">
@@ -1858,9 +1805,9 @@ export default function ComposeWindow({
                   className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-400">
                   Go back
                 </button>
-                <button onClick={() => void sendNow(confirmSend === 'test')} disabled={sending}
+                <button onClick={() => void sendNow(confirmSend === 'test')} 
                   className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-orange-400">
-                  {sending ? 'Sending…' : confirmSend === 'test' ? 'Send test' : 'Send it'}
+                  {confirmSend === 'test' ? 'Send test' : 'Send it'}
                 </button>
               </div>
             </div>
@@ -1896,7 +1843,7 @@ export default function ComposeWindow({
                   nothing. `sendBlock` is the one reason, in priority order, shared by both. */}
               {(
                 <>
-                  <button onClick={() => askSend(true)} disabled={!!testBlock || sending}
+                  <button onClick={() => askSend(true)} disabled={!!testBlock}
                     title={testBlock ?? 'Sends this message to your own address. Nothing is logged and no contact is recorded.'}
                     className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-slate-400">
                     Send test to me
@@ -1904,7 +1851,7 @@ export default function ComposeWindow({
                   {/* 🔴 THE ONLY ORANGE CONTROL ON THE PAGE, AND IT SAYS WHAT WILL HAPPEN. The
                       follow-up date comes from the page's single control, so "Send · follow up
                       3 Oct" is the whole consequence of the press, visible before it. */}
-                  <button onClick={() => askSend(false)} disabled={!!sendBlock || sending}
+                  <button onClick={() => askSend(false)} disabled={!!sendBlock}
                     title={sendBlock
                       ?? `Sends from your mailbox to ${toEmail} and logs the contact.${followUpDate ? ` Follow-up set for ${followUpDate}.` : ''}`}
                     className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
@@ -1921,7 +1868,7 @@ export default function ComposeWindow({
                       * prop to be in: the page still computed a string, passed it, and a reader had
                       * to find this comment to learn it went nowhere. The prop, its type, its call
                       * site and the expression that built it are all removed. */}
-                    {sending ? 'Sending…' : sendButtonLabel({ isReply: !!replyTo, step: stepKind ?? null })}
+                    {sendButtonLabel({ isReply: !!replyTo, step: stepKind ?? null })}
                   </button>
                 </>
               )}

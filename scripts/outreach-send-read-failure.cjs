@@ -253,10 +253,11 @@ function runRouteSuite() {
   t('🔴 a test with no test recipient → still a refusal',
     /if \(isTest && !testRecipient\) return refuse\('OUTREACH_TEST_RECIPIENT is not set/.test(SRC))
   t('🔴 a schema violation in the email itself → still a refusal (malformed + unresolved tokens)',
-    /if \(malformed\.length\) return refuse\(/.test(SRC) && /if \(mustResolve\.length\) return refuse\(/.test(SRC)
-    && /if \(literal\) return refuse\(literal\)/.test(SRC))
+    // ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): the same refusals, now RECORDED (\`flagged\`) so the prospect is flagged.
+    /if \(malformed\.length\) return await flagged\(/.test(SRC) && /if \(mustResolve\.length\) return await flagged\(/.test(SRC)
+    && /if \(literal\) return await flagged\(literal\)/.test(SRC))
   t('🔴 and the prospect refusal is still consulted before anything is built',
-    /const blocked = prospectRefusal\(\{/.test(SRC) && /if \(blocked\) return refuse\(blocked\.refusal\)/.test(SRC))
+    /const blocked = prospectRefusal\(\{/.test(SRC) && /if \(blocked\) return await flagged\(blocked\.refusal\)/.test(SRC))
 
   // ── TEST SENDS, AND THE STANDING RULES ───────────────────────────────────────────────────────
   t('🔴 A TEST SEND IS UNAFFECTED — the whole guard block is still inside `if (!isTest)`', (() => {
@@ -268,8 +269,10 @@ function runRouteSuite() {
   /* ⚠️ ONE SEND PATH. `deliver` appears twice — the compose send and the Retry action — and that is
    * the point of it: both go through the ONE function in lib/outreach-mail-deliver.ts that owns the
    * socket. What matters is that this route never talks to a mail server itself. */
-  t('⚠️ ONE SEND PATH: every send goes through `deliver`, and this route opens no transport of its own',
-    (SRC.match(/await deliver\(/g) || []).length === 2
+  /* ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): the compose send calls \`sendRow\` (the socket half of \`deliver\`,
+   * same file) and files the copy after the answer; Retry still calls \`deliver\`. Still no transport here. */
+  t('⚠️ ONE SEND PATH: every send goes through lib/outreach-mail-deliver, and this route opens no transport of its own',
+    (SRC.match(/await deliver\(/g) || []).length === 1 && (SRC.match(/await sendRow\(/g) || []).length === 1
     && !/nodemailer|createTransport|sendMail/.test(SRC))
   t('⚠️ ONE CONTACT WRITER: `logOutreachContact` only, and nothing inserts outreach_contacts here',
     /logOutreachContact\(/.test(SRC) && !/from\('outreach_contacts'\)\s*\.insert/.test(SRC))

@@ -94,6 +94,7 @@
     "screenshot-truck-details.cjs",
     "screenshot-phone-match.cjs",
     "template-formatting.cjs",
+    "outreach-instant-send.cjs",
     "seed-demo-grid.cjs",
     "sixteen-pizza-admission.cjs",
     "slot-interval-dots.cjs",

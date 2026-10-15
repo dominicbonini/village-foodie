@@ -626,9 +626,12 @@ function fakeDb(opts = {}) {
   t('the page says the queue stops if the tab closes', /the queue stops/.test(PANEL))
   t('a beforeunload guard exists while files wait', /beforeunload/.test(PANEL))
   t('the banner offers Retry', /Retry/.test(PANEL))
+  /* ⚠️ RE-PINNED 15 October 2026 (docs/outreach-instant-send-report.md): this asked the WHOLE file to be unchanged against HEAD, and a
+   * later build added a row badge to it. What it guards is the sandbox, so it now asks about the sandbox:
+   * the constant's value, and that it is the only line in the file naming it. */
   t('EMAIL_FRAME_SANDBOX is untouched and still allow-same-origin only',
-    gitClean('lib/outreach-workspace.ts')
-    && /EMAIL_FRAME_SANDBOX\s*=\s*'allow-same-origin'/.test(read('lib/outreach-workspace.ts')))
+    /export const EMAIL_FRAME_SANDBOX\s*=\s*'allow-same-origin'/.test(read('lib/outreach-workspace.ts'))
+    && (read('lib/outreach-workspace.ts').match(/EMAIL_FRAME_SANDBOX\s*=/g) || []).length === 1)
 
   /* ══════════════════ 13b. WHO MAY READ discovery_trucks FOR AN ANONYMOUS VISITOR ══════════════════ */
   console.log('── 13b. The anonymous readers of discovery_trucks ──────────────────────────────────────')

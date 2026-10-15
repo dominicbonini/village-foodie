@@ -22,7 +22,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { safeHref } from '@/lib/safe-href'
-import ComposeWindow, { type ReplyTarget } from '@/components/admin/ComposeWindow'
+import ComposeWindow, { type ReplyTarget, type ComposeSnapshot } from '@/components/admin/ComposeWindow'
+// 🔴 INSTANT SEND (15 October 2026): the tab's outbox, its toast, and the held sends for the history.
+import OutboxToasts, { getOutbox, useOutbox } from '@/components/admin/OutboxToasts'
 import type { EditorApi } from '@/components/admin/RichEmailEditor'
 import CreateDemoModal from '@/components/admin/CreateDemoModal'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
@@ -101,7 +103,16 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
   // applies the URL's intent and `messageAction` arms the "Done" bar, and both run before the render
   // reaches the panel section — a `const` declared later would be in its temporal dead zone.
   const [panel, setPanel] = useState<Panel>('email')
-  const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null)
+  /* 🔴 UNDO CAN ARRIVE BEFORE THIS PAGE EXISTS — the toast's Undo navigates here when the send was made
+   * from this prospect and the operator has since moved on. So the hand-back is PEEKED on first render
+   * (a lazy initialiser StrictMode may run twice) and taken in an effect that sets no state. */
+  const [undone] = useState(() => (typeof window === 'undefined' ? null : getOutbox().peekRestore(prospectId)))
+  const undoneSnap = undone?.snapshot as { compose: ComposeSnapshot; replyTo: ReplyTarget | null } | undefined
+  const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(undoneSnap?.replyTo ?? null)
+  /** What the compose window re-opens with after Undo. Null ⇒ a fresh window. */
+  const [composeRestore, setComposeRestore] = useState<ComposeSnapshot | null>(undoneSnap?.compose ?? null)
+  /** Bumped to close (remount) the compose window when Send hands it to the outbox, or Undo reopens it. */
+  const [composeKey, setComposeKey] = useState(0)
   const [dirty, setDirty] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [resolved, setResolved] = useState(false)
@@ -143,6 +154,26 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
 
   /** Everything this page re-reads after a write. One function, so no action can refresh half of it. */
   const reloadAll = useCallback(async () => { await Promise.all([load(), reloadTimeline()]) }, [load, reloadTimeline])
+
+  // ── 🔴 THE OUTBOX: UNDO HANDS THE WINDOW BACK; A SETTLED SEND RE-READS THE PAGE ────────────────────
+  useEffect(() => { if (undone) getOutbox().takeRestore(prospectId) }, [undone, prospectId])
+  useEffect(() => getOutbox().onRestore(e => {
+    if (e.prospectId !== prospectId) return
+    getOutbox().takeRestore(prospectId)
+    const snap = e.snapshot as { compose: ComposeSnapshot; replyTo: ReplyTarget | null }
+    setReplyTarget(snap.replyTo); setComposeRestore(snap.compose); setPanel('email'); setComposeKey(k => k + 1)
+  }), [prospectId])
+  // What `onSent` used to do, now when the SERVER has answered (the window closed five seconds earlier).
+  useEffect(() => getOutbox().onSettled(e => {
+    if (e.prospectId !== prospectId) return
+    void reloadAll()
+    if (e.phase === 'sent' && !e.test) setResolved(true)
+  }), [prospectId, reloadAll])
+  /** The held sends for THIS prospect — the history shows them as "Sending…" until the server answers. */
+  const outbox = useOutbox()
+  const pendingSends = outbox
+    .filter(e => e.prospectId === prospectId && (e.phase === 'waiting' || e.phase === 'sending'))
+    .map(e => ({ key: e.key, subject: e.subject, to: e.to, test: e.test }))
 
   /**
    * 🔴 ONE MOUNT EFFECT, IN ORDER: the queue, the prospect, its timeline, and only then whatever the
@@ -238,7 +269,9 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
     try {
       // ⚠️ TWO ROUTES, BY WHOSE ACTION IT IS. The attention columns belong to the timeline route
       // (Part 1); retry, save-to-sent and log-it belong to the send route and always have.
+      // 🔴 A REFUSED SEND's "Send anyway" and "Dismiss" are the send route's too (15 October 2026).
       const onSend = action === 'retry' || action === 'save_to_sent' || action === 'log_only'
+        || action === 'send_refused' || action === 'dismiss_refused'
       const url = onSend ? '/api/admin/outreach/mail-send' : '/api/admin/outreach/timeline'
       const body = onSend
         ? { action, message_row_id: messageId, ...extra }
@@ -714,6 +747,8 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
 
   return (
     <div className="text-slate-900 px-4 py-3 max-md:px-2">
+      {/* 🔴 "Sending… Undo", then the verdict — for a send from this page or one still held from another. */}
+      <OutboxToasts />
       {/* ── DO NOT CONTACT — ACROSS THE PAGE, NOT A TICKBOX IN A CORNER ──────────────────────────
           🔴 IT BLOCKS EVERY EXIT IN THE SEND PATH, so the page must not look ordinary while it is on.
           Undo is here because the flag is only ever set by hand and is only ever unset by hand —
@@ -894,6 +929,10 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           {panel === 'email' && (
             <ComposeWindow
               inline
+              key={composeKey}
+              restore={composeRestore}
+              // 🔴 SEND CLOSES THE WINDOW AT ONCE: the outbox has the message; a fresh window replaces this one.
+              onQueued={() => { setDirty(false); setReplyTarget(null); setComposeRestore(null); setComposeKey(k => k + 1) }}
               truckName={p.name}
               prospectId={p.id}
               toEmail={p.contact_email}
@@ -920,7 +959,6 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
               hideCopyAndLog
               onDirtyChange={setDirty}
               onClose={closePanel}
-              onSent={async () => { await reloadAll(); setResolved(true) }}
               onLog={async (editedBody, ch, servesKind) => {
                 const kind = servesKind ?? composerMode.templateKind ?? oneClick
                 const ok = await logContactThrough(post, p.id, {
@@ -944,6 +982,7 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           <ProspectTimeline
             prospect={p}
             data={timeline}
+            pending={pendingSends}
             expandedId={expandedId}
             onExpand={setExpandedId}
             actions={{

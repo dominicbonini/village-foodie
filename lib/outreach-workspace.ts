@@ -192,10 +192,12 @@ export function nextAction(input: {
  * already in the icon and the tint; provenance is in the expanded row's details line. What is left
  * here is exactly the set a person must act on or explain.
  */
-export type RowBadge = 'waiting' | 'bounced' | 'failed' | 'uncertain' | 'auto_reply' | 'test'
+export type RowBadge = 'waiting' | 'refused' | 'bounced' | 'failed' | 'uncertain' | 'auto_reply' | 'test'
 
 export const BADGE_LABEL: Record<RowBadge, string> = {
   waiting: 'Waiting',
+  // 🔴 A send the server declined — nothing went (15 October 2026, instant Send).
+  refused: 'Not sent',
   bounced: 'Bounced',
   failed: 'Failed',
   uncertain: 'May have been sent',
@@ -210,6 +212,7 @@ export function rowBadges(
 ): RowBadge[] {
   const out: RowBadge[] = []
   if (needsAttention(m, { now: opts.now, linkedTruck: opts.linkedTruck })) out.push('waiting')
+  if (m.status === 'refused' && !m.handled_at) out.push('refused')
   if (m.status === 'bounced' || m.status === 'bounce') out.push('bounced')
   if (m.status === 'failed') out.push('failed')
   if (m.status === 'uncertain') out.push('uncertain')
