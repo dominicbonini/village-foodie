@@ -59,7 +59,8 @@ import { WebOfflineBanner } from '@/components/WebOfflineBanner'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
-import { useTruckLocale } from '@/lib/i18n/client'
+import { useT, useTruckLocale } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/kds'
 
 // View mode driven by ?view= query param
 // /kds           → window view (default, for the main iPad at the hatch)
@@ -137,6 +138,14 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   const kdsTime = useMemo(() => (truck ? timeSettingsOr(truck.time, 'kds') : LEGACY_UK_TIME_SETTINGS), [truck])
   const kdsTz = kdsTime.timeZone
   useTruckLocale(kdsTime.locale)   // Language Phase 0: the truck's country's locale for the kitchen screen's words
+  // Language Phase 1b: the kitchen screen's words (messages/en-GB.json → "kds").
+  // 🔴 `t` IS NEVER IN A DEPENDENCY ARRAY. A handler that is a `useCallback` reads `tRef.current` instead —
+  // the words of a toast or a confirm are produced at the moment of the TAP, so the translator current at
+  // that moment is the right one, and no callback (or the effects downstream of `fetchAll`) is re-created
+  // when the language arrives. State set inside `fetchAll` holds a CODE (`error`), turned into words below.
+  const t = useT('kds')
+  const tRef = useRef(t)
+  useEffect(() => { tRef.current = t }, [t])
   // Van-level "show cooking step" preference (Settings). Gates the cook view's "Start
   // cooking" button. Defaults off (matches the Settings toggle default) until loaded.
   const [showCookingStep, setShowCookingStep] = useState(false)
@@ -615,7 +624,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         // Authoritative: the token no longer exists. Clear and go terminal, even mid-service.
         loadedOnceRef.current = false
         setHasLoaded(false)
-        setError(data.error ?? 'This link is no longer valid.')
+        // A CODE when the server sent no words (Language Phase 1b) — turned into words at render.
+        setError(data.error ?? 'error.linkInvalid')
         setLoading(false)
         return
       }
@@ -803,7 +813,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         setDegradedSince(prev => prev ?? new Date())
       } else {
         console.error('[kds] fetchAll error:', e)
-        setError('Could not load orders')   // never loaded → the honest wording, kept verbatim
+        setError('error.couldNotLoad')   // never loaded → the honest wording, kept verbatim (a CODE; words at render)
       }
     } finally {
       clearTimeout(timeoutId)
@@ -1127,9 +1137,11 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     prevOrderCountRef.current = orders.length
   }, [orders])
 
+  // The words are made at RENDER and the effect only writes them — so the translator is never a dependency.
+  const kdsDocTitle = truck?.name ? t('docTitle', { truck: truck.name }) : null
   useEffect(() => {
-    if (truck?.name) document.title = `${truck.name} Kitchen`
-  }, [truck?.name])
+    if (kdsDocTitle) document.title = kdsDocTitle
+  }, [kdsDocTitle])
 
   // Realtime subscription (same pattern as main dashboard)
   useEffect(() => {
@@ -1259,8 +1271,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       type="button"
       onClick={() => setSoundEnabled(v => { const next = !v; if (next) primeAudio(); return next })}
       aria-pressed={soundEnabled}
-      aria-label={soundEnabled ? 'New-order sound is on — tap to turn it off' : 'New-order sound is off — tap to turn it on'}
-      title={soundEnabled ? 'New-order sound is on — tap to turn it off' : 'New-order sound is off — tap to turn it on'}
+      aria-label={soundEnabled ? t('header.soundOn') : t('header.soundOff')}
+      title={soundEnabled ? t('header.soundOn') : t('header.soundOff')}
       className={`${extra} items-center px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${soundEnabled ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
     >
       <span aria-hidden>{soundEnabled ? '🔔' : '🔕'}</span>
@@ -1315,19 +1327,20 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         // Queued durably. The optimistic guard HOLDS until replay — dropping it would let the next poll
         // revert a pager that is already in a customer's hand.
         showToast(buzzerNumber == null
-          ? `Buzzer ${prior ?? ''} removed`
-          : `Buzzer ${buzzerNumber} saved`)
+          ? tRef.current('toast.buzzerRemoved', { n: String(prior ?? '') })
+          : tRef.current('toast.buzzerSaved', { n: String(buzzerNumber) }))
         if (!keepOpen) setBuzzerTarget(null)
         setSavingBuzzer(false)
         return
       }
       const data = result.data ?? {}
       if (!result.ok) throw new Error(data.error || 'write failed')
-      const from = data.clearedFrom?.id ? ` (taken from #${data.clearedFrom.id})` : ''
       // Names the number that went back to the rack — see the dashboard copy of this handler.
       showToast(buzzerNumber == null
-        ? (prior != null ? `Buzzer ${prior} removed` : 'Buzzer removed')
-        : `Buzzer ${buzzerNumber} assigned${from}`)
+        ? (prior != null ? tRef.current('toast.buzzerRemoved', { n: String(prior) }) : tRef.current('toast.buzzerRemovedNone'))
+        : data.clearedFrom?.id
+          ? tRef.current('toast.buzzerAssignedFrom', { n: String(buzzerNumber), from: String(data.clearedFrom.id) })
+          : tRef.current('toast.buzzerAssigned', { n: String(buzzerNumber) }))
       if (!keepOpen) setBuzzerTarget(null)
       // Guard released by fetchAll, and only once the SERVER row carries the value — see the dashboard.
       fetchAllRef.current()
@@ -1336,10 +1349,11 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       // already be holding the pager, so the toast names the number and the order's real state.
       for (const k of Object.keys(next)) delete pendingBuzzersRef.current[k]
       setOrders(prev => prev.map(o => o.order_key in priorByKey ? { ...o, buzzer_number: priorByKey[o.order_key] } : o))
-      const who = buzzerTarget?.id ? `order #${buzzerTarget.id}` : 'this order'
+      const target = buzzerTarget?.id ? 'order' : 'this'
+      const id = String(buzzerTarget?.id ?? '')
       showToast(buzzerNumber == null
-        ? `Could not remove buzzer ${prior} — it is still on ${who}`
-        : `Could not give buzzer ${buzzerNumber} to ${who} — ${prior != null ? `it still has buzzer ${prior}` : 'it still has no buzzer'}`, 'error')
+        ? tRef.current('toast.buzzerRemoveFailed', { n: String(prior), target, id })
+        : tRef.current('toast.buzzerAssignFailed', { n: String(buzzerNumber), target, id, had: prior != null ? 'yes' : 'no', prior: String(prior) }), 'error')
     } finally { setSavingBuzzer(false) }
   }, [token, pin, showToast, orders, buzzerTarget])
 
@@ -1407,7 +1421,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         kind: 'status', order_key: orderKey, online: isOnline(), expectedFrom: STATUS_REPLAY_EXPECTED_FROM,
       })
       await handleGateResult(result, 'reject', orderKey)
-    } catch { showToast('Failed to reject', 'error') } finally { setActionLoading(null) }
+    } catch { showToast(tRef.current('toast.rejectFailed'), 'error') } finally { setActionLoading(null) }
   }, [token, pin, rejectingOrder, handleGateResult, showToast])
 
   // `opts.booksPayment` is OrderCard's toast hint for the one-press "Mark paid & collected" — carried
@@ -1432,7 +1446,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       // 🔴 THE EMPTY `catch {}` IS GONE. The shared handler throws on a server rejection exactly as the
       // dashboard always did, and this catch is what surfaces it.
       await handleGateResult(result, action, orderKey, opts?.booksPayment)
-    } catch (err: any) { showToast(err.message || 'Failed', 'error') } finally { setActionLoading(null) }
+    } catch (err: any) { showToast(err.message || tRef.current('toast.failed'), 'error') } finally { setActionLoading(null) }
     // `plainPaidMethod` is listed because this body reads it. It is a plain derived value, so it changes
     // only when the truck's setting or the active event does — exactly when this handler SHOULD be
     // rebuilt, since a stale copy would attach the previous truck's declaration to a new request.
@@ -1450,7 +1464,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   const togglePause = useCallback(async () => {
     const isPaused = pausedUntil && new Date(pausedUntil) > new Date()
     if (!isPaused) {
-      const confirmed = window.confirm('Pause orders? Customers will see "Not accepting orders" until you resume.')
+      const confirmed = window.confirm(tRef.current('event.pauseConfirm'))
       if (!confirmed) return
     }
     const paused_until = isPaused
@@ -1512,10 +1526,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     // 🔴 SAME RULE AS THE DASHBOARD'S submitPin — a failure to reach the data is not an incorrect PIN.
     // See the note there for why the 503 copy leads with reachability rather than with the PIN.
     if (!res.ok) {
-      if (res.status === 503) setPinError("Can't reach the server right now. Your PIN is fine — try again in a moment.")
-      else if (res.status === 401 && data.requiresPin) setPinError('Incorrect PIN')
-      else if (res.status === 401) setPinError('This link is no longer valid.')
-      else setPinError('Something went wrong. Try again.')
+      if (res.status === 503) setPinError(t('pin.unreachable'))
+      else if (res.status === 401 && data.requiresPin) setPinError(t('pin.incorrect'))
+      else if (res.status === 401) setPinError(t('error.linkInvalid'))
+      else setPinError(t('pin.generic'))
       return
     }
     // The same served-versus-requested check as fetchAll, before anything reaches state. Same reasons,
@@ -1557,9 +1571,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       if (data?.queued) { setPendingSyncCount(c => c + 1); return }
       if (!res.ok) throw new Error(data.error)
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'open' as const, opened_at: new Date().toISOString() } : e))
-      showKdsToast('Event started')
+      showKdsToast(t('event.started'))
       fetchAllRef.current() // re-sync from the server read so status propagates immediately
-    } catch (err: any) { showKdsToast(err.message || 'Failed') }
+    } catch (err: any) { showKdsToast(err.message || t('toast.failed')) }
   }
 
   // ── `extendEvent` DELETED (16 August) ───────────────────────────────────────────────────────────
@@ -1589,9 +1603,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       if (data?.queued) { setPendingSyncCount(c => c + 1); setFinishTimeTarget(null); return }
       if (!res.ok) throw new Error(data.error)
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, end_time: newEnd } : e))
-      showKdsToast(`Finish time now ${newEnd}`)
+      showKdsToast(t('event.finishTimeNow', { time: newEnd }))
       setFinishTimeTarget(null)
-    } catch (err: any) { showKdsToast(err.message || 'Failed') }
+    } catch (err: any) { showKdsToast(err.message || t('toast.failed')) }
     finally { setFinishTimeBusy(false) }
   }
 
@@ -1614,9 +1628,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
       if (!res.ok) throw new Error(data.error)
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'closed' as const, closed_at: new Date().toISOString() } : e))
-      setShowEventMenu(false); showKdsToast('Event finished')
+      setShowEventMenu(false); showKdsToast(t('event.finished'))
       fetchAllRef.current() // re-sync so the status flips to "Finished" immediately
-    } catch (err: any) { showKdsToast(err.message || 'Failed') }
+    } catch (err: any) { showKdsToast(err.message || t('toast.failed')) }
   }
 
   // ── OPEN THE GATE. WAS: `if (!window.confirm('Cancel this event? This cannot be undone.')) return` ──
@@ -1653,9 +1667,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       // NOT the automatic re-resolution the latch exists to prevent, and it cannot fire on a poll.
       const remaining = events.filter(e => e.id !== eventId)
       setEvents(remaining)
-      setSelectedEventId(pickDefaultEventByTime(remaining, kdsTz)?.id ?? null); setShowEventMenu(false); showKdsToast('Event cancelled')
+      setSelectedEventId(pickDefaultEventByTime(remaining, kdsTz)?.id ?? null); setShowEventMenu(false); showKdsToast(t('event.cancelled'))
       fetchAllRef.current() // re-sync so the cancelled event drops out immediately
-    } catch (err: any) { showKdsToast(err.message || 'Failed') }
+    } catch (err: any) { showKdsToast(err.message || t('toast.failed')) }
     finally { setEventCancelBusy(false); setEventCancelTarget(null) }
   }
 
@@ -1666,8 +1680,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
       if (!res.ok) throw new Error(data.error)
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, customer_note: eventNoteInput || null } : e))
-      setShowEventMenu(false); showKdsToast('Note saved')
-    } catch (err: any) { showKdsToast(err.message || 'Failed') }
+      setShowEventMenu(false); showKdsToast(t('event.noteSaved'))
+    } catch (err: any) { showKdsToast(err.message || t('toast.failed')) }
   }
 
   // ── 🔴 CHANGING EVENT SETS A NEW HELD VALUE. IT DOES NOT RE-ENABLE RESOLUTION. ──────────────────
@@ -1683,8 +1697,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     const active = selectedEventId ? events.find(e => e.id === selectedEventId) ?? null : null
     if (active && event.id !== active.id) {
       const onScreen = orders.filter(o => ['pending', 'confirmed', 'modified', 'cooking', 'ready'].includes(o.status)).length
-      const orderPart = onScreen > 0 ? ` ${onScreen} order${onScreen === 1 ? '' : 's'} on this screen will be replaced.` : ''
-      if (!window.confirm(`Switch from ${active.venue_name} to ${event.venue_name}?${orderPart} Tap the current event to switch back.`)) return
+      if (!window.confirm(t('event.switchConfirm', { from: active.venue_name, to: event.venue_name, n: onScreen, count: String(onScreen) }))) return
     }
     setSelectedEventId(event.id)
   }
@@ -1882,7 +1895,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
 
   if (loading) return (
     <div className="flex items-center justify-center h-dvh text-slate-400 text-sm">
-      Loading kitchen...
+      {t('loading')}
     </div>
   )
 
@@ -1890,12 +1903,12 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   if (requiresPin) return (
     <div className="flex flex-col items-center justify-center h-dvh bg-slate-50 gap-4">
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 w-80 flex flex-col gap-4">
-        <h2 className="text-lg font-semibold text-slate-900 text-center">Enter PIN</h2>
+        <h2 className="text-lg font-semibold text-slate-900 text-center">{t('pin.title')}</h2>
         <input
           type="number"
           inputMode="numeric"
           pattern="[0-9]*"
-          placeholder="PIN"
+          placeholder={t('pin.placeholder')}
           value={pinInput}
           onChange={e => setPinInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && submitPin()}
@@ -1907,7 +1920,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           onClick={submitPin}
           className="bg-slate-900 text-white rounded-xl py-3 font-medium hover:bg-slate-700 transition-colors"
         >
-          Unlock
+          {t('pin.unlock')}
         </button>
       </div>
     </div>
@@ -1918,7 +1931,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   // to the real screen below, with the strip on top.
   if ((error && !hasLoaded) || !truck) return (
     <div className="flex items-center justify-center h-dvh text-red-500 text-sm">
-      {error ?? 'Truck not found'}
+      {/* `error` is a CODE this page set, or the server's own words (left as they are). */}
+      {error != null ? (t.has(error as never) ? t(error as never) : error) : t('error.truckNotFound')}
     </div>
   )
 
@@ -1931,9 +1945,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           for food nobody is cooking. ⚠️ It claims nothing is saved, because nothing is. */}
       {degradedSince && (
         <div className="shrink-0 bg-amber-500 text-white px-4 py-2 text-sm font-black text-center">
-          ⚠️ Can&apos;t reach the server. Showing tickets from{' '}
-          {lastRefresh ? formatInstantClock(lastRefresh, kdsTime) : 'earlier'}
-          . NEW ORDERS MAY BE MISSING.
+          {lastRefresh ? t('degraded.at', { time: formatInstantClock(lastRefresh, kdsTime) }) : t('degraded.earlier')}
         </div>
       )}
 
@@ -1991,12 +2003,12 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
             ⚠️ POSITION, ICON AND VISIBLE TEXT ARE UNCHANGED — attributes only. */}
         <AppLink
           href={`/dashboard/${token}`}
-          aria-label="Dashboard"
-          title="Back to the dashboard"
+          aria-label={t('header.dashboard')}
+          title={t('header.backTitle')}
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
         >
           <span aria-hidden>←</span>
-          <span className="hidden sm:inline">Dashboard</span>
+          <span className="hidden sm:inline">{t('header.dashboard')}</span>
         </AppLink>
         {/* ── 🔴 FIX 2 — THE NAME IS THE ONLY THING ON THIS ROW ALLOWED TO GIVE WAY ────────────────
             The collapsed row wrapped when a long truck+van name met three state badges, and collapsed is
@@ -2064,7 +2076,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                 : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            List
+            {t('header.list')}
           </button>
           <button
             onClick={() => setLayoutOverride('grid')}
@@ -2074,7 +2086,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                 : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            Grid
+            {t('header.grid')}
           </button>
           {/* ── 🔴 CARD DISPLAY: Full / Cook. A DISPLAY CONTROL, BESIDE THE OTHER DISPLAY CONTROL. ─────
               It sits with List/Grid and NOT with the two step switches, because that is what it is: it
@@ -2086,25 +2098,25 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           <div className="w-px h-4 bg-slate-300 mx-1" />
           <button
             onClick={() => setCardMode('window')}
-            title="Full cards — prices and payment details, as the hatch sees them."
+            title={t('header.fullTitle')}
             className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
               cardMode === 'window'
                 ? 'bg-white text-slate-900 shadow-sm'
                 : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            Full
+            {t('header.full')}
           </button>
           <button
             onClick={() => setCardMode('cook')}
-            title="Cook cards — bigger type, grouped by category, no prices."
+            title={t('header.cookTitle')}
             className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
               cardMode === 'cook'
                 ? 'bg-white text-slate-900 shadow-sm'
                 : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            Cook
+            {t('header.cook')}
           </button>
         </div>
 
@@ -2144,10 +2156,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
               onClick={() => { if (handoverOn) setReady(!readyOn) }}
               disabled={!handoverOn}
               title={!handoverOn
-                ? 'This screen only marks orders ready, so this cannot be turned off — it is the only step it performs.'
+                ? t('header.readyOnlyTitle')
                 : readyOn
-                  ? 'This screen marks orders ready. Tap so another screen does it instead.'
-                  : 'Another screen marks orders ready. Tap so this one does it.'}
+                  ? t('header.readyOnTitle')
+                  : t('header.readyOffTitle')}
               className={`flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 disabled:opacity-60 ${
                 readyOn ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
               }`}
@@ -2160,16 +2172,16 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
               {/* ⚠️ "Ready step", MATCHING THE DASHBOARD'S SETTINGS ENTRY "Order-ready step" — the same
                   step named the same way on both surfaces, even though the two are set independently.
                   Label text only: the key, the default and the behaviour are unchanged. */}
-              <span className="hidden sm:inline text-xs">Ready step</span>
+              <span className="hidden sm:inline text-xs">{t('header.readyStep')}</span>
             </button>
             <button
               onClick={() => { if (readyOn) setHandover(!handoverOn) }}
               disabled={!readyOn}
               title={!readyOn
-                ? 'This screen only takes payment, so this cannot be turned off — it is the only step it performs.'
+                ? t('header.handoverOnlyTitle')
                 : handoverOn
-                  ? 'This screen takes payment and hands over. Tap so another screen does it instead.'
-                  : 'Another screen takes payment. Tap so this one does it.'}
+                  ? t('header.handoverOnTitle')
+                  : t('header.handoverOffTitle')}
               className={`flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 disabled:opacity-60 ${
                 handoverOn ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
               }`}
@@ -2181,7 +2193,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                   "Mark paid", "Collected", "Mark paid & collected" — rather than describing the step in
                   the abstract. The earlier rule against labelling a control with a status word was
                   rescinded for this switch deliberately, for exactly that reason. */}
-              <span className="hidden sm:inline text-xs">Payment &amp; handover</span>
+              <span className="hidden sm:inline text-xs">{t('header.handover')}</span>
             </button>
         </div>
 
@@ -2221,7 +2233,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
             Putting it behind `Screen & sound` last task made it three. `screenOnBtn` is the SAME function
             the `hidden sm:block` mount calls and `toggleKeepScreenOn` is untouched — only the label
             argument and the words-only flag differ. The label is the wide-width label, verbatim. */}
-        <div className="sm:hidden shrink-0">{screenOnBtn(screenHeld ? 'Screen on' : 'Screen off', true)}</div>
+        <div className="sm:hidden shrink-0">{screenOnBtn(screenHeld ? t('header.screenOn') : t('header.screenOff'), true)}</div>
         {/* SCREEN SETTINGS — everything that is NOT changed mid-service. See the panel below for what is
             in it and why it is a sheet rather than an expanding row. */}
         <button
@@ -2230,7 +2242,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           aria-expanded={phoneOpen}
           className="sm:hidden flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
         >
-          Screen settings
+          {t('header.screenSettings')}
           {/* ⚠️ A ROTATION, NOT A SECOND CHARACTER — U+25B4 would be a character class this file does not
               carry. `aria-expanded` above is what actually announces the state. */}
           <span aria-hidden className={`text-slate-400 transition-transform ${phoneOpen ? 'rotate-180' : ''}`}>▾</span>
@@ -2249,11 +2261,11 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         {activeEvent && (!isDemo || isPaused) && (
           <button
             onClick={() => { setEventNoteInput(activeEvent.customer_note || ''); setShowEventMenu(true) }}
-            aria-label="Manage event"
-            title="Manage event — start, pause, change or finish it"
+            aria-label={t('header.manageEvent')}
+            title={t('header.manageEventTitle')}
             className="sm:hidden text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400 font-semibold shrink-0"
           >
-            Manage event ▾
+            {`${t('header.manageEvent')} ▾`}
           </button>
         )}
 
@@ -2300,10 +2312,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
             panels differ, and a button that overstates its contents is how an operator learns to guess. */}
         <button
           onClick={() => setDeviceOpen(true)}
-          title="Which sounds fire on this device"
+          title={t('header.soundSettingsTitle')}
           className="hidden sm:flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
         >
-          Sound settings
+          {t('header.soundSettings')}
         </button>
 
         {/* ⚠️ `basis-0` SO IT CANNOT FORCE A WRAP. As a bare `flex-1` this spacer has an `auto` basis; on
@@ -2360,7 +2372,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
             handler, its `aria-pressed` and its classes are byte-identical, only its position moved.
             ⚠️ It keeps `hidden sm:block`, so the phone row is untouched; the phone's own `sm:hidden`
             mount on the expanded line is a separate call to the same helper and is not touched either. */}
-        <div className="hidden sm:block shrink-0">{screenOnBtn(screenHeld ? 'Screen on' : 'Screen off')}</div>
+        <div className="hidden sm:block shrink-0">{screenOnBtn(screenHeld ? t('header.screenOn') : t('header.screenOff'))}</div>
 
         {/* ── "Open cook screen" REMOVED — IT BECAME A LINK THAT LIED. ──────────────────────────────
             🔴 It opened `?view=cook` in a second tab, and `?view=cook` is no longer read by anything:
@@ -2429,7 +2441,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                 is one line away if you want it.
                 ⚠️ EACH HEADING COSTS A ROW: the region is two rows taller than it was. No label was
                 shortened to pay for them. */}
-            <p className="text-xs font-bold text-slate-500 -mb-1">View settings</p>
+            <p className="text-xs font-bold text-slate-500 -mb-1">{t('panel.viewSettings')}</p>
             {/* LINE 1 — `List` `Grid` `Full` `Cook`, the header segments' own button text, verbatim.
                 🔴 SELECTED IS GREEN HERE AND WHITE AT `sm:` AND ABOVE, AND THE SPLIT IS DELIBERATE. The
                 instruction was one colour language across this phone panel; `sm:` and above must stay
@@ -2442,15 +2454,15 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
                 <button onClick={() => setLayoutOverride('list')}
-                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${activeLayout === 'list' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>List</button>
+                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${activeLayout === 'list' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>{t('header.list')}</button>
                 <button onClick={() => setLayoutOverride('grid')}
-                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${activeLayout === 'grid' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>Grid</button>
+                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${activeLayout === 'grid' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>{t('header.grid')}</button>
               </div>
               <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
                 <button onClick={() => setCardMode('window')}
-                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${cardMode === 'window' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>Full</button>
+                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${cardMode === 'window' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>{t('header.full')}</button>
                 <button onClick={() => setCardMode('cook')}
-                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${cardMode === 'cook' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>Cook</button>
+                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${cardMode === 'cook' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>{t('header.cook')}</button>
               </div>
             </div>
             {/* LINE 2 — the two step switches, their wide-width labels verbatim, state inside the chip.
@@ -2463,7 +2475,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                 aria-pressed={readyOn}
                 className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-60 shrink-0 ${readyOn ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}
               >
-                <span>Ready step</span><span className="font-bold">{readyOn ? 'On' : 'Off'}</span>
+                <span>{t('header.readyStep')}</span><span className="font-bold">{readyOn ? t('panel.on') : t('panel.off')}</span>
               </button>
               <button
                 onClick={() => { if (readyOn) setHandover(!handoverOn) }}
@@ -2471,7 +2483,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                 aria-pressed={handoverOn}
                 className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-60 shrink-0 ${handoverOn ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}
               >
-                <span>Payment &amp; handover</span><span className="font-bold">{handoverOn ? 'On' : 'Off'}</span>
+                <span>{t('header.handover')}</span><span className="font-bold">{handoverOn ? t('panel.on') : t('panel.off')}</span>
               </button>
             </div>
             {/* LINE 3 — which sounds. 🔴 TWO CHIPS IN ONE BOX, AND THE HEADING IS GONE. The scope is
@@ -2506,9 +2518,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                 the dashboard's sub-heading, so a screen reader still gets the specific name.
                 ⚠️ IT COSTS ONE ROW AT EVERY WIDTH. That is the price of naming the group and it is paid
                 knowingly; no label was shortened to avoid it. */}
-            <p className="text-xs font-bold text-slate-500 -mb-1">Sound settings</p>
-            <div role="radiogroup" aria-label="New order sound" className="flex flex-wrap items-center gap-1 bg-slate-100 rounded-lg p-1 self-start">
-              {([['needs_confirming', 'Only orders needing confirming'], ['all', 'All new orders']] as const).map(([val, label]) => {
+            <p className="text-xs font-bold text-slate-500 -mb-1">{t('header.soundSettings')}</p>
+            <div role="radiogroup" aria-label={t('panel.newOrderSound')} className="flex flex-wrap items-center gap-1 bg-slate-100 rounded-lg p-1 self-start">
+              {([['needs_confirming', t('panel.soundNeedsConfirming')], ['all', t('panel.soundAll')]] as const).map(([val, label]) => {
                 const selected = (storedSoundCfg ?? DEFAULT_SOUND_CONFIG).new_orders === val
                 return (
                   <button key={val} type="button" role="radio" aria-checked={selected}
@@ -2540,8 +2552,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                 aria-pressed={(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due}
                 className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}
               >
-                <span>Sound when an order is due to be cooked</span>
-                <span className="font-bold">{(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due ? 'On' : 'Off'}</span>
+                <span>{t('panel.soundDue')}</span>
+                <span className="font-bold">{(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due ? t('panel.on') : t('panel.off')}</span>
               </button>
               {isNativeApp() && !isDemo && (
                 <button
@@ -2549,7 +2561,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                   onClick={() => setDeviceOpen(true)}
                   className="text-xs px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
                 >
-                  Device settings
+                  {t('panel.deviceSettings')}
                 </button>
               )}
             </div>
@@ -2629,10 +2641,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
             orders; this one shows none. */}
         {eventScopeMismatch && (
           <div className="bg-red-700 text-white text-sm font-medium px-4 py-3 flex-shrink-0">
-            <div className="font-black">⚠️ Orders not loaded for this event</div>
+            <div className="font-black">{t('banner.mismatchTitle')}</div>
             <div className="text-xs mt-0.5 text-red-100">
-              The server answered with a different event, so nothing is shown rather than the wrong
-              orders{activeEvent ? ` for ${activeEvent.venue_name}` : ''}. Pick the event again, or reload.
+              {activeEvent ? t('banner.mismatchBodyAt', { venue: activeEvent.venue_name }) : t('banner.mismatchBody')}
             </div>
           </div>
         )}
@@ -2647,8 +2658,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
             would be a control that does not do what it says. */}
         {anyPaused && (
           <div className="bg-red-500 text-white text-sm font-medium px-4 py-2.5 flex items-center justify-between flex-shrink-0">
-            <span>⏸ Orders paused{pauseReason === 'offline' ? ' (device offline)' : ''} — customers cannot order</span>
-            {pauseReason === 'manual' && <button onClick={togglePause} className="underline text-white text-xs">Resume</button>}
+            <span>{t('banner.paused', { reason: pauseReason ?? 'none' })}</span>
+            {pauseReason === 'manual' && <button onClick={togglePause} className="underline text-white text-xs">{t('banner.resume')}</button>}
           </div>
         )}
         {/* ── Offline banner ── */}
@@ -2656,8 +2667,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           <div className="bg-slate-900 text-white text-sm font-medium px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
             <span className="inline-block w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
             <span>
-              No connection — showing last known orders. Online ordering has been paused for customers.
-              {pendingSyncCount > 0 && ` · ${pendingSyncCount} action${pendingSyncCount > 1 ? 's' : ''} queued`}
+              {t('banner.offline')}
+              {pendingSyncCount > 0 && ` · ${t('banner.queued', { n: pendingSyncCount, count: String(pendingSyncCount) })}`}
             </span>
           </div>
         )}
@@ -2666,8 +2677,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} onAcquire={() => { void applyKeepScreenOn(true) }} />
         {extraWaitMins > 0 && (
           <div className="bg-amber-500 text-white text-sm font-medium px-4 py-2.5 flex items-center justify-between flex-shrink-0">
-            <span>⏱ +{extraWaitMins} min extra wait active</span>
-            <button onClick={() => handleSetWait(0)} className="underline text-white text-xs">Clear</button>
+            <span>{t('banner.extraWait', { mins: String(extraWaitMins) })}</span>
+            <button onClick={() => handleSetWait(0)} className="underline text-white text-xs">{t('banner.clear')}</button>
           </div>
         )}
       </div>
@@ -2678,7 +2689,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       {allDayPills.length > 0 && boardMode === 'window' && (
         <div className="flex items-center gap-2 px-4 py-2 bg-white border-b border-slate-200 flex-shrink-0 overflow-x-auto">
           <span className="text-xs font-medium text-slate-400 uppercase tracking-wide flex-shrink-0">
-            To make
+            {t('banner.toMake')}
           </span>
           {allDayPills.map(([name, count]) => (
             <span
@@ -2698,10 +2709,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       {activeEvent?.status === 'confirmed' && !activeEvent.auto_open && (
         <div className="bg-white border-2 border-teal-500 m-3 rounded-2xl p-5 text-center flex-shrink-0">
           <div className="text-base font-semibold text-slate-900 mb-1">📍 {activeEvent.venue_name}</div>
-          <div className="text-sm text-slate-500 mb-3">Today · {formatTimeRange(activeEvent.start_time, activeEvent.end_time, kdsTime)}</div>
+          <div className="text-sm text-slate-500 mb-3">{t('banner.today', { range: formatTimeRange(activeEvent.start_time, activeEvent.end_time, kdsTime) })}</div>
           <button onClick={() => openEvent(activeEvent.id)}
             className="w-full bg-teal-600 text-white font-bold py-3 rounded-xl text-base hover:bg-teal-700 active:scale-[0.98] transition-all">
-            Start Event
+            {t('banner.startEvent')}
           </button>
         </div>
       )}
@@ -2769,10 +2780,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           {/* 🔴 `(!isDemo || isPaused)` — see the phone opener. A paused demo must reach Resume. */}
           {(!isDemo || isPaused) && (
             <button onClick={() => { setEventNoteInput(activeEvent.customer_note || ''); setShowEventMenu(true) }}
-              aria-label="Manage event"
-              title="Manage event — start, pause, change or finish it"
+              aria-label={t('header.manageEvent')}
+              title={t('header.manageEventTitle')}
               className="hidden sm:block flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400 font-semibold">
-              <span className="hidden sm:inline">Manage event </span>▾
+              <span className="hidden sm:inline">{`${t('header.manageEvent')} `}</span>▾
             </button>
           )}
         </div>
@@ -2791,7 +2802,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           itself is deleted from both files — it had no callers left. */}
       {recentlyClosed && activeEvent && (
         <div className="mx-3 mt-2 mb-1 bg-slate-100 border border-slate-200 rounded-xl p-3 flex items-center justify-between flex-shrink-0">
-          <span className="text-sm text-slate-600">Event finished · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time, kdsTime)}</span>
+          <span className="text-sm text-slate-600">{t('banner.recentlyClosed', { venue: activeEvent.venue_name, time: formatTime(activeEvent.end_time, kdsTime) })}</span>
         </div>
       )}
 
@@ -2817,7 +2828,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           {displayOrders.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1 text-slate-300 gap-2">
               <span className="text-4xl">✓</span>
-              <span className="text-sm">Queue clear</span>
+              <span className="text-sm">{t('board.queueClear')}</span>
             </div>
           ) : (
             visibleOrders.map(order => (
@@ -2888,7 +2899,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           {boardMode === 'window' && activeLayout === 'list' && doneOrders.length > 0 && (
             <div className="mt-2 border-t border-slate-200 pt-2">
               <div className="text-xs text-slate-400 uppercase tracking-wide mb-1.5">
-                Done today · {doneOrders.length}
+                {t('board.doneToday', { count: String(doneOrders.length) })}
               </div>
               {doneOrders.map(o => {
                 // 🔴 WAS THE LITERAL STRING "✓ paid", printed for every collected order and derived from
@@ -2915,10 +2926,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                   <div key={o.order_key} className="flex justify-between items-center py-1 text-xs text-slate-400 border-t border-slate-100">
                     <span>#{o.id} · {o.customer_name}</span>
                     {hidePayments ? null : settled
-                      ? <span className="text-green-600">✓ paid</span>
+                      ? <span className="text-green-600">{t('board.paid')}</span>
                       : held
-                      ? <span className="text-indigo-600">card held</span>
-                      : <span className="text-amber-600">{formatMinorOrBare(bal.balanceMinor, orderMoney(o, truck?.money), 'kds done strip')} due</span>}
+                      ? <span className="text-indigo-600">{t('board.cardHeld')}</span>
+                      : <span className="text-amber-600">{t('board.due', { amount: formatMinorOrBare(bal.balanceMinor, orderMoney(o, truck?.money), 'kds done strip') })}</span>}
                   </div>
                 )
               })}
@@ -2950,18 +2961,19 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Allow screen to turn off?</h3>
+              <h3 className="text-lg font-semibold text-slate-900">{t('screenOff.title')}</h3>
               <p className="text-sm text-slate-500 mt-2">
+                {/* ⚠️ The van names are joined by hand (", ") exactly as before — a locale list format is a later change. */}
                 {vansWithAutoPause.length > 0
-                  ? `${vansWithAutoPause.join(', ')} ${vansWithAutoPause.length === 1 ? 'has' : 'have'} offline detection enabled. If the screen turns off, the device may stop sending its online signal and customer ordering may be paused.`
-                  : 'If the screen turns off, the device may stop sending its online signal.'
+                  ? t('screenOff.bodyVans', { vans: vansWithAutoPause.join(', '), n: vansWithAutoPause.length })
+                  : t('screenOff.body')
                 }
               </p>
-              <p className="text-sm text-slate-500 mt-2">Keep the screen on to ensure uninterrupted ordering.</p>
+              <p className="text-sm text-slate-500 mt-2">{t('screenOff.keepHint')}</p>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setShowScreenOffWarning(false)} className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Keep screen on</button>
-              <button onClick={confirmScreenOff} className="flex-1 bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm">Allow screen off</button>
+              <button onClick={() => setShowScreenOffWarning(false)} className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">{t('screenOff.keep')}</button>
+              <button onClick={confirmScreenOff} className="flex-1 bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm">{t('screenOff.allow')}</button>
             </div>
           </div>
         </div>
@@ -2989,8 +3001,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         isEventBlocked={event => isOffline && activeEvent?.id !== event.id}
         onSelect={event => { setShowEventPicker(false); switchEvent(event) }}
         onClose={() => setShowEventPicker(false)}
-        title="Change event"
-        closeLabel="Cancel"
+        title={t('event.change')}
+        closeLabel={t('event.cancel')}
       />
 
       {/* ── EVENT ACTIONS — THE SHARED MODAL, the same one the dashboard mounts ─────────────────────
@@ -3032,12 +3044,12 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           extraWaitControl={(isDemo && extraWaitMins <= 0) ? undefined : extraWaitMins > 0 ? (
             <button onClick={() => { setShowEventMenu(false); void handleSetWait(0) }}
               className="w-full bg-orange-100 text-orange-700 border border-orange-300 font-black py-2.5 rounded-xl hover:bg-orange-200 text-sm">
-              ⏱ +{extraWaitMins}m active · Tap to clear
+              {t('event.waitActive', { mins: String(extraWaitMins) })}
             </button>
           ) : (
             <button onClick={() => { setShowEventMenu(false); setShowExtraWaitPicker(true) }}
               className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">
-              ⏱ Add extra wait
+              {t('event.addWait')}
             </button>
           )}
           onChangeFinishTime={() => { setShowEventMenu(false); setFinishTimeTarget({ id: activeEvent.id, end_time: activeEvent.end_time ?? null, event_date: activeEvent.event_date ?? null }) }}
@@ -3071,15 +3083,15 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       {finishConfirm && (
         <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 text-base mb-1">End event?</h3>
+            <h3 className="font-black text-slate-900 text-base mb-1">{t('event.endTitle')}</h3>
             <p className="text-sm text-slate-600">
               {finishConfirm.early
-                ? `This event isn't scheduled to finish until ${finishConfirm.endTime}. No more orders will be allowed. Confirm to end event?`
-                : 'Finish this event? No more orders will be taken.'}
+                ? t('event.endEarly', { time: finishConfirm.endTime })
+                : t('event.endNow')}
             </p>
             <div className="flex gap-2 mt-5">
-              <button onClick={() => doFinishEvent(finishConfirm.eventId)} className="flex-1 bg-red-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-red-700">Yes</button>
-              <button onClick={() => setFinishConfirm(null)} className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">Cancel</button>
+              <button onClick={() => doFinishEvent(finishConfirm.eventId)} className="flex-1 bg-red-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-red-700">{t('event.yes')}</button>
+              <button onClick={() => setFinishConfirm(null)} className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">{t('event.cancel')}</button>
             </div>
           </div>
         </div>
@@ -3147,18 +3159,16 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6 flex flex-col gap-3"
             onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <div className="text-3xl text-center" aria-hidden>👨‍🍳</div>
-            <h3 className="font-black text-slate-900 text-center">This is the kitchen screen</h3>
+            <h3 className="font-black text-slate-900 text-center">{t('intro.title')}</h3>
             <p className="text-sm text-slate-600">
-              It&apos;s the cook&apos;s view — the orders you need to make, in the order to make them. The
-              screen by the grill shows this while the counter uses the orders dashboard.
+              {t('intro.p1')}
             </p>
             <p className="text-sm text-slate-600">
-              Cards move across as you tap them, so whoever&apos;s cooking always knows what&apos;s next and
-              nobody has to shout. Everything here is your demo data — have a play.
+              {t('intro.p2')}
             </p>
             <button onClick={dismissKdsIntro}
               className="mt-1 w-full bg-orange-600 text-white font-bold py-3 rounded-xl text-sm hover:bg-orange-700">
-              Got it
+              {t('intro.gotIt')}
             </button>
           </div>
         </div>
@@ -3201,10 +3211,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                   it is opened by the header's `Sound settings` chip, so it says `Sound settings` and
                   matches the control that opened it. */}
               <h2 className="text-white font-bold text-base">
-                <span className="sm:hidden">Device settings</span>
-                <span className="hidden sm:inline">Sound settings</span>
+                <span className="sm:hidden">{t('panel.deviceSettings')}</span>
+                <span className="hidden sm:inline">{t('header.soundSettings')}</span>
               </h2>
-              <button onClick={() => setDeviceOpen(false)} aria-label="Close"
+              <button onClick={() => setDeviceOpen(false)} aria-label={t('panel.close')}
                 className="text-white/80 hover:text-white text-3xl leading-none">×</button>
             </div>
             <div className="bg-white rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto">
@@ -3246,7 +3256,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                     settings, and the panel's `<h2>` above already says "Sounds" — a second heading saying
                     the same word one line lower is noise, so it does not render there. The `sm:hidden`
                     "Screen & sound" wording went with the screen row it named. */}
-                <h3 className="hidden sm:block text-sm font-bold text-slate-900">Sound</h3>
+                <h3 className="hidden sm:block text-sm font-bold text-slate-900">{t('panel.sound')}</h3>
                 {/* 🔴 KEEP-SCREEN-ON HAS LEFT THIS PANEL AGAIN, AND THAT IS A CORRECTION, NOT A WOBBLE.
                     It is the wake-lock ACQUISITION control on web — Safari grants the lock only on a
                     completed gesture and drops it on visibility loss — so a control the operator re-taps
@@ -3273,9 +3283,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                     ⚠️ `soundConfigRef` is updated alongside the state so the ding decision — which reads
                     the ref, not the state — takes effect on the very next order without a re-render. */}
                 <div className="pt-1">
-                  <p className="text-sm font-semibold text-slate-700 mb-1.5">New order sound</p>
+                  <p className="text-sm font-semibold text-slate-700 mb-1.5">{t('panel.newOrderSound')}</p>
                   <div className="space-y-1">
-                    {([['needs_confirming', 'Only orders needing confirming'], ['all', 'All new orders']] as const).map(([val, label]) => (
+                    {([['needs_confirming', t('panel.soundNeedsConfirming')], ['all', t('panel.soundAll')]] as const).map(([val, label]) => (
                       <button key={val} type="button"
                         onClick={() => {
                           const next = { ...(storedSoundCfg ?? DEFAULT_SOUND_CONFIG), new_orders: val }
@@ -3303,7 +3313,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                     the "which sounds" radios above it do, and updates `soundConfigRef` alongside the state
                     so the next amber ticket obeys it without waiting for a re-render. */}
                 <label className="flex items-center justify-between gap-3 text-sm pt-1">
-                  <span className="font-semibold text-slate-700">Sound when an order is due to be cooked</span>
+                  <span className="font-semibold text-slate-700">{t('panel.soundDue')}</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -3314,10 +3324,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                     aria-pressed={(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due}
                     className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
                   >
-                    <span>{(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due ? 'On' : 'Off'}</span>
+                    <span>{(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due ? t('panel.on') : t('panel.off')}</span>
                   </button>
                 </label>
-                <p className="text-xs text-slate-500 -mt-1">Sounds when a ticket turns amber.</p>
+                <p className="text-xs text-slate-500 -mt-1">{t('panel.soundDueHelp')}</p>
               </div>
               {/* The native-only device configuration, gate intact — see the device button's note. */}
               {isNativeApp() && !isDemo && <ThisDeviceSettings token={token} />}

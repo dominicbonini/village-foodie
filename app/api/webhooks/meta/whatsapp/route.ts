@@ -30,6 +30,7 @@ import { limit80Email, limit100Email, paymentBlockedEmail } from '@/lib/whatsapp
 import { monthResetLocalDate } from '@/lib/whatsapp/usage'
 import { usageMonthKey } from '@/lib/whatsapp/maintenance'
 import { WHATSAPP_MANAGER_URL } from '@/lib/whatsapp/copy'
+import { localeForTruck } from '@/lib/i18n/server-locale'
 /* 🔴 PRIVATE EVENTS (20261014): redacted before the reply model sees them. */
 import { redactPrivateRows } from '@/lib/private-events/read'
 
@@ -91,7 +92,7 @@ async function manageLinkFor(truckId: string): Promise<string> {
  * read failed earlier and no allowance email is sent at all — see the hoist comment.
  */
 async function afterAcceptedSend(args: {
-  truck: { id: string; name: string | null; contact_email: string | null; whatsapp_monthly_reply_limit: number | null; timezone: string | null }
+  truck: { id: string; name: string | null; contact_email: string | null; whatsapp_monthly_reply_limit: number | null; timezone: string | null; country?: string | null }
   countBefore: number | null
   tz: string
 }): Promise<void> {
@@ -112,8 +113,9 @@ async function afterAcceptedSend(args: {
     const name = truck.name || 'there'
     const resetLabel = monthResetLocalDate(tz)
     const email = kind === 'limit_100'
-      ? limit100Email({ truckName: name, limit, resetLabel, manageUrl })
-      : limit80Email({ truckName: name, used: countBefore + 1, limit, resetLabel, manageUrl })
+      // The truck's language (Language Phase 1b, messages/en-GB.json `alertsOperator`).
+      ? limit100Email({ truckName: name, limit, resetLabel, manageUrl }, await localeForTruck(truck))
+      : limit80Email({ truckName: name, used: countBefore + 1, limit, resetLabel, manageUrl }, await localeForTruck(truck))
     await sendWhatsAppAlert({
       store: supabaseAlertStore(supabase),
       kind: kind as WhatsAppAlertKind,
@@ -137,7 +139,7 @@ async function afterAcceptedSend(args: {
  */
 async function afterRefusedSend(args: {
   err: unknown
-  truck: { id: string; name: string | null; contact_email: string | null; timezone: string | null }
+  truck: { id: string; name: string | null; contact_email: string | null; timezone: string | null; country?: string | null }
   tz: string
 }): Promise<void> {
   const { err, truck, tz } = args
@@ -160,7 +162,7 @@ async function afterRefusedSend(args: {
       to,
       email: paymentBlockedEmail({
         truckName: truck.name || 'there', manageUrl, whatsappManagerUrl: WHATSAPP_MANAGER_URL,
-      }),
+      }, await localeForTruck(truck)),
     })
   } catch (e) {
     console.error(`[webhook/meta-whatsapp] payment_blocked alert failed: ${truck.id}`, e instanceof Error ? e.message : String(e))

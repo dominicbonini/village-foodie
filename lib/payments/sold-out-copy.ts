@@ -22,6 +22,8 @@
 // `code` and the ?payment_failed= URL, so a screen renders the sentence from its own message file.
 import { translatorFor } from '@/lib/i18n/translator'
 import type { CustomerErrorCode } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/soldOut'
+import '@/lib/i18n/catalog/errorsCustomer'
 
 /** "A" · "A and B" · "A, B and C" — Oxford-free, which is how the rest of the copy reads.
  *  ⚠️ NOT Intl.ListFormat: en-US would add the Oxford comma and change the US sentence. The ", " between the

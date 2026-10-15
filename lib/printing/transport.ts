@@ -36,6 +36,7 @@
 
 import { Capacitor } from '@capacitor/core'
 import { Preferences } from '@capacitor/preferences'
+import type { PrinterMessage } from './printerText'
 
 // 'net' ADDED 17 September 2026 — the wired (network, port 9100) backend, lib/printing/netTransport.ts.
 export type PrinterClass = 'mfi' | 'ble' | 'net'
@@ -72,7 +73,9 @@ export function isNetPrinterAvailable(): boolean {
   try { return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable(NET_PRINTER_PLUGIN) } catch { return false }
 }
 
-export interface PrintResult { ok: boolean; error?: string }
+/** `error` is a CODE (lib/printing/printerText.ts) the card turns into words in the truck's language, or a plain
+ *  string that is not ours (a native error's own message). Language Phase 1b. */
+export interface PrintResult { ok: boolean; error?: PrinterMessage }
 
 /** Can this device print at all, before any pairing question. Four ANSWERS, not a boolean, because the UI
  *  must be able to tell an operator WHICH wall they hit — "turn Bluetooth on" and "this iPad cannot print"
@@ -97,8 +100,9 @@ export interface PrinterStatus {
   printerName?: string
   paperOut?: boolean
   coverOpen?: boolean
-  /** Operator-facing reason, shown when `connected` is false. Never a stack trace. */
-  detail?: string
+  /** Operator-facing reason, shown when `connected` is false. Never a stack trace. A code (or a native string),
+   *  turned into words by the card — see PrintResult. */
+  detail?: PrinterMessage
 }
 
 export interface DiscoveredPrinter {
@@ -140,13 +144,13 @@ export function createStubTransport(sink: (bytes: Uint8Array) => void): PrinterT
     async availability() { return 'unsupported' },
     async scan() { return [] },
     // Nothing can be discovered, so any id passed here was not obtained from scan().
-    async connect() { return { ok: false, error: 'No printer support in this build' } },
+    async connect() { return { ok: false, error: { code: 'noSupport' } } },
     async disconnect() { /* nothing to release */ },
     async sendBytes(bytes) {
       sink(bytes)
-      return { ok: false, error: 'No printer connected' }
+      return { ok: false, error: { code: 'noPrinter' } }
     },
-    async status() { return { connected: false, detail: 'No printer support in this build' } },
+    async status() { return { connected: false, detail: { code: 'noSupport' } } },
   }
 }
 

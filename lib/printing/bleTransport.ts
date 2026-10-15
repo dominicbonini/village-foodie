@@ -209,7 +209,7 @@ export function createBleTransport(): PrinterTransport {
     // device is never persisted for the resume-reconnect to pick up. That property was fixed once in the
     // stub and must not regress here.
     async connect(printerId: string): Promise<PrintResult> {
-      if (!Capacitor.isNativePlatform()) return { ok: false, error: 'Printing is only available in the app' }
+      if (!Capacitor.isNativePlatform()) return { ok: false, error: { code: 'appOnly' } }
       const BleClient = await ble()
       /** Leave nothing half-open. Idempotent and never throws. */
       const abandon = async () => {
@@ -226,7 +226,7 @@ export function createBleTransport(): PrinterTransport {
         const target = await findWriteTarget(printerId)
         if (!target) {
           await abandon()
-          return { ok: false, error: 'That device does not look like a printer — it has no channel a ticket could be sent on' }
+          return { ok: false, error: { code: 'notPrinterNoChannel' } }
         }
 
         // CHECK 3 — the ESC @ probe. See the note above for exactly how little a pass proves.
@@ -237,7 +237,7 @@ export function createBleTransport(): PrinterTransport {
           else await BleClient.write(printerId, target.service, target.characteristic, view)
         } catch {
           await abandon()
-          return { ok: false, error: 'That device does not look like a printer — it refused a printer command' }
+          return { ok: false, error: { code: 'notPrinterRefused' } }
         }
 
         const devices = await BleClient.getConnectedDevices([]).catch(() => [] as Array<{ deviceId: string; name?: string }>)
@@ -253,7 +253,7 @@ export function createBleTransport(): PrinterTransport {
         return { ok: true }
       } catch (e) {
         await abandon()
-        return { ok: false, error: e instanceof Error ? e.message : 'Could not connect' }
+        return { ok: false, error: e instanceof Error ? e.message : { code: 'couldNotConnect' } }
       }
     },
 
@@ -274,7 +274,7 @@ export function createBleTransport(): PrinterTransport {
     // ── SEND ─────────────────────────────────────────────────────────────────────────────────────────
     // 🔴 THE CHUNK LOOP IS WHERE 'failed' AND 'unknown' ARE DECIDED. Read the header before changing it.
     async sendBytes(bytes: Uint8Array): Promise<PrintResult> {
-      if (!session) return { ok: false, error: 'No printer connected' }
+      if (!session) return { ok: false, error: { code: 'noPrinter' } }
       const { deviceId, service, characteristic, withoutResponse } = session
       const BleClient = await ble()
       const { numbersToDataView } = await import('@capacitor-community/bluetooth-le')
@@ -305,13 +305,13 @@ export function createBleTransport(): PrinterTransport {
     // the radio drops. It never infers a connection from a stored id — that is precisely the lie the
     // stub used to tell.
     async status(): Promise<PrinterStatus> {
-      if (!Capacitor.isNativePlatform()) return { connected: false, detail: 'Printing is only available in the app' }
+      if (!Capacitor.isNativePlatform()) return { connected: false, detail: { code: 'appOnly' } }
       if (session) return { connected: true, printerName: session.name }
       const stored = (await Preferences.get({ key: K.name })).value
       return {
         connected: false,
         printerName: stored ?? undefined,
-        detail: stored ? `${stored} is not connected` : 'No printer paired yet',
+        detail: stored ? { code: 'bleNotConnected', name: stored } : { code: 'notPaired' },
       }
     },
 

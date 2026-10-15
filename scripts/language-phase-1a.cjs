@@ -273,11 +273,13 @@ async function privateLinkPage() {
 async function sharedPieces() {
   const m = await kit.bundle('lp1a-shared', [
     "export * as L from '@/lib/order-charge-lines'", "export * as S from '@/lib/payments/sold-out-copy'", "export * as P from '@/lib/preorder'",
-    "export * as PH from '@/lib/phone'", "export * as MR from '@/lib/modifier-rules'", "export { OptionStockBadge } from '@/components/OptionStockBadge'",
+    "export * as PHB from '@/lib/phone'", fs.existsSync(path.join(REPO, 'lib/phone-message.ts')) ? "export * as PHM from '@/lib/phone-message'" : "", "export * as MR from '@/lib/modifier-rules'", "export { OptionStockBadge } from '@/components/OptionStockBadge'",
     "export { SpiceLevel } from '@/components/SpiceLevel'", "export { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'",
     "export { ChargeRows } from '@/components/ChargeRows'", "export { DealsModal } from '@/components/dashboard/DealsModal'",
     "export { MoneyProvider } from '@/components/MoneyContext'",
   ].join('\n'))
+  // Phase 1b moved phoneErrorMessage to lib/phone-message.ts (lib/phone.ts is imported by pages that only check a number).
+  const PH = { ...m.PHB, ...(m.PHM || {}) }
   const out = {}
   const snaps = { gb: { food_minor: 4390, tax_inclusive: true, tax_label: 'VAT' }, us: US_SNAPSHOT, usNoTip: { ...US_SNAPSHOT, tip_minor: 0, tip_pct_bps: null }, usFeeOnly: { ...US_SNAPSHOT, tip_minor: 0, tip_pct_bps: null, tax_minor: 0 }, usSurcharge: { ...US_SNAPSHOT, card_surcharge_minor: 75 }, usHg: { ...US_SNAPSHOT, service_fee_recipient: 'hatchgrab' } }
   for (const [k, s] of Object.entries(snaps)) for (const aud of ['customer', 'kitchen', 'operator']) {
@@ -291,8 +293,8 @@ async function sharedPieces() {
   for (const r of ['on_confirm', 'day_of', '1d', '7d', 'bogus', null]) out[`preorderOpen|${r}`] = m.P.formatPreorderOpenLabel(r, '2026-10-10')
   const copies = { gb: C.GB.phone, us: C.US.phone, none: null, noName: { ...C.GB.phone, short_name: null }, noEx: { ...C.GB.phone, phone_example: null } }
   for (const [k, cp] of Object.entries(copies)) {
-    for (const kind of ['mobile', 'phone', 'phone_number']) out[`phoneErr|${k}|${kind}`] = m.PH.phoneErrorMessage(kind, cp)
-    out[`phonePh|${k}`] = m.PH.phonePlaceholder(cp); out[`phonePh+|${k}`] = m.PH.phonePlaceholder(cp, 'e.g. ')
+    for (const kind of ['mobile', 'phone', 'phone_number']) out[`phoneErr|${k}|${kind}`] = PH.phoneErrorMessage(kind, cp)
+    out[`phonePh|${k}`] = PH.phonePlaceholder(cp); out[`phonePh+|${k}`] = PH.phonePlaceholder(cp, 'e.g. ')
   }
   for (const g of [{ min_choices: 1, max_choices: 1, is_required: true }, { min_choices: 0, max_choices: 3 }, { min_choices: 2, max_choices: 4 }, { min_choices: 0, max_choices: 1 }, { min_choices: 1, max_choices: 99 }, { min_choices: 0 }])
     for (const aud of ['customer', 'operator']) out[`rule|${JSON.stringify(g)}|${aud}`] = m.MR.groupRuleLabel({ id: 'g', name: 'Size', options: [], ...g }, aud)

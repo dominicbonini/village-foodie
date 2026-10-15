@@ -7,7 +7,8 @@
 import React from 'react'
 import { useMoney } from '@/components/MoneyContext'
 import { formatMajorOrBare } from '@/lib/money-format'
-import { useT } from '@/lib/i18n/client'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/orderLine'
 
 interface Mod { name: string; price: number; allergens?: string[]; dietary?: string[] }
 

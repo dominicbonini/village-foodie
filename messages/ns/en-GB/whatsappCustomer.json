@@ -1,0 +1,13 @@
+{
+  "greeting": "Hey there 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}You can see our full menu and allergen information here: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}You can check out our full menu here: {url} — {truck} {emoji}",
+  "otherCategory": "Other",
+  "categoryFrom": "{category} from {price}",
+  "listTwo": "{first} and {second}",
+  "listMany": "{init}, and {last}",
+  "menuSummary": "{opener}We've got {summary}. Check out the full menu and order ahead here: {url} — {truck} {emoji}",
+  "allergenCaveat": "Please double-check the full menu for allergen info — this is an automated reply.",
+  "specificFallback": "{opener}Check out our latest schedule here: {url}\n\n{truck} {emoji}"
+}

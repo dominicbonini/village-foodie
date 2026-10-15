@@ -12,6 +12,7 @@
 // selection. Within-group, option names are assumed distinct (a sane editor constraint).
 
 import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/modifierRules'
 
 export interface ModRuleOption {
   id: string

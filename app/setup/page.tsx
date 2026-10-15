@@ -27,11 +27,12 @@ import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 // app/api/setup/route.ts:13 imports this exact function and rejects on it at :74; components/
 // DemoGetStarted.tsx:53 imports it for the identical field. Three callers, one rule — so this form
 // cannot accept a number the server will refuse, and the two signup paths cannot drift apart.
-import { isPlausiblePhone, phoneErrorMessage, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
+import { isPlausiblePhone, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
+import { phoneErrorMessage } from '@/lib/phone-message'
 // Phase 2D-1: "Where's your truck based?" comes FIRST — the same step the demo modal shows.
 import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
 import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'
-import { useTruckLocale } from '@/lib/i18n/client'
+import { useTruckLocale } from '@/lib/i18n/use-t'
 
 const STEPS = [
   { key: 'based', label: 'Where you’re based' },

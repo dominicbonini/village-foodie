@@ -1,0 +1,17 @@
+{
+  "breachHeadline": "{n, plural, one {{count} slot} other {{count} slots}} over capacity — review",
+  "batchOver": "{cat} over batch — {count} for {slot} ({per} per batch)",
+  "eventStartOver": "Over capacity at event start — {n, plural, one {{count} item} other {{count} items}} for {slot}",
+  "kitchenOver": "Kitchen over capacity — {n, plural, one {{count} item} other {{count} items}} cooking for {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} item} other {{count} items}}",
+  "placedAnyway": "Placed anyway: {list}",
+  "placedItem": "#{id} for {slot}",
+  "orphans": "{times} over capacity — no orders found to attribute it to",
+  "dismiss": "Dismiss",
+  "kitchenCapacity": "Kitchen capacity",
+  "overCapacity": "Over capacity",
+  "wakeUnsupported": "This device can't keep the screen on.",
+  "wakeInsecure": "The screen can't be kept on from this address.",
+  "wakeRetry": "Keep screen on — tap to try again",
+  "wakeAcquire": "Keep screen on"
+}

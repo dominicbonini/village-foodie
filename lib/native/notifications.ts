@@ -2,6 +2,8 @@ import { Capacitor } from '@capacitor/core'
 import { Preferences } from '@capacitor/preferences'
 import { playDing } from '@/lib/audio'
 import { NOTIFICATION_SMALL_ICON } from '@/lib/native/notificationIcon'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/nativeShell'
 
 // Device-local notification prefs (Capacitor Preferences). master = OS permission granted + master on;
 // offline = the offline/paused LOCAL-alert type (default ON); neworder = mirrors van_devices.notify_enabled
@@ -56,26 +58,28 @@ export async function offlineAlertsEnabled(): Promise<boolean> {
   }
 }
 
-export async function playNewOrderAlert(orderNumber: string) {
+export async function playNewOrderAlert(orderNumber: string, locale?: string | null) {
   if (!Capacitor.isNativePlatform()) { playWebBeep(); return }   // Web fallback — beep via Web Audio API
   try {
     const { LocalNotifications } = await import('@capacitor/local-notifications')
+    const t = translatorFor(locale, 'nativeShell')
     await LocalNotifications.schedule({
-      notifications: [{ id: Date.now() % 2147483647, title: 'New order', body: `Order ${orderNumber} received`, sound: 'default', smallIcon: NOTIFICATION_SMALL_ICON, actionTypeId: '', extra: null }],
+      notifications: [{ id: Date.now() % 2147483647, title: t('localNotify.newOrderTitle'), body: t('localNotify.orderReceived', { number: orderNumber }), sound: 'default', smallIcon: NOTIFICATION_SMALL_ICON, actionTypeId: '', extra: null }],
     })
   } catch (err) { console.warn('[Notifications] playNewOrderAlert failed:', err); playWebBeep() }
 }
 
-export async function notifyNewOrder(count: number) {
+export async function notifyNewOrder(count: number, locale?: string | null) {
   if (!Capacitor.isNativePlatform()) return
   try {
     const { LocalNotifications } = await import('@capacitor/local-notifications')
     await LocalNotifications.requestPermissions()
+    const t = translatorFor(locale, 'nativeShell')
     await LocalNotifications.schedule({
       notifications: [{
         id: Date.now() % 2147483647,
-        title: 'New order',
-        body: count === 1 ? 'You have a new order' : `You have ${count} new orders`,
+        title: t('localNotify.newOrderTitle'),
+        body: t('localNotify.newOrders', { n: count, count: String(count) }),
         // 🔴 `sound: 'beep.wav'` REMOVED — IT NAMED A FILE THAT HAS NEVER EXISTED IN THIS REPOSITORY.
         // There is no beep.wav, no res/raw/ directory, and no audio asset of any kind anywhere outside
         // node_modules. The built APK's resource table confirms it: ZERO `raw/` resources.

@@ -1,0 +1,6 @@
+{
+  "closedPending": "Pre-orders closed. Kitchen to approve.",
+  "deadline": "Pre-order by {time}",
+  "deadlineOnDay": "Pre-order by {time}, {day}",
+  "opens": "Pre-orders open {day}"
+}

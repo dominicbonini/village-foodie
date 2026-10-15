@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { formatTime, formatYmd, getLocalDateInTz, addDaysYmd, type TimeSettings } from '@/lib/time-utils'
 import { formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-format'
 import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/whatsappCustomer'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

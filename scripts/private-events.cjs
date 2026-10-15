@@ -1064,7 +1064,11 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       && (codeOf(dash).match(/\?\.is_private===true/g) || []).length === 1)
     t('🔴 and the Link & QR row shows ONLY for a private event',
       /onPrivateLink=\{eventIsPrivate\?/.test(dash)
-      && /Private link &amp; QR code/.test(read('components/shared/EventActionsModal.tsx')))
+      /* Language Phase 1b re-pin: the row's words moved into messages (`kitchenModals.actions.privateLink`). The
+       * sentence is asserted EXACTLY in messages/en-GB.json, and the modal reads that key INSIDE the row that renders
+       * only when `onPrivateLink` is passed — the same place the literal was. */
+      && JSON.parse(read('messages/en-GB.json')).kitchenModals.actions.privateLink === 'Private link & QR code'
+      && /\{onPrivateLink && \(\s*<button onClick=\{onPrivateLink\}[\s\S]{0,300}?\{t\('actions\.privateLink'\)\}\s*<\/button>\s*\)\}/.test(read('components/shared/EventActionsModal.tsx')))
 
     /* ══ 🔴 THE DARK EVENT BAR'S TITLE IS THE EVENT'S **NAME**, NEVER ITS VENUE (Dominic, 5 Oct) ════
      * ⛔ THE VENUE IS NOT RENDERED AT ALL in the private arm — not greyed, not in a title attribute.

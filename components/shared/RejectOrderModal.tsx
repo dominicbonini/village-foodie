@@ -28,25 +28,27 @@
 //
 // ⚠️ THE ANDROID BACK ENTRY STAYS IN EACH PAGE'S ORDERED LIST — see the note on `onDismiss`.
 import { useState } from 'react'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/kitchenModals'
 
-/** The reasons, in display order. 🔴 EXPORTED SO NOTHING RESTATES THEM. `Other` is last and is the one
- *  that promotes the free-text note from optional to required. */
-export const REJECT_REASONS = [
-  'Sold out of an item',
-  "Too busy — can't make it in time",
-  'Closing soon',
-  'Other',
-] as const
+/** The reasons, in display order — as IDS (Language Phase 1b). 🔴 EXPORTED SO NOTHING RESTATES THEM. `other` is
+ *  last and is the one that promotes the free-text note from optional to required.
+ *  ⚠️ THE BEHAVIOUR KEYS ON THE ID, NEVER ON THE WORD. It used to compare the displayed label ('Other'), which would
+ *  have broken the day the label was translated. The words are messages (kitchenModals.reject.reason). */
+export const REJECT_REASONS = ['sold_out', 'too_busy', 'closing_soon', 'other'] as const
+export type RejectReasonId = (typeof REJECT_REASONS)[number]
 
 /**
  * Compose what the customer will read. 🔴 THE ONE PLACE THIS RULE LIVES.
  *   a concrete preset  → "preset" or "preset — note"
- *   'Other' or nothing → the note alone, which is why the note is mandatory in that case
+ *   'other' or nothing → the note alone, which is why the note is mandatory in that case
+ * `presetLabel` is the chosen preset's WORDS ('' for `other` or nothing) — the caller resolves the id, so the
+ * stored text is exactly the label the operator picked (today the en-GB label, as before).
  * Returns '' when there is nothing to say, which is what both enforcement layers test.
  */
-export function composeRejectReason(reason: string, note: string): string {
+export function composeRejectReason(presetLabel: string, note: string): string {
   const n = note.trim()
-  return (reason && reason !== 'Other') ? [reason, n].filter(Boolean).join(' — ') : n
+  return presetLabel ? [presetLabel, n].filter(Boolean).join(' — ') : n
 }
 
 export function RejectOrderModal({
@@ -71,10 +73,15 @@ export function RejectOrderModal({
    *  Each page therefore keeps `[open, dismiss]` in its own list, at the position it already occupies. */
   onDismiss: () => void
 }) {
+  const t = useT('kitchenModals')
+  const labelOf = (id: RejectReasonId) => t('reject.reason', { reason: id })
+  /** The <select>'s value: '' or the chosen reason's LABEL as rendered (the option values are unchanged). It is
+   *  turned straight back into an id below, and every decision is made on the id. */
   const [reason, setReason] = useState('')
   const [note, setNote] = useState('')
+  const reasonId: RejectReasonId | null = REJECT_REASONS.find(id => labelOf(id) === reason) ?? null
 
-  const fullReason = composeRejectReason(reason, note)
+  const fullReason = composeRejectReason(reasonId && reasonId !== 'other' ? labelOf(reasonId) : '', note)
   // ── 🔴 ENFORCEMENT LAYER 1 OF 2: THE BUTTON. Layer 2 is the caller's own `if (!fullReason) return`,
   // which is kept on both surfaces. Two layers, deliberately — this is the last gate before an email
   // reaches a customer, and a disabled attribute is a UI fact rather than a guarantee.
@@ -84,23 +91,23 @@ export function RejectOrderModal({
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
       <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Reject order #{orderId}?</h3>
+          <h3 className="text-lg font-semibold text-slate-900">{t('reject.title', { orderId: String(orderId) })}</h3>
           <p className="text-sm text-slate-500 mt-1">{customerName}{totalLabel}</p>
         </div>
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Reason — required (shown to the customer)</label>
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('reject.reasonLabel')}</label>
           <select value={reason} onChange={e => setReason(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
-            <option value="">Select a reason</option>
-            {REJECT_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
+            <option value="">{t('selectReason')}</option>
+            {REJECT_REASONS.map(r => <option key={r} value={labelOf(r)}>{labelOf(r)}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{reason === 'Other' ? 'Reason — required' : 'Additional note — optional'}</label>
-          <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Add more detail for the customer..." rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{reasonId === 'other' ? t('reject.noteRequired') : t('reject.noteOptional')}</label>
+          <textarea value={note} onChange={e => setNote(e.target.value)} placeholder={t('reject.notePlaceholder')} rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
         </div>
         <div className="flex gap-3">
-          <button onClick={onDismiss} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm">Keep order</button>
-          <button onClick={() => { if (canConfirm) onConfirm(fullReason) }} disabled={!canConfirm} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed">Reject order</button>
+          <button onClick={onDismiss} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm">{t('reject.keep')}</button>
+          <button onClick={() => { if (canConfirm) onConfirm(fullReason) }} disabled={!canConfirm} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed">{t('reject.confirm')}</button>
         </div>
       </div>
     </div>

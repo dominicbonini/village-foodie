@@ -29,6 +29,8 @@ import { stripeAccountForTruck } from '@/lib/payments/authorize'
 import { logAction } from '@/lib/audit/actionAudit'
 import type { ResolvedActor } from '@/lib/audit/actor'
 import { stripeClient } from '@/lib/stripe/client'
+import { kitchenErrorBody, type KitchenErrorCode, type KitchenErrorParams } from '@/lib/i18n/kitchen-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 /**
  * 🔴 THE OPERATOR'S REASONS, WHICH ARE NOT STRIPE'S.
@@ -63,9 +65,16 @@ export type RefundOutcome =
   /** 🔴 STRIPE HAS ACCEPTED IT AND THE MONEY HAS NOT MOVED YET. No ledger row, by design. */
   | { status: 'pending'; refundId: string; amountMinor: number }
   /** A guard said no. Nothing was sent to Stripe. */
-  | { status: 'refused'; reason: 'not_card' | 'invalid_amount' | 'exceeds_remaining'; detail: string; remainingMinor: number }
-  /** Stripe or the network failed. Whether money moved is stated in `detail`. */
-  | { status: 'failed'; detail: string }
+  | { status: 'refused'; reason: 'not_card' | 'invalid_amount' | 'exceeds_remaining'; detail: string; remainingMinor: number; code: KitchenErrorCode; params: KitchenErrorParams }
+  /** Stripe or the network failed. Whether money moved is stated in `detail`. A refusal of OURS carries its
+   *  `code` and `params` (messages/en-GB.json `errorsKitchen`, Language Phase 1b); Stripe's own words carry none. */
+  | { status: 'failed'; detail: string; code?: KitchenErrorCode; params?: KitchenErrorParams }
+
+/** Our refusal, as its code and values plus the same sentence for the log (`detail`, en-GB). The route answers the
+ *  dashboard with the code in the truck's language (lib/i18n/kitchen-errors.ts). */
+function ours(code: KitchenErrorCode, params: KitchenErrorParams = {}) {
+  return { code, params, detail: kitchenErrorBody(DEFAULT_LOCALE, code, params).error }
+}
 
 /**
  * What this order could still have refunded, in minor units, and the intent to refund it against.
@@ -130,7 +139,7 @@ export async function refundOrder(
 ): Promise<RefundOutcome> {
   const account = await stripeAccountForTruck(supabase, args.truckId)
   if (!account) {
-    return { status: 'failed', detail: 'This truck has no Stripe account, so nothing can be refunded from here.' }
+    return { status: 'failed', ...ours('refund_no_account') }
   }
   const stripe = stripeClient()
 
@@ -142,20 +151,20 @@ export async function refundOrder(
     // moves money: a balance we could not read is not evidence that a refund is safe.
     const detail = err instanceof Error ? err.message : String(err)
     console.error(`[refund] 🔴 could not establish what is refundable for order_key=${args.orderKey}:`, detail)
-    return { status: 'failed', detail: 'We could not check what has already been refunded, so nothing was sent.' }
+    return { status: 'failed', ...ours('refund_check_failed') }
   }
 
   // ── 🔴 THE GUARDS. SERVER-SIDE, IN THIS ORDER, AND NONE OF THEM READS THE REQUEST. ───────────────
   if (!refundable.paymentIntentId || refundable.capturedMinor <= 0) {
     return {
       status: 'refused', reason: 'not_card', remainingMinor: 0,
-      detail: 'Nothing was taken by card on this order, so there is nothing to refund here.',
+      ...ours('refund_not_card'),
     }
   }
   if (!Number.isInteger(args.amountMinor) || args.amountMinor <= 0) {
     return {
       status: 'refused', reason: 'invalid_amount', remainingMinor: refundable.remainingMinor,
-      detail: 'Enter an amount greater than zero.',
+      ...ours('refund_amount_invalid'),
     }
   }
   if (args.amountMinor > refundable.remainingMinor) {
@@ -163,9 +172,9 @@ export async function refundOrder(
     // already holding open, so a first refund of the full amount leaves zero and this refuses at once.
     return {
       status: 'refused', reason: 'exceeds_remaining', remainingMinor: refundable.remainingMinor,
-      detail: refundable.remainingMinor === 0
-        ? 'This order has already been fully refunded.'
-        : `Only ${formatMinorOrBare(refundable.remainingMinor, await orderFormatFor(supabase, args.orderKey), 'refund refusal')} is left to refund on this order.`,
+      ...(refundable.remainingMinor === 0
+        ? ours('refund_fully_refunded')
+        : ours('refund_only_left', { amount: formatMinorOrBare(refundable.remainingMinor, await orderFormatFor(supabase, args.orderKey), 'refund refusal') })),
     }
   }
 

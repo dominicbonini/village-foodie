@@ -24,7 +24,7 @@ import { parseSignature, parseOptOut } from '@/lib/outreach-signature'
 // this same document into the two MIME parts — see lib/outreach-doc.ts for why it is a document and
 // not HTML on the wire.
 import {
-  docFromTemplateText, docToText, docPlainText, literalTokenRefusal, optOutWarning,
+  docFromTemplateText, docToText, docPlainText, literalTokenRefusal, optOutWarning, templateWantsPlansPdf,
   EMPTY_DOC, type EmailDoc, type DocLine,
 } from '@/lib/outreach-doc'
 import RichEmailEditor, { type EditorApi } from '@/components/admin/RichEmailEditor'
@@ -44,7 +44,7 @@ import { SizedEmailFrame, GrowingTextarea } from '@/components/admin/outreach-sh
 // things the route refuses — a picker that accepts a 40 MB file and a route that rejects it is a
 // worse experience than one that says so before the upload.
 import {
-  ALLOWED_ATTACHMENT_EXTENSIONS, MAX_ATTACHMENT_BYTES, attachmentSetRefusal, uploadRefusal, mb,
+  ALLOWED_ATTACHMENT_EXTENSIONS, MAX_ATTACHMENT_BYTES, attachmentSetRefusal, uploadRefusal, mb, isPlansPdfFilename,
   type OutboundAttachment,
 } from '@/lib/outreach-attachments'
 import { replySubject } from '@/lib/outreach-mail-message'
@@ -355,6 +355,8 @@ export default function ComposeWindow({
   const [fileBusy, setFileBusy] = useState<string | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  /** "Attach the plans PDF for this template" — assigned once `attachPlansPdf` exists (see below). */
+  const attachPlansForTemplateRef = useRef<() => void>(() => {})
 
   /* ── THE EMAIL BOX'S REMEMBERED HEIGHT ──────────────────────────────────────────────────────
      🔴 READ ONCE, IN AN EFFECT, AND CLAMPED TO THIS WINDOW. Reading localStorage during render is
@@ -489,6 +491,8 @@ export default function ComposeWindow({
     if (!tpl) return
     const out = renderTemplate(tpl, ctx)
     setSourceSubject(out.subject ?? ''); setSourceBody(out.body)
+    // 📎 A template carrying `{{plans_pdf}}` attaches the PDF as it is chosen (email only).
+    if (tpl.channel === 'email' && templateWantsPlansPdf(out.body)) attachPlansForTemplateRef.current()
     // Fields were just cleared, so the message starts as the raw render: resolved tokens substituted,
     // unfilled placeholders still visible as [[…]].
     setSubject(out.subject ?? ''); setBody(out.body)
@@ -955,6 +959,30 @@ export default function ComposeWindow({
       setFileError('The plans PDF could not be attached — check the connection.')
     } finally { setFileBusy(null) }
   }, [prospectId])
+
+  /* ── 📎 A TEMPLATE THAT ASKS FOR THE PLANS PDF (15 October 2026) ─────────────────────────────────
+   * `{{plans_pdf}}` on a line of its own in a template means "attach the plans PDF when this is used".
+   * The line is dropped from the email (`docFromTemplateText`) and THIS attaches the PDF — the Plans PDF
+   * button's own call, so the copy is the same document either way.
+   * ⚠️ NEVER TWICE: not while one is being generated, and not when one is already attached. Removing the
+   * chip afterwards is the operator's choice and is respected — nothing re-attaches it behind them. */
+  const filesRef = useRef(files)
+  useEffect(() => { filesRef.current = files }, [files])
+  const plansInFlight = useRef(false)
+  const attachPlansForTemplate = useCallback(() => {
+    if (plansInFlight.current || filesRef.current.some(f => isPlansPdfFilename(f.filename))) return
+    plansInFlight.current = true
+    void attachPlansPdf().finally(() => { plansInFlight.current = false })
+  }, [attachPlansPdf])
+  useEffect(() => { attachPlansForTemplateRef.current = attachPlansForTemplate }, [attachPlansForTemplate])
+  // A window OPENED with a template already chosen (from the due queue) asks once, on open.
+  const seedPlansAsked = useRef(false)
+  useEffect(() => {
+    if (seedPlansAsked.current) return
+    seedPlansAsked.current = true
+    const tpl = TPL_BY_ID(offerable, seed.id)
+    if (tpl && tpl.channel === 'email' && templateWantsPlansPdf(seed.body)) queueMicrotask(() => attachPlansForTemplate())
+  }, [offerable, seed, attachPlansForTemplate])
 
   /** ⚠️ REMOVING A FILE FORGETS THE PATH; the object stays in the bucket, unreferenced and private. */
   const removeFile = useCallback((path: string) => {

@@ -253,6 +253,11 @@ export interface EditorApi {
    * focused. Returns false only when there is no editor yet.
    */
   insertLink: (url: string, text?: string) => boolean
+  /**
+   * Plain text at the caret — the Templates editor's "Insert token ▾" and "Insert condition ▾".
+   * `ownLine`: a `?condition:` marker only works at the START of a line, so it goes on a line of its own.
+   */
+  insertText?: (text: string, opts?: { ownLine?: boolean }) => boolean
 }
 
 export interface RichEmailEditorProps {
@@ -298,11 +303,19 @@ export interface RichEmailEditorProps {
    * document.
    */
   apiRef?: React.MutableRefObject<EditorApi | null>
+  /**
+   * 🔴 THE TEMPLATES EDITOR (15 October 2026). The same box and toolbar, writing a TEMPLATE: "Insert
+   * signature" and "Insert opt-out" put the `{{signature}}` / `{{opt_out}}` token on a line of its own —
+   * they are filled when the template is used — instead of today's lines.
+   */
+  templateTokens?: boolean
+  /** The grey sentence at the right of the toolbar. Absent ⇒ "This is the email. Exactly what is here is sent." */
+  note?: string
 }
 
 export default function RichEmailEditor({
   value, onChange, signatureLines, optOut, disabled, maxHeight, height, onHeightChange, onExpand, expanded,
-  toolbarExtra, underToolbar, apiRef,
+  toolbarExtra, underToolbar, apiRef, templateTokens, note,
 }: RichEmailEditorProps) {
   /* ⚠️ ORDER IS NOT SIGNIFICANT HERE, but the grouping is kept readable: the document shape, then the
    * marks, then the list nodes and their keymap. `ListKeymap` is what gives Tab / Shift-Tab and the
@@ -467,6 +480,16 @@ export default function RichEmailEditor({
         // restores the last selection if there was one; `'end'` is only the fallback.
         if (editor.state.selection.empty && !editor.isFocused) chain.focus('end')
         chain.insertContent([{ type: 'text', text: label, marks: [{ type: 'link', attrs: { href: url } }] }]).run()
+        return true
+      },
+      insertText: (text: string, opts?: { ownLine?: boolean }) => {
+        if (!editor) return false
+        const chain = editor.chain().focus()
+        if (editor.state.selection.empty && !editor.isFocused) chain.focus('end')
+        // ⚠️ A NEW PARAGRAPH unless the caret is already at the start of an empty one, so the marker leads its line.
+        const { $from } = editor.state.selection
+        if (opts?.ownLine && $from.parent.textContent !== '') chain.splitBlock()
+        chain.insertContent(text).run()
         return true
       },
     }
@@ -641,14 +664,14 @@ export default function RichEmailEditor({
           Link
         </button>
         <span className="w-px h-4 bg-slate-200 mx-1" />
-        <button type="button" onMouseDown={keepSelection} onClick={() => insertLines(signatureLines)}
-          disabled={!signatureLines.length}
+        <button type="button" onMouseDown={keepSelection} onClick={() => (templateTokens ? insertLines([{ text: '{{signature}}' }]) : insertLines(signatureLines))}
+          disabled={!templateTokens && !signatureLines.length}
           title="Insert your signature at the cursor, from the Signature tab"
           className={`${tbtn(false)} disabled:opacity-40`}>
           Insert signature
         </button>
-        <button type="button" onMouseDown={keepSelection} onClick={() => insertLines(optOut ? [{ text: optOut, small: true }] : [])}
-          disabled={!optOut}
+        <button type="button" onMouseDown={keepSelection} onClick={() => (templateTokens ? insertLines([{ text: '{{opt_out}}' }]) : insertLines(optOut ? [{ text: optOut, small: true }] : []))}
+          disabled={!templateTokens && !optOut}
           title="Insert the opt-out sentence at the cursor, at 10pt"
           className={`${tbtn(false)} disabled:opacity-40`}>
           Insert opt-out
@@ -662,7 +685,7 @@ export default function RichEmailEditor({
         {/* ⚠️ THE SENTENCE IS THE FIRST THING TO GO when the row is full: it is a reminder, and the
             controls beside it are the work. */}
         <span className="ml-auto text-[11px] text-slate-400 max-xl:hidden">
-          This is the email. Exactly what is here is sent.
+          {note ?? 'This is the email. Exactly what is here is sent.'}
         </span>
         {onExpand && (
           // 🔴 A WRITING VIEW, NOT A PREVIEW. It opens the same editor and the same Send buttons at

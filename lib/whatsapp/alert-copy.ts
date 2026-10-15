@@ -13,6 +13,16 @@
 // emails MUST NOT. Keep that line where it is.
 
 import { formatLimit } from '@/lib/whatsapp/copy'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/alertsOperator'
+
+// 🔴 THE THREE OPERATOR EMAILS' SENTENCES ARE IN messages/en-GB.json `alertsOperator` (Language Phase 1b), read in the
+// truck's language — the optional trailing `locale` (its country's; en-GB when absent). The markup stays here; a bold
+// phrase is a <b> tag in its message. Each sentence serves both bodies: HTML (values escaped, <b> → <strong>) and
+// text (raw values, tags dropped). The ADMIN emails below go to us, name internals, and stay in English here.
+type AlertT = ReturnType<typeof translatorFor<'alertsOperator'>>
+const strong = (c: string) => `<strong>${c}</strong>`
+const plain = (c: string) => c
 
 export interface AlertEmail { subject: string; html: string; text: string }
 
@@ -40,22 +50,24 @@ const button = (href: string, label: string) =>
  */
 export function limit80Email(p: {
   truckName: string; used: number; limit: number; resetLabel: string; manageUrl: string
-}): AlertEmail {
-  const subject = `You've used 80% of this month's WhatsApp replies`
+}, locale?: string | null): AlertEmail {
+  const t: AlertT = translatorFor(locale, 'alertsOperator')
+  const limit = formatLimit(p.limit)
+  const subject = t('limit80.subject')
   const html = shell(
-    `<p>Hi ${esc(p.truckName)},</p>
-     <p>Your automatic WhatsApp replies have used <strong>${p.used} of ${formatLimit(p.limit)}</strong> for this month.</p>
-     <p>Nothing has stopped. When you reach ${formatLimit(p.limit)}, automatic replies pause until your allowance resets on <strong>${esc(p.resetLabel)}</strong> — customers can still message you, and you'll still see everything they send.</p>
-     <p>You can raise your monthly limit in Settings whenever you like.</p>
-     ${button(p.manageUrl, 'Open Settings')}`
+    `<p>${t('hi', { name: esc(p.truckName) })}</p>
+     <p>${t.markup('limit80.used', { used: String(p.used), limit, b: strong })}</p>
+     <p>${t.markup('limit80.nothingStopped', { limit, reset: esc(p.resetLabel), b: strong })}</p>
+     <p>${t('limit80.raise')}</p>
+     ${button(p.manageUrl, t('limit80.button'))}`
   )
-  const text = `Hi ${p.truckName},
+  const text = `${t('hi', { name: p.truckName })}
 
-Your automatic WhatsApp replies have used ${p.used} of ${formatLimit(p.limit)} for this month.
+${t.markup('limit80.used', { used: String(p.used), limit, b: plain })}
 
-Nothing has stopped. When you reach ${formatLimit(p.limit)}, automatic replies pause until your allowance resets on ${p.resetLabel} — customers can still message you, and you'll still see everything they send.
+${t.markup('limit80.nothingStopped', { limit, reset: p.resetLabel, b: plain })}
 
-You can raise your monthly limit in Settings whenever you like:
+${t('limit80.raiseLink')}
 ${p.manageUrl}
 
 — HatchGrab`
@@ -70,22 +82,24 @@ ${p.manageUrl}
  */
 export function limit100Email(p: {
   truckName: string; limit: number; resetLabel: string; manageUrl: string
-}): AlertEmail {
-  const subject = `Your WhatsApp auto-replies have paused for this month`
+}, locale?: string | null): AlertEmail {
+  const t: AlertT = translatorFor(locale, 'alertsOperator')
+  const limit = formatLimit(p.limit)
+  const subject = t('limit100.subject')
   const html = shell(
-    `<p>Hi ${esc(p.truckName)},</p>
-     <p>You've used all ${formatLimit(p.limit)} of this month's automatic WhatsApp replies, so they've paused.</p>
-     <p><strong>Customers can still message you as normal, and every message still reaches you.</strong> The only thing that's stopped is the automatic reply going back out.</p>
-     <p>They'll start again on <strong>${esc(p.resetLabel)}</strong>, or straight away if you raise your monthly limit in Settings.</p>
-     ${button(p.manageUrl, 'Raise my limit')}`
+    `<p>${t('hi', { name: esc(p.truckName) })}</p>
+     <p>${t('limit100.usedAll', { limit })}</p>
+     <p>${t.markup('limit100.stillReach', { b: strong })}</p>
+     <p>${t.markup('limit100.startAgain', { reset: esc(p.resetLabel), b: strong })}</p>
+     ${button(p.manageUrl, t('limit100.button'))}`
   )
-  const text = `Hi ${p.truckName},
+  const text = `${t('hi', { name: p.truckName })}
 
-You've used all ${formatLimit(p.limit)} of this month's automatic WhatsApp replies, so they've paused.
+${t('limit100.usedAll', { limit })}
 
-Customers can still message you as normal, and every message still reaches you. The only thing that's stopped is the automatic reply going back out.
+${t.markup('limit100.stillReach', { b: plain })}
 
-They'll start again on ${p.resetLabel}, or straight away if you raise your monthly limit in Settings:
+${t('limit100.startAgainLink', { reset: p.resetLabel })}
 ${p.manageUrl}
 
 — HatchGrab`
@@ -100,26 +114,27 @@ ${p.manageUrl}
  */
 export function paymentBlockedEmail(p: {
   truckName: string; manageUrl: string; whatsappManagerUrl: string
-}): AlertEmail {
-  const subject = `WhatsApp needs a payment method before it can send`
+}, locale?: string | null): AlertEmail {
+  const t: AlertT = translatorFor(locale, 'alertsOperator')
+  const subject = t('paymentBlocked.subject')
   const html = shell(
-    `<p>Hi ${esc(p.truckName)},</p>
-     <p>WhatsApp has stopped your automatic replies going out because there's no working payment method on your WhatsApp Business account.</p>
-     <p><strong>Customers can still message you, and you'll still see everything they send</strong> — but the replies aren't reaching them.</p>
-     <p>You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager rather than in HatchGrab. Add or update a card there and replies start again on their own.</p>
-     ${button(p.whatsappManagerUrl, 'Open WhatsApp Manager')}
-     <p style="color:#64748b;font-size:13px">Your HatchGrab settings: <a href="${p.manageUrl}" style="color:#ea580c">${p.manageUrl}</a></p>`
+    `<p>${t('hi', { name: esc(p.truckName) })}</p>
+     <p>${t('paymentBlocked.stopped')}</p>
+     <p>${t.markup('paymentBlocked.stillMessage', { b: strong })}</p>
+     <p>${t('paymentBlocked.payDirect')}</p>
+     ${button(p.whatsappManagerUrl, t('paymentBlocked.button'))}
+     <p style="color:#64748b;font-size:13px">${t.markup('paymentBlocked.settings', { url: p.manageUrl, link: c => `<a href="${p.manageUrl}" style="color:#ea580c">${c}</a>` })}</p>`
   )
-  const text = `Hi ${p.truckName},
+  const text = `${t('hi', { name: p.truckName })}
 
-WhatsApp has stopped your automatic replies going out because there's no working payment method on your WhatsApp Business account.
+${t('paymentBlocked.stopped')}
 
-Customers can still message you, and you'll still see everything they send — but the replies aren't reaching them.
+${t.markup('paymentBlocked.stillMessage', { b: plain })}
 
-You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager rather than in HatchGrab. Add or update a card there and replies start again on their own:
+${t('paymentBlocked.payDirectLink')}
 ${p.whatsappManagerUrl}
 
-Your HatchGrab settings: ${p.manageUrl}
+${t.markup('paymentBlocked.settings', { url: p.manageUrl, link: plain })}
 
 — HatchGrab`
   return { subject, html, text }

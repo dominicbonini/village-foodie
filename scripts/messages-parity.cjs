@@ -83,6 +83,7 @@ for (const loc of locales) {
 // ── Phases 1a–1e: one entry per surface moved into messages/, each comparing BEFORE with AFTER. ──
 const AREAS = [
   '_messages-parity-1a.cjs',   // Language Phase 1a — the customer-facing text (docs/language-phase-1a-report.md)
+  '_messages-parity-1b.cjs',   // Language Phase 1b — the kitchen and operator text (docs/language-phase-1b-report.md)
 ]
 if (AREAS.length) for (const a of AREAS) require(`./${a}`)({ t, head, msgs })
 

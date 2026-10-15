@@ -33,6 +33,8 @@ import { getLocalDateInTz, getNowMinsInTz, timeSettingsOr, type TimeSettings } f
 import { phoneCopyForTruck } from '@/lib/phone-copy'
 import type { PhoneCopy } from '@/lib/phone'
 import type { TruckMoney } from '@/lib/money-format'
+import { kitchenErrorBody } from '@/lib/i18n/kitchen-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 // ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
 // 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
@@ -86,6 +88,8 @@ function publicTruckFields(row: Record<string, any>): Record<string, any> {
 // webhook, payments/return — all 300 by their own export). This is a per-route decision, not a global.
 export const maxDuration = 30
 
+// Every refusal here carries a code and its values (Language Phase 1b, lib/i18n/kitchen-errors.ts). All of them come
+// before the token and PIN are accepted, so they read en-GB.
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
   const pin   = req.nextUrl.searchParams.get('pin')
@@ -94,7 +98,7 @@ export async function GET(req: NextRequest) {
   const eventIdParam = req.nextUrl.searchParams.get('event_id')
 
   if (!token) {
-    return NextResponse.json({ error: 'Missing token' }, { status: 401 })
+    return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'missing_token'), { status: 401 })
   }
 
   // Find truck by token — select('*') avoids 401 errors from missing columns
@@ -128,13 +132,13 @@ export async function GET(req: NextRequest) {
       `returning 503:`, error.message, error.details, error.code,
     )
     return NextResponse.json(
-      { error: 'Service unavailable', retryable: true },
+      kitchenErrorBody(DEFAULT_LOCALE, 'service_unavailable', {}, { retryable: true }),
       { status: 503, headers: { 'Retry-After': '10' } },
     )
   }
   if (!truck) {
     console.error(`[dashboard] no truck for token ending …${token.slice(-6)} — returning 401 (authoritative)`)
-    return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'invalid_token'), { status: 401 })
   }
 
   // ── 🔴 THE TRUCK'S CLOCK (Phase 2B) — trucks.timezone, else its country's default, with the country's
@@ -182,7 +186,7 @@ export async function GET(req: NextRequest) {
   const actor = await resolveActor(req, supabase, truck)
   if (actor.foreignOperator) {
     // User has an operator account for a different truck → deny
-    return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
+    return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 403 })
   }
   // No operator record + no truck_users → token-only access (KDS/anonymous), userRole stays null
   const currentUserName = actor.currentUserName
@@ -190,7 +194,7 @@ export async function GET(req: NextRequest) {
 
   // Check PIN if set
   if (truck.dashboard_pin && truck.dashboard_pin !== pin) {
-    return NextResponse.json({ error: 'Invalid PIN', requiresPin: true }, { status: 401 })
+    return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'invalid_pin', {}, { requiresPin: true }), { status: 401 })
   }
 
   // Resolve the dashboard event context BEFORE reading orders, so the order lists

@@ -3,10 +3,12 @@
 // (isNativeApp() false) → zero behaviour change for browser users. Reads/writes the current device_id's
 // van_devices row via /api/native/bind-device (truck-scoped server-side).
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { isNativeApp, getDeviceId, fetchDeviceConfig, saveDeviceConfig, saveFailureMessage, type DeviceConfig, type VanRef } from '@/lib/native/device'
+import { isNativeApp, getDeviceId, fetchDeviceConfig, saveDeviceConfig, saveFailureKey, type DeviceConfig, type VanRef } from '@/lib/native/device'
 import { registerForPush, releasePushHandlers } from '@/lib/native/push'
 import { isAppLockEnabled, setAppLockEnabled, isBiometricAvailable, verifyIdentity, setAppLockPin, clearAppLockPin } from '@/lib/native/appLock'
 import { fetchMyTrucks, switchTruck, type TruckRef } from '@/lib/native/trucks'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/nativeShell'
 
 // NOTE (Package 4): keep-awake is NOT owned here — it's the SINGLE "Screen on" control in the dashboard
 // header/UserMenu, which routes to the per-device pref (localStorage `hg_keepawake_${token}`, default on /
@@ -36,7 +38,15 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
   // 🔴 A FAILED WRITE NOW HAS SOMEWHERE TO GO. Every save on this card used to resolve to `null` and be
   // dropped: the button returned from "Saving…" to "Continue" and the modal sat there looking untouched,
   // which reads as "nothing happened" — not as "that failed". One plain sentence, no internal cause.
+  // ⚠️ HOLDS A CODE (Language Phase 1b) — `runSetup` is a useCallback, so it sets `deviceSave.network` /
+  // `deviceSave.server` and the words are made at render. The translator is never one of its dependencies.
   const [saveError, setSaveError] = useState<string | null>(null)
+  const t = useT('nativeShell')
+  // The Android channel's words follow the app's locale. A REF, written in an effect, because `runSetup` is a
+  // useCallback whose identity drives the setup effect — a locale in its deps would re-run setup on arrival.
+  const locale = useAppLocale()
+  const localeRef = useRef(locale)
+  useEffect(() => { localeRef.current = locale }, [locale])
   const mounted = useRef(true)
   useEffect(() => { mounted.current = true; return () => { mounted.current = false } }, [])
 
@@ -68,13 +78,13 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
     const device = result.device
     const vanList = result.vans
     // Already configured (row exists WITH a van) → apply side effects, no card.
-    if (device && device.van_id) { void registerForPush(token, onOpenOrderRef.current); setLoading(false); return }
+    if (device && device.van_id) { void registerForPush(token, onOpenOrderRef.current, localeRef.current); setLoading(false); return }
     // Single active van → auto-bind SILENTLY (no van question; screen defaults to 'dashboard', changeable in
     // This-device settings). Per spec: single van = no modal.
     if (vanList.length === 1) {
       const saved = await saveDeviceConfig(token, { van_id: vanList[0].id, default_screen: device?.default_screen ?? 'dashboard' })
       if (!mounted.current) return
-      if (saved.ok) { void registerForPush(token, onOpenOrderRef.current); setLoading(false); return }
+      if (saved.ok) { void registerForPush(token, onOpenOrderRef.current, localeRef.current); setLoading(false); return }
       // 🔴 A SILENT AUTO-BIND THAT FAILS MUST NOT STAY SILENT. This branch used to fall straight through
       // to setLoading(false) whatever happened, so the device ended up bound to nothing and the operator
       // was shown a perfectly normal dashboard. It is the only save on this card with no button behind it,
@@ -83,7 +93,7 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
       setVans(vanList)
       setVanId(vanList[0].id)
       setScreen(device?.default_screen ?? 'dashboard')
-      setSaveError(saveFailureMessage(saved))
+      setSaveError(saveFailureKey(saved))
       setNeedsSetup(true)
       setLoading(false); return
     }
@@ -116,8 +126,8 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
     // 🔴 THE MODAL STAYS OPEN ON FAILURE, AND THAT IS THE POINT. setNeedsSetup(false) is the ONLY thing
     // that closes it, and it is reachable only from the success branch — a card that closed on a failed
     // save would be indistinguishable from one that saved. Unchanged behaviour on success.
-    if (saved.ok) { void registerForPush(token, onOpenOrderRef.current); setNeedsSetup(false); return }
-    setSaveError(saveFailureMessage(saved))
+    if (saved.ok) { void registerForPush(token, onOpenOrderRef.current, localeRef.current); setNeedsSetup(false); return }
+    setSaveError(saveFailureKey(saved))
   }
 
   // NEVER TRAP: every state has an escape — Retry (error), "Go to Settings → Vans" (no van), Continue (picker),
@@ -129,62 +139,62 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
           // ── FETCH FAILED ──────────────────────────────────────────────────────────────────────
           <>
             <div>
-              <h2 className="text-base font-black text-slate-900">Couldn&apos;t load device setup</h2>
-              <p className="text-xs text-slate-500 mt-0.5">We couldn&apos;t reach the server to set up <strong>this device</strong>. Check the connection and try again — your orders and settings are unaffected.</p>
+              <h2 className="text-base font-black text-slate-900">{t('setup.fetchErrorTitle')}</h2>
+              <p className="text-xs text-slate-500 mt-0.5">{t.rich('setup.fetchErrorBody', { b: c => <strong>{c}</strong> })}</p>
             </div>
             <div className="flex gap-2">
-              <button type="button" onClick={() => void runSetup()} className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm">Retry</button>
-              <button type="button" onClick={() => setDismissed(true)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-500 border border-slate-200">Later</button>
+              <button type="button" onClick={() => void runSetup()} className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm">{t('setup.retry')}</button>
+              <button type="button" onClick={() => setDismissed(true)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-500 border border-slate-200">{t('setup.later')}</button>
             </div>
           </>
         ) : vans.length === 0 ? (
           // ── GENUINELY NO ACTIVE VAN ───────────────────────────────────────────────────────────
           <>
             <div>
-              <h2 className="text-base font-black text-slate-900">No active van</h2>
-              <p className="text-xs text-slate-500 mt-0.5">This truck has no active van yet. Activate one in <strong>Settings → Vans</strong>, then this device sets up automatically — no further steps here.</p>
+              <h2 className="text-base font-black text-slate-900">{t('setup.noVanTitle')}</h2>
+              <p className="text-xs text-slate-500 mt-0.5">{t.rich('setup.noVanBody', { b: c => <strong>{c}</strong> })}</p>
             </div>
             <div className="flex gap-2">
-              <a href={`/manage/${token}?tab=settings`} className="flex-1 text-center bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm">Go to Settings → Vans</a>
-              <button type="button" onClick={() => setDismissed(true)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-500 border border-slate-200">Later</button>
+              <a href={`/manage/${token}?tab=settings`} className="flex-1 text-center bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm">{t('setup.goToVans')}</a>
+              <button type="button" onClick={() => setDismissed(true)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-500 border border-slate-200">{t('setup.later')}</button>
             </div>
           </>
         ) : (
           // ── MULTI-VAN PICKER (>1 active van) ──────────────────────────────────────────────────
           <>
             <div>
-              <h2 className="text-base font-black text-slate-900">Set up this device</h2>
-              <p className="text-xs text-slate-500 mt-0.5">One-time setup for <strong>this device</strong>: the screen it opens to and which van it runs. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → &ldquo;This device&rdquo;.</p>
+              <h2 className="text-base font-black text-slate-900">{t('setup.title')}</h2>
+              <p className="text-xs text-slate-500 mt-0.5">{t.rich('setup.body', { b: c => <strong>{c}</strong> })}</p>
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-800 mb-1.5">Which screen should this device open to?</p>
+              <p className="text-sm font-bold text-slate-800 mb-1.5">{t('setup.whichScreen')}</p>
               <div className="flex gap-2">
                 {(['dashboard', 'kds'] as const).map(s => (
                   <button key={s} type="button" onClick={() => setScreen(s)}
                     className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold border ${screen === s ? 'bg-orange-600 text-white border-orange-600' : 'bg-white border-slate-300 text-slate-600'}`}>
-                    {s === 'dashboard' ? 'Dashboard' : 'KDS'}
+                    {s === 'dashboard' ? t('setup.dashboard') : t('setup.kds')}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-800 mb-1.5">Which van is this device?</p>
+              <p className="text-sm font-bold text-slate-800 mb-1.5">{t('setup.whichVan')}</p>
               <select value={vanId} onChange={e => setVanId(e.target.value)}
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-                <option value="">Select a van…</option>
+                <option value="">{t('setup.selectVan')}</option>
                 {vans.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
               </select>
             </div>
             {/* Same shape and vocabulary as this file's own set-PIN error (`pinSetupErr`, below) and as
                 Manage's verify line — `text-[11px] text-red-500`, sitting directly above the action it
                 refers to. Not a new pattern. */}
-            {saveError && <p className="text-[11px] text-red-500 -mb-1">{saveError}</p>}
+            {saveError && <p className="text-[11px] text-red-500 -mb-1">{t.has(saveError as never) ? t(saveError as never) : saveError}</p>}
             <div className="flex gap-2">
               <button type="button" disabled={!vanId || saving} onClick={onSave}
                 className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-40">
-                {saving ? 'Saving…' : saveError ? 'Try again' : 'Continue'}
+                {saving ? t('setup.saving') : saveError ? t('setup.tryAgain') : t('setup.continue')}
               </button>
-              <button type="button" onClick={() => setDismissed(true)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-500 border border-slate-200">Later</button>
+              <button type="button" onClick={() => setDismissed(true)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-500 border border-slate-200">{t('setup.later')}</button>
             </div>
           </>
         )}
@@ -214,6 +224,8 @@ export function ThisDeviceSettings({ token }: { token: string }) {
   const [switching, setSwitching] = useState(false)
   // Inline write-failure line for the three per-device settings below. See `patch()`.
   const [patchError, setPatchError] = useState<string | null>(null)
+  const t = useT('nativeShell')
+  const locale = useAppLocale()
 
   useEffect(() => {
     if (!isNativeApp()) return
@@ -233,11 +245,12 @@ export function ThisDeviceSettings({ token }: { token: string }) {
   // `cfg`, so not calling setCfg is already what puts the select and the checkbox back — but a control
   // that silently springs back reads as a mis-tap, not as a failure. `label` names the setting so one
   // shared line can serve three controls without being vague about which one did not save.
-  const patch = async (p: Parameters<typeof saveDeviceConfig>[1], label: string) => {
+  // ⚠️ `setting` is an ID, not the row's label (Language Phase 1b): the sentence picks the setting's name.
+  const patch = async (p: Parameters<typeof saveDeviceConfig>[1], setting: 'van' | 'defaultScreen' | 'notifications') => {
     setPatchError(null)
     const saved = await saveDeviceConfig(token, p)
     if (saved.ok) { setCfg(saved.device); return }
-    setPatchError(`${label} didn’t save. ${saveFailureMessage(saved)}`)
+    setPatchError(t('device.patchFailed', { setting, reason: t(saveFailureKey(saved)) }))
   }
   const vanName = vans.find(v => v.id === cfg?.van_id)?.name ?? null
 
@@ -255,18 +268,20 @@ export function ThisDeviceSettings({ token }: { token: string }) {
   return (
     <div className="rounded-2xl border border-slate-200 p-4 flex flex-col gap-3">
       <div>
-        <h3 className="text-sm font-bold text-slate-900">This device</h3>
+        <h3 className="text-sm font-bold text-slate-900">{t('device.title')}</h3>
         {/* Which truck/van this device is currently showing — always visible, so the operator can SEE
             what they're viewing before deciding whether to switch. */}
-        <p className="text-sm text-slate-700 mt-1">You&apos;re viewing: <strong>{truckName ?? '—'}</strong>{vanName ? <> — <strong>{vanName}</strong></> : ''}</p>
-        <p className="text-xs text-slate-400 mt-0.5">This device only — other devices are set separately. (ID: {getDeviceId().slice(0, 8)}…)</p>
+        <p className="text-sm text-slate-700 mt-1">{vanName
+          ? t.rich('device.viewingVan', { truck: truckName ?? '—', van: vanName, b: c => <strong>{c}</strong> })
+          : t.rich('device.viewing', { truck: truckName ?? '—', b: c => <strong>{c}</strong> })}</p>
+        <p className="text-xs text-slate-400 mt-0.5">{t('device.only', { id: getDeviceId().slice(0, 8) })}</p>
       </div>
 
       {/* TRUCK — switch to another truck the user is a MEMBER of (only when >1 permitted; hidden/silent for
           single-truck users). Sick-cover / multi-truck edge. Server-gated (my-trucks / switch-truck). */}
       {myTrucks.length > 1 && (
         <label className="flex items-center justify-between gap-3 text-sm">
-          <span className="font-semibold text-slate-700">Truck</span>
+          <span className="font-semibold text-slate-700">{t('device.truck')}</span>
           <select value={cfg?.truck_id ?? ''} disabled={switching} onChange={e => void onSwitchTruck(e.target.value)}
             className="border border-slate-300 rounded-lg px-2 py-1 text-sm disabled:opacity-50">
             {myTrucks.map(t => <option key={t.truck_id} value={t.truck_id}>{t.name}</option>)}
@@ -278,8 +293,8 @@ export function ThisDeviceSettings({ token }: { token: string }) {
           server-side (bind-device). "If permissions allow switch to another van." */}
       {vans.length > 1 && (
         <label className="flex items-center justify-between gap-3 text-sm">
-          <span className="font-semibold text-slate-700">Van</span>
-          <select value={cfg?.van_id ?? ''} onChange={e => patch({ van_id: e.target.value }, 'Van')}
+          <span className="font-semibold text-slate-700">{t('device.van')}</span>
+          <select value={cfg?.van_id ?? ''} onChange={e => patch({ van_id: e.target.value }, 'van')}
             className="border border-slate-300 rounded-lg px-2 py-1 text-sm">
             <option value="">—</option>
             {vans.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
@@ -288,17 +303,17 @@ export function ThisDeviceSettings({ token }: { token: string }) {
       )}
 
       <label className="flex items-center justify-between gap-3 text-sm">
-        <span className="font-semibold text-slate-700">Default screen</span>
-        <select value={cfg?.default_screen ?? 'dashboard'} onChange={e => patch({ default_screen: e.target.value as 'dashboard' | 'kds' }, 'Default screen')}
+        <span className="font-semibold text-slate-700">{t('device.defaultScreen')}</span>
+        <select value={cfg?.default_screen ?? 'dashboard'} onChange={e => patch({ default_screen: e.target.value as 'dashboard' | 'kds' }, 'defaultScreen')}
           className="border border-slate-300 rounded-lg px-2 py-1 text-sm">
-          <option value="dashboard">Dashboard</option>
-          <option value="kds">KDS</option>
+          <option value="dashboard">{t('setup.dashboard')}</option>
+          <option value="kds">{t('setup.kds')}</option>
         </select>
       </label>
 
       <label className="flex items-center justify-between gap-3 text-sm">
-        <span className="font-semibold text-slate-700">Order notifications</span>
-        <input type="checkbox" checked={cfg?.notify_enabled ?? true} onChange={e => patch({ notify_enabled: e.target.checked }, 'Order notifications')} />
+        <span className="font-semibold text-slate-700">{t('device.orderNotifications')}</span>
+        <input type="checkbox" checked={cfg?.notify_enabled ?? true} onChange={e => patch({ notify_enabled: e.target.checked }, 'notifications')} />
       </label>
       {/* One line for all three settings above — same `text-[11px] text-red-500` as the set-PIN error
           further down this card. It sits under the group because the control that failed has already
@@ -313,12 +328,12 @@ export function ThisDeviceSettings({ token }: { token: string }) {
           each of them so they cannot drift apart.
           Enabling opens the backup-PIN setup (required) — it's committed only once a valid PIN is stored. */}
       <label className="flex items-center justify-between gap-3 text-sm">
-        <span className="font-semibold text-slate-700">Require fingerprint or face unlock to open</span>
+        <span className="font-semibold text-slate-700">{t('device.requireBiometric')}</span>
         <input type="checkbox" checked={appLock}
           onChange={async e => {
             const on = e.target.checked
             if (on) {
-              const ok = await verifyIdentity('Confirm to enable app lock')
+              const ok = await verifyIdentity(t('appLock.confirmEnable'), locale)
               if (!ok) return
               setNewPin(''); setConfirmPin(''); setPinSetupErr(''); setPinSetup(true)   // require a backup PIN before committing
             } else {
@@ -328,33 +343,33 @@ export function ThisDeviceSettings({ token }: { token: string }) {
       </label>
       {pinSetup && (
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 flex flex-col gap-2 -mt-1">
-          <p className="text-xs font-semibold text-slate-700">Set a backup PIN (4–6 digits)</p>
-          <p className="text-[11px] text-slate-500 -mt-1">Your way in if fingerprint or face unlock won&apos;t work — it&apos;s the only fallback, so don&apos;t forget it (a forgotten PIN means reinstalling the app). Works offline.</p>
-          <input type="tel" inputMode="numeric" value={newPin} placeholder="PIN"
+          <p className="text-xs font-semibold text-slate-700">{t('device.pinTitle')}</p>
+          <p className="text-[11px] text-slate-500 -mt-1">{t('device.pinHelp')}</p>
+          <input type="tel" inputMode="numeric" value={newPin} placeholder={t('device.pinPlaceholder')}
             onChange={e => { setNewPin(e.target.value.replace(/\D/g, '').slice(0, 6)); setPinSetupErr('') }}
             className="text-center tracking-[0.3em] font-bold border border-slate-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-          <input type="tel" inputMode="numeric" value={confirmPin} placeholder="Confirm PIN"
+          <input type="tel" inputMode="numeric" value={confirmPin} placeholder={t('device.confirmPinPlaceholder')}
             onChange={e => { setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 6)); setPinSetupErr('') }}
             className="text-center tracking-[0.3em] font-bold border border-slate-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
           {pinSetupErr && <p className="text-[11px] text-red-500">{pinSetupErr}</p>}
           <div className="flex gap-2">
             <button type="button"
               onClick={async () => {
-                if (newPin.length < 4) { setPinSetupErr('Use at least 4 digits.'); return }
-                if (newPin !== confirmPin) { setPinSetupErr('PINs don’t match.'); return }
+                if (newPin.length < 4) { setPinSetupErr(t('device.pinTooShort')); return }
+                if (newPin !== confirmPin) { setPinSetupErr(t('device.pinMismatch')); return }
                 await setAppLockPin(newPin)
                 setAppLockEnabled(true); setAppLock(true); setPinSetup(false); setNewPin(''); setConfirmPin('')
               }}
-              className="flex-1 bg-orange-600 text-white font-bold py-2 rounded-lg text-sm">Set PIN &amp; enable</button>
+              className="flex-1 bg-orange-600 text-white font-bold py-2 rounded-lg text-sm">{t('device.setPin')}</button>
             <button type="button"
               onClick={() => { setPinSetup(false); setNewPin(''); setConfirmPin(''); setPinSetupErr('') }}
-              className="px-3 bg-slate-200 text-slate-600 font-bold py-2 rounded-lg text-sm">Cancel</button>
+              className="px-3 bg-slate-200 text-slate-600 font-bold py-2 rounded-lg text-sm">{t('device.cancel')}</button>
           </div>
         </div>
       )}
-      {appLock && !bioAvailable && <p className="text-[11px] text-amber-600 -mt-1">No fingerprint or face unlock set up on this device — add one in your device settings. Your backup PIN still works.</p>}
+      {appLock && !bioAvailable && <p className="text-[11px] text-amber-600 -mt-1">{t('device.noBiometric')}</p>}
 
-      <p className="text-[11px] text-slate-400 mt-0.5">These settings apply to this device only — other devices are configured separately.</p>
+      <p className="text-[11px] text-slate-400 mt-0.5">{t('device.footer')}</p>
     </div>
   )
 }

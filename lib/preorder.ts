@@ -9,6 +9,7 @@
 // getBundleAvailabilityMessage falls into — deliberately NOT copied here).
 import { weekdayName, monthName } from '@/lib/time-utils'
 import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/preorder'
 
 /** Per-item pre-order config — maps to the menu_items_db columns:
  *  preorder_enabled / preorder_deadline_type / preorder_deadline_value / preorder_past_action. */

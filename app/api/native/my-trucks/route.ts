@@ -6,6 +6,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { isDemoIdentifier } from '@/lib/demo'
+import { kitchenErrorBody } from '@/lib/i18n/kitchen-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
@@ -66,7 +68,7 @@ export async function permittedTruckIds(userId: string): Promise<Set<string>> {
 
 export async function GET(req: NextRequest) {
   const userId = await userIdFromBearer(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!userId) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
   const deviceId = new URL(req.url).searchParams.get('device_id')
 
   const { isAdmin, ids: truckIds } = await resolvePermittedTrucks(userId)

@@ -1,28 +1,18 @@
 // lib/i18n/messages.ts — 🔴 HOW THE MESSAGE FILES LOAD (Language Phase 0, docs/language-phase-0-report.md §1).
 //
-// PURE AND CLIENT-SAFE. messages/en-GB.json is the FULL base. messages/en-US.json holds ONLY the keys whose US
+// ⚠️ THE WHOLE CATALOGUE — FOR THE SERVER'S next-intl REQUEST CONFIG (lib/i18n/request.ts) AND THE HARNESSES. Since
+// Language Phase 1b no client module imports this file: the browser reads one namespace at a time through
+// lib/i18n/registry.ts, so a bundle carries only the words its files use (docs/language-phase-1b-report.md).
+// messages/en-GB.json is the FULL base. messages/en-US.json holds ONLY the keys whose US
 // wording differs, and is deep-merged OVER en-GB here — so a key the US file lacks shows the UK text, never a
 // raw key. A later language is a full file of its own, checked for completeness by scripts/messages-parity.cjs.
 import enGB from '@/messages/en-GB.json'
 import enUS from '@/messages/en-US.json'
 import type { Messages } from 'next-intl'
 import { DEFAULT_LOCALE, resolveLocale, type AppLocale } from './locales'
+import { deepMerge, type Tree } from './merge'
 
-type Tree = { [k: string]: string | Tree }
-
-const isBranch = (x: unknown): x is Tree => typeof x === 'object' && x !== null && !Array.isArray(x)
-
-/** `over` laid onto `base`, branch by branch. A string in `over` replaces the base's; anything `over` lacks stays. */
-export function deepMerge(base: Tree, over: Tree): Tree {
-  const out: Tree = { ...base }
-  for (const [k, v] of Object.entries(over)) {
-    const b = out[k]
-    // An ARRAY is a leaf: with the build's message precompile (Language Phase 1a) a message can be a compiled
-    // array rather than a string, and merging two of those index by index would corrupt both.
-    out[k] = isBranch(v) && isBranch(b) ? deepMerge(b, v) : v
-  }
-  return out
-}
+export { deepMerge }
 
 const OVERRIDES: Record<AppLocale, Tree | null> = { 'en-GB': null, 'en-US': enUS as Tree }
 const CACHE = new Map<AppLocale, Messages>()

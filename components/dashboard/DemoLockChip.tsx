@@ -10,10 +10,14 @@
 // Sits beside a control's TITLE (not under it): the reader meets the constraint while still working out
 // what the thing is. The caller decides WHEN to render it (demo only) — this is pure presentation.
 
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/demo'
+
 export function DemoLockChip({ className = '' }: { className?: string }) {
+  const t = useT('demo')
   return (
     <span className={`align-middle text-[11px] font-bold text-amber-900 bg-amber-100 border border-amber-300 rounded-md px-1.5 py-0.5 whitespace-nowrap ${className}`}>
-      Not available in demo
+      {t('notAvailable')}
     </span>
   )
 }

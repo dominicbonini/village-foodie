@@ -43,6 +43,8 @@ import { useEffect, useState, useSyncExternalStore } from 'react'
 import { demoWelcomeSeen, markDemoWelcomeSeen, subscribeDemoWelcome } from '@/lib/demo-board-build'
 import { completionLabel } from '@/lib/order-completion-label'
 import type { CompletionPresses } from '@/lib/payments/paid-step'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/demo'
 
 export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
   completionPresses = 'one', takesCash = false }: {
@@ -67,6 +69,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
   // subscription: clearing it re-opens the panel in the same render pass.
   // The server snapshot is `true` (seen) so nothing flashes during hydration; the client's first read
   // decides. See lib/demo-board-build for why the state is session-scoped rather than stored or server-side.
+  const t = useT('demo')
   const seen = useSyncExternalStore(
     subscribeDemoWelcome,
     () => demoWelcomeSeen(token),
@@ -78,10 +81,13 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
   // authorisation, so the first two branches never apply here and the setting decides. The cash split is
   // resolved above the shared helper, exactly as OrderCard resolves it.
   const completionButtonText = takesCash && completionPresses === 'one'
-    ? '💷 Cash & collected'
+    ? `💷 ${t('cashAndCollected')}`
     : completionLabel({ paid: false, heldAuthorisation: false, completionPresses, partPaid: false })
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const [qrFailed, setQrFailed] = useState(false)
+  // The words drawn into the QR's logo plate — a STRING, not the translator, so the effect below re-runs only if
+  // the words themselves change.
+  const logoPlaceholder = t('logoPlaceholder')
 
   // Generated on open, not on mount, so a visitor who already dismissed the popup never pays for the
   // qrcode chunk. Guarded against setting state after dismissal.
@@ -93,7 +99,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
         const { generateQRWithLogo } = await import('@/lib/generateQRCode')
         // A real logo WINS over the placeholder inside generateQRWithLogo (its own `if (logo) … else if
         // (placeholderText)` order — unchanged here). Passing null keeps today's plate exactly.
-        const dataUrl = await generateQRWithLogo(orderUrl, logoUrl, 320, 'Your logo here')
+        const dataUrl = await generateQRWithLogo(orderUrl, logoUrl, 320, logoPlaceholder)
         if (live) setQrDataUrl(dataUrl)
       } catch (err) {
         console.error('[DemoWelcome] QR generation failed:', err)
@@ -101,7 +107,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
       }
     })()
     return () => { live = false }
-  }, [open, orderUrl, qrDataUrl, qrFailed, logoUrl])
+  }, [open, orderUrl, qrDataUrl, qrFailed, logoUrl, logoPlaceholder])
 
   const dismiss = () => {
     markDemoWelcomeSeen(token)
@@ -138,7 +144,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
               demo_sessions.extraction_source === 'template', served in /api/dashboard's `demo` block and
               passed down as isSample. It was previously the ?welcome=sample redirect param, which did not
               survive a reload — a stored column does. */}
-          <h3 className="font-black text-slate-900">{isSample ? 'Here’s a sample demo' : 'Here’s your demo'}</h3>
+          <h3 className="font-black text-slate-900">{t('welcomeTitle', { sample: isSample ? 'yes' : 'no' })}</h3>
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto px-6 space-y-4">
@@ -148,20 +154,17 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
               other people's live orders on their own truck, which is the one misreading this popup exists
               to prevent. One sentence, in both variants, and it is the second thing they read. */}
           <p className="text-sm text-slate-600 text-center">
-            {isSample
-              ? <>This is a <strong>stand-in menu</strong> so you can see how it all works — upload your own any time to make it yours.</>
-              : <>This is your own menu and branding, on a real board.</>}{' '}
-            The orders already on it are examples, so you can see a busy service.
+            {t.rich('welcomeIntro', { sample: isSample ? 'yes' : 'no', b: c => <strong>{c}</strong> })}
           </p>
 
           {/* The two instructions. One action on the board they're looking at, one that closes the loop
               from a real phone. Nothing else competes with them. */}
           <div>
-            <p className="text-sm font-bold text-slate-900 mb-2">Two things to try:</p>
+            <p className="text-sm font-bold text-slate-900 mb-2">{t('twoThings')}</p>
             <ul className="space-y-2">
               <li className="flex gap-2 text-sm text-slate-600">
                 <span className="text-slate-400 shrink-0" aria-hidden>·</span>
-                <span>Hit <strong className="text-slate-900">{completionButtonText}</strong> on an order</span>
+                <span>{t.rich('hitButton', { button: completionButtonText, b: c => <strong className="text-slate-900">{c}</strong> })}</span>
               </li>
               <li className="flex gap-2 text-sm text-slate-600">
                 <span className="text-slate-400 shrink-0" aria-hidden>·</span>
@@ -169,8 +172,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
                   {/* G1: the bullet has to name BOTH routes now. Left as "scan the QR code" it would
                       instruct half the visitors to do the one thing their device cannot do, with the
                       thing it can do sitting unmentioned beside it. */}
-                  Scan the <strong className="text-slate-900">QR code</strong> — or tap the link — and order as
-                  a customer, then watch it land
+                  {t.rich('scanQr', { b: c => <strong className="text-slate-900">{c}</strong> })}
                 </span>
               </li>
             </ul>
@@ -197,7 +199,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
                     // eslint-disable-next-line @next/next/no-img-element -- canvas data: URL, not an optimisable asset
                     <img
                       src={qrDataUrl}
-                      alt="QR code to your customer ordering page"
+                      alt={t('qrAlt')}
                       className="w-40 h-40 rounded-xl border border-slate-200"
                     />
                   ) : (
@@ -206,7 +208,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
                 </div>
               )}
               <div className="min-w-0 flex-1 bg-orange-50 border border-orange-200 rounded-xl px-3 py-3">
-                <p className="text-xs font-bold text-orange-900 mb-2">Or open it on this device</p>
+                <p className="text-xs font-bold text-orange-900 mb-2">{t('openHere')}</p>
                 {/* TAPPABLE. New tab so the demo dashboard they are being oriented on is still behind
                     them when they come back — a same-tab navigation would lose the board mid-tour.
                     `break-all` not `truncate`: the URL is the thing being offered, and a clipped one
@@ -222,8 +224,8 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
                 {orderUrl && (
                   <CopyButton
                     value={orderUrl}
-                    label="Copy link"
-                    describedAs="order link"
+                    label={t('copyLink')}
+                    describedAs={t('copyDescribedAs')}
                     tone="primary"
                     className="mt-2 w-full py-2 text-xs font-bold"
                   />
@@ -235,21 +237,21 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
           {/* No slug at all ⇒ there is no URL to render either way. Unchanged. */}
           {!orderUrl && (
             <div className="bg-orange-50 border border-orange-200 rounded-xl px-3 py-3">
-              <p className="text-xs font-bold text-orange-900 mb-2">Your customer order link</p>
-              <p className="text-xs text-orange-900/70">Your ordering page link is in the menu, top right.</p>
+              <p className="text-xs font-bold text-orange-900 mb-2">{t('noLinkTitle')}</p>
+              <p className="text-xs text-orange-900/70">{t('noLinkBody')}</p>
             </div>
           )}
 
           {/* Scoped reassurance — see the header note. Answers "is this a mock-up?", and stays true. */}
           <p className="text-sm text-slate-500 text-center italic">
-            The ordering and kitchen flow is exactly as it runs live.
+            {t('asLive')}
           </p>
         </div>
 
         <div className="px-6 pt-4 pb-6 shrink-0">
           <button onClick={dismiss}
             className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl text-sm hover:bg-slate-800">
-            Start exploring
+            {t('startExploring')}
           </button>
         </div>
       </div>

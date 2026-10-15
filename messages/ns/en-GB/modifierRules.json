@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Required} other {Optional}}{limit, select, one { · Choose one} upTo { · Choose up to {max}} other {}}",
+  "operator": "{required, select, yes {Required} other {Optional}}{limit, select, one { · Customer chooses one} upTo { · Customer can choose up to {max}} other {}}"
+}

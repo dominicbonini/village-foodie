@@ -28,7 +28,8 @@ import { usePrintWatcher, selectDueToPrint, type PrintAttempt, type PrintAttempt
 import { mapOrderToTicket, reprintFromContext } from '@/lib/printing/mapOrderToTicket'
 import { renderTicket, type PaperWidth } from '@/lib/printing/ticket'
 import { getPrinterTransport, loadPrinterKind, type PrinterStatus, type PrinterKind } from '@/lib/printing/transport'
-import { resolveNetGuard, subscribeNetGuard, NET_GUARD_COPY, type NetGuardState } from '@/lib/printing/networkGuard'
+import { resolveNetGuard, subscribeNetGuard, type NetGuardState } from '@/lib/printing/networkGuard'
+import { printerMessageText } from '@/lib/printing/printerText'
 import { getDeviceId } from '@/lib/native/device'
 import { onAppResume } from '@/lib/native/app'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
@@ -156,7 +157,8 @@ export function usePrinting(args: {
         const s = await getPrinterTransport().status()
         if (!off) setStatus(s)
       } catch {
-        if (!off) setStatus({ connected: false, detail: 'The printer connection could not be checked' })
+        // 🔴 A CODE, NOT WORDS (Language Phase 1b): set inside an effect, turned into words by the card at render.
+        if (!off) setStatus({ connected: false, detail: { code: 'statusUnchecked' } })
       }
     }
     void read()
@@ -215,7 +217,8 @@ export function usePrinting(args: {
       const res = await getPrinterTransport().sendBytes(bytes)
       if (res.ok) return { outcome: 'printed' }
       // 🔴 A REFUSAL IS 'failed' — the transport is certain nothing came out. The stub always lands here.
-      return { outcome: 'failed', error: res.error }
+      // The record's text: a transport's code in the truck's language (a ref, so no translator joins any deps).
+      return { outcome: 'failed', error: res.error === undefined ? undefined : printerMessageText(truckRef.current?.time?.locale, res.error) }
     } catch (e) {
       // 🔴 A THROW IS 'unknown'. The write may have gone out partway; only the transport could know, and
       // it did not answer. The next ticket carries the possible-duplicate banner.
@@ -247,7 +250,7 @@ export function usePrinting(args: {
   // shows, so no new prop reaches the dashboard page. Bluetooth never enters this branch.
   const shownStatus: PrinterStatus =
     kind === 'net' && enabled && ready && netGuard !== 'ok'
-      ? { connected: false, detail: NET_GUARD_COPY[netGuard] }
+      ? { connected: false, detail: { code: 'guard', state: netGuard } }
       : status
 
   return { active, status: shownStatus, waitingCount }

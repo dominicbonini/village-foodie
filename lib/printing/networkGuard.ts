@@ -9,6 +9,7 @@
 // /api/printing. This module is the client: fetch, claim, release, a per-van cached claim for when the
 // route cannot be reached, and ONE pure decision function both usePrinting and the card call.
 import { Preferences } from '@capacitor/preferences'
+import type { PrinterMessage } from './printerText'
 
 export type NetGuardState =
   | 'ok'        // this device holds the van (or just claimed it) — printing may run
@@ -72,14 +73,10 @@ export function decideNetPrinting(input: { deviceId: string; info: NetPrintingRe
   return { state: 'other', shouldClaim: false }
 }
 
-/** What the card shows for each blocked state. ONE line each, and the button text for 'other'. */
-export const NET_GUARD_COPY: Record<Exclude<NetGuardState, 'ok'>, string> = {
-  other: 'Printing is on another device. Move printing to this device?',
-  unknown: "Can't check which device is printing right now.",
-  unbound: "This device isn't set to a van yet, so wired printing isn't available.",
-  pin: "Wired printing isn't available on dashboards with a PIN yet.",
-}
-export const NET_GUARD_MOVE_BUTTON = 'Move printing to this device'
+// What the card shows for each blocked state — ONE line each, and the button text for 'other' — is in
+// messages/en-GB.json `printing.say.guard.<state>` and `printing.say.guardMove` (Language Phase 1b; this file held
+// them as NET_GUARD_COPY / NET_GUARD_MOVE_BUTTON). A state travels as the code `{ code: 'guard', state }`
+// (lib/printing/printerText.ts) and becomes words at render.
 
 // ── THE ROUTE CLIENT ───────────────────────────────────────────────────────────────────────────────
 const q = (o: Record<string, string>) => new URLSearchParams(o).toString()
@@ -106,13 +103,14 @@ export async function fetchNetPrinting(token: string, deviceId: string): Promise
   } catch { return null }
 }
 
-async function post(body: Record<string, unknown>): Promise<{ ok: boolean; error?: string }> {
+/** `error`: the route's own message (a string, shown as it came) or a code of ours (lib/printing/printerText.ts). */
+async function post(body: Record<string, unknown>): Promise<{ ok: boolean; error?: PrinterMessage }> {
   try {
     const res = await fetch('/api/printing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     const j = await res.json().catch(() => ({}))
-    if (!res.ok) return { ok: false, error: j?.error ?? `Request failed (${res.status})` }
+    if (!res.ok) return { ok: false, error: j?.error ?? { code: 'requestFailed', status: String(res.status) } }
     return { ok: true }
-  } catch { return { ok: false, error: 'Could not reach HatchGrab right now.' } }
+  } catch { return { ok: false, error: { code: 'couldNotReachHatchGrab' } } }
 }
 export const claimNetPrinting = (token: string, deviceId: string) => post({ token, device_id: deviceId, action: 'claim' })
 export const releaseNetPrinting = (token: string, deviceId: string) => post({ token, device_id: deviceId, action: 'release' })

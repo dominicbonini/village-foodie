@@ -1,0 +1,67 @@
+{
+  "close": "Close",
+  "cancel": "Cancel",
+  "selectReason": "Select a reason",
+  "reject": {
+    "title": "Reject order #{orderId}?",
+    "reasonLabel": "Reason — required (shown to the customer)",
+    "reason": "{reason, select, sold_out {Sold out of an item} too_busy {Too busy — can't make it in time} closing_soon {Closing soon} other {Other}}",
+    "noteRequired": "Reason — required",
+    "noteOptional": "Additional note — optional",
+    "notePlaceholder": "Add more detail for the customer...",
+    "keep": "Keep order",
+    "confirm": "Reject order"
+  },
+  "eventCancel": {
+    "title": "Cancel this event?",
+    "affected": "{n, plural, one {{count} order} other {{count} orders}} will be cancelled and customers notified.",
+    "reasonLabel": "Reason — optional",
+    "reason": "{reason, select, vehicle_breakdown {Vehicle breakdown} weather {Weather} venue_issue {Venue issue} personal_emergency {Personal emergency} other {Other}}",
+    "messageLabel": "Message to customers — optional",
+    "messagePlaceholder": "e.g. Sorry, our trailer broke down on the way to the venue...",
+    "keep": "Keep event",
+    "cancelling": "Cancelling…",
+    "confirm": "Cancel event"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Restart Event} other {Start Event}}",
+    "changeEvent": "Change event",
+    "changeEventType": "Change event type…",
+    "privateLink": "Private link & QR code",
+    "noteLabel": "Note for customers",
+    "notePlaceholder": "e.g. Park in the main car park, look for the orange gazebo",
+    "noteHint": "Shown to customers on the order page below your event details.",
+    "saveNote": "Save note",
+    "resume": "Resume orders",
+    "pause": "Pause orders",
+    "changeFinishTime": "Change event finish time",
+    "finishEvent": "Finish event",
+    "cancelEvent": "Cancel event"
+  },
+  "finish": {
+    "confirmTitle": "Change finish time?",
+    "willFinish": "This event will finish at <b>{selected}</b>{hasCurrent, select, yes { instead of <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} order is} other {{count} orders are}} due after {selected}.</b> {n, plural, one {It stays} other {They stay}} on the board and still {n, plural, one {needs} other {need}} making. Changing the finish time only stops NEW orders being placed for later times.",
+    "saving": "Saving...",
+    "confirm": "Change finish time",
+    "keepCurrent": "Keep {current}",
+    "keepAsIs": "Keep as is",
+    "title": "Change finish time",
+    "currentlySet": "This event is currently set to finish at <b>{current}</b>.",
+    "noFinishTime": "This event has no finish time set.",
+    "noTimesLeft": "There are no times left today. Use Finish event instead.",
+    "newFinishTime": "New finish time",
+    "optionCurrent": "{time} (current)",
+    "earlier": "That is earlier than the current finish time. Customers will not be able to order for times after it.",
+    "review": "Review change"
+  },
+  "extraWait": {
+    "title": "Add extra wait",
+    "hint": "Adds to the collection time quoted on new orders. It does not change the event finish time.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Reconnect to load",
+    "selected": "Selected"
+  }
+}

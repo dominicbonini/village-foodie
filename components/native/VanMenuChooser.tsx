@@ -10,7 +10,9 @@
 // single-van truck (nothing to switch to). A staff-read-only restriction would need server-side enforcement
 // (a role / truck_user_vans check added to bind-device) and is intentionally NOT faked in the UI.
 import { useCallback, useEffect, useState } from 'react'
-import { isNativeApp, fetchDeviceConfig, saveDeviceConfig, saveFailureMessage, type VanRef } from '@/lib/native/device'
+import { isNativeApp, fetchDeviceConfig, saveDeviceConfig, saveFailureKey, type VanRef } from '@/lib/native/device'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/nativeShell'
 
 export function VanMenuChooser({ token }: { token: string }) {
   const [vans, setVans] = useState<VanRef[]>([])
@@ -22,6 +24,7 @@ export function VanMenuChooser({ token }: { token: string }) {
   // `switching` went false, and the <select> snapped back to `vanId` with nothing said. Same
   // failure/empty distinction the load path above already draws — now applied to the WRITE.
   const [switchError, setSwitchError] = useState<string | null>(null)
+  const t = useT('nativeShell')
 
   const load = useCallback(async () => {
     if (!isNativeApp()) return
@@ -44,8 +47,8 @@ export function VanMenuChooser({ token }: { token: string }) {
     return (
       <div className="px-4 py-2 border-b border-slate-100">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm text-slate-700">Van</span>
-          <button type="button" onClick={() => void load()} className="text-sm font-semibold text-orange-600">Couldn&apos;t load · Retry</button>
+          <span className="text-sm text-slate-700">{t('van.label')}</span>
+          <button type="button" onClick={() => void load()} className="text-sm font-semibold text-orange-600">{t('van.loadRetry')}</button>
         </div>
       </div>
     )
@@ -64,18 +67,18 @@ export function VanMenuChooser({ token }: { token: string }) {
     // what keeps the previous van selected — the device is still bound to that van, and showing the
     // one the operator picked would claim a switch that did not happen.
     setSwitching(false)
-    if (!saved.ok) setSwitchError(saveFailureMessage(saved))
+    if (!saved.ok) setSwitchError(t(saveFailureKey(saved)))
   }
 
   return (
     <div className="px-4 py-2 border-b border-slate-100">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm text-slate-700">Van</span>
+        <span className="text-sm text-slate-700">{t('van.label')}</span>
         {vans.length > 1 ? (
           // Multi-van → switchable (any truck member may switch — see permission note above).
           <select value={vanId ?? ''} disabled={switching} onChange={e => void onSwitch(e.target.value)}
             className="border border-slate-300 rounded-lg px-2 py-1 text-sm max-w-[9rem] disabled:opacity-50">
-            {vanId == null && <option value="">Select…</option>}
+            {vanId == null && <option value="">{t('van.select')}</option>}
             {vans.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
           </select>
         ) : (

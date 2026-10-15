@@ -26,6 +26,9 @@
 // ⚠️ The grid it opens may be entirely red (every buzzer out). That is a valid state, not a dead end —
 // taking one from another order is a legitimate move and the grid stays live. See BuzzerGrid.
 
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/buzzer'
+
 export interface BuzzerLoss {
   order_key: string
   /** Display number ("12"), NOT order_key. Human-facing. */
@@ -47,6 +50,7 @@ export function BuzzerLostBanner({
   onDismiss: (orderKey: string) => void
   onAssign: (loss: BuzzerLoss) => void
 }) {
+  const t = useT('buzzer')
   const visible = (losses || []).filter(l => l && !dismissedKeys.has(l.order_key))
   if (visible.length === 0) return null
 
@@ -62,11 +66,10 @@ export function BuzzerLostBanner({
         >
           <div className="flex flex-col gap-0.5">
             <span className="font-bold">
-              ⚠ Order #{l.id} doesn&apos;t have a buzzer
+              ⚠ {t('lostTitle', { id: l.id })}
             </span>
             <span className="text-xs text-red-50 leading-snug">
-              {l.customer_name ? `${l.customer_name} — ` : ''}
-              another order claimed the same buzzer while you were offline. Give them a different one.
+              {t('lostBody', { hasName: l.customer_name ? 'yes' : 'no', name: l.customer_name || '' })}
             </span>
           </div>
           {/* min-h-[44px] on both: this is tapped mid-service on an iPad, the same floor the grid and
@@ -77,14 +80,14 @@ export function BuzzerLostBanner({
               onClick={() => onDismiss(l.order_key)}
               className="min-h-[44px] underline font-bold px-1"
             >
-              Dismiss
+              {t('dismiss')}
             </button>
             <button
               type="button"
               onClick={() => onAssign(l)}
               className="min-h-[44px] bg-white text-red-700 font-bold rounded-lg px-4 text-sm"
             >
-              Assign
+              {t('assign')}
             </button>
           </div>
         </div>

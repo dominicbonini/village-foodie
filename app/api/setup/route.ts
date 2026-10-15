@@ -11,7 +11,8 @@ import { DEMO_PREFIX } from '@/lib/demo'
 import { linkDiscoveryRowForSelfServe } from '@/lib/self-serve-discovery-link'
 // I4: the SAME phone check Manage Settings and the signup modal use (lib/phone.ts, Phase 2C) — one rule,
 // so a number the client accepts can never be rejected here.
-import { isPlausiblePhone, phoneErrorMessage } from '@/lib/phone'
+import { isPlausiblePhone } from '@/lib/phone'
+import { phoneErrorMessage } from '@/lib/phone-message'
 import { phoneCopyOf } from '@/lib/phone-copy'
 import { resolveOperatorTruck } from '@/lib/resolve-operator-truck'
 import { getCountrySettings } from '@/lib/country-settings'

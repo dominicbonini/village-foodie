@@ -1549,13 +1549,13 @@ export async function POST(req: NextRequest) {
             const invalidTokens: string[] = []
             if (iosTokens.length) {
               try {
-                const res = await sendOrderPendingPush(iosTokens, { orderKey: order?.order_key ?? '', orderNumber: orderId, truckName: truck.name })
+                const res = await sendOrderPendingPush(iosTokens, { orderKey: order?.order_key ?? '', orderNumber: orderId, truckName: truck.name }, locale)   // the truck's language (Phase 1b)
                 invalidTokens.push(...res.invalidTokens)
               } catch (iosErr) { console.error('APNs push failed (non-fatal, Android unaffected):', iosErr) }
             }
             if (androidTokens.length) {
               try {
-                const res = await sendOrderPendingPushFcm(androidTokens, { orderKey: order?.order_key ?? '', orderNumber: orderId, truckName: truck.name })
+                const res = await sendOrderPendingPushFcm(androidTokens, { orderKey: order?.order_key ?? '', orderNumber: orderId, truckName: truck.name }, locale)   // the truck's language (Phase 1b)
                 invalidTokens.push(...res.invalidTokens)
               } catch (fcmErr) { console.error('FCM push failed (non-fatal, iOS unaffected):', fcmErr) }
             }

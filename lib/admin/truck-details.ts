@@ -371,8 +371,19 @@ export type MatchKey = 'facebook' | 'website' | 'phone' | 'email' | 'name'
 
 export type MatchResult =
   | { kind: 'definite'; row: MatchRow; on: MatchKey; why: string }
-  | { kind: 'needs_a_look'; candidates: MatchRow[]; why: string }
+  /** `ask: 'phone_only'` — the number matched one prospect and the name did not (see `matchProspect`). */
+  | { kind: 'needs_a_look'; candidates: MatchRow[]; why: string; ask?: 'phone_only' }
   | { kind: 'none'; why: string }
+
+/**
+ * The question a phone-only match asks. One owner for the words, so the row summary, the log line and the
+ * harness all read the same sentence.
+ */
+export function phoneOnlyQuestion(prospectName: string | null, screenshotName: string | null): string {
+  const p = prospectName?.trim() || 'an unnamed prospect'
+  const said = screenshotName?.trim() ? `The screenshot says ${screenshotName.trim()}.` : 'The screenshot shows no name.'
+  return `This number belongs to ${p}. ${said} Is this ${p}, or a different truck?`
+}
 
 /** Case-insensitive comparison of two canonical Facebook URLs. See `canonicalFacebookUrl`. */
 export function sameFacebookPage(a: string | null | undefined, b: string | null | undefined): boolean {
@@ -394,6 +405,14 @@ export function sameFacebookPage(a: string | null | undefined, b: string | null 
  *
  * ⚠️ INSTAGRAM IS NOT A MATCH KEY. The brief lists five keys and Instagram is not among them; it is
  * extracted and filled, never used to assert identity.
+ *
+ * 🔴 A PHONE NUMBER ALONE NEVER DECIDES (15 October 2026, docs/outreach-screenshot-match-report.md). One
+ * owner can run two trucks on one mobile: Smash and Grab's Facebook page matched Tacoman on the shared
+ * number and its email and Instagram were written onto Tacoman. So when the ONLY key that hit a prospect
+ * is the phone, the names must agree too (`normalizeVenue`, the name key's own normaliser). If they do not
+ * — or the screenshot shows no name — the row is "Needs a look" with `ask: 'phone_only'`, and nothing is
+ * written until the admin says which truck it is. A Facebook or website hit is recorded before the phone
+ * is looked at (`continue`), so it still decides on its own; a name-and-phone match behaves as before.
  */
 export function matchProspect(d: TruckDetails, rows: MatchRow[], country: PhoneCountry = MARKETING_COUNTRY): MatchResult {
   // 🔴 PHASE 2D-2: the caller passes only the prospects whose truck is in `country` (the route filters by
@@ -424,6 +443,12 @@ export function matchProspect(d: TruckDetails, rows: MatchRow[], country: PhoneC
   }
   if (hits.length === 1 || distinct.length === 1) {
     const h = hits[0]
+    if (h.on === 'phone') {
+      const dn = normalizeVenue(d.name ?? ''), rn = normalizeVenue(h.row.name ?? '')
+      if (!dn || dn !== rn) {
+        return { kind: 'needs_a_look', candidates: [h.row], why: phoneOnlyQuestion(h.row.name, d.name), ask: 'phone_only' }
+      }
+    }
     return { kind: 'definite', row: h.row, on: h.on, why: `matched on ${KEY_WORDS[h.on]}` }
   }
 
@@ -509,6 +534,52 @@ export function planFill(d: TruckDetails, truck: Record<string, unknown>): FillP
 
 export function planIsEmpty(p: FillPlan): boolean {
   return Object.keys(p.fills).length === 0 && p.areaNote === null
+}
+
+/* ── 🔴 A DIFFERENT SAVED EMAIL OR SOCIAL LINK IS ASKED ABOUT, NEVER REPLACED ON ITS OWN (15 Oct 2026) ──
+ * `planFill` still fills EMPTY only and keeps every saved value. For these three columns the kept conflict
+ * is now shown to the admin as old → new with a choice; only "Replace" writes, through `planReplace`.
+ * Mobile, phone and website stay as they were: kept, and reported in the summary. */
+export const CONFIRM_FIELDS: readonly Fillable[] = ['contact_email', 'facebook_url', 'instagram_url']
+export type Conflict = FillPlan['kept'][number]
+
+/** The kept conflicts the admin is asked about. */
+export function conflictsToConfirm(plan: FillPlan): Conflict[] {
+  return plan.kept.filter(k => CONFIRM_FIELDS.includes(k.field))
+}
+
+/** "Email: kept@a.com → new@b.com" — the line the row shows and the history repeats. */
+export function conflictLine(c: Conflict): string {
+  const word = FIELD_WORDS[c.field]
+  return `${word.charAt(0).toUpperCase()}${word.slice(1)}: ${c.saved} → ${c.found}`
+}
+
+/**
+ * What "Replace" may write. 🔴 THE CONFLICT IS RE-DERIVED HERE, NOT TRUSTED FROM THE BROWSER: `fresh` is the
+ * re-normalised screenshot and `saved` is the truck as it stands now. A field is replaced only if it is one
+ * of CONFIRM_FIELDS, the admin asked for it, it is STILL in conflict, and the saved value is still the one
+ * the admin was shown — anything that changed in between is refused, not overwritten.
+ */
+export function planReplace(
+  asked: { field: string; saved: string }[], saved: Record<string, unknown>, fresh: TruckDetails,
+): { patch: Partial<Record<Fillable, string>>; changes: Conflict[]; refused: string[] } {
+  const current = conflictsToConfirm(planFill(fresh, saved))
+  const patch: Partial<Record<Fillable, string>> = {}
+  const changes: Conflict[] = []
+  const refused: string[] = []
+  for (const a of asked) {
+    const c = current.find(k => k.field === a.field)
+    if (!c) { refused.push(`${a.field}: nothing to replace`); continue }
+    if (c.saved.toLowerCase() !== String(a.saved ?? '').trim().toLowerCase()) { refused.push(`${FIELD_WORDS[c.field]} changed since — kept`); continue }
+    patch[c.field] = c.found
+    changes.push(c)
+  }
+  return { patch, changes, refused }
+}
+
+/** "Replaced email kept@a.com → new@b.com" */
+export function replacedSummary(changes: Conflict[]): string {
+  return `Replaced ${changes.map(c => `${FIELD_WORDS[c.field]} ${c.saved} → ${c.found}`).join(', ')}`
 }
 
 /* ─────────────────────────────── 7. THE HIDDEN NEW TRUCK ─────────────────────────────── */

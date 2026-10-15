@@ -6,6 +6,8 @@
 // real token. Build-complete here; smoke-test on device in the paid-account phase.
 import { Capacitor } from '@capacitor/core'
 import { saveDeviceConfig } from './device'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/nativeShell'
 
 // Module-level, i.e. one per JS context (= one per page load in the WebView). registerForPush is called
 // from THREE sites in components/native/OperatorDeviceConfig.tsx (:43 already-configured, :49 single-van
@@ -89,7 +91,8 @@ export function releasePushHandlers(full = false): void {
  * van_devices row (via /api/native/bind-device). Also wires the tap handler → deep-link to the pending
  * order. Safe no-op on web. Call once the device is bound to a van (Package 3).
  */
-export async function registerForPush(token: string, onOpenOrder?: (orderKey: string) => void): Promise<void> {
+// `locale` (optional, Language Phase 1b): the words of the Android channel; none ⇒ en-GB.
+export async function registerForPush(token: string, onOpenOrder?: (orderKey: string) => void, locale?: string | null): Promise<void> {
   // 🔴 SET SYNCHRONOUSLY, BEFORE ANY AWAIT, so the attached listener is pointing at the newest handler
   // even if the attach below is already in flight or long finished.
   currentOnOpenOrder = onOpenOrder
@@ -179,8 +182,8 @@ export async function registerForPush(token: string, onOpenOrder?: (orderKey: st
       try {
         await PushNotifications.createChannel({
           id: ORDER_CHANNEL_ID,
-          name: 'New orders',
-          description: 'Alerts when an order needs confirming.',
+          name: translatorFor(locale, 'nativeShell')('channel.ordersName'),
+          description: translatorFor(locale, 'nativeShell')('channel.ordersDescription'),
           importance: 5,
           visibility: 1,
           sound: 'default',

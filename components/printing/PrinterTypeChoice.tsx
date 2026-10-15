@@ -22,18 +22,21 @@
 // appears. A gate buried as one `&&` inside four hundred lines of card JSX cannot be tested that way,
 // and an untestable gate protecting live trucks is not a gate. DO NOT INLINE IT BACK INTO THE CARD.
 import { isNetPrinterAvailable, type PrinterKind } from '@/lib/printing/transport'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/printing'
 
 export function PrinterTypeChoice({ kind, onChoose }: {
   kind: PrinterKind
   /** Writes the device's kind and re-points the transport. Never called when this renders null. */
   onChoose: (k: PrinterKind) => void | Promise<void>
 }) {
+  const t = useT('printing.card')
   if (!isNetPrinterAvailable()) return null
   return (
     <div className="flex items-center justify-between gap-3 text-sm">
-      <span className="text-slate-700">Printer type</span>
+      <span className="text-slate-700">{t('printerType')}</span>
       <div className="flex gap-1.5">
-        {([['ble', 'Bluetooth'], ['net', 'Wired']] as [PrinterKind, string][]).map(([k, label]) => (
+        {([['ble', t('typeBluetooth')], ['net', t('typeWired')]] as [PrinterKind, string][]).map(([k, label]) => (
           <button key={k} onClick={() => { void onChoose(k) }}
             className={`px-3 py-1 rounded-lg text-sm font-bold border ${kind === k ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white border-slate-300 text-slate-600'}`}>{label}</button>
         ))}

@@ -50,6 +50,8 @@ import ScreenshotCountryPicker, { useScreenshotCountry, countryWithArticle, type
 
 type Dropped = { event: Record<string, string>; reason: string }
 type Candidate = { prospect_id: string; truck_id: string; name: string | null }
+/** A saved email or social link that differs from the screenshot: kept, and shown old → new to confirm. */
+type Conflict = { field: string; saved: string; found: string; line: string }
 type FileResult = {
   fileName: string
   kind: string | null
@@ -59,6 +61,9 @@ type FileResult = {
   written: number | null; bridged: number | null
   prospectId: string | null; truckId: string | null
   candidates: Candidate[] | null
+  /** 'phone_only': the number matched one prospect and the name did not — the row asks which truck it is. */
+  ask?: 'phone_only' | null
+  conflicts?: Conflict[]
   details: TruckDetails | null
   error: string | null
   warnings: string[]
@@ -78,6 +83,8 @@ type Item = {
   error: string | null
   /** Set once a "Needs a look" row has been decided, so its buttons go away. */
   decided: string | null
+  /** Per old → new line: what the admin chose ("Kept saved", the replace summary, or 'working'). */
+  resolved?: Record<string, string>
   /** 🔴 The country chosen WHEN THIS FILE WAS QUEUED — changing the picker mid-batch does not relabel it. */
   country: string
 }
@@ -266,13 +273,36 @@ export default function ScreenshotsPanel() {
       const data = await res.json().catch(() => ({}))
       setItems(prev => prev.map(i => i.id === item.id
         ? res.ok
-          ? { ...i, decided: data?.summary ?? 'done', result: i.result ? { ...i.result, outcome: data?.outcome ?? i.result.outcome, summary: data?.summary ?? i.result.summary, prospectId: data?.prospectId ?? null } : i.result }
+          ? { ...i, decided: data?.summary ?? 'done', result: i.result ? { ...i.result, outcome: data?.outcome ?? i.result.outcome, summary: data?.summary ?? i.result.summary, prospectId: data?.prospectId ?? null, conflicts: Array.isArray(data?.conflicts) ? data.conflicts : [] } : i.result }
           : { ...i, decided: null, error: data?.error ?? `Request failed (${res.status})` }
         : i))
       void loadLog()
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed'
       setItems(prev => prev.map(i => i.id === item.id ? { ...i, decided: null, error: msg } : i))
+    }
+  }, [loadLog, pick])
+
+  // ── An old → new line: "Replace" writes that one field (the server re-checks it is still in conflict with
+  // the value shown); "Keep saved" writes nothing.
+  const resolveConflict = useCallback(async (item: Item, c: Conflict, replace: boolean) => {
+    const mark = (line: string) => setItems(prev => prev.map(i => i.id === item.id ? { ...i, resolved: { ...(i.resolved ?? {}), [c.field]: line } } : i))
+    pick.touch()
+    if (!replace) { mark('Kept saved'); return }
+    const details = item.result?.details, prospectId = item.result?.prospectId
+    if (!details || !prospectId) return
+    mark('working')
+    try {
+      const res = await fetch('/api/admin/screenshot-events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
+        body: JSON.stringify({ action: 'replace_fields', fields: [{ field: c.field, saved: c.saved }], details, prospectId, fileName: item.name, fileSize: item.file.size, country: item.country }),
+      })
+      const data = await res.json().catch(() => ({}))
+      mark(res.ok ? (data?.summary ?? 'Replaced') : (data?.error ?? `Request failed (${res.status})`))
+      void loadLog()
+    } catch (e) {
+      mark(e instanceof Error ? e.message : 'Failed')
     }
   }, [loadLog, pick])
 
@@ -301,6 +331,10 @@ export default function ScreenshotsPanel() {
       setItems(prev => prev.map(i => i.id === item.id ? { ...i, decided: null, error: msg } : i))
     }
   }, [loadLog, pick])
+  const cancelAsk = useCallback((item: Item) => {
+    pick.touch()
+    setItems(prev => prev.map(i => i.id === item.id ? { ...i, decided: 'Cancelled — nothing added' } : i))
+  }, [pick])
   const dismissHeld = useCallback((item: Item) => {
     pick.touch()
     setItems(prev => prev.map(i => i.id === item.id ? { ...i, decided: 'Dismissed — nothing added' } : i))
@@ -503,7 +537,7 @@ export default function ScreenshotsPanel() {
               </div>
 
               {/* 🔴 THE TWO ONE-CLICK ACTIONS. Only while this session still holds the details. */}
-              {outcome === 'needs_a_look' && !item.decided && (
+              {outcome === 'needs_a_look' && r?.ask !== 'phone_only' && !item.decided && (
                 <div className="mt-2 flex flex-wrap items-center gap-2 pl-14">
                   {(r?.candidates ?? []).map(c => (
                     <button
@@ -516,6 +550,53 @@ export default function ScreenshotsPanel() {
                     onClick={() => decide(item, 'add_as_new')}
                     className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-slate-500"
                   >Add as new</button>
+                </div>
+              )}
+              {/* 🔴 A PHONE-ONLY MATCH ASKS (15 Oct 2026): one owner can run two trucks on one number. Nothing has
+                  been written; Cancel writes nothing either. */}
+              {outcome === 'needs_a_look' && r?.ask === 'phone_only' && !item.decided && (
+                <div className="mt-2 pl-14" data-ask="phone_only">
+                  <p className="text-sm text-amber-900">{r.summary}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {(r.candidates ?? []).slice(0, 1).map(c => (
+                      <button
+                        key={c.prospect_id}
+                        onClick={() => decide(item, 'same_truck', c.prospect_id)}
+                        className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-700"
+                      >Same truck — update {c.name ?? 'unnamed'}</button>
+                    ))}
+                    <button
+                      onClick={() => decide(item, 'add_as_new')}
+                      className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-slate-500"
+                    >Different truck — add as new</button>
+                    <button onClick={() => cancelAsk(item)}
+                      className="px-2 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800"
+                    >Cancel</button>
+                  </div>
+                </div>
+              )}
+              {/* 🔴 OLD → NEW: a saved email or social link that differs is KEPT, and only "Replace" changes it. */}
+              {r?.prospectId && (r.conflicts?.length ?? 0) > 0 && item.decided !== 'working' && (
+                <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-2 ml-14" data-conflicts>
+                  <p className="text-xs font-bold text-slate-700">Saved details differ from this screenshot — nothing was replaced:</p>
+                  {r.conflicts!.map(c => {
+                    const done = item.resolved?.[c.field]
+                    return (
+                      <div key={c.field} className="mt-1 flex flex-wrap items-center gap-2">
+                        <span className="min-w-0 break-all text-sm text-slate-700">{c.line}</span>
+                        {done === 'working' ? <span className="text-xs text-slate-500">Saving…</span>
+                          : done ? <span className="text-xs text-slate-500">{done}</span>
+                          : <>
+                              <button onClick={() => resolveConflict(item, c, true)}
+                                className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-700"
+                              >Replace</button>
+                              <button onClick={() => resolveConflict(item, c, false)}
+                                className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-slate-500"
+                              >Keep saved</button>
+                            </>}
+                      </div>
+                    )
+                  })}
                 </div>
               )}
               {/* 🔴 "CHECK COUNTRY" (Phase 2D-2): nothing is written until Add or Keep is pressed. */}

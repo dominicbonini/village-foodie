@@ -51,7 +51,8 @@ import { CuisinePicker, resolveCuisines, type CuisineSlot } from '@/components/s
 // /api/setup runs server-side — one rule, three surfaces, so a number accepted here cannot be rejected
 // there. Phase 2C: lib/phone.ts, in the country of the truck this demo runs on (GB, as every demo and
 // every signup is until the signup country question exists — /api/setup checks in that same country).
-import { isPlausiblePhone, phoneErrorMessage, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
+import { isPlausiblePhone, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
+import { phoneErrorMessage } from '@/lib/phone-message'
 // Phase 2D-1: the wizard's FIRST step, "Where's your truck based?" — shared with /setup.
 import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
 import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'

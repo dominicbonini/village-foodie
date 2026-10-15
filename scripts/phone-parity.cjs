@@ -217,13 +217,15 @@ async function checkAfter() {
   if (seeds.US?.short_name !== 'US' || seeds.US?.phone_example !== '(201) 555-0123') fails.push(`the US seed is not US / (201) 555-0123: ${JSON.stringify(seeds.US)}`)
   const GB = copyFor('GB', seeds), US = copyFor('US', seeds)
   const L = await kit.bundle('libs-after', [
-    `export * as P from '@/lib/phone'`, `export { phoneWhatsApp } from '@/lib/whatsapp-hint'`,
+    `export * as PB from '@/lib/phone'`, fs.existsSync(path.join(REPO, 'lib/phone-message.ts')) ? `export * as PM from '@/lib/phone-message'` : '', `export { phoneWhatsApp } from '@/lib/whatsapp-hint'`,
     `export { normaliseUkPhone, phoneDigits } from '@/lib/admin/truck-details'`,
   ].join('\n'))
-  const newWebhook = d => { const digits = d.replace(/\D/g, ''); return [`+${digits}`, digits, L.P.nationalDigitsOfInternational(digits)].filter(v => v !== null) }
+  // Phase 1b moved phoneErrorMessage to lib/phone-message.ts (lib/phone.ts is imported by pages that only check a number).
+  const PHN = { ...L.PB, ...(L.PM || {}) }
+  const newWebhook = d => { const digits = d.replace(/\D/g, ''); return [`+${digits}`, digits, PHN.nationalDigitsOfInternational(digits)].filter(v => v !== null) }
   // ── 1 · the corpus
   for (const r of B.rows) {
-    const valid = L.P.isPlausiblePhone(r.input, 'GB', 'length')
+    const valid = PHN.isPlausiblePhone(r.input, 'GB', 'length')
     if (valid !== r.valid) {
       const id = classify(r.valid ? REFUSED : ACCEPTED, r)
       if (!id) fails.push(`${r.valid ? 'newly REFUSED' : 'newly ACCEPTED'} and no allowance names it: ${JSON.stringify(r.input)} (${r.label})`)
@@ -233,7 +235,7 @@ async function checkAfter() {
     if (!(valid && r.valid)) continue
     // stored form: every surface stores the raw input — nothing to compare but that the module never rewrites it
     // link forms (email, hint, webhook) — byte-identical unless a named class
-    const link = L.P.phoneLinkDigits(r.input, 'GB')
+    const link = PHN.phoneLinkDigits(r.input, 'GB')
     if (`https://wa.me/${link}` !== r.emailLink) { const id = classify(LINK, r); if (!id) fails.push(`email link moved: ${JSON.stringify(r.input)} ${r.emailLink} → ${link}`); else note(id, r.input) }
     const hint = L.phoneWhatsApp(r.input, 'Cash, Card, WhatsApp', 'GB')
     if (JSON.stringify(hint) !== JSON.stringify(r.hint)) {
@@ -260,7 +262,7 @@ async function checkAfter() {
   }
   // ── 2 · the copy: GB reads exactly as each surface did
   const OLD = { mobile: 'Please enter a valid UK mobile (e.g. 07700 900123)', phone: 'Please enter a valid UK phone (e.g. 07700 900123)', phone_number: 'Enter a valid UK phone number (e.g. 07700 900123).' }
-  for (const [k, v] of Object.entries(OLD)) if (L.P.phoneErrorMessage(k, GB) !== v) fails.push(`GB ${k} message: "${L.P.phoneErrorMessage(k, GB)}" ≠ today's "${v}"`)
+  for (const [k, v] of Object.entries(OLD)) if (PHN.phoneErrorMessage(k, GB) !== v) fails.push(`GB ${k} message: "${PHN.phoneErrorMessage(k, GB)}" ≠ today's "${v}"`)
   for (const [f, re] of [
     // Language Phase 1a: the order page passes its language, and the placeholder's "e.g. " is a message around the
     // same example — still the truck's country's (docs/language-phase-1a-report.md).
@@ -290,13 +292,13 @@ async function checkAfter() {
   // ── 4 · a US truck
   const us = [], usOk = (label, ok, d) => { if (!ok) fails.push(`US: ${label}${d === undefined ? '' : ' — ' + JSON.stringify(d)}`); else us.push(label) }
   const usForms = ['(201) 555-0123', '201-555-0123', '+1 201 555 0123', '2015550123']
-  usOk('the four ways of writing (201) 555-0123 are accepted', usForms.every(p => L.P.isPlausiblePhone(p, 'US', 'length')), usForms.map(p => L.P.isPlausiblePhone(p, 'US', 'length')))
-  usOk('…and give one link form, 12015550123', usForms.every(p => L.P.phoneLinkDigits(p, 'US') === '12015550123'), usForms.map(p => L.P.phoneLinkDigits(p, 'US')))
-  usOk('a UK number with +44 is accepted on a US truck (a visitor)', L.P.isPlausiblePhone('+44 7380 736226', 'US', 'length') && L.P.phoneLinkDigits('+44 7380 736226', 'US') === '447380736226')
+  usOk('the four ways of writing (201) 555-0123 are accepted', usForms.every(p => PHN.isPlausiblePhone(p, 'US', 'length')), usForms.map(p => PHN.isPlausiblePhone(p, 'US', 'length')))
+  usOk('…and give one link form, 12015550123', usForms.every(p => PHN.phoneLinkDigits(p, 'US') === '12015550123'), usForms.map(p => PHN.phoneLinkDigits(p, 'US')))
+  usOk('a UK number with +44 is accepted on a US truck (a visitor)', PHN.isPlausiblePhone('+44 7380 736226', 'US', 'length') && PHN.phoneLinkDigits('+44 7380 736226', 'US') === '447380736226')
   const bad = ['555-0123', '12345', '201 555 01234 5', '07700 900123']
-  usOk('clearly invalid US numbers are refused', bad.every(p => !L.P.isPlausiblePhone(p, 'US', 'length')), bad.map(p => L.P.isPlausiblePhone(p, 'US', 'length')))
-  usOk('the US message', L.P.phoneErrorMessage('mobile', US) === 'Please enter a valid US mobile (e.g. (201) 555-0123)', L.P.phoneErrorMessage('mobile', US))
-  usOk('the US example passes its own check', L.P.isPlausiblePhone(US.phone_example, 'US', 'length'))
+  usOk('clearly invalid US numbers are refused', bad.every(p => !PHN.isPlausiblePhone(p, 'US', 'length')), bad.map(p => PHN.isPlausiblePhone(p, 'US', 'length')))
+  usOk('the US message', PHN.phoneErrorMessage('mobile', US) === 'Please enter a valid US mobile (e.g. (201) 555-0123)', PHN.phoneErrorMessage('mobile', US))
+  usOk('the US example passes its own check', PHN.isPlausiblePhone(US.phone_example, 'US', 'length'))
   const usTruck = { ...opTruck, country: 'US', phone: US, money: { currency: 'USD', locale: 'en-US' } }
   const usScreens = await screens(usTruck, { phoneCountry: 'US', money: { currency: 'USD', locale: 'en-US' } }, { phoneCopy: US }, ['555-0123', '(201) 555-0123', '+44 7380 736226'], ['(201) 555-0123'])
   usOk('the order form refuses 555-0123 with the US message', usScreens['order|555-0123'].field.includes('Please enter a valid US mobile (e.g. (201) 555-0123)'), usScreens['order|555-0123'].field)
@@ -307,12 +309,12 @@ async function checkAfter() {
   // ── 5 · the per-country check setting (20261010_12): 'length' is everything above; 'strict' and 'off'
   const modes = [], modeOk = (label, ok, d) => { if (!ok) fails.push(`phone_check: ${label}${d === undefined ? '' : ' — ' + JSON.stringify(d)}`); else modes.push(label) }
   modeOk("the seeded default is 'length'", GB.phoneCheck === 'length' && US.phoneCheck === 'length', [GB.phoneCheck, US.phoneCheck])
-  modeOk("'strict' refuses 07700 900123 for GB (a drama number, not a real one)", !L.P.isPlausiblePhone('07700 900123', 'GB', 'strict'))
-  modeOk("'strict' accepts 07380 736226 for GB", L.P.isPlausiblePhone('07380 736226', 'GB', 'strict'))
-  modeOk("'strict' checks a + visitor in its own country: +1 201 555 0123 on a GB truck", L.P.isPlausiblePhone('+1 201 555 0123', 'GB', 'strict') && !L.P.isPlausiblePhone('+1 201 555 01', 'GB', 'strict'))
-  modeOk("'off' accepts \"abc\"", L.P.isPlausiblePhone('abc', 'GB', 'off'))
-  modeOk("'off' still refuses empty (the caller decides optional)", !L.P.isPlausiblePhone('', 'GB', 'off') && !L.P.isPlausiblePhone('   ', 'GB', 'off'))
-  modeOk("links are unchanged by the mode: an unparseable number simply has no link", L.P.phoneLinkDigits('abc', 'GB') === null && L.P.phoneLinkDigits('07380 736226', 'GB') === '447380736226')
+  modeOk("'strict' refuses 07700 900123 for GB (a drama number, not a real one)", !PHN.isPlausiblePhone('07700 900123', 'GB', 'strict'))
+  modeOk("'strict' accepts 07380 736226 for GB", PHN.isPlausiblePhone('07380 736226', 'GB', 'strict'))
+  modeOk("'strict' checks a + visitor in its own country: +1 201 555 0123 on a GB truck", PHN.isPlausiblePhone('+1 201 555 0123', 'GB', 'strict') && !PHN.isPlausiblePhone('+1 201 555 01', 'GB', 'strict'))
+  modeOk("'off' accepts \"abc\"", PHN.isPlausiblePhone('abc', 'GB', 'off'))
+  modeOk("'off' still refuses empty (the caller decides optional)", !PHN.isPlausiblePhone('', 'GB', 'off') && !PHN.isPlausiblePhone('   ', 'GB', 'off'))
+  modeOk("links are unchanged by the mode: an unparseable number simply has no link", PHN.phoneLinkDigits('abc', 'GB') === null && PHN.phoneLinkDigits('07380 736226', 'GB') === '447380736226')
   for (const [f, re] of [['app/trucks/[slug]/order/page.tsx', /isPlausiblePhone\(phone, pagePhone\.phoneCountry, pagePhone\.phoneCheck\)/],
     ['app/manage/[token]/page.tsx', /isPlausiblePhone\(form\.contact_phone \|\| '', phoneCopy\.phoneCountry, phoneCopy\.phoneCheck\)/],
     ['app/setup/page.tsx', /isPlausiblePhone\(contactPhone, phoneCopy\.phoneCountry, phoneCopy\.phoneCheck\)/],

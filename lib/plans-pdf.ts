@@ -32,6 +32,7 @@ import {
   TABLE_PLANS, type TablePlan, PLAN_SUB, planPriceLabels,
   trialFeatureValue, visibleRows, rowName, rowDetail, cellLabel,
 } from '@/lib/landing-table'
+import '@/lib/i18n/catalog/plansPdf'
 
 // ── 🔴 THE PRICE POLICY. ONE CONSTANT, THREE MODES, AND IT IS A DECISION NOT A DEFAULT. ─────────────
 //   'follow-flag'  prices obey NEXT_PUBLIC_PRICING_PUBLISHED exactly as Billing does. While the flag is

@@ -13,7 +13,8 @@ import { minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/
 import { useToasts, type ShowToast } from '@/lib/useToasts'
 import { ToastStack } from '@/components/ToastStack'
 import { isValidEmail } from '@/lib/contact-validation'
-import { isPlausiblePhone, phoneErrorMessage, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
+import { isPlausiblePhone, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
+import { phoneErrorMessage } from '@/lib/phone-message'
 import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
 import { CountrySettingsProvider, useCountrySettings, useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 import { allergenVocab, genericReplacements } from '@/lib/allergens'
@@ -169,7 +170,7 @@ import {
   type ScheduleSection,
 } from '@/lib/manage-links'
 import { isWalkUp } from '@/lib/walk-up'
-import { useTruckLocale } from '@/lib/i18n/client'
+import { useTruckLocale } from '@/lib/i18n/use-t'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }

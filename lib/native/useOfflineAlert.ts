@@ -8,12 +8,20 @@ import { useEffect, useRef } from 'react'
 import { isNativeApp } from '@/lib/native/device'
 import { onReachabilityChange } from '@/lib/native/reachability'
 import { notifyLocal, offlineAlertsEnabled } from '@/lib/native/notifications'
+import { useAppLocale } from '@/lib/i18n/use-t'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/nativeShell'
 
 const OFFLINE_ALERT_DELAY_MS = 8000   // debounce: a blip shorter than this never fires
 
 export function useOfflineAlert(autoPauseOn: boolean): void {
   const autoPauseRef = useRef(autoPauseOn)
   autoPauseRef.current = autoPauseOn
+  // The words are made when the alert FIRES, in the locale current then (Language Phase 1b). A ref, written in
+  // an effect, so the reachability subscription below never re-subscribes when the language arrives.
+  const locale = useAppLocale()
+  const localeRef = useRef(locale)
+  useEffect(() => { localeRef.current = locale }, [locale])
   useEffect(() => {
     if (!isNativeApp()) return
     let fired = false                                   // one alert per offline EPISODE
@@ -32,9 +40,10 @@ export function useOfflineAlert(autoPauseOn: boolean): void {
           if (!(await offlineAlertsEnabled())) return       // Settings: master + offline-type must be on
           fired = true
           const paused = autoPauseRef.current
+          const t = translatorFor(localeRef.current, 'nativeShell')
           await notifyLocal(
-            paused ? 'Ordering paused' : "You're offline",
-            paused ? "You're offline — customer ordering is paused." : 'This device has lost its connection.',
+            paused ? t('offlineAlert.pausedTitle') : t('offlineAlert.offlineTitle'),
+            paused ? t('offlineAlert.pausedBody') : t('offlineAlert.offlineBody'),
           )
         })()
       }, OFFLINE_ALERT_DELAY_MS)

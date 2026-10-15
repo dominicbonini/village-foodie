@@ -12,6 +12,7 @@
 // a knowable "not supported yet" into "Can't check which device is printing right now." The PIN
 // requirement is now OBSERVED from the route's own 401 + requiresPin, and nothing is ever claimed.
 const fs = require('fs'); const path = require('path'); const { execFileSync } = require('child_process')
+const SAY = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'messages/en-GB.json'), 'utf8')).printing.say   // Language Phase 1b
 const { compile, REPO } = require('./_slot-interval-compile.cjs'); const { installMocks } = require('./_printing-mocks.cjs')
 const c = compile(REPO, ['lib/printing/networkGuard.ts', 'lib/printing/netAddress.ts'], 'guard')
 installMocks(c.out, { native: true })
@@ -41,8 +42,10 @@ console.log('\n── decideNetPrinting: every branch ────────�
   r = d({ ...base, printingDeviceId: 'me' }); check(r.state === 'ok' && !r.shouldClaim, "held by this device → 'ok', no claim")
   r = d({ ...base, printingDeviceId: 'them' }); check(r.state === 'other' && !r.shouldClaim, "held by another device → 'other' (never a silent take-over)")
   r = d({ ...base, vanId: null }); check(r.state === 'unbound', "device not bound to a van → 'unbound'")
-  check(G.NET_GUARD_COPY.other === 'Printing is on another device. Move printing to this device?' && G.NET_GUARD_COPY.unknown === "Can't check which device is printing right now.", 'the two required sentences, verbatim')
-  check(G.NET_GUARD_MOVE_BUTTON === 'Move printing to this device', 'the button label')
+  // Language Phase 1b (docs/language-phase-1b-report.md): the guard's words are messages — printing.say.guard.<state> and
+  // printing.say.guardMove (they were NET_GUARD_COPY / NET_GUARD_MOVE_BUTTON in lib/printing/networkGuard.ts).
+  check(SAY.guard.other === 'Printing is on another device. Move printing to this device?' && SAY.guard.unknown === "Can't check which device is printing right now.", 'the two required sentences, verbatim')
+  check(SAY.guardMove === 'Move printing to this device', 'the button label')
 }
 console.log('\n── cached claim: unreadable → the LAST KNOWN answer, never a new one ───────────────────')
 {
@@ -65,8 +68,11 @@ console.log('\n── the route (source-level): validation, auth split, probed r
   const r = fs.readFileSync(path.join(REPO, 'app/api/printing/route.ts'), 'utf8')
   check(/status: 503/.test(r) && /status: 401/.test(r), 'verifyToken keeps the 503 (cannot check) / 401 (refused) split')
   check(/action !== 'claim' && action !== 'release' && action !== 'set_address'/.test(r), 'POST action allow-list')
-  check(/device_id required/.test(r), 'device_id required on GET and POST')
-  check(/parseNetAddress\(body\.address\)/.test(r) && /NET_ADDRESS_HELP/.test(r), 'set_address validates through parseNetAddress and answers with the help line')
+  // Language Phase 1b: the refusal is the kitchen code device_id_required — its words unchanged.
+  check((r.match(/'device_id_required'/g) || []).length >= 2 && JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).errorsKitchen.device_id_required === 'device_id required', 'device_id required on GET and POST')
+  // Language Phase 1b: the route answers with the help line as the kitchen code net_address_invalid — the same words.
+  const MSG = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+  check(/parseNetAddress\(body\.address\)/.test(r) && /'net_address_invalid'/.test(r) && MSG.errorsKitchen.net_address_invalid === MSG.printing.say.addressHelp, 'set_address validates through parseNetAddress and answers with the help line')
   check(/PGRST204/.test(r) && /42703/.test(r), 'PGRST204 and 42703 logged distinguishably')
   check(/\.eq\('network_print_device_id', deviceId\)/.test(r), 'release only clears the claim if THIS device holds it')
   check(/\.eq\('truck_id', auth\.truck\.id\)/.test(r), 'every write is scoped to the authenticated truck')
@@ -119,7 +125,7 @@ console.log('\n── the migration (NOT applied): nullable, additive, reloads t
   const st = await G.resolveNetGuard('tok', 'me')
   check(st === 'pin', `resolveNetGuard → '${st}'`)
   check(posts.length === 0, `NO claim was attempted (${posts.length} POSTs)`)
-  check(G.NET_GUARD_COPY.pin === "Wired printing isn't available on dashboards with a PIN yet.", `the one sentence: "${G.NET_GUARD_COPY.pin}"`)
+  check(SAY.guard.pin === "Wired printing isn't available on dashboards with a PIN yet.", `the one sentence: "${SAY.guard.pin}"`)
 
   // A 401 WITHOUT requiresPin is a different thing (bad token) and must NOT read as 'pin'.
   global.fetch = async () => ({ ok: false, status: 401, json: async () => ({ error: 'Unauthorised', requiresPin: false }) })
@@ -137,7 +143,7 @@ console.log('\n── the migration (NOT applied): nullable, additive, reloads t
   }
   // The card shows the ONE sentence and nothing else on a PIN truck.
   const card = fs.readFileSync(path.join(REPO, 'components/printing/PrintingSettings.tsx'), 'utf8')
-  check(/\{netInfo === 'pin' \? \(\s*\n\s*<p className="text-amber-800">\{NET_GUARD_COPY\.pin\}<\/p>\s*\n\s*\) : \(/.test(card), "the wired branch opens `netInfo === 'pin' ? <the sentence> : (everything else)`")
+  check(/\{netInfo === 'pin' \? \(\s*\n\s*<p className="text-amber-800">\{say\(\{ code: 'guard', state: 'pin' \}\)\}<\/p>\s*\n\s*\) : \(/.test(card), "the wired branch opens `netInfo === 'pin' ? <the sentence> : (everything else)`")
   check(!/claimNetPrinting\([^)]*readDashboardPin/.test(card) && !/setNetPrinterAddress\([^)]*readDashboardPin/.test(card), 'no claim or address write carries a guessed PIN')
 
   console.log(`\n${fails ? '🔴 ' + fails + ' FAILED' : '✅ network guard + named-select rule + PIN refusal proven'}`)

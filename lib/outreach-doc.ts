@@ -75,7 +75,8 @@ export const ALLOWED_NODES = [
 ] as const
 
 /** ⚠️ ONLY THE `link` MARK CARRIES `href`, and only an `https://` one. */
-export interface DocMarkValue { type: DocMark; href?: string }
+/** ⚠️ A link's href is `href` here and `attrs.href` in the editor's own JSON; markup-built links carry both. */
+export interface DocMarkValue { type: DocMark; href?: string; attrs?: { href?: string } }
 export interface DocText { type: 'text'; text: string; marks?: DocMarkValue[] }
 export interface DocBreak { type: 'hardBreak' }
 export type DocInline = DocText | DocBreak
@@ -386,11 +387,173 @@ export function paragraphsFromPlain(text: string): DocParagraph[] {
     const content: DocInline[] = []
     lines.forEach((l, i) => {
       if (i > 0) content.push({ type: 'hardBreak' })
-      if (l !== '') content.push({ type: 'text', text: l })
+      // ⚠️ A LINE WITH NO MARKUP IS ONE PLAIN TEXT NODE, EXACTLY AS BEFORE — `inlineFromMarkup` returns
+      // `[{ type: 'text', text: l }]` for it, so a template with no formatting builds the same document.
+      if (l !== '') content.push(...inlineFromMarkup(unescapeListLine(l)))
     })
     out.push(content.length ? { type: 'paragraph', content } : { type: 'paragraph' })
   }
   return out.length ? out : [{ type: 'paragraph' }]
+}
+
+/* ── 🔴 TEMPLATE FORMATTING — THE MARKUP A TEMPLATE IS STORED IN (15 October 2026) ─────────────────
+ * Templates are TEXT, and stay text: the resolver substitutes tokens in it and drops `?condition:` lines
+ * from it line by line, and WhatsApp sends it as it is. So formatting written in the Templates editor is
+ * stored as small, unambiguous markers in that text, and turned into marks here — the same place the
+ * signature and opt-out are expanded — when the template becomes a document:
+ *     <b>…</b>  <i>…</i>  <small>…</small>  <large>…</large>  <a href="https://…">…</a>
+ *     a line starting "• " is a bulleted item; "1. " a numbered one (the same markers docToText writes)
+ * 🔴 WHY TAGS AND NOT **MARKDOWN**: `_` is in every token name (`{{truck_name}}`), `*` pairs are
+ * ambiguous when bold and italic meet, and a hand-typed "- " is ALREADY in a live template as plain text.
+ * 🧪 Measured on the 8 live templates: none contains `*`, `**`, a tag, "• " or "1. ", so none renders
+ * differently — scripts/template-formatting.cjs holds that as a byte-for-byte check.
+ * ⚠️ MARKS NEVER CROSS A LINE. The serialiser closes every mark at a line end and the parser starts each
+ * line plain, so a `?condition:` line that the resolver drops can never leave a bold open behind it.
+ * ⚠️ A LINK IS A MARK ONLY WHEN ITS href PASSES `LINK_RE` — otherwise the tag stays as text, and
+ * `validateDoc` would never be asked to refuse it at send. */
+const INLINE_TAG_RE = /<(\/?)(b|i|small|large)>|<a href="([^"<>]*)">|<\/a>/g
+/** A literal "<" that would otherwise read as one of the tags above is stored as "&lt;". */
+const TAG_LIKE_RE = /<(?=\/?(?:b|i|small|large)>|a href="|\/a>)/g
+const ESCAPED_TAG_RE = /&lt;(?=\/?(?:b|i|small|large)>|a href="|\/a>)/g
+export const BULLET_LINE_RE = /^• /
+export const ORDERED_LINE_RE = /^\d{1,3}\. /
+/** A paragraph line that BEGINS like a list item is stored with one backslash in front, so it stays text. */
+const ESCAPED_LIST_LINE_RE = /^\\+(?:• |\d{1,3}\. )/
+const isListLine = (l: string) => BULLET_LINE_RE.test(l) || ORDERED_LINE_RE.test(l)
+const unescapeListLine = (l: string) => (ESCAPED_LIST_LINE_RE.test(l) ? l.slice(1) : l)
+/** The mark order the editor's schema uses, so a parsed node and an edited one compare equal. */
+const MARK_ORDER: DocMark[] = ['bold', 'italic', 'small', 'large', 'link']
+
+/** One line of template markup → text nodes with marks. A line with no markup is one plain node. */
+export function inlineFromMarkup(line: string): DocText[] {
+  const out: DocText[] = []
+  const on = { bold: 0, italic: 0, small: 0, large: 0 }
+  const links: (string | null)[] = []        // null = an <a> whose href was refused, kept as text
+  const push = (text: string) => {
+    if (!text) return
+    const t = text.replace(ESCAPED_TAG_RE, '<')
+    const href = [...links].reverse().find(h => h !== null) ?? null
+    const marks: DocMarkValue[] = MARK_ORDER
+      .filter(m => (m === 'link' ? !!href : on[m as keyof typeof on] > 0))
+      .map(m => (m === 'link' ? { type: 'link', href: href!, attrs: { href: href! } } : { type: m }))
+    const last = out[out.length - 1]
+    if (last && JSON.stringify(last.marks ?? []) === JSON.stringify(marks)) { last.text += t; return }
+    out.push(marks.length ? { type: 'text', text: t, marks } : { type: 'text', text: t })
+  }
+  let at = 0
+  for (const m of line.matchAll(INLINE_TAG_RE)) {
+    push(line.slice(at, m.index))
+    at = (m.index ?? 0) + m[0].length
+    if (m[2]) {
+      const k = (m[2] === 'b' ? 'bold' : m[2] === 'i' ? 'italic' : m[2]) as keyof typeof on
+      if (m[1] === '/') { if (on[k] > 0) on[k]--; else push(m[0]) } else on[k]++
+    } else if (m[0] === '</a>') {
+      if (!links.length) push(m[0])
+      else if (links.pop() === null) push(m[0])
+    } else {
+      const ok = LINK_RE.test(m[3] ?? '')
+      if (!ok) push(m[0])
+      links.push(ok ? m[3]! : null)
+    }
+  }
+  push(line.slice(at))
+  return out
+}
+
+/** Template markup → blocks: plain runs exactly as `paragraphsFromPlain` builds them, list runs as lists. */
+function blocksFromMarkup(lines: string[]): DocBlock[] {
+  const out: DocBlock[] = []
+  let run: string[] = []
+  const flush = () => { if (run.length) { out.push(...paragraphsFromPlain(run.join('\n'))); run = [] } }
+  for (const line of lines) {
+    if (!isListLine(line)) { run.push(line); continue }
+    flush()
+    const type = BULLET_LINE_RE.test(line) ? 'bulletList' : 'orderedList'
+    const text = line.replace(type === 'bulletList' ? BULLET_LINE_RE : ORDERED_LINE_RE, '')
+    // ⚠️ A LINE BREAK INSIDE ONE ITEM IS STORED AS `<br>` — a newline would end the item.
+    const content: DocInline[] = []
+    text.split(/<br\s*\/?>/i).forEach((part, i) => {
+      if (i > 0) content.push({ type: 'hardBreak' })
+      content.push(...inlineFromMarkup(part))
+    })
+    const item: DocListItem = { type: 'listItem', content: [content.length ? { type: 'paragraph', content } : { type: 'paragraph' }] }
+    const prev = out[out.length - 1]
+    if (prev && prev.type === type) (prev as DocList).content!.push(item)
+    else out.push({ type, content: [item] })
+  }
+  flush()
+  return out
+}
+
+/** The marks a text node carries, outermost first — the order the serialiser opens them in. */
+const OPEN_ORDER: DocMark[] = ['link', 'large', 'small', 'bold', 'italic']
+const TAG: Record<Exclude<DocMark, 'link'>, string> = { bold: 'b', italic: 'i', small: 'small', large: 'large' }
+
+/** One line's inline nodes → markup, every mark closed at the end of the line. */
+function markupFromInline(kids: DocText[]): string {
+  let s = ''
+  let open: string[] = []                         // 'bold' … or 'link:<href>', outermost first
+  const openTag = (k: string) => (k.startsWith('link:') ? `<a href="${k.slice(5)}">` : `<${TAG[k as keyof typeof TAG]}>`)
+  const closeTag = (k: string) => (k.startsWith('link:') ? '</a>' : `</${TAG[k as keyof typeof TAG]}>`)
+  for (const n of kids) {
+    const want = OPEN_ORDER.flatMap(m => {
+      const mk = n.marks?.find(x => x.type === m)
+      return mk ? [m === 'link' ? `link:${mk.href ?? mk.attrs?.href ?? ''}` : m] : []
+    })
+    let same = 0
+    while (same < open.length && same < want.length && open[same] === want[same]) same++
+    for (let i = open.length - 1; i >= same; i--) s += closeTag(open[i])
+    for (let i = same; i < want.length; i++) s += openTag(want[i])
+    open = want
+    s += n.text.replace(TAG_LIKE_RE, '&lt;')
+  }
+  for (let i = open.length - 1; i >= 0; i--) s += closeTag(open[i])
+  return s
+}
+
+/** A paragraph's inline content split at its hard breaks. */
+const linesOf = (kids: DocInline[]): DocText[][] => {
+  const lines: DocText[][] = [[]]
+  for (const k of kids) { if (k.type === 'hardBreak') lines.push([]); else lines[lines.length - 1].push(k) }
+  return lines
+}
+
+/**
+ * 🔴 THE EDITOR'S DOCUMENT → THE TEMPLATE TEXT IT IS STORED AS. The inverse of `docFromTemplateMarkup`:
+ * paragraphs and hard breaks become lines, an empty paragraph a blank line, list items "• " / "1. " lines.
+ * ⚠️ IT NORMALISES, BY DESIGN: two adjacent paragraphs and one paragraph with a break look the same in
+ * the email (`docToHtml`) and are stored the same way. Parsing the result builds the same EMAIL.
+ */
+export function templateMarkupFromDoc(doc: EmailDoc): string {
+  const lines: string[] = []
+  for (const block of doc.content) {
+    if (isListBlock(block)) {
+      (block.content ?? []).forEach((item, i) => {
+        const marker = block.type === 'bulletList' ? '• ' : `${i + 1}. `
+        const parts = (item.content ?? []).flatMap(p => linesOf(p.content ?? []).map(markupFromInline))
+        lines.push(marker + parts.join('<br>'))
+      })
+      continue
+    }
+    const kids = block.content ?? []
+    if (!kids.length) { lines.push(''); continue }
+    for (const l of linesOf(kids).map(markupFromInline)) {
+      lines.push(/^\\*(?:• |\d{1,3}\. )/.test(l) ? `\\${l}` : l)
+    }
+  }
+  return lines.join('\n')
+}
+
+/** Known markup tags out, escapes undone — for the places that QUOTE a template line to the operator. */
+export function stripTemplateMarkup(text: string): string {
+  return String(text ?? '').split('\n')
+    .map(l => unescapeListLine(l).replace(INLINE_TAG_RE, '').replace(ESCAPED_TAG_RE, '<'))
+    .join('\n')
+}
+
+/** Whether a text carries inline formatting tags — WhatsApp would show them as typed. */
+export function hasTemplateMarkup(text: string): boolean {
+  return new RegExp(INLINE_TAG_RE.source).test(String(text ?? ''))
 }
 
 /**
@@ -408,20 +571,45 @@ export interface DocSettings {
 
 const SIG_LINE_RE = /^\s*\{\{\s*signature\s*\}\}\s*$/
 const OPT_LINE_RE = /^\s*\{\{\s*opt_out\s*\}\}\s*$/
+/**
+ * 🔴 `{{plans_pdf}}` ON A LINE OF ITS OWN: "attach the plans PDF when this template is used". It is not
+ * text in the email — the line is DROPPED when the document is built, and the compose window attaches
+ * the PDF (the same generator as its Plans PDF button). Email only.
+ */
+export const PLANS_LINE_RE = /^\s*\{\{\s*plans_pdf\s*\}\}\s*$/
+export function templateWantsPlansPdf(text: string): boolean {
+  return String(text ?? '').replace(/\r\n/g, '\n').split('\n').some(l => PLANS_LINE_RE.test(l))
+}
 
 export function docFromTemplateText(text: string, settings: DocSettings): EmailDoc {
+  return buildFromTemplate(text, settings)
+}
+
+/**
+ * The template text AS THE TEMPLATES EDITOR SHOWS IT: formatting applied, but `{{signature}}`,
+ * `{{opt_out}}` and `{{plans_pdf}}` left standing as lines of text — they are filled when it is used.
+ */
+export function docFromTemplateMarkup(text: string): EmailDoc {
+  return buildFromTemplate(text, null)
+}
+
+function buildFromTemplate(text: string, settings: DocSettings | null): EmailDoc {
   const src = String(text ?? '').replace(/\r\n/g, '\n')
-  const out: DocParagraph[] = []
+  const out: DocBlock[] = []
   // A blank line between two blocks is a blank line in the email, so the spacer is explicit.
   src.split(/\n{2,}/).forEach((block, i) => {
     if (i > 0) out.push({ type: 'paragraph' })
     let prose: string[] = []
     const flushProse = () => {
       if (!prose.length) return
-      out.push(...paragraphsFromPlain(prose.join('\n')))
+      out.push(...blocksFromMarkup(prose))
       prose = []
     }
     for (const line of block.split('\n')) {
+      // The Templates editor's view: every line is text, the three send-time tokens included.
+      if (!settings) { prose.push(line); continue }
+      // An instruction to the compose window, not a line of the email.
+      if (PLANS_LINE_RE.test(line)) { flushProse(); continue }
       if (SIG_LINE_RE.test(line)) {
         flushProse()
         out.push(...paragraphsFromLines(settings.signatureLines))
@@ -452,6 +640,10 @@ export function literalTokenRefusal(doc: EmailDoc): string | null {
     if (new RegExp(`\\{\\{\\s*${name}\\s*\\}\\}`).test(text)) {
       return `Your message still contains {{${name}}} — use Insert ${name === 'signature' ? 'signature' : 'opt-out'} instead.`
     }
+  }
+  // `{{plans_pdf}}` is dropped only when it is a line of its own; anywhere else it would be emailed as text.
+  if (/\{\{\s*plans_pdf\s*\}\}/.test(text)) {
+    return 'Your message still contains {{plans_pdf}} — remove it and use the Plans PDF button to attach the PDF.'
   }
   return null
 }

@@ -121,6 +121,13 @@ function typeWith(o) {
 }
 
 const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+/* ══ Language Phase 1b re-pin (docs/language-phase-1b-report.md) ═══════════════════════════════════════════════
+ * The dashboard page's words moved into messages/en-GB.json (`dashboard.*`; the shared modals' into
+ * `kitchenModals.*`). A check that looked for an English sentence in the page now asserts BOTH halves:
+ * (a) the message has EXACTLY that sentence, and (b) the page reads that key in the same place. `GB_MSG(path)` is
+ * the en-GB text of a message, or undefined. */
+const GB_MESSAGES = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+const GB_MSG = (p) => p.split('.').reduce((o, k) => (o == null ? undefined : o[k]), GB_MESSAGES)
 
 function build(root, files, tag) {
   /* ⚠️ `jsx: 'react-jsx'` AND A node_modules SYMLINK INTO THE OUTPUT. `lib/buzzer.ts` carries the
@@ -1119,10 +1126,16 @@ head('5 · THE WIRING')
    * variants in scripts/event-pricing.cjs this build and is why `buildVariant` now throws. */
   t('🔴 the type-switch confirm says all three things a live switch has to say', (() => {
     const src = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
-    return /New orders use \{targetName\}&rsquo;s service settings\./.test(src)
-      && /Orders already placed keep their prices\./.test(src)
-      && /for this event stay\./.test(src)
-      && /Clear my changes and use \{targetName\} exactly/.test(src)
+    /* Language Phase 1b re-pin: the four sentences are `dashboard.typePicker.*` messages (exact text; the page's
+     * `{targetName}` is the message's `{type}`, `&rsquo;` is ’), and the confirm reads each key with targetName. */
+    return GB_MSG('dashboard.typePicker.newOrders') === 'New orders use {type}’s service settings.'
+      && /\{tDash\('typePicker\.newOrders',\{type:targetName\}\)\}/.test(src)
+      && GB_MSG('dashboard.typePicker.placedOrders') === 'Orders already placed keep their prices.'
+      && /\{tDash\('typePicker\.placedOrders'\)\}/.test(src)
+      && /for this event stay\.$/.test(GB_MSG('dashboard.typePicker.changesStay') || '')
+      && /\{tDash\('typePicker\.changesStay'\)\}/.test(src)
+      && GB_MSG('dashboard.typePicker.clearOwn') === 'Clear my changes and use {type} exactly'
+      && /\{tDash\('typePicker\.clearOwn',\{type:targetName\}\)\}/.test(src)
   })())
   /* ⚠️ THIS CHECK HAS BEEN REVERSED TWICE, AND THE TRAIL IS THE POINT. Stage 2b: "Standard is first
    * and READ-ONLY". v3 first pass: editable, but saying "Set per van" where the vans disagree. v3
@@ -2104,10 +2117,24 @@ head('5b · THE MODAL AND THE CARD')
     ['Collection times, untouched', '<p className="text-sm font-semibold text-slate-800">Collection times</p>'],
     ['…and its route back', 'Use my usual setting'],
   ]
+  /* Language Phase 1b re-pin: six of those lines carry words that moved into `dashboard.*` messages. The LIVE side is
+   * still the exact line from `origin/main`; THIS side is the same line reading the key, and the key's en-GB text is
+   * asserted to be exactly the words the live line has. [live line → this file's line, message key, exact text] */
+  const RESTORED_P1B = {
+    'Do you take cash?': ['<p className="text-sm font-semibold text-slate-800">{tDash(\'settings.takesCashTitle\')}</p>', 'dashboard.settings.takesCashTitle', 'Do you take cash?'],
+    '…and its one-line description': ['<p className="text-slate-500 text-xs mt-0.5">{tDash(\'settings.takesCashHelp\')}</p>', 'dashboard.settings.takesCashHelp', 'Splits the payment button into "Cash" and "Card".'],
+    'Order-ready step': ['<p className="text-sm font-semibold text-slate-800">{tDash(\'settings.orderReadyTitle\')}{demoLockChip}</p>', 'dashboard.settings.orderReadyTitle', 'Order-ready step'],
+    'Remind me to add a buzzer': ['<p className="text-sm font-semibold text-slate-800">{tDash(\'settings.buzzerPromptTitle\')}</p>', 'dashboard.settings.buzzerPromptTitle', 'Remind me to add a buzzer'],
+    'Collection times, untouched': ['<p className="text-sm font-semibold text-slate-800">{tDash(\'settings.intervalsTitle\')}</p>', 'dashboard.settings.intervalsTitle', 'Collection times'],
+    '…and its route back': ['{tDash(\'settings.useUsual\')}', 'dashboard.settings.useUsual', 'Use my usual setting'],
+  }
   for (const [what, line] of RESTORED) {
     /* 🔴 BOTH SIDES. A line that is NOT on `origin/main` would make this check about my own text
      * rather than about the restoration, so the live file is asserted to carry it too. */
-    t(`✅ RESTORED · ${what}`, liveDash.includes(line) && dashPage.includes(line))
+    const moved = RESTORED_P1B[what]
+    t(`✅ RESTORED · ${what}`, moved
+      ? liveDash.includes(line) && codeOf(dashPage).includes(moved[0]) && GB_MSG(moved[1]) === moved[2]
+      : liveDash.includes(line) && dashPage.includes(line))
   }
 
   /* ══ ⛔ AND NOT IN TWO PLACES. Each control appears exactly ONCE in the dashboard's own JSX. ═══════
@@ -2121,9 +2148,20 @@ head('5b · THE MODAL AND THE CARD')
       'Order-ready step{demoLockChip}', '{OFFLINE_PROTECTION_PURPOSE}',
       '<p className="text-sm font-semibold text-slate-800">Collection times</p>',
     ]
+    /* Language Phase 1b re-pin: a control whose words moved is counted as references to its KEY (exactly one), and its
+     * sentence must be exactly one `dashboard` message — so "one copy" still holds on both sides of the move. */
+    const ONCE_P1B = {
+      'Do you take cash?': ["tDash('settings.takesCashTitle')", 'Do you take cash?'],
+      'Remind me to add a buzzer': ["tDash('settings.buzzerPromptTitle')", 'Remind me to add a buzzer'],
+      'Order-ready step{demoLockChip}': ["{tDash('settings.orderReadyTitle')}{demoLockChip}", 'Order-ready step'],
+      '<p className="text-sm font-semibold text-slate-800">Collection times</p>': ['<p className="text-sm font-semibold text-slate-800">{tDash(\'settings.intervalsTitle\')}</p>', 'Collection times'],
+    }
+    const dashTexts = (function flat(o) { return Object.values(o).flatMap(v => typeof v === 'string' ? [v] : flat(v)) })(GB_MESSAGES.dashboard)
     for (const needle of ONCE) {
-      const n = page.split(needle).length - 1
-      t(`⛔ exactly ONE copy of "${needle.slice(0, 34)}" on the dashboard (${n})`, n === 1)
+      const moved = ONCE_P1B[needle]
+      const n = page.split(moved ? moved[0] : needle).length - 1
+      const once = moved ? n === 1 && dashTexts.filter(x => x === moved[1]).length === 1 : n === 1
+      t(`⛔ exactly ONE copy of "${needle.slice(0, 34)}" on the dashboard (${n})`, once)
     }
   }
 
@@ -2192,8 +2230,11 @@ head('5b · THE MODAL AND THE CARD')
     const modal = fs.readFileSync(path.join(REPO, 'components/shared/EventActionsModal.tsx'), 'utf8')
     return /onChangeEventType=\{eventTypeList\.length>0\?/.test(page)
       && /onPrivateLink=\{eventIsPrivate\?/.test(page)
-      && /Change event type…/.test(modal)
-      && /Private link &amp; QR code/.test(modal)
+      /* Language Phase 1b re-pin: the modal's two rows read `kitchenModals.actions.*` (exact text asserted). */
+      && GB_MSG('kitchenModals.actions.changeEventType') === 'Change event type…'
+      && /\{onChangeEventType && \([\s\S]{0,300}?\{t\('actions\.changeEventType'\)\}/.test(modal)
+      && GB_MSG('kitchenModals.actions.privateLink') === 'Private link & QR code'
+      && /\{onPrivateLink && \([\s\S]{0,300}?\{t\('actions\.privateLink'\)\}/.test(modal)
       /* ⚠️ BOTH ROWS ARE OPTIONAL PROPS, so the KDS — the modal's other caller — renders unchanged. */
       && /onChangeEventType\?: \(\) => void/.test(modal)
       && /onPrivateLink\?: \(\) => void/.test(modal)
@@ -2208,10 +2249,15 @@ head('5b · THE MODAL AND THE CARD')
   /* 🔴 THE SERVICE CONFIRM'S THREE SENTENCES AND THE "use it exactly" ESCAPE SURVIVED THE CARD. They
    * are the only remaining home of what the card called "Reset to <type>". */
   t('🔴 the type-switch confirm still says all three things, and offers the clear', (() => {
-    return /New orders use \{targetName\}&rsquo;s service settings\./.test(dashPage)
-      && /Orders already placed keep their prices\./.test(dashPage)
-      && /Your changes for this event stay\./.test(dashPage)
-      && /Clear my changes and use \{targetName\} exactly/.test(dashPage)
+    /* Language Phase 1b re-pin: exact message text + the confirm reading each key (see the first copy of this check). */
+    return GB_MSG('dashboard.typePicker.newOrders') === 'New orders use {type}’s service settings.'
+      && /\{tDash\('typePicker\.newOrders',\{type:targetName\}\)\}/.test(dashPage)
+      && GB_MSG('dashboard.typePicker.placedOrders') === 'Orders already placed keep their prices.'
+      && /\{tDash\('typePicker\.placedOrders'\)\}/.test(dashPage)
+      && GB_MSG('dashboard.typePicker.changesStay') === 'Your changes for this event stay.'
+      && /\{tDash\('typePicker\.changesStay'\)\}/.test(dashPage)
+      && GB_MSG('dashboard.typePicker.clearOwn') === 'Clear my changes and use {type} exactly'
+      && /\{tDash\('typePicker\.clearOwn',\{type:targetName\}\)\}/.test(dashPage)
       && /action:'assign',eventId:activeEvent\.id,typeId,clearOwn/.test(codeOf(dashPage))
   })())
   /* ⛔ AND THE HEADER'S ORDER LINK / QR GIVE THE **PRIVATE** LINK ON A PRIVATE EVENT, NEVER THE
@@ -2230,9 +2276,13 @@ head('5b · THE MODAL AND THE CARD')
   /* ══ 🔴 WHAT MOVED TO MENU & STOCK: A PER-EVENT PRICE COLUMN, ON EVERY PLAN ═══════════════════════ */
   t('🔴 the Price column is before Item limit, and its figures come from the SERVER', (() => {
     const page = codeOf(dashPage)
-    const head = page.slice(page.indexOf('{EVENT_PRICE_COLUMN_LABEL}'), page.indexOf('>Available<'))
+    /* Language Phase 1b re-pin: the slice still runs from the Price header to the "How it works" bullet that names
+     * Available — that bullet now reads `stock.howAvailable` — and "Item limit" is the limit box's `stock.limitAria`. */
+    const head = page.slice(page.indexOf('{EVENT_PRICE_COLUMN_LABEL}'), page.indexOf("tDash.rich('stock.howAvailable'"))
     return /\{EVENT_PRICE_COLUMN_LABEL\}/.test(page)
-      && head.length > 0 && head.includes('Item limit')
+      && /^<b>Available<\/b>/.test(GB_MSG('dashboard.stock.howAvailable') || '')
+      && GB_MSG('dashboard.stock.limitAria') === 'Item limit — {item}'
+      && head.length > 0 && head.includes("tDash('stock.limitAria'")
       /* the value is the route's `charged` map, never computed here */
       /* ⚠️ RE-AIMED WITH THE EDIT MODE (5 October 2026): the shown figure is now the operator's
        * UNSAVED intent first, then the server's charged figure, then the menu. All three come from
@@ -2267,7 +2317,9 @@ head('5b · THE MODAL AND THE CARD')
         const col = page.slice(a, page.indexOf('<div className="flex flex-col items-center gap-0.5 w-16 shrink-0">', a))
         return col.length > 400
           && col.indexOf('{priceEditing?(') >= 0
-          && col.indexOf('aria-label={`Price for ${item.name} at this event`}') > col.indexOf('{priceEditing?(')
+          /* Language Phase 1b re-pin: the input's label is `stock.priceAria` ("Price for {item} at this event"). */
+          && GB_MSG('dashboard.stock.priceAria') === 'Price for {item} at this event'
+          && col.indexOf("aria-label={tDash('stock.priceAria',{item:item.name})}") > col.indexOf('{priceEditing?(')
           && col.indexOf('<p data-event-price') > col.indexOf('):(')
       })()
   })())
@@ -2367,7 +2419,8 @@ head('5b · THE MODAL AND THE CARD')
    * of its own — which is what makes "all plans" true rather than claimed. */
   t('⛔ the Price column has no plan gate on the screen, and its actions are plan-exempt', (() => {
     const page = codeOf(dashPage)
-    const col = page.slice(page.indexOf('{EVENT_PRICE_COLUMN_LABEL}'), page.indexOf('>Available<'))
+    // Language Phase 1b re-pin: the same end anchor as the check above (the "Available" bullet, now `stock.howAvailable`).
+    const col = page.slice(page.indexOf('{EVENT_PRICE_COLUMN_LABEL}'), page.indexOf("tDash.rich('stock.howAvailable'"))
     const r = fs.readFileSync(path.join(REPO, 'app/api/event-types/route.ts'), 'utf8')
     return !/canAccess|hasFeature|plan/.test(col)
       && /const ALL_PLAN_ACTIONS = new Set\(\['event_item_prices', 'save_event_item_prices'\]\)/.test(r)
@@ -2515,7 +2568,47 @@ head('5b · THE MODAL AND THE CARD')
       /* ⚠️ DEMO "SETTING UP" GATE (14 October 2026, Reset for sending) — while a demo is being set up, the ended
        * card, the welcome and the loop-complete baseline stand down. Each replacement is asserted below. */
       /^const demoEndedCard=demoServiceEnded\?\($/, /^\{isDemo&&<DemoWelcome token=\{token\}/, /^loaded=\{!loading&&!!truck\}$/,
+      /* ⚠️ LANGUAGE PHASE 1b re-pin (docs/language-phase-1b-report.md). Lines whose WORDS moved into `dashboard` messages
+       * are accounted by `phase1bWordsMoved` below (each word proved present in the catalogue). These are the lost lines
+       * that carried no checkable sentence — the cancel-reason table that became ids + `cancelReasons.*`, the access-denied
+       * gate (brand names stay inline), the "+N min" / "N minutes" options, the "OK" button, a key that stopped being a
+       * label, and the "(current)" suffix. Each replacement is asserted present below. */
+      /^const CANCEL_REASONS: \[string,string\]\[\] = \[$/, /^\]$/,
+      /^const reasonLabel=CANCEL_REASONS\.find\(\(\[v\]\)=>v===cancelReason\)\?\.\[1\]\?\?''$/,
+      /^\{CANCEL_REASONS\.map\(\(\[v,l\]\)=><option key=\{v\} value=\{v\}>\{l\}<\/option>\)\}$/,
+      /^if\(error&&!authenticated\)\{const _brand=typeof window!=='undefined'&&window\.location\.hostname\.includes\('hatchgrab'\)\?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied<\/p><p className="text-slate-500 text-sm">\{error\}<\/p>/,
+      /^<option value=\{(10|20|30)\}>\+\1 min<\/option>$/,
+      /^\{\[\{label:'10 minutes',mins:10\},\{label:'20 minutes',mins:20\},\{label:'30 minutes',mins:30\}\]\.map\(\(\{label,mins\}\)=>\($/,
+      /^<div key=\{s\.label\} className="bg-white rounded-xl p-2\.5 text-center border border-slate-200 shadow-sm">/,
+      /^<button onClick=\{ackOfflinePausedNotice\} className="mt-5 w-full bg-orange-600 text-white font-black text-sm py-3 rounded-xl hover:bg-orange-700 transition-colors">OK<\/button>$/,
+      /^const label=`\$\{ind\.label\?` \$\{ind\.label\}`:''\}\$\{isCurrent\?' · \(current\)':''\}`$/,
     ]
+    t('⚠️ …and the Language Phase 1b replacements are present (the page reads `dashboard`; each enumerated line in its new form)', (() => {
+      const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
+      const flat = pg.replace(/\s+/g, '')
+      const REASONS = { customer_cancelled: 'Customer cancelled', item_unavailable: 'Item unavailable', not_collected: 'Order not collected',
+        wrong_or_missing_item: 'Wrong or missing item', quality_issue: 'Quality issue', duplicate_payment: 'Duplicate payment', other: 'Other' }
+      return /import '@\/lib\/i18n\/catalog\/dashboard'/.test(pg) && /const tDash=useT\('dashboard'\)/.test(pg)
+        /* the cancel reasons: the SAME ids, in the same order, and each label exactly today's words */
+        && flat.includes(`constCANCEL_REASONS=[${Object.keys(REASONS).map(k => `'${k}'`).join(',')}]asconst`)
+        && Object.entries(REASONS).every(([k, v]) => GB_MSG(`dashboard.cancelReasons.${k}`) === v)
+        && /constreasonId=CANCEL_REASONS\.find\(v=>v===cancelReason\)constreasonLabel=reasonId\?cancelReasonLabel\(reasonId\):''/.test(flat)
+        && /\{CANCEL_REASONS\.map\(v=><optionkey=\{v\}value=\{v\}>\{cancelReasonLabel\(v\)\}<\/option>\)\}/.test(flat)
+        /* access denied: the brand stays inline; the title and the code's sentence are messages */
+        && GB_MSG('dashboard.gate.accessDenied') === 'Access denied' && GB_MSG('dashboard.gate.invalidAccessLink') === 'Invalid access link'
+        && /'HatchGrab':'Village Foodie';return<div[^\n]*>\{tDash\('gate\.accessDenied'\)\}<\/p><p className="text-slate-500 text-sm">\{error==='invalidAccessLink'\?tDash\('gate\.invalidAccessLink'\):error\}<\/p>/.test(pg)
+        && /setError\('invalidAccessLink'\)/.test(pg)
+        /* the extra-wait options and the pause lengths */
+        && GB_MSG('dashboard.extraWait.option') === '+{mins} min'
+        && [10, 20, 30].every(n => flat.includes(`<optionvalue={${n}}>{tDash('extraWait.option',{mins:'${n}'})}</option>`))
+        && GB_MSG('dashboard.pause.minutes') === '{n, plural, one {{count} minute} other {{count} minutes}}'
+        && /\{\[10,20,30\]\.map\(mins=>\(\{label:tDash\('pause\.minutes',\{n:mins,count:String\(mins\)\}\),mins\}\)\)\.map\(\(\{label,mins\}\)=>\(/.test(flat)
+        /* the stat tiles keep a stable key; the OK button; the "(current)" suffix */
+        && /<divkey=\{s\.id\}className="bg-whiterounded-xlp-2\.5text-centerborderborder-slate-200shadow-sm">/.test(flat)
+        && GB_MSG('dashboard.common.ok') === 'OK' && /<buttononClick=\{ackOfflinePausedNotice\}[^>]*>\{tDash\('common\.ok'\)\}<\/button>/.test(flat)
+        && GB_MSG('dashboard.edit.current') === '(current)'
+        && pg.includes("const label=`${ind.label?` ${ind.label}`:''}${isCurrent?` · ${tDash('edit.current')}`:''}`")
+    })())
     t('⚠️ …and the demo setting-up gate is present on all three (ended card, welcome, loop-complete baseline)', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
       return /const demoEndedCard=demoServiceEnded&&!demoSettingUp\?\(/.test(pg) && /\{isDemo&&!demoSettingUp&&<DemoWelcome token=\{token\}/.test(pg)
@@ -2576,16 +2669,51 @@ head('5b · THE MODAL AND THE CARD')
         && /\{EVENT_PRICE_COLUMN_LABEL\}/.test(nowPage)
         /* ④ THE TWO SHORTENED HEADINGS, IN THEIR OWN COLUMNS' WIDTHS. ⛔ WITHOUT THIS, DELETING BOTH
          * HEADINGS OUTRIGHT WOULD READ AS "explained" — the whole point of the companion check. */
-        && /<span className="w-16 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">Limit<\/span>/.test(nowPage)
-        && /<span className="w-12 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">On<\/span>/.test(nowPage)
+        /* Language Phase 1b re-pin: the headings and the labels read `dashboard.stock.*` (exact text asserted). */
+        && GB_MSG('dashboard.stock.colLimit') === 'Limit' && GB_MSG('dashboard.stock.colOn') === 'On'
+        && /<span className="w-16 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">\{tDash\('stock\.colLimit'\)\}<\/span>/.test(nowPage)
+        && /<span className="w-12 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">\{tDash\('stock\.colOn'\)\}<\/span>/.test(nowPage)
         /* ⚠️ AND THE LONG WORDS ARE STILL WHAT A SCREEN READER HEARS. */
-        && /ariaLabel=\{`Available — \$\{item\.name\}`\}/.test(nowPage)
-        && /aria-label=\{`Item limit — \$\{item\.name\}`\}/.test(nowPage)
+        && GB_MSG('dashboard.stock.availableAria') === 'Available — {item}' && GB_MSG('dashboard.stock.limitAria') === 'Item limit — {item}'
+        && /ariaLabel=\{tDash\('stock\.availableAria',\{item:item\.name\}\)\}/.test(nowPage)
+        && /aria-label=\{tDash\('stock\.limitAria',\{item:item\.name\}\)\}/.test(nowPage)
     })())
-    const unexplained = gone.filter(l => !ALLOWED.some(re => re.test(l)))
+    /* ══ Language Phase 1b re-pin: A LINE THAT LEFT BECAUSE ITS WORDS MOVED INTO `dashboard` MESSAGES ═════════════
+     * Accounted — not waived — by proof: every user-facing fragment the lost line carried (JSX text, and each quoted
+     * or template string that reads as words, entities decoded, `${…}`/`{…}` cut out) must be found VERBATIM in a
+     * `dashboard` message (placeholders and <b> tags cut out the same way). A lost line that carried no words at all
+     * is not covered by this and must be on the ALLOWED list. The companion check below asserts the page reads the
+     * namespace. */
+    const P1B_PIECES = (function flat(o) { return Object.values(o).flatMap(v => typeof v === 'string' ? [v] : flat(v)) })(GB_MESSAGES.dashboard)
+      // ICU syntax cut out: simple `{name}` placeholders, `{x, select|plural, ` heads and `key {` branch openers.
+      .flatMap(m => m.replace(/<\/?b>/g, '\u0000').replace(/\{\w+\}/g, '\u0000').replace(/\{\w+, (select|plural), /g, '\u0000')
+        .replace(/(^|[\s}\u0000])=?\w+ \{/g, '$1\u0000').split(/[\u0000{}]/))
+      .filter(x => /[A-Za-z]/.test(x))
+    const p1bDecode = x => x.replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&rsquo;/g, '’').replace(/&ldquo;/g, '“').replace(/&rdquo;/g, '”')
+      .replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16))).replace(/\\'/g, "'")
+    const p1bFragments = (line) => {
+      const text = [], quoted = []
+      const L = line.replace(/className=(\{`[^`]*`\}|"[^"]*")/g, ' ').replace(/key=\{[^}]*\}/g, ' ')
+      let J = L; for (let i = 0; i < 6; i++) J = J.replace(/\{[^{}<>]*\}/g, '\u0000')                 // JS expressions out (nested; JSX kept)
+      for (const m of J.matchAll(/>([^<>]*)(?=<)/g)) text.push(m[1])                                       // JSX text between tags
+      if (/</.test(J)) { const tail = J.slice(J.lastIndexOf('>') + 1); if (J.lastIndexOf('>') >= 0) text.push(tail) }   // …and after the last tag
+      else if (/^[^<>='"`]*$/.test(J.replace(/&\w+;/g, '')) && !/^\s*[}\])]|\w\(/.test(J)) text.push(J)       // a JSX text line on its own
+      text.splice(0, text.length, ...text.filter(x => !/&&|\|\||=>|[!=]==?|\?\.|\w\(/.test(x)))
+      for (const m of L.matchAll(/'((?:\\.|[^'\\])*)'|`((?:\\.|[^`\\])*)`|"((?:\\.|[^"\\])*)"/g)) quoted.push(m[1] ?? m[2] ?? m[3])
+      const cut = (xs) => xs.map(p1bDecode)
+        .flatMap(x => x.split(/\$\{[^}]*\}|\{[^{}]*\}|[{}\u0000]/))
+        .map(x => x.trim().replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}.!?…)]+$/gu, ''))                 // glyphs (⏱ ▶ ↩ → ▾) stay inline
+        .filter(x => (x.match(/[A-Za-z]/g) || []).length >= 3)
+      return [
+        ...cut(text),                                                                                   // JSX text: every word
+        ...cut(quoted).filter(x => /\s/.test(x) || /^[A-Z]/.test(x)).filter(x => !/^(Content-Type|POST|Enter|Escape)$/.test(x)),
+      ]
+    }
+    const phase1bWordsMoved = (line) => { const f = p1bFragments(line); return f.length > 0 && f.every(x => P1B_PIECES.some(pc => pc.includes(x))) }
+    const unexplained = gone.filter(l => !ALLOWED.some(re => re.test(l)) && !phase1bWordsMoved(l))
     if (unexplained.length) {
       console.log('      UNEXPLAINED LOSSES: ' + unexplained.length)
-      for (const l of unexplained.slice(0, 8)) console.log('        • ' + l.slice(0, 100))
+      for (const l of unexplained.slice(0, process.env.ET_SHOW_ALL ? 999 : 8)) console.log('        • ' + l.slice(0, process.env.ET_SHOW_ALL ? 400 : 100))
     }
     return unexplained.length === 0
   })())

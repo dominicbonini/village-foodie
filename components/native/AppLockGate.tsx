@@ -15,6 +15,8 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { isNativeApp } from '@/lib/native/device'
 import { isAppLockEnabled, verifyIdentity, verifyAppLockPin } from '@/lib/native/appLock'
 import { onAppResume } from '@/lib/native/app'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/nativeShell'
 
 export function AppLockGate() {
   const enabled = isNativeApp() && isAppLockEnabled()
@@ -30,11 +32,18 @@ export function AppLockGate() {
   // can be raced by a slow become-active on a slow device). A LATER resume (real background→foreground, guard
   // already consumed) still re-locks, so the feature's purpose survives.
   const authInProgress = useRef(false)
+  const t = useT('nativeShell')
+  // The system prompt's words follow the app's locale (Language Phase 1b). A REF, written in an effect: `attempt`
+  // is a dependency of the lock effects below, and a locale in its deps would re-lock and re-prompt the moment
+  // the language arrived.
+  const locale = useAppLocale()
+  const localeRef = useRef(locale)
+  useEffect(() => { localeRef.current = locale }, [locale])
 
   const attempt = useCallback(async () => {
     authInProgress.current = true
     setVerifying(true)
-    const ok = await verifyIdentity()
+    const ok = await verifyIdentity(undefined, localeRef.current)
     setVerifying(false)
     if (ok) { setLocked(false); setShowPin(false); setPin('') }
     else setFails(f => f + 1)
@@ -65,20 +74,20 @@ export function AppLockGate() {
   return (
     <div className="fixed inset-0 z-[80] bg-slate-900 flex flex-col items-center justify-center gap-5 p-6 text-center">
       <div className="text-5xl">🔒</div>
-      <p className="text-white/80 text-sm">HatchGrab is locked</p>
+      <p className="text-white/80 text-sm">{t('lock.locked')}</p>
       {!offerPin ? (
         <>
           <button onClick={() => void attempt()} disabled={verifying}
             className="bg-orange-600 text-white font-bold px-6 py-3 rounded-xl text-sm disabled:opacity-50">
-            {verifying ? 'Verifying…' : 'Unlock'}
+            {verifying ? t('lock.verifying') : t('lock.unlock')}
           </button>
           <button onClick={() => setShowPin(true)} className="text-white/50 text-xs underline">
-            Can&apos;t use Face / Touch ID?
+            {t('lock.cantUseBiometric')}
           </button>
         </>
       ) : (
         <div className="w-full max-w-[220px] flex flex-col gap-3">
-          <p className="text-white/60 text-xs">Enter your backup PIN</p>
+          <p className="text-white/60 text-xs">{t('lock.enterPin')}</p>
           <input
             type="tel" inputMode="numeric" autoFocus value={pin}
             onChange={e => { setPin(e.target.value.replace(/\D/g, '').slice(0, 6)); setPinError(false) }}
@@ -86,14 +95,14 @@ export function AppLockGate() {
             className="text-center tracking-[0.4em] text-lg font-bold bg-white/10 text-white rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
             placeholder="••••"
           />
-          {pinError && <p className="text-red-400 text-xs">Wrong PIN — try again.</p>}
+          {pinError && <p className="text-red-400 text-xs">{t('lock.wrongPin')}</p>}
           <button onClick={() => void submitPin()} disabled={pin.length < 4 || pinChecking}
             className="bg-orange-600 text-white font-bold px-6 py-3 rounded-xl text-sm disabled:opacity-40">
-            {pinChecking ? 'Checking…' : 'Unlock'}
+            {pinChecking ? t('lock.checking') : t('lock.unlock')}
           </button>
           <button onClick={() => { setShowPin(false); setPin(''); setPinError(false); void attempt() }}
-            className="text-white/50 text-xs underline">Try Face / Touch ID instead</button>
-          <p className="text-white/30 text-[11px] mt-1">Forgot your PIN? You&apos;ll need to reinstall the app.</p>
+            className="text-white/50 text-xs underline">{t('lock.tryBiometric')}</button>
+          <p className="text-white/30 text-[11px] mt-1">{t('lock.forgot')}</p>
         </div>
       )}
     </div>

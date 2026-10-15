@@ -24,8 +24,17 @@ function editBlockOf(src) {
   if (a < 0 || b < 0) throw new Error('edit block not found')
   return src.slice(a, b)
 }
+/* Language Phase 1b re-pin: the action route's refusals now go through `kErr(code, params, extra)` →
+ * kitchenErrorBody, whose body is `{ error, ...extra, code, params }` — the phase's named difference (error
+ * unchanged and first, `retry: true` in its place, code + params last). So the busy refusal is pinned to the
+ * kErr call with `{ retry: true }` and 409, and the sentence it carries is asserted EXACTLY below
+ * (errorsKitchen.busy_retry_edit) together with kitchenErrorBody's shape. */
+const BUSY = "await kErr('busy_retry_edit', {}, { retry: true }),\n          { status: 409 },"
+const GB_MESSAGES = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+const KERR_SHAPE = /return \{ error: t\(code, params\), \.\.\.\(extra \?\? \(\{\} as X\)\), code, params \}/
+  .test(fs.readFileSync(path.join(REPO, 'lib/i18n/kitchen-errors.ts'), 'utf8'))
+  && GB_MESSAGES.errorsKitchen.busy_retry_edit === 'Someone else is updating orders right now. Please try again.'
 /** The structural checks. Returns the list of failures (empty = holds). */
-const BUSY = "{ error: 'Someone else is updating orders right now. Please try again.', retry: true },\n          { status: 409 },"
 function structure(block) {
   const out = []
   const acquires = (block.match(/acquireEventLock\(/g) || []).length
@@ -84,10 +93,16 @@ console.log('\n── STRUCTURE: the real edit block ─────────
   const off = /const editLock = editNeedsLock \? await acquireEventLock/.test(block) && /if \(editNeedsLock && !editLock\?\.ok\)/.test(block)
   check(off, 'switch OFF ⇒ editNeedsLock false: no booking_locks write, no wait, no refusal, no release — the OFF flow is HEAD\'s')
   const manualBusy = real.slice(real.indexOf("if (!haveLock) {"), real.indexOf("if (!haveLock) {") + 260)
-  check(/\{ error: '[^']+', retry: true \},\s*\{ status: 409 \}/.test(manualBusy) && block.includes(BUSY), "the edit's busy refusal has the manual path's status and shape (409, { error, retry: true })")
+  // Language Phase 1b re-pin: both busy refusals are `kErr(<code>, {}, { retry: true })` with 409 — the body
+  // `{ error, retry: true, code, params }` (named difference: code + params added last, error unchanged).
+  check(/await kErr\('busy_retry', \{\}, \{ retry: true \}\),\s*\{ status: 409 \}/.test(manualBusy) && typeof GB_MESSAGES.errorsKitchen.busy_retry === 'string'
+    && block.includes(BUSY) && KERR_SHAPE, "the edit's busy refusal has the manual path's status and shape (409, { error, retry: true })")
   const page = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
   const submitEdit = page.slice(page.indexOf('const submitEdit=async'), page.indexOf('const updateStock=async'))
-  check(/if\(res\.status===409&&data\?\.retry\)\{\s*showToast\(data\?\.error\|\|'Someone else is updating orders right now\. Please try again\.','error'\)\s*return\s*\}/.test(submitEdit), 'the dashboard shows that message and returns — the edit modal and its edits stay (no setEditingOrder(null), no fetchAll)')
+  // Language Phase 1b re-pin: the fallback sentence is the message `dashboard.toast.editBusy` (asserted exactly);
+  // the branch, its order and its `return` are unchanged.
+  check(GB_MESSAGES.dashboard.toast.editBusy === 'Someone else is updating orders right now. Please try again.'
+    && /if\(res\.status===409&&data\?\.retry\)\{\s*showToast\(data\?\.error\|\|tDash\('toast\.editBusy'\),'error'\)\s*return\s*\}/.test(submitEdit), 'the dashboard shows that message and returns — the edit modal and its edits stay (no setEditingOrder(null), no fetchAll)')
   check(submitEdit.indexOf('data?.retry') < submitEdit.indexOf('if(!res.ok)throw'), '…and the branch sits before the generic throw, exactly where the Add Order panel handles the manual path\'s busy answer')
   for (const m of CALLEE_MODULES) {
     const src = fs.readFileSync(path.join(REPO, m), 'utf8')

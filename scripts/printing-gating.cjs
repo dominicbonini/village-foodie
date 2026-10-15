@@ -86,6 +86,7 @@ console.log('\n── KDS never mounts printing; web gets the stub ────�
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'gate-v2-'))
     fs.cpSync(path.join(REPO, 'components'), path.join(tmp, 'components'), { recursive: true })
     fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
+    fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })   // Language Phase 1b: components read messages/
     fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules'))
     const f = path.join(tmp, 'components/printing/PrinterTypeChoice.tsx'); const src = fs.readFileSync(f, 'utf8')
     const needle = '  if (!isNetPrinterAvailable()) return null\n'

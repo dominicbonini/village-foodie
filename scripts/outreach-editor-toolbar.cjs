@@ -196,9 +196,16 @@ function census() {
       && !pkg['@tiptap/starter-kit']
   })())
   // ── WHAT MAY NOT CHANGE ────────────────────────────────────────────────────────────────────────
-  tt('🔴 the Templates editor is still a textarea — only the composer changed',
-    /<textarea ref=\{bodyRef\}/.test(stripComments(read('components/admin/TemplatesPanel.tsx')))
-    && !/RichEmailEditor/.test(read('components/admin/TemplatesPanel.tsx')))
+  /* ⚠️ RE-PINNED 15 October 2026 (docs/template-formatting-report.md). This read "the Templates editor is still
+   * a textarea — only the composer changed": a fence around the toolbar build. Dominic then asked for the
+   * same toolbar on Templates, so the fence moves: an EMAIL template is written in this editor and STORED AS
+   * TEXT (templateMarkupFromDoc), and a WhatsApp template keeps its textarea. scripts/template-formatting.cjs
+   * proves the stored text and the email it builds. */
+  tt('🔴 the Templates editor: this editor for email (stored as text), the textarea for WhatsApp', (() => {
+    const T = stripComments(read('components/admin/TemplatesPanel.tsx'))
+    return /<textarea ref=\{bodyRef\}/.test(T) && /<RichEmailEditor value=\{doc\}/.test(T)
+      && /templateMarkupFromDoc\(d\)/.test(T) && /draft\.channel !== 'whatsapp' && \(/.test(T)
+  })())
   tt('🔴 EMAIL_FRAME_SANDBOX is allow-same-origin only', (() => {
     const W = stripComments(read('lib/outreach-workspace.ts'))
     return /export const EMAIL_FRAME_SANDBOX = 'allow-same-origin'/.test(W)

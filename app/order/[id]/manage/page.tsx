@@ -6,8 +6,10 @@ import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { formatSlot, instantOfLocal, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { ChargeRows } from '@/components/ChargeRows'
 import type { ChargeLineSource } from '@/lib/order-charge-lines'
-import { useT, useTruckLocale } from '@/lib/i18n/client'
+import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import { errorText } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/orderStatus'
+import '@/lib/i18n/catalog/errorsCustomer'
 
 type OrderState = {
   /** 🔴 THE ORDER'S OWN currency and locale, from /api/orders/[id]. Missing ⇒ figures with no symbol. */

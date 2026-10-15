@@ -39,11 +39,11 @@ import { getCountrySettings, listCountrySettingsCached } from '@/lib/country-set
 import { flagDataUri } from '@/lib/flags'
 import {
   buildClassifyPrompt, parseClassification, shouldRunSchedule, shouldRunTruckDetails,
-  buildTruckDetailsPrompt, parseTruckDetails, detailsAreEmpty, matchProspect, planFill, planIsEmpty,
-  updatedSummary, newTruckSummary, type Classification, type TruckDetails, type MatchRow,
+  buildTruckDetailsPrompt, parseTruckDetails, detailsAreEmpty,
+  conflictLine, type Classification, type TruckDetails, type MatchRow, type Conflict,
 } from '@/lib/admin/truck-details'
 import {
-  applyFill, createHiddenTruckWithProspect, type TruckWriteDb,
+  fileTruckDetails, addAsNewTruck, fillConfirmedTruck, replaceConfirmed, type TruckWriteDb,
 } from '@/lib/admin/truck-details-write'
 import {
   classifyFailure, alertIsDue, alertStateFrom, screenshotAlertEmail, SCREENSHOT_ALERT_TO,
@@ -226,6 +226,9 @@ const db: TruckWriteDb = {
   },
 }
 
+/** Each old → new conflict carries its line, so the panel shows it without importing the matcher. */
+const withLines = (cs: Conflict[]) => cs.map(c => ({ ...c, line: conflictLine(c) }))
+
 /* ─────────────────────────── MATCH CANDIDATES ─────────────────────────── */
 
 /**
@@ -287,6 +290,10 @@ type FileResult = {
   truckId: string | null
   /** Set only for 'needs_a_look': what the admin chooses between, and the details to apply. */
   candidates: { prospect_id: string; truck_id: string; name: string | null }[] | null
+  /** 'phone_only': the number matched one prospect and the name did not — the row asks which truck it is. */
+  ask?: 'phone_only' | null
+  /** Saved emails and social links that differ from the screenshot: kept, and shown old → new to confirm. */
+  conflicts?: (Conflict & { line: string })[]
   details: TruckDetails | null
   error: string | null
   warnings: string[]
@@ -485,43 +492,18 @@ export async function POST(req: NextRequest) {
         } else {
           const { rows, error: mErr } = await matchRows(hasSocial, country.code)
           if (mErr) throw new Error(`The prospect list could not be read: ${mErr}`)
-          const match = matchProspect(details, rows, country.code)
-
-          if (match.kind === 'definite') {
-            const plan = planFill(details, {
-              contact_email: match.row.contact_email, mobile: match.row.mobile, phone: match.row.phone,
-              website: match.row.website, facebook_url: match.row.facebook_url,
-              instagram_url: match.row.instagram_url,
-            })
-            if (planIsEmpty(plan) && plan.kept.length === 0) {
-              result.outcome = 'nothing_new'
-              result.summary = `Already had everything this screenshot shows · ${match.why}`
-              result.prospectId = match.row.prospect_id
-              result.truckId = match.row.truck_id
-            } else {
-              const summary = updatedSummary(plan, match.on)
-              const applied = await applyFill(db, match.row, plan, `Filled from a screenshot — ${summary}`)
-              if (!applied.ok) throw new Error(`The prospect could not be updated: ${applied.error}`)
-              result.outcome = Object.keys(plan.fills).length > 0 || plan.areaNote ? 'updated' : 'nothing_new'
-              result.summary = summary
-              result.prospectId = match.row.prospect_id
-              result.truckId = match.row.truck_id
-              result.warnings = applied.warnings
-            }
-          } else if (match.kind === 'needs_a_look') {
-            result.outcome = 'needs_a_look'
-            result.summary = match.why
-            result.candidates = match.candidates.map(c => ({ prospect_id: c.prospect_id, truck_id: c.truck_id, name: c.name }))
-          } else {
-            const summary = newTruckSummary(details)
-            const created = await createHiddenTruckWithProspect(db, details, `Added from a screenshot — ${summary}`, country.code)
-            if (!created.ok) throw new Error(`The new truck could not be created: ${created.error}`)
-            result.outcome = 'new_truck'
-            result.summary = summary
-            result.prospectId = created.prospectId
-            result.truckId = created.truckId
-            result.warnings = created.warnings
-          }
+          // Match, then fill / ask / create — lib/admin/truck-details-write.ts, where the harness counts the
+          // writes. 🔴 A "Needs a look" (including a phone-only match) writes nothing here.
+          const f = await fileTruckDetails(db, details, rows, country.code)
+          if (!f.ok) throw new Error(f.error ?? 'The screenshot could not be filed')
+          result.outcome = f.outcome
+          result.summary = f.summary
+          result.prospectId = f.prospectId
+          result.truckId = f.truckId
+          result.warnings = f.warnings
+          result.candidates = f.candidates?.map(c => ({ prospect_id: c.prospect_id, truck_id: c.truck_id, name: c.name })) ?? null
+          result.ask = f.ask
+          result.conflicts = withLines(f.conflicts)
         }
       }
 
@@ -575,7 +557,9 @@ export async function POST(req: NextRequest) {
 
 /**
  * The two one-click actions on a "Needs a look" row: "Same truck" applies the details as a definite
- * match, "Add as new" creates the hidden truck.
+ * match, "Add as new" creates the hidden truck. A phone-only match offers the same two, worded as the
+ * question it asks; its Cancel writes nothing and never reaches here. And `replace_fields` — "Replace" on
+ * an old → new line — the one path that changes a saved email or social link (planReplace).
  *
  * 🔴 THE DETAILS COME FROM THE BROWSER, AND THAT IS WHY THEY ARE RE-NORMALISED HERE. The extracted values
  * were sent to the client with the row; a client could return anything. `parseTruckDetails` is run again
@@ -585,7 +569,7 @@ export async function POST(req: NextRequest) {
 async function decide(req: NextRequest) {
   const body = await req.json().catch(() => null) as
     { action?: string; details?: unknown; prospectId?: string; truckId?: string; fileName?: string; fileSize?: number
-      country?: string; events?: unknown } | null
+      country?: string; events?: unknown; fields?: unknown } | null
   if (!body) return NextResponse.json({ error: 'Unreadable request' }, { status: 400 })
 
   // ── 🔴 PHASE 2D-2: "Add as {detected}" / "Keep as {chosen}" on a held row. FIRST, before the social-column
@@ -626,44 +610,44 @@ async function decide(req: NextRequest) {
   const fileSize = Number.isFinite(body.fileSize) ? Number(body.fileSize) : null
 
   if (body.action === 'add_as_new') {
-    const summary = newTruckSummary(reDetails)
-    const created = await createHiddenTruckWithProspect(db, reDetails, `Added from a screenshot — ${summary}`, country.code)
-    if (!created.ok) return NextResponse.json({ error: created.error }, { status: 500 })
+    const f = await addAsNewTruck(db, reDetails, country.code)
+    if (!f.ok) return NextResponse.json({ error: f.error }, { status: 500 })
     await writeLog(hasLog, {
-      fileName, fileSize, kind: 'truck_details', outcome: 'new_truck', summary,
-      prospectId: created.prospectId, truckId: created.truckId, eventsWritten: null, error: null, alertedAt: null,
+      fileName, fileSize, kind: 'truck_details', outcome: 'new_truck', summary: f.summary,
+      prospectId: f.prospectId, truckId: f.truckId, eventsWritten: null, error: null, alertedAt: null,
     })
-    return NextResponse.json({ ok: true, outcome: 'new_truck', summary, prospectId: created.prospectId, truckId: created.truckId, warnings: created.warnings })
+    return NextResponse.json({ ok: true, outcome: 'new_truck', summary: f.summary, prospectId: f.prospectId, truckId: f.truckId, warnings: f.warnings })
   }
 
-  if (body.action === 'same_truck') {
+  if (body.action === 'same_truck' || body.action === 'replace_fields') {
     if (!body.prospectId) return NextResponse.json({ error: 'No prospect was chosen' }, { status: 400 })
     const { rows, error } = await matchRows(hasSocial, country.code)
     if (error) return NextResponse.json({ error: `The prospect list could not be read: ${error}` }, { status: 500 })
     const row = rows.find(r => r.prospect_id === body.prospectId)
     if (!row) return NextResponse.json({ error: 'That prospect could not be found' }, { status: 404 })
-    const plan = planFill(reDetails, {
-      contact_email: row.contact_email, mobile: row.mobile, phone: row.phone,
-      website: row.website, facebook_url: row.facebook_url, instagram_url: row.instagram_url,
-    })
-    if (planIsEmpty(plan) && plan.kept.length === 0) {
-      const summary = 'Already had everything this screenshot shows · confirmed by hand'
-      await writeLog(hasLog, {
-        fileName, fileSize, kind: 'truck_details', outcome: 'nothing_new', summary,
-        prospectId: row.prospect_id, truckId: row.truck_id, eventsWritten: null, error: null, alertedAt: null,
-      })
-      return NextResponse.json({ ok: true, outcome: 'nothing_new', summary, prospectId: row.prospect_id, truckId: row.truck_id, warnings: [] })
+
+    // "Replace" on an old → new line: only what is still in conflict with the value the admin was shown.
+    if (body.action === 'replace_fields') {
+      const asked = (Array.isArray(body.fields) ? body.fields : [])
+        .filter((x): x is { field: string; saved: string } => !!x && typeof x === 'object' && typeof (x as { field?: unknown }).field === 'string')
+      const f = await replaceConfirmed(db, row, asked, reDetails)
+      if (!f.ok) return NextResponse.json({ error: f.error }, { status: 500 })
+      if (f.outcome === 'updated') {
+        await writeLog(hasLog, {
+          fileName, fileSize, kind: 'truck_details', outcome: 'updated', summary: f.summary,
+          prospectId: row.prospect_id, truckId: row.truck_id, eventsWritten: null, error: null, alertedAt: null,
+        })
+      }
+      return NextResponse.json({ ok: true, outcome: f.outcome, summary: f.summary, prospectId: row.prospect_id, truckId: row.truck_id, warnings: f.warnings, refused: f.refused })
     }
-    // ⚠️ 'name' as the key: the admin asserted the identity, so the summary says so rather than naming a
-    // field that did not actually match.
-    const summary = `${updatedSummary(plan, 'name').replace(/ · matched on name$/, '')} · confirmed by hand`
-    const applied = await applyFill(db, row, plan, `Filled from a screenshot — ${summary}`)
-    if (!applied.ok) return NextResponse.json({ error: applied.error }, { status: 500 })
+
+    const f = await fillConfirmedTruck(db, row, reDetails)
+    if (!f.ok) return NextResponse.json({ error: f.error }, { status: 500 })
     await writeLog(hasLog, {
-      fileName, fileSize, kind: 'truck_details', outcome: 'updated', summary,
+      fileName, fileSize, kind: 'truck_details', outcome: f.outcome, summary: f.summary,
       prospectId: row.prospect_id, truckId: row.truck_id, eventsWritten: null, error: null, alertedAt: null,
     })
-    return NextResponse.json({ ok: true, outcome: 'updated', summary, prospectId: row.prospect_id, truckId: row.truck_id, warnings: applied.warnings })
+    return NextResponse.json({ ok: true, outcome: f.outcome, summary: f.summary, prospectId: row.prospect_id, truckId: row.truck_id, warnings: f.warnings, conflicts: withLines(f.conflicts) })
   }
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })

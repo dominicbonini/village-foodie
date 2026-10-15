@@ -15,8 +15,11 @@ import { formatSlot, formatYmd, type TimeSettings } from '@/lib/time-utils'
 // 🔴 EVERY CUSTOMER SENTENCE BELOW IS IN messages/en-GB.json `emailCustomer` (Language Phase 1a), read in the
 // order's language — `money.locale`, its country's — so a translated email is a translated file, not an edit
 // here. The markup stays in this file; a bold word or a link inside a sentence is a tag in its message.
-// ⚠️ The operator's "🔔 New order" email (formatNewOrderEmail) is a later phase and keeps its words here.
+// 🔴 The operator's "🔔 New order" email (formatNewOrderEmail) reads `emailOperator` (Language Phase 1b), in the
+// truck's language — its time settings' locale, else the order's money locale. Its glyphs (🔔 ⏰ 📍 📞 📝 ✓) stay here.
 import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/emailCustomer'
+import '@/lib/i18n/catalog/emailOperator'
 
 type EmailT = ReturnType<typeof translatorFor<'emailCustomer'>>
 const emailT = (locale: string | null | undefined): EmailT => translatorFor(locale, 'emailCustomer')
@@ -577,27 +580,37 @@ export function formatNewOrderEmail(params: {
   // Single-sourced line rendering (now shows deal bundle price + slot-modifier prices too).
   const orderLinesHtml = renderOrderLinesHtml(items, deals, money)
 
-  const subject = `🔔 New order #${orderId} — ${customerName}${slot ? ' · ' + slot : ''}`
+  const t = translatorFor(params.time?.locale ?? money.locale, 'emailOperator.newOrder')
+  const subject = `🔔 ${t('subject', { id: orderId, name: customerName, withSlot: slot ? 'yes' : 'no', slot: slot ?? '' })}`
   const html = `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-            <h2 style="color:#ea580c;margin:0 0 12px">🔔 New order received</h2>
-            <p><strong>Order #${orderId}</strong> from <strong>${customerName}</strong></p>
-            ${slot ? `<p style="font-size:16px"><strong>⏰ Collection: ${slot}</strong></p>` : '<p>No specific time — ASAP</p>'}
+            <h2 style="color:#ea580c;margin:0 0 12px">🔔 ${t('heading')}</h2>
+            <p>${t.markup('from', { id: orderId, name: customerName, b: strong })}</p>
+            ${slot ? `<p style="font-size:16px"><strong>⏰ ${t('collection', { time: slot })}</strong></p>` : `<p>${t('asap')}</p>`}
             ${(venueName || venueTown) ? `<p>📍 ${[venueName, venueTown, venuePostcode].filter(Boolean).join(', ')}</p>` : ''}
             ${customerPhone ? `<p>📞 <a href="tel:${customerPhone}">${customerPhone}</a></p>` : ''}
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
               ${orderLinesHtml}${chargeRowsHtml(params.charges, money)}
               <tr style="border-top:2px solid #e2e8f0">
-                <td style="padding-top:8px;font-weight:800">Total</td>
+                <td style="padding-top:8px;font-weight:800">${t('total')}</td>
                 <td style="text-align:right;padding-top:8px;font-weight:800">${formatMajor(total, money)}</td>
               </tr>
             </table>
-            ${notes ? `<p><strong>📝 Notes:</strong> ${notes}</p>` : ''}
+            ${notes ? `<p>${t.markup('notes', { notes, b: c => `<strong>📝 ${c}</strong>` })}</p>` : ''}
             ${autoAccepted
-              ? `<p style="color:#16a34a;font-size:13px;font-weight:600;margin-top:16px">✓ Auto-confirmed — no action needed.</p>`
-              : `<p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your HatchGrab dashboard to confirm or reject this order.</p>`}
+              ? `<p style="color:#16a34a;font-size:13px;font-weight:600;margin-top:16px">✓ ${t('autoConfirmed')}</p>`
+              : `<p style="color:#64748b;font-size:12px;margin-top:16px">${t('confirmPrompt')}</p>`}
           </body>`
   const chargeText = chargeTextLines(params.charges, money)
-  const text = `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}${(venueName || venueTown) ? ' at ' + [venueName, venueTown].filter(Boolean).join(', ') : ''}.${chargeText.length ? ` ${chargeText.join('. ')}.` : ''} Total ${formatMajor(total, money)}.${notes ? ' Notes: ' + notes : ''}`
+  // ⚠️ Two hand-built lists stay here as they were: the venue ("The Green, Harnessville") and the charge lines
+  // joined by ". " — a later phase can make them locale lists.
+  const text = t('text', {
+    id: orderId, name: customerName,
+    withSlot: slot ? 'yes' : 'no', slot: slot ?? '',
+    withVenue: (venueName || venueTown) ? 'yes' : 'no', venue: [venueName, venueTown].filter(Boolean).join(', '),
+    withCharges: chargeText.length ? 'yes' : 'no', charges: chargeText.join('. '),
+    total: formatMajor(total, money),
+    withNotes: notes ? 'yes' : 'no', notes: notes ?? '',
+  })
 
   return { subject, html, text }
 }

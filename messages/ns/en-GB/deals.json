@@ -1,0 +1,17 @@
+{
+  "back": "← Back",
+  "title": "Apply a deal",
+  "save": "Save {amount}",
+  "selectItems": "Select items for each slot",
+  "choose": "Choose {category}…",
+  "inYourBasket": "── In your basket ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (in basket){state, select, used { — already in a deal} taken { — selected in another slot} other {}}",
+  "addNew": "── Add new ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Required · choose one} required {Required} other {Choose one}}{unmet, select, yes { (required)} other {}}",
+  "notePlaceholder": "Add a note, e.g. no onions (optional)",
+  "backButton": "Back",
+  "cancel": "Cancel",
+  "chooseRequired": "Choose required options",
+  "apply": "Apply deal · {amount}"
+}

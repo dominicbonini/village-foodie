@@ -28,7 +28,8 @@ import { Capacitor } from '@capacitor/core'
 import type { NetPrinterErrorCode, NetPrinterPlugin } from '@hatchgrab/net-printer'
 import { isNetPrinterAvailable } from './transport'
 import type { PrinterTransport, PrinterAvailability, PrinterStatus, PrintResult, DiscoveredPrinter } from './transport'
-import { parseNetAddress, NET_ADDRESS_HELP } from './netAddress'
+import { parseNetAddress } from './netAddress'
+import { printerMessageText, type PrinterText } from './printerText'
 
 /** Per-DEVICE, like the BLE pairing keys — the address this device last connected to. The VAN's
  *  address lives in truck_vans.network_printer_address and is what the card pre-fills from. */
@@ -49,16 +50,17 @@ function toBase64(bytes: Uint8Array): string {
   return btoa(s)
 }
 
-/** Operator-facing wording for a plugin error code. Never a stack trace. */
-export function describeNetError(code: NetPrinterErrorCode | undefined, address: string): string {
+/** Operator-facing wording for a plugin error code, AS A CODE (lib/printing/printerText.ts) — the card turns it
+ *  into words in the truck's language. Never a stack trace. */
+export function describeNetError(code: NetPrinterErrorCode | undefined, address: string): PrinterText {
   switch (code) {
-    case 'permission': return 'HatchGrab needs permission to reach your printer. Turn on Local Network for HatchGrab in Settings.'
-    case 'refused': return `Can't reach the printer at ${address} — it isn't accepting connections.`
-    case 'timeout': return `Can't reach the printer at ${address} — it didn't answer in time.`
-    case 'unreachable': return `Can't reach the printer at ${address} — check it's on the same network.`
-    case 'invalid': return NET_ADDRESS_HELP
-    case 'unsupported': return 'Printing is only available in the app'
-    default: return `Can't reach the printer at ${address}`
+    case 'permission': return { code: 'netPermission' }
+    case 'refused': return { code: 'netRefused', address }
+    case 'timeout': return { code: 'netTimeout', address }
+    case 'unreachable': return { code: 'netUnreachable', address }
+    case 'invalid': return { code: 'addressHelp' }
+    case 'unsupported': return { code: 'appOnly' }
+    default: return { code: 'netCantReach', address }
   }
 }
 
@@ -93,9 +95,9 @@ export function createNetTransport(): PrinterTransport {
 
     // ── CONNECT = PARSE → PROBE (ESC @) → STORE, in that order, and the store happens LAST ──────────
     async connect(raw: string): Promise<PrintResult> {
-      if (!Capacitor.isNativePlatform()) return { ok: false, error: 'Printing is only available in the app' }
+      if (!Capacitor.isNativePlatform()) return { ok: false, error: { code: 'appOnly' } }
       const parsed = parseNetAddress(raw)
-      if (!parsed) return { ok: false, error: NET_ADDRESS_HELP }
+      if (!parsed) return { ok: false, error: { code: 'addressHelp' } }
       try {
         const res = await (await plugin()).probe({ host: parsed.host, port: parsed.port, connectTimeoutMs: NET_CONNECT_TIMEOUT_MS, writeTimeoutMs: NET_WRITE_TIMEOUT_MS })
         if (!res.ok) {
@@ -104,7 +106,7 @@ export function createNetTransport(): PrinterTransport {
         }
       } catch (e) {
         lastOk = false; lastCode = 'io'
-        return { ok: false, error: e instanceof Error ? e.message : 'Could not reach the printer' }
+        return { ok: false, error: e instanceof Error ? e.message : { code: 'couldNotReachPrinter' } }
       }
       // 🔴 ONLY NOW. The address is persisted after the probe succeeded, never before.
       address = parsed.normalised; loaded = true; lastOk = true; lastCode = undefined
@@ -120,10 +122,10 @@ export function createNetTransport(): PrinterTransport {
     // ── SEND — WHERE 'failed' AND 'unknown' ARE DECIDED. Read the header before changing it. ────────
     async sendBytes(bytes: Uint8Array): Promise<PrintResult> {
       await load()
-      if (!Capacitor.isNativePlatform()) return { ok: false, error: 'Printing is only available in the app' }
-      if (!address) return { ok: false, error: 'No printer connected' }
+      if (!Capacitor.isNativePlatform()) return { ok: false, error: { code: 'appOnly' } }
+      if (!address) return { ok: false, error: { code: 'noPrinter' } }
       const parsed = parseNetAddress(address)
-      if (!parsed) return { ok: false, error: NET_ADDRESS_HELP }
+      if (!parsed) return { ok: false, error: { code: 'addressHelp' } }
       let res
       try {
         res = await (await plugin()).send({ host: parsed.host, port: parsed.port, base64: toBase64(bytes), connectTimeoutMs: NET_CONNECT_TIMEOUT_MS, writeTimeoutMs: NET_WRITE_TIMEOUT_MS })
@@ -138,18 +140,20 @@ export function createNetTransport(): PrinterTransport {
       // 🔴 NOTHING LEFT THE DEVICE — certain failure. The reprint is a FIRST ticket, unmarked.
       if (!res.bytesWritten || res.bytesWritten <= 0) return { ok: false, error: msg }
       // 🔴 PART OF THE TICKET MAY BE ON PAPER. Throwing is what makes usePrinting record 'unknown'.
-      throw new Error(`partial write after ${res.bytesWritten} of ${bytes.length} bytes: ${msg}`)
+      // ⚠️ A thrown message is a DIAGNOSTIC (the record, and the card's "may have printed only partly" line) with no
+      // truck to hand, so its reason reads in the default language (en-GB).
+      throw new Error(`partial write after ${res.bytesWritten} of ${bytes.length} bytes: ${printerMessageText(null, msg)}`)
     },
 
     // ── STATUS — connected ONLY while an address is stored AND the last probe/send succeeded ─────────
     async status(): Promise<PrinterStatus> {
-      if (!Capacitor.isNativePlatform()) return { connected: false, detail: 'Printing is only available in the app' }
+      if (!Capacitor.isNativePlatform()) return { connected: false, detail: { code: 'appOnly' } }
       await load()
       if (address && lastOk) return { connected: true, printerName: address }
       return {
         connected: false,
         printerName: address ?? undefined,
-        detail: address ? describeNetError(lastCode, address) : 'No printer connected',
+        detail: address ? describeNetError(lastCode, address) : { code: 'noPrinter' },
       }
     },
 

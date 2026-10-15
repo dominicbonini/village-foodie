@@ -3,7 +3,8 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, use } from 'react';
 import { soldOutRefusalMessage } from '@/lib/payments/sold-out-copy';
 import { isValidEmail } from '@/lib/contact-validation'
-import { isPlausiblePhone, phoneErrorMessage, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
+import { isPlausiblePhone, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
+import { phoneErrorMessage } from '@/lib/phone-message'
 import { isDemoIdentifier, displayTruckName } from '@/lib/demo'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
@@ -38,8 +39,10 @@ import { computeOrderCharges, rulesFromCheckout, applyBps, type CheckoutRules, t
 import { ChargeRows } from '@/components/ChargeRows'
 import { formatRateBps, type ChargeLineSource } from '@/lib/order-charge-lines'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
-import { useT, useTruckLocale, useAppLocale } from '@/lib/i18n/client'
+import { useT, useTruckLocale, useAppLocale } from '@/lib/i18n/use-t'
 import { errorText, type CustomerErrorParams } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/order'
+import '@/lib/i18n/catalog/errorsCustomer'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

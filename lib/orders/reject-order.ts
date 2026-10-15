@@ -33,6 +33,7 @@ import { rejectionPaymentSentence, notifyCustomer } from '@/lib/email'
 import { translatorFor } from '@/lib/i18n/translator'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import type { ResolvedActor, ActorSource } from '@/lib/audit/actor'
+import '@/lib/i18n/catalog/emailCustomer'
 
 // Escape operator free-text before interpolating into a customer email's HTML (prevents broken
 // markup / injection from a rejection/cancellation reason). NOTE: the CANCEL email (:cancellation

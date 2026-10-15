@@ -1,0 +1,14 @@
+{
+  "newOrder": {
+    "subject": "New order #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "New order received",
+    "from": "<b>Order #{id}</b> from <b>{name}</b>",
+    "collection": "Collection: {time}",
+    "asap": "No specific time — ASAP",
+    "total": "Total",
+    "notes": "<b>Notes:</b> {notes}",
+    "autoConfirmed": "Auto-confirmed — no action needed.",
+    "confirmPrompt": "Log in to your HatchGrab dashboard to confirm or reject this order.",
+    "text": "New order #{id} from {name}{withSlot, select, yes { for {slot}} other {}}{withVenue, select, yes { at {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total {total}.{withNotes, select, yes { Notes: {notes}} other {}}"
+  }
+}

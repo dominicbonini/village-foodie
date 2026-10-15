@@ -66,20 +66,30 @@ console.log('\n── Bluetooth-only sentences appear ONLY inside the Bluetooth 
   // moment the code deploys — and FIX 1 requires that such a device sees the Bluetooth card it already
   // had, unchanged to the byte. Tidier copy is not worth a diff on a shipped screen; it can ride with
   // the next binary. If you change one of these, change HEAD's too.
+  // ⚠️ LANGUAGE PHASE 1b (docs/language-phase-1b-report.md): the card's words are messages (`printing.card.*` in
+  // messages/en-GB.json, read with `useT('printing.card')`). So each sentence is checked twice: its WORDS in the
+  // message (exact, as before), and its KEY's use — referenced inside the Bluetooth branch and nowhere else.
+  const CARD = JSON.parse(read('messages/en-GB.json')).printing.card
+  const keysFor = s => Object.entries(CARD).filter(([, v]) => typeof v === 'string' && v.includes(s)).map(([k]) => k)
+  const usesKey = (src, k) => new RegExp(`\\bt(?:\\.rich)?\\('${k}'`).test(src)
   for (const s of ['Bluetooth is switched off', 'Connect a Bluetooth receipt printer', 'cannot reach a Bluetooth printer', 'most receipt printers only appear', 'Scan for printers']) {
-    check(bleBranch.includes(s), `"${s}" is in the Bluetooth branch`)
-    check(!noComments(rest).includes(s), `…and nowhere else`)
+    const keys = keysFor(s)
+    check(keys.length > 0 && keys.some(k => usesKey(bleBranch, k)), `"${s}" is in the Bluetooth branch (printing.card.${keys.join('/') || '?'})`)
+    check(!keys.some(k => usesKey(noComments(rest), k)), `…and nowhere else`)
   }
   const wiredBranch = card.slice(close)
-  for (const s of ['Turn on Local Network for HatchGrab in Settings', 'Print test ticket', "Can't reach the printer"]) check(!bleBranch.includes(s) || s === "Can't reach the printer", `"${s}" is not in the Bluetooth branch`)
-  // The PIN refusal is wired-only copy and says what IS true, not what cannot be checked.
-  const guardSrc = read('lib/printing/networkGuard.ts')
-  check(/pin: "Wired printing isn't available on dashboards with a PIN yet\.",/.test(guardSrc), 'NET_GUARD_COPY.pin — the exact sentence')
-  check(!bleBranch.includes('NET_GUARD_COPY.pin'), 'the PIN sentence never appears in the Bluetooth branch')
+  for (const s of ['Turn on Local Network for HatchGrab in Settings', 'Print test ticket']) check(!keysFor(s).some(k => usesKey(bleBranch, k)), `"${s}" is not in the Bluetooth branch`)
+  // The PIN refusal is wired-only copy and says what IS true, not what cannot be checked. Its words are
+  // `printing.say.guard.pin`, reached through the guard code — which the Bluetooth branch never renders.
+  const SAY = JSON.parse(read('messages/en-GB.json')).printing.say
+  check(SAY.guard && SAY.guard.pin === "Wired printing isn't available on dashboards with a PIN yet.", 'printing.say.guard.pin — the exact sentence (was NET_GUARD_COPY.pin)')
+  check(!/code: 'guard'|guard\b/.test(noComments(bleBranch)), 'the PIN sentence never appears in the Bluetooth branch')
   // The choice itself lives in its own file BECAUSE it is gated on the running binary carrying the
   // plugin — scripts/printing-gating.cjs renders it both ways. Here we only check its words.
   const choice = read('components/printing/PrinterTypeChoice.tsx')
-  check(/Printer type/.test(choice) && /'Bluetooth'/.test(choice) && /'Wired'/.test(choice), 'PrinterTypeChoice.tsx: the choice reads Bluetooth / Wired')
+  // Language Phase 1b: the words are printing.card.printerType / typeBluetooth / typeWired, read by the choice.
+  check(CARD.printerType === 'Printer type' && CARD.typeBluetooth === 'Bluetooth' && CARD.typeWired === 'Wired'
+    && /t\('printerType'\)/.test(choice) && /t\('typeBluetooth'\)/.test(choice) && /t\('typeWired'\)/.test(choice), 'PrinterTypeChoice.tsx: the choice reads Bluetooth / Wired')
   check(!/Printer type/.test(noComments(card)), 'the card itself renders no Printer type markup — it delegates to the gated component')
   check(/isNetPrinterAvailable\(\)/.test(choice), 'and it is gated on isNetPrinterAvailable()')
   check(!/Bluetooth thermal|thermal/.test(noComments(card)), 'the card never says "thermal"')

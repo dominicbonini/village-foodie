@@ -38,6 +38,8 @@
 //     backdrop's own dismiss is unchanged.
 import { formatTime, type TimeSettings } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_LIGHT } from '@/lib/event-display'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/kitchenModals'
 
 /** The shape both callers already hold. Deliberately minimal — anything richer is the caller's. */
 export interface PickableEvent {
@@ -85,6 +87,7 @@ export interface EventPickerPanelProps<T extends PickableEvent> {
 export function EventPickerPanel<T extends PickableEvent>({
   open, isDemo, events, isSelected, onSelect, onClose, title, closeLabel, isEventBlocked, emptyState, time,
 }: EventPickerPanelProps<T>) {
+  const t = useT('kitchenModals')
   if (!open || isDemo) return null
 
   return (
@@ -100,7 +103,7 @@ export function EventPickerPanel<T extends PickableEvent>({
           <h3 className="font-semibold text-slate-900">{title}</h3>
           <button
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('close')}
             className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center"
           >
             ×
@@ -136,7 +139,7 @@ export function EventPickerPanel<T extends PickableEvent>({
                       </p>
                       {blocked && (
                         <span className="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">
-                          📴 Reconnect to load
+                          📴 {t('picker.reconnect')}
                         </span>
                       )}
                       <span className={`text-[10px] font-bold bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0 ${EVENT_STATUS_TEXT_ON_LIGHT[status.tone]}`}>
@@ -144,7 +147,7 @@ export function EventPickerPanel<T extends PickableEvent>({
                       </span>
                     </div>
                     {venue && <p className="text-xs text-slate-500 mt-0.5">{venue}</p>}
-                    {selected && <span className="text-[10px] font-black text-orange-600 uppercase tracking-wide">Selected</span>}
+                    {selected && <span className="text-[10px] font-black text-orange-600 uppercase tracking-wide">{t('picker.selected')}</span>}
                   </button>
                 )
               })}

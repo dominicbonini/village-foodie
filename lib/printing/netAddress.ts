@@ -1,6 +1,7 @@
 // lib/printing/netAddress.ts — the ONE parser for a wired printer's address, shared by the card, the
 // transport and the /api/printing route so the three cannot disagree about what counts as valid.
 // No Capacitor import here on purpose: the server route imports it.
+import { printerMessageText } from './printerText'
 
 export const DEFAULT_NET_PRINTER_PORT = 9100
 
@@ -20,5 +21,12 @@ export function parseNetAddress(raw: string | null | undefined): NetAddress | nu
   return { host, port, normalised: `${host}:${port}` }
 }
 
-/** The operator-facing reason when parseNetAddress returns null. */
-export const NET_ADDRESS_HELP = "Enter the printer's address as 192.168.1.50 or 192.168.1.50:9100."
+/** The operator-facing reason when parseNetAddress returns null, in `locale` (messages/en-GB.json
+ *  `printing.say.addressHelp`, Language Phase 1b). The card and the transports carry it as the code
+ *  `{ code: 'addressHelp' }` (lib/printing/printerText.ts) and turn it into words at render. */
+export function netAddressHelp(locale?: string | null): string {
+  return printerMessageText(locale, { code: 'addressHelp' })
+}
+/** ⚠️ The same sentence in en-GB, for /api/printing, which answers it as its error (the server route has no
+ *  truck locale at that point). Kept so that route is unchanged; it reads the catalogue, not a literal. */
+export const NET_ADDRESS_HELP = netAddressHelp('en-GB')

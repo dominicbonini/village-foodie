@@ -9,7 +9,8 @@ import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, s
 import { tallyBasketOptionQtys, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { isModifierAvailable } from '@/lib/modifier-utils'
-import { useT } from '@/lib/i18n/client'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/deals'
 
 interface Bundle {
   name: string

@@ -6,6 +6,8 @@
 // can fake a match. Needs `npx cap sync ios` + the Face ID usage description (NSFaceIDUsageDescription).
 import { Capacitor } from '@capacitor/core'
 import { Preferences } from '@capacitor/preferences'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/nativeShell'
 
 const APP_LOCK_KEY = 'hg_app_lock'
 const PIN_KEY = 'hg_app_lock_pin'   // native Preferences (NOT localStorage) — {salt,hash}, never the PIN itself
@@ -72,15 +74,17 @@ export async function isBiometricAvailable(): Promise<boolean> {
  * cancel/failure. On web (non-native) resolves TRUE (no lock off-shell — this gates the app, it doesn't
  * protect data, which the session already governs).
  */
-export async function verifyIdentity(reason = 'Unlock HatchGrab'): Promise<boolean> {
+// `locale` (optional, Language Phase 1b): the words of the system prompt; none ⇒ en-GB.
+export async function verifyIdentity(reason?: string, locale?: string | null): Promise<boolean> {
   if (!Capacitor.isNativePlatform()) return true
   try {
     const { BiometricAuth } = await import('@aparajita/capacitor-biometric-auth')
+    const t = translatorFor(locale, 'nativeShell')
     await BiometricAuth.authenticate({
-      reason,
+      reason: reason ?? t('appLock.unlockReason'),
       allowDeviceCredential: true,   // passcode fallback when biometry isn't enrolled/available
-      iosFallbackTitle: 'Use passcode',
-      cancelTitle: 'Cancel',
+      iosFallbackTitle: t('appLock.usePasscode'),
+      cancelTitle: t('appLock.cancel'),
     })
     return true   // authenticate() resolves on success, throws on cancel/failure
   } catch { return false }

@@ -1,0 +1,12 @@
+{
+  "guestLabel": "PRIVATE EVENT",
+  "truckFallback": "The food truck",
+  "noSlugTitle": "This truck isn’t set up for online ordering yet.",
+  "orderingOffTitle": "Ordering online isn’t switched on",
+  "orderingOffBody": "This event isn’t taking orders online. Please order at the hatch.",
+  "replacedTitle": "This link has been replaced",
+  "replacedBody": "This link no longer works — {truck} has replaced it. Ask the organiser for the new link or QR code.",
+  "madePublicBody": "This link no longer works — {truck} has made this event public. You can order from their normal page.",
+  "unknownTitle": "This link doesn’t work",
+  "unknownBody": "This link doesn’t work. Check it with the organiser, or scan the QR code again."
+}

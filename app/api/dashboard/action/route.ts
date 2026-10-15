@@ -8,6 +8,9 @@ import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
 import { getLocalDateInTz } from '@/lib/time-utils'
 import { formatMajor } from '@/lib/money-format'
 import { translatorFor } from '@/lib/i18n/translator'
+import { kitchenErrorBody, type KitchenErrorCode, type KitchenErrorParams } from '@/lib/i18n/kitchen-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 // 🔴 THE ONE RESOLVER EVERY EMAIL IN THIS FILE ASKS. Four sites here used to print "Pay at the truck on
 // collection" unconditionally — to customers whose card was held, and to customers already charged.
 // None of them works the answer out for itself; they all call this. See lib/payments/email-payment-state.
@@ -66,6 +69,7 @@ import { INTERVAL_CHOICES, isIntervalChoice } from '@/lib/slot-interval'
 import { writeCookingReservation, writeReservationRecord, admitForManual } from '@/lib/orders/cooking-reservation'
 import { resolveBatchReservations } from '@/lib/features'
 import { WALK_UP_NAME } from '@/lib/walk-up'
+import '@/lib/i18n/catalog/emailCustomer'
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
 // OPERATOR WRITES. Most handlers are fast DB writes, but this route imports captureOnConfirmation
@@ -246,12 +250,14 @@ async function deliverReadyEmail(order: any, truck: any) {
 //   • 22xxx (data exception, incl. 22P02 invalid uuid) → 400. TERMINAL: the same bytes will fail again,
 //     so it must NOT be queued and retried — it needs a schema fix, not another attempt.
 //   • anything else → 503 + Retry-After, marked `retryable`, so a genuine blip is queued and replayed.
-function optionStockWriteFailure(where: string, err: { code?: string; message?: string; details?: string }) {
+function optionStockWriteFailure(where: string, err: { code?: string; message?: string; details?: string }, locale: string) {
   const terminal = typeof err.code === 'string' && err.code.startsWith('22')
   console.error(`[dashboard/action] ${where}: event_option_stock write FAILED —`, err.code, err.message, err.details)
   return terminal
+    // ⚠️ THE TERMINAL BODY KEEPS ITS OWN `code` — the database's error code, which the offline queue reads — so it
+    // gets no kitchen code beside it (Language Phase 1b; listed in docs/language-phase-1b-report.md).
     ? NextResponse.json({ error: 'Could not save that extra. The stock table needs attention.', code: err.code }, { status: 400 })
-    : NextResponse.json({ error: 'Service unavailable', retryable: true }, { status: 503, headers: { 'Retry-After': '10' } })
+    : NextResponse.json(kitchenErrorBody(locale, 'service_unavailable', {}, { retryable: true }), { status: 503, headers: { 'Retry-After': '10' } })
 }
 
 export async function POST(req: NextRequest) {
@@ -267,15 +273,19 @@ export async function POST(req: NextRequest) {
     // database that was merely slow.
     if (!verified.ok && verified.reason === 'unavailable') {
       return NextResponse.json(
-        { error: 'Service unavailable', retryable: true },
+        kitchenErrorBody(DEFAULT_LOCALE, 'service_unavailable', {}, { retryable: true }),
         { status: 503, headers: { 'Retry-After': '10' } },
       )
     }
     if (!verified.ok && verified.reason === 'bad_pin') {
-      return NextResponse.json({ error: 'Invalid PIN', requiresPin: true }, { status: 401 })
+      return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'invalid_pin', {}, { requiresPin: true }), { status: 401 })
     }
-    if (!verified.ok) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    if (!verified.ok) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
     const truck = verified.truck
+    // 🔴 EVERY REFUSAL BELOW CARRIES A CODE AND ITS VALUES (Language Phase 1b, lib/i18n/kitchen-errors.ts), in the
+    // truck's language — read only when a refusal is built, so a request that succeeds reads nothing extra.
+    const kErr = async <X extends Record<string, unknown>>(code: KitchenErrorCode, params: KitchenErrorParams = {}, extra?: X) =>
+      kitchenErrorBody(await localeForTruck(truck), code, params, extra)
 
     // ── ACTOR ATTRIBUTION (V9.4) — LOGGING ONLY, NEVER AUTHORISATION ───────────────────────────────
     // This route previously discarded identity entirely: verifyToken above resolves a TRUCK from a
@@ -301,14 +311,14 @@ export async function POST(req: NextRequest) {
     if (Array.isArray(body.expected_from) && orderKey && action !== 'manual') {
       const { data: cur } = await supabase.from('orders').select('status').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (cur && !body.expected_from.includes(cur.status)) {
-        return NextResponse.json({ error: 'conflict', current_status: cur.status }, { status: 409 })
+        return NextResponse.json(await kErr('conflict', {}, { current_status: cur.status }), { status: 409 })
       }
     }
 
     // ── CONFIRM ───────────────────────────────────────────────────────────────
     if (action === 'confirm') {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
-      if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
 
       // ── 🔴 CAPTURE SITE 2 of 4: THE OPERATOR CONFIRM — AND EVERY OFFLINE REPLAY OF IT. ──────────
@@ -389,7 +399,7 @@ export async function POST(req: NextRequest) {
       const rejected = await rejectOrder(supabase, {
         orderKey, truck, rejectionReason, actor, source: actorSource,
       })
-      if (!rejected.ok) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      if (!rejected.ok) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       // ⚠️ ADDITIVE FIELD. `success` and `status` are unchanged and mean exactly what they meant; the
       // rejection did happen. `hold_release` is the money half of the answer, which had no field before
       // because there was no money half.
@@ -400,7 +410,7 @@ export async function POST(req: NextRequest) {
     if (action === 'cancel') {
       const { cancellationReason } = body
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
-      if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       // ── 🔴 WHAT THE MONEY WAS DOING, ASKED BEFORE ANYTHING MOVES. ────────────────────────────────
       // Resolved here rather than after the release, because releasing stamps `authorization_cancelled_at`
       // and the resolver would then answer 'hatch' — "Pay at the truck on collection" — to a customer
@@ -482,7 +492,7 @@ export async function POST(req: NextRequest) {
     // immediately, dashboard after the undo window.
     if (action === 'ready') {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
-      if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       await supabase.from('orders').update({ status: 'ready' }).eq('order_key', orderKey).eq('truck_id', truck.id)
       // RELEASE kitchen-capacity occupancy at ready (done cooking). buildUnitsFromOrders no longer counts a
       // 'ready' order, so the rebuild frees its production slot — shared with every capacity reader (the
@@ -501,7 +511,7 @@ export async function POST(req: NextRequest) {
     // timer is cleared whenever the flush path fires), with this status guard as the server backstop.
     if (action === 'send_ready_email') {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
-      if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       if (order.status !== 'ready') return NextResponse.json({ success: true, skipped: 'not ready' })
       await deliverReadyEmail(order, truck)
       return NextResponse.json({ success: true })
@@ -753,7 +763,7 @@ export async function POST(req: NextRequest) {
         confirmUnresolvedTotal,
       } = editedOrder || {}
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
-      if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
 
       // ── SERVER-AUTHORITATIVE PRICING, PRICE-LOCKED ─────────────────────────────────────────────
       // The request body's unit_price / modifier prices / deal price are ADVISORY ONLY — they say
@@ -900,7 +910,7 @@ export async function POST(req: NextRequest) {
         // The manual path's busy response, verbatim in status and shape (409, { error, retry: true }):
         // the dashboard reads `retry` and keeps the operator's edits on screen for another go.
         return NextResponse.json(
-          { error: 'Someone else is updating orders right now. Please try again.', retry: true },
+          await kErr('busy_retry_edit', {}, { retry: true }),
           { status: 409 },
         )
       }
@@ -943,7 +953,7 @@ export async function POST(req: NextRequest) {
       }).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (updateErr) {
         console.error('[edit] order update failed:', updateErr.message, updateErr.details, updateErr.hint)
-        return NextResponse.json({ error: 'Could not save the changes to this order' }, { status: 500 })
+        return NextResponse.json(await kErr('edit_save_failed'), { status: 500 })
       }
 
       // ── 🔴 THE TOTAL MOVED, SO THE MONEY QUESTION HAS A NEW ANSWER. RECOMPUTE IT. ────────────────
@@ -1161,16 +1171,16 @@ export async function POST(req: NextRequest) {
       const reason = body.reason
       const note = typeof body.note === 'string' ? body.note.trim() : ''
       if (!REFUND_REASONS.includes(reason)) {
-        return NextResponse.json({ error: 'Choose a reason for this refund.' }, { status: 400 })
+        return NextResponse.json(await kErr('refund_reason_required'), { status: 400 })
       }
       // ⚠️ THE NOTE IS REQUIRED FOR 'other' AND THE SERVER SAYS SO TOO. A required field enforced only in
       // the browser is a field that is empty in the audit log the first time somebody uses a stale tab.
       if (reason === 'other' && !note) {
-        return NextResponse.json({ error: 'Add a note explaining this refund.' }, { status: 400 })
+        return NextResponse.json(await kErr('refund_note_required'), { status: 400 })
       }
       const amountMinor = typeof rawAmount === 'number' ? Math.round(rawAmount) : NaN
       if (!Number.isFinite(amountMinor) || amountMinor <= 0) {
-        return NextResponse.json({ error: 'Enter an amount greater than zero.' }, { status: 400 })
+        return NextResponse.json(await kErr('refund_amount_invalid'), { status: 400 })
       }
       const outcome = await refundOrder(supabase, {
         orderKey, truckId: truck.id, amountMinor, reason, note: note || null, actor, source: actorSource,
@@ -1223,19 +1233,20 @@ export async function POST(req: NextRequest) {
         case 'refused':
           // 409, like every other guard refusal on this route, carrying the figure the operator needs.
           return NextResponse.json(
-            { error: outcome.detail, refundRefused: outcome.reason, remainingMinor: outcome.remainingMinor },
+            await kErr(outcome.code, outcome.params, { refundRefused: outcome.reason, remainingMinor: outcome.remainingMinor }),
             { status: 409 },
           )
         default:
-          return NextResponse.json({ error: outcome.detail }, { status: 502 })
+          // Our own failure carries its code; Stripe's or the network's words are passed on as they came.
+          return NextResponse.json(outcome.code ? await kErr(outcome.code, outcome.params) : { error: outcome.detail }, { status: 502 })
       }
     }
 
     // ── ITEM AVAILABILITY (sold out toggle) — PER-EVENT (Phase 5) ──────────────
     if (action === 'set_item_availability') {
-      if (!itemName) return NextResponse.json({ error: 'itemName required' }, { status: 400 })
+      if (!itemName) return NextResponse.json(await kErr('item_name_required'), { status: 400 })
       const { event_id } = body
-      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+      if (!event_id) return NextResponse.json(await kErr('event_id_required'), { status: 400 })
       // Omit stock_count → preserved on an existing row, defaults null on a new row (no ceiling
       // override). Writes only this event's row (onConflict event_id,item_name).
       await supabase.from('event_item_stock').upsert({
@@ -1267,7 +1278,7 @@ export async function POST(req: NextRequest) {
         const { data: cur } = await supabase.from('truck_events').select('status').eq('id', event_id).eq('truck_id', truck.id).single()
         const isLive = cur?.status === 'confirmed' || cur?.status === 'open'
         if (isLive && !hasValidEventTimes(start_time, end_time)) {
-          return NextResponse.json({ error: 'A live event needs a start and end time — add them before saving.' }, { status: 400 })
+          return NextResponse.json(await kErr('live_event_needs_times'), { status: 400 })
         }
         await supabase.from('truck_events')
           .update({ start_time, end_time, updated_at: new Date().toISOString() })
@@ -1304,7 +1315,7 @@ export async function POST(req: NextRequest) {
       const { customerName, customerPhone, customerEmail, slot, items, notes, event_date: passedEventDate, event_id: passedEventId } = manualOrder
       const deals = manualOrder.deals ?? null
       if (!items?.length && !deals?.length) {
-        return NextResponse.json({ error: 'Items required' }, { status: 400 })
+        return NextResponse.json(await kErr('items_required'), { status: 400 })
       }
 
       // ── Required-modifier completeness guard (operator backstop; mirrors the §15 customer-submit
@@ -1394,12 +1405,9 @@ export async function POST(req: NextRequest) {
         })()
         if (requiredUnmet) {
           return NextResponse.json(
-            {
-              error: requiredUnmet.soldOut
-                ? `Sorry, ${requiredUnmet.item} is sold out.`
-                : `Please choose ${requiredUnmet.group} for ${requiredUnmet.item}.`,
-              requiredModifier: true,
-            },
+            requiredUnmet.soldOut
+              ? await kErr('item_sold_out', { item: requiredUnmet.item }, { requiredModifier: true })
+              : await kErr('choose_group', { group: requiredUnmet.group ?? '', item: requiredUnmet.item }, { requiredModifier: true }),
             { status: 400 },
           )
         }
@@ -1627,7 +1635,7 @@ export async function POST(req: NextRequest) {
       try {
         if (!haveLock) {
           return NextResponse.json(
-            { error: 'We are handling a lot of orders right now — please try again', retry: true },
+            await kErr('busy_retry', {}, { retry: true }),
             { status: 409 },
           )
         }
@@ -1642,18 +1650,18 @@ export async function POST(req: NextRequest) {
           // keep serving the window); the AddOrderPanel prompts "add anyway?" → resubmits override:true.
           const closed = await checkClosedCategories(truck.id, orderEventId, manualLines, itemCatMap)
           if (closed) {
-            return NextResponse.json({ error: `${closed[0]} is closed for this event`, categoryClosed: true, categories: closed }, { status: 409 })
+            return NextResponse.json(await kErr('category_closed', { category: closed[0] }, { categoryClosed: true, categories: closed }), { status: 409 })
           }
           const shortfall = await checkStockShortfall(truck.id, orderEventId, eventDate, manualLines, itemCatMap)
           if (shortfall) {
-            return NextResponse.json({ error: 'Not enough stock', stock: true, items: shortfall }, { status: 409 })
+            return NextResponse.json(await kErr('not_enough_stock', {}, { stock: true, items: shortfall }), { status: 409 })
           }
           // Extras ceiling check (step 2) — SAME shared engine as items (no secondary axis), so operator
           // orders honour the per-event option ceiling too. !override only: an informed override skips it
           // (like the item check). The decrement-pool draw below still runs (additive — removed in step 3).
           const optShort = await checkOptionCeilingShortfall(supabase, truck.id, orderEventId, items, deals)
           if (optShort && optShort.length) {
-            return NextResponse.json({ error: `Sorry, ${optShort[0].name} just sold out.`, optionStock: true, optionName: optShort[0].name }, { status: 409 })
+            return NextResponse.json(await kErr('option_sold_out', { option: optShort[0].name }, { optionStock: true, optionName: optShort[0].name }), { status: 409 })
           }
         }
 
@@ -1665,7 +1673,7 @@ export async function POST(req: NextRequest) {
         if (!override) {
           const soldOut = await findSoldOutOption(supabase, truck.id, items, deals, passedEventId)
           if (soldOut) {
-            return NextResponse.json({ error: `Sorry, ${soldOut} just sold out.`, optionStock: true, optionName: soldOut }, { status: 409 })
+            return NextResponse.json(await kErr('option_sold_out', { option: soldOut }, { optionStock: true, optionName: soldOut }), { status: 409 })
           }
         }
 
@@ -1699,7 +1707,7 @@ export async function POST(req: NextRequest) {
             newOrderId = await nextOrderId(orderEventId, truck.id)
           } catch (err: any) {
             console.error('[manual] order counter failed:', err.message)
-            return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
+            return NextResponse.json(await kErr('order_id_failed'), { status: 500 })
           }
         }
 
@@ -1789,11 +1797,11 @@ export async function POST(req: NextRequest) {
         // the op immediately and surfaces it to the operator for review. The op is never deleted.
         if (insertErr && (insertErr as { code?: string }).code === '23505') {
           console.error('[manual] duplicate display number refused (never renumbered):', newOrderId, insertErr.message)
-          return NextResponse.json({ error: `Order number ${newOrderId} is already used on this event.`, duplicateOrderId: true }, { status: 409 })
+          return NextResponse.json(await kErr('order_number_used', { number: String(newOrderId) }, { duplicateOrderId: true }), { status: 409 })
         }
         if (insertErr || !manualOrderRow) {
           console.error('[manual] order insert failed:', insertErr?.message, insertErr?.details, insertErr?.hint)
-          return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+          return NextResponse.json(await kErr('save_failed'), { status: 500 })
         }
         manualOrderKey = manualOrderRow.order_key
 
@@ -2098,19 +2106,19 @@ export async function POST(req: NextRequest) {
     // template (stage 2) — only the dashboard write + customer read are event-scoped this stage.
     if (action === 'set_modifier_option_available') {
       const { optionId, available, event_id } = body
-      if (!optionId) return NextResponse.json({ error: 'optionId required' }, { status: 400 })
-      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+      if (!optionId) return NextResponse.json(await kErr('option_id_required'), { status: 400 })
+      if (!event_id) return NextResponse.json(await kErr('event_id_required'), { status: 400 })
       // Verify the option belongs to this truck via its group
       const { data: opt, error: optErr } = await supabase.from('modifier_options').select('group_id').eq('id', optionId).single()
       // 🔴 `if (opt) { ... }` USED TO WRAP THE WHOLE WRITE, and the success return sat OUTSIDE it — so a
       // missing option, or a failed lookup, skipped the write and still answered `{ success: true }`.
-      if (optErr || !opt) return optionStockWriteFailure('set_modifier_option_available (option lookup)', optErr ?? { code: 'PGRST116', message: 'option not found' })
+      if (optErr || !opt) return optionStockWriteFailure('set_modifier_option_available (option lookup)', optErr ?? { code: 'PGRST116', message: 'option not found' }, await localeForTruck(truck))
       const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
-      if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      if (!grp) return NextResponse.json(await kErr('not_found'), { status: 404 })
       const { error: eosErr } = await supabase.from('event_option_stock').upsert({
         truck_id: truck.id, event_id, option_id: optionId, available: available !== false,
       }, { onConflict: 'event_id,option_id' })
-      if (eosErr) return optionStockWriteFailure('set_modifier_option_available', eosErr)
+      if (eosErr) return optionStockWriteFailure('set_modifier_option_available', eosErr, await localeForTruck(truck))
       return NextResponse.json({ success: true })
     }
 
@@ -2122,26 +2130,26 @@ export async function POST(req: NextRequest) {
     // + customer read are event-scoped this stage. Same group→truck guard.
     if (action === 'set_modifier_option_stock') {
       const { optionId, stockCount, event_id } = body
-      if (!optionId) return NextResponse.json({ error: 'optionId required' }, { status: 400 })
-      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+      if (!optionId) return NextResponse.json(await kErr('option_id_required'), { status: 400 })
+      if (!event_id) return NextResponse.json(await kErr('event_id_required'), { status: 400 })
       const { data: opt, error: optErr } = await supabase.from('modifier_options').select('group_id').eq('id', optionId).single()
       // Same fall-through as above: a missing option must not answer success.
-      if (optErr || !opt) return optionStockWriteFailure('set_modifier_option_stock (option lookup)', optErr ?? { code: 'PGRST116', message: 'option not found' })
+      if (optErr || !opt) return optionStockWriteFailure('set_modifier_option_stock (option lookup)', optErr ?? { code: 'PGRST116', message: 'option not found' }, await localeForTruck(truck))
       const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
-      if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      if (!grp) return NextResponse.json(await kErr('not_found'), { status: 404 })
       const next = (stockCount === null || stockCount === undefined || stockCount === '') ? null : Math.max(0, parseInt(String(stockCount), 10) || 0)
       const { error: eosErr } = await supabase.from('event_option_stock').upsert({
         truck_id: truck.id, event_id, option_id: optionId, stock_count: next,
       }, { onConflict: 'event_id,option_id' })
-      if (eosErr) return optionStockWriteFailure('set_modifier_option_stock', eosErr)
+      if (eosErr) return optionStockWriteFailure('set_modifier_option_stock', eosErr, await localeForTruck(truck))
       return NextResponse.json({ success: true })
     }
 
     // ── SET ITEM STOCK — PER-EVENT (Phase 5) ──────────────────────────────────
     if (action === 'set_stock') {
       const { itemName, available, stockCount, noItemCap, event_id } = body
-      if (!itemName) return NextResponse.json({ error: 'itemName required' }, { status: 400 })
-      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+      if (!itemName) return NextResponse.json(await kErr('item_name_required'), { status: 400 })
+      if (!event_id) return NextResponse.json(await kErr('event_id_required'), { status: 400 })
       // Writes stock_count, available AND no_item_cap together for THIS event. no_item_cap=true =
       // "follow category" (ceiling resolves to null); false + stock_count=null = "use default". This
       // is the RECOVERY path Phase 4 flagged: available !== false clears a prior enforce-set sold-out.
@@ -2160,8 +2168,8 @@ export async function POST(req: NextRequest) {
     // ── SET CATEGORY STOCK — PER-EVENT (Phase 5) ──────────────────────────────
     if (action === 'set_category_stock') {
       const { category, stockCount, event_id } = body
-      if (!category) return NextResponse.json({ error: 'category required' }, { status: 400 })
-      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+      if (!category) return NextResponse.json(await kErr('category_required'), { status: 400 })
+      if (!event_id) return NextResponse.json(await kErr('event_id_required'), { status: 400 })
       await supabase.from('event_category_stock').upsert({
         truck_id:    truck.id,
         event_id,
@@ -2177,8 +2185,8 @@ export async function POST(req: NextRequest) {
     // === false closes the whole category for THIS event (menu-hide + submit gate); auto-reverts next event.
     if (action === 'set_category_available') {
       const { category, available, event_id } = body
-      if (!category) return NextResponse.json({ error: 'category required' }, { status: 400 })
-      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+      if (!category) return NextResponse.json(await kErr('category_required'), { status: 400 })
+      if (!event_id) return NextResponse.json(await kErr('event_id_required'), { status: 400 })
       // Check .error — a swallowed write is the V7.1 trap: the client believes it succeeded, then a
       // refetch returns pre-write state and the toggle "reverts" with no clue why. Surface it as 500.
       const { error: catAvailErr } = await supabase.from('event_category_stock').upsert({
@@ -2208,7 +2216,7 @@ export async function POST(req: NextRequest) {
     // ── adjust_slot ───────────────────────────────────────────────────────────
     if (action?.startsWith('adjust_slot_+')) {
       const mins = parseInt(action.replace('adjust_slot_+', ''))
-      if (!orderKey || isNaN(mins)) return NextResponse.json({ error: 'Invalid' }, { status: 400 })
+      if (!orderKey || isNaN(mins)) return NextResponse.json(await kErr('invalid'), { status: 400 })
       // ── 🔴 OWNERSHIP IS ESTABLISHED HERE, ON THE READ, AND NOT ON THE WRITES BELOW. ─────────────
       // A foreign `order_key` must fail BEFORE any side effect, and this is the only place that can be
       // true: `ord` gates everything that follows — the re-slot, the status write, moveSlotBooking,
@@ -2219,7 +2227,7 @@ export async function POST(req: NextRequest) {
       // write would report SUCCESS for an order that never moved — while the booking, the capture and
       // the email still ran. That is the silent-no-op trap the cross-truck cancel hole hid behind.
       const { data: ord } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt,currency,country,food_minor,tax_minor,tax_rate_milli,tax_label,tip_minor,tip_pct_bps,service_fee_minor,card_surcharge_minor').eq('order_key', orderKey).eq('truck_id', truck.id).single()
-      if (!ord?.slot) return NextResponse.json({ error: 'No slot' }, { status: 400 })
+      if (!ord?.slot) return NextResponse.json(await kErr('no_slot'), { status: 400 })
       const [h, m] = ord.slot.split(':').map(Number)
       const newTotal = h * 60 + m + mins
       const newSlot = `${String(Math.floor(newTotal / 60) % 24).padStart(2, '0')}:${String(newTotal % 60).padStart(2, '0')}`
@@ -2336,9 +2344,9 @@ export async function POST(req: NextRequest) {
     // silently clearing an override on one would be the quiet kind of wrong.
     if (action === 'set_show_paid_step_override') {
       const { value, eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      if (!eventId) return NextResponse.json(await kErr('missing_event_id'), { status: 400 })
       if (value !== null && typeof value !== 'boolean') {
-        return NextResponse.json({ error: 'value must be true, false, or null to clear' }, { status: 400 })
+        return NextResponse.json(await kErr('value_bool_or_clear'), { status: 400 })
       }
       // ── SERVER-CONFIRMED UPDATE (V9.6) ─────────────────────────────────────────────────────────
       // Returns the UPDATED ROW so the client can set state FROM THE RESPONSE instead of guessing
@@ -2372,9 +2380,9 @@ export async function POST(req: NextRequest) {
     // the CHECK would reject with a 23514 — the same discipline mark_paid uses for `method`.
     if (action === 'set_completion_presses_override') {
       const { value, eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      if (!eventId) return NextResponse.json(await kErr('missing_event_id'), { status: 400 })
       if (value !== null && value !== 'one' && value !== 'two') {
-        return NextResponse.json({ error: "value must be 'one', 'two', or null to clear" }, { status: 400 })
+        return NextResponse.json(await kErr('value_presses_or_clear'), { status: 400 })
       }
       // Server-confirmed update — same contract as set_show_paid_step_override above: select('*') and
       // NOT a named list (a named select naming a column that does not exist fails the WHOLE statement
@@ -2396,7 +2404,7 @@ export async function POST(req: NextRequest) {
     // reasoning is recorded at lib/payments/paid-step.ts:18-34.
     if (action === 'set_buzzer_prompt_override') {
       const { value, eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      if (!eventId) return NextResponse.json(await kErr('missing_event_id'), { status: 400 })
       // Server-confirmed update — same contract as set_show_paid_step_override above; the reasoning for
       // select('*'), the absent .single() and the row-absent-is-still-success rule is recorded there.
       const { data: rows, error } = await supabase.from('truck_events')
@@ -2424,13 +2432,13 @@ export async function POST(req: NextRequest) {
     // grid — there is deliberately no unique index, because the confirmed take-it path would then 500
     // at the hatch. See supabase/migrations/20260803_orders_buzzer_number_placed_at.sql.
     if (action === 'set_buzzer') {
-      if (!orderKey) return NextResponse.json({ error: 'Missing order_key' }, { status: 400 })
+      if (!orderKey) return NextResponse.json(await kErr('missing_order_key'), { status: 400 })
       const raw = body.buzzerNumber
       // null / '' / undefined ⇒ CLEAR. Anything else must be a positive integer.
       const buzzerNumber: number | null =
         raw === null || raw === undefined || raw === '' ? null : Number(raw)
       if (buzzerNumber !== null && (!Number.isInteger(buzzerNumber) || buzzerNumber < 1)) {
-        return NextResponse.json({ error: 'Invalid buzzer number' }, { status: 400 })
+        return NextResponse.json(await kErr('invalid_buzzer_number'), { status: 400 })
       }
       // The order's OWN event scopes the clear — never a client-supplied event id, so a stale or
       // hostile client cannot free a buzzer on some other event.
@@ -2438,7 +2446,7 @@ export async function POST(req: NextRequest) {
       // order is legitimate, and refusing it would be friction with no safety gain.
       const { data: target } = await supabase.from('orders')
         .select('event_id, placed_at').eq('order_key', orderKey).eq('truck_id', truck.id).maybeSingle()
-      if (!target) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      if (!target) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       // ── REPLAY MARKER — QUEUED OPS ONLY ────────────────────────────────────────────────────────
       // `replay` rides on the outbox body alone (gatedAction's queuedExtra), never on an online
       // request. It is what switches assign_buzzer_atomic from "the operator confirmed this take, just
@@ -2472,7 +2480,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true, assigned, buzzerNumber: assigned ? buzzerNumber : null, clearedFrom, lost })
       } catch (err) {
         console.error(`[set_buzzer] failed for order_key=${orderKey} truck_id=${truck.id}:`, err)
-        return NextResponse.json({ error: 'Could not save the buzzer number' }, { status: 500 })
+        return NextResponse.json(await kErr('buzzer_save_failed'), { status: 500 })
       }
     }
 
@@ -2485,9 +2493,9 @@ export async function POST(req: NextRequest) {
     // default is not the same state as inheriting it. Resolution order is untouched.
     if (action === 'set_takes_cash_override') {
       const { value, eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      if (!eventId) return NextResponse.json(await kErr('missing_event_id'), { status: 400 })
       if (value !== null && typeof value !== 'boolean') {
-        return NextResponse.json({ error: 'value must be true, false, or null to clear' }, { status: 400 })
+        return NextResponse.json(await kErr('value_bool_or_clear'), { status: 400 })
       }
       // Server-confirmed update — same contract as set_show_paid_step_override above; the reasoning for
       // select('*'), the absent .single() and the row-absent-is-still-success rule is recorded there.
@@ -2536,11 +2544,7 @@ export async function POST(req: NextRequest) {
           afterState: { recorded: false, meaning: 'refused: this order has a live card hold against it' },
           actor, source: actorSource,
         })
-        return NextResponse.json({
-          error: 'This customer has already paid by card. Their card is authorised for this order and is '
-               + 'charged automatically when you confirm it, so taking payment here would charge them '
-               + 'twice. Nothing has been recorded.',
-        }, { status: 409 })
+        return NextResponse.json(await kErr('already_paid_by_card'), { status: 409 })
       }
       let paymentWarning: string | null = null
       let charged = 0
@@ -2620,7 +2624,7 @@ export async function POST(req: NextRequest) {
     if (action === 'set_online_payments_paused') {
       const { value } = body
       if (typeof value !== 'boolean') {
-        return NextResponse.json({ error: 'value must be true or false' }, { status: 400 })
+        return NextResponse.json(await kErr('value_bool'), { status: 400 })
       }
       // ⚠️ select('*'), NOT a named list — the same rule set_show_paid_step_override follows: a named
       // select naming a column that does not exist fails the WHOLE statement with 42703 (§35), and '*'
@@ -2669,7 +2673,7 @@ export async function POST(req: NextRequest) {
     if (action === 'set_add_order_layout') {
       const { value } = body
       if (value !== 'tabs' && value !== 'scroll') {
-        return NextResponse.json({ error: 'Invalid layout' }, { status: 400 })
+        return NextResponse.json(await kErr('invalid_layout'), { status: 400 })
       }
       const { error } = await supabase.from('trucks').update({ add_order_layout: value }).eq('id', truck.id)
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
@@ -2694,7 +2698,7 @@ export async function POST(req: NextRequest) {
     // ── set_paused ── EVENT-scoped (truck_events), not truck/van ───────────────
     if (action === 'set_paused') {
       const { paused_until, eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+      if (!eventId) return NextResponse.json(await kErr('eventid_required'), { status: 400 })
       const resuming = !paused_until // null/undefined ⇒ "Resume orders"
       // Resume = operator forcing orders back on for THIS event → clear both the manual pause and
       // any offline auto-pause on the event. (If still genuinely offline, the heartbeat-monitor
@@ -2738,9 +2742,9 @@ export async function POST(req: NextRequest) {
     // separate). Mirrors the set_paused clear, but offline-only.
     if (action === 'set_offline_protection') {
       const { value, eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+      if (!eventId) return NextResponse.json(await kErr('eventid_required'), { status: 400 })
       if (value !== true && value !== false && value !== null) {
-        return NextResponse.json({ error: 'value must be true, false, or null' }, { status: 400 })
+        return NextResponse.json(await kErr('value_bool_or_null'), { status: 400 })
       }
       const patch: Record<string, unknown> = { offline_protection_override: value }
       if (value === false) patch.online_paused_until = null // disabling clears the offline pause too
@@ -2787,18 +2791,18 @@ export async function POST(req: NextRequest) {
     // override on one would be the quiet kind of wrong.
     if (action === 'set_collection_intervals_override') {
       const { customer, operator, eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      if (!eventId) return NextResponse.json(await kErr('missing_event_id'), { status: 400 })
       if (customer !== null && !isIntervalChoice(customer)) {
-        return NextResponse.json({ error: `Collection times must be every ${INTERVAL_CHOICES.join(', ')} minutes.` }, { status: 400 })
+        return NextResponse.json(await kErr('intervals_choices', { choices: INTERVAL_CHOICES.join(', ') }), { status: 400 })
       }
       if (operator !== null && !isIntervalChoice(operator)) {
-        return NextResponse.json({ error: `Collection times must be every ${INTERVAL_CHOICES.join(', ')} minutes.` }, { status: 400 })
+        return NextResponse.json(await kErr('intervals_choices', { choices: INTERVAL_CHOICES.join(', ') }), { status: 400 })
       }
       // 🔴 E2's INVALID SHAPE. An operator value with no customer value has no defensible meaning —
       // there is no answer to "which customer grid does this event use" — so it is refused rather than
       // stored and ignored later.
       if (customer === null && operator !== null) {
-        return NextResponse.json({ error: 'Set the customer collection times before setting your own.' }, { status: 400 })
+        return NextResponse.json(await kErr('intervals_customer_first'), { status: 400 })
       }
       // ⚠️ select('*'), NOT a named list — the same rule set_show_paid_step_override follows: a named
       // select naming a column that does not exist fails the WHOLE statement with 42703.
@@ -2811,7 +2815,7 @@ export async function POST(req: NextRequest) {
         if (code === 'PGRST204') console.warn(`[slot-interval] event ${eventId}: override save rejected — columns not in PostgREST's schema cache (PGRST204); reload the schema`)
         else if (code === '42703') console.warn(`[slot-interval] event ${eventId}: override save rejected — columns absent (42703); migration not applied`)
         else console.warn(`[slot-interval] event ${eventId}: override save failed (${code ?? 'no code'}): ${error.message}`)
-        return NextResponse.json({ error: 'Collection times could not be saved right now.' }, { status: 500 })
+        return NextResponse.json(await kErr('intervals_save_failed'), { status: 500 })
       }
       return NextResponse.json({ success: true, event: rows?.[0] ?? null })
     }
@@ -2823,9 +2827,9 @@ export async function POST(req: NextRequest) {
     // gated). effectiveOrderReady resolves from this in /api/dashboard, so a refetch picks up the new value.
     if (action === 'set_order_ready_override') {
       const { value, eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+      if (!eventId) return NextResponse.json(await kErr('eventid_required'), { status: 400 })
       if (value !== true && value !== false && value !== null) {
-        return NextResponse.json({ error: 'value must be true, false, or null' }, { status: 400 })
+        return NextResponse.json(await kErr('value_bool_or_null'), { status: 400 })
       }
       /* 🔴 `order_ready_source: 'truck'` IS WHAT MAKES THIS A HAND CHANGE. This is the only writer
        * that records a per-event CHOICE for the mark-ready step, and it is why a type cannot overrule
@@ -2838,7 +2842,7 @@ export async function POST(req: NextRequest) {
     // ── set_extra_wait ── EVENT-scoped (truck_events), not trucks ──────────────
     if (action === 'set_extra_wait') {
       const { eventId } = body
-      if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+      if (!eventId) return NextResponse.json(await kErr('eventid_required'), { status: 400 })
       const mins = parseInt(body.minutes) || 0
       await supabase.from('truck_events').update({
         extra_wait_mins: mins,
@@ -2868,7 +2872,7 @@ export async function POST(req: NextRequest) {
     // ── UPDATE CATEGORY ───────────────────────────────────────────────────────
     if (action === 'update_category') {
       const { categoryId, name, prep_secs, batch_size, allow_notes, counts_toward_capacity } = body
-      if (!categoryId) return NextResponse.json({ error: 'categoryId required' }, { status: 400 })
+      if (!categoryId) return NextResponse.json(await kErr('category_id_required'), { status: 400 })
       await supabase.from('menu_categories')
         // counts_toward_capacity only set when explicitly provided (the capacity tickbox) — a
         // prep/batch save omits it and must NOT reset it. undefined fields are dropped by the PATCH.
@@ -2893,10 +2897,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, events: events || [] })
     }
 
-    return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+    return NextResponse.json(await kErr('unknown_action'), { status: 400 })
 
   } catch (err: any) {
     console.error('Dashboard action error:', err)
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
+    return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'something_went_wrong'), { status: 500 })
   }
 }

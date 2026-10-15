@@ -18,6 +18,10 @@
 const fs = require('fs'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const src = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
+// Language Phase 1b re-pin: the dashboard's and the action route's words moved into messages/en-GB.json. A check that
+// looked for an English sentence in source now asserts (a) the message has EXACTLY that text and (b) the source
+// reads that key where the sentence was.
+const GB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
 const strip = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1')
 const IV = compile(REPO, ['lib/slot-interval.ts'], 'evov').req('lib/slot-interval.js')
 const { generateCollectionTimes } = compile(REPO, ['lib/slot-generation.ts'], 'evov2').req('lib/slot-generation.js')
@@ -149,7 +153,9 @@ console.log('\n── REVERT: BOTH COLUMNS NULL ⇒ BACK TO THE VAN ────
   check(reverted.customer === 15 && reverted.truck === 5, `revert → ${reverted.customer}/${reverted.truck}, the van's pair`)
   const page = strip(src('app/dashboard/[token]/page.tsx'))
   check(/onClick=\{\(\)=>saveCollectionIntervals\(null,null\)\}/.test(page), '"Use my usual setting" calls the saver with (null, null)')
-  check(/Use my usual setting/.test(page), '…and the control exists on the dashboard')
+  // Language Phase 1b re-pin: "Use my usual setting" is `dashboard.settings.useUsual`, read by THAT button.
+  check(GB.dashboard.settings.useUsual === 'Use my usual setting'
+    && /onClick=\{\(\)=>saveCollectionIntervals\(null,null\)\}[\s\S]{0,250}?\{tDash\('settings\.useUsual'\)\}/.test(page), '…and the control exists on the dashboard')
   check(/\{hasEventOv&&\(/.test(page), '…shown only when the event actually has an override')
 }
 
@@ -158,7 +164,9 @@ console.log('\n── AN OPERATOR OVERRIDE WITHOUT A CUSTOMER ONE IS REJECTED �
   const action = strip(src('app/api/dashboard/action/route.ts'))
   check(/if \(customer === null && operator !== null\) \{[\s\S]{0,200}status: 400/.test(action),
     '🔴 the save route refuses it with a 400 and a visible message')
-  check(/Set the customer collection times before setting your own\./.test(action), '…and the message says what to do')
+  // Language Phase 1b re-pin: the route's refusal is `kErr('intervals_customer_first')` (errorsKitchen), in the same 400 branch.
+  check(GB.errorsKitchen.intervals_customer_first === 'Set the customer collection times before setting your own.'
+    && /if \(customer === null && operator !== null\) \{\s*return NextResponse\.json\(await kErr\('intervals_customer_first'\), \{ status: 400 \}\)/.test(action), '…and the message says what to do')
   check(applyEventIntervals({ customer: 15, truck: 5 }, EVENTS['ev-invalid']).truck === 5,
     '…and if such a row ever existed the resolver ignores it rather than inventing a customer grid')
 }
@@ -217,13 +225,17 @@ console.log('\n── A 42703 DISABLES ONLY THE BOX ─────────�
   check(/const eventIntervalOverrides = await readEventIntervalsForTruck\(supabase, truck\.id\)/.test(dashRoute), '…they come from a separate probed read')
   const page = strip(src('app/dashboard/[token]/page.tsx'))
   check(/\{!eventIntervalsAvailable \? \(/.test(page), 'the box branches on the flag')
-  check(/Collection times are unavailable right now\./.test(page), '…showing exactly that one line')
+  // Language Phase 1b re-pin: the line is `dashboard.settings.intervalsUnavailable`, read in the branch's unavailable arm.
+  check(GB.dashboard.settings.intervalsUnavailable === 'Collection times are unavailable right now.'
+    && /\{!eventIntervalsAvailable \? \(\s*<p className="text-xs text-slate-500">\{tDash\('settings\.intervalsUnavailable'\)\}<\/p>/.test(page), '…showing exactly that one line')
   check(/setEventIntervalsAvailable\(data\.eventIntervalsAvailable !== false\)/.test(page), 'an absent flag reads as available')
-  const boxStart = page.indexOf('Collection times are unavailable right now.')
+  const boxStart = page.indexOf("tDash('settings.intervalsUnavailable')")   // Language Phase 1b re-pin: anchored on the key
   check(!/vanBuzzerCount|effectivePaidStep|effectiveTakesCash/.test(page.slice(boxStart - 200, boxStart + 200)), 'no other dashboard setting sits inside that branch')
   // The save route degrades visibly rather than silently.
   const action = strip(src('app/api/dashboard/action/route.ts'))
-  check(/Collection times could not be saved right now\./.test(action) && /status: 500/.test(action), 'a save against the missing columns returns a visible error, never { success: true }')
+  // Language Phase 1b re-pin: the 500 is `kErr('intervals_save_failed')` (errorsKitchen), sentence asserted exactly.
+  check(GB.errorsKitchen.intervals_save_failed === 'Collection times could not be saved right now.'
+    && /return NextResponse\.json\(await kErr\('intervals_save_failed'\), \{ status: 500 \}\)/.test(action), 'a save against the missing columns returns a visible error, never { success: true }')
 }
 
 console.log('\n── DASHBOARD ORDER: Collection times sits DIRECTLY ABOVE Kitchen capacity (17 Sep 2026) ──')
@@ -235,8 +247,12 @@ console.log('\n── DASHBOARD ORDER: Collection times sits DIRECTLY ABOVE Kitc
   // The Settings tab's card sequence, as the titles the operator reads, in source order.
   const TITLES = ['Collection times', 'Remind me to add a buzzer', 'Take card payments online', 'Sounds', 'Kitchen capacity']
   const tabStart = page.indexOf("{activeTab==='settings'&&(")
+  // Language Phase 1b re-pin: each card title is now a `dashboard.settings.*` message, rendered as `>{tDash('<key>')}<`.
+  // The key's text is asserted to be EXACTLY the title, so the sequence still reads in the titles the operator sees.
+  const TITLE_KEY = { 'Collection times': 'intervalsTitle', 'Remind me to add a buzzer': 'buzzerPromptTitle',
+    'Take card payments online': 'cardsTitle', 'Sounds': 'soundsTitle', 'Kitchen capacity': 'capacityTitle' }
   const order = (text) => TITLES
-    .map(t => ({ t, i: text.indexOf(`>${t}<`, tabStart) }))
+    .map(t => ({ t, i: GB.dashboard.settings[TITLE_KEY[t]] === t ? text.indexOf(`>{tDash('settings.${TITLE_KEY[t]}')}<`, tabStart) : -1 }))
     .filter(x => x.i >= 0)
     .sort((a, b) => a.i - b.i)
     .map(x => x.t)
@@ -267,8 +283,10 @@ console.log('\n── DASHBOARD ORDER: Collection times sits DIRECTLY ABOVE Kitc
   check(!manage.includes(CARD) && kcFile.includes(CARD), '🔴 Manage’s capacity card is in its own file and NOWHERE in page.tsx — one copy, not two')
   check(manage.includes('{/* ── ⛔ KITCHEN CAPACITY MOVED TO MENU'), '…and page.tsx keeps a pointer where it used to be, so the move is findable')
   // Nothing but the position moved: the box\'s copy is intact.
-  for (const t of ['Customer Collection Times', 'Use different times for orders I add', 'Your Collection Times', 'Use my usual setting', 'Collection times are unavailable right now.'])
-    check(page.includes(t), `copy intact: "${t}"`)
+  // Language Phase 1b re-pin: each sentence is a `dashboard.settings.*` message with EXACTLY that text, and the page
+  // reads the key.
+  for (const [t, k] of [['Customer Collection Times', 'customerTimes'], ['Use different times for orders I add', 'differentTimes'], ['Your Collection Times', 'yourTimes'], ['Use my usual setting', 'useUsual'], ['Collection times are unavailable right now.', 'intervalsUnavailable']])
+    check(GB.dashboard.settings[k] === t && page.includes(`tDash('settings.${k}')`), `copy intact: "${t}"`)
   // 18 September 2026: the one conditional hint line exists on BOTH boxes, identically (scripts/collection-times-hint.cjs proves the rule).
   check((page.match(/collectionTimesHint\(mc\)/g) || []).length === 1 && (manage.match(/collectionTimesHint\(mc\)/g) || []).length === 1, 'the ONE conditional hint line is present once on each box')
 }

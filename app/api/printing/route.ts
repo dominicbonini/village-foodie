@@ -10,7 +10,10 @@
 // the dashboard and Bluetooth printing never touch this route.
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { parseNetAddress, NET_ADDRESS_HELP } from '@/lib/printing/netAddress'
+import { parseNetAddress } from '@/lib/printing/netAddress'
+import { kitchenErrorBody } from '@/lib/i18n/kitchen-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 // ── COPIED from app/api/dashboard/action/route.ts (verifyToken) — same rules, same outcomes ──────────
 //   'unavailable' → 503. We could not check.
@@ -27,10 +30,12 @@ async function verifyToken(token: string, pin?: string) {
   if (truck.dashboard_pin && truck.dashboard_pin !== pin) return { ok: false as const, reason: 'bad_pin' as const }
   return { ok: true as const, truck }
 }
+// Every refusal carries a code and its values (Language Phase 1b, lib/i18n/kitchen-errors.ts): en-GB until the token
+// is accepted, then the truck's language.
 const authFail = (reason: 'unavailable' | 'no_truck' | 'bad_pin') =>
   reason === 'unavailable'
-    ? NextResponse.json({ error: 'Could not check your sign-in right now' }, { status: 503 })
-    : NextResponse.json({ error: 'Unauthorised', requiresPin: reason === 'bad_pin' }, { status: 401 })
+    ? NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'sign_in_check_failed'), { status: 503 })
+    : NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised', {}, { requiresPin: reason === 'bad_pin' }), { status: 401 })
 
 /** The device's van, by its EXISTING van_devices binding — the same row /api/native/bind-device reads. */
 async function vanForDevice(truckId: string, deviceId: string): Promise<{ vanId: string | null; vanName: string | null }> {
@@ -64,10 +69,10 @@ export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token') ?? ''
   const pin = req.nextUrl.searchParams.get('pin') ?? undefined
   const deviceId = req.nextUrl.searchParams.get('device_id') ?? ''
-  if (!token) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!token) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
   const auth = await verifyToken(token, pin || undefined)
   if (!auth.ok) return authFail(auth.reason)
-  if (!deviceId) return NextResponse.json({ error: 'device_id required' }, { status: 400 })
+  if (!deviceId) return NextResponse.json(kitchenErrorBody(await localeForTruck(auth.truck), 'device_id_required'), { status: 400 })
   const { vanId, vanName } = await vanForDevice(auth.truck.id, deviceId)
   const truckName = (auth.truck as { name?: string | null }).name ?? null
   if (!vanId) return NextResponse.json({ columnsAvailable: true, vanId: null, vanName: null, truckName, address: null, printingDeviceId: null })
@@ -77,21 +82,21 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   let body: { token?: string; pin?: string; device_id?: string; action?: string; address?: unknown }
-  try { body = await req.json() } catch { return NextResponse.json({ error: 'Bad request' }, { status: 400 }) }
+  try { body = await req.json() } catch { return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'bad_request'), { status: 400 }) }
   const { token, pin, device_id: deviceId, action } = body
-  if (!token) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!token) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
   const auth = await verifyToken(token, pin || undefined)
   if (!auth.ok) return authFail(auth.reason)
-  if (!deviceId || typeof deviceId !== 'string') return NextResponse.json({ error: 'device_id required' }, { status: 400 })
-  if (action !== 'claim' && action !== 'release' && action !== 'set_address') return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+  if (!deviceId || typeof deviceId !== 'string') return NextResponse.json(kitchenErrorBody(await localeForTruck(auth.truck), 'device_id_required'), { status: 400 })
+  if (action !== 'claim' && action !== 'release' && action !== 'set_address') return NextResponse.json(kitchenErrorBody(await localeForTruck(auth.truck), 'unknown_action'), { status: 400 })
   const { vanId } = await vanForDevice(auth.truck.id, deviceId)
-  if (!vanId) return NextResponse.json({ error: "This device isn't set to a van yet, so wired printing isn't available." }, { status: 400 })
+  if (!vanId) return NextResponse.json(kitchenErrorBody(await localeForTruck(auth.truck), 'no_van_for_device'), { status: 400 })
 
-  const fail = (error: { code?: string; message: string } | null, what: string) => {
+  const fail = async (error: { code?: string; message: string } | null, what: string) => {
     const code = error?.code
     if (code === 'PGRST204' || code === '42703') console.warn(`[printing] van ${vanId}: ${what} rejected — network printer columns ${code === 'PGRST204' ? 'not in the schema cache (PGRST204)' : 'absent (42703)'}`)
     else console.warn(`[printing] van ${vanId}: ${what} failed (${code ?? 'no code'}): ${error?.message}`)
-    return NextResponse.json({ error: 'Wired printing could not be saved right now.' }, { status: 500 })
+    return NextResponse.json(kitchenErrorBody(await localeForTruck(auth.truck), 'wired_save_failed'), { status: 500 })
   }
 
   if (action === 'claim') {
@@ -108,7 +113,8 @@ export async function POST(req: NextRequest) {
   }
   // set_address — validated with the SAME parser the card and the transport use.
   const parsed = typeof body.address === 'string' ? parseNetAddress(body.address) : null
-  if (!parsed) return NextResponse.json({ error: NET_ADDRESS_HELP }, { status: 400 })
+  // The same sentence as the card's own help (printing.say.addressHelp), as a kitchen refusal code (Phase 1b).
+  if (!parsed) return NextResponse.json(kitchenErrorBody(await localeForTruck(auth.truck), 'net_address_invalid'), { status: 400 })
   const { error } = await supabase.from('truck_vans').update({ network_printer_address: parsed.normalised }).eq('id', vanId).eq('truck_id', auth.truck.id)
   if (error) return fail(error, 'set_address')
   return NextResponse.json({ ok: true, address: parsed.normalised })

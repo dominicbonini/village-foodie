@@ -105,6 +105,29 @@ async function view(tree, stores, { orderKeys = SEEDED, isAdmin = false, isSampl
   return api
 }
 
+// ── Language Phase 1b re-pin: the words V3–V5 break now live in messages/en-GB.json (namespace `demo`). Each pin
+// proves (a) the message has exactly today's text and (b) DemoWelcome.tsx still renders that key in the same place,
+// so a variant that edits the message (or the key's argument) breaks the same behaviour the source edit used to.
+const DW_SRC = () => fs.readFileSync(path.join(REPO, 'components/dashboard/DemoWelcome.tsx'), 'utf8')
+const DEMO_MSG = () => JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).demo || {}
+const pinFail = why => { console.log(`🔴 re-pin: ${why}`); process.exit(1) }
+function pinV3() {
+  if (DEMO_MSG().welcomeIntro !== '{sample, select, yes {This is a <b>stand-in menu</b> so you can see how it all works — upload your own any time to make it yours.} other {This is your own menu and branding, on a real board.}} The orders already on it are examples, so you can see a busy service.')
+    pinFail('demo.welcomeIntro is not exactly today\'s intro (ending "The orders already on it are examples, so you can see a busy service.")')
+  if (!/<p className="text-sm text-slate-600 text-center">\s*\{t\.rich\('welcomeIntro', \{ sample: isSample \? 'yes' : 'no', b: c => <strong>\{c\}<\/strong> \}\)\}\s*<\/p>/.test(DW_SRC()))
+    pinFail('DemoWelcome.tsx no longer renders demo.welcomeIntro as the intro paragraph')
+}
+function pinV4() {
+  if (DEMO_MSG().welcomeTitle !== '{sample, select, yes {Here’s a sample demo} other {Here’s your demo}}') pinFail('demo.welcomeTitle is not exactly today\'s heading')
+  if (!DW_SRC().includes(`<h3 className="font-black text-slate-900">{t('welcomeTitle', { sample: isSample ? 'yes' : 'no' })}</h3>`))
+    pinFail('DemoWelcome.tsx no longer renders demo.welcomeTitle as the heading')
+}
+function pinV5() {
+  if (DEMO_MSG().hitButton !== 'Hit <b>{button}</b> on an order') pinFail('demo.hitButton is not exactly "Hit <b>{button}</b> on an order"')
+  if (!DW_SRC().includes(`<span>{t.rich('hitButton', { button: completionButtonText, b: c => <strong className="text-slate-900">{c}</strong> })}</span>`))
+    pinFail('DemoWelcome.tsx no longer names completionButtonText in the bullet\'s <strong>')
+}
+
 ;(async () => {
   console.log('── BROKEN VARIANTS: MUST report FAILURE ─────────────────────────────────────────────────')
   const variant = (tag, file, patch) => {
@@ -149,7 +172,12 @@ async function view(tree, stores, { orderKeys = SEEDED, isAdmin = false, isSampl
   {
     // V3 — THE REMOVED SENTENCE RESTORED. "Nothing here is a real customer." was cut; if it comes back,
     // this must catch it rather than the copy quietly regrowing.
-    const v = variant('v3', 'components/dashboard/DemoWelcome.tsx', src => src.replace(
+    // Language Phase 1b re-pin: the sentence moved from DemoWelcome.tsx into messages (demo.welcomeIntro), so the
+    // broken variant restores it IN THE MESSAGE the component renders (messages/ns/en-GB/demo.json, generated from
+    // messages/en-GB.json). pinV3() first proves the message holds exactly today's sentence and that the component
+    // still renders that key in the intro paragraph.
+    pinV3()
+    const v = variant('v3', 'messages/ns/en-GB/demo.json', src => src.replace(
       'The orders already on it are examples, so you can see a busy service.',
       'The orders already on it are examples, so you can see a busy service. Nothing here is a real customer.'))
     const m = await view(v.tree, makeStores())
@@ -159,9 +187,12 @@ async function view(tree, stores, { orderKeys = SEEDED, isAdmin = false, isSampl
   }
   {
     // V4 — THE OLD HEADING.
-    const v = variant('v4', 'components/dashboard/DemoWelcome.tsx', src => src.replace(
-      "{isSample ? 'Here’s a sample demo' : 'Here’s your demo'}",
-      "{isSample ? 'Here’s a sample truck' : 'Here’s your menu'}"))
+    // Language Phase 1b re-pin: the heading moved into messages (demo.welcomeTitle); the variant puts the old
+    // words back in that message. pinV4() proves the message is exactly today's heading and the <h3> renders it.
+    pinV4()
+    const v = variant('v4', 'messages/ns/en-GB/demo.json', src => src
+      .replace('Here’s a sample demo', 'Here’s a sample truck')
+      .replace('Here’s your demo', 'Here’s your menu'))
     const m = await view(v.tree, makeStores())
     const old = /Here’s your menu/.test(m.text())
     console.log(`  ${old ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V4 the old heading: the panel reads "Here’s your menu" again`)
@@ -170,9 +201,12 @@ async function view(tree, stores, { orderKeys = SEEDED, isAdmin = false, isSampl
   {
     // V5 — THE BULLET NAMING A LABEL THE BUTTON DOES NOT USE: hard-coded back to the string that was on
     // screen when Dominic reported it, so it no longer follows the setting.
+    // Language Phase 1b re-pin: the bullet is now t.rich('hitButton', { button: completionButtonText, … }); the
+    // variant hard-codes the button's words there. pinV5() proves the message still wraps {button} in the <strong>.
+    pinV5()
     const v = variant('v5', 'components/dashboard/DemoWelcome.tsx', src => src.replace(
-      '<strong className="text-slate-900">{completionButtonText}</strong>',
-      '<strong className="text-slate-900">Mark paid &amp; done</strong>'))
+      "t.rich('hitButton', { button: completionButtonText,",
+      "t.rich('hitButton', { button: 'Mark paid & done',"))
     const m = await view(v.tree, makeStores(), { completionPresses: 'one' })
     const wrong = /Mark paid & done/.test(m.text())
     console.log(`  ${wrong ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V5 the bullet hard-coded: it names "Mark paid & done" while the card renders "Mark paid & collected"`)

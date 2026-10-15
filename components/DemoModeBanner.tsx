@@ -26,6 +26,9 @@
 // The label is CENTRED ON THE BANNER, not centred in the space left over by the CTA — so it doesn't shift
 // depending on whether a button is present or how wide it is. The CTA is absolutely positioned right.
 
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/demo'
+
 export function DemoModeBanner({ className = '', action, innerRef }: {
   /** Positioning for the host surface. Defaults to the app-shell strip treatment (dashboard + KDS, which
    *  are h-dvh flex columns and need `shrink-0`). The customer order page passes its own sticky offset
@@ -38,10 +41,11 @@ export function DemoModeBanner({ className = '', action, innerRef }: {
    *  app/trucks/[slug]/order/page.tsx. Purely additive: the dashboard and KDS pass nothing. */
   innerRef?: React.Ref<HTMLDivElement>
 }) {
+  const t = useT('demo')
   return (
     <div ref={innerRef} className={`w-full bg-orange-50 px-4 py-2 shrink-0 border-b-2 border-slate-900 ${className}`}>
       <div className="relative w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center justify-center min-h-[1.75rem]">
-        <span className="text-base font-black text-orange-600">DEMO MODE</span>
+        <span className="text-base font-black text-orange-600">{t('demoMode')}</span>
         {action && (
           <div className="absolute right-0 top-1/2 -translate-y-1/2">{action}</div>
         )}

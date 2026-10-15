@@ -12,6 +12,7 @@
 // the list renders nothing new and stays byte-identical.
 
 import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/charges'
 
 /** The snapshot columns a line needs (lib/order-charges.ts). All optional: an older order has none. */
 export interface ChargeLineSource {

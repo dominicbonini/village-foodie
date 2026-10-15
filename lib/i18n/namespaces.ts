@@ -8,11 +8,14 @@ import type { AppNamespace } from './translator'
 // catalogue for one that is not, so a missing entry here can never print keys (lib/i18n/client.tsx).
 export const NAMESPACES = {
   // The order page: its own words, the refusals it shows, and every shared piece it renders.
-  order: ['order', 'errorsCustomer', 'eventCard', 'orderLine', 'deals', 'menuBadges'],
+  order: ['order', 'errorsCustomer', 'eventCard', 'orderLine', 'deals', 'menuBadges', 'demo'],
   // The status / manage page.
   confirmation: ['orderStatus', 'errorsCustomer'],
-  dashboard: ['dashboard', 'orderLine', 'deals', 'menuBadges'],
-  kds: [],
-  manage: ['eventCard', 'menuBadges'],
+  // Language Phase 1b: the kitchen surfaces and every shared piece they render (scripts/messages-split.cjs walks each
+  // page's import graph and fails if an entry leaves out a namespace its components read).
+  dashboard: ['dashboard', 'orderCard', 'addOrder', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'userMenu',
+    'orderLine', 'deals', 'menuBadges', 'printing', 'nativeShell'],
+  kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell'],
+  manage: ['eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell'],
   setup: [],
 } as const satisfies Record<string, readonly AppNamespace[]>

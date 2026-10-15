@@ -23,6 +23,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { isNativeApp } from '@/lib/native/device'
 import { listUnacknowledgedConflicts, acknowledgeConflicts } from '@/lib/native/outbox'
 import { isPaymentAction, opAction } from '@/lib/native/orderGate'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/nativeShell'
 
 /** 🔴 MONEY IS NOT STATUS. A failed 'ready' and a failed 'mark_paid' are not the same failure and must not
  *  produce the same bar. `kind` cannot separate them (both are 'status'); the discriminator is the action
@@ -53,7 +55,10 @@ export function nameConflictOrders(
   list: ConflictEntry[],
   resolveLabel: (e: ConflictEntry) => string | null,
   limit = NAMED_LIMIT,
+  /** Language Phase 1b: the words' locale (none ⇒ en-GB). ⚠️ The list itself is still joined by hand (", "). */
+  locale?: string | null,
 ): string {
+  const t = translatorFor(locale, 'nativeShell')
   const named: string[] = []
   let unresolved = 0
   for (const c of list) {
@@ -68,11 +73,11 @@ export function nameConflictOrders(
   // ⚠️ TWO DIFFERENT SUFFIXES, DELIBERATELY. "+2 more" means there ARE more and they are findable;
   // "not on this screen" means this surface could not identify them at all. Folding them into one count
   // would tell an operator to go looking for orders that nothing here can point them at.
-  if (overflow > 0) parts.push(`+${overflow} more`)
+  if (overflow > 0) parts.push(t('conflicts.more', { count: String(overflow) }))
   if (unresolved > 0) {
     parts.push(shown.length
-      ? `+${unresolved} not on this screen`
-      : `${unresolved} ${unresolved === 1 ? 'order' : 'orders'} not on this screen`)
+      ? t('conflicts.notOnScreenPlus', { count: String(unresolved) })
+      : t('conflicts.notOnScreen', { n: unresolved, count: String(unresolved) }))
   }
   return parts.join(' ')
 }

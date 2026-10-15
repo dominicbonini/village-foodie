@@ -12,7 +12,8 @@
 //   1–3       → "N left"   (red)      — same wording, red styling carries the urgency (no "Only"/"!")
 //   <= 0      → "sold out" (red)      — the pill is also made unselectable by the caller
 
-import { useT } from '@/lib/i18n/client'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/menuBadges'
 
 // The words: messages/en-GB.json `menuBadges` (Language Phase 1a).
 export function OptionStockBadge({ remaining }: { remaining: number | null }) {

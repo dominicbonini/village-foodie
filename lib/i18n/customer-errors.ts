@@ -12,6 +12,7 @@
 // this phase is the unchanged prefix of what it says now (scripts/language-phase-1a.cjs proves it, per field).
 import type enGB from '@/messages/en-GB.json'
 import { translatorFor } from './translator'
+import '@/lib/i18n/catalog/errorsCustomer'
 
 export type CustomerErrorCode = keyof (typeof enGB)['errorsCustomer']
 export type CustomerErrorParams = Record<string, string | number>

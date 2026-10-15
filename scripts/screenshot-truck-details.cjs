@@ -178,9 +178,16 @@ const vanityVsId = D.matchProspect(
   [{ ...BROS_PROSPECT, website: null, facebook_url: 'https://www.facebook.com/profile.php?id=100039496906958' }])
 t('🔴 a vanity url and a numeric id are NOT a definite match on their own', vanityVsId.kind !== 'definite')
 
+// ⚠️ RE-PINNED (15 Oct 2026, docs/outreach-screenshot-match-report.md): a phone number alone no longer decides.
+// With the prospect's own name it is still definite across formats; without it, it asks. The full end-to-end
+// proof, with broken variants, is scripts/screenshot-phone-match.cjs.
 const byPhone = D.matchProspect(
+  D.parseTruckDetails(JSON.stringify({ name: 'Pizza Mondo', phone: '+44 7712 000000' })), [BROS_PROSPECT, OTHER])
+t('a phone match WITH the same name is definite across formats', byPhone.kind === 'definite' && byPhone.on === 'phone' && byPhone.row.prospect_id === 'p-other')
+const phoneOnly = D.matchProspect(
   D.parseTruckDetails(JSON.stringify({ phone: '+44 7712 000000' })), [BROS_PROSPECT, OTHER])
-t('a phone match is definite across formats', byPhone.kind === 'definite' && byPhone.on === 'phone' && byPhone.row.prospect_id === 'p-other')
+t('🔴 a phone match with no name is "Needs a look" (phone_only), never definite',
+  phoneOnly.kind === 'needs_a_look' && phoneOnly.ask === 'phone_only' && phoneOnly.candidates[0].prospect_id === 'p-other')
 
 const byEmail = D.matchProspect(
   D.parseTruckDetails(JSON.stringify({ email: 'HI@pizzamondo.example' })), [BROS_PROSPECT, OTHER])

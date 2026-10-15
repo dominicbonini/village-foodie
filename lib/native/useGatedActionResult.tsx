@@ -26,11 +26,13 @@
 // ⚠️ WHAT THIS FILE DOES NOT TOUCH: `gatedAction`, the outbox, reachability, the drain, `expected_from`,
 // the status/payment overlay MODULES, `useOutboxConflicts`, `OfflineBanner`, the action endpoint, and
 // every server-side idempotency guard. It runs strictly after the gate has returned.
-import { useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { buzzerPill } from '@/lib/buzzer'
 import { isCollectAction, type GateResult } from '@/lib/native/orderGate'
 import { removePendingStatusOp } from '@/lib/native/outbox'
 import type { ShowToast } from '@/lib/useToasts'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/nativeShell'
 
 // ── 🔴 THE PAYMENT-METHOD VOCABULARY. ONE SET OF WORDS, TAKEN FROM PaymentActionsModal. ─────────────
 // That modal is where an operator already reads how an order was paid, and it prints exactly:
@@ -118,6 +120,13 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
     runAction, refetch, setActionLoading,
     refreshPendingPayment, onQueued, onQueuedUndone, onPrepStrike, onPrepUnstrike, plainPaidMethod,
   } = fx
+  // Language Phase 1b: the toasts' words ("nativeShell"). 🔴 THE TRANSLATOR IS NEVER A DEPENDENCY of the
+  // callback below — it is read from a ref at the moment of the result, so the handler (and every surface
+  // handler built on it) keeps its identity when the language arrives. A toast is made after a tap, long after
+  // the language has landed, so the translator current then is the right one.
+  const t = useT('nativeShell')
+  const tRef = useRef(t)
+  useEffect(() => { tRef.current = t }, [t])
 
   return useCallback(async (
     result: GateResult,
@@ -134,6 +143,7 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
      *  ⚠️ ABSENT MEANS FALSE, so every caller that does not pass it keeps today's wording. */
     booksPayment?: boolean,
   ): Promise<void> => {
+    const tr = tRef.current
     // ── QUEUED OFFLINE ────────────────────────────────────────────────────────────────────────────
     // The optimistic advance is a DURABLE render-time overlay derived from the outbox, NOT a one-shot
     // patch (a stale poll or an SW-cache read would wipe that). Refreshing it here is what moves the card
@@ -154,14 +164,14 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
           dropOverlayEntry(orderKey); refreshPendingStatus()
           onQueuedUndone?.(orderKey)
           onPrepUnstrike?.(orderKey)
-          showToast(`Order #${q?.id ?? ''} reverted`)
+          showToast(tr('gate.reverted', { id: String(q?.id ?? '') }))
         } else if (action === 'ready') { undoReady(orderKey, q?.id ?? '') }
         else if (isCollectAction(action)) { runAction('undo_collected', orderKey) }
         else { void refetch() }
       }
-      const savedMsg = `Order #${q?.id ?? ''} saved`
+      const savedMsg = tr('gate.saved', { id: String(q?.id ?? '') })
       if (action === 'ready' || isCollectAction(action)) {
-        showToast(savedMsg, 'success', { duration: 7000, action: { label: '↩ Undo', run: offlineUndo } })
+        showToast(savedMsg, 'success', { duration: 7000, action: { label: tr('gate.undo'), run: offlineUndo } })
       } else { showToast(savedMsg) }
       return
     }
@@ -169,9 +179,12 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
     // ── COMMITTED ─────────────────────────────────────────────────────────────────────────────────
     const data = result.data ?? {}
     if (!result.ok) throw new Error(data.error)
-    const labels: Record<string, string> = { confirm: 'confirmed', reject: 'rejected', ready: 'ready', collected: 'collected', undo_collected: 'restored', cancel: 'cancelled' }
+    // The past-tense word per action is a SELECT in the message (gate.status, Language Phase 1b) — confirm →
+    // "confirmed", reject → "rejected", ready, collected, undo_collected → "restored", cancel → "cancelled", and
+    // any other action → its own name, exactly as the `labels[action] || action` map did.
     const done = findOrder(orderKey)
     const num = done?.id ?? ''
+    const id = String(num)
     // ── THE MONEY HALF FAILED, ON A 200 ─────────────────────────────────────────────────────────────
     // 🔴 `result.ok` IS TRUE HERE AND THE ACTION DID PARTLY SUCCEED. 'collected' books the ledger row,
     // then logs, then writes the status; the ledger write FAILS OPEN so the operator is never stranded at
@@ -194,9 +207,9 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
     // this module may quietly change.
     if (moneyFailed) {
       showToast(
-        `⚠ Order #${num} — PAYMENT NOT RECORDED. ${isCollectAction(action) ? 'The order completed' : 'The order was saved'}; the money did not.`,
+        tr('gate.paymentNotRecorded', { id, collect: isCollectAction(action) ? 'yes' : 'no' }),
         'error',
-        { duration: 20000, action: { label: 'Record payment', run: () => runAction('mark_paid', orderKey) } },
+        { duration: 20000, action: { label: tr('gate.recordPayment'), run: () => runAction('mark_paid', orderKey) } },
       )
     } else if (isPayAction(action)) {
       // ── 🔴 THREE TOASTS, THREE WORDS: paid · collected · paid and collected. ─────────────────────
@@ -209,12 +222,12 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
       // paid on your card machine" — a sentence with two clauses for one tap. The method is not what the
       // operator is checking at a hatch; WHICH ORDER and WHAT HAPPENED are. It is still recorded on the
       // row, still shown by PaymentActionsModal, and still in the audit log — only the toast is shorter.
-      showToast(`Order #${num} paid`, 'success',
-        { duration: 7000, action: { label: '↩ Undo', run: () => runAction('undo_mark_paid', orderKey) } })
+      showToast(tr('gate.paid', { id }), 'success',
+        { duration: 7000, action: { label: tr('gate.undo'), run: () => runAction('undo_mark_paid', orderKey) } })
     } else if (action === 'undo_mark_paid') {
-      showToast('Undone — payment removed')
+      showToast(tr('gate.undonePayment'))
     } else if (action === 'undo_collected') {
-      showToast('Undone — order not collected')
+      showToast(tr('gate.undoneCollected'))
     } else if (isCollectAction(action)) {
       // ── 🔴 "paid and collected" ONLY WHEN THE ACTION NAME SAYS MONEY WAS BOOKED. ─────────────────
       // `collected_cash` / `collected_card` ARE the one-press completion on a truck that distinguishes
@@ -227,8 +240,8 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
       // of. 🔴 THE SAFE DIRECTION IS THE ONE THAT NEVER CLAIMS A PAYMENT THAT MAY NOT HAVE HAPPENED,
       // and the operator has just pressed a button whose own label said which it was.
       const paidToo = action === 'collected_cash' || action === 'collected_card' || booksPayment === true
-      showToast(`Order #${num} ${paidToo ? 'paid and collected' : 'collected'}`, 'success',
-        { duration: 7000, action: { label: '↩ Undo', run: () => runAction('undo_collected', orderKey) } })
+      showToast(tr('gate.collected', { id, paidToo: paidToo ? 'yes' : 'no' }), 'success',
+        { duration: 7000, action: { label: tr('gate.undo'), run: () => runAction('undo_collected', orderKey) } })
     } else if (action === 'ready') {
       // Status commits now but the customer email is DEFERRED 4s (defer_email on the request): an Undo
       // within 4s cancels the email AND reverts the status.
@@ -242,13 +255,14 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
       // ⚠️ That 3.30:1 is a REAL pre-existing defect on EVERY success toast in the app. It is
       // deliberately NOT fixed here (darkening to green-700 would reach 5.02:1 but touches every toast)
       // — it is its own change.
+      const buzzer = done?.buzzer_number
       showToast(
-        done?.buzzer_number != null
-          ? <>Order #{num} ready · {buzzerPill(done.buzzer_number)}</>
-          : `Order #${num} ready`,
-        'success', { duration: 4000, action: { label: '↩ Undo', run: () => undoReady(orderKey, num) } })
+        buzzer != null
+          ? tr.rich('gate.readyBuzzer', { id, pill: () => buzzerPill(buzzer) })
+          : tr('gate.ready', { id }),
+        'success', { duration: 4000, action: { label: tr('gate.undo'), run: () => undoReady(orderKey, num) } })
     } else {
-      showToast(`Order #${num} ${labels[action] || action}`)
+      showToast(tr('gate.status', { id, action }))
     }
     // Auto-clear prep board on collected (solo operator workflow)
     if (isCollectAction(action) || action === 'ready') {

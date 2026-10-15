@@ -46,6 +46,8 @@ import { useState, useEffect } from 'react'
 import { demoBaselineKey, demoWelcomeSeen, boardWasReplaced, resetDemoBoardFlags } from '@/lib/demo-board-build'
 import { DemoGetStarted, SIGNUP_OFFER } from '@/components/DemoGetStarted'
 import type { Order } from '@/components/dashboard/types'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/demo'
 
 const SNOOZE_MS = 10 * 60_000
 
@@ -82,6 +84,7 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
    *  with null on click, to clear a previous ring and let the CSS animation retrigger on a second press. */
   onHighlight?: (orderKey: string | null) => void
 }) {
+  const t = useT('demo')
   const baseKey = demoBaselineKey(token)
   const stateKey = `hg_demo_loop_${token}`
 
@@ -202,13 +205,13 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
           separate line and has gone — the drama line already says what happened, and "Show me" plus
           the highlight identify WHICH order far better than a number they'd have to match by eye. */}
       <p className="text-xs font-bold text-orange-600 uppercase tracking-wide">
-        That&apos;s exactly how a real order lands
+        {t('loopLands')}
         {arrived && !ambiguous && (
           <>
             {' · '}
             <button type="button" onClick={showMe}
               className="font-bold underline underline-offset-2 hover:text-orange-800">
-              Show me
+              {t('showMe')}
             </button>
           </>
         )}
@@ -222,7 +225,7 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
         {SIGNUP_OFFER.heading}
       </p>
       <p className="text-sm text-slate-600 mt-1">
-        {SIGNUP_OFFER.sub} No card needed.
+        {t('noCard', { sub: SIGNUP_OFFER.sub })}
       </p>
       <div className="mt-3 flex items-center justify-center gap-3">
         {/* SAME capture flow as the banner CTA — one path, two presentations, so they can't drift.
@@ -241,7 +244,7 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
         />
         <button type="button" onClick={snooze}
           className="text-sm text-slate-500 hover:text-slate-700 font-medium">
-          Not yet
+          {t('notYet')}
         </button>
       </div>
     </div>

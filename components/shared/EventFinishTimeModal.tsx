@@ -21,6 +21,8 @@
 // onConfirm. `selected` lives in this component, so closing discards it and every open starts from the
 // event's CURRENT finish time — there is no draft to leak back in.
 import { useState } from 'react'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/kitchenModals'
 
 /** Statuses that are over, so an order in one of them cannot be "due after" anything.
  *  ⚠️ THE SAME LIST THE KDS BOARD USES for `activeOrders`, kept here so both surfaces count identically
@@ -75,6 +77,7 @@ export function EventFinishTimeModal({
   /** Fired ONLY from the confirm step. The caller performs the write and then closes. */
   onConfirm: (newEnd: string) => void
 }) {
+  const t = useT('kitchenModals')
   const current = (event.end_time || '').slice(0, 5)
   const [selected, setSelected] = useState(current)
   const [step, setStep] = useState<'pick' | 'confirm'>('pick')
@@ -96,25 +99,23 @@ export function EventFinishTimeModal({
     return (
       <div className="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-          <h3 className="font-black text-slate-900 text-base mb-1">Change finish time?</h3>
+          <h3 className="font-black text-slate-900 text-base mb-1">{t('finish.confirmTitle')}</h3>
           <p className="text-sm text-slate-600">
-            This event will finish at <span className="font-bold text-slate-900">{selected}</span>
-            {current ? <> instead of <span className="font-bold text-slate-900">{current}</span></> : null}.
+            {t.rich('finish.willFinish', { selected, current, hasCurrent: current ? 'yes' : 'no', b: c => <span className="font-bold text-slate-900">{c}</span> })}
           </p>
           {affected > 0 && (
             <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 mt-3">
-              <span className="font-bold">{affected} order{affected === 1 ? ' is' : 's are'} due after {selected}.</span>{' '}
-              {affected === 1 ? 'It stays' : 'They stay'} on the board and still {affected === 1 ? 'needs' : 'need'} making. Changing the finish time only stops NEW orders being placed for later times.
+              {t.rich('finish.dueAfter', { n: affected, count: String(affected), selected, b: c => <span className="font-bold">{c}</span> })}
             </p>
           )}
           <div className="flex gap-2 mt-5">
             <button disabled={busy} onClick={() => onConfirm(selected)}
               className="flex-1 bg-teal-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-teal-700 disabled:bg-slate-300">
-              {busy ? 'Saving...' : 'Change finish time'}
+              {busy ? t('finish.saving') : t('finish.confirm')}
             </button>
             <button disabled={busy} onClick={onClose}
               className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">
-              {current ? `Keep ${current}` : 'Keep as is'}
+              {current ? t('finish.keepCurrent', { current }) : t('finish.keepAsIs')}
             </button>
           </div>
         </div>
@@ -131,17 +132,17 @@ export function EventFinishTimeModal({
   return (
     <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-        <h3 className="font-black text-slate-900 text-base mb-1">Change finish time</h3>
+        <h3 className="font-black text-slate-900 text-base mb-1">{t('finish.title')}</h3>
         <p className="text-sm text-slate-600">
           {current
-            ? <>This event is currently set to finish at <span className="font-bold text-slate-900">{current}</span>.</>
-            : 'This event has no finish time set.'}
+            ? t.rich('finish.currentlySet', { current, b: c => <span className="font-bold text-slate-900">{c}</span> })
+            : t('finish.noFinishTime')}
         </p>
         {options.length === 0 ? (
-          <p className="text-sm text-slate-500 mt-4">There are no times left today. Use Finish event instead.</p>
+          <p className="text-sm text-slate-500 mt-4">{t('finish.noTimesLeft')}</p>
         ) : (
           <>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mt-4 mb-1">New finish time</label>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mt-4 mb-1">{t('finish.newFinishTime')}</label>
             <select
               value={selected}
               onChange={e => setSelected(e.target.value)}
@@ -151,15 +152,15 @@ export function EventFinishTimeModal({
                   never showing a blank while the operator decides. It cannot be SUBMITTED — the
                   button below is disabled while selected === current. */}
               {!options.includes(selected) && (
-                <option value={selected}>{selected || '--:--'} (current)</option>
+                <option value={selected}>{t('finish.optionCurrent', { time: selected || '--:--' })}</option>
               )}
-              {options.map(t => (
-                <option key={t} value={t}>{t}{t === current ? ' (current)' : ''}</option>
+              {options.map(opt => (
+                <option key={opt} value={opt}>{opt === current ? t('finish.optionCurrent', { time: opt }) : opt}</option>
               ))}
             </select>
             {current && selected < current && (
               <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-2">
-                That is earlier than the current finish time. Customers will not be able to order for times after it.
+                {t('finish.earlier')}
               </p>
             )}
           </>
@@ -169,9 +170,9 @@ export function EventFinishTimeModal({
             disabled={options.length === 0 || selected === current}
             onClick={() => setStep('confirm')}
             className="flex-1 bg-teal-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-teal-700 disabled:bg-slate-200 disabled:text-slate-400">
-            Review change
+            {t('finish.review')}
           </button>
-          <button onClick={onClose} className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">Cancel</button>
+          <button onClick={onClose} className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">{t('cancel')}</button>
         </div>
       </div>
     </div>

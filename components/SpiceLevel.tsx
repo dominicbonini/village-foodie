@@ -3,7 +3,8 @@
 // Matches the dietary/allergen chip pattern (rounded, rem font so it scales with the OS "Larger Text"
 // setting). NOT customer-selectable, never part of basket/order/deal/ticket logic — display only.
 
-import { useT } from '@/lib/i18n/client'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/menuBadges'
 
 // The words: messages/en-GB.json `menuBadges.spiceLevel` (Language Phase 1a).
 export function SpiceLevel({ value, className = '' }: { value?: number | null; className?: string }) {

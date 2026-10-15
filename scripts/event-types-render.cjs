@@ -29,6 +29,16 @@ const PAGE = read('app/manage/[token]/page.tsx')
 const PRIM = read('components/manage/primitives.tsx')
 const TOKENS = read('lib/ui-tokens.ts')
 
+/* Language Phase 1b re-pin: the dashboard page's words moved into messages/en-GB.json (`dashboard.*`). A lift that
+ * anchored on an English literal now anchors on the key the page reads THERE, and `liftMessage` resolves a lifted key
+ * to its exact en-GB text — so the fixture still renders the words the operator sees, never a raw key. */
+const GB_DASH = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'messages/en-GB.json'), 'utf8')).dashboard
+function liftMessage(src, re, what) {
+  const key = lift(src, re, what)
+  const text = key.split('.').reduce((o, k) => (o == null ? o : o[k]), GB_DASH)
+  if (typeof text !== 'string') throw new Error(`the fixture cannot be built: ${what} reads dashboard.${key}, which is not a message`)
+  return text
+}
 function lift(src, re, what) {
   const m = src.match(re)
   if (!m) throw new Error(`the fixture cannot be built: no ${what} found in the source`)
@@ -747,11 +757,15 @@ function itemsFixture(css, editing = false, longName = false) {
    * it was `w-full sm:w-auto` and a solid grey bar under the title at 390. The lift is what made this
    * file notice; the checks below are what make the new shape a claim rather than a class string. */
   const editBtnCls = lift(PAGE, /data-price-edit-open\s*\n\s*className="(shrink-0 border border-slate-300 bg-white text-slate-700 font-bold px-2\.5 py-1 rounded-lg hover:bg-slate-50 text-xs disabled:opacity-40)"/, 'the Edit prices button')
-  const cardHeadCls = lift(PAGE, /<div className="(flex flex-wrap items-center justify-between gap-2 mb-1)">\s*\n\s*<p className="text-sm font-semibold text-slate-800 tracking-wide">Items/, 'the card header row')
+  // Language Phase 1b re-pin: the title is `{tDash('stock.itemsTitle')}`, whose message is exactly "Items — this event".
+  const cardHeadCls = lift(PAGE, /<div className="(flex flex-wrap items-center justify-between gap-2 mb-1)">\s*\n\s*<p className="text-sm font-semibold text-slate-800 tracking-wide">\{tDash\('stock\.itemsTitle'\)\}<\/p>/, 'the card header row')
+  if (GB_DASH.stock.itemsTitle !== 'Items — this event') throw new Error('the fixture cannot be built: dashboard.stock.itemsTitle is not "Items — this event"')
   /* 🔴 THE TWO SHORTENED HEADINGS, LIFTED — "Item limit"/"Available" overflowed their 64px and 48px
    * columns at 390. If either word grows again, this file rebuilds with it and the fit check speaks. */
-  const limitHead = lift(PAGE, /<span className="w-16 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">(.+?)<\/span>/, 'the Limit column header')
-  const onHead = lift(PAGE, /<span className="w-12 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">(.+?)<\/span>/, 'the On column header')
+  // Language Phase 1b re-pin: the two headings are `{tDash('stock.colLimit')}` / `{tDash('stock.colOn')}`; the words
+  // measured are those messages' en-GB text, lifted through the key the page reads.
+  const limitHead = liftMessage(PAGE, /<span className="w-16 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">\{tDash\('([\w.]+)'\)\}<\/span>/, 'the Limit column header')
+  const onHead = liftMessage(PAGE, /<span className="w-12 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">\{tDash\('([\w.]+)'\)\}<\/span>/, 'the On column header')
   const COPY = read('lib/copy/serviceSettings.ts')
   const editLabel = lift(COPY, /export const EVENT_PRICE_EDIT = '(.+?)'/, 'the Edit prices label')
   const saveLabel = lift(COPY, /export const EVENT_PRICE_SAVE = '(.+?)'/, 'the Save prices label')
@@ -820,7 +834,9 @@ function eventBarFixture(css, kind = 'standard', longName = false) {
   const bar = lift(PAGE, /<div id="dashboard-event-bar" className="(bg-slate-800 border-b border-slate-700 shrink-0 z-30 relative)">/, 'the event bar')
   const inner = lift(PAGE, /<div className=\{"(w-full min-\[1400px\]:max-w-5xl min-\[1400px\]:mx-auto px-4 py-2 flex items-center gap-2)"\}>/, 'the bar inner row')
   const title = lift(PAGE, /<span className="(block text-white text-sm font-medium truncate)">/, 'the title line')
-  const manage = lift(PAGE, /aria-label="Manage event"\s*\n\s*className="(flex-shrink-0 text-xs font-semibold text-white bg-slate-700 border border-slate-500 hover:bg-slate-600 rounded px-2\.5 py-1 transition-colors)">/, 'the Manage event button')
+  // Language Phase 1b re-pin: the button's accessible name is `{tDash('eventBar.manageEvent')}` ("Manage event").
+  if (GB_DASH.eventBar.manageEvent !== 'Manage event') throw new Error('the fixture cannot be built: dashboard.eventBar.manageEvent is not "Manage event"')
+  const manage = lift(PAGE, /aria-label=\{tDash\('eventBar\.manageEvent'\)\}\s*\n\s*className="(flex-shrink-0 text-xs font-semibold text-white bg-slate-700 border border-slate-500 hover:bg-slate-600 rounded px-2\.5 py-1 transition-colors)">/, 'the Manage event button')
 
   const NAME = longName
     ? 'Sarah and Thomas’s wedding reception at the old manor house barn'

@@ -246,7 +246,11 @@ console.log('\n── THE OTHER RECENTLY CHANGED COMPONENTS ──────�
   // needs a route token, an authenticated /api/dashboard fetch and a dozen effects. Extracting it is a
   // refactor of a file this work is forbidden to touch, so it is REPORTED, not faked.
   const page = fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8')
-  check(/<p className="text-sm font-semibold text-slate-800">Collection times<\/p>/.test(page), 'Collection times is inline JSX in the dashboard page — not separately renderable (see the note above)')
+  // Language Phase 1b re-pin: the title's words moved into messages (`dashboard.settings.intervalsTitle`, exactly
+  // "Collection times"); the SAME inline <p> now reads that key, so the gap reported here is unchanged.
+  const gbDash = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).dashboard
+  check(gbDash.settings.intervalsTitle === 'Collection times'
+    && /<p className="text-sm font-semibold text-slate-800">\{tDash\('settings\.intervalsTitle'\)\}<\/p>/.test(page), 'Collection times is inline JSX in the dashboard page — not separately renderable (see the note above)')
 }
 
 console.log('\n── THE MEMO DEPENDENCIES ARE REFERENTIALLY STABLE ───────────────────────────────────────')

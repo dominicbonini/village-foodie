@@ -39,6 +39,8 @@ import { formatMajorOrBare } from '@/lib/money-format'
 import { computeOrderCharges, rulesFromCheckout } from '@/lib/order-charges'
 import { WALK_UP_NAME } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/addOrder'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -228,6 +230,7 @@ function ScrollMenuSections({ cats, categoryStocks, renderCategory }: {
   categoryStocks: CategoryStock[]
   renderCategory: (cat: string) => React.ReactNode
 }) {
+  const t = useT('addOrder')
   return (
     <div>
       {cats.map(cat => {
@@ -306,7 +309,7 @@ function ScrollMenuSections({ cats, categoryStocks, renderCategory }: {
             {closed && (
               <div className="mb-2 flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
                 <span aria-hidden>🔒</span>
-                <span>{cat.charAt(0).toUpperCase() + cat.slice(1)} is closed for online orders this event — hidden from customers. You can still add for the hatch; you&apos;ll be asked to confirm.</span>
+                <span>{t('catClosed', { cat: cat.charAt(0).toUpperCase() + cat.slice(1) })}</span>
               </div>
             )}
             {renderCategory(cat)}
@@ -346,6 +349,7 @@ export function AddOrderPanel({
   // 🔴 THE TRUCK'S CURRENCY — this order does not exist yet (/api/dashboard's truck.money). The panel
   // provides it to its leaves (the basket lines, the price editor, the deals modal) as well.
   const amount = (major: number) => formatMajorOrBare(major, truck.money, 'add order')
+  const t = useT('addOrder')
 
   // ── order state ─────────────────────────────────────────────────────────────
   const [manualName, setManualName] = useState('')
@@ -1164,7 +1168,7 @@ export function AddOrderPanel({
 
   const addManualItem = (item: MenuItem, mods: { name: string; price: number; allergens?: string[]; dietary?: string[] }[] = [], notes = '') => {
     const blocked = optionAddBlocked(mods.map(m => m.name))
-    if (blocked) { showToast(`Only ${buildOptionStockByName(truckMenu?.items || [])[blocked]} ${blocked} left — shared across all dishes`, 'error'); return }
+    if (blocked) { showToast(t('optionLeftToast', { count: String(buildOptionStockByName(truckMenu?.items || [])[blocked]), option: blocked }), 'error'); return }
     const key = makeCartKey(item.name, mods, notes)
     const unitPrice = item.price + mods.reduce((s, m) => s + m.price, 0)
     setManualItems(prev => {
@@ -1178,7 +1182,7 @@ export function AddOrderPanel({
     if (delta > 0) {
       const line = manualItems.find(i => (i.cartKey || i.name) === cartKey)
       const blocked = optionAddBlocked((line?.modifiers || []).map(m => m.name))
-      if (blocked) { showToast(`Only ${buildOptionStockByName(truckMenu?.items || [])[blocked]} ${blocked} left — shared across all dishes`, 'error'); return }
+      if (blocked) { showToast(t('optionLeftToast', { count: String(buildOptionStockByName(truckMenu?.items || [])[blocked]), option: blocked }), 'error'); return }
     }
     setManualItems(prev =>
       prev.map(i => (i.cartKey || i.name) === cartKey ? { ...i, quantity: i.quantity + delta } : i).filter(i => i.quantity > 0)
@@ -1322,10 +1326,11 @@ setItemModal({ item, modGroups, editCartKey })
   // 🔴 THE MODAL'S WORDS, NOT A SECOND VOCABULARY. `PaymentActionsModal` prints `Paid in cash` and
   // `Paid on your card machine`; `useGatedActionResult` reuses the lower-case forms for its toasts, and
   // so does this. One fact, one set of words, three surfaces.
-  const paidPhrase = () => {
-    if (!takePaymentRef.current) return ''
+  /** How the toast names the payment taken with this order: 'cash', 'card' or 'none' (the words are the toast's). */
+  const paidMethod = (): 'cash' | 'card' | 'none' => {
+    if (!takePaymentRef.current) return 'none'
     const m = paymentMethodRef.current
-    return m === 'cash' ? ' — paid in cash' : m === 'card' ? ' — paid on your card machine' : ''
+    return m === 'cash' ? 'cash' : m === 'card' ? 'card' : 'none'
   }
 
   // ── submit ──────────────────────────────────────────────────────────────────
@@ -1597,14 +1602,14 @@ setItemModal({ item, modGroups, editCartKey })
         // ⚠️ THE METHOD RIDES BESIDE THE IDENTITY, IN PaymentActionsModal's OWN WORDS — `paid in cash` /
         //    `paid on your card machine`. Silent when nothing was recorded (an unpaid save), which is
         //    the string this line always was.
-        showToast(`Order ${displayId} saved${paidPhrase()}`, 'success')
+        showToast(t('savedToast', { id: displayId, paid: paidMethod() }), 'success')
         resetManual(); setShowOrderSheet(false); setLoading(false); setSubmitting(null)
         return
       }
       const data = result.data ?? {}
       // Lock contention past the budget (rare): server did NOT insert — keep the order, retry.
       if (result.status === 409 && data?.retry) {
-        showToast('Busy right now — tap Confirm again in a moment', 'error')
+        showToast(t('busyRetry'), 'error')
         return
       }
       // Category CLOSED: the operator turned this category off for the event (online orders closed). They
@@ -1612,8 +1617,8 @@ setItemModal({ item, modGroups, editCartKey })
       // before the stock branch — it's a hard stop, not a shortfall.
       if (result.status === 409 && data?.categoryClosed) {
         const cats: string[] = Array.isArray(data.categories) ? data.categories : []
-        const detail = cats.length ? `${cats.join(', ')} ${cats.length > 1 ? 'are' : 'is'} closed for this event.` : 'A category is closed for this event.'
-        const proceed = window.confirm(`${detail}\n\nAdd anyway (for the hatch)?\n\nOK = add anyway   ·   Cancel = edit the order`)
+        const detail = cats.length ? t('catsClosed', { n: cats.length, cats: cats.join(', ') }) : t('aCatClosed')
+        const proceed = window.confirm(t('addAnywayConfirm', { detail }))
         if (proceed) { await submitManual(true, true); return }
         return // Edit/Cancel — keep the order in the panel
       }
@@ -1622,9 +1627,9 @@ setItemModal({ item, modGroups, editCartKey })
       if (result.status === 409 && data?.stock) {
         const shortItems: { name: string; remaining: number }[] = Array.isArray(data.items) ? data.items : []
         const detail = shortItems.length
-          ? shortItems.map(s => `${s.name}: only ${s.remaining} left`).join('\n')
-          : 'Some items are low on stock'
-        const proceed = window.confirm(`${detail}\n\nProceed anyway (oversell)?\n\nOK = proceed anyway   ·   Cancel = edit the order`)
+          ? shortItems.map(s => t('stockShort', { name: s.name, remaining: String(s.remaining) })).join('\n')
+          : t('stockLow')
+        const proceed = window.confirm(t('oversellConfirm', { detail }))
         // skipFitCheck=true: the fit check already ran (and passed/was overridden) before this
         // POST — re-entry for the stock override must not re-prompt the fit modal.
         if (proceed) { await submitManual(true, true); return }
@@ -1641,9 +1646,9 @@ setItemModal({ item, modGroups, editCartKey })
       if (result.status === 409 && data?.needsPriceConfirm) {
         const list: { kind: string; name: string; on?: string }[] = Array.isArray(data.unresolved) ? data.unresolved : []
         const detail = list.length
-          ? list.map(u => `${u.name}${u.on ? ` (on ${u.on})` : ''} — not on the menu`).join('\n')
-          : 'Something on this order is no longer on the menu'
-        const proceed = window.confirm(`${detail}\n\nSave at ${amount(Number(data.total ?? 0))}?\n\nOK = save at this total   ·   Cancel = edit the order`)
+          ? list.map(u => t('notOnMenu', { name: u.name, hasOn: u.on ? 'yes' : 'no', on: u.on ?? '' })).join('\n')
+          : t('somethingNotOnMenu')
+        const proceed = window.confirm(t('saveAtConfirm', { detail, amount: amount(Number(data.total ?? 0)) }))
         if (proceed) {
           confirmUnresolvedTotalRef.current = Number(data.total ?? 0)
           // skipFitCheck=true for the same reason the stock override passes it: the fit check already
@@ -1657,8 +1662,8 @@ setItemModal({ item, modGroups, editCartKey })
       // Option shared-pool shortfall (D2): a tracked modifier option ran out. SHARED POOL — overriding
       // oversells it across ALL dishes that use it (not just this one). Same override→re-submit shape.
       if (result.status === 409 && data?.optionStock) {
-        const opt = data.optionName || 'an option'
-        const proceed = window.confirm(`Only a limited amount of "${opt}" left — and it's shared across ALL dishes that use it.\n\nProceed anyway (oversell)?\n\nOK = proceed anyway   ·   Cancel = edit the order`)
+        const opt = data.optionName || t('anOption')
+        const proceed = window.confirm(t('optionOversellConfirm', { option: opt }))
         if (proceed) { await submitManual(true, true); return }
         return // Edit/Cancel — keep the order in the panel
       }
@@ -1668,7 +1673,7 @@ setItemModal({ item, modGroups, editCartKey })
       // can retry on reconnect WITHOUT re-entering it. Do NOT imply durability — a refresh/navigation loses it.
       // (Native never reaches here: the gate queues to the outbox and returns result.queued, handled above.)
       if (!isNativeApp() && !result.queued && result.status == null) {
-        showToast("Couldn't reach the server — you appear to be offline. The order was NOT sent. Keep this panel open and retry when you reconnect.", 'error')
+        showToast(t('offlineNotSent'), 'error')
         return
       }
       if (!result.ok) throw new Error(data.error)
@@ -1683,9 +1688,9 @@ setItemModal({ item, modGroups, editCartKey })
       // The card marker is the durable half: this order stays ON the board, so the next poll renders
       // ⚠ PAYMENT NOT RECORDED on its card with a repair beside it. No new alerting mechanism here.
       if (data.paymentWarning) {
-        showToast(`⚠ Order #${data.orderId} added — PAYMENT NOT RECORDED. Take payment again on the order card.`, 'error', { duration: 20000 })
+        showToast(t('paymentNotRecorded', { id: String(data.orderId) }), 'error', { duration: 20000 })
       } else {
-        showToast(`Order #${data.orderId} confirmed${paidPhrase()}`)
+        showToast(t('confirmedToast', { id: String(data.orderId), paid: paidMethod() }))
       }
       if (manualItems.length) {
         const categoryMap: Record<string, string> = {}
@@ -1733,7 +1738,7 @@ setItemModal({ item, modGroups, editCartKey })
       }
       onOrderPlaced()
     } catch (err: any) {
-      showToast(err.message || 'Failed', 'error')
+      showToast(err.message || t('failed'), 'error')
     } finally {
       setLoading(false)
       setSubmitting(null)
@@ -1816,14 +1821,14 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         >
           {/* Show the concrete earliest-fitting time ONLY once the basket has items — empty-basket
               "earliest" (event open) is misleading and jumps as soon as an item is added. Display-only. */}
-          <option value="">⚡ ASAP{asapNoFit ? ' — over capacity (no slot fits)' : (hasItems && adjustedAsapSlot) ? ` — ${formatSlot(adjustedAsapSlot.collection_time, panelTime)}` : ''}</option>
+          <option value="">{`⚡ ${asapNoFit ? t('asapNoFit') : (hasItems && adjustedAsapSlot) ? t('asapAt', { time: formatSlot(adjustedAsapSlot.collection_time, panelTime) }) : t('asap')}`}</option>
           {/* PAST = the SINGLE live source of truth isSlotPast(eventTz) — never the cached server
               is_past flag (stale once the clock advances; on Vercel it's UTC, an hour off in BST).
               Operators see every slot from NOW including the imminent next one (isSlotPast excludes
               only genuinely-elapsed slots, no +5 grace); too-soon/full slots stay visible with their
               traffic-light. */}
           {manualSlots.filter(s => s.is_grace || !isSlotPast(s, eventTz, manualEvent?.event_date)).map(s => {
-            if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {formatSlot(s.collection_time, panelTime)} · After closing</option>
+            if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>{`⚠️ ${t('afterClosing', { time: formatSlot(s.collection_time, panelTime) })}`}</option>
             const ind = slotIndicatorFor(s)
             // ❗ = this window is STRICTLY OVER the ceiling, not merely full. Red alone conflates the
             // two (tone goes red at conc >= ceiling), so an at-capacity slot and an over-subscribed
@@ -1860,7 +1865,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
           className={SLOT_SELECT_CLASS}
           style={SLOT_SELECT_STYLE}
         >
-          <option value="">⚡ ASAP</option>
+          <option value="">{`⚡ ${t('asap')}`}</option>
           {(() => {
             const startMins = manualEvent ? (() => { const [h, m] = manualEvent.start_time.split(':').map(Number); return h * 60 + m })() : 10 * 60
             const endMins = manualEvent ? (() => { const [h, m] = manualEvent.end_time.split(':').map(Number); return h * 60 + m })() : 22 * 60 + 30
@@ -1893,7 +1898,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
               : 'bg-white text-slate-400 border-slate-200 hover:text-slate-600 hover:border-slate-300'
           }`}
         >
-          {manualBuzzer != null ? `🔔 Buzzer ${manualBuzzer}` : '🔔 + Buzzer'}
+          {`🔔 ${manualBuzzer != null ? t('buzzerN', { number: String(manualBuzzer) }) : t('addBuzzer')}`}
         </button>
       )}
       </div>
@@ -1903,7 +1908,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
       {!manualSlot && asapNoFit ? (
         // Engine found NO genuinely-fitting slot all day (truly over capacity). Tell the truth — do
         // NOT show a basket-blind "around 16:40". The operator can still pick a specific slot + override.
-        <p className="text-xs text-red-600 font-semibold mt-1.5">⚠ Over capacity — no slot fits this order</p>
+        <p className="text-xs text-red-600 font-semibold mt-1.5">⚠ {t('noSlotFits')}</p>
       ) : !manualSlot && readyTime && (() => {
         const isFutureDay = manualEvent && manualEvent.event_date > getLocalDateInTz(eventTz)
         const dateLabel = isFutureDay
@@ -1914,19 +1919,20 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         // load/ceiling set the slot, or honest-early (the ungridded estimate ≤ the slot) only when the
         // slot is late purely by gridding. Falls back to the queue-batch estimate when there's no fit slot.
         const m = readyMinsFromNow
+        const hrs = Math.round(m / 30) / 2
         const wait = m < 60
-          ? `~${m} min${m !== 1 ? 's' : ''}`
-          : `~${Math.round(m / 30) / 2} hr${Math.round(m / 30) / 2 !== 1 ? 's' : ''}`
+          ? t('waitMins', { n: m, count: String(m) })
+          : t('waitHours', { n: hrs, count: String(hrs) })
         return isFutureDay ? (
           <div className="mt-2 bg-teal-50 border border-teal-200 rounded-xl px-3 py-2.5 flex items-center gap-2">
             <span className="text-teal-600 text-base">⚡</span>
             <div>
-              <p className="text-sm font-black text-teal-800">Ready around {formatSlot(readyTime, panelTime)}</p>
+              <p className="text-sm font-black text-teal-800">{t('readyAround', { time: formatSlot(readyTime, panelTime) })}</p>
               <p className="text-xs text-teal-600 font-medium">{dateLabel}</p>
             </div>
           </div>
         ) : (
-          <p className="text-xs text-green-600 font-medium mt-1.5">⚡ {wait} · around {formatSlot(readyTime, panelTime)}</p>
+          <p className="text-xs text-green-600 font-medium mt-1.5">⚡ {t('readyWait', { wait, time: formatSlot(readyTime, panelTime) })}</p>
         )
       })()}
     </div>
@@ -1934,15 +1940,15 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
 
   const contactDetails = (
     <details className="text-xs text-slate-400">
-      <summary className="cursor-pointer select-none py-1">+ Add email / phone / notes</summary>
+      <summary className="cursor-pointer select-none py-1">{t('addContact')}</summary>
       <div className="mt-2 flex flex-col gap-2">
-        <input type="email" placeholder="Email for receipt" value={manualEmail}
+        <input type="email" placeholder={t('emailPlaceholder')} value={manualEmail}
           onChange={e => setManualEmail(e.target.value)}
           className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" />
-        <input type="tel" placeholder="Phone number" value={manualPhone}
+        <input type="tel" placeholder={t('phonePlaceholder')} value={manualPhone}
           onChange={e => setManualPhone(e.target.value)}
           className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" />
-        <textarea placeholder="Order notes" value={manualNotes} onChange={e => setManualNotes(e.target.value)}
+        <textarea placeholder={t('notesPlaceholder')} value={manualNotes} onChange={e => setManualNotes(e.target.value)}
           rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 resize-none" />
       </div>
     </details>
@@ -1952,13 +1958,13 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
     <div className="border-t border-slate-200 p-4 flex flex-col gap-3 bg-white shrink-0">
       {hasItems && (
         <div className="flex justify-between text-base font-semibold text-slate-900">
-          <span>Total</span>
+          <span>{t('total')}</span>
           <span>{amount(manualTotal)}</span>
         </div>
       )}
       <input
         type="text"
-        placeholder="Customer name — optional"
+        placeholder={t('namePlaceholder')}
         value={manualName}
         onChange={e => setManualName(e.target.value)}
         className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
@@ -2014,7 +2020,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             disabled={loading || !hasItems || !manualEvent}
             className={`flex-1 min-w-0 ${ORANGE_OUTLINE} font-semibold py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]`}
           >
-            {submitting === 'plain' ? 'Confirming…' : !manualEvent ? 'Select an event' : 'Place order'}
+            {submitting === 'plain' ? t('confirming') : !manualEvent ? t('selectAnEvent') : t('placeOrder')}
           </button>
           {takesCash ? (
             /* CASH/CARD — both blue (both are money actions; no fourth colour), one tap each, no modal.
@@ -2026,8 +2032,8 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 disabled={loading || !hasItems || !manualEvent}
                 className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
               >
-                {submitting === 'take-cash' ? <span className="text-sm">Confirming…</span> : (
-                  <><span className="text-sm">💷 Cash</span><span className="text-base font-black">{amount(manualTotal)}</span></>
+                {submitting === 'take-cash' ? <span className="text-sm">{t('confirming')}</span> : (
+                  <><span className="text-sm">💷 {t('cash')}</span><span className="text-base font-black">{amount(manualTotal)}</span></>
                 )}
               </button>
               <button
@@ -2035,8 +2041,8 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 disabled={loading || !hasItems || !manualEvent}
                 className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
               >
-                {submitting === 'take-card' ? <span className="text-sm">Confirming…</span> : (
-                  <><span className="text-sm">💳 Card</span><span className="text-base font-black">{amount(manualTotal)}</span></>
+                {submitting === 'take-card' ? <span className="text-sm">{t('confirming')}</span> : (
+                  <><span className="text-sm">💳 {t('card')}</span><span className="text-base font-black">{amount(manualTotal)}</span></>
                 )}
               </button>
             </>
@@ -2046,8 +2052,8 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
               disabled={loading || !hasItems || !manualEvent}
               className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
             >
-              {submitting === 'take' ? <span className="text-sm">Confirming…</span> : (
-                <><span className="text-sm">Take payment</span><span className="text-base font-black">{amount(manualTotal)}</span></>
+              {submitting === 'take' ? <span className="text-sm">{t('confirming')}</span> : (
+                <><span className="text-sm">{t('takePayment')}</span><span className="text-base font-black">{amount(manualTotal)}</span></>
               )}
             </button>
           )}
@@ -2062,8 +2068,8 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             disabled={loading || !hasItems || !manualEvent}
             className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
           >
-            {submitting === 'take-cash' ? <span className="text-sm">Confirming…</span> : !manualEvent ? <span className="text-sm">Select an event</span> : (
-              <><span className="text-sm">💷 Cash</span><span className="text-base font-black">{amount(manualTotal)}</span></>
+            {submitting === 'take-cash' ? <span className="text-sm">{t('confirming')}</span> : !manualEvent ? <span className="text-sm">{t('selectAnEvent')}</span> : (
+              <><span className="text-sm">💷 {t('cash')}</span><span className="text-base font-black">{amount(manualTotal)}</span></>
             )}
           </button>
           <button
@@ -2071,8 +2077,8 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             disabled={loading || !hasItems || !manualEvent}
             className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
           >
-            {submitting === 'take-card' ? <span className="text-sm">Confirming…</span> : !manualEvent ? <span className="text-sm">Select an event</span> : (
-              <><span className="text-sm">💳 Card</span><span className="text-base font-black">{amount(manualTotal)}</span></>
+            {submitting === 'take-card' ? <span className="text-sm">{t('confirming')}</span> : !manualEvent ? <span className="text-sm">{t('selectAnEvent')}</span> : (
+              <><span className="text-sm">💳 {t('card')}</span><span className="text-base font-black">{amount(manualTotal)}</span></>
             )}
           </button>
         </div>
@@ -2090,7 +2096,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
           disabled={loading || !hasItems || !manualEvent}
           className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
         >
-          {loading ? 'Confirming...' : !manualEvent ? 'Select an event to confirm' : `Take payment${manualTotal > 0 ? ` ${amount(manualTotal)}` : ''}`}
+          {loading ? t('confirmingDots') : !manualEvent ? t('selectEventToConfirm') : manualTotal > 0 ? t('takePaymentAmount', { amount: amount(manualTotal) }) : t('takePayment')}
         </button>
       )}
     </div>
@@ -2100,7 +2106,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
     <div className="space-y-1">
       {/* Deals first — always with category header */}
       {appliedDeals.length > 0 && (
-        <p className="text-[10px] font-black text-orange-500 uppercase tracking-wide mb-1">Deals</p>
+        <p className="text-[10px] font-black text-orange-500 uppercase tracking-wide mb-1">{t('deals')}</p>
       )}
       {appliedDeals.map((d, i) => (
         <div key={i} className="py-1">
@@ -2182,7 +2188,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                     {/* Option-pool limit feedback is the DISABLED "+" + its tooltip (consistent with how
                         items behave on the basket line — no static "max" label on this confirmation surface;
                         the count lives in the add modal §29). V7.8 §32 removed the basket-line "max" badge. */}
-                    <button onClick={() => adjustManualQty(rowKey, 1)} disabled={!!optBlocked} title={optBlocked ? `Only ${buildOptionStockByName(truckMenu?.items || [])[optBlocked]} ${optBlocked} left (shared)` : undefined} className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm leading-none ${optBlocked ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-slate-200 hover:bg-orange-100 hover:text-orange-600'}`}>+</button>
+                    <button onClick={() => adjustManualQty(rowKey, 1)} disabled={!!optBlocked} title={optBlocked ? t('optionLeftTitle', { count: String(buildOptionStockByName(truckMenu?.items || [])[optBlocked]), option: optBlocked }) : undefined} className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm leading-none ${optBlocked ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-slate-200 hover:bg-orange-100 hover:text-orange-600'}`}>+</button>
                   </div>
                   <div className="flex-1 min-w-0">
                     <OrderLineItem
@@ -2195,7 +2201,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                       nameSuffix={showCustomise ? (
                         <button onClick={() => openManualItemModal(fullMenuItem!, itemCatModGroups, rowKey)}
                           className="text-[10px] font-bold text-orange-500 border border-orange-200 rounded-md px-1.5 py-0.5 hover:bg-orange-50 shrink-0">
-                          ✏ Edit
+                          ✏ {t('edit')}
                         </button>
                       ) : undefined}
                       rightSlot={
@@ -2257,8 +2263,8 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
   const stockNotice = stockStatus === 'live' ? null : (
     <div className={`rounded-xl px-3 py-2 mb-2 text-xs font-semibold ${stockStatus === 'unknown' ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-800'}`}>
       {stockStatus === 'unknown'
-        ? 'Stock counts aren\u2019t loaded on this device. You can still take orders \u2014 check what you have.'
-        : `Stock last checked${stockCheckedAt ? ` at ${formatInstantClock(stockCheckedAt, panelTime)}` : ''}. It may have moved since.`}
+        ? t('stockUnknown')
+        : t('stockStale', { hasTime: stockCheckedAt ? 'yes' : 'no', time: stockCheckedAt ? formatInstantClock(stockCheckedAt, panelTime) : '' })}
     </div>
   )
 
@@ -2287,7 +2293,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
   const closedBanner = selectedCatClosed ? (
     <div className="mb-2 flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
       <span aria-hidden>🔒</span>
-      <span>{(selectedMenuCat as string).charAt(0).toUpperCase() + (selectedMenuCat as string).slice(1)} is closed for online orders this event — hidden from customers. You can still add for the hatch; you&apos;ll be asked to confirm.</span>
+      <span>{t('catClosed', { cat: (selectedMenuCat as string).charAt(0).toUpperCase() + (selectedMenuCat as string).slice(1) })}</span>
     </div>
   ) : null
 
@@ -2339,7 +2345,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             if (isSoldOut) return (
               <div key={item.name} className="flex flex-col items-start justify-center gap-0.5 px-3 py-2.5 rounded-xl border border-slate-100 bg-slate-50 cursor-not-allowed opacity-60 min-h-[56px]">
                 <span className="text-xs text-slate-500 line-through leading-tight">{item.name}</span>
-                <span className="text-[10px] text-red-400 font-bold">sold out</span>
+                <span className="text-[10px] text-red-400 font-bold">{t('soldOut')}</span>
               </div>
             )
             return (
@@ -2364,8 +2370,8 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 <span className="pr-6 text-left leading-tight">{item.name}</span>
                 <div className="flex items-center gap-1.5">
                   <span className={`text-xs font-normal ${atStockLimit ? 'text-slate-400' : totalInBasket > 0 ? 'text-orange-200' : 'text-slate-400'}`}>{amount(item.price)}</span>
-                  {atStockLimit && <span className="text-[10px] text-red-500 font-black">max</span>}
-                  {!atStockLimit && isLow && <span className={`text-[10px] font-black ${totalInBasket > 0 ? 'text-white' : 'text-orange-500'}`}>({addable} left)</span>}
+                  {atStockLimit && <span className="text-[10px] text-red-500 font-black">{t('max')}</span>}
+                  {!atStockLimit && isLow && <span className={`text-[10px] font-black ${totalInBasket > 0 ? 'text-white' : 'text-orange-500'}`}>{t('leftParen', { count: String(addable) })}</span>}
                 </div>
               </button>
             )
@@ -2418,16 +2424,16 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                     <p className={`text-sm font-semibold truncate ${isSoldOut ? 'line-through text-slate-400' : 'text-slate-800'}`}>{item.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-xs text-slate-400">{amount(item.price)}</span>
-                      {isSoldOut && <span className="text-[10px] text-red-400 font-bold">sold out</span>}
-                      {!isSoldOut && atStockLimit && <span className="text-[10px] text-red-500 font-black">max reached</span>}
-                      {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">{addable} left</span>}
+                      {isSoldOut && <span className="text-[10px] text-red-400 font-bold">{t('soldOut')}</span>}
+                      {!isSoldOut && atStockLimit && <span className="text-[10px] text-red-500 font-black">{t('maxReached')}</span>}
+                      {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">{t('left', { count: String(addable) })}</span>}
                     </div>
                   </div>
                   {!isSoldOut && (
                     <button
                       onClick={() => !atStockLimit && addOrCustomise(item)}
                       disabled={atStockLimit}
-                      title="Add"
+                      title={t('add')}
                       className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xl leading-none shrink-0 ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-100 text-orange-600 active:scale-90'}`}
                     >+</button>
                   )}
@@ -2448,7 +2454,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                       <div className="flex items-center gap-1 shrink-0">
                         <button onClick={() => adjustManualQty(rowKey, -1)} className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-red-100 hover:text-red-600 text-sm leading-none active:scale-90">−</button>
                         <span className="w-5 text-center font-black text-sm text-slate-900">{line.quantity}</span>
-                        <button onClick={() => adjustManualQty(rowKey, 1)} disabled={!!optBlocked} title={optBlocked ? `Only ${buildOptionStockByName(truckMenu?.items || [])[optBlocked]} ${optBlocked} left (shared)` : undefined} className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm leading-none active:scale-90 ${optBlocked ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-slate-200 hover:bg-orange-100 hover:text-orange-600'}`}>+</button>
+                        <button onClick={() => adjustManualQty(rowKey, 1)} disabled={!!optBlocked} title={optBlocked ? t('optionLeftTitle', { count: String(buildOptionStockByName(truckMenu?.items || [])[optBlocked]), option: optBlocked }) : undefined} className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm leading-none active:scale-90 ${optBlocked ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-slate-200 hover:bg-orange-100 hover:text-orange-600'}`}>+</button>
                       </div>
                       {/* Detail block — STACK each extra on its own line + note beneath (break-words, NEVER
                           truncate: the operator must see exactly what was chosen). rem type sizes scale w/ OS. */}
@@ -2461,7 +2467,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                       {/* Edit — PENCIL only (dropped the "Edit" text: horizontal space is scarce and was
                           driving the truncation). Padded ~44px tap target so operator speed isn't hurt.
                           Vertically centred against the detail block, beside the price. */}
-                      <button onClick={() => openManualItemModal(item, itemModGroups, rowKey)} aria-label="Edit"
+                      <button onClick={() => openManualItemModal(item, itemModGroups, rowKey)} aria-label={t('edit')}
                         className="shrink-0 min-w-[2.75rem] min-h-[2.75rem] flex items-center justify-center text-slate-400 active:scale-95">✏️</button>
                       {/* Price (right) */}
                       <span className="shrink-0 text-sm font-bold text-slate-900 tabular-nums">{amount(line.unit_price * line.quantity)}</span>
@@ -2514,8 +2520,8 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
       className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-orange-300 text-orange-600 hover:bg-orange-50 transition-colors text-sm font-bold active:scale-[0.99] mb-4"
     >
       <span>🎁</span>
-      <span>{appliedDeals.length > 0 ? '+ Add another deal' : '+ Apply a deal'}</span>
-      {appliedDeals.length > 0 && <span className="text-xs text-orange-400 font-normal">({appliedDeals.length} applied)</span>}
+      <span>{appliedDeals.length > 0 ? t('addAnotherDeal') : t('applyDeal')}</span>
+      {appliedDeals.length > 0 && <span className="text-xs text-orange-400 font-normal">{t('dealsApplied', { count: String(appliedDeals.length) })}</span>}
     </button>
   ) : null
 
@@ -2532,17 +2538,17 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 </p>
               )}
               <p className="text-xs text-orange-600 truncate">{(() => {
-                const t = getLocalDateInTz(eventTz)
-                const tmrw = addDaysYmd(t, 1)
+                const todayYmd = getLocalDateInTz(eventTz)
+                const tmrw = addDaysYmd(todayYmd, 1)
                 const d = manualEvent.event_date
-                const label = d === t ? 'Today' : d === tmrw ? 'Tomorrow' : formatYmd(d, panelTime, { weekday: 'short', day: 'numeric', month: 'short' })
+                const label = d === todayYmd ? t('today') : d === tmrw ? t('tomorrow') : formatYmd(d, panelTime, { weekday: 'short', day: 'numeric', month: 'short' })
                 return `${label} · ${formatTime(manualEvent.start_time, panelTime)}–${formatTime(manualEvent.end_time, panelTime)}`
               })()}</p>
             </div>
             {/* Change event — SHOWN but locked in demo (opens the explainer via openEventPicker's guard). */}
             <button onClick={openEventPicker}
               className={`text-xs font-bold rounded-lg px-2.5 py-1 shrink-0 ${isDemo ? 'text-slate-400 border border-slate-300 cursor-pointer' : 'text-orange-600 border border-orange-300 hover:bg-orange-100 active:scale-95'}`}>
-              {isDemo && <span aria-hidden>🔒 </span>}Change
+              {isDemo && <span aria-hidden>🔒 </span>}{t('change')}
             </button>
           </div>
           {(liveEvent?.status === 'confirmed' || liveEvent?.status === 'closed') && onOpenEvent && (
@@ -2551,7 +2557,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             <button
               onClick={() => isDemo ? onLockedEventAction?.() : onOpenEvent(manualEvent.id)}
               className={`mt-2 w-full font-bold py-2.5 rounded-xl text-sm transition-all ${isDemo ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-pointer' : 'bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.98]'}`}>
-              {isDemo && <span aria-hidden>🔒 </span>}{liveEvent?.status === 'closed' ? 'Restart Event' : 'Start Event'}
+              {isDemo && <span aria-hidden>🔒 </span>}{t('startEvent', { restart: liveEvent?.status === 'closed' ? 'yes' : 'no' })}
             </button>
           )}
         </div>
@@ -2559,11 +2565,11 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="text-amber-500">⚠️</span>
-            <p className="text-sm font-medium text-amber-800">No event selected</p>
+            <p className="text-sm font-medium text-amber-800">{t('noEventSelected')}</p>
           </div>
           <button onClick={openEventPicker}
             className="text-sm font-semibold text-amber-700 border border-amber-300 bg-white rounded-lg px-3 py-1.5 hover:bg-amber-50 whitespace-nowrap">
-            Select event
+            {t('selectEvent')}
           </button>
         </div>
       )}
@@ -2578,7 +2584,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         <div className="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
           <span className="text-amber-500 flex-shrink-0 text-sm">⚠️</span>
           <p className="text-xs text-amber-700">
-            {eventDateLabel(manualEvent.event_date, panelTime, 'compact')} event selected. Orders will appear on the order screen when the event opens.
+            {t('futureEventSelected', { date: eventDateLabel(manualEvent.event_date, panelTime, 'compact') })}
           </p>
         </div>
       )}
@@ -2586,13 +2592,13 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         <div className="mt-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
           <span className="text-blue-500 flex-shrink-0 text-sm">ℹ️</span>
           <p className="text-xs text-blue-700">
-            Today&apos;s event — not yet open for orders. Orders will be queued and visible when you open the event.
+            {t('todayNotOpen')}
           </p>
         </div>
       )}
       {isEventEnded && (
         <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
-          ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event.
+          ⚠️ {t('eventEnded')}
         </div>
       )}
     </div>
@@ -2625,14 +2631,14 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
               {dealsButton}
             </div>
             <div className="@container flex-1 min-h-0 overflow-y-auto px-4 pb-4">
-              {truckMenu ? menuGrid : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
+              {truckMenu ? menuGrid : <p className="text-slate-400 text-sm animate-pulse">{t('loadingMenu')}</p>}
             </div>
           </div>
         ) : (
           <div className="@container w-[58%] min-h-0 overflow-y-auto border-r border-slate-200 p-4">
             {eventBanner}
             {dealsButton}
-            {truckMenu ? menuGrid : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
+            {truckMenu ? menuGrid : <p className="text-slate-400 text-sm animate-pulse">{t('loadingMenu')}</p>}
           </div>
         )}
 
@@ -2642,7 +2648,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             {hasItems ? cartLines : (
               <div className="flex flex-col items-center justify-center h-full text-slate-300 gap-2 select-none">
                 <span className="text-4xl">🛒</span>
-                <span className="text-sm">Tap items to build order</span>
+                <span className="text-sm">{t('tapItems')}</span>
               </div>
             )}
           </div>
@@ -2684,14 +2690,14 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
               ⚠️ SCOPED TO THIS ONE-PAGE SCROLLER. The tabs layout's box is untouched — it was not what
               was asked about, and a truck on that layout sees exactly what it saw yesterday. */}
           <div className="flex-1 min-h-0 min-w-0 overflow-y-auto scrollbar-hide pb-24">
-            {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
+            {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">{t('loadingMenu')}</p>}
           </div>
         </div>
       ) : (
         <div className="md:hidden flex-1 min-h-0 overflow-y-auto pb-24">
           {eventBanner}
           {dealsButton}
-          {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
+          {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">{t('loadingMenu')}</p>}
         </div>
       )}
 
@@ -2699,14 +2705,14 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between gap-3 z-20">
         <div>
           <p className="text-sm font-bold text-slate-900">{amount(manualTotal)}</p>
-          <p className="text-xs text-slate-400">{totalItemCount} item{totalItemCount !== 1 ? 's' : ''}</p>
+          <p className="text-xs text-slate-400">{t('itemCount', { n: totalItemCount, count: String(totalItemCount) })}</p>
         </div>
         <button
           onClick={() => setShowOrderSheet(true)}
           disabled={!hasItems}
           className="flex-1 max-w-xs bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 active:scale-95"
         >
-          Review order →
+          {t('reviewOrder')} →
         </button>
       </div>
 
@@ -2717,7 +2723,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
           <div className="relative w-full bg-white rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-slate-100">
-              <p className="font-black text-slate-900">Confirm order</p>
+              <p className="font-black text-slate-900">{t('confirmOrder')}</p>
               <button onClick={() => setShowOrderSheet(false)}
                 className="text-slate-400 hover:text-slate-600 text-xl font-bold w-8 h-8 flex items-center justify-center">✕</button>
             </div>
@@ -2783,7 +2789,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             } catch {
               // The ORDER IS ALREADY PLACED. Say what failed and let the flow finish — trapping the
               // operator in a modal over a buzzer write would be worse than the missing number.
-              showToast('Could not save the buzzer number — add it from the order card', 'error')
+              showToast(t('buzzerSaveFailed'), 'error')
             } finally {
               setSavingPromptBuzzer(false)
               setBuzzerPrompt(null)
@@ -2808,7 +2814,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
               <h3 className="font-black text-slate-900 text-lg mb-1">{capacityConfirm.message.title}</h3>
 
               {capacityConfirm.variant === 'filled' && (
-                <p className="text-sm text-slate-600 mb-2">Another order came in while you were adding this one.</p>
+                <p className="text-sm text-slate-600 mb-2">{t('anotherOrderCameIn')}</p>
               )}
 
               {/* 🔴 STRINGS ONLY. Every line came from lib/slot-fit-message.ts, which read
@@ -2827,7 +2833,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
 
               {capacityConfirm.stale && (
                 <p className="mt-3 text-xs font-semibold text-amber-700">
-                  Checked against the last data this device downloaded -- you&apos;re offline, so a newer order may not be counted.
+                  {t('staleCheck')}
                 </p>
               )}
               <div className="flex gap-2 mt-5">
@@ -2835,7 +2841,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                   type="button"
                   onClick={() => { setManualSlot(''); setCapacityConfirm(null) }}
                   className="flex-1 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm"
-                >Pick another time</button>
+                >{t('pickAnotherTime')}</button>
                 <button
                   type="button"
                   onClick={() => {
@@ -2846,7 +2852,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                     void submitManual(ov, true, true)
                   }}
                   className="flex-1 bg-orange-600 text-white font-bold py-3 rounded-xl hover:bg-orange-700 text-sm"
-                >Place it anyway</button>
+                >{t('placeAnyway')}</button>
               </div>
             </div>
           </div>
@@ -2862,7 +2868,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="font-black text-slate-900 text-lg">{itemModal.item.name}</h3>
-                  <p className="text-slate-400 text-sm">{amount(itemModal.item.price)} base</p>
+                  <p className="text-slate-400 text-sm">{t('basePrice', { amount: amount(itemModal.item.price) })}</p>
                 </div>
                 <button onClick={() => setItemModal(null)} className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none ml-4 mt-0.5">✕</button>
               </div>
@@ -2910,9 +2916,9 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                     allergy / "no onions" / "extra crispy" on ANY item regardless of config. For a no-extras item
                     (e.g. a drink) this is the modal's only body row → it renders cleanly on its own. */}
                 <div>
-                  <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Note <span className="font-normal normal-case text-slate-400">— optional</span></p>
+                  <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">{t.rich('noteOptional', { s: c => <span className="font-normal normal-case text-slate-400">{c}</span> })}</p>
                   <textarea value={modalNotes} onChange={e => setModalNotes(e.target.value.slice(0, 60))}
-                    placeholder="e.g. No onions, well done…" rows={2}
+                    placeholder={t('notePlaceholder')} rows={2}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none" />
                   <p className="text-right text-[10px] text-slate-400 mt-0.5">{modalNotes.length}/60</p>
                 </div>
@@ -2923,8 +2929,8 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                 disabled={modalUnmetGroupIds.length > 0}
                 className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
                 {modalUnmetGroupIds.length > 0
-                  ? 'Choose required options'
-                  : `${itemModal.editCartKey ? 'Save changes' : 'Add'} · ${amount(itemModal.item.price + modalMods.reduce((s, m) => s + m.price, 0))}`}
+                  ? t('chooseRequired')
+                  : t('addLine', { edit: itemModal.editCartKey ? 'yes' : 'no', amount: amount(itemModal.item.price + modalMods.reduce((s, m) => s + m.price, 0)) })}
               </button>
             </div>
           </div>
@@ -2973,11 +2979,11 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         isEventBlocked={ev => isOffline && manualEvent?.id !== ev.id && !!isEventLoaded && !isEventLoaded(ev.id)}
         onSelect={ev => { if (manualEvent && manualEvent.id !== ev.id) resetManual(); setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time, ev.id); setManualSlot(''); onEventChange?.(ev.id) }}
         onClose={() => setShowEventPicker(false)}
-        title="Select event"
-        closeLabel="Done"
+        title={t('selectEvent')}
+        closeLabel={t('done')}
         emptyState={(eventsLoading || !eventsLoaded)
           ? <>{[0, 1, 2].map(i => <div key={i} className="h-[58px] rounded-xl bg-slate-100 animate-pulse" />)}</>
-          : <p className="text-sm text-slate-400 text-center py-6">No upcoming events found</p>}
+          : <p className="text-sm text-slate-400 text-center py-6">{t('noUpcomingEvents')}</p>}
       />
     </MoneyProvider>
   )

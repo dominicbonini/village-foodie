@@ -1,0 +1,18 @@
+{
+  "menuLabel": "User menu",
+  "screenOn": "Screen on",
+  "screenOff": "Screen off",
+  "newOrderSound": "New-order sound",
+  "copied": "Copied",
+  "orderLink": "Order link",
+  "qrCode": "QR code",
+  "kitchenScreen": "Kitchen screen",
+  "thisDevice": "This device",
+  "manage": "Manage",
+  "ordersDashboard": "Orders dashboard",
+  "admin": "Admin",
+  "privacy": "Privacy policy",
+  "terms": "Terms",
+  "signOut": "Sign out",
+  "close": "Close"
+}

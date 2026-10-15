@@ -16,6 +16,14 @@ translation file, never another sweep. Source: `docs/language-readiness-audit-re
    PDFs, API responses, tickets, crons — `lib/i18n/translator.ts`). `scripts/ui-literals.cjs` fails if a new file
    carries JSX text or a literal placeholder, title, label, aria-label or alt. US wording goes in
    `messages/en-US.json` only when it differs.
+   - **A file that reads a namespace imports its catalog module** — `import '@/lib/i18n/catalog/<namespace>'` beside
+     `useT` (from `@/lib/i18n/use-t`) or `translatorFor`. The browser then carries only the namespaces its files read
+     (Language Phase 1b). The per-namespace files (`messages/ns/**`, `lib/i18n/catalog/*`) are GENERATED from the two
+     authored files by `node scripts/split-messages.cjs` (run by `npm run build` / `npm run dev`); never edit them by
+     hand. `scripts/messages-split.cjs` fails if one is stale or a file reads a namespace it does not import
+     (`--fix` adds the import).
+   - **A refusal a route sends is `{ error, …, code, params }`** — `customerErrorBody` (customers) or
+     `kitchenErrorBody` (the kitchen and operator); a screen shows `errorText(t, body, fallback)`.
 2. **Whole sentences only.** Never build a sentence from pieces (`'Only ' + n + ' left'`, a prefix and a suffix
    around a control, a bold word split out). One message with placeholders, and rich-text tags for bold or links.
 3. **No hand-written plurals.** No `n === 1 ? … : …` and no added `'s'`. Use ICU `plural` in the message.

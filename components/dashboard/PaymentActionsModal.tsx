@@ -24,17 +24,12 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useMoney } from '@/components/MoneyContext'
 import { formatMinorOrBare, currencySymbolOrBare, editableMinor } from '@/lib/money-format'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/paymentActions'
 
 /** Our seven, mirrored from lib/payments/refund — the labels an operator reads are only here. */
-const REASONS: { value: string; label: string }[] = [
-  { value: 'item_unavailable',     label: 'Item unavailable' },
-  { value: 'not_collected',        label: 'Order not collected' },
-  { value: 'wrong_or_missing_item',label: 'Wrong or missing item' },
-  { value: 'quality_issue',        label: 'Quality issue' },
-  { value: 'duplicate_payment',    label: 'Duplicate payment' },
-  { value: 'customer_cancelled',   label: 'Customer cancelled' },
-  { value: 'other',                label: 'Other' },
-]
+// The values are what the server records; the words are messages (paymentActions.reason), keyed by the value.
+const REASONS = ['item_unavailable', 'not_collected', 'wrong_or_missing_item', 'quality_issue', 'duplicate_payment', 'customer_cancelled', 'other'] as const
 
 export type RefundSubmit = (args: {
   orderKey: string
@@ -86,6 +81,7 @@ export function PaymentActionsModal({
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState<string | null>(null)
   const fmt = useMoney()
+  const t = useT('paymentActions')
 
   if (!open) return null
 
@@ -116,14 +112,14 @@ export function PaymentActionsModal({
     const mixed = online.length > 0 && inPerson.length > 0
     const out: { label: string; hint?: string }[] = []
     if (online.length) {
-      out.push({ label: `Paid online by card${mixed ? ` — ${money(sum(online))}` : ''}` })
+      out.push({ label: t('paidOnline', { mixed: mixed ? 'yes' : 'no', amount: mixed ? money(sum(online)) : '' }) })
     }
     if (inPerson.length) {
       const methods = new Set(inPerson.map(c => c.method))
-      const amount = mixed ? ` — ${money(sum(inPerson))}` : ''
-      if (methods.size === 1 && methods.has('cash')) out.push({ label: `Paid in cash${amount}` })
-      else if (methods.size === 1 && methods.has('card')) out.push({ label: `Paid on your card machine${amount}` })
-      else out.push({ label: `Paid in person${amount}`, hint: 'Cash or your card machine — not recorded' })
+      const amountArgs = { mixed: mixed ? 'yes' : 'no', amount: mixed ? money(sum(inPerson)) : '' }
+      if (methods.size === 1 && methods.has('cash')) out.push({ label: t('paidCash', amountArgs) })
+      else if (methods.size === 1 && methods.has('card')) out.push({ label: t('paidCardMachine', amountArgs) })
+      else out.push({ label: t('paidInPerson', amountArgs), hint: t('inPersonHint') })
     }
     return out
   })()
@@ -200,11 +196,11 @@ export function PaymentActionsModal({
     return shell(
       <>
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Order #{orderId}</h3>
+          <h3 className="text-lg font-semibold text-slate-900">{t('orderTitle', { orderId })}</h3>
           <p className="text-sm text-slate-500 mt-2">{done}</p>
         </div>
         <button onClick={onClose}
-          className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm">Done</button>
+          className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm">{t('done')}</button>
       </>
     )
   }
@@ -224,18 +220,16 @@ export function PaymentActionsModal({
       <>
         {howPaidBlock}
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Payment changes need a connection</h3>
+          <h3 className="text-lg font-semibold text-slate-900">{t('offlineTitle')}</h3>
           <p className="text-sm text-slate-500 mt-2">
-            Payment changes can&apos;t be made while offline. Refunds and removing a recorded payment both
-            have to reach the payment provider, so they can&apos;t be saved on this device and sent later.
+            {t('offlineBody')}
           </p>
           <p className="text-sm text-slate-500 mt-2">
-            Order <strong className="text-slate-700">#{orderId}</strong> is unchanged. Reconnect and open
-            this again.
+            {t.rich('offlineUnchanged', { orderId, b: c => <strong className="text-slate-700">{c}</strong> })}
           </p>
         </div>
         <button onClick={onClose}
-          className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm">Got it</button>
+          className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm">{t('gotIt')}</button>
       </>
     )
   }
@@ -246,19 +240,17 @@ export function PaymentActionsModal({
       <>
         {howPaidBlock}
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Remove payment?</h3>
+          <h3 className="text-lg font-semibold text-slate-900">{t('removeTitle')}</h3>
           <p className="text-sm text-slate-500 mt-2">
-            This removes the <strong className="text-slate-700">{money(paidMinor)}</strong> recorded
-            against order <strong className="text-slate-700">#{orderId}</strong>. The order stays where it is;
-            only the payment record is removed.
+            {t.rich('removeBody', { amount: money(paidMinor), orderId, b: c => <strong className="text-slate-700">{c}</strong> })}
           </p>
         </div>
         <div className="flex gap-3">
           <button onClick={onClose}
-            className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Cancel</button>
+            className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">{t('cancel')}</button>
           <button onClick={() => { onClose(); onUndoPayment() }} disabled={undoLoading}
             className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50">
-            {undoLoading ? '…' : 'Remove payment'}
+            {undoLoading ? '…' : t('removeConfirm')}
           </button>
         </div>
       </>
@@ -271,20 +263,18 @@ export function PaymentActionsModal({
       <>
         {howPaidBlock}
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Paid by card</h3>
+          <h3 className="text-lg font-semibold text-slate-900">{t('paidByCardTitle')}</h3>
           <p className="text-sm text-slate-500 mt-2">
-            Order <strong className="text-slate-700">#{orderId}</strong> was paid by card, so there is no
-            payment record to remove here — the money is already on the customer&apos;s card.
+            {t.rich('paidByCardBody', { orderId, b: c => <strong className="text-slate-700">{c}</strong> })}
           </p>
           {cardChargeMinor > 0 && refundedMinor > 0 && (
             <p className="text-sm text-slate-500 mt-2">
-              {money(refundedMinor)} of {money(cardChargeMinor)} has already been refunded, so there is
-              nothing left to refund on this order.
+              {t('alreadyRefunded', { refunded: money(refundedMinor), charged: money(cardChargeMinor) })}
             </p>
           )}
         </div>
         <button onClick={onClose}
-          className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm">Got it</button>
+          className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm">{t('gotIt')}</button>
       </>
     )
   }
@@ -294,15 +284,17 @@ export function PaymentActionsModal({
     <>
       {howPaidBlock}
       <div>
-        <h3 className="text-lg font-semibold text-slate-900">Refund order #{orderId}</h3>
+        <h3 className="text-lg font-semibold text-slate-900">{t('refundTitle', { orderId })}</h3>
         <p className="text-sm text-slate-500 mt-1">
-          {money(cardChargeMinor)} was paid by card{refundedMinor > 0 ? `, ${money(refundedMinor)} already refunded` : ''}.
-          <span className="text-slate-700 font-medium"> {money(refundableMinor)} can be refunded.</span>
+          {t.rich('refundSummary', {
+            charged: money(cardChargeMinor), hasRefunded: refundedMinor > 0 ? 'yes' : 'no', refunded: money(refundedMinor), refundable: money(refundableMinor),
+            b: c => <span className="text-slate-700 font-medium">{c}</span>,
+          })}
         </p>
       </div>
 
       <div className="flex gap-2">
-        {([['full', `Full · ${money(refundableMinor)}`], ['partial', 'Part']] as const).map(([v, label]) => (
+        {([['full', t('full', { amount: money(refundableMinor) })], ['partial', t('part')]] as const).map(([v, label]) => (
           <button key={v} type="button" onClick={() => { setMode(v); setError(null) }}
             className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border ${mode === v ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-200 text-slate-600'}`}>
             {label}
@@ -312,7 +304,7 @@ export function PaymentActionsModal({
 
       {mode === 'partial' && (
         <label className="block">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Amount</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('amount')}</span>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-slate-500 text-sm">{currencySymbolOrBare(fmt, 'payment actions')}</span>
             <input type="number" inputMode="decimal" step="0.01" min="0.01" max={editable(refundableMinor)}
@@ -321,26 +313,26 @@ export function PaymentActionsModal({
               className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm" />
           </div>
           {partialMinor > refundableMinor && (
-            <span className="text-xs text-red-600 mt-1 block">Only {money(refundableMinor)} can be refunded.</span>
+            <span className="text-xs text-red-600 mt-1 block">{t('onlyRefundable', { amount: money(refundableMinor) })}</span>
           )}
         </label>
       )}
 
       <label className="block">
-        <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Reason</span>
+        <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('reasonLabel')}</span>
         <select value={reason} onChange={e => { setReason(e.target.value); setError(null) }}
           className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm mt-1 bg-white">
-          <option value="">Choose a reason…</option>
-          {REASONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+          <option value="">{t('chooseReason')}</option>
+          {REASONS.map(r => <option key={r} value={r}>{t('reason', { reason: r })}</option>)}
         </select>
       </label>
 
       <label className="block">
         <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-          Note {noteRequired ? '(required)' : '(optional)'}
+          {t('noteLabel', { required: noteRequired ? 'yes' : 'no' })}
         </span>
         <textarea value={note} onChange={e => { setNote(e.target.value); setError(null) }} rows={2}
-          placeholder={noteRequired ? 'What happened?' : 'Anything worth recording'}
+          placeholder={noteRequired ? t('notePlaceholderRequired') : t('notePlaceholderOptional')}
           className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm mt-1" />
       </label>
 
@@ -348,14 +340,14 @@ export function PaymentActionsModal({
 
       <div className="flex gap-3">
         <button onClick={onClose} disabled={busy}
-          className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm disabled:opacity-50">Cancel</button>
+          className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm disabled:opacity-50">{t('cancel')}</button>
         <button onClick={submit} disabled={!submittable || busy}
           className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40">
-          {busy ? 'Refunding…' : `Refund ${money(Math.max(0, Math.min(amountMinor, refundableMinor)))}`}
+          {busy ? t('refunding') : t('refund', { amount: money(Math.max(0, Math.min(amountMinor, refundableMinor))) })}
         </button>
       </div>
       <p className="text-[11px] text-slate-400 text-center leading-relaxed">
-        This sends the money back to the customer&apos;s card. It cannot be undone from here.
+        {t('footer')}
       </p>
     </>
   )

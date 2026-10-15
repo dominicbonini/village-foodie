@@ -28,6 +28,8 @@ import type { ReactNode } from 'react'
 // to read a date differently from the bar that opened it.
 import { fmtVenue, eventDateLabel } from '@/lib/event-display'
 import { formatTimeRange, type TimeSettings } from '@/lib/time-utils'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/kitchenModals'
 
 export function EventActionsModal({
   event,
@@ -97,6 +99,7 @@ export function EventActionsModal({
   /** The NON-COMMITTING arm. Wired to the ×, the backdrop, and Android back by both callers. */
   onClose: () => void
 }) {
+  const t = useT('kitchenModals')
   const canStart = event.status === 'confirmed' || event.status === 'closed'
 
   return (
@@ -125,7 +128,7 @@ export function EventActionsModal({
               </p>
             )}
           </div>
-          <button onClick={onClose} aria-label="Close" className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center shrink-0">×</button>
+          <button onClick={onClose} aria-label={t('close')} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center shrink-0">×</button>
         </div>
 
         {/* Start / Restart — visible whenever the event isn't live yet (confirmed) or has finished
@@ -134,7 +137,7 @@ export function EventActionsModal({
         {canStart && onStartEvent && (
           <button onClick={onStartEvent}
             className="w-full bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm mb-3">
-            {event.status === 'closed' ? 'Restart Event' : 'Start Event'}
+            {t('actions.startEvent', { restart: event.status === 'closed' ? 'yes' : 'no' })}
           </button>
         )}
 
@@ -144,7 +147,7 @@ export function EventActionsModal({
         {onChangeEvent && (
           <button onClick={onChangeEvent}
             className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm mb-4">
-            Change event
+            {t('actions.changeEvent')}
           </button>
         )}
 
@@ -157,23 +160,23 @@ export function EventActionsModal({
         {onChangeEventType && (
           <button onClick={onChangeEventType}
             className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm mb-2">
-            Change event type…
+            {t('actions.changeEventType')}
           </button>
         )}
         {onPrivateLink && (
           <button onClick={onPrivateLink}
             className="w-full bg-purple-50 text-purple-700 font-bold py-2.5 rounded-xl hover:bg-purple-100 border border-purple-200 text-sm mb-4">
-            <span aria-hidden>🔒</span> Private link &amp; QR code
+            <span aria-hidden>🔒</span>{' '}{t('actions.privateLink')}
           </button>
         )}
 
         <div className="mb-4">
-          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Note for customers</label>
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">{t('actions.noteLabel')}</label>
           <input type="text" value={noteValue} onChange={e => onNoteChange(e.target.value)}
-            placeholder="e.g. Park in the main car park, look for the orange gazebo"
+            placeholder={t('actions.notePlaceholder')}
             className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" />
-          <p className="text-xs text-slate-500 mt-1.5">Shown to customers on the order page below your event details.</p>
-          <button onClick={onSaveNote} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">Save note</button>
+          <p className="text-xs text-slate-500 mt-1.5">{t('actions.noteHint')}</p>
+          <button onClick={onSaveNote} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">{t('actions.saveNote')}</button>
         </div>
 
         <div className="space-y-2 border-t border-slate-100 pt-3">
@@ -184,11 +187,11 @@ export function EventActionsModal({
           {event.status === 'open' && (paused
             ? (onResume && (
               <button onClick={onResume}
-                className="w-full bg-red-600 text-white font-bold py-2.5 rounded-xl hover:bg-red-700 text-sm">▶ Resume orders</button>
+                className="w-full bg-red-600 text-white font-bold py-2.5 rounded-xl hover:bg-red-700 text-sm">▶ {t('actions.resume')}</button>
             ))
             : (onPause && (
               <button onClick={onPause}
-                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">⏸ Pause orders</button>
+                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">⏸ {t('actions.pause')}</button>
             ))
           )}
 
@@ -199,11 +202,11 @@ export function EventActionsModal({
               sentence and again as the select's starting value; a third copy here was the only one that
               could go stale against a change made on the other surface. */}
           <button onClick={onChangeFinishTime}
-            className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Change event finish time</button>
+            className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">{t('actions.changeFinishTime')}</button>
           <button onClick={onFinishEvent}
-            className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Finish event</button>
+            className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">{t('actions.finishEvent')}</button>
           <button onClick={onCancelEvent}
-            className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">Cancel event</button>
+            className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">{t('actions.cancelEvent')}</button>
         </div>
       </div>
     </div>

@@ -28,7 +28,11 @@ import { phoneWhatsApp } from '@/lib/whatsapp-hint'
 import { MARKETING_COUNTRY } from '@/lib/marketing-country'   // discovery and outreach are the marketing country's (Phase 2C)
 import SequenceGrid from '@/components/admin/SequenceGrid'
 import { TEMPLATES_VIEW_KEY } from '@/lib/outreach-queue'
-import { docFromTemplateText, docPlainText, type DocLine } from '@/lib/outreach-doc'
+import {
+  docFromTemplateText, docPlainText, docToHtml, docFromTemplateMarkup, templateMarkupFromDoc, templateWantsPlansPdf,
+  hasTemplateMarkup, type DocLine, type EmailDoc,
+} from '@/lib/outreach-doc'
+import RichEmailEditor, { type EditorApi } from '@/components/admin/RichEmailEditor'
 import {
   ANY_LEAD, STEP_LABELS, slotKey, type SequenceSlot, type SlotTemplate,
 } from '@/lib/outreach-sequence'
@@ -765,7 +769,11 @@ export default function TemplatesPanel() {
     const full = tpl.channel === 'email' && sendSettings
       ? docPlainText(docFromTemplateText(m.body, sendSettings))
       : m.body
-    return { ...m, full, isEmail: tpl.channel === 'email', expanded: tpl.channel === 'email' && !!sendSettings }
+    // 🔴 THE EMAIL AS IT WILL ARRIVE — bold, italic, sizes, lists and links — drawn by the SAME `docToHtml`
+    // the send uses (15 October 2026). Its text is escaped and its links passed `LINK_RE`.
+    const html = tpl.channel === 'email' && sendSettings ? docToHtml(docFromTemplateText(m.body, sendSettings)) : null
+    return { ...m, full, html, plans: tpl.channel === 'email' && templateWantsPlansPdf(m.body),
+      isEmail: tpl.channel === 'email', expanded: tpl.channel === 'email' && !!sendSettings }
   }, [selected, draft, previewProspect, forceNoEvent, sendSettings])
 
   const tokenRef = useMemo(() => resolvedTokenReference(), [])
@@ -787,6 +795,8 @@ export default function TemplatesPanel() {
   // went wrong. A click can use the field's OWN selection, which is exact.
   const subjectRef = useRef<HTMLInputElement>(null)
   const bodyRef = useRef<HTMLTextAreaElement>(null)
+  /** The email body's formatting editor — where Insert token / Insert condition land for an email. */
+  const bodyApi = useRef<EditorApi | null>(null)
   // 🔴 WHICH FIELD RECEIVES AN INSERT. Null until one has been focused — see `insertAtCaret`.
   const [lastFocus, setLastFocus] = useState<null | 'subject' | 'body'>(null)
 
@@ -796,6 +806,13 @@ export default function TemplatesPanel() {
     // puts text somewhere the operator did not ask for and did not watch happen. The palette's buttons
     // are disabled in this state and say why, so this is belt-and-braces.
     if (!lastFocus) { say('Click into the subject or body first — then the token lands at your cursor.'); return }
+    // An EMAIL body is the formatting editor: the text goes in at ITS caret (a condition on a line of its own).
+    if (lastFocus === 'body' && draft.channel !== 'whatsapp') { bodyApi.current?.insertText?.(text, { ownLine: !!opts?.ownLines }); return }
+    // 📎 `{{plans_pdf}}` only works as a line of its own, and never in a subject.
+    if (/\{\{plans_pdf\}\}/.test(text)) {
+      if (lastFocus === 'subject') { say('The plans PDF goes in the message, not the subject.'); return }
+      opts = { ...opts, ownLines: true }
+    }
     const el = lastFocus === 'subject' ? subjectRef.current : bodyRef.current
     if (!el) return
     const cur = lastFocus === 'subject' ? (draft.subject ?? '') : (draft.body ?? '')
@@ -817,7 +834,7 @@ export default function TemplatesPanel() {
     // Put the caret after what was inserted, and keep focus where the operator was working.
     const caret = start + ins.length
     requestAnimationFrame(() => { el.focus(); try { el.setSelectionRange(caret, caret) } catch { /* older engines */ } })
-  }, [lastFocus, draft.subject, draft.body])
+  }, [lastFocus, draft.subject, draft.body, draft.channel])
 
   // ── 🔴 (5) CONDITIONAL PAIRS, DERIVED — AND ONLY WHERE BOTH HALVES REALLY EXIST ────────────────────
   // `conditionMet` returns FALSE for an unknown condition, so a `?no_website:` line would be dropped
@@ -1322,7 +1339,7 @@ export default function TemplatesPanel() {
                           characters a person would type and is checked the same way.
                           ⚠️ IT REPLACES THE "Tokens" RAIL, which was a third pane competing with the
                           preview for the width beside the editor. */}
-                      <TokenMenu tokens={tokenRef} disabled={!lastFocus}
+                      <TokenMenu tokens={tokenRef} emailOnlyHidden={draft.channel === 'whatsapp'} disabled={!lastFocus}
                         hint={lastFocus ? `Inserts at your cursor in the ${lastFocus}.` : 'Click into the subject or body first.'}
                         onInsert={syntax => insertAtCaret(syntax)} />
                       {/* ── 🔴 EVERY CONDITION, IN PLAIN WORDS, ONE MARKER PER CLICK ──────────────
@@ -1351,7 +1368,7 @@ export default function TemplatesPanel() {
                       {'{{double braces}}'} fill themselves in; {'[[square brackets]]'} are values you
                       set once in Snippets, or are asked for per truck.
                     </p>
-                    <label className="flex-1 min-h-[7rem] flex flex-col">
+                    {draft.channel === 'whatsapp' && (<label className="flex-1 min-h-[7rem] flex flex-col">
                       {/* 🔴 THE MESSAGE FILLS WHAT IS LEFT, AND IS THE ONLY THING THAT SHRINKS. It was
                           a fixed `rows={15}` (404px, measured against a 1440x900 laptop) inside a
                           column that is now the measured height of the pane — so on a shorter window
@@ -1374,7 +1391,27 @@ export default function TemplatesPanel() {
                         value={draft.body ?? ''}
                         onFocus={() => setLastFocus('body')}
                         onChange={e => setDraft(d => ({ ...d, body: e.target.value }))} />
-                </label>
+                </label>)}
+                {/* ⚠️ A WhatsApp message is sent as typed, so formatting tags would arrive as text. */}
+                {draft.channel === 'whatsapp' && hasTemplateMarkup(draft.body ?? '') && (
+                  <p className="shrink-0 -mt-2 text-[12px] text-amber-800">
+                    This message has email formatting in it (&lt;b&gt;, &lt;i&gt; and similar). WhatsApp would show those
+                    tags as typed — remove them, or switch back to Email.
+                  </p>
+                )}
+                {/* ── 🔴 AN EMAIL IS WRITTEN IN THE COMPOSE WINDOW'S OWN EDITOR (15 October 2026) ──────
+                    Bold, italic, size, lists, links, signature and opt-out — the same toolbar as the
+                    prospect's Email tab. Stored as the template text the resolver reads, with formatting
+                    as small tags (lib/outreach-doc.ts, "TEMPLATE FORMATTING").
+                    ⛔ IN A <div>, NEVER THE <label> ABOVE: a label forwards every click inside it to its
+                    first control, and here that is the Bold button — the 5 October bold bug in
+                    ComposeWindow.tsx, which is exactly how B "turned itself back on". */}
+                {draft.channel !== 'whatsapp' && (
+                  <div className="flex-1 min-h-[7rem] flex flex-col" data-template-editor onFocus={() => setLastFocus('body')}>
+                    <TemplateBodyEditor key={selected?.id ?? 'none'} body={draft.body ?? ''} apiRef={bodyApi}
+                      onBody={b => setDraft(d => ({ ...d, body: b }))} />
+                  </div>
+                )}
 
                 {/* ── 🔴 (S4 / item 6) THE SNIPPET LINE — UNDER THE MESSAGE, AND READ-ONLY ──────────
                     Moved here from the top of the pane. It was the first thing on screen, which put
@@ -1580,7 +1617,13 @@ export default function TemplatesPanel() {
                           and a letterbox onto a long one, in a pane that already knows how tall it
                           is. `flex-1 min-h-0` takes the height that is left after the picker above
                           and the footer below, and scrolls inside when the email is longer. */}
-                      <pre className="flex-1 min-h-0 text-base leading-relaxed text-slate-800 bg-white border border-slate-200 rounded-lg px-2.5 py-2 whitespace-pre-wrap font-sans overflow-y-auto">{preview.full}</pre>
+                      {preview.html != null ? (
+                        // 🔴 OUR OWN `docToHtml` OUTPUT ONLY: every text node escaped, every href through `LINK_RE`.
+                        <div data-preview-html className="flex-1 min-h-0 bg-white border border-slate-200 rounded-lg px-2.5 py-2 overflow-y-auto"
+                          dangerouslySetInnerHTML={{ __html: preview.html }} />
+                      ) : (
+                        <pre className="flex-1 min-h-0 text-base leading-relaxed text-slate-800 bg-white border border-slate-200 rounded-lg px-2.5 py-2 whitespace-pre-wrap font-sans overflow-y-auto">{preview.full}</pre>
+                      )}
                       <div className="flex flex-wrap gap-1.5">
                         {preview.unresolved.length > 0 && (
                           <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">
@@ -1599,6 +1642,11 @@ export default function TemplatesPanel() {
                             the signature stopped being appended automatically (29 September). It now
                             says what the pane is actually doing: the two send-time tokens have been
                             expanded from the Signature screen's rows, exactly as the composer will. */}
+                        {preview.plans && (
+                          <span className="text-[11px] text-slate-700 bg-slate-50 border border-slate-300 rounded px-1.5 py-0.5">
+                            📎 The plans PDF is attached when this template is used
+                          </span>
+                        )}
                         {preview.isEmail && (
                           <span className="text-[11px] text-slate-500 bg-slate-50 border border-dashed border-slate-300 rounded px-1.5 py-0.5">
                             {preview.expanded ? 'Signature and opt-out from Settings' : 'Reading the signature…'}
@@ -1849,9 +1897,11 @@ function ListRow({ r, i, arr, selId, usedIn, onSelect, onMove, onToggle }: {
  * ⚠️ IT IS DISABLED UNTIL A FIELD HAS BEEN FOCUSED, and says why — inserting into a guessed field is
  * how text lands somewhere nobody watched.
  */
-function TokenMenu({ tokens, disabled, hint, onInsert }: {
+function TokenMenu({ tokens, disabled, hint, onInsert, emailOnlyHidden }: {
   tokens: readonly { syntax: string; name: string; description: string }[]
   disabled: boolean
+  /** A WhatsApp template: `{{plans_pdf}}` attaches to an email and means nothing in a WhatsApp message. */
+  emailOnlyHidden?: boolean
   hint: string
   onInsert: (syntax: string) => void
 }) {
@@ -1868,7 +1918,7 @@ function TokenMenu({ tokens, disabled, hint, onInsert }: {
           <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} role="presentation" />
           <div className="absolute z-30 mt-1 w-80 max-h-80 overflow-y-auto rounded-lg border border-slate-300 bg-white shadow-lg p-1">
             <p className="px-2 py-1 text-[11px] text-slate-500">{hint}</p>
-            {tokens.map(t => (
+            {tokens.filter(t => !(emailOnlyHidden && t.name === 'plans_pdf')).map(t => (
               <button key={t.name} type="button"
                 onClick={() => { onInsert(t.syntax); setOpen(false) }}
                 className="w-full text-left px-2 py-1 rounded hover:bg-slate-100">
@@ -1934,5 +1984,42 @@ function CondMenu({ conds, disabled, onInsert }: {
         </>
       )}
     </div>
+  )
+}
+
+// ── THE EMAIL TEMPLATE'S FORMATTING EDITOR ────────────────────────────────────────────────────────────
+/**
+ * The compose window's editor, holding a TEMPLATE. 🔴 IT KEEPS ITS OWN DOCUMENT WHILE YOU TYPE: template
+ * text and the editor's document are not one-to-one (two paragraphs and one paragraph with a break are the
+ * same email and the same stored text), so re-deriving the document from the text on every keystroke would
+ * reset the editor and throw the caret. The document is rebuilt from the text only when the text changes
+ * from OUTSIDE — Discard, or a template switch (the `key`).
+ */
+function TemplateBodyEditor({ body, onBody, apiRef }: {
+  body: string
+  onBody: (body: string) => void
+  apiRef: React.MutableRefObject<EditorApi | null>
+}) {
+  const [doc, setDoc] = useState<EmailDoc>(() => docFromTemplateMarkup(body))
+  const [emitted, setEmitted] = useState(body)
+  if (body !== emitted) {          // changed from outside — adjust during render, React's own pattern
+    setEmitted(body)
+    setDoc(docFromTemplateMarkup(body))
+  }
+  return (
+    <RichEmailEditor value={doc} signatureLines={[]} optOut={null} templateTokens apiRef={apiRef}
+      note="Formatting is kept when the template is used."
+      // 📎 THE COMPOSE WINDOW'S "Plans PDF" BUTTON, AS A TEMPLATE INSTRUCTION: it puts `{{plans_pdf}}` on a line
+      // of its own, and the compose window attaches the PDF when the template is used. Once is enough.
+      toolbarExtra={(
+        <button type="button" disabled={templateWantsPlansPdf(body)}
+          onMouseDown={e => e.preventDefault()}
+          onClick={() => apiRef.current?.insertText?.('{{plans_pdf}}', { ownLine: true })}
+          title={templateWantsPlansPdf(body) ? 'This template already attaches the plans PDF.' : 'Attach the plans-and-features PDF whenever this template is used. Adds {{plans_pdf}} on a line of its own; that line is not sent.'}
+          className="text-xs font-bold px-2 py-1 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
+          {templateWantsPlansPdf(body) ? 'Plans PDF ✓' : 'Plans PDF'}
+        </button>
+      )}
+      onChange={d => { const text = templateMarkupFromDoc(d); setDoc(d); setEmitted(text); onBody(text) }} />
   )
 }

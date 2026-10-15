@@ -9,6 +9,8 @@ import { isNativeApp } from '@/lib/native/device'
 import { operatorSignOut } from '@/lib/native/signOut'
 import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
 import { VanMenuChooser } from '@/components/native/VanMenuChooser'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/userMenu'
 
 interface UserMenuProps {
   // Account/session control — the identity block shows the LOGGED-IN USER (name + email), NOT the
@@ -66,6 +68,7 @@ export default function UserMenu({
   onShowQR,
   onOpenKDS,
 }: UserMenuProps) {
+  const t = useT('userMenu')
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [deviceOpen, setDeviceOpen] = useState(false)   // "This device" sheet (native-only)
@@ -89,7 +92,7 @@ export default function UserMenu({
       <button
         onClick={() => setOpen(v => !v)}
         className="flex items-center gap-1.5 rounded-xl px-2 py-1 hover:bg-white/10 transition-colors"
-        aria-label="User menu"
+        aria-label={t('menuLabel')}
       >
         <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-sm font-semibold text-orange-700">
           {initial}
@@ -127,7 +130,7 @@ export default function UserMenu({
             {showScreenToggle && (
               <div className="sm:hidden px-4 py-2 border-b border-slate-100">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-700">{keepScreenOn ? 'Screen on' : 'Screen off'}</span>
+                  <span className="text-sm text-slate-700">{keepScreenOn ? t('screenOn') : t('screenOff')}</span>
                   <Toggle on={keepScreenOn} onToggle={() => onToggleScreenOn?.()} />
                 </div>
               </div>
@@ -145,7 +148,7 @@ export default function UserMenu({
                       the KDS keeps its chip, because a lone Toggle would be the odd one out in the KDS's
                       chip family. The state is now carried by the Toggle alone, which is what a switch is
                       for. */}
-                  <span className="text-sm text-slate-700">{soundEnabled ? '🔔 New-order sound' : '🔕 New-order sound'}</span>
+                  <span className="text-sm text-slate-700">{`${soundEnabled ? '🔔' : '🔕'} ${t('newOrderSound')}`}</span>
                   <Toggle on={soundEnabled} onToggle={() => onToggleSound()} />
                 </div>
               </div>
@@ -161,7 +164,7 @@ export default function UserMenu({
                   <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                   </svg>
-                  {copiedOrderLink ? '✓ Copied' : 'Order link'}
+                  {copiedOrderLink ? `✓ ${t('copied')}` : t('orderLink')}
                 </button>
                 <button
                   onClick={() => { onShowQR?.(); setOpen(false) }}
@@ -170,7 +173,7 @@ export default function UserMenu({
                   <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
                   </svg>
-                  QR code
+                  {t('qrCode')}
                 </button>
                 <button
                   onClick={() => { onOpenKDS?.(); setOpen(false) }}
@@ -179,7 +182,7 @@ export default function UserMenu({
                   <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                   </svg>
-                  Kitchen screen
+                  {t('kitchenScreen')}
                 </button>
               </div>
             )}
@@ -199,7 +202,7 @@ export default function UserMenu({
                 onClick={() => { setDeviceOpen(true); setOpen(false) }}
                 className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 w-full text-left"
               >
-                📱 This device
+                📱 {t('thisDevice')}
               </button>
             )}
 
@@ -210,7 +213,7 @@ export default function UserMenu({
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
               >
-                ⚙️ Manage
+                ⚙️ {t('manage')}
               </Link>
             )}
 
@@ -220,7 +223,7 @@ export default function UserMenu({
                 href={`/dashboard/${token}`}
                 className="sm:hidden flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 w-full"
               >
-                ← Orders dashboard
+                ← {t('ordersDashboard')}
               </a>
             )}
 
@@ -230,7 +233,7 @@ export default function UserMenu({
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
               >
-                🔐 Admin
+                🔐 {t('admin')}
               </Link>
             )}
 
@@ -269,14 +272,14 @@ export default function UserMenu({
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-500 hover:bg-slate-50"
             >
-              Privacy policy
+              {t('privacy')}
             </Link>
             <Link
               href={TERMS_PATH}
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-500 hover:bg-slate-50"
             >
-              Terms
+              {t('terms')}
             </Link>
 
             {/* Sign out — every caller EXCEPT the demo dashboard (no session exists to end). The <hr> is
@@ -288,7 +291,7 @@ export default function UserMenu({
                   onClick={handleSignOut}
                   className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
                 >
-                  Sign out
+                  {t('signOut')}
                 </button>
               </>
             )}
@@ -304,7 +307,7 @@ export default function UserMenu({
           onClick={() => setDeviceOpen(false)}>
           <div className="w-full max-w-sm" onClick={e => e.stopPropagation()}>
             <div className="flex justify-end mb-1">
-              <button onClick={() => setDeviceOpen(false)} aria-label="Close"
+              <button onClick={() => setDeviceOpen(false)} aria-label={t('close')}
                 className="text-white/80 hover:text-white text-3xl leading-none">×</button>
             </div>
             <div className="bg-white rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto">

@@ -80,6 +80,7 @@ import type { CustomerErrorCode, CustomerErrorParams } from '@/lib/i18n/customer
 import { writeCookingReservation, writeReservationRecord } from '@/lib/orders/cooking-reservation'
 import { resolveBatchReservations } from '@/lib/features'
 import type { StoredCookingReservation } from '@/lib/slot-bookings'
+import '@/lib/i18n/catalog/errorsCustomer'
 
 /** What a refusal tells the customer: the sentence, in the truck's language, and the code and values it was
  *  made from — which /api/payments/return carries to the page (?payment_failed=, and its JSON reply) so the

@@ -1,0 +1,23 @@
+{
+  "notAvailable": "Not available in demo",
+  "demoMode": "DEMO MODE",
+  "loopLands": "That's exactly how a real order lands",
+  "showMe": "Show me",
+  "noCard": "{sub} No card needed.",
+  "notYet": "Not yet",
+  "cashAndCollected": "Cash & collected",
+  "logoPlaceholder": "Your logo here",
+  "welcomeTitle": "{sample, select, yes {Here’s a sample demo} other {Here’s your demo}}",
+  "welcomeIntro": "{sample, select, yes {This is a <b>stand-in menu</b> so you can see how it all works — upload your own any time to make it yours.} other {This is your own menu and branding, on a real board.}} The orders already on it are examples, so you can see a busy service.",
+  "twoThings": "Two things to try:",
+  "hitButton": "Hit <b>{button}</b> on an order",
+  "scanQr": "Scan the <b>QR code</b> — or tap the link — and order as a customer, then watch it land",
+  "qrAlt": "QR code to your customer ordering page",
+  "openHere": "Or open it on this device",
+  "copyLink": "Copy link",
+  "copyDescribedAs": "order link",
+  "noLinkTitle": "Your customer order link",
+  "noLinkBody": "Your ordering page link is in the menu, top right.",
+  "asLive": "The ordering and kitchen flow is exactly as it runs live.",
+  "startExploring": "Start exploring"
+}

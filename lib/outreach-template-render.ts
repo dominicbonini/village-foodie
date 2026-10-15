@@ -47,6 +47,8 @@
 // no fetch and no route. That is a property of the file, provable by grep, not a promise in a comment.
 
 import { effectiveLeadType, LEAD_TYPE_LABELS, type LeadType, type LeadTypeInput } from '@/lib/outreach-step'
+// The notes QUOTE a template line to the operator; formatting markup is not part of the words (15 Oct 2026).
+import { stripTemplateMarkup } from '@/lib/outreach-doc'
 
 export type TemplateChannel = 'email' | 'whatsapp'
 
@@ -205,6 +207,10 @@ function resolvedValue(token: string, ctx: TemplateContext): string | null {
     // returns non-null here, so `substitute` never reaches the fallback branch.
     case 'signature': return '{{signature}}'
     case 'opt_out': return '{{opt_out}}'
+    // 🔴 THE THIRD ONE (15 October 2026): "attach the plans PDF when this template is used". It survives into
+    // the compose box the same way; `docFromTemplateText` drops its line from the email and the compose
+    // window attaches the PDF with its own Plans PDF button's code. See lib/outreach-doc.ts#PLANS_LINE_RE.
+    case 'plans_pdf': return '{{plans_pdf}}'
     default: return null
   }
 }
@@ -381,6 +387,7 @@ const TOKEN_DESCRIPTIONS: Record<string, string> = {
   next_event_date: 'Date of the next event after today, e.g. "18 September".',
   next_event_venue: 'Venue of the next event after today.',
   signature: '🔴 Your signature block, from the Signature tab. Put it on a LINE OF ITS OWN. It is filled in when the email is SENT, so it stays as {{signature}} in the compose box — edit the lines on the Signature tab, not here. Nothing is added automatically any more: a message without this token goes out without a signature.',
+  plans_pdf: '📎 Attaches the plans-and-features PDF when this template is used — the same document as the compose window\'s Plans PDF button, generated fresh. Put it on a LINE OF ITS OWN; the line itself is not sent. Email only.',
   opt_out: '🔴 The opt-out sentence, from the Signature tab, at 10pt. Put it on a LINE OF ITS OWN, last. Also filled in at send time. Every cold approach should carry it — the compose window warns when a first contact or a chase has not got it.',
 }
 const CONDITION_DESCRIPTIONS: Record<string, string> = {
@@ -603,7 +610,7 @@ export type ConditionAudience = {
  * ⚠️ A MARKER ON AN EMPTY LINE has no words to quote and falls back to naming the marker.
  */
 function quoteOpening(text: string, cond: string, words = 5): string {
-  const parts = text.split(/\s+/).filter(Boolean)
+  const parts = stripTemplateMarkup(text).split(/\s+/).filter(Boolean)
   if (parts.length === 0) return `The empty ?${cond}: line`
   return `\u201c${parts.slice(0, words).join(' ')}${parts.length > words ? '\u2026' : ''}\u201d`
 }

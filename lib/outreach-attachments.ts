@@ -154,3 +154,6 @@ export function parseOutboundAttachments(value: unknown): OutboundAttachment[] {
 /** The name the plans PDF is attached under. 🔴 The date is in the name so a folder of them sorts. */
 export const plansPdfFilename = (d: Date = new Date()): string =>
   `hatchgrab-plans-and-features-${d.toISOString().slice(0, 10)}.pdf`
+
+/** Whether an attachment is the plans PDF — so a template that asks for it never attaches a second copy. */
+export const isPlansPdfFilename = (name: string): boolean => /^hatchgrab-plans-and-features-\d{4}-\d{2}-\d{2}\.pdf$/.test(name)

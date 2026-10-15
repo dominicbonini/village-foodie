@@ -1,4 +1,6 @@
 import type { WakeState } from '@/lib/native/keepAwake'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/dashboardBanners'
 
 /**
  * Screen-stays-on prompt — a real BUTTON, not a passive "tap anywhere" notice. The old banner relied on a
@@ -18,14 +20,15 @@ export function KeepAwakePrompt({ keepScreenOn, wakeState, onAcquire }: {
   wakeState: WakeState
   onAcquire: () => void
 }) {
+  const t = useT('dashboardBanners')
   const held = wakeState === 'held' || wakeState === 'native'
   if (!keepScreenOn || held) return null
 
   // Not actionable — no gesture will help. Static, muted notice.
   if (wakeState === 'unsupported' || wakeState === 'insecure') {
     const text = wakeState === 'unsupported'
-      ? "This device can't keep the screen on."
-      : "The screen can't be kept on from this address."
+      ? t('wakeUnsupported')
+      : t('wakeInsecure')
     return (
       <div className="w-full bg-amber-600 text-white text-xs font-semibold px-4 py-2 flex items-center justify-center gap-2 shrink-0">
         <span aria-hidden>☀️</span><span>{text}</span>
@@ -43,7 +46,7 @@ export function KeepAwakePrompt({ keepScreenOn, wakeState, onAcquire }: {
       className={`w-full text-white text-xs font-semibold px-4 py-2.5 flex items-center justify-center gap-2 shrink-0 active:brightness-95 ${retry ? 'bg-amber-600' : 'bg-orange-500'}`}
     >
       <span aria-hidden>{retry ? '🔄' : '👆'}</span>
-      <span>{retry ? 'Keep screen on — tap to try again' : 'Keep screen on'}</span>
+      <span>{retry ? t('wakeRetry') : t('wakeAcquire')}</span>
     </button>
   )
 }

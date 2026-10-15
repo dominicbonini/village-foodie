@@ -26,6 +26,8 @@ import { startReachability, onReachabilityChange } from '@/lib/native/reachabili
 import { countPendingOps } from '@/lib/native/outbox'
 import { drainOutbox } from '@/lib/native/orderGate'
 import { nameConflictOrders, type ConflictEntry } from '@/lib/native/useOutboxConflicts'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/nativeShell'
 
 type Phase = 'online' | 'offline' | 'syncing' | 'synced'
 
@@ -44,6 +46,8 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
   const [queued, setQueued] = useState(0)        // ACTIONABLE pending ops (excludes conflicts)
   const [lastSynced, setLastSynced] = useState(0)
   const [confirming, setConfirming] = useState(false)   // payment dismissal — the second, explicit step
+  const t = useT('nativeShell')
+  const locale = useAppLocale()   // for nameConflictOrders' words (a pure function, so it takes the locale)
 
   // onSynced held in a ref so the reachability effect doesn't tear down + re-subscribe on every parent render
   // (the prop is an inline arrow) — which would also cancel in-flight retries.
@@ -117,7 +121,7 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
 
   // Naming lives in the conflict module as a PURE function so it can be executed in a harness rather
   // than eyeballed in a screenshot — see nameConflictOrders.
-  const nameOrders = (list: ConflictEntry[]): string => nameConflictOrders(list, resolveLabel)
+  const nameOrders = (list: ConflictEntry[]): string => nameConflictOrders(list, resolveLabel, undefined, locale)
 
   // 🔴 MONEY — the louder bar, and the one that cannot be dismissed in a single tap. Its copy states the
   // consequence (nothing was recorded) and the required check, because "couldn't sync" does not tell an
@@ -126,15 +130,15 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
     <div className="w-full bg-red-700 text-white px-4 py-3 border-b-2 border-red-900">
       <div className="flex items-start justify-center gap-3 flex-wrap">
         <div className="text-center">
-          <div className="text-base font-black tracking-wide">⚠ PAYMENT NOT RECORDED</div>
+          <div className="text-base font-black tracking-wide">{t('banner.paymentTitle')}</div>
           <div className="text-sm font-semibold mt-0.5">
-            {nameOrders(paymentConflicts)} — marked paid on this device only. It hasn&apos;t gone through.
+            {t('banner.paymentBody', { orders: nameOrders(paymentConflicts) })}
           </div>
-          <div className="text-xs font-medium mt-0.5 opacity-90">Check the order and take payment again if it is still owed.</div>
+          <div className="text-xs font-medium mt-0.5 opacity-90">{t('banner.paymentCheck')}</div>
         </div>
         {!confirmingNow && (
           <button type="button" onClick={() => setConfirming(true)}
-            className="underline font-bold text-sm flex-shrink-0 mt-1">Dismiss</button>
+            className="underline font-bold text-sm flex-shrink-0 mt-1">{t('banner.dismiss')}</button>
         )}
       </div>
       {confirmingNow && (
@@ -142,18 +146,18 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
         // decision rather than a reflex. 🔴 Neither button deletes anything.
         <div className="mt-2 rounded-lg bg-red-900/60 px-3 py-2 text-center">
           <div className="text-sm font-bold">
-            Confirm you have checked {nameOrders(paymentConflicts)}
+            {t('banner.confirmChecked', { orders: nameOrders(paymentConflicts) })}
           </div>
           <div className="text-xs mt-0.5 opacity-90">
-            This hides the warning. The record is kept on this device either way.
+            {t('banner.confirmHides')}
           </div>
           <div className="flex items-center justify-center gap-3 mt-2">
             <button type="button" onClick={() => setConfirming(false)}
-              className="px-3 py-1.5 rounded-md bg-white/20 text-sm font-bold">Not yet</button>
+              className="px-3 py-1.5 rounded-md bg-white/20 text-sm font-bold">{t('banner.notYet')}</button>
             <button type="button"
               onClick={() => { setConfirming(false); void onAcknowledge(paymentConflicts.map(c => c.op_id)) }}
               className="px-3 py-1.5 rounded-md bg-white text-red-800 text-sm font-black">
-              I&apos;ve checked {nameOrders(paymentConflicts)}
+              {t('banner.iveChecked', { orders: nameOrders(paymentConflicts) })}
             </button>
           </div>
         </div>
@@ -165,9 +169,9 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
   // dismissal is proportionate. It still names the orders.
   const statusBanner: ReactNode = statusConflicts.length > 0 ? (
     <div className="w-full bg-red-600 text-white text-sm font-semibold px-4 py-2 flex items-center justify-center gap-3">
-      <span>⚠ {nameOrders(statusConflicts)} — this change didn&apos;t go through. Check the order.</span>
+      <span>{t('banner.statusBody', { orders: nameOrders(statusConflicts) })}</span>
       <button type="button" onClick={() => { void onAcknowledge(statusConflicts.map(c => c.op_id)) }}
-        className="underline font-bold flex-shrink-0">Dismiss</button>
+        className="underline font-bold flex-shrink-0">{t('banner.dismiss')}</button>
     </div>
   ) : null
 
@@ -178,27 +182,27 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
   if (phase === 'offline') {
     syncBanner = (
       <div className="w-full bg-amber-500 text-white text-sm font-semibold px-4 py-2 text-center">
-        📴 No connection — {queued} {queued === 1 ? 'change' : 'changes'} saved on this device. They&apos;ll be sent when you&apos;re back online. Settings are locked.
+        {t('banner.offline', { n: queued, count: String(queued) })}
       </div>
     )
   } else if (phase === 'syncing') {
     syncBanner = (
       <div className="w-full bg-slate-700 text-white text-sm font-semibold px-4 py-2 text-center animate-pulse">
-        Back online — sending {queued} {queued === 1 ? 'change' : 'changes'}…
+        {t('banner.syncing', { n: queued, count: String(queued) })}
       </div>
     )
   } else if (phase === 'synced' && lastSynced > 0) {
     // Only when something actually synced — a drain that produced only conflicts is carried by the conflict banner.
     syncBanner = (
       <div className="w-full bg-green-600 text-white text-sm font-semibold px-4 py-2 text-center">
-        All changes sent.
+        {t('banner.synced')}
       </div>
     )
   } else if (queued > 0) {
     // Online but still-queued (mid-recovery / retrying) → keep the operator informed rather than silent.
     syncBanner = (
       <div className="w-full bg-amber-500 text-white text-sm font-semibold px-4 py-2 text-center">
-        {queued} {queued === 1 ? 'change' : 'changes'} saved on this device. Still trying to send them.
+        {t('banner.stillQueued', { n: queued, count: String(queued) })}
       </div>
     )
   }

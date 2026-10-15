@@ -18,7 +18,6 @@
 // plausible", "what is its wa.me form" and "how does it read nationally".
 import { isPossiblePhoneNumber, isValidPhoneNumber, parsePhoneNumberFromString, type CountryCode } from 'libphonenumber-js/min'
 import type { PhoneCheck } from '@/lib/country-settings-types'
-import { translatorFor } from '@/lib/i18n/translator'
 
 /** A country as `trucks.country` / `country_settings.country_code` holds it (ISO 3166 alpha-2). */
 export type PhoneCountry = string
@@ -107,22 +106,6 @@ export function phonePlaceholder(copy: PhoneCopy | null | undefined, prefix = ''
   return copy?.phone_example ? `${prefix}${copy.phone_example}` : ''
 }
 
-/**
- * The refusal, in each surface's own words with the country's name and example filled in. GB reads exactly
- * as each message did before Phase 2C:
- *   'mobile'       (order form)       "Please enter a valid UK mobile (e.g. 07700 900123)"
- *   'phone'        (Manage contact)   "Please enter a valid UK phone (e.g. 07700 900123)"
- *   'phone_number' (signup, setup API) "Enter a valid UK phone number (e.g. 07700 900123)."
- * Without a short name or example (a country whose row lacks them) the sentence drops that part rather
- * than inventing one.
- */
-export function phoneErrorMessage(kind: 'mobile' | 'phone' | 'phone_number', copy: PhoneCopy | null | undefined, locale?: string | null): string {
-  // The words: messages/en-GB.json `phone` (Language Phase 1a) — one whole sentence per kind, with and without
-  // the country's name and example.
-  const values = {
-    withName: copy?.short_name ? 'yes' : 'no', name: copy?.short_name ?? '',
-    withExample: copy?.phone_example ? 'yes' : 'no', example: copy?.phone_example ?? '',
-  }
-  const t = translatorFor(locale, 'phone')
-  return t(kind === 'mobile' ? 'invalidMobile' : kind === 'phone' ? 'invalidPhone' : 'invalidPhoneNumber', values)
-}
+// The refusal sentence (`phoneErrorMessage`) lives in lib/phone-message.ts. ⚠️ KEPT OUT OF THIS FILE ON PURPOSE
+// (Language Phase 1b): pages import this module to CHECK a number — the home page, venues, outreach — and a message
+// import here put the translator into every one of their bundles.

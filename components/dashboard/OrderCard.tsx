@@ -15,6 +15,8 @@ import { completionLabel } from '@/lib/order-completion-label'
 import { formatMajorOrBare, formatMinorOrBare, editableAmount, orderMoney, currencySymbolOrBare } from '@/lib/money-format'
 import { MoneyProvider, useMoney } from '@/components/MoneyContext'
 import { timeSettingsOr, formatInstantClock } from '@/lib/time-utils'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/orderCard'
 
 export type ViewMode = 'solo' | 'window' | 'cook'
 
@@ -60,6 +62,7 @@ export function InlinePriceEditor({ price, quantity, onChange }: {
 }) {
   // The basket's currency — the Add Order panel's provider (the truck's format: this order does not exist yet).
   const fmt = useMoney()
+  const t = useT('orderCard')
   const [editing, setEditing] = useState(false)
   const [val, setVal] = useState(editableAmount(price, fmt))
   if (editing) {
@@ -76,7 +79,7 @@ export function InlinePriceEditor({ price, quantity, onChange }: {
   }
   return (
     <button onClick={() => { setVal(editableAmount(price, fmt)); setEditing(true) }}
-      className="flex items-center gap-1.5 shrink-0 text-right group" title="Tap to override price">
+      className="flex items-center gap-1.5 shrink-0 text-right group" title={t('tapToOverride')}>
       <span className="text-slate-900 font-bold text-sm">{formatMajorOrBare(price * quantity, fmt, 'basket line')}</span>
       <span className="text-slate-300 group-hover:text-orange-400 transition-colors text-xs" aria-hidden>✏</span>
     </button>
@@ -287,6 +290,7 @@ export function OrderCard({
 }) {
   // Cards always show their content — the collapse/triangle was removed (it only made the box look empty).
   const expanded = true
+  const t = useT('orderCard')
 
   /** Inline "Remove payment?" confirm, revealed by tapping the paid chip. Local and transient — it
    *  auto-clears whenever the order's payment state changes (see the effect below). */
@@ -471,7 +475,7 @@ export function OrderCard({
     // the ordinary flow it has usually already become paid. This branch covers the window where it has
     // not: a confirmed order whose capture failed or is still in flight.
     if (effectivePaid || heldAuthorisation) {
-      return <Btn label="Collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+      return <Btn label={t('collected')} colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     if (completionPresses === 'one') {
       // ── 🔴 A ONE-PRESS TRUCK THAT TAKES CASH CAN NOW SAY WHICH IT WAS. ────────────────────────
@@ -492,9 +496,9 @@ export function OrderCard({
       if (takesCash) {
         return (
           <>
-            <Btn label="💷 Cash & collected" colour="money" loading={isLoading('collected_cash')}
+            <Btn label={`💷 ${t('cashAndCollected')}`} colour="money" loading={isLoading('collected_cash')}
               onClick={() => onAction('collected_cash', order.order_key)} />
-            <Btn label="💳 Card & collected" colour="money" loading={isLoading('collected_card')}
+            <Btn label={`💳 ${t('cardAndCollected')}`} colour="money" loading={isLoading('collected_card')}
               onClick={() => onAction('collected_card', order.order_key)} />
           </>
         )
@@ -532,16 +536,16 @@ export function OrderCard({
     if (takesCash) {
       return (
         <>
-          <Btn label="💷 Cash" colour="money" loading={isLoading('mark_paid_cash')}
+          <Btn label={`💷 ${t('cash')}`} colour="money" loading={isLoading('mark_paid_cash')}
             onClick={() => onAction('mark_paid_cash', order.order_key)} />
-          <Btn label="💳 Card" colour="money" loading={isLoading('mark_paid_card')}
+          <Btn label={`💳 ${t('card')}`} colour="money" loading={isLoading('mark_paid_card')}
             onClick={() => onAction('mark_paid_card', order.order_key)} />
         </>
       )
     }
     return (
       <Btn
-        label={effectivePartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
+        label={effectivePartPaid ? t('markAmountPaid', { amount: money(balance.balanceMinor) }) : t('markPaid')}
         colour="money" loading={isLoading('mark_paid')}
         onClick={() => onAction('mark_paid', order.order_key)}
       />
@@ -620,7 +624,7 @@ export function OrderCard({
   // outstanding, and a refund is neither. The partial one carries the AMOUNT GIVEN BACK, because
   // "part refunded" without a figure sends an operator to Stripe to find out how much.
   const paidChipStatic = hidePayments ? null
-    : balance.status === 'refunded' ? <span title="Refunded in full. Nothing to collect." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 whitespace-nowrap">REFUNDED</span>
+    : balance.status === 'refunded' ? <span title={t('refundedTitle')} className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 whitespace-nowrap">{t('refunded')}</span>
     // 🔴 THE ONE ARM OF THIS CHAIN THAT CARRIES AN AMOUNT, AND THE ONLY ONE `hideAmounts` TOUCHES.
     // Hidden ENTIRELY in Cook rather than reworded to a bare "REFUNDED": that would make a part-refunded
     // order read identically to a fully refunded one, and the second still has money outstanding. A
@@ -628,9 +632,9 @@ export function OrderCard({
     // to avoid printing a number would be the wrong trade.
     // ⚠️ NULL HERE DOES NOT FALL THROUGH TO `PAID`. This is a ternary cascade: a part_refunded order
     // matches HERE and stops, so hiding the chip shows no chip, never a different one.
-    : balance.status === 'part_refunded' ? (hideAmounts ? null : <span title="Charged in full, then partly refunded. Nothing to collect." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 whitespace-nowrap">{money(balance.balanceMinor)} REFUNDED</span>)
-    : effectivePaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
-    : heldAuthorisation ? <span title="Card authorised — do not collect. Payment is taken when you confirm." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 flex-shrink-0 whitespace-nowrap">CARD HELD</span>
+    : balance.status === 'part_refunded' ? (hideAmounts ? null : <span title={t('partRefundedTitle')} className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 whitespace-nowrap">{t('amountRefunded', { amount: money(balance.balanceMinor) })}</span>)
+    : effectivePaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">{t('paid')}</span>
+    : heldAuthorisation ? <span title={t('cardHeldTitle')} className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 flex-shrink-0 whitespace-nowrap">{t('cardHeld')}</span>
     // 🔴 PART-PAID HAS LEFT THE HEADER ROW ENTIRELY — see `partPaidRow` below. It read
     // "£6.50 / £6.50 due", which parses as a fraction rather than as two amounts, and it was
     // `whitespace-nowrap` + `flex-shrink-0` at three to four times the width of PAID on the busiest row
@@ -650,7 +654,7 @@ export function OrderCard({
     <span className="flex-shrink-0">{paidChipStatic}</span>
   ) : (
     <button onClick={() => setConfirmRemovePayment(true)}
-      title={hasReversibleInPersonPayment ? 'Tap to remove this payment' : 'Tap for how to refund this'}
+      title={hasReversibleInPersonPayment ? t('tapToRemovePayment') : t('tapForRefund')}
       className="flex-shrink-0">
       {paidChipStatic}
     </button>
@@ -729,9 +733,9 @@ export function OrderCard({
   const partPaidRow = (hidePayments || cardStyle === 'cook' || hideAmounts || !effectivePartPaid) ? null : (
     <button
       onClick={() => setConfirmRemovePayment(true)}
-      title={hasReversibleInPersonPayment ? 'Tap to remove this payment' : 'Tap for how to refund this'}
+      title={hasReversibleInPersonPayment ? t('tapToRemovePayment') : t('tapForRefund')}
       className="w-full mb-2 rounded-md bg-amber-100 text-amber-800 px-2 py-1 text-xs font-black text-center">
-      {money(balance.paidMinor)} paid, {money(balance.balanceMinor)} due
+      {t('partPaid', { paid: money(balance.paidMinor), due: money(balance.balanceMinor) })}
     </button>
   )
 
@@ -759,7 +763,7 @@ export function OrderCard({
   const buzzerChip = !onBuzzer ? null : (
     <button
       onClick={(e) => { e.stopPropagation(); onBuzzer(order) }}
-      title={order.buzzer_number != null ? `Buzzer ${order.buzzer_number} — tap to change` : 'Tap to give a buzzer'}
+      title={order.buzzer_number != null ? t('buzzerTitle', { number: String(order.buzzer_number) }) : t('giveBuzzer')}
       className={`flex-shrink-0 text-[10px] font-black px-1.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${
         order.buzzer_number != null
           ? 'bg-white text-slate-900 border-slate-300 hover:border-slate-400'
@@ -854,7 +858,7 @@ export function OrderCard({
   // exactly as `PAID` and `CARD HELD` do, and for the same reason: it tells the operator what the order
   // is doing. The only "not in cook" rule in this file is about money.
   const statusBadgeStatic = !['confirmed', 'pending'].includes(order.status) ? (
-    <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{s.label}</span>
+    <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{t('status', { status: order.status })}</span>
   ) : null
 
   // ── 🔴 THE KDS SUPPRESSES ONE VALUE, AND `Cooking` IS NOT A REDUNDANT LABEL — READ BEFORE "FIXING" ──
@@ -935,12 +939,12 @@ export function OrderCard({
   })()
 
   const offsetLabel = (() => {
-    if (!slotDt) return `${getTicketAge(order.created_at)}m`
+    if (!slotDt) return t('ageMins', { mins: String(getTicketAge(order.created_at)) })
     if (slotOffset < -1440) return null
-    if (slotOffset < -60) return `in ${Math.round(Math.abs(slotOffset) / 60)}h`
-    if (slotOffset < 0) return `in ${Math.abs(slotOffset)}m`
-    if (slotOffset === 0) return 'now'
-    return `${slotOffset}m late`
+    if (slotOffset < -60) return t('inHours', { hours: String(Math.round(Math.abs(slotOffset) / 60)) })
+    if (slotOffset < 0) return t('inMins', { mins: String(Math.abs(slotOffset)) })
+    if (slotOffset === 0) return t('now')
+    return t('minsLate', { mins: String(slotOffset) })
   })()
   // Overdue (slot passed by ≥1 min) → the offset label renders as a RED PILL. Purely the lateness
   // indicator; the CARD background colour logic (§72) is unchanged (a ready card stays green).
@@ -953,7 +957,7 @@ export function OrderCard({
       return (
         <div className="flex items-center gap-2 py-3 text-slate-400 text-sm justify-center">
           <span>⏳</span>
-          <span>Syncing…</span>
+          <span>{t('syncing')}</span>
         </div>
       )
     }
@@ -961,8 +965,8 @@ export function OrderCard({
     if (order.status === 'pending') {
       return (
         <>
-          <Btn label="✓ Confirm" colour="green" loading={isLoading('confirm')} onClick={() => onAction('confirm', order.order_key)} />
-          <Btn label="✗ Reject"  colour="red"   loading={isLoading('reject')}  onClick={() => onAction('reject', order.order_key)} />
+          <Btn label={`✓ ${t('confirm')}`} colour="green" loading={isLoading('confirm')} onClick={() => onAction('confirm', order.order_key)} />
+          <Btn label={`✗ ${t('reject')}`}  colour="red"   loading={isLoading('reject')}  onClick={() => onAction('reject', order.order_key)} />
         </>
       )
     }
@@ -982,18 +986,18 @@ export function OrderCard({
         // toggle later, restore `&& showCookingStep` here. Cook mode shows Start cooking → Ready.
         return kdsMode ? (
           <>
-            <Btn label="Start cooking" colour="amber" loading={isLoading('cooking')} onClick={() => onAction('cooking', order.order_key)} />
-            <Btn label="Ready"         colour="green" loading={isLoading('ready')}   onClick={() => onAction('ready', order.order_key)} />
+            <Btn label={t('startCooking')} colour="amber" loading={isLoading('cooking')} onClick={() => onAction('cooking', order.order_key)} />
+            <Btn label={t('ready')}         colour="green" loading={isLoading('ready')}   onClick={() => onAction('ready', order.order_key)} />
           </>
         ) : (
-          <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
+          <Btn label={t('ready')} colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
         )
       }
       if (order.status === 'cooking') {
         return (
           <>
-            <span className="flex-1 text-amber-700 font-bold text-sm flex items-center">🔥 Cooking…</span>
-            <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
+            <span className="flex-1 text-amber-700 font-bold text-sm flex items-center">🔥 {t('cooking')}</span>
+            <Btn label={t('ready')} colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
           </>
         )
       }
@@ -1020,13 +1024,13 @@ export function OrderCard({
       // The dashboard never reaches this branch at all: it renders viewMode 'solo'.
       if (readyStepOn) {
         if (['confirmed', 'modified'].includes(order.status)) {
-          return <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
+          return <Btn label={t('ready')} colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
         }
         if (order.status === 'cooking') {
           return (
             <>
-              <span className="flex-1 text-amber-700 font-bold text-sm flex items-center">🔥 Cooking…</span>
-              <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
+              <span className="flex-1 text-amber-700 font-bold text-sm flex items-center">🔥 {t('cooking')}</span>
+              <Btn label={t('ready')} colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
             </>
           )
         }
@@ -1046,7 +1050,7 @@ export function OrderCard({
         if (['confirmed', 'modified'].includes(order.status)) {
           return (
             <>
-              <span className="text-xs font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-500">⏳ Waiting</span>
+              <span className="text-xs font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-500">⏳ {t('waiting')}</span>
               {completionBtnDisabled()}
             </>
           )
@@ -1054,7 +1058,7 @@ export function OrderCard({
         if (order.status === 'cooking') {
           return (
             <>
-              <span className="text-xs font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700">🔥 Cooking…</span>
+              <span className="text-xs font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700">🔥 {t('cooking')}</span>
               {completionBtnDisabled()}
             </>
           )
@@ -1073,14 +1077,14 @@ export function OrderCard({
     const readyStepEnabled = isPub || effectiveOrderReady
     if (['confirmed', 'modified'].includes(order.status)) {
       return readyStepEnabled
-        ? <Btn label={`${truck?.truck_emoji || "🍕"} Ready`} colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
+        ? <Btn label={`${truck?.truck_emoji || "🍕"} ${t('ready')}`} colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
         : completionBtn()
     }
     if (order.status === 'ready') {
       return completionBtn()
     }
     if (order.status === 'collected') {
-      return <Btn label="↩ Undo" colour="slate" loading={isLoading('undo_collected')} onClick={() => onAction('undo_collected', order.order_key)} />
+      return <Btn label={`↩ ${t('undo')}`} colour="slate" loading={isLoading('undo_collected')} onClick={() => onAction('undo_collected', order.order_key)} />
     }
     return null
   }
@@ -1114,7 +1118,7 @@ export function OrderCard({
     (order.customer_email || order.customer_phone) ? (
       <button
         onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
-        title="Tap for contact details"
+        title={t('contactTitle')}
         className={`group inline-flex items-baseline gap-1 text-left ${className}`}>
         <span className="truncate">{order.customer_name}</span>
         <span className="text-orange-500 group-hover:text-orange-600 transition-colors text-[10px] flex-shrink-0" aria-hidden>✉</span>
@@ -1131,11 +1135,11 @@ export function OrderCard({
   // acknowledges it in the banner; see the `conflict` prop note for why a poll cannot clear it.
   const conflictMarker = conflict === 'payment' ? (
     <div className="w-full bg-red-700 text-white px-3 py-1.5 text-xs font-black tracking-wide text-center">
-      ⚠ PAYMENT NOT RECORDED — check before releasing
+      ⚠ {t('conflictPayment')}
     </div>
   ) : conflict === 'status' ? (
     <div className="w-full bg-amber-500 text-white px-3 py-1.5 text-xs font-bold text-center">
-      ⚠ Last update didn&apos;t sync
+      ⚠ {t('conflictStatus')}
     </div>
   ) : null
 
@@ -1342,7 +1346,7 @@ export function OrderCard({
                       character-identical to the window/solo arm's heading below. */}
                   <div className={`flex items-center gap-2 mb-1 ${gi > 0 ? 'mt-3' : ''}`}>
                     <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">
-                      {cat === '__other__' ? 'Other' : cat}
+                      {cat === '__other__' ? t('otherCategory') : cat}
                     </span>
                     <div className="flex-1 h-px bg-slate-200" />
                   </div>
@@ -1377,7 +1381,7 @@ export function OrderCard({
             <div className="mb-2">
               {standaloneGroups.length > 0 && (order.deals ?? []).length > 0 && (
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">Deals</span>
+                  <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">{t('deals')}</span>
                   <div className="flex-1 h-px bg-slate-200" />
                 </div>
               )}
@@ -1435,7 +1439,7 @@ export function OrderCard({
                 <div key={cat}>
                   <div className={`flex items-center gap-2 mb-1 ${gi > 0 || (order.deals ?? []).length > 0 ? 'mt-3' : ''}`}>
                     <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">
-                      {cat === '__other__' ? 'Other' : cat}
+                      {cat === '__other__' ? t('otherCategory') : cat}
                     </span>
                     <div className="flex-1 h-px bg-slate-200" />
                   </div>
@@ -1564,13 +1568,13 @@ export function OrderCard({
                 {['pending', 'confirmed', 'modified'].includes(order.status) && (
                   <button onClick={() => onEdit(order)}
                     className="flex-1 font-semibold text-xs text-slate-500 bg-transparent border border-slate-200 hover:bg-slate-50 py-2.5 rounded-lg transition-colors active:scale-95">
-                    ✏ Edit
+                    ✏ {t('edit')}
                   </button>
                 )}
                 {['confirmed', 'modified', 'ready'].includes(order.status) && (
                   <button onClick={() => onAction('cancel', order.order_key)} disabled={isLoading('cancel')}
                     className="flex-1 font-semibold text-xs text-red-400 bg-transparent border border-red-100 hover:bg-red-50 py-2.5 rounded-lg transition-colors active:scale-95 disabled:opacity-50">
-                    {isLoading('cancel') ? '...' : '✕ Cancel'}
+                    {isLoading('cancel') ? '...' : `✕ ${t('cancel')}`}
                   </button>
                 )}
               </div>

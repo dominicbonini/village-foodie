@@ -30,9 +30,12 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Preferences } from '@capacitor/preferences'
 import { getPrinterTransport, loadPrinterKind, setPrinterKind, type PrinterKind, type PrinterAvailability, type DiscoveredPrinter } from '@/lib/printing/transport'
-import { fetchNetPrinting, claimNetPrinting, setNetPrinterAddress, bumpNetGuard, decideNetPrinting, readCachedClaim, NET_GUARD_COPY, NET_GUARD_MOVE_BUTTON, type NetPrintingRead, type NetGuardState } from '@/lib/printing/networkGuard'
+import { fetchNetPrinting, claimNetPrinting, setNetPrinterAddress, bumpNetGuard, decideNetPrinting, readCachedClaim, type NetPrintingRead, type NetGuardState } from '@/lib/printing/networkGuard'
 import { NET_ADDRESS_KEY } from '@/lib/printing/netTransport'
-import { parseNetAddress, NET_ADDRESS_HELP } from '@/lib/printing/netAddress'
+import { parseNetAddress } from '@/lib/printing/netAddress'
+import { printerMessageText, type PrinterMessage } from '@/lib/printing/printerText'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/printing'
 import { renderTestTicket } from '@/lib/printing/testTicket'
 import { PrinterTypeChoice } from '@/components/printing/PrinterTypeChoice'
 import { getDeviceId } from '@/lib/native/device'
@@ -63,11 +66,18 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
   // ever omits them, which is what keeps this additive.
   /** The transport's own answer. False in Phase A, and it carries a reason. */
   connected?: boolean
-  /** Operator-facing reason shown when `connected` is false. Never a stack trace. */
-  statusDetail?: string
+  /** Operator-facing reason shown when `connected` is false. Never a stack trace. A CODE from the transport (or a
+   *  native string), turned into words here at render — lib/printing/printerText.ts. */
+  statusDetail?: PrinterMessage
   /** 🔴 Tickets due that have not printed. The number that turns "no printer" into a consequence. */
   waitingCount?: number
 }) {
+  // 🔴 THE CARD'S WORDS (messages/en-GB.json `printing`, Language Phase 1b). A message from the printer stack is
+  // held in state as a CODE (PrinterMessage) and turned into words HERE, at render — `say` — never in a handler
+  // or an effect, and no translator joins a dependency array.
+  const t = useT('printing.card')
+  const locale = useAppLocale()
+  const say = (m: PrinterMessage) => printerMessageText(locale, m)
   const [ready, setReady] = useState(false)
   const [enabled, setEnabled] = useState(false)                 // On/Off master switch (this device)
   const [printer, setPrinter] = useState<string | null>(null)   // THIS device's paired printer (name)
@@ -81,7 +91,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
   // next poll. `liveConnected` prefers the local answer when there is one and falls back to the prop.
   const [scanning, setScanning] = useState(false)
   const [found, setFound] = useState<DiscoveredPrinter[] | null>(null)   // null = never scanned
-  const [pairingError, setPairingError] = useState<string | null>(null)
+  const [pairingError, setPairingError] = useState<PrinterMessage | null>(null)
   const [availability, setAvailability] = useState<PrinterAvailability | null>(null)
   const [localConnected, setLocalConnected] = useState<boolean | null>(null)
   const [localName, setLocalName] = useState<string | null>(null)
@@ -99,7 +109,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
   const [netInfo, setNetInfo] = useState<NetPrintingRead | undefined>(undefined)   // undefined = not fetched; 'pin' = PIN truck
   const [netGuard, setNetGuard] = useState<NetGuardState | null>(null)
   const [netBusy, setNetBusy] = useState<'connect' | 'test' | 'move' | null>(null)
-  const [netMsg, setNetMsg] = useState<string | null>(null)   // the last connect/test result, operator-facing
+  const [netMsg, setNetMsg] = useState<PrinterMessage | null>(null)   // the last connect/test result, operator-facing
   const [netOk, setNetOk] = useState<boolean | null>(null)     // this device's last probe/send result
   const [netAvailability, setNetAvailability] = useState<PrinterAvailability | null>(null)
 
@@ -165,7 +175,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
       if (avail !== 'available') { setScanning(false); return }
       setFound(await t.scan())
     } catch (e) {
-      setPairingError(e instanceof Error ? e.message : 'The scan could not be started')
+      setPairingError(e instanceof Error ? e.message : { code: 'scanFailed' })
     } finally { setScanning(false) }
   }
   const connectTo = async (d: DiscoveredPrinter) => {
@@ -173,9 +183,9 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
     try {
       const res = await getPrinterTransport().connect(d.id)
       if (res.ok) { setLocalConnected(true); setLocalName(d.name); setPrinter(d.name); setFound(null) }
-      else setPairingError(res.error ?? 'Could not connect to that printer')
+      else setPairingError(res.error ?? { code: 'couldNotConnectPrinter' })
     } catch (e) {
-      setPairingError(e instanceof Error ? e.message : 'Could not connect to that printer')
+      setPairingError(e instanceof Error ? e.message : { code: 'couldNotConnectPrinter' })
     } finally { setConnectingId(null) }
   }
   const disconnectPrinter = async () => {
@@ -192,14 +202,14 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-800">🖨 Kitchen ticket printing</p>
-          <p className="text-xs text-slate-500 mt-0.5">Automatically print a kitchen ticket for each order when it&apos;s due.</p>
+          <p className="text-sm font-semibold text-slate-800">{`🖨 ${t('title')}`}</p>
+          <p className="text-xs text-slate-500 mt-0.5">{t('description')}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {/* 🔴 "● Connected" ONLY when a real pairing exists. In Phase A nothing writes K.printer, so this
               never shows — which is the honest answer, not a missing feature. Phase B writes a real name
               and this lights up with no code change. */}
-          {enabled && printer && <span className="text-[11px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">● Connected</span>}
+          {enabled && printer && <span className="text-[11px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">{`● ${t('badgeConnected')}`}</span>}
           {/* ── THE "Coming soon" CHIP WAS REMOVED HERE, 15 August 2026 ────────────────────────────
               lib/plan-features.ts now advertises Kitchen ticket printing as INCLUDED on Max, and a
               status badge saying the opposite on the same operator's device is a contradiction the
@@ -252,46 +262,41 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
           {liveConnected ? (
             <div className="flex items-center justify-between gap-3 text-xs border border-green-200 bg-green-50 rounded-lg px-3 py-2">
               <span className="text-green-800 min-w-0 truncate">
-                <strong>Connected</strong> to {localName ?? printer ?? 'your printer'}. Tickets will print automatically.
+                {(() => { const name = localName ?? printer; return t.rich('connectedTo', { hasName: name != null ? 'yes' : 'no', name: name ?? '', b: c => <strong>{c}</strong> }) })()}
               </span>
-              <button onClick={disconnectPrinter} className="shrink-0 font-semibold text-red-600 hover:text-red-700">Disconnect</button>
+              <button onClick={disconnectPrinter} className="shrink-0 font-semibold text-red-600 hover:text-red-700">{t('disconnect')}</button>
             </div>
           ) : (
             <div className="text-xs text-slate-500 border border-amber-200 bg-amber-50 rounded-lg px-3 py-2 flex flex-col gap-2">
               <div>
-                <strong className="text-amber-800">No printer connected.</strong>{' '}
-                {statusDetail ? `${statusDetail}. ` : ''}Connect a Bluetooth receipt printer to start printing tickets.
+                {t.rich('noPrinter', { withDetail: statusDetail ? 'yes' : 'no', detail: statusDetail ? say(statusDetail) : '', b: c => <strong className="text-amber-800">{c}</strong> })}
                 {waitingCount > 0 && (
                   <span className="block mt-1 font-semibold text-amber-800">
-                    {waitingCount === 1 ? '1 ticket is waiting' : `${waitingCount} tickets are waiting`} and will
-                    print once a printer is connected. Nothing has been lost.
+                    {t('waitingBle', { n: waitingCount, count: String(waitingCount) })}
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={runScan} disabled={scanning}
                   className="shrink-0 font-bold text-white bg-orange-600 hover:bg-orange-700 disabled:opacity-50 px-3 py-1.5 rounded-lg">
-                  {scanning ? 'Scanning...' : 'Scan for printers'}
+                  {scanning ? t('scanning') : t('scan')}
                 </button>
-                {scanning && <span className="text-slate-500">Looking for nearby printers — this takes a few seconds.</span>}
+                {scanning && <span className="text-slate-500">{t('scanningHint')}</span>}
               </div>
               {/* 🔴 THE AVAILABILITY BRANCHES. Each names the ONE thing the operator can do about it. */}
               {availability === 'off' && (
-                <p className="text-amber-800">Bluetooth is switched off on this device. Turn it on in Settings, then scan again.</p>
+                <p className="text-amber-800">{t('bluetoothOff')}</p>
               )}
               {availability === 'unauthorised' && (
-                <p className="text-amber-800">HatchGrab needs permission to use Bluetooth. Allow it in Settings &rarr; HatchGrab &rarr; Bluetooth, then scan again.</p>
+                <p className="text-amber-800">{t('bluetoothUnauthorised')}</p>
               )}
               {availability === 'unsupported' && (
-                <p className="text-amber-800">Printing needs the HatchGrab app — a web browser cannot reach a Bluetooth printer.</p>
+                <p className="text-amber-800">{t('bluetoothUnsupported')}</p>
               )}
-              {pairingError && <p className="text-red-600">{pairingError}</p>}
+              {pairingError && <p className="text-red-600">{say(pairingError)}</p>}
               {/* 🔴 THE EMPTY RESULT, WHICH IS THE ONE A REVIEWER WILL SEE. */}
               {found?.length === 0 && !scanning && (
-                <p className="text-amber-800">
-                  No printers found. Check the printer is switched on, has paper, and is close to this device —
-                  most receipt printers only appear for a minute or two after you turn them on.
-                </p>
+                <p className="text-amber-800">{t('noneFound')}</p>
               )}
               {/* ── 🔴 RANKED, NEVER FILTERED (15 August 2026) ────────────────────────────────────
                   The list showed an Apple Watch and AirPods with a Connect button beside each, which
@@ -309,7 +314,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                   <button key={d.id} onClick={() => connectTo(d)} disabled={!!connectingId}
                     className="flex items-center justify-between gap-2 text-left bg-white border border-slate-200 hover:border-orange-300 rounded-lg px-3 py-2 disabled:opacity-50">
                     <span className="min-w-0 truncate text-slate-800 font-medium">{d.name}</span>
-                    <span className="shrink-0 text-orange-600 font-semibold">{connectingId === d.id ? 'Connecting...' : 'Connect'}</span>
+                    <span className="shrink-0 text-orange-600 font-semibold">{connectingId === d.id ? t('connecting') : t('connect')}</span>
                   </button>
                 )
                 return (
@@ -319,14 +324,11 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                         shown OPEN — a collapsed empty-looking panel would read as a failure. */}
                     {likely.length > 0 ? (
                       <>
-                        <p className="text-slate-600">Likely printers — tap to connect:</p>
+                        <p className="text-slate-600">{t('likelyHeading')}</p>
                         {likely.map(row)}
                       </>
                     ) : (
-                      <p className="text-slate-600">
-                        No printers recognised yet. Everything nearby is listed below — if your printer is
-                        there, tap it and HatchGrab will check whether it can print.
-                      </p>
+                      <p className="text-slate-600">{t('noneRecognised')}</p>
                     )}
                     {other.length > 0 && (
                       likely.length === 0 ? (
@@ -335,11 +337,11 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                         <>
                           <button onClick={() => setShowOther(v => !v)} aria-expanded={showOther}
                             className="text-left text-slate-500 hover:text-slate-700 font-semibold py-1">
-                            {showOther ? 'Hide other devices' : `Other devices (${other.length})`}
+                            {showOther ? t('hideOther') : t('showOther', { count: String(other.length) })}
                           </button>
                           {showOther && (
                             <>
-                              <p className="text-slate-500">These do not look like printers, but you can still try one.</p>
+                              <p className="text-slate-500">{t('otherHint')}</p>
                               {other.map(row)}
                             </>
                           )}
@@ -361,20 +363,20 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                   requiresPin, so no address field, no Connect, no test ticket and NO CLAIM — every one of
                   them would 401 too. See NetPrintingRead in lib/printing/networkGuard.ts. */}
               {netInfo === 'pin' ? (
-                <p className="text-amber-800">{NET_GUARD_COPY.pin}</p>
+                <p className="text-amber-800">{say({ code: 'guard', state: 'pin' })}</p>
               ) : (
                 <>
               {netInfo === null && (
-                <p className="text-amber-800">Can&apos;t check which device is printing right now.</p>
+                <p className="text-amber-800">{say({ code: 'guard', state: 'unknown' })}</p>
               )}
               {netInfo && !netInfo.columnsAvailable && (
-                <p className="text-amber-800">Wired printing isn&apos;t available right now.</p>
+                <p className="text-amber-800">{t('wiredUnavailable')}</p>
               )}
               {netInfo && netInfo.columnsAvailable && !netInfo.vanId && (
-                <p className="text-amber-800">{NET_GUARD_COPY.unbound}</p>
+                <p className="text-amber-800">{say({ code: 'guard', state: 'unbound' })}</p>
               )}
               <label className="block">
-                <span className="text-sm font-semibold text-slate-800">Printer address</span>
+                <span className="text-sm font-semibold text-slate-800">{t('addressLabel')}</span>
                 <input
                   type="text" inputMode="decimal" autoCapitalize="off" autoCorrect="off" spellCheck={false}
                   value={netAddress} placeholder="192.168.1.50"
@@ -382,7 +384,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                   className="mt-1 w-full border border-slate-300 rounded-lg px-2 py-1 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
               </label>
-              <p className="text-slate-500">Print the printer&apos;s settings page to find its address. Ask whoever set up your router to keep this address fixed.</p>
+              <p className="text-slate-500">{t('addressHint')}</p>
               <div className="flex items-center gap-2 flex-wrap">
                 <button disabled={!!netBusy || !parseNetAddress(netAddress)}
                   onClick={async () => {
@@ -392,17 +394,17 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                       setNetOk(res.ok)
                       if (res.ok) {
                         const norm = parseNetAddress(netAddress)?.normalised ?? netAddress
-                        setNetMsg(`Connected to ${norm}`)
+                        setNetMsg({ code: 'connectedTo', address: norm })
                         // Share the address with the van, so the next device is pre-filled with it.
                         const saved = await setNetPrinterAddress(token, getDeviceId(), netAddress)
-                        if (!saved.ok) setNetMsg(`Connected to ${norm}. ${saved.error ?? ''}`.trim())
+                        if (!saved.ok) setNetMsg({ code: 'connectedToSaveFailed', address: norm, error: saved.error })
                         await refreshNet(); bumpNetGuard()
-                      } else setNetMsg(res.error ?? `Can't reach the printer at ${netAddress}`)
-                    } catch (e) { setNetOk(false); setNetMsg(e instanceof Error ? e.message : `Can't reach the printer at ${netAddress}`) }
+                      } else setNetMsg(res.error ?? { code: 'netCantReach', address: netAddress })
+                    } catch (e) { setNetOk(false); setNetMsg(e instanceof Error ? e.message : { code: 'netCantReach', address: netAddress }) }
                     finally { setNetBusy(null); try { setNetAvailability(await getPrinterTransport().availability()) } catch { /* unknown */ } }
                   }}
                   className="shrink-0 font-bold text-white bg-orange-600 hover:bg-orange-700 disabled:opacity-50 px-3 py-1.5 rounded-lg">
-                  {netBusy === 'connect' ? 'Connecting...' : 'Connect'}
+                  {netBusy === 'connect' ? t('connecting') : t('connect')}
                 </button>
                 <button disabled={!!netBusy || netOk !== true}
                   onClick={async () => {
@@ -413,48 +415,48 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                       const bytes = renderTestTicket({ truckName: netInfo?.truckName, paper, time })
                       const res = await getPrinterTransport().sendBytes(bytes)
                       setNetOk(res.ok)
-                      setNetMsg(res.ok ? 'Test ticket sent — check the printer.' : (res.error ?? 'The test ticket did not print.'))
-                    } catch (e) { setNetOk(false); setNetMsg(`The test ticket may have printed only partly. ${e instanceof Error ? e.message : ''}`.trim()) }
+                      setNetMsg(res.ok ? { code: 'testSent' } : (res.error ?? { code: 'testNotPrinted' }))
+                    } catch (e) { setNetOk(false); setNetMsg({ code: 'testPartial', detail: (e instanceof Error ? e.message : '').trimEnd() }) }
                     finally { setNetBusy(null) }
                   }}
                   className="shrink-0 font-semibold text-orange-700 border border-orange-300 bg-white hover:bg-orange-50 disabled:opacity-50 px-3 py-1.5 rounded-lg">
-                  {netBusy === 'test' ? 'Printing...' : 'Print test ticket'}
+                  {netBusy === 'test' ? t('printing') : t('printTest')}
                 </button>
                 {netOk === true && netAddress && (
                   <button onClick={async () => { await getPrinterTransport().disconnect(); setNetOk(null); setNetMsg(null) }}
-                    className="shrink-0 font-semibold text-red-600 hover:text-red-700">Disconnect</button>
+                    className="shrink-0 font-semibold text-red-600 hover:text-red-700">{t('disconnect')}</button>
                 )}
               </div>
               {/* THE STATUS LINE — this device's last probe/send, never inferred from a stored address. */}
-              {netAddress && netOk === true && <p className="text-green-800"><strong>Connected</strong> to {parseNetAddress(netAddress)?.normalised ?? netAddress}. Tickets will print automatically.</p>}
-              {netAddress && netOk === false && !netMsg && <p className="text-amber-800">Can&apos;t reach the printer at {parseNetAddress(netAddress)?.normalised ?? netAddress}</p>}
-              {netMsg && <p className={netOk ? 'text-green-800' : 'text-amber-800'}>{netMsg}</p>}
+              {netAddress && netOk === true && <p className="text-green-800">{t.rich('connectedTo', { hasName: 'yes', name: parseNetAddress(netAddress)?.normalised ?? netAddress, b: c => <strong>{c}</strong> })}</p>}
+              {netAddress && netOk === false && !netMsg && <p className="text-amber-800">{say({ code: 'netCantReach', address: parseNetAddress(netAddress)?.normalised ?? netAddress })}</p>}
+              {netMsg && <p className={netOk ? 'text-green-800' : 'text-amber-800'}>{say(netMsg)}</p>}
               {netAvailability === 'unauthorised' && (
-                <p className="text-amber-800">HatchGrab needs permission to reach your printer. Turn on Local Network for HatchGrab in Settings.</p>
+                <p className="text-amber-800">{say({ code: 'netPermission' })}</p>
               )}
               {netAvailability === 'unsupported' && (
-                <p className="text-amber-800">Printing needs the HatchGrab app.</p>
+                <p className="text-amber-800">{t('wiredAppOnly')}</p>
               )}
-              {!parseNetAddress(netAddress) && netAddress.trim() !== '' && <p className="text-amber-800">{NET_ADDRESS_HELP}</p>}
+              {!parseNetAddress(netAddress) && netAddress.trim() !== '' && <p className="text-amber-800">{say({ code: 'addressHelp' })}</p>}
               {/* THE ONE-PRINTING-DEVICE GUARD — the same decision usePrinting gates `active` on. */}
               {netGuard === 'other' && (
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-amber-800">{NET_GUARD_COPY.other}</span>
+                  <span className="text-amber-800">{say({ code: 'guard', state: 'other' })}</span>
                   <button disabled={!!netBusy}
                     onClick={async () => {
                       setNetBusy('move')
-                      try { const r = await claimNetPrinting(token, getDeviceId()); if (!r.ok) setNetMsg(r.error ?? 'Could not move printing'); await refreshNet(); bumpNetGuard() }
+                      try { const r = await claimNetPrinting(token, getDeviceId()); if (!r.ok) setNetMsg(r.error ?? { code: 'couldNotMove' }); await refreshNet(); bumpNetGuard() }
                       finally { setNetBusy(null) }
                     }}
-                    className="shrink-0 font-bold text-white bg-orange-600 hover:bg-orange-700 disabled:opacity-50 px-3 py-1.5 rounded-lg">{NET_GUARD_MOVE_BUTTON}</button>
+                    className="shrink-0 font-bold text-white bg-orange-600 hover:bg-orange-700 disabled:opacity-50 px-3 py-1.5 rounded-lg">{say({ code: 'guardMove' })}</button>
                 </div>
               )}
               {netGuard === 'unknown' && netInfo !== null && netInfo?.columnsAvailable !== false && (
-                <p className="text-amber-800">{NET_GUARD_COPY.unknown}</p>
+                <p className="text-amber-800">{say({ code: 'guard', state: 'unknown' })}</p>
               )}
               {waitingCount > 0 && netGuard !== 'ok' && (
                 <span className="block font-semibold text-amber-800">
-                  {waitingCount === 1 ? '1 ticket is waiting' : `${waitingCount} tickets are waiting`} and will print once this device is printing. Nothing has been lost.
+                  {t('waitingNet', { n: waitingCount, count: String(waitingCount) })}
                 </span>
               )}
                 </>
@@ -467,11 +469,11 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
             className="group flex items-center justify-between gap-3 w-full text-left">
             <span className="text-xs text-slate-600 min-w-0 truncate">
               {mode === 'on_confirmed'
-                ? <>Print <strong>when accepted</strong> · {paper}mm paper</>
-                : <>Print <strong>{lead} min</strong> before collection · {paper}mm paper</>}
+                ? t.rich('summaryOnConfirmed', { paper: String(paper), b: c => <strong>{c}</strong> })
+                : t.rich('summaryLead', { lead: String(lead), paper: String(paper), b: c => <strong>{c}</strong> })}
             </span>
             <span className="shrink-0 flex items-center gap-1 text-xs font-semibold text-slate-500 group-hover:text-orange-600 transition-colors">
-              Settings <span aria-hidden>{expanded ? '▲' : '▾'}</span>
+              {t('settings')} <span aria-hidden>{expanded ? '▲' : '▾'}</span>
             </span>
           </button>
 
@@ -480,13 +482,13 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
             // paper width), just gated behind the collapse. Nothing removed; presentation only.
             <div className="flex flex-col gap-3 border-t border-slate-100 pt-3">
               {printer && <div className="flex items-center justify-between text-sm gap-3">
-                <span className="text-slate-700 truncate">Printer: <strong>{printer}</strong></span>
+                <span className="text-slate-700 truncate">{t.rich('printerName', { name: printer, b: c => <strong>{c}</strong> })}</span>
                 {/* "Change" (pick a DIFFERENT printer) is Phase B — the real BT scan/picker doesn't exist
                     yet, so there is nothing to change TO. This whole row only renders once a REAL pairing
                     exists (Phase B writes K.printer); Disconnect clears it and returns to the honest
                     "No printer connected" state above. */}
                 <div className="flex gap-3 text-xs font-semibold shrink-0">
-                  <button onClick={disconnect} className="text-red-600 hover:text-red-700">Disconnect</button>
+                  <button onClick={disconnect} className="text-red-600 hover:text-red-700">{t('disconnect')}</button>
                 </div>
               </div>}
               {/* ── WHEN TO PRINT ─────────────────────────────────────────────────────────────────────
@@ -495,12 +497,12 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                   before its collection time — that is the whole difference between the two modes and it is
                   not discoverable from the label alone. */}
               <div className="flex flex-col gap-2">
-                <span className="text-sm text-slate-700">When to print</span>
+                <span className="text-sm text-slate-700">{t('whenToPrint')}</span>
                 <label className="flex items-start gap-2 cursor-pointer">
                   <input type="radio" name="print-mode" checked={mode === 'lead_time'}
                     onChange={() => setTriggerMode('lead_time')} className="mt-1 accent-orange-500" />
                   <span className="text-sm">
-                    <span className="text-slate-800 font-medium">A set time before collection</span>
+                    <span className="text-slate-800 font-medium">{t('modeLead')}</span>
                   </span>
                 </label>
                 {/* ── THE MINUTES INPUT BELONGS TO THE OPTION ABOVE IT ──────────────────────────────
@@ -525,7 +527,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                   // line of the wording when it wraps. items-center floated it against the middle of
                   // a two-line block, which is what read as adrift.
                   <label className="flex items-start justify-between gap-3 text-sm pl-6">
-                    <span className="text-slate-700 min-w-0">Minutes before the collection time</span>
+                    <span className="text-slate-700 min-w-0">{t('leadLabel')}</span>
                     <input type="number" min={0} max={60} value={lead} onChange={e => setLeadMins(Number(e.target.value) || 0)}
                       className="w-20 shrink-0 -mt-1 border border-slate-300 rounded-lg px-2 py-1 text-sm text-right" />
                   </label>
@@ -534,20 +536,17 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                   <input type="radio" name="print-mode" checked={mode === 'on_confirmed'}
                     onChange={() => setTriggerMode('on_confirmed')} className="mt-1 accent-orange-500" />
                   <span className="text-sm">
-                    <span className="text-slate-800 font-medium">As soon as you accept the order</span>
-                    <span className="block text-xs text-slate-500">
-                      An advance pre-order prints when you accept it, which may be hours before the collection
-                      time. Orders you have not accepted yet never print.
-                    </span>
+                    <span className="text-slate-800 font-medium">{t('modeOnConfirmed')}</span>
+                    <span className="block text-xs text-slate-500">{t('modeOnConfirmedHint')}</span>
                   </span>
                 </label>
               </div>
               <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-slate-700">Paper width</span>
+                <span className="text-slate-700">{t('paperWidth')}</span>
                 <div className="flex gap-1.5">
                   {([58, 80] as PaperWidth[]).map(w => (
                     <button key={w} onClick={() => setPaperWidth(w)}
-                      className={`px-3 py-1 rounded-lg text-sm font-bold border ${paper === w ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white border-slate-300 text-slate-600'}`}>{w}mm</button>
+                      className={`px-3 py-1 rounded-lg text-sm font-bold border ${paper === w ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white border-slate-300 text-slate-600'}`}>{t('paperOption', { width: String(w) })}</button>
                   ))}
                 </div>
               </div>

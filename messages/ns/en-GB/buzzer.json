@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Buzzer <b>{number}</b> is with <b>order #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Take it for <b>{hasTarget, select, yes {order #{targetId}} other {this order}}</b>?",
+  "cancel": "Cancel",
+  "take": "Take buzzer {number}",
+  "titleBlocking": "Buzzer for order #{id}?",
+  "title": "Choose a buzzer",
+  "subtitle": "{hasTarget, select, yes {Order #{id}} other {This order}}{hasCurrent, select, yes { · currently buzzer {current}} other {}}",
+  "allTaken": "All {count} buzzers are out. Tap one to take it from another order.",
+  "thisOrder": "This order",
+  "noBuzzer": "No buzzer",
+  "done": "Done",
+  "lostTitle": "Order #{id} doesn't have a buzzer",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}another order claimed the same buzzer while you were offline. Give them a different one.",
+  "dismiss": "Dismiss",
+  "assign": "Assign"
+}

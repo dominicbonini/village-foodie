@@ -1,0 +1,125 @@
+{
+  "docTitle": "{truck} Kitchen",
+  "loading": "Loading kitchen...",
+  "pin": {
+    "title": "Enter PIN",
+    "placeholder": "PIN",
+    "unlock": "Unlock",
+    "unreachable": "Can't reach the server right now. Your PIN is fine — try again in a moment.",
+    "incorrect": "Incorrect PIN",
+    "generic": "Something went wrong. Try again."
+  },
+  "error": {
+    "linkInvalid": "This link is no longer valid.",
+    "couldNotLoad": "Could not load orders",
+    "truckNotFound": "Truck not found"
+  },
+  "degraded": {
+    "at": "⚠️ Can't reach the server. Showing tickets from {time}. NEW ORDERS MAY BE MISSING.",
+    "earlier": "⚠️ Can't reach the server. Showing tickets from earlier. NEW ORDERS MAY BE MISSING."
+  },
+  "header": {
+    "dashboard": "Dashboard",
+    "backTitle": "Back to the dashboard",
+    "list": "List",
+    "grid": "Grid",
+    "full": "Full",
+    "cook": "Cook",
+    "fullTitle": "Full cards — prices and payment details, as the hatch sees them.",
+    "cookTitle": "Cook cards — bigger type, grouped by category, no prices.",
+    "readyStep": "Ready step",
+    "readyOnlyTitle": "This screen only marks orders ready, so this cannot be turned off — it is the only step it performs.",
+    "readyOnTitle": "This screen marks orders ready. Tap so another screen does it instead.",
+    "readyOffTitle": "Another screen marks orders ready. Tap so this one does it.",
+    "handover": "Payment & handover",
+    "handoverOnlyTitle": "This screen only takes payment, so this cannot be turned off — it is the only step it performs.",
+    "handoverOnTitle": "This screen takes payment and hands over. Tap so another screen does it instead.",
+    "handoverOffTitle": "Another screen takes payment. Tap so this one does it.",
+    "soundOn": "New-order sound is on — tap to turn it off",
+    "soundOff": "New-order sound is off — tap to turn it on",
+    "screenOn": "Screen on",
+    "screenOff": "Screen off",
+    "screenSettings": "Screen settings",
+    "manageEvent": "Manage event",
+    "manageEventTitle": "Manage event — start, pause, change or finish it",
+    "soundSettings": "Sound settings",
+    "soundSettingsTitle": "Which sounds fire on this device"
+  },
+  "panel": {
+    "viewSettings": "View settings",
+    "on": "On",
+    "off": "Off",
+    "newOrderSound": "New order sound",
+    "soundNeedsConfirming": "Only orders needing confirming",
+    "soundAll": "All new orders",
+    "soundDue": "Sound when an order is due to be cooked",
+    "soundDueHelp": "Sounds when a ticket turns amber.",
+    "deviceSettings": "Device settings",
+    "sound": "Sound",
+    "close": "Close"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Orders not loaded for this event",
+    "mismatchBody": "The server answered with a different event, so nothing is shown rather than the wrong orders. Pick the event again, or reload.",
+    "mismatchBodyAt": "The server answered with a different event, so nothing is shown rather than the wrong orders for {venue}. Pick the event again, or reload.",
+    "paused": "⏸ Orders paused{reason, select, offline { (device offline)} other {}} — customers cannot order",
+    "resume": "Resume",
+    "offline": "No connection — showing last known orders. Online ordering has been paused for customers.",
+    "queued": "{n, plural, one {{count} action queued} other {{count} actions queued}}",
+    "extraWait": "⏱ +{mins} min extra wait active",
+    "clear": "Clear",
+    "toMake": "To make",
+    "today": "Today · {range}",
+    "startEvent": "Start Event",
+    "recentlyClosed": "Event finished · {venue} ended at {time}"
+  },
+  "board": {
+    "queueClear": "Queue clear",
+    "doneToday": "Done today · {count}",
+    "paid": "✓ paid",
+    "cardHeld": "card held",
+    "due": "{amount} due"
+  },
+  "screenOff": {
+    "title": "Allow screen to turn off?",
+    "bodyVans": "{vans} {n, plural, one {has} other {have}} offline detection enabled. If the screen turns off, the device may stop sending its online signal and customer ordering may be paused.",
+    "body": "If the screen turns off, the device may stop sending its online signal.",
+    "keepHint": "Keep the screen on to ensure uninterrupted ordering.",
+    "keep": "Keep screen on",
+    "allow": "Allow screen off"
+  },
+  "event": {
+    "change": "Change event",
+    "cancel": "Cancel",
+    "waitActive": "⏱ +{mins}m active · Tap to clear",
+    "addWait": "⏱ Add extra wait",
+    "endTitle": "End event?",
+    "endEarly": "This event isn't scheduled to finish until {time}. No more orders will be allowed. Confirm to end event?",
+    "endNow": "Finish this event? No more orders will be taken.",
+    "yes": "Yes",
+    "started": "Event started",
+    "finishTimeNow": "Finish time now {time}",
+    "finished": "Event finished",
+    "cancelled": "Event cancelled",
+    "noteSaved": "Note saved",
+    "pauseConfirm": "Pause orders? Customers will see \"Not accepting orders\" until you resume.",
+    "switchConfirm": "Switch from {from} to {to}?{n, plural, =0 {} one { {count} order on this screen will be replaced.} other { {count} orders on this screen will be replaced.}} Tap the current event to switch back."
+  },
+  "intro": {
+    "title": "This is the kitchen screen",
+    "p1": "It's the cook's view — the orders you need to make, in the order to make them. The screen by the grill shows this while the counter uses the orders dashboard.",
+    "p2": "Cards move across as you tap them, so whoever's cooking always knows what's next and nobody has to shout. Everything here is your demo data — have a play.",
+    "gotIt": "Got it"
+  },
+  "toast": {
+    "failed": "Failed",
+    "rejectFailed": "Failed to reject",
+    "buzzerSaved": "Buzzer {n} saved",
+    "buzzerRemoved": "Buzzer {n} removed",
+    "buzzerRemovedNone": "Buzzer removed",
+    "buzzerAssigned": "Buzzer {n} assigned",
+    "buzzerAssignedFrom": "Buzzer {n} assigned (taken from #{from})",
+    "buzzerRemoveFailed": "Could not remove buzzer {n} — it is still on {target, select, order {order #{id}} other {this order}}",
+    "buzzerAssignFailed": "Could not give buzzer {n} to {target, select, order {order #{id}} other {this order}} — {had, select, yes {it still has buzzer {prior}} other {it still has no buzzer}}"
+  }
+}

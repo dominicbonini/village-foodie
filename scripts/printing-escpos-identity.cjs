@@ -34,10 +34,13 @@ const FIX = [
 console.log('── BROKEN VARIANT: MUST report FAILURE ──────────────────────────────────────────────────')
 {
   const src = fs.readFileSync(path.join(REPO, 'lib/printing/ticket.ts'), 'utf8').replace('const TICKET_LEADING_FEED_LINES = 2', 'const TICKET_LEADING_FEED_LINES = 3')
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'escV1-')); fs.mkdirSync(path.join(tmp, 'lib/printing'), { recursive: true })
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'escV1-'))
+  // Language Phase 1b (docs/language-phase-1b-report.md): the ticket reads its headings from the message catalogue
+  // (lib/i18n + messages/), so the variant compiles against the whole lib/ and messages/ trees, with only the
+  // ticket swapped for its broken copy. (It copied five named lib files before; walk-up.ts came with Phase 0.)
+  for (const d of ['lib', 'messages']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
+  fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules'))
   fs.writeFileSync(path.join(tmp, 'lib/printing/ticket.ts'), src)
-  // 'walk-up.ts': Language Phase 0 (14 October 2026) — the ticket reads its walk-up default from lib/walk-up.ts.
-  for (const f of ['prep-utils.ts', 'slot-capacity.ts', 'slot-indicator.ts', 'money-format.ts', 'walk-up.ts']) if (fs.existsSync(path.join(REPO, 'lib', f))) fs.copyFileSync(path.join(REPO, 'lib', f), path.join(tmp, 'lib', f))
   const V = compile(tmp, ['lib/printing/ticket.ts'], 'escV1').req('lib/printing/ticket.js')
   const a = JSON.stringify(Array.from(H.renderTicket(FIX[0][1], { paper_width: 80 }))), b = JSON.stringify(Array.from(V.renderTicket(FIX[0][1], { paper_width: 80 })))
   console.log(`  ${a !== b ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V1 TICKET_LEADING_FEED_LINES 2→3 changes the bytes`)

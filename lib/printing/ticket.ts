@@ -105,7 +105,7 @@ export interface TicketOrder {
    *  not have. Pizzeria Gusto is exactly this truck. */
   showPaidStep?: boolean
   // ⚠️ 'part_refunded' JOINED THE UNION 17 August 2026. The RENDERER ALREADY HANDLED IT: the else arm
-  // below prints `PAYMENT PART REFUNDED` via .replace('_',' ').toUpperCase(), so only the type needed
+  // below prints `PAYMENT PART REFUNDED` (now the `ticket.paymentStatus` select), so only the type needed
   // widening. What matters is that it does NOT fall into the 'part_paid' arm, which prints "TO PAY".
   paymentStatus?: 'unpaid' | 'paid' | 'part_paid' | 'refunded' | 'part_refunded' | 'refund_due' | 'failed'
   /** 🔴 A LIVE, UNCAPTURED CARD AUTHORISATION. Resolved by lib/payments/held-authorisation.ts and passed
@@ -126,6 +126,11 @@ export interface TicketOrder {
    *  amounts print with NO symbol and one console warning — the kitchen never breaks and never sees a £
    *  nobody vouched for. */
   money?: MoneyFormat | null
+  /** 🔴 THE LANGUAGE THE TICKET'S OWN WORDS PRINT IN (Language Phase 1b) — the truck's locale (`truck.time.locale`,
+   *  set by mapOrderToTicket). Absent ⇒ the money format's locale, else en-GB. Every heading and label comes from
+   *  messages/en-GB.json `ticket`, ALREADY IN CAPITALS where the paper prints capitals ("COLLECT {time}") — this
+   *  file upper-cases none of its own words. */
+  locale?: string | null
 }
 
 /** An amount as the printer can print it. "£" (0xA3) and "$" (ASCII) print as themselves; a symbol the
@@ -156,6 +161,8 @@ export interface TicketLine {
 
 import { formatMajorOrBare, formatMinorOrBare, formatMajorNumber, toMajor, type MoneyFormat } from '@/lib/money-format'
 import { WALK_UP_NAME } from '@/lib/walk-up'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/ticket'
 
 const colsFor = (w: PaperWidth): number => (w === 58 ? 32 : 48)   // chars/line at normal size
 
@@ -213,6 +220,9 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   const largeWidth = Math.max(1, Math.floor(width / 2))   // double-width chars ⇒ half the chars/line
   const lines: TicketLine[] = []
   const amount = (major: number) => ticketAmount(major, order.money)
+  // The ticket's words (messages/en-GB.json `ticket`). Every one is plain ASCII in its message, so the bytes, the
+  // widths and the fit tests below measure exactly what they measured when the words were written here.
+  const t = translatorFor(order.locale ?? order.money?.locale, 'ticket')
 
   // ── 🔴 THE REPRINT BANNER — ABOVE EVERYTHING, BOXED AND INVERTED ────────────────────────────────
   // WHY IT EXISTS: the print pipeline deliberately prefers a duplicate ticket to a missing one, because a
@@ -229,15 +239,15 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   //     normal size so it fits 58mm without wrapping into noise.
   //   • Wrapped to `largeWidth`, so it cannot overflow at 58mm (16 cols large / 32 normal).
   if (order.reprint) {
-    const headline = order.reprint.reason === 'possible_duplicate' ? 'MAY BE A DUPLICATE' : 'REPRINT'
+    const headline = order.reprint.reason === 'possible_duplicate' ? t('duplicateHeadline') : t('reprintHeadline')
     const detail = order.reprint.reason === 'possible_duplicate'
-      ? 'Check the rail before making'
-      : 'Reprint of an earlier ticket'
+      ? t('duplicateDetail')
+      : t('reprintDetail')
     lines.push({ divider: true })
     for (const w of wrap(headline, largeWidth)) lines.push({ text: w, align: 'center', size: 'large', bold: true, invert: true })
     for (const w of wrap(detail, width)) lines.push({ text: w, align: 'center', invert: true })
     if (order.reprint.attempt != null && order.reprint.attempt > 1) {
-      lines.push({ text: `attempt ${order.reprint.attempt}`, align: 'center', invert: true })
+      lines.push({ text: t('attempt', { attempt: String(order.reprint.attempt) }), align: 'center', invert: true })
     }
     lines.push({ divider: true })
   }
@@ -259,8 +269,8 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   // busiest. That is why this is a measurement, not an `if (paper_width === 58)`.
   // ⚠️ REJECTED: dropping "COLLECT" to fit "#17  18:45" at double width on 58mm. That puts TWO BARE
   // NUMBERS side by side — the same failure the BUZZER label exists to prevent.
-  const idText = `#${order.id}`
-  const collectText = order.collection_time ? `COLLECT ${order.collection_time}` : 'COLLECT ASAP'
+  const idText = t('orderNumber', { id: order.id })
+  const collectText = order.collection_time ? t('collect', { time: order.collection_time }) : t('collectAsap')
   // 🔴 ONE RIGHT MARGIN FOR THE WHOLE HEADER, COMPUTED THE SAME WAY EVERY TIME. The id anchors LEFT and
   // every handover fact (collect time, buzzer) anchors RIGHT — on one row when they fit, stacked when they
   // do not. Right alignment is padBetween('', text, largeWidth) in all three places rather than an
@@ -281,7 +291,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
     // 🔴 RIGHT-ALIGNED to the SAME edge as the collect time, by the same padBetween call. It was centred,
     // which put it on neither the left nor the right margin and made the header read as three unrelated
     // elements. The word BUZZER stays — see the wording note.
-    for (const w of wrap(`BUZZER ${order.buzzer_number}`, largeWidth)) {
+    for (const w of wrap(t('buzzer', { number: String(order.buzzer_number) }), largeWidth)) {
       lines.push({ text: padBetween('', w, largeWidth), size: 'large', bold: true })
     }
   }
@@ -338,7 +348,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   // Prices are present because this follows the ORDERS TAB, not the cook view (see the header note).
   for (const it of order.items || []) {
     const b: TicketLine[] = []
-    const label = `${it.quantity}x ${it.name}`
+    const label = t('itemLine', { quantity: String(it.quantity), name: it.name })
     const lineTotal = it.unit_price != null ? amount(it.unit_price * it.quantity) : ''
     // Only pad onto one line when both halves fit; otherwise wrap the name and put the price on its own
     // right-aligned line, so a long dish name never collides with its price.
@@ -394,23 +404,25 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
     lines.push({ text: padBetween(adj.label, amount(adj.minor / 100), width) })
   }
 
-  lines.push({ text: padBetween('TOTAL', amount(order.total), width), bold: true })
+  lines.push({ text: padBetween(t('total'), amount(order.total), width), bold: true })
 
   // ── PAYMENT (D) — the caller has already resolved this. See the TicketOrder note.
   // 🔴 ABSENT when showPaidStep is false. Not "unpaid" — a truck without the paid step has no such state.
   if (order.showPaidStep && order.paymentStatus) {
     const bal = order.balanceMinor ?? 0
     const money = (minor: number) => ticketAmountMinor(minor, order.money)
-    if (order.paymentStatus === 'paid') lines.push({ text: padBetween('PAYMENT', 'PAID', width), bold: true })
+    if (order.paymentStatus === 'paid') lines.push({ text: padBetween(t('payment'), t('paid'), width), bold: true })
     // 🔴 HELD BEATS 'unpaid', AND ONLY 'unpaid'. `TO PAY £6.00` on a ticket whose card is already
     // authorised is a printed instruction to collect money that is held — the exact double-payment path
     // this change closes. It cannot mask a real balance: a captured order is 'paid' and takes the branch
     // above, and the resolver excludes captured intents.
     // ⚠️ THE WORD "PAID" IS ABSENT. Nothing has been charged; the kitchen must not read it as settled.
-    else if (order.heldAuthorisation) lines.push({ text: padBetween('CARD HELD', 'DO NOT COLLECT', width), bold: true })
-    else if (order.paymentStatus === 'part_paid') lines.push({ text: padBetween('TO PAY', money(bal), width), bold: true })
-    else if (order.paymentStatus === 'unpaid') lines.push({ text: padBetween('TO PAY', money(bal), width), bold: true })
-    else lines.push({ text: padBetween('PAYMENT', order.paymentStatus.replace('_', ' ').toUpperCase(), width), bold: true })
+    else if (order.heldAuthorisation) lines.push({ text: padBetween(t('cardHeld'), t('doNotCollect'), width), bold: true })
+    else if (order.paymentStatus === 'part_paid') lines.push({ text: padBetween(t('toPay'), money(bal), width), bold: true })
+    else if (order.paymentStatus === 'unpaid') lines.push({ text: padBetween(t('toPay'), money(bal), width), bold: true })
+    // 🔴 THE STATUS IS A SELECT IN ITS MESSAGE, ALREADY IN CAPITALS ("PART REFUNDED") — it used to be the code
+    // upper-cased here (`.replace('_', ' ').toUpperCase()`), which no translation could follow.
+    else lines.push({ text: padBetween(t('payment'), t('paymentStatus', { status: order.paymentStatus }), width), bold: true })
   }
 
   // ── 🔴 ORDER NOTES — THE ALLERGY CARRIER. UNTRUNCATED AND VISUALLY LOUDEST THING ON THE TICKET.
@@ -424,13 +436,13 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   // is the one medium with no scroll to recover it.
   if (order.notes && order.notes.trim()) {
     lines.push({ divider: true })
-    lines.push({ text: 'NOTE', bold: true, invert: true })
+    lines.push({ text: t('note'), bold: true, invert: true })
     for (const w of wrap(order.notes.trim(), width)) lines.push({ text: w, invert: true })
     lines.push({ divider: true })
   }
 
   if (order.truck_name) lines.push({ text: order.truck_name, align: 'center' })
-  if (order.printedLabel) lines.push({ text: `printed ${order.printedLabel}`, align: 'center' })
+  if (order.printedLabel) lines.push({ text: t('printed', { when: order.printedLabel }), align: 'center' })
 
   return lines
 }

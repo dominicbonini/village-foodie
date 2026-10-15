@@ -119,13 +119,14 @@ export async function saveDeviceConfig(
   }
 }
 
-/** The ONE operator-facing sentence for a failed write. 🔴 IT NEVER NAMES `reason`: the internal cause
- *  is for the console line above, not for a hatch. Only the network/server split changes the wording,
- *  because only that changes what the operator should do about it. */
-export function saveFailureMessage(r: Extract<SaveDeviceConfigResult, { ok: false }>): string {
-  return r.networkError
-    ? 'Couldn’t reach the server — check the connection and try again.'
-    : 'Couldn’t save that just now. Please try again.'
+// The sentence itself is saveFailureMessage in lib/native/deviceSaveText.ts. ⚠️ KEPT OUT OF THIS FILE ON PURPOSE
+// (Language Phase 1b): this module is imported by nearly every page (the device id), so a message import here put
+// the translator and the whole "nativeShell" namespace into every page's bundle.
+
+/** The same choice as a message KEY of the "nativeShell" namespace (Language Phase 1b) — for state that must
+ *  hold a code and become words at render (a setter inside a `useCallback`). */
+export function saveFailureKey(r: Extract<SaveDeviceConfigResult, { ok: false }>): 'deviceSave.network' | 'deviceSave.server' {
+  return r.networkError ? 'deviceSave.network' : 'deviceSave.server'
 }
 
 // ── Last-viewed screen (restart-to-last-screen) ──────────────────────────────────────────────────────

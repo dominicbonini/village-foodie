@@ -25,6 +25,8 @@
 import { useState } from 'react'
 import { formatTime, formatYmd, type TimeSettings } from '@/lib/time-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/kitchenModals'
 
 // Lifted verbatim from the manage page's local helper so the three surfaces render the date identically.
 /** The event's date in the truck's words and order (Phase 2B). ⚠️ formatYmd pins the date to UTC, so a
@@ -33,13 +35,17 @@ function fmtDate(d: string, time: TimeSettings | null | undefined) {
   return formatYmd(d, time, { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
+/** The reasons, in display order — as IDS (Language Phase 1b); the words are messages
+ *  (kitchenModals.eventCancel.reason). ⚠️ onConfirm still receives the chosen reason's WORDS, exactly as before
+ *  (today the en-GB label, 'Other' included) — the request and the customers' note are unchanged. */
 export const EVENT_CANCEL_REASONS = [
-  'Vehicle breakdown',
-  'Weather',
-  'Venue issue',
-  'Personal emergency',
-  'Other',
+  'vehicle_breakdown',
+  'weather',
+  'venue_issue',
+  'personal_emergency',
+  'other',
 ] as const
+export type EventCancelReasonId = (typeof EVENT_CANCEL_REASONS)[number]
 
 export function EventCancelModal({
   event,
@@ -61,14 +67,20 @@ export function EventCancelModal({
   onKeep: () => void
   onConfirm: (reason: string, note: string) => void
 }) {
+  const t = useT('kitchenModals')
+  const labelOf = (id: EventCancelReasonId) => t('eventCancel.reason', { reason: id })
+  /** The <select>'s value: '' or the chosen reason's LABEL as rendered (the option values are unchanged). It is
+   *  turned straight back into an id; what onConfirm receives is that id's label — exactly today's text. */
   const [reason, setReason] = useState('')
   const [note, setNote] = useState('')
+  const reasonId: EventCancelReasonId | null = EVENT_CANCEL_REASONS.find(id => labelOf(id) === reason) ?? null
+  const reasonWords = reasonId ? labelOf(reasonId) : ''
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
       <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Cancel this event?</h3>
+          <h3 className="text-lg font-semibold text-slate-900">{t('eventCancel.title')}</h3>
           <p className="text-sm text-slate-500 mt-1">
             {event.venue_name}{event.town ? `, ${event.town}` : ''}
             {' · '}
@@ -79,23 +91,23 @@ export function EventCancelModal({
           </p>
           {affectedOrderCount > 0 && (
             <p className="text-sm font-medium text-red-600 mt-2">
-              {affectedOrderCount} order{affectedOrderCount !== 1 ? 's' : ''} will be cancelled and customers notified.
+              {t('eventCancel.affected', { n: affectedOrderCount, count: String(affectedOrderCount) })}
             </p>
           )}
         </div>
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Reason — optional</label>
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('eventCancel.reasonLabel')}</label>
           <select value={reason} onChange={e => setReason(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
-            <option value="">Select a reason</option>
-            {EVENT_CANCEL_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
+            <option value="">{t('selectReason')}</option>
+            {EVENT_CANCEL_REASONS.map(r => <option key={r} value={labelOf(r)}>{labelOf(r)}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Message to customers — optional</label>
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('eventCancel.messageLabel')}</label>
           <textarea
             value={note}
             onChange={e => setNote(e.target.value)}
-            placeholder="e.g. Sorry, our trailer broke down on the way to the venue..."
+            placeholder={t('eventCancel.messagePlaceholder')}
             rows={3}
             className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"
           />
@@ -109,14 +121,14 @@ export function EventCancelModal({
             disabled={busy}
             className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm disabled:opacity-50"
           >
-            Keep event
+            {t('eventCancel.keep')}
           </button>
           <button
-            onClick={() => onConfirm(reason, note)}
+            onClick={() => onConfirm(reasonWords, note)}
             disabled={busy}
             className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50"
           >
-            {busy ? 'Cancelling…' : 'Cancel event'}
+            {busy ? t('eventCancel.cancelling') : t('eventCancel.confirm')}
           </button>
         </div>
       </div>

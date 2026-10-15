@@ -16,6 +16,8 @@
 
 import { getNowMinsInTz, getLocalDateInTz, formatSlot, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import type { Slot } from './types'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/dashboardBanners'
 
 const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
 
@@ -44,6 +46,7 @@ export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots }:
 }) {
   // Cross-day guard mirrors the engine: only exclude past slots when the event IS today; a
   // pre-order event (future date) shows its whole day. nowMins is event-local minute-of-day.
+  const t = useT('dashboardBanners')
   const ts = timeSettingsOr(time, 'day load strip')
   const tz = ts.timeZone
   const isToday = !!eventDate && eventDate === getLocalDateInTz(tz)
@@ -60,7 +63,7 @@ export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots }:
     // cells are tightened now that the count line is gone, so it never crushes the order cards.
     return (
       <div className="mb-3">
-        <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Kitchen capacity</p>
+        <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5">{t('kitchenCapacity')}</p>
         <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1">
           {upcoming.map(s => {
             const tone = (s.tone ?? 'green') as 'green' | 'amber' | 'red'
@@ -75,7 +78,7 @@ export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots }:
                     the KDS header's controls follow, and `title` puts those words on hover.
                     The banner names WHICH slot and WHICH orders; this is the at-a-glance half only. */}
                 {breachedSlots?.has(s.collection_time) && (
-                  <span role="img" aria-label="Over capacity" title="Over capacity"
+                  <span role="img" aria-label={t('overCapacity')} title={t('overCapacity')}
                     className="text-[11px] font-black leading-none text-red-600">!</span>
                 )}
               </div>
@@ -107,7 +110,7 @@ export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots }:
   // so nothing here reaches portrait or a phone.
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex flex-col min-h-0 flex-1">
-      <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2 shrink-0">Kitchen capacity</p>
+      <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2 shrink-0">{t('kitchenCapacity')}</p>
       <div className="flex flex-col gap-0.5 flex-1 min-h-0 overflow-y-auto">
         {upcoming.map(s => {
           const tone = (s.tone ?? 'green') as 'green' | 'amber' | 'red'
@@ -118,7 +121,7 @@ export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots }:
               {/* Same marker, same rule, same accessible name as the mobile strip above -- one component,
                   two variants, and the wording lives in exactly one place. */}
               {breachedSlots?.has(s.collection_time) && (
-                <span role="img" aria-label="Over capacity" title="Over capacity"
+                <span role="img" aria-label={t('overCapacity')} title={t('overCapacity')}
                   className="text-xs font-black leading-none text-red-600 flex-shrink-0">!</span>
               )}
               {/* One line per slot: nowrap + truncate so a typical label ("2 Pizzas, 1 Other") fits and

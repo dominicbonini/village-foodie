@@ -7,7 +7,8 @@ import Link from 'next/link';
 import { getVenueSlug } from '@/lib/utils';
 import { isHatchGrab } from '@/lib/domain';
 import { formatTimeRange, formatYmd, DISCOVERY_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils';
-import { useT } from '@/lib/i18n/client';
+import { useT } from '@/lib/i18n/use-t';
+import '@/lib/i18n/catalog/eventCard'
 
 interface TruckListCardProps {
   event: VillageEvent;

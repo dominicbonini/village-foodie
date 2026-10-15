@@ -1,0 +1,5 @@
+{
+  "soldOut": "sold out",
+  "left": "{count} left",
+  "spiceLevel": "Spice level {level} of {max}"
+}

@@ -26,6 +26,7 @@ module.exports = async function after(x) {
 
   const I = await kit.bundle('lp0-i18n', [
     "export * as L from '@/lib/i18n/locales'", "export * as M from '@/lib/i18n/messages'", "export * as TR from '@/lib/i18n/translator'",
+    "import '@/lib/i18n/catalog/order'",   // Language Phase 1b: the translator reads the namespaces its caller imports
     "export { default as requestConfig } from '@/lib/i18n/request'", "export { NAMESPACES } from '@/lib/i18n/namespaces'",
   ].join('\n'), { stubs: { 'next-intl/server': 'export function getRequestConfig(fn) { return fn }' } })
   const cases = [['en-GB', 'en-GB'], ['en-US', 'en-US'], ['fr-FR', 'en-GB'], ['en', 'en-GB'], ['en-us', 'en-GB'], ['', 'en-GB'], [null, 'en-GB'], [undefined, 'en-GB']]
@@ -62,6 +63,7 @@ module.exports = async function after(x) {
   const C = await kit.bundle('lp0-client', `
     import { createElement as h } from 'react'
     import { I18nProvider, useT, useTruckLocale } from '@/lib/i18n/client'
+    import '@/lib/i18n/catalog/order'   // Language Phase 1b: a file that reads a namespace imports its catalog module
     import { useLocale } from 'next-intl'
     export { I18nProvider }
     export function Probe({ tag }) { useTruckLocale(tag); const t = useT('order'); return h('p', null, useLocale() + '|' + t('tipHeading')) }

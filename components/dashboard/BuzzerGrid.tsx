@@ -22,6 +22,8 @@
 
 import { useState } from 'react'
 import { buildBuzzerMap, type BuzzerHolder } from '@/lib/buzzer'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/buzzer'
 
 interface GridOrder {
   order_key: string
@@ -83,6 +85,7 @@ export function BuzzerGrid({
   onClose: () => void
   saving?: boolean
 }) {
+  const t = useT('buzzer')
   const [pending, setPending] = useState<Pending | null>(null)
   // ── 🔴 CAPTURED ONCE, AT OPEN — NOT DERIVED FROM THE LIVE currentNumber. ─────────────────────────
   // "Did this order already have a buzzer when the grid opened?" It decides two things together, and
@@ -111,8 +114,6 @@ export function BuzzerGrid({
   // exists ONLY in currentNumber — and a rack whose last free buzzer is pending is not free.
   const heldCount = numbers.filter(n => taken.has(n) || n === currentNumber).length
   const allTaken = heldCount === buzzerCount
-
-  const orderLabel = targetOrderId ? `order #${targetOrderId}` : 'this order'
 
   const choose = (n: number) => {
     if (saving) return
@@ -152,9 +153,12 @@ export function BuzzerGrid({
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative bg-white rounded-2xl w-full max-w-sm shadow-2xl p-5 flex flex-col gap-4">
         <p className="text-base text-slate-900">
-          Buzzer <strong>{pending.number}</strong> is with <strong>order #{pending.holder.id}</strong>
-          {pending.holder.customer_name ? ` (${pending.holder.customer_name})` : ''}.
-          {' '}Take it for <strong>{orderLabel}</strong>?
+          {t.rich('takeConfirm', {
+            number: String(pending.number), holderId: String(pending.holder.id),
+            hasName: pending.holder.customer_name ? 'yes' : 'no', name: pending.holder.customer_name || '',
+            hasTarget: targetOrderId ? 'yes' : 'no', targetId: targetOrderId,
+            b: c => <strong>{c}</strong>,
+          })}
         </p>
         <div className="flex gap-3">
           <button
@@ -162,14 +166,14 @@ export function BuzzerGrid({
             onClick={() => setPending(null)}
             className="flex-1 border border-slate-200 text-slate-600 py-3.5 rounded-xl text-sm font-semibold"
           >
-            Cancel
+            {t('cancel')}
           </button>
           <button
             type="button"
             onClick={() => { const n = pending.number; setPending(null); onAssign(n, openedWithBuzzer) }}
             className="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-3.5 rounded-xl text-sm font-bold"
           >
-            {`Take buzzer ${pending.number}`}
+            {t('take', { number: String(pending.number) })}
           </button>
         </div>
       </div>
@@ -188,11 +192,10 @@ export function BuzzerGrid({
           <div className="flex items-center justify-between px-5 pt-5 pb-3">
             <div>
               <h3 className="text-lg font-black text-slate-900">
-                {blocking ? `Buzzer for order #${targetOrderId || '—'}?` : 'Choose a buzzer'}
+                {blocking ? t('titleBlocking', { id: targetOrderId || '—' }) : t('title')}
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                {targetOrderId ? `Order #${targetOrderId}` : 'This order'}
-                {currentNumber != null ? ` · currently buzzer ${currentNumber}` : ''}
+                {t('subtitle', { hasTarget: targetOrderId ? 'yes' : 'no', id: targetOrderId, hasCurrent: currentNumber != null ? 'yes' : 'no', current: String(currentNumber ?? '') })}
               </p>
             </div>
             {/* No ✕ in blocking mode — "No buzzer" below is the only exit, and it is an active choice. */}
@@ -211,7 +214,7 @@ export function BuzzerGrid({
               legitimate move (that customer may have already been served), so the grid stays live. */}
           {allTaken && (
             <p className="mx-5 mb-3 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-              All {buzzerCount} buzzers are out. Tap one to take it from another order.
+              {t('allTaken', { count: String(buzzerCount) })}
             </p>
           )}
 
@@ -246,7 +249,7 @@ export function BuzzerGrid({
               // ⚠️ `isOurs` is checked FIRST. On the card path the current order IS the holder, so
               // without this order the cell would print the target's own display number back at them
               // ("#12") when what they need to know is "this one is already yours".
-              const subLabel = isOurs ? 'This order' : holder ? `#${holder.id}` : ''
+              const subLabel = isOurs ? t('thisOrder') : holder ? `#${holder.id}` : ''
               return (
                 <button
                   key={n}
@@ -295,7 +298,7 @@ export function BuzzerGrid({
                 disabled={saving}
                 className="flex-1 min-h-[44px] border border-slate-300 text-slate-700 py-3.5 rounded-xl text-sm font-semibold disabled:opacity-50"
               >
-                No buzzer
+                {t('noBuzzer')}
               </button>
             </div>
           ) : openedWithBuzzer ? (
@@ -316,7 +319,7 @@ export function BuzzerGrid({
                 onClick={onClose}
                 className="flex-1 min-h-[44px] bg-slate-800 hover:bg-slate-900 text-white py-3.5 rounded-xl text-sm font-bold"
               >
-                Done
+                {t('done')}
               </button>
             </div>
           ) : null}

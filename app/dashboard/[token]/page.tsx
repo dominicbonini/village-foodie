@@ -148,7 +148,8 @@ import { decideRead, classifyReadFailure, nextDegraded, degradedBanner, type Rea
 import { PrivateLinkPanel, type PrivateLinkData } from '@/components/manage/PrivateLinkPanel'
 import { WALK_UP_NAME, isWalkUp } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
-import { useT, useTruckLocale } from '@/lib/i18n/client'
+import { useT, useTruckLocale } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/dashboard'
 import { clearDemoWelcomeSeen } from '@/lib/demo-board-build'   // a restarted service re-introduces itself
 
 /** The ONLY list of valid ?tab= values, shared by the tab bar and the URL validator — so a tab cannot be
@@ -175,9 +176,9 @@ const TAB_VALUES = ['orders','add','stock','settings'] as const
 // save function with `null`. No migration, no new action, no outbox op — the server side is unchanged.
 // docs/payments-report.md carries the full reasoning and the recommendation.
 //
-// USUAL_SETTING_TOAST is KEPT because the save functions still handle `null` and still toast for it;
-// it is the string that fires if a clear is ever dispatched again.
-const USUAL_SETTING_TOAST = 'Back to your usual setting for this event'
+// USUAL_SETTING_TOAST — now the message `dashboard.toast.usualSetting` (Language Phase 1b) — is KEPT because the
+// save functions still handle `null` and still toast for it; it is the sentence that fires if a clear is ever
+// dispatched again.
 
 // A cheap fingerprint of the edit basket, used ONLY to invalidate a stale unpriceable-line banner:
 // the server's verdict was computed for one particular basket, and must not stay on screen naming a
@@ -273,6 +274,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const dashTime=useMemo(()=>truck?timeSettingsOr(truck.time,'dashboard'):LEGACY_UK_TIME_SETTINGS,[truck])
   const dashTz=dashTime.timeZone
   useTruckLocale(dashTime.locale)   // Language Phase 0: the truck's country's locale for this screen's words
+  // Language Phase 1b: every word on this screen is a message in `dashboard` (messages/en-GB.json).
+  const tDash=useT('dashboard')
+  // 🔴 A useCallback READS THE WORDS THROUGH THIS REF, NEVER THE TRANSLATOR ITSELF. The translator would otherwise
+  // be one of its dependencies, and the callback (openOrderFromPush → the push listener's setup) would be rebuilt
+  // when the truck's language arrives. Kept current after every render; read only when the callback runs.
+  const tDashRef=useRef(tDash)
+  useLayoutEffect(()=>{tDashRef.current=tDash})
   const[orders,setOrders]=useState<Order[]>([])
   // 🔴 THE ORDERS, READABLE FROM A CALLBACK THAT OUTLIVES ITS RENDER. `openOrderFromPush` awaits a
   // refetch and then has to read the RESULT — the `orders` it closed over is by then a render old. Written
@@ -460,7 +468,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // 🔴 RESOLVED AGAINST THE FETCHED DATA, NOT THE DOM. The DOM is then only used to SCROLL to
       // something we already know exists — which is what makes the toast's copy true when it fires.
       const found=ordersRef.current.some(o=>o.order_key===orderKey)
-      if(!found){showToast('That order is not on this board - check the event','error');return}
+      if(!found){showToast(tDashRef.current('toast.notOnBoard'),'error');return}
       const el=document.getElementById(orderAnchorId(orderKey,isDemo))
       if(el)el.scrollIntoView({behavior:'smooth',block:'center'})
     }))
@@ -807,15 +815,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[cancelReason,setCancelReason]=useState('')
   /** The ONE list, mirrored from lib/payments/refund's REFUND_REASONS. Value = what the server and the
    *  audit log record; label = what the customer reads in the cancellation email. */
-  const CANCEL_REASONS: [string,string][] = [
-    ['customer_cancelled','Customer cancelled'],
-    ['item_unavailable','Item unavailable'],
-    ['not_collected','Order not collected'],
-    ['wrong_or_missing_item','Wrong or missing item'],
-    ['quality_issue','Quality issue'],
-    ['duplicate_payment','Duplicate payment'],
-    ['other','Other'],
-  ]
+  // Language Phase 1b: the labels are messages (`dashboard.cancelReasons.<value>`); the values are unchanged.
+  const CANCEL_REASONS=['customer_cancelled','item_unavailable','not_collected','wrong_or_missing_item','quality_issue','duplicate_payment','other'] as const
+  const cancelReasonLabel=(v:typeof CANCEL_REASONS[number])=>tDash(`cancelReasons.${v}`)
   // ── 🔴 CANCELLING A PAID ORDER IS TWO DECISIONS, NOT ONE. ──────────────────────────────────────
   // Whether to cancel, and whether the money goes back. They are separate because a no-show — the truck
   // cooked the food and nobody came — is a real cancellation that must NOT return the money, and
@@ -1189,7 +1191,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // ⚠️ A 503 NEVER REACHES HERE — it falls to the non-ok branch below, which already keeps state.
       if(res.status===401){
         if(data.requiresPin){setRequiresPin(true);setLoading(false);return}
-        setError('Invalid access link');setAuthenticated(false);authenticatedRef.current=false
+        setError('invalidAccessLink');setAuthenticated(false);authenticatedRef.current=false
         setLoading(false);return
       }
       // Any response at all means the server answered → we are not degraded. Cleared here rather than
@@ -1875,7 +1877,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   const handleCopyOrderLink=async()=>{
     const orderUrl=customerOrderUrl
-    if(!orderUrl){showToast('Order URL not available — slug not set','error');return}
+    if(!orderUrl){showToast(tDash('toast.orderUrlMissing'),'error');return}
     try{
       await navigator.clipboard.writeText(orderUrl)
       setCopiedOrderLink(true)
@@ -1925,7 +1927,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // the dead one. Reloading would drop the operator back onto the same ended service with the error
       // gone and nothing to press. Instead: keep the card, show the real error, re-enable the button.
       if(!res.ok){
-        setRestartError(data?.error||'Could not start a new service — try again.')
+        setRestartError(data?.error||tDash('demo.restartFailed'))
         restartingRef.current=false; setRestarting(false)
         return false
       }
@@ -1959,7 +1961,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       return true
     }catch{
       // Network/parse failure — same as above: the restart may not have happened, so stay put.
-      setRestartError('Could not start a new service — try again.')
+      setRestartError(tDash('demo.restartFailed'))
       restartingRef.current=false; setRestarting(false)
       return false
     }
@@ -1975,7 +1977,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   const handleShowQR=async()=>{
     const orderUrl=customerOrderUrl
-    if(!orderUrl){showToast('Order URL not available — slug not set','error');return}
+    if(!orderUrl){showToast(tDash('toast.orderUrlMissing'),'error');return}
     setShowQRFullscreen(true)
     if(qrFullscreenDataUrl) return
     if(!truck) return
@@ -1989,7 +1991,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         orderUrl,
         showBrandedQr?truck.logo:null,
         600,
-        isDemo?'Your logo here':null,
+        isDemo?tDash('qr.logoPlaceholder'):null,
       ))
     }catch(err){
       console.error('[QR] Generation failed:',err)
@@ -2011,10 +2013,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // ⚠️ NO AUTO-RETRY HERE. A silent retry behind an unchanged message is how the old defect read to an
     // operator; the button stays live and they choose.
     if(!res.ok){
-      if(res.status===503) setPinError('Can\'t reach the server right now. Your PIN is fine — try again in a moment.')
-      else if(res.status===401&&data.requiresPin) setPinError('Incorrect PIN')
-      else if(res.status===401) setPinError('This link is no longer valid.')
-      else setPinError('Something went wrong. Try again.')
+      if(res.status===503) setPinError(tDash('pin.unreachable'))
+      else if(res.status===401&&data.requiresPin) setPinError(tDash('pin.incorrect'))
+      else if(res.status===401) setPinError(tDash('pin.linkInvalid'))
+      else setPinError(tDash('pin.failed'))
       return
     }
     setPin(pinInput); setTruck(data.truck); setOrders(prev=>applyPendingBuzzers(mergeOrders(prev,data.orders||[]),peekPendingBuzzer)); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
@@ -2034,8 +2036,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         body:JSON.stringify({token,pin,action:'set_print_trigger_mode',value:m})
       })
       setTruck(t=>t?{...t,print_trigger_mode:m}:t)
-      showToast(m==='on_confirmed'?'Tickets will print when you accept an order':'Tickets will print shortly before collection')
-    }catch{showToast('Failed to save','error')}
+      showToast(tDash('toast.printMode',{mode:m==='on_confirmed'?'onConfirmed':'leadTime'}))
+    }catch{showToast(tDash('toast.saveFailed'),'error')}
   }
 
   // ── MENU LAYOUT (trucks.add_order_layout) ──────────────────────────────────────────────────────────
@@ -2058,10 +2060,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         body:JSON.stringify({token,pin,action:'set_add_order_layout',value})
       })
       if(!res.ok)throw new Error('save failed')
-      showToast(value==='scroll'?'Menu shows as one page':'Menu shows separate categories')
+      showToast(tDash('toast.layout',{layout:value}))
     }catch{
       setTruck(t=>t?{...t,add_order_layout:prev}:t)
-      showToast('Failed to save','error')
+      showToast(tDash('toast.saveFailed'),'error')
     }
     finally{setSavingAddOrderLayout(false)}
   }
@@ -2074,8 +2076,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         body:JSON.stringify({token,pin,action:'set_auto_accept',value:val})
       })
       setAutoAccept(val)
-      showToast(val?'Auto-accept enabled':'Auto-accept disabled')
-    }catch{showToast('Failed to save','error')}
+      showToast(tDash('toast.autoAccept',{state:val?'on':'off'}))
+    }catch{showToast(tDash('toast.saveFailed'),'error')}
     finally{setSavingAutoAccept(false)}
   }
 
@@ -2099,8 +2101,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(!res.ok)throw new Error('write failed')
       const d=await res.json().catch(()=>({}))
       setTruck(t=>t?{...t,online_payments_paused_at:d?.online_payments_paused_at??null}:t)
-      showToast(paused?'Card payments off — customers pay at the hatch':'Card payments back on')
-    }catch{showToast('Failed to save','error')}
+      showToast(tDash('toast.cardPayments',{state:paused?'off':'on'}))
+    }catch{showToast(tDash('toast.saveFailed'),'error')}
     finally{setSavingOnlinePaymentsPause(false)}
   }
 
@@ -2134,7 +2136,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         body:JSON.stringify({token,pin,action:'set_collection_intervals_override',customer,operator,eventId:activeEvent.id})
       })
       if(!res.ok){
-        let msg='Collection times could not be saved right now.'
+        let msg=tDash('toast.intervalsFailed')
         try{ msg=(await res.clone().json())?.error ?? msg }catch{}
         showToast(msg,'error')
         return
@@ -2142,8 +2144,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Keep the local map in step so the box re-renders from the value the server stored, not a guess.
       setEventIntervals(prev=>({...prev,[activeEvent.id]:{collection_interval_mins_override:customer,operator_collection_interval_mins_override:operator}}))
       await applyEventPatch(res)
-      showToast(customer===null?USUAL_SETTING_TOAST:'Collection times saved for this event')
-    }catch{showToast('Failed to save','error')}
+      showToast(customer===null?tDash('toast.usualSetting'):tDash('toast.intervalsSaved'))
+    }catch{showToast(tDash('toast.saveFailed'),'error')}
     finally{setSavingIntervals(false)}
   }
 
@@ -2194,8 +2196,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         body:JSON.stringify({token,pin,action:'set_show_paid_step_override',value:val,eventId:activeEvent.id})
       })
       await applyEventPatch(res)
-      showToast(val===null?USUAL_SETTING_TOAST:val?'Unpaid orders on for this event':'Unpaid orders off for this event')
-    }catch{showToast('Failed to save','error')}
+      showToast(val===null?tDash('toast.usualSetting'):tDash('toast.unpaidOrders',{state:val?'on':'off'}))
+    }catch{showToast(tDash('toast.saveFailed'),'error')}
     finally{setSavingPaidStepOverride(false)}
   }
 
@@ -2213,8 +2215,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         body:JSON.stringify({token,pin,action:'set_completion_presses_override',value:val,eventId:activeEvent.id})
       })
       await applyEventPatch(res)
-      showToast(val===null?USUAL_SETTING_TOAST:val==='one'?'One press for this event':'Two presses for this event')
-    }catch{showToast('Failed to save','error')}
+      showToast(val===null?tDash('toast.usualSetting'):tDash('toast.presses',{presses:val}))
+    }catch{showToast(tDash('toast.saveFailed'),'error')}
     finally{setSavingCompletionOverride(false)}
   }
 
@@ -2232,8 +2234,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         body:JSON.stringify({token,pin,action:'set_takes_cash_override',value:val,eventId:activeEvent.id})
       })
       await applyEventPatch(res)
-      showToast(val===null?USUAL_SETTING_TOAST:val?'Cash and card on for this event':'Cash and card off for this event')
-    }catch{showToast('Failed to save','error')}
+      showToast(val===null?tDash('toast.usualSetting'):tDash('toast.cashAndCard',{state:val?'on':'off'}))
+    }catch{showToast(tDash('toast.saveFailed'),'error')}
     finally{setSavingTakesCashOverride(false)}
   }
 
@@ -2255,11 +2257,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       })
       if(!res.ok)throw new Error('write failed')
       await applyEventPatch(res)
-      showToast(val?'Buzzer prompt on for this event':'Buzzer prompt off for this event')
+      showToast(tDash('toast.buzzerPrompt',{state:val?'on':'off'}))
     }catch{
       delete pendingWritesRef.current['effectiveBuzzerPrompt']
       setEffectiveBuzzerPrompt(!val)   // revert optimistic on failure
-      showToast('Failed to save','error')
+      showToast(tDash('toast.saveFailed'),'error')
     }
     finally{setSavingBuzzerPrompt(false)}
   }
@@ -2308,8 +2310,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // Durably queued. The optimistic patch already applied above and its guard HOLDS — do not drop
         // it here, or the next poll would revert the cell while the op is still waiting to replay.
         showToast(buzzerNumber==null
-          ?`Buzzer ${prior??''} removed`
-          :`Buzzer ${buzzerNumber} saved`)
+          ?tDash('buzzer.removedNumber',{number:String(prior??'')})
+          :tDash('buzzer.saved',{number:String(buzzerNumber)}))
         if(!keepOpen)setBuzzerTarget(null)
         setSavingBuzzer(false)
         return
@@ -2318,12 +2320,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(!result.ok)throw new Error(data.error||'write failed')
       // Name the order the buzzer came FROM when one was taken — the operator has just been told in the
       // confirm that it would happen, and the toast is the receipt that it did.
-      const from=data.clearedFrom?.id?` (taken from #${data.clearedFrom.id})`:''
+      const takenFrom=data.clearedFrom?.id?String(data.clearedFrom.id):null
       // A removal NAMES the number that just went back to the rack — "Buzzer cleared" told the operator
       // an action had happened but not which pager they are now holding, which is the fact that matters.
       showToast(buzzerNumber==null
-        ?(prior!=null?`Buzzer ${prior} removed`:'Buzzer removed')
-        :`Buzzer ${buzzerNumber} assigned${from}`)
+        ?(prior!=null?tDash('buzzer.removedNumber',{number:String(prior)}):tDash('buzzer.removed'))
+        :takenFrom!=null?tDash('buzzer.assignedTakenFrom',{number:String(buzzerNumber),from:takenFrom}):tDash('buzzer.assigned',{number:String(buzzerNumber)}))
       if(!keepOpen)setBuzzerTarget(null)
       // The guard is NOT dropped here. It is released by fetchAll, and only once the SERVER row
       // actually carries the new value (echoedBuzzerKeys) — dropping it on the 2xx would re-open the
@@ -2338,10 +2340,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // the number that failed AND the state the order is really in.
       for(const k of Object.keys(next)) delete pendingWritesRef.current[`buzzer:${k}`]
       setOrders(prev=>prev.map(o=>o.order_key in priorByKey?{...o,buzzer_number:priorByKey[o.order_key]}:o))
-      const who=buzzerTarget?.id?`order #${buzzerTarget.id}`:'this order'
+      const who={target:buzzerTarget?.id?'order':'none',id:String(buzzerTarget?.id??'')}
       showToast(buzzerNumber==null
-        ?`Could not remove buzzer ${prior} — it is still on ${who}`
-        :`Could not give buzzer ${buzzerNumber} to ${who} — ${prior!=null?`it still has buzzer ${prior}`:'it still has no buzzer'}`,'error')
+        ?tDash('buzzer.removeFailed',{...who,prior:String(prior)})
+        :tDash('buzzer.giveFailed',{...who,number:String(buzzerNumber),has:prior!=null?'yes':'no',prior:String(prior)}),'error')
     }
     finally{setSavingBuzzer(false)}
   }
@@ -2355,7 +2357,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // matters and the thing keep-screen-on's silent catch hid.
   const saveSoundConfig=(next:SoundConfig)=>{
     setStoredSoundCfg(next)
-    if(!writeSoundConfig(token,next)) showToast('Sound saved for now, but this device could not store it — it will reset on reload','error')
+    if(!writeSoundConfig(token,next)) showToast(tDash('toast.soundNotStored'),'error')
   }
 
   // Writes the per-event MODE override. Same choke point shape as toggleOfflineProtection: demo hard
@@ -2368,7 +2370,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:eventOfflineOverride,mode,eventId:activeEvent.id})})
       if(!res.ok)throw new Error('write failed')
-    }catch{ setEventOfflineModeOverride(prev); showToast('Could not save that — try again','error') }
+    }catch{ setEventOfflineModeOverride(prev); showToast(tDash('toast.saveThatFailed'),'error') }
   }
   // ── 🔴 THE DELAY'S EVENT OVERRIDE. setOfflineMode's shape, line for line. ──────────────────────
   // Optimistic, reverted on failure, same endpoint, same event scope. `null` is a WRITE that clears the
@@ -2380,7 +2382,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:eventOfflineOverride,autoRejectMins:mins,eventId:activeEvent.id})})
       if(!res.ok)throw new Error('write failed')
-    }catch{ setEventAutoRejectOverride(prev); showToast('Could not save that — try again','error') }
+    }catch{ setEventAutoRejectOverride(prev); showToast(tDash('toast.saveThatFailed'),'error') }
   }
   const toggleOfflineProtection=async(value:boolean)=>{
     if(!activeEvent)return
@@ -2515,8 +2517,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           name:editCatForm.name,prep_secs:prepSecs,batch_size:editCatForm.batch,allow_notes:editCatForm.allowNotes})})
       setEditingCatId(null);setEditCatForm(null)
       fetchMenu(truck.id,pin)
-      showToast('Category saved')
-    }catch{showToast('Failed to save category','error')}
+      showToast(tDash('toast.categorySaved'))
+    }catch{showToast(tDash('toast.categorySaveFailed'),'error')}
     finally{setSavingCat(false)}
   }
 
@@ -2585,15 +2587,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const data=await res.json().catch(()=>({}))
       const refunded=orders.find(o=>o.order_key===orderKey)
       const money=formatMinorOrBare(amountMinor,orderMoney(refunded,truck?.money),'refund message')
-      if(!res.ok) return {ok:false,settled:false,message:typeof data?.error==='string'?data.error:'That refund could not be sent.'}
+      if(!res.ok) return {ok:false,settled:false,message:typeof data?.error==='string'?data.error:tDash('refund.failed')}
       fetchAll(undefined,false,true)
       // 🔴 "SENT" IS NOT "REFUNDED", AND THE PENDING CASE SAYS SO. Stripe accepts a refund on a direct
       // charge as `pending` when the connected account's balance is short; no money has moved yet and
       // the ledger is untouched. Reporting it as done would be the false-success class again.
-      if(data?.pending) return {ok:true,settled:false,message:`${money} refund sent. Stripe is processing it — the order will show as refunded once the money has actually gone back.`}
-      return {ok:true,settled:true,message:`${money} has been refunded to the customer's card.`}
+      if(data?.pending) return {ok:true,settled:false,message:tDash('refund.pending',{amount:money})}
+      return {ok:true,settled:true,message:tDash('refund.settled',{amount:money})}
     }catch{
-      return {ok:false,settled:false,message:'We could not reach the payment system, so nothing was refunded. Check your connection and try again.'}
+      return {ok:false,settled:false,message:tDash('refund.unreachable')}
     }
   }
 
@@ -2668,7 +2670,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Offline GATE (mirrors KDS): online → normal write; offline (native) → durable outbox + queued.
       const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action,order_key:orderKey,...(action==='ready'?{defer_email:true}:{}),...(PLAIN_PAID_ACTIONS.has(action)&&plainPaidMethod?{method:plainPaidMethod}:{})},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
       await handleGateResult(result,action,orderKey,opts?.booksPayment)
-    }catch(err:any){showToast(err.message||'Failed','error')}finally{setActionLoading(null)}
+    }catch(err:any){showToast(err.message||tDash('toast.failed'),'error')}finally{setActionLoading(null)}
   }
 
   // Fetch the edited order's slots from the SHARED /api/slots path, keyed to the
@@ -2745,16 +2747,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // the same shape the Add Order panel handles for a manual order: show the message, keep the edit on
       // screen, let the operator try again. Not an error thrown: the modal and its edits stay as they are.
       if(res.status===409&&data?.retry){
-        showToast(data?.error||'Someone else is updating orders right now. Please try again.','error')
+        showToast(data?.error||tDash('toast.editBusy'),'error')
         return
       }
       if(!res.ok)throw new Error(data.error)
       setEditReprice(null)
       // A slot-rebooking failure does NOT undo the saved edit — the server reports it so the operator
       // knows the capacity board is stale, and surfacing it must not read as "the edit failed".
-      showToast(data?.slotWarning??`Order #${editingOrder.id} updated`,data?.slotWarning?'error':'success')
+      showToast(data?.slotWarning??tDash('toast.orderUpdated',{id:String(editingOrder.id)}),data?.slotWarning?'error':'success')
       setEditingOrder(null); await fetchAll(undefined,false,true)
-    }catch(err:any){showToast(err.message||'Edit failed','error')}finally{setActionLoading(null)}
+    }catch(err:any){showToast(err.message||tDash('toast.editFailed'),'error')}finally{setActionLoading(null)}
   }
 
   const updateStock=async(itemName:string,available:boolean,stockCount:number|null,category?:string,noItemCap=false)=>{
@@ -2768,14 +2770,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // Through the offline GATE (kind:'stock'): online → posts directly (unchanged); offline → durable outbox +
     // optimistic stays. Synthetic key `${event_id}:set_stock:${itemName}` coalesces re-queues (last-write-wins).
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_stock',itemName,available,stockCount,noItemCap,category,event_id},kind:'stock',order_key:`${event_id??'none'}:set_stock:${itemName}`,online:isOnline()})
-    if(r.queued)showToast('Stock saved')
+    if(r.queued)showToast(tDash('toast.stockSaved'))
   }
   const updateCategoryStock=async(category:string,stockCount:number|null)=>{
     const event_id=selectedEventRef.current?.id??null
     const key=event_id??'__none__'
     setCategoryStocksByEvent(prev=>{const cur=prev[key]??[];const ex=cur.find(s=>s.category===category);const next=ex?cur.map(s=>s.category===category?{...s,stock_count:stockCount}:s):[...cur,{category,stock_count:stockCount,default_stock:null,orders_count:0}];return{...prev,[key]:next}})
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_category_stock',category,stockCount,event_id},kind:'stock',order_key:`${event_id??'none'}:set_category_stock:${category}`,online:isOnline()})
-    if(r.queued)showToast('Stock saved')
+    if(r.queued)showToast(tDash('toast.stockSaved'))
   }
 
   // Enable/disable a whole category for THIS event (GATE) — mirrors updateCategoryStock. Optimistic
@@ -2788,13 +2790,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     pendingWritesRef.current[pk]={v:available,meta:category}   // shared guard; meta=name so an omitting refetch can re-add the row
     setCategoryStocksByEvent(prev=>{const cur=prev[key]??[];const ex=cur.find(s=>s.category===category);const next=ex?cur.map(s=>s.category===category?{...s,available}:s):[...cur,{category,stock_count:null,default_stock:null,orders_count:0,available}];return{...prev,[key]:next}})
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_category_available',category,available,event_id},kind:'stock',order_key:`${event_id??'none'}:set_category_available:${category}`,online:isOnline()})
-    if(r.queued){delete pendingWritesRef.current[pk];showToast(`${category} availability saved`);return}
+    if(r.queued){delete pendingWritesRef.current[pk];showToast(tDash('toast.categoryAvailabilitySaved',{category}));return}
     if(!r.ok){
       // Write FAILED (surfaced now that the action checks .error): drop the guard + revert so the UI
       // shows the truth instead of a lie that a later refetch would silently undo.
       delete pendingWritesRef.current[pk]
       setCategoryStocksByEvent(prev=>{const cur=prev[key]??[];const next=cur.map(s=>s.category===category?{...s,available:!available}:s);return{...prev,[key]:next}})
-      showToast('Could not update the category — please try again','error')
+      showToast(tDash('toast.categoryUpdateFailed'),'error')
     }
     // On success the guard stays until fetchStock sees the committed value catch up (then drops it).
   }
@@ -2822,21 +2824,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     patchOption(optionId,{available}) // optimistic
     // Offline gate (kind:'stock'). Key includes the ACTION so an option's availability + stock don't collide.
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_modifier_option_available',optionId,available,event_id},kind:'stock',order_key:`${event_id??'none'}:set_modifier_option_available:${optionId}`,online:isOnline()})
-    if(r.queued){showToast('Stock saved');return}
+    if(r.queued){showToast(tDash('toast.stockSaved'));return}
     // 🔴 THE FAILURE BRANCH DID NOT EXIST. Only `r.queued` was handled, so a route that answered a
     // genuine error left the OPTIMISTIC patch on screen and said nothing — the operator saw the extra
     // flipped and believed it. Every one of these writes has failed since the table was created.
     // Re-pulling the menu rather than un-patching by hand: /api/menu resolves the event override, so the
     // screen returns to what the server actually holds instead of a second guess at it.
-    if(!r.ok){showToast('Couldn’t save that extra. Check it before service.','error');if(truck?.id)fetchMenu(truck.id,pin)}
+    if(!r.ok){showToast(tDash('toast.extraSaveFailed'),'error');if(truck?.id)fetchMenu(truck.id,pin)}
   }
   const updateModifierOptionStock=async(optionId:string,stockCount:number|null)=>{
     const event_id=selectedEventRef.current?.id??null
     patchOption(optionId,{stock_count:stockCount}) // optimistic
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_modifier_option_stock',optionId,stockCount,event_id},kind:'stock',order_key:`${event_id??'none'}:set_modifier_option_stock:${optionId}`,online:isOnline()})
-    if(r.queued){showToast('Stock saved');return}
+    if(r.queued){showToast(tDash('toast.stockSaved'));return}
     // Same missing failure branch as updateModifierOptionAvailable above.
-    if(!r.ok){showToast('Couldn’t save that extra. Check it before service.','error');if(truck?.id)fetchMenu(truck.id,pin)}
+    if(!r.ok){showToast(tDash('toast.extraSaveFailed'),'error');if(truck?.id)fetchMenu(truck.id,pin)}
   }
 
   const openEvent=async(eventId:string)=>{
@@ -2851,9 +2853,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const opened=new Date().toISOString()
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:opened}:e))
       setUpcomingEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:opened}:e))
-      showToast(wasClosedEvent?'Event restarted':'Event started')
+      showToast(tDash('toast.eventStarted',{state:wasClosedEvent?'restarted':'started'}))
       fetchAllRef.current() // re-sync from the authoritative server read so status propagates immediately
-    }catch(err:any){showToast(err.message||'Failed','error')}
+    }catch(err:any){showToast(err.message||tDash('toast.failed'),'error')}
   }
 
   // ── CHANGE EVENT FINISH TIME ────────────────────────────────────────────────────────────────────
@@ -2870,9 +2872,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{end_time:newEnd}})})
       const data=await res.json(); if(!res.ok) throw new Error(data.error)
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,end_time:newEnd}:e))
-      showToast(`Finish time now ${newEnd}`)
+      showToast(tDash('toast.finishTimeNow',{time:newEnd}))
       setFinishTimeTarget(null)
-    }catch(err:any){showToast(err.message||'Failed','error')}
+    }catch(err:any){showToast(err.message||tDash('toast.failed'),'error')}
     finally{setFinishTimeBusy(false)}
   }
 
@@ -2905,9 +2907,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'close',eventId,payload:{}})})
       const data=await res.json(); if(!res.ok) throw new Error(data.error)
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'closed' as const,closed_at:new Date().toISOString()}:e))
-      setShowEventMenu(false); showToast('Event finished')
+      setShowEventMenu(false); showToast(tDash('toast.eventFinished'))
       fetchAllRef.current() // re-sync so the status flips to "Finished" immediately (no manual refresh)
-    }catch(err:any){showToast(err.message||'Failed','error')}
+    }catch(err:any){showToast(err.message||tDash('toast.failed'),'error')}
   }
 
   const confirmCancelOrder=async()=>{
@@ -2917,7 +2919,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     //  number itself via findOrder, exactly as it does for every other action.)
     // The single reason, in both vocabularies: the LABEL is what the customer reads on the cancellation,
     // the VALUE is what the refund path and the audit log record. One question, asked once.
-    const reasonLabel=CANCEL_REASONS.find(([v])=>v===cancelReason)?.[1]??''
+    const reasonId=CANCEL_REASONS.find(v=>v===cancelReason)
+    const reasonLabel=reasonId?cancelReasonLabel(reasonId):''
     const fullReason=[reasonLabel,cancelNote].filter(Boolean).join(' — ')
     // ── 🔴 THE REFUND GOES FIRST, AND A FAILED REFUND DOES NOT CANCEL THE ORDER. ─────────────────
     // Cancel-then-refund can leave a cancelled order with the money still taken and nobody looking at
@@ -2931,7 +2934,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       -rows.filter((r:any)=>r.kind==='refund').reduce((t:number,r:any)=>t+r.amount_minor,0))
     let refundedMinor:number|null=null
     if(cancelRefund&&refundableMinor>0){
-      if(!cancelReason){setCancelError('Choose a reason for the refund.');return}
+      if(!cancelReason){setCancelError(tDash('cancelModal.chooseReason'));return}
       setCancelBusy(true);setCancelError(null)
       const res=await submitRefund({orderKey,amountMinor:refundableMinor,reason:cancelReason,note:fullReason||'',context:'cancellation'})
       setCancelBusy(false)
@@ -2956,7 +2959,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // `Order #N saved`. ⚠️ The refund decision above is UNTOUCHED: it happens before the gate, it is
       // this modal's alone, and nothing in the shared handler knows or needs to know about it.
       await handleGateResult(result,'cancel',orderKey)
-    }catch{showToast('Failed to cancel','error')}finally{setActionLoading(null)}
+    }catch{showToast(tDash('toast.cancelFailed'),'error')}finally{setActionLoading(null)}
   }
 
   // 🔴 THE COMPOSED REASON ARRIVES FROM THE MODAL. The composition rule (preset, preset + note, or the
@@ -2980,7 +2983,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // useGatedActionResult exists to be the only one. `labels.reject` is 'rejected', so the committed
       // toast is the same string it always was.
       await handleGateResult(result,'reject',orderKey)
-    }catch{showToast('Failed to reject','error')}finally{setActionLoading(null)}
+    }catch{showToast(tDash('toast.rejectFailed'),'error')}finally{setActionLoading(null)}
   }
 
   // ── OPEN THE GATE. WAS: `if(!window.confirm('Cancel this event? This cannot be undone.')) return` ──
@@ -3009,9 +3012,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'cancel',eventId,payload:{cancellationReason,cancellationNote}})})
       const data=await res.json(); if(!res.ok) throw new Error(data.error)
       setTodayEvents(prev=>prev.filter(e=>e.id!==eventId))
-      setSelectedEventId(null); setShowEventMenu(false); showToast('Event cancelled')
+      setSelectedEventId(null); setShowEventMenu(false); showToast(tDash('toast.eventCancelled'))
       fetchAllRef.current() // re-sync so the cancelled event drops out immediately
-    }catch(err:any){showToast(err.message||'Failed','error')}
+    }catch(err:any){showToast(err.message||tDash('toast.failed'),'error')}
     finally{setEventCancelBusy(false); setEventCancelTarget(null)}
   }
 
@@ -3020,14 +3023,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{customer_note:eventNoteInput}})})
       const data=await res.json(); if(!res.ok) throw new Error(data.error)
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,customer_note:eventNoteInput||null}:e))
-      setShowEventMenu(false); showToast('Note saved')
-    }catch(err:any){showToast(err.message||'Failed','error')}
+      setShowEventMenu(false); showToast(tDash('toast.noteSaved'))
+    }catch(err:any){showToast(err.message||tDash('toast.failed'),'error')}
   }
 
   const switchEvent=(event:TruckEvent)=>{
     const active=todayEvents.find(e=>e.id===selectedEventId)||(todayEvents.find(e=>e.status==='open')??todayEvents.find(e=>e.status==='confirmed')??todayEvents[0]??null)
     if(active?.status==='open'&&event.id!==active.id){
-      const confirmed=window.confirm(`You're currently serving at ${active.venue_name}. Switch to ${event.venue_name}? Tap the current event to switch back.`)
+      const confirmed=window.confirm(tDash('switchEventConfirm',{current:active.venue_name,next:event.venue_name}))
       if(!confirmed) return
     }
     setSelectedEventId(event.id)
@@ -3286,8 +3289,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,action:'save_event_item_prices',eventId:activeEventId,prices})})
-      showToast('Prices saved for this event')
-    }catch{showToast('Couldn’t save the prices','error')}
+      showToast(tDashRef.current('toast.pricesSaved'))
+    }catch{showToast(tDashRef.current('toast.pricesSaveFailed'),'error')}
     finally{
       setPriceSaving(false);setPriceEditing(false);setPricePending({});setPriceDrafts({})
       setPriceTick(t=>t+1)
@@ -3424,7 +3427,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // the prompt's baseline is not written. The page reloads onto the new board when the restart succeeds; a
   // declined claim (an admin, an already-opened link) clears it at once.
   const demoSettingUp=!!(isDemo&&(restarting||(demoFirstOpenPending&&!firstOpenChecked)))
-  const tDash=useT('dashboard')
 
   // ── DEMO — AUTO-RESTART ON LOAD ──────────────────────────────────────────────────────────────────
   // A prospect who opens a demo link two days after it was built should land on a working service, not
@@ -3717,7 +3719,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Amount helpers for the render below: the menu in the TRUCK's format, an order in ITS own.
   const truckAmount=(major:number)=>formatMajorOrBare(major,truck?.money,'dashboard menu')
   const amountFor=(o:Order|null|undefined)=>(major:number)=>formatMajorOrBare(major,orderMoney(o,truck?.money),'dashboard order')
-  if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
+  if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">{tDash('gate.loading')}</p></div>
   // 🔴 NON-NAVIGATING INSIDE THE NATIVE SHELL (2.1 completeness, 14 August 2026) — SAME MECHANISM AS
   //    components/shared/AppHeader.tsx:86-115, deliberately not a second approach.
   //    href="/" is the Village Foodie DISCOVERY MAP (app/page.tsx), not a HatchGrab page. This screen
@@ -3746,7 +3748,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // the access-denied screen above the board. The failure was a display decision, not data loss.
   // `error` is now only set for a never-authenticated session (R2) or an authoritative 401, so gating
   // on `!authenticated` renders the full-page error exactly when it is the truth and never otherwise.
-  if(error&&!authenticated){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p>{isNativeApp()?<span className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</span>:<Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link>}</div></div>}
+  if(error&&!authenticated){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">{tDash('gate.accessDenied')}</p><p className="text-slate-500 text-sm">{error==='invalidAccessLink'?tDash('gate.invalidAccessLink'):error}</p>{isNativeApp()?<span className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</span>:<Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link>}</div></div>}
   // 🔴 NOTHING LOADED AND NOTHING SAVED — SAY SO, AND SAY WHAT TO DO ABOUT IT.
   // Reached only when a first load failed AND this device has no truck snapshot. Deliberately NOT the
   // "Access denied" screen above: that one is a verdict on the credential and this is not — the link is
@@ -3756,9 +3758,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   if(boardUnavailable&&!truck)return(
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-6">
       <div className="text-center max-w-sm">
-        <p className="text-slate-900 font-bold text-lg mb-2">Can&apos;t take orders on this device right now</p>
-        <p className="text-slate-600 text-sm">We couldn&apos;t reach your orders, and there&apos;s nothing saved on this device yet.</p>
-        <p className="text-slate-500 text-sm mt-2">Open the app once while you&apos;re connected and it will work offline after that.</p>
+        <p className="text-slate-900 font-bold text-lg mb-2">{tDash('gate.cantTakeOrders')}</p>
+        <p className="text-slate-600 text-sm">{tDash('gate.noOrdersSaved')}</p>
+        <p className="text-slate-500 text-sm mt-2">{tDash('gate.openOnceOnline')}</p>
       </div>
     </div>
   )
@@ -3766,11 +3768,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
       <div className="bg-slate-800 rounded-2xl p-8 max-w-sm w-full text-center">
         <div className="text-4xl mb-4">🔒</div>
-        <h2 className="text-white font-black text-xl mb-2">Enter PIN</h2>
-        <p className="text-slate-500 text-sm mb-6">4-digit dashboard PIN</p>
+        <h2 className="text-white font-black text-xl mb-2">{tDash('pin.title')}</h2>
+        <p className="text-slate-500 text-sm mb-6">{tDash('pin.hint')}</p>
         <input type="number" maxLength={4} value={pinInput} onChange={e=>setPinInput(e.target.value.slice(0,4))} onKeyDown={e=>e.key==='Enter'&&submitPin()} placeholder="• • • •" className="w-full text-center text-2xl font-black tracking-widest bg-slate-700 text-white rounded-xl px-4 py-3 mb-3 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-600"/>
         {pinError&&<p className="text-red-400 text-sm mb-3">{pinError}</p>}
-        <button onClick={submitPin} className="w-full bg-orange-600 text-white font-black py-3 rounded-xl hover:bg-orange-700">Unlock</button>
+        <button onClick={submitPin} className="w-full bg-orange-600 text-white font-black py-3 rounded-xl hover:bg-orange-700">{tDash('pin.unlock')}</button>
       </div>
     </div>
   )
@@ -3789,9 +3791,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Null for an operator truck and for a live demo, so `{demoEndedCard}` is a no-op on both.
   const demoEndedCard=demoServiceEnded&&!demoSettingUp?(
                 <div className="bg-white border-2 border-slate-300 rounded-2xl px-4 py-4 mb-4 shadow-sm text-center">
-                  <p className="text-base font-black text-slate-900">This service has ended</p>
+                  <p className="text-base font-black text-slate-900">{tDash('demo.endedTitle')}</p>
                   <p className="text-sm text-slate-600 mt-1">
-                    Start a new one and we&apos;ll set up a fresh service for right now — your menu stays as it is.
+                    {tDash('demo.endedBody')}
                   </p>
                   {/* ⚠️ WRAPPED, NOT PASSED DIRECTLY. `startNewService` now takes an options object, and
                       React would hand the click event straight into it — so the button would be sending a
@@ -3799,7 +3801,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       never claims the first open: pressing it is a deliberate restart, not a first view. */}
                   <button type="button" onClick={()=>{void startNewService()}} disabled={restarting}
                     className="mt-3 bg-orange-600 hover:bg-orange-700 disabled:opacity-40 text-white text-sm font-black px-5 py-2.5 rounded-xl shadow-sm">
-                    {restarting?'Setting up…':'Start a new service'}
+                    {restarting?tDash('demo.settingUp'):tDash('demo.startNew')}
                   </button>
                   {restartError&&<p className="text-sm text-red-600 mt-2">{restartError}</p>}
                 </div>
@@ -3927,18 +3929,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // write with two openers, never two writes.
   const renderExtraWait=(cls:string,variant:'select'|'button'='select')=> (isDemo&&waitMinutes<=0)?null:waitMinutes>0?(
     <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:0,eventId:activeEvent?.id})});markPending('extraWaitMins',0);markPending('extraWaitStartedAt',null);setExtraWaitMins(0);setExtraWaitStartedAt(null)}} className={`py-2.5 rounded-xl text-sm font-black bg-orange-100 text-orange-700 border border-orange-300 hover:bg-orange-200 ${cls}`}>
-      ⏱ +{waitMinutes}m active · Tap to clear
+      ⏱ {tDash('extraWait.activeTapToClear',{mins:String(waitMinutes)})}
     </button>
   ):variant==='button'?(
     <button onClick={()=>{setShowEventMenu(false);setShowExtraWaitPicker(true)}} className={`bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm ${cls}`}>
-      ⏱ Add extra wait
+      ⏱ {tDash('extraWait.add')}
     </button>
   ):(
     <select defaultValue="" onChange={e=>{const m=parseInt(e.target.value);if(!m)return;applyExtraWait(m);e.target.value=''}} className={`border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${cls}`}>
-      <option value="">⏱ Add extra wait</option>
-      <option value={10}>+10 min</option>
-      <option value={20}>+20 min</option>
-      <option value={30}>+30 min</option>
+      <option value="">⏱ {tDash('extraWait.add')}</option>
+      <option value={10}>{tDash('extraWait.option',{mins:'10'})}</option>
+      <option value={20}>{tDash('extraWait.option',{mins:'20'})}</option>
+      <option value={30}>{tDash('extraWait.option',{mins:'30'})}</option>
     </select>
   )
 
@@ -3965,12 +3967,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           says what still works, so an operator is not left guessing whether they can trade. */}
       {boardUnavailable&&(
         <div className="shrink-0 bg-red-600 text-white px-4 py-2 text-sm font-bold text-center">
-          Couldn&apos;t load today&apos;s orders. You can still take new orders on this device.
+          {tDash('banner.boardUnavailable')}
         </div>
       )}
       {menuSnapshotAt&&!error&&(
         <div className="shrink-0 bg-amber-600 text-white px-4 py-2 text-sm font-bold text-center">
-          Menu saved on this tablet at {formatInstantClock(menuSnapshotAt,dashTime)}. Check prices before taking payment.
+          {tDash('banner.menuSnapshot',{time:formatInstantClock(menuSnapshotAt,dashTime)})}
         </div>
       )}
       {/* App-lock overlay (per-device biometric/passcode) — covers the screen until unlocked. No-op on web
@@ -4078,16 +4080,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           type="button"
           onClick={()=>setSoundEnabled(v=>{const next=!v;if(next)primeAudio();return next})}
           aria-pressed={soundEnabled}
-          aria-label={soundEnabled ? 'New-order sound is on — tap to turn it off' : 'New-order sound is off — tap to turn it on'}
-          title={soundEnabled ? 'New-order sound is on — tap to turn it off' : 'New-order sound is off — tap to turn it on'}
+          aria-label={tDash('header.sound',{state:soundEnabled?'on':'off'})}
+          title={tDash('header.sound',{state:soundEnabled?'on':'off'})}
           className="hidden sm:flex items-center text-base leading-none select-none"
         >
           <span aria-hidden>{soundEnabled ? '🔔' : '🔕'}</span>
         </button>
         {/* Screen toggle — desktop only (mobile → UserMenu). BINARY: green "Screen on" ONLY when the lock is
             actually HELD; grey "Screen off" otherwise. Failure is a toast on the tap, never a hedged label. */}
-        <button onClick={toggleKeepScreenOn} title={screenHeld ? 'Screen will stay on' : 'Tap to keep the screen on'} className="hidden sm:flex items-center gap-2">
-          <span className="text-xs font-medium text-slate-500 select-none">{screenHeld ? 'Screen on' : 'Screen off'}</span>
+        <button onClick={toggleKeepScreenOn} title={tDash('header.screenTitle',{state:screenHeld?'on':'off'})} className="hidden sm:flex items-center gap-2">
+          <span className="text-xs font-medium text-slate-500 select-none">{tDash('header.screen',{state:screenHeld?'on':'off'})}</span>
           {/* CANONICAL toggle values — see the Sound toggle above. */}
           <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${screenHeld ? 'bg-green-500' : 'bg-slate-300'}`}>
             <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${screenHeld ? 'translate-x-6' : 'translate-x-1'}`} />
@@ -4136,7 +4138,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center"}>
             {/* In DEMO the Settings tab keeps only ONE card (Kitchen capacity — see the tab body), so it is
                 relabelled to match what's actually in it. "Settings" on a single-card tab reads as broken. */}
-            {([['orders',(()=>{const c=activeEvent?pendingOrders.length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock'],['settings','Settings']] as [typeof activeTab,string][]).map(([tab,label])=>(
+            {([['orders',(()=>{const c=activeEvent?pendingOrders.length:0;return tDash('tabs.orders',{n:c,count:String(c)})})()],['add',tDash('tabs.add')],['stock',tDash('tabs.stock')],['settings',tDash('tabs.settings')]] as [typeof activeTab,string][]).map(([tab,label])=>(
               <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
             ))}
             {/* Utility actions — desktop only. Desktop twins of the UserMenu items, so they must stay in
@@ -4152,12 +4154,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {isDemo&&(
               <button onClick={handleShowQR} className="ml-auto sm:hidden flex items-center gap-1.5 my-1.5 px-3 py-1.5 rounded-lg bg-orange-500 text-white text-sm font-bold hover:bg-orange-600 transition-colors whitespace-nowrap">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-                QR code
+                {tDash('header.qrCode')}
               </button>
             )}
             <div className="ml-auto hidden sm:flex items-center">
               <button onClick={handleCopyOrderLink} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 hover:text-white transition-colors whitespace-nowrap">
-                {copiedOrderLink ? '✓ Copied' : 'Order link'}
+                {copiedOrderLink ? `✓ ${tDash('header.copied')}` : tDash('header.orderLink')}
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
               </button>
               {/* DEMO: filled orange, not a text link — the popup points at it by name. Non-demo keeps the
@@ -4166,10 +4168,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 ? "flex items-center gap-1.5 my-1.5 px-3 py-1.5 rounded-lg bg-orange-500 text-white text-sm font-bold hover:bg-orange-600 transition-colors whitespace-nowrap"
                 : "flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 hover:text-white transition-colors whitespace-nowrap"}>
                 {isDemo&&<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>}
-                QR code
+                {tDash('header.qrCode')}
               </button>
               <button onClick={handleOpenKDS} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-500 hover:text-white transition-colors whitespace-nowrap">
-                Kitchen screen
+                {tDash('header.kitchenScreen')}
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
               </button>
             </div>
@@ -4250,9 +4252,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   // Padlock only — no chip. The explainer on click carries the "why"; a chip here too would
                   // double the message on a control they haven't engaged with yet.
                   <button onClick={()=>setShowDemoEventLock(true)}
-                    aria-label="Manage event"
+                    aria-label={tDash('eventBar.manageEvent')}
                     className="flex-shrink-0 flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-slate-700/60 border border-slate-600 rounded px-2.5 py-1 cursor-pointer">
-                    <span aria-hidden>🔒</span> Manage event
+                    <span aria-hidden>🔒</span> {tDash('eventBar.manageEvent')}
                   </button>
                 ):(
                   // 🔴 THE NAME AND THE ACCESSIBLE NAME MOVE TOGETHER, ALWAYS. This read "Event actions"
@@ -4260,18 +4262,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   // `aria-label="Manage event"`, and one control may not answer to two names. The label is
                   // the exact visible string minus the caret, so voice control matches what is on screen.
                   <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
-                    aria-label="Manage event"
+                    aria-label={tDash('eventBar.manageEvent')}
                     className="flex-shrink-0 text-xs font-semibold text-white bg-slate-700 border border-slate-500 hover:bg-slate-600 rounded px-2.5 py-1 transition-colors">
-                    Manage event ▾
+                    {tDash('eventBar.manageEvent')} ▾
                   </button>
                 )}
               </>
             ):(
               <>
-                <span className="text-slate-400 text-sm flex-1">No event selected</span>
+                <span className="text-slate-400 text-sm flex-1">{tDash('eventBar.noEvent')}</span>
                 <button onClick={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
                   className="text-xs text-slate-400 hover:text-white flex-shrink-0 px-2 py-1 rounded border border-slate-600 hover:border-slate-400 transition-colors">
-                  Select event
+                  {tDash('eventBar.selectEvent')}
                 </button>
               </>
             )}
@@ -4333,12 +4335,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="flex items-center gap-2 min-w-0">
               <span className="text-amber-500">⚠️</span>
               <p className="text-sm font-medium text-amber-800">
-                Card payments are off — customers are paying at the hatch. This stays off, on every event, until you turn it back on.
+                {tDash('banner.cardPaymentsOff')}
               </p>
             </div>
             <button onClick={()=>saveOnlinePaymentsPaused(false)} disabled={isOffline||savingOnlinePaymentsPause}
               className="text-sm font-semibold text-amber-700 border border-amber-300 bg-white rounded-lg px-3 py-1.5 hover:bg-amber-50 whitespace-nowrap disabled:opacity-50">
-              Turn back on
+              {tDash('banner.turnBackOn')}
             </button>
           </div>
         </div>
@@ -4377,11 +4379,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
                 <div className="flex items-center gap-2">
                   <span className="text-amber-500">⚠️</span>
-                  <p className="text-sm font-medium text-amber-800">No event selected — select an event to view orders</p>
+                  <p className="text-sm font-medium text-amber-800">{tDash('orders.noEvent')}</p>
                 </div>
                 <button onClick={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
                   className="text-sm font-semibold text-amber-700 border border-amber-300 bg-white rounded-lg px-3 py-1.5 hover:bg-amber-50 whitespace-nowrap">
-                  Select event
+                  {tDash('eventBar.selectEvent')}
                 </button>
               </div>
               )
@@ -4431,11 +4433,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4 flex items-start gap-3">
                 <span className="text-orange-500 text-lg flex-shrink-0">⚙️</span>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-orange-800">Set your prep times before going live</p>
-                  <p className="text-xs text-orange-700 mt-0.5">Your menu is using default prep times. Update them in Manage so your kitchen doesn't get overwhelmed with orders.</p>
+                  <p className="text-sm font-semibold text-orange-800">{tDash('orders.prepBannerTitle')}</p>
+                  <p className="text-xs text-orange-700 mt-0.5">{tDash('orders.prepBannerBody')}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <AppLink href={`/manage/${token}`} className="text-xs font-medium text-orange-700 underline">Edit categories</AppLink>
+                  <AppLink href={`/manage/${token}`} className="text-xs font-medium text-orange-700 underline">{tDash('orders.editCategories')}</AppLink>
                   <button onClick={()=>setShowPrepTimeBanner(false)} className="text-orange-400 hover:text-orange-600 text-lg leading-none">×</button>
                 </div>
               </div>
@@ -4451,7 +4453,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 because a single flex child with that class simply starts at the left edge. */}
             {recentlyClosed&&activeEvent&&(
               <div className="bg-slate-100 border border-slate-200 rounded-xl p-4 mb-4 flex items-center justify-between">
-                <span className="text-sm text-slate-600">Event finished · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time,dashTime)}</span>
+                <span className="text-sm text-slate-600">{tDash('orders.eventFinishedAt',{venue:activeEvent.venue_name,time:formatTime(activeEvent.end_time,dashTime)})}</span>
               </div>
             )}
             {/* Mobile controls row REMOVED to reclaim vertical space (was: inline Add-extra-wait + Prep).
@@ -4476,26 +4478,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 not dismissible, because a manual pause has an action attached and must stay in view. */}
             {paused&&pauseUntilEffective&&!(pauseReason==='offline'&&offlinePauseAcked)&&(()=>{const minsLeft=Math.max(0,Math.round((new Date(pauseUntilEffective).getTime()-Date.now())/60000));const isIndefinite=new Date(pauseUntilEffective).getFullYear()>=2099;const offlineCase=pauseReason==='offline';return<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center">
               {offlineCase
-                ? <><p className="text-red-700 font-black text-sm">⏸ Offline protection is on — customers can browse but not order.</p>
-                    <p className="text-red-600 text-xs mt-1.5">Ordering resumes automatically when your connection returns.</p></>
-                : <p className="text-red-700 font-black text-sm">⏸ Orders paused{isIndefinite?'':(` — resuming in ~${minsLeft} min`)} · Customers can browse but not order</p>}
+                ? <><p className="text-red-700 font-black text-sm">⏸ {tDash('banner.offlinePaused')}</p>
+                    <p className="text-red-600 text-xs mt-1.5">{tDash('banner.offlineResumes')}</p></>
+                : <p className="text-red-700 font-black text-sm">⏸ {tDash('banner.paused',{indefinite:isIndefinite?'yes':'no',mins:String(minsLeft)})}</p>}
               {/* Prominent inline Resume — one tap, no hunting in the ··· menu. Clears BOTH paused_until
                   and online_paused_until on the active event (set_paused resume). */}
-              {pauseReason==='manual'&&<button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}} className="mt-2 w-full sm:w-auto bg-red-600 text-white font-black text-sm px-6 py-2.5 rounded-xl hover:bg-red-700 transition-colors">▶ Resume orders</button>}
-              {offlineCase&&<button onClick={dismissOfflinePauseBlock} className="mt-2 text-red-600 text-xs font-bold underline">Dismiss</button>}
+              {pauseReason==='manual'&&<button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}} className="mt-2 w-full sm:w-auto bg-red-600 text-white font-black text-sm px-6 py-2.5 rounded-xl hover:bg-red-700 transition-colors">▶ {tDash('banner.resume')}</button>}
+              {offlineCase&&<button onClick={dismissOfflinePauseBlock} className="mt-2 text-red-600 text-xs font-bold underline">{tDash('banner.dismiss')}</button>}
             </div>})()}
-            {waitMinutes>0&&!paused&&<div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-orange-700 font-black text-sm">⏱ +{waitMinutes} min extra wait active</p></div>}
+            {waitMinutes>0&&!paused&&<div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-orange-700 font-black text-sm">⏱ {tDash('banner.extraWait',{mins:String(waitMinutes)})}</p></div>}
             <div className="flex flex-col sm:flex-row sm:items-center lg:items-start sm:justify-between mb-3">
               <div className="grid grid-cols-3 gap-2 mb-2 sm:mb-0 sm:flex-1">
-                {[{label:'New',value:pendingOrders.length,colour:'text-orange-500'},{label:'Confirmed',value:confirmedOrders.length,colour:'text-green-600'},{label:'Done',value:otherOrders.length,colour:'text-slate-400'}].map(s=>(
-                  <div key={s.label} className="bg-white rounded-xl p-2.5 text-center border border-slate-200 shadow-sm"><p className={`text-xl font-black ${s.colour}`}>{s.value}</p><p className="text-slate-500 text-[11px] font-medium mt-0.5">{s.label}</p></div>
+                {[{id:'new',label:tDash('orders.statNew'),value:pendingOrders.length,colour:'text-orange-500'},{id:'confirmed',label:tDash('orders.statConfirmed'),value:confirmedOrders.length,colour:'text-green-600'},{id:'done',label:tDash('orders.statDone'),value:otherOrders.length,colour:'text-slate-400'}].map(s=>(
+                  <div key={s.id} className="bg-white rounded-xl p-2.5 text-center border border-slate-200 shadow-sm"><p className={`text-xl font-black ${s.colour}`}>{s.value}</p><p className="text-slate-500 text-[11px] font-medium mt-0.5">{s.label}</p></div>
                 ))}
               </div>
               {/* Right-hand controls: on lg+ this becomes a stack with Add extra wait ABOVE Prep, beside
                   the stat boxes (the boxes flex-shrink to make room). On sm–lg it's just Prep (unchanged). */}
               <div className={"hidden sm:flex sm:flex-col gap-1.5 sm:ml-2 sm:shrink-0 md:w-40"}>
                 <div className={'hidden md:block'}>{renderExtraWait('w-full')}</div>
-                <button onClick={()=>setShowPrepList(p=>!p)} className={`font-bold text-xs px-2.5 py-2 rounded-xl transition-colors ${showPrepList?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-600 hover:bg-slate-200'}`} title="Today's prep list">📋 Prep</button>
+                <button onClick={()=>setShowPrepList(p=>!p)} className={`font-bold text-xs px-2.5 py-2 rounded-xl transition-colors ${showPrepList?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-600 hover:bg-slate-200'}`} title={tDash('prep.buttonTitle')}>📋 {tDash('prep.button')}</button>
               </div>
             </div>
             <div className="lg:hidden">
@@ -4685,17 +4687,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               return(
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-black text-amber-700 uppercase tracking-wide">📋 Prep needed now</p>
+                    <p className="text-xs font-black text-amber-700 uppercase tracking-wide">📋 {tDash('prep.title')}</p>
                     <button onClick={()=>setShowPrepList(false)} className="text-amber-400 hover:text-amber-700 text-sm font-bold">×</button>
                   </div>
 
                   {allUnits.length===0?(
-                    <p className="text-amber-600 text-sm">Nothing to prep right now</p>
+                    <p className="text-amber-600 text-sm">{tDash('prep.nothing')}</p>
                   ):(
                     <div className="space-y-1.5 mb-2">
                       {kitchenUnits.length>0&&(
                         <div>
-                          <p className="text-[10px] font-black text-amber-600 uppercase tracking-wide mb-1">🔥 Kitchen — start now (in order)</p>
+                          <p className="text-[10px] font-black text-amber-600 uppercase tracking-wide mb-1">🔥 {tDash('prep.kitchen')}</p>
                           <div className="flex flex-wrap gap-1.5">
                             {kitchenUnits.map((u,idx)=>{
                               const pillKey=`${u.orderId}:${u.name}:${u.unitIdx}`
@@ -4724,7 +4726,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       )}
                       {assemblyUnits.length>0&&(
                         <div>
-                          <p className="text-[10px] font-black text-amber-600 uppercase tracking-wide mb-1">🥤 Assembly</p>
+                          <p className="text-[10px] font-black text-amber-600 uppercase tracking-wide mb-1">🥤 {tDash('prep.assembly')}</p>
                           <div className="flex flex-wrap gap-1.5">
                             {assemblyUnits.map((u,idx)=>{
                               const pillKey=`${u.orderId}:${u.name}:${u.unitIdx}`
@@ -4755,14 +4757,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   {/* Upcoming batches — countdown timers */}
                   {upcomingBatches.length>0&&(
                     <div className="border-t border-amber-200 pt-2 mt-1 space-y-1">
-                      <p className="text-[10px] font-black text-amber-500 uppercase tracking-wide">Coming up</p>
+                      <p className="text-[10px] font-black text-amber-500 uppercase tracking-wide">{tDash('prep.comingUp')}</p>
                       {upcomingBatches.map(b=>(
                         <div key={b.id} className="flex items-center justify-between text-xs">
                           <span className="text-amber-700 font-bold">
                             {b.items.map(item=>`${item.qty}× ${item.label}`).join(', ')}{b.orderNotes.length>0&&` · 📝 ${b.orderNotes.join(' · ')}`}
                           </span>
                           <span className="text-amber-600 font-black ml-2 shrink-0">
-                            Start by {formatSlot(b.startBy,dashTime)} · {b.minsUntil>=120?`in ${Math.round(b.minsUntil/60)}h`:`${b.minsUntil}min`}
+                            {tDash('prep.startBy',{time:formatSlot(b.startBy,dashTime),far:b.minsUntil>=120?'yes':'no',hours:String(Math.round(b.minsUntil/60)),mins:String(b.minsUntil)})}
                           </span>
                         </div>
                       ))}
@@ -4774,13 +4776,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
             {pendingOrders.length>0&&(
               <div className="mb-4">
-                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">{tDash('orders.newSection')}</p>
                 <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={orderAnchorId(o.order_key,isDemo)} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} vanTakesCash={vanTakesCash} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
-                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">{tDash('orders.confirmedSection')}</p>
                 <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={orderAnchorId(o.order_key,isDemo)} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} vanTakesCash={vanTakesCash} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
@@ -4791,9 +4793,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <button onClick={()=>setShowCompleted(c=>!c)} className="w-full flex items-center justify-between gap-2 py-2 text-left">
                   <span className="flex items-center gap-2 text-sm font-bold text-slate-700">
                     <span className={`transition-transform inline-block text-slate-400 text-xs ${showCompleted?'rotate-90':''}`}>▶</span>
-                    Completed &amp; cancelled ({otherOrders.length})
+                    {tDash('orders.completedSection',{count:String(otherOrders.length)})}
                   </span>
-                  <span className="text-xs text-slate-500 shrink-0">{otherOrders.length-cancelledCount} done{cancelledCount>0?` · ${cancelledCount} cancelled`:''}</span>
+                  <span className="text-xs text-slate-500 shrink-0">{tDash('orders.doneSummary',{done:String(otherOrders.length-cancelledCount),hasCancelled:cancelledCount>0?'yes':'no',cancelled:String(cancelledCount)})}</span>
                 </button>
                 {showCompleted&&(
                 <div className="space-y-2 mt-1">
@@ -4816,7 +4818,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     <div key={o.order_key} id={orderAnchorId(o.order_key,isDemo)} className={`bg-white rounded-xl px-4 py-3 flex items-center justify-between ${unrecorded?'border-2 border-red-600':'border border-slate-200'}`}>
                       <div className="min-w-0 flex-1">
                         {unrecorded&&(
-                          <p className="text-[11px] font-black text-red-700 mb-1 tracking-wide">⚠ PAYMENT NOT RECORDED</p>
+                          <p className="text-[11px] font-black text-red-700 mb-1 tracking-wide">⚠ {tDash('orders.paymentNotRecorded')}</p>
                         )}
                         <div className="flex items-center gap-2">
                           <span className="font-black text-slate-700 text-sm">#{o.id}</span>
@@ -4837,7 +4839,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         {unrecorded&&(
                           <button onClick={()=>doAction('mark_paid',o.order_key)} disabled={actionLoading===`mark_paid-${o.order_key}`}
                             className="text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg px-3 py-2 transition-colors active:scale-95 disabled:opacity-50">
-                            {actionLoading===`mark_paid-${o.order_key}`?'…':'Record payment'}
+                            {actionLoading===`mark_paid-${o.order_key}`?'…':tDash('orders.recordPayment')}
                           </button>
                         )}
                         {/* Later-recovery Undo — collected orders only (not cancelled/rejected). Reuses
@@ -4846,7 +4848,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         {o.status==='collected'&&(
                           <button onClick={()=>doAction('undo_collected',o.order_key)} disabled={actionLoading===`undo_collected-${o.order_key}`}
                             className="text-xs font-bold text-slate-500 hover:text-orange-600 border border-slate-200 hover:border-orange-300 rounded-lg px-3 py-2 transition-colors active:scale-95 disabled:opacity-50">
-                            ↩ Undo
+                            ↩ {tDash('orders.undo')}
                           </button>
                         )}
                         {/* ── 🔴 THE MONEY CHIP THIS ROW NEVER HAD, AND THE ONLY WAY INTO A REFUND FROM HERE.
@@ -4860,10 +4862,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             "Record payment" repair beside it is untouched. */}
                         {(()=>{const bal=getOrderBalance(o as never,payments[o.order_key]??[])
                           if(bal.paidMinor<=0&&bal.status!=='refunded'&&bal.status!=='part_refunded')return null
-                          const label=bal.status==='refunded'?'REFUNDED':bal.status==='part_refunded'?`${formatMinorOrBare(bal.balanceMinor,orderMoney(o,truck?.money),'completed row')} REFUNDED`:'PAID'
+                          const label=bal.status==='refunded'?tDash('orders.chipRefunded'):bal.status==='part_refunded'?tDash('orders.chipPartRefunded',{amount:formatMinorOrBare(bal.balanceMinor,orderMoney(o,truck?.money),'completed row')}):tDash('orders.chipPaid')
                           const tone=bal.status==='refunded'||bal.status==='part_refunded'?'bg-slate-200 text-slate-700':'bg-green-100 text-green-700'
                           return (
-                            <button onClick={()=>setPayModalOrder(o.order_key)} title="Tap to refund or correct this payment"
+                            <button onClick={()=>setPayModalOrder(o.order_key)} title={tDash('orders.chipTitle')}
                               className={`text-[10px] font-black px-1.5 py-0.5 rounded-full whitespace-nowrap ${tone}`}>{label}</button>
                           )})()}
                         <span className="font-black text-slate-600 text-sm">{formatMajorOrBare(Number(o.total),orderMoney(o,truck?.money),'completed row')}</span>
@@ -4900,8 +4902,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length===0&&confirmedOrders.length===0&&(
               <div className="text-center py-16">
                 <p className="text-4xl mb-3">{truck?.truck_emoji || '🍕'}</p>
-                <p className="text-slate-500 font-medium">{boardUnavailable?'Couldn\u2019t load today\u2019s orders.':orders.length===0?'No orders yet today':'All orders complete!'}</p>
-                <p className="text-slate-300 text-xs mt-3">Updated {formatInstantClock(lastRefresh,dashTime,true)}</p>
+                <p className="text-slate-500 font-medium">{boardUnavailable?tDash('orders.emptyUnavailable'):orders.length===0?tDash('orders.emptyNone'):tDash('orders.emptyAllDone')}</p>
+                <p className="text-slate-300 text-xs mt-3">{tDash('orders.updated',{time:formatInstantClock(lastRefresh,dashTime,true)})}</p>
               </div>
             )}
               </div>
@@ -4935,9 +4937,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           {boardUnavailable&&!truckMenu?(
             <div className="h-full flex items-center justify-center px-6">
               <div className="text-center max-w-sm">
-                <p className="text-slate-900 font-bold text-base mb-2">Can&apos;t take orders on this device right now</p>
-                <p className="text-slate-600 text-sm">Your menu isn&apos;t saved on this device, so there&apos;s nothing to build an order from.</p>
-                <p className="text-slate-500 text-sm mt-2">Open the app once while you&apos;re connected and it will work offline after that.</p>
+                <p className="text-slate-900 font-bold text-base mb-2">{tDash('gate.cantTakeOrders')}</p>
+                <p className="text-slate-600 text-sm">{tDash('addTab.noMenuSaved')}</p>
+                <p className="text-slate-500 text-sm mt-2">{tDash('gate.openOnceOnline')}</p>
               </div>
             </div>
           ):(
@@ -4979,7 +4981,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             onEventChange={(id)=>{
               // EVENT-SWITCH GATE backstop: never switch to a never-loaded event offline (the picker also
               // greys/blocks these). Online → always allowed. Current event is always in loadedEventIds.
-              if(isOffline&&!loadedEventIds.has(id)){showToast('Reconnect to load this event','error');return}
+              if(isOffline&&!loadedEventIds.has(id)){showToast(tDash('toast.reconnectToLoad'),'error');return}
               setSelectedEventId(id)
             }}
           />)}
@@ -5000,7 +5002,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 {/* TRIMMED 14 August 2026 to the ONE fact nothing else says. The lead — "You're offline —
                     reconnect to change these settings" — is carried persistently by OfflineBanner, which
                     now ends with "Settings are locked." This keeps the EXCEPTION to that rule. */}
-                <span>Printer &amp; notification settings still work offline.</span>
+                <span>{tDash('settings.offlineStillWorks')}</span>
               </div>
             )}
             {/* ⚠️ DEMO MODE keeps this TAB but strips it to the Kitchen-capacity card alone.
@@ -5112,11 +5114,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                    row is gone, so `pb-3` would pad against nothing. */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Auto-accept orders</p>
-                  <p className="text-slate-500 text-xs mt-0.5">Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity. Orders with customer notes (e.g. an allergy) will still need to be confirmed.</p>
+                  <p className="text-sm font-semibold text-slate-800">{tDash('settings.autoAcceptTitle')}</p>
+                  <p className="text-slate-500 text-xs mt-0.5">{tDash('settings.autoAcceptHelp')}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
-                  {savingAutoAccept&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  {savingAutoAccept&&<span className="text-xs text-slate-400 animate-pulse">{tDash('common.saving')}</span>}
                   <Toggle on={autoAccept} onToggle={()=>saveAutoAccept(!autoAccept)} disabled={isOffline}/>
                 </div>
               </div>
@@ -5142,7 +5144,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 siblings and mb-4 would double it. The inner gap-3 is deliberately tighter than that space-y-4
                 so the four read as one family rather than four neighbours. */}
             <div>
-              <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Order screen</p>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">{tDash('settings.orderScreen')}</p>
               <div className="flex flex-col gap-3">
             {/* ── MENU LAYOUT — trucks.add_order_layout (MOVED HERE 14 August 2026) ────────────────────
                 It was in Manage → Settings and is now here, in ONE place, because this is the screen it
@@ -5164,15 +5166,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Menu layout</p>
-                  <p className="text-slate-500 text-xs mt-0.5">How items appear on the Add order screen.</p>
+                  <p className="text-sm font-semibold text-slate-800">{tDash('settings.layoutTitle')}</p>
+                  <p className="text-slate-500 text-xs mt-0.5">{tDash('settings.layoutHelp')}</p>
                 </div>
-                {savingAddOrderLayout&&<span className="text-xs text-slate-400 animate-pulse shrink-0">Saving…</span>}
+                {savingAddOrderLayout&&<span className="text-xs text-slate-400 animate-pulse shrink-0">{tDash('common.saving')}</span>}
               </div>
               <div className="flex flex-col gap-2 mt-3">
                 {([
-                  ['tabs','Separate categories','Show one category at a time. Tap a category to switch. Best for longer menus, where every item stays in the same place.'],
-                  ['scroll','One page','Show every item in one scrolling list, with a heading for each category. There are no category buttons - you scroll to move around. Best for shorter menus, where you can see most of it at once.'],
+                  ['tabs',tDash('settings.layoutTabs'),tDash('settings.layoutTabsHelp')],
+                  ['scroll',tDash('settings.layoutScroll'),tDash('settings.layoutScrollHelp')],
                 ] as const).map(([v,lbl,help])=>{
                   // Anything that is not exactly 'scroll' reads as 'tabs' — the SAME expression
                   // AddOrderPanel uses, so this control and that screen cannot show different answers.
@@ -5240,14 +5242,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {/* 🔴 THE PRIVATE LINK & QR PANEL — the SAME component the Events list opens. */}
             {privateLinkData && (
               <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 sm:items-center"
-                role="dialog" aria-modal="true" aria-label="Private link and QR code"
+                role="dialog" aria-modal="true" aria-label={tDash('settings.privateLinkDialog')}
                 onClick={() => { setPrivateLinkFor(null); setPrivateLinkData(null) }}>
                 <div className="w-full max-w-lg" onClick={e => e.stopPropagation()}>
                   <PrivateLinkPanel data={privateLinkData}
                     onReplaced={next => setPrivateLinkData(p => p ? { ...p, token: next.token, url: next.url } : p)} />
                   <button type="button" onClick={() => { setPrivateLinkFor(null); setPrivateLinkData(null) }}
                     className="mt-3 w-full rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow">
-                    Close
+                    {tDash('common.close')}
                   </button>
                 </div>
               </div>
@@ -5286,11 +5288,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   comment is for. Do not start annotating rows with their scope. */}
               <div className="flex items-center justify-between gap-3 pb-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Take orders without payment</p>
-                  <p className="text-slate-500 text-xs mt-0.5">Adds a Confirm button when you add an order yourself, so you can place it now and take payment later.</p>
+                  <p className="text-sm font-semibold text-slate-800">{tDash('settings.paidStepTitle')}</p>
+                  <p className="text-slate-500 text-xs mt-0.5">{tDash('settings.paidStepHelp')}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
-                  {savingPaidStepOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  {savingPaidStepOverride&&<span className="text-xs text-slate-400 animate-pulse">{tDash('common.saving')}</span>}
                   <Toggle on={effectivePaidStep} onToggle={()=>savePaidStepOverride(!effectivePaidStep)} disabled={isOffline||!activeEvent}/>
                 </div>
               </div>
@@ -5306,11 +5308,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="py-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">Completing an unpaid order</p>
-                    <p className="text-slate-500 text-xs mt-0.5">What happens when an unpaid order is ready to hand over.</p>
+                    <p className="text-sm font-semibold text-slate-800">{tDash('settings.completionTitle')}</p>
+                    <p className="text-slate-500 text-xs mt-0.5">{tDash('settings.completionHelp')}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0 ml-3">
-                    {savingCompletionOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                    {savingCompletionOverride&&<span className="text-xs text-slate-400 animate-pulse">{tDash('common.saving')}</span>}
                   </div>
                 </div>
                 <div className="space-y-1.5 mt-1.5">
@@ -5320,8 +5322,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       🔴 The button names are QUOTED FROM THE CODE — “Mark paid & collected”, “Mark paid”
                       and “Collected” are the exact `label` strings OrderCard renders. Verify against the
                       code before editing, and change the copy to match the button, never the reverse. */}
-                  {([['one','One press (“Mark paid & collected”)','Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
-                     ['two','Two presses (“Mark paid” & “Collected”)','Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.']] as const).map(([v,lbl,help])=>(
+                  {([['one',tDash('settings.pressesOne'),tDash('settings.pressesOneHelp')],
+                     ['two',tDash('settings.pressesTwo'),tDash('settings.pressesTwoHelp')]] as const).map(([v,lbl,help])=>(
                     <button type="button" key={v} onClick={()=>saveCompletionPressesOverride(v)}
                       disabled={isOffline||!activeEvent||savingCompletionOverride}
                       className="w-full text-left flex items-start gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
@@ -5372,8 +5374,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   TYPE (lib/payments/paid-step.ts) is unchanged. */}
               <div className="pt-3 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
-                  <p className="text-slate-500 text-xs mt-0.5">Splits the payment button into &quot;Cash&quot; and &quot;Card&quot;.</p>
+                  <p className="text-sm font-semibold text-slate-800">{tDash('settings.takesCashTitle')}</p>
+                  <p className="text-slate-500 text-xs mt-0.5">{tDash('settings.takesCashHelp')}</p>
                   {/* 🔴 THE GATE IS GONE — 10 August 2026, matching Manage. The Add Order confirm bar now
                       ALWAYS offers a payment button (the single one when "Take orders without payment" is
                       off, the primary one when it is on), so the cash split has a live parent in every
@@ -5381,7 +5383,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       screen. Full reasoning at the Manage copy of this row. */}
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
-                  {savingTakesCashOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  {savingTakesCashOverride&&<span className="text-xs text-slate-400 animate-pulse">{tDash('common.saving')}</span>}
                   <Toggle on={effectiveTakesCash} onToggle={()=>saveTakesCashOverride(!effectiveTakesCash)} disabled={isOffline||!activeEvent}/>
                 </div>
               </div>
@@ -5400,8 +5402,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {activeEvent&&(
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Order-ready step{demoLockChip}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen. Kitchen screens are set separately. Customers are emailed whenever an order is marked ready.</p>
+                  <p className="text-sm font-semibold text-slate-800">{tDash('settings.orderReadyTitle')}{demoLockChip}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{tDash('settings.orderReadyHelp')}</p>
                 </div>
                 <Toggle on={isDemo?false:effectiveOrderReady} onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}} disabled={isOffline||isDemo}/>
               </div>
@@ -5424,11 +5426,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {activeEvent&&vanBuzzerCount!=null&&(
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Remind me to add a buzzer</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Opens the buzzer grid as soon as you place an order, so the number goes on the board while the customer is still in front of you. With it off you can still add a buzzer any time by tapping the order, but nothing will prompt you. Useful where you hand buzzers out, easy to switch off where you don&rsquo;t.</p>
+                  <p className="text-sm font-semibold text-slate-800">{tDash('settings.buzzerPromptTitle')}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{tDash('settings.buzzerPromptHelp')}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  {savingBuzzerPrompt&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  {savingBuzzerPrompt&&<span className="text-xs text-slate-400 animate-pulse">{tDash('common.saving')}</span>}
                   <Toggle on={effectiveBuzzerPrompt} onToggle={()=>saveBuzzerPromptOverride(!effectiveBuzzerPrompt)} disabled={isOffline||!activeEvent}/>
                 </div>
               </div>
@@ -5476,21 +5478,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Take card payments online</p>
+                  <p className="text-sm font-semibold text-slate-800">{tDash('settings.cardsTitle')}</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Turn this off during a card problem and customers will place orders as normal and pay at the hatch instead. Orders keep coming; only the card step stops.
+                    {tDash('settings.cardsHelp')}
                   </p>
                   <p className="text-xs text-slate-400 mt-1">
-                    This applies to your whole truck, on every event, and stays off until you turn it back on.
+                    {tDash('settings.cardsScope')}
                   </p>
                   {truck?.online_payments_paused_at&&(
                     <p className="text-xs font-semibold text-amber-700 mt-1.5">
-                      Off since {String(truck.online_payments_paused_at).slice(0,10)}
+                      {tDash('settings.cardsOffSince',{date:String(truck.online_payments_paused_at).slice(0,10)})}
                     </p>
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  {savingOnlinePaymentsPause&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  {savingOnlinePaymentsPause&&<span className="text-xs text-slate-400 animate-pulse">{tDash('common.saving')}</span>}
                   {/* ON means "we take cards", so the stored value is INVERTED at both ends: the toggle
                       reads !pausedAt, and tapping saves !pausedAt (currently on ⇒ pause). */}
                   <Toggle on={!truck?.online_payments_paused_at} onToggle={()=>saveOnlinePaymentsPaused(!truck?.online_payments_paused_at)} disabled={isOffline}/>
@@ -5510,13 +5512,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               return (
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
                   <div className="pb-3">
-                    <p className="text-sm font-semibold text-slate-800">Sounds</p>
-                    <p className="text-slate-500 text-xs mt-0.5">The on/off switch is on each screen; every device controls its own sound.</p>
+                    <p className="text-sm font-semibold text-slate-800">{tDash('settings.soundsTitle')}</p>
+                    <p className="text-slate-500 text-xs mt-0.5">{tDash('settings.soundsHelp')}</p>
                   </div>
                   <div className="py-3">
-                    <p className="text-sm font-semibold text-slate-800 mb-1.5">New order sound</p>
+                    <p className="text-sm font-semibold text-slate-800 mb-1.5">{tDash('settings.newOrderSound')}</p>
                     <div className="space-y-1">
-                      {([['needs_confirming','Only orders needing confirming'],['all','All new orders']] as const).map(([val,label])=>(
+                      {([['needs_confirming',tDash('settings.soundNeedsConfirming')],['all',tDash('settings.soundAll')]] as const).map(([val,label])=>(
                         <button key={val} onClick={()=>!isOffline&&saveSoundConfig({...sc,new_orders:val})} disabled={isOffline} className="flex items-center gap-2.5 w-full text-left py-1 disabled:opacity-50">
                           <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${sc.new_orders===val?'border-orange-500':'border-slate-300'}`}>{sc.new_orders===val&&<span className="w-2 h-2 rounded-full bg-orange-500"/>}</span>
                           <span className="text-sm text-slate-700">{label}</span>
@@ -5526,8 +5528,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   </div>
                   <div className="flex items-center justify-between gap-3 py-3">
                     <div>
-                      <p className="text-sm font-semibold text-slate-800">Sound when an order is due to be cooked</p>
-                      <p className="text-slate-500 text-xs mt-0.5">Sounds when a ticket turns amber.</p>
+                      <p className="text-sm font-semibold text-slate-800">{tDash('settings.dueSoundTitle')}</p>
+                      <p className="text-slate-500 text-xs mt-0.5">{tDash('settings.dueSoundHelp')}</p>
                     </div>
                     <Toggle on={sc.order_due} onToggle={()=>saveSoundConfig({...sc,order_due:!sc.order_due})} disabled={isOffline}/>
                   </div>
@@ -5560,12 +5562,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                  it is a stable hook for the render harnesses that measure this box, and because an
                  `id` on a card costs nothing — but nothing links to it any more. */
               <div id="collection-times-box" className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
-                <p className="text-sm font-semibold text-slate-800">Collection times</p>
-                <p className="text-xs text-slate-500 mt-0.5 mb-3">How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.</p>
+                <p className="text-sm font-semibold text-slate-800">{tDash('settings.intervalsTitle')}</p>
+                <p className="text-xs text-slate-500 mt-0.5 mb-3">{tDash('settings.intervalsHelp')}</p>
                 {!eventIntervalsAvailable ? (
                   /* The columns could not be read, so the controls would be lying about what is stored.
                      One line, no controls — and every other setting on this tab is untouched. */
-                  <p className="text-xs text-slate-500">Collection times are unavailable right now.</p>
+                  <p className="text-xs text-slate-500">{tDash('settings.intervalsUnavailable')}</p>
                 ) : (() => {
                   const ov = eventIntervals[activeEvent.id] ?? {}
                   const evCustomer = ov.collection_interval_mins_override
@@ -5583,42 +5585,42 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   return (
                     <div className="flex flex-col gap-3">
                       <label className="block">
-                        <span className="text-sm font-semibold text-slate-800">Customer Collection Times</span>
+                        <span className="text-sm font-semibold text-slate-800">{tDash('settings.customerTimes')}</span>
                         <select
                           value={customer}
-                          aria-label="Customer Collection Times"
+                          aria-label={tDash('settings.customerTimes')}
                           disabled={isOffline||savingIntervals}
                           onChange={e=>saveCollectionIntervals(normaliseInterval(parseInt(e.target.value)),overrideOn?operator:null)}
                           className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50">
-                          {INTERVAL_CHOICES.map(n=><option key={n} value={n}>Every {n} minutes</option>)}
+                          {INTERVAL_CHOICES.map(n=><option key={n} value={n}>{tDash('settings.everyMinutes',{n,count:String(n)})}</option>)}
                         </select>
                         <p className="text-xs text-slate-500 mt-1">
-                          {overrideOn?'Customers can pick ':'You and your customers can pick '}{intervalExample(customer)}
+                          {tDash('settings.canPick',{who:overrideOn?'customers':'everyone',example:intervalExample(customer)})}
                         </p>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={overrideOn}
-                          aria-label="Use different times for orders I add"
+                          aria-label={tDash('settings.differentTimes')}
                           disabled={isOffline||savingIntervals}
                           onChange={e=>saveCollectionIntervals(customer,e.target.checked?customer:null)}
                           className="accent-orange-500"
                         />
-                        <span className="text-sm text-slate-800">Use different times for orders I add</span>
+                        <span className="text-sm text-slate-800">{tDash('settings.differentTimes')}</span>
                       </label>
                       {overrideOn&&(
                         <label className="block">
-                          <span className="text-sm font-semibold text-slate-800">Your Collection Times</span>
+                          <span className="text-sm font-semibold text-slate-800">{tDash('settings.yourTimes')}</span>
                           <select
                             value={operator}
-                            aria-label="Your Collection Times"
+                            aria-label={tDash('settings.yourTimes')}
                             disabled={isOffline||savingIntervals}
                             onChange={e=>saveCollectionIntervals(customer,normaliseInterval(parseInt(e.target.value)))}
                             className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50">
-                            {INTERVAL_CHOICES.map(n=><option key={n} value={n}>Every {n} minutes</option>)}
+                            {INTERVAL_CHOICES.map(n=><option key={n} value={n}>{tDash('settings.everyMinutes',{n,count:String(n)})}</option>)}
                           </select>
-                          <p className="text-xs text-slate-500 mt-1">You can pick {intervalExample(operator)}</p>
+                          <p className="text-xs text-slate-500 mt-1">{tDash('settings.youCanPick',{example:intervalExample(operator)})}</p>
                         </label>
                       )}
                       {/* 18 September 2026: ONE conditional line under the selects, from the shared rule
@@ -5632,10 +5634,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             onClick={()=>saveCollectionIntervals(null,null)}
                             disabled={isOffline||savingIntervals}
                             className="text-xs font-semibold text-orange-600 hover:text-orange-700 disabled:opacity-50">
-                            Use my usual setting
+                            {tDash('settings.useUsual')}
                           </button>
                         )}
-                        {savingIntervals&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                        {savingIntervals&&<span className="text-xs text-slate-400 animate-pulse">{tDash('common.saving')}</span>}
                       </div>
                     </div>
                   )
@@ -5651,7 +5653,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {activeEvent&&(
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800 tracking-wide mb-3">Kitchen capacity</p>
+                  <p className="text-sm font-semibold text-slate-800 tracking-wide mb-3">{tDash('settings.capacityTitle')}</p>
                   {/* Items(batch) / Prep / capacity-membership AND the Total-capacity ceiling — aligned
                       to ONE shared 4-column template (V7.8 §42): CATEGORY · ITEMS · PREP · COUNTS TO
                       TOTAL CAPACITY. The category grid and the Total-capacity grid use the SAME
@@ -5663,10 +5665,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       The window select stays PLAIN MINUTES (capacity window ≠ a prep time). */}
                   {truckMenu?.categories&&truckMenu.categories.length>0&&(
                     <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
-                      <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
-                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
-                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
-                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
+                      <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">{tDash('settings.colCategory')}</span>
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{tDash('settings.colItems')}</span>
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{tDash('settings.colPrep')}</span>
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title={tDash('settings.colCountsTitle')}>{tDash('settings.colCounts')}</span>
                       {truckMenu.categories.map(catObj=>{
                         const hasCap=kitchenCapacity!=null
                         const locked=(catObj.prep_secs??0)>0
@@ -5677,7 +5679,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             {/* ITEMS = batch_size — shared <BatchSizeSelect> atom (∞ + 1..20 + off-grid).
                                 ∞ = no batch limit (null), unchanged write (updateCategoryField 'batch_size'). */}
                             <BatchSizeSelect
-                              ariaLabel={`${catObj.name} items per batch`}
+                              ariaLabel={tDash('settings.batchAria',{category:catObj.name})}
                               disabled={isOffline}
                               valueSize={catObj.batch_size}
                               onChange={val=>{setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:val??undefined}:c)}:prev);updateCategoryField(catObj.id??'','batch_size',val)}}
@@ -5685,14 +5687,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             <PrepTimeSelect
                               valueSecs={catObj.prep_secs}
                               disabled={isOffline}
-                              ariaLabel={`${catObj.name} prep time`}
+                              ariaLabel={tDash('settings.prepAria',{category:catObj.name})}
                               onChange={secs=>{setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:secs}:c)}:prev);updateCategoryField(catObj.id??'','prep_secs',secs)}}
                               className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"/>
                             <label className={`flex items-center justify-center ${capDisabled?'cursor-not-allowed':'cursor-pointer'}`}
                               title={locked
-                                ? 'Cooked — always counts (its prep & batch set the pace)'
-                                : !hasCap ? 'Set a capacity to choose which categories count'
-                                : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}>
+                                ? tDash('settings.countsLocked')
+                                : !hasCap ? tDash('settings.countsNoCap')
+                                : tDash('settings.countsTick')}>
                               <input type="checkbox"
                                 checked={locked?true:!!catObj.counts_toward_capacity}
                                 disabled={capDisabled}
@@ -5714,7 +5716,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       a real feature a prospect should see exists, not something to hide. */}
                   <div className={`${KITCHEN_CAPACITY_GRID} items-center ${truckMenu?.categories&&truckMenu.categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="text-sm font-semibold text-slate-800">Total capacity</span>
+                      <span className="text-sm font-semibold text-slate-800">{tDash('settings.totalCapacity')}</span>
                       {/* The van chip beside Total capacity — same rule, same field: on a one-van truck
                           it names the only van there is. Q4 of docs/van-name-visibility-report.md listed
                           this site; it is covered here rather than left as the header's odd one out. */}
@@ -5724,33 +5726,33 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     </div>
                     <select
                       value={kitchenCapacity??''}
-                      aria-label="Total capacity (items)"
+                      aria-label={tDash('settings.totalCapacityAria')}
                       disabled={!activeEvent.van_id||isOffline}
                       onChange={e=>saveKitchenCapacity(e.target.value===''?null:parseInt(e.target.value))}
                       className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
                       <option value="">∞</option>
                       {Array.from({length:20},(_,i)=>i+1).map(n=>(
-                        <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                        <option key={n} value={n}>{tDash('settings.items',{n,count:String(n)})}</option>
                       ))}
                     </select>
                     <select
                       value={capacityWindowMins}
-                      aria-label="Capacity window (minutes)"
+                      aria-label={tDash('settings.windowAria')}
                       disabled={!activeEvent.van_id||kitchenCapacity==null||isOffline}
                       onChange={e=>saveCapacityWindow(parseInt(e.target.value))}
                       className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
                       {Array.from({length:20},(_,i)=>i+1).concat((capacityWindowMins>20)?[capacityWindowMins]:[]).map(n=>(
-                        <option key={n} value={n}>every {formatPrepSecs(n*60)}</option>
+                        <option key={n} value={n}>{tDash('settings.windowEvery',{duration:formatPrepSecs(n*60)})}</option>
                       ))}
                     </select>
                     <span/>
                   </div>
                   {!activeEvent.van_id&&(
-                    <p className="text-xs text-amber-600 font-medium mt-1.5">⚠ Assign a truck to this event before setting kitchen capacity.</p>
+                    <p className="text-xs text-amber-600 font-medium mt-1.5">⚠ {tDash('settings.assignTruck')}</p>
                   )}
                   {/* The per-category "Counts" tick boxes now live in the grid above (one aligned column). */}
                   {kitchenCapacity==null&&activeEvent.van_id&&truckMenu?.categories&&truckMenu.categories.length>0&&(
-                    <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
+                    <p className="text-xs text-slate-400 mt-1.5">{tDash('settings.setCapacityFirst')}</p>
                   )}
                   {kitchenCapacityNeedsPrepWarning(kitchenCapacity, truckMenu?.categories)&&(
                     <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
@@ -5803,7 +5805,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   card: its other controls write immediately, so orange here means "commit".
                   Measured in both engines by scripts/event-types-render.cjs. */}
               <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                <p className="text-sm font-semibold text-slate-800 tracking-wide">Items — this event</p>
+                <p className="text-sm font-semibold text-slate-800 tracking-wide">{tDash('stock.itemsTitle')}</p>
                 {priceEditing?(
                   <div className="flex items-center gap-2 w-full sm:w-auto" data-price-edit-actions>
                     <button type="button" onClick={cancelPriceEdit} disabled={priceSaving}
@@ -5812,7 +5814,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     </button>
                     <button type="button" onClick={()=>void savePriceEdit()} disabled={priceSaving}
                       className="flex-1 sm:flex-none bg-orange-600 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-orange-700 text-xs disabled:opacity-50">
-                      {priceSaving?'Saving…':EVENT_PRICE_SAVE}
+                      {priceSaving?tDash('common.saving'):EVENT_PRICE_SAVE}
                     </button>
                   </div>
                 ):(
@@ -5867,8 +5869,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       every limit input and every switch keeps its own `aria-label`, so a screen reader
                       still hears "Available" and not "On". */}
                   <span className="w-20 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{EVENT_PRICE_COLUMN_LABEL}</span>
-                  <span className="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Limit</span>
-                  <span className="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">On</span>
+                  <span className="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tDash('stock.colLimit')}</span>
+                  <span className="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tDash('stock.colOn')}</span>
                 </div>
                 <div className="space-y-5">
                   {Object.entries(menuGroups).map(([cat,items])=>{
@@ -5888,7 +5890,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         <div className="mb-2 pb-2 border-b border-slate-100">
                           {/* Line 1 (mobile) / full row (desktop) */}
                           <div className="flex items-center gap-2 pr-2">
-                            <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}{catOrdered>0&&<span className="ml-1.5 text-sm font-medium normal-case tracking-normal text-slate-500">({catOrdered} sold)</span>}{catRem!==null&&<span className={`ml-1.5 text-xs font-bold normal-case tracking-normal ${catRem<=5?'text-orange-500':'text-slate-500'}`}>{catRem} left</span>}{catStock?.available===false&&<span className="ml-1.5 text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full normal-case tracking-normal">CLOSED</span>}</p>
+                            <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}{catOrdered>0&&<span className="ml-1.5 text-sm font-medium normal-case tracking-normal text-slate-500">{tDash('stock.catSold',{count:String(catOrdered)})}</span>}{catRem!==null&&<span className={`ml-1.5 text-xs font-bold normal-case tracking-normal ${catRem<=5?'text-orange-500':'text-slate-500'}`}>{tDash('stock.left',{count:String(catRem)})}</span>}{catStock?.available===false&&<span className="ml-1.5 text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full normal-case tracking-normal">{tDash('stock.closed')}</span>}</p>
                             {/* Prep & batch moved to the "Total capacity" section (V7.8 §42) — this card is per-event STOCK only. */}
                             <div className="flex items-center gap-2">
                               {/* ⚠️ A SPACER UNDER THE PRICE COLUMN. A CATEGORY has no price — only an
@@ -5911,8 +5913,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     if(next!==(catStock?.stock_count??null))updateCategoryStock(cat,next)
                                   }}
                                   className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${isCatDefault?'border-blue-200 bg-blue-50 text-blue-700':'border-orange-200 bg-orange-50'}`}
-                                  title={isCatDefault?'Default stock — save to override':'Category stock'}/>
-                                {isCatDefault&&<span className="text-[9px] text-blue-400 font-medium">default</span>}
+                                  title={isCatDefault?tDash('stock.defaultStockTitle'):tDash('stock.categoryStockTitle')}/>
+                                {isCatDefault&&<span className="text-[9px] text-blue-400 font-medium">{tDash('stock.default')}</span>}
                               </div>
                               {/* AVAILABLE column — per-event category enable/disable (GATE). Off = closed for this
                                   event: hidden from customers (tab vanishes) + blocked at submit; auto-reverts next event. */}
@@ -5987,14 +5989,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                         shows what they pay, and the note under the name shows the menu
                                         figure only where this event has changed it. */}
                                     <p className={`font-bold text-sm ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}</p>
-                                    {!isAvailable&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">SOLD OUT</span>}
+                                    {!isAvailable&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">{tDash('stock.soldOut')}</span>}
                                     {/* Show "X left" ONLY for an item with its OWN cap (itemRem !== null) — never echo
                                         the category number onto every item (the category header row shows {catRem} left).
                                         No ≤N threshold on this stock-management surface: the operator set the cap and wants
                                         to see it at any value. DISPLAY only — gating/enforcement is unchanged. */}
-                                    {isAvailable&&itemRem!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${itemRem<=3?'text-red-600 bg-red-100':itemRem<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{itemRem} left</span>}
+                                    {isAvailable&&itemRem!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${itemRem<=3?'text-red-600 bg-red-100':itemRem<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{tDash('stock.left',{count:String(itemRem)})}</span>}
                                   </div>
-                                  {itemOrdered>0&&<p className="text-xs text-slate-600 mt-0.5">{itemOrdered} sold</p>}
+                                  {itemOrdered>0&&<p className="text-xs text-slate-600 mt-0.5">{tDash('stock.itemSold',{count:String(itemOrdered)})}</p>}
                                   {/* ── 🔴 "menu £12.00 · this event only" — ONLY WHEN THIS EVENT SET IT ─
                                       It names the MENU price, not the difference: "+£1" would restate
                                       what the box already shows and would be wrong the moment the menu
@@ -6026,7 +6028,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                        network — nothing leaves the page until Save. */
                                     <div className="relative w-20">
                                       <input type="text" inputMode="decimal" disabled={!priceEditable}
-                                        aria-label={`Price for ${item.name} at this event`}
+                                        aria-label={tDash('stock.priceAria',{item:item.name})}
                                         value={(itemId?priceDrafts[itemId]:undefined) ?? editableAmount(shownPrice,truck?.money)}
                                         onFocus={()=>{ if(itemId)setPriceDrafts(d=>({...d,[itemId]:editableAmount(shownPrice,truck?.money)})) }}
                                         onChange={e=>{if(itemId)setPriceDrafts(d=>({...d,[itemId]:e.target.value}))}}
@@ -6054,9 +6056,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                           setPricePending(p=>({...p,[itemId]:next}))
                                         }}
                                         className={`w-20 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-right font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 ${priceOwn?'border-blue-300 bg-blue-50 text-blue-700 pr-5':'border-slate-200 bg-white text-slate-900'}`}
-                                        title={priceOwn?'This event\u2019s own price — press \u00d7 to go back to the type or menu price':'What customers pay at this event'}/>
+                                        title={priceOwn?tDash('stock.ownPriceTitle'):tDash('stock.priceTitle')}/>
                                       {priceOwn&&priceEditable&&itemId&&priceDrafts[itemId]===undefined&&(
-                                        <button type="button" aria-label={`Clear this event\u2019s price for ${item.name}`}
+                                        <button type="button" aria-label={tDash('stock.clearPriceAria',{item:item.name})}
                                           onClick={()=>setPricePending(p=>({...p,[itemId]:null}))}
                                           className="absolute right-0.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 text-[10px] font-bold flex items-center justify-center">
                                           &times;
@@ -6097,8 +6099,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     }}
                                     /* ⚠️ NAMED FOR THE SAME REASON THE SWITCH BESIDE IT IS — the
                                        heading over this column is now "Limit". */
-                                    aria-label={`Item limit — ${item.name}`}
-                                    className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white disabled:cursor-not-allowed disabled:bg-slate-100 ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={catClosed?'Category closed for this event':isDefault?'Default stock — save to override':followsCategory?'Following category total — type a number to cap':'Item stock'}/>
+                                    aria-label={tDash('stock.limitAria',{item:item.name})}
+                                    className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white disabled:cursor-not-allowed disabled:bg-slate-100 ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={catClosed?tDash('stock.categoryClosedTitle'):isDefault?tDash('stock.defaultStockTitle'):followsCategory?tDash('stock.followsCategoryTitle'):tDash('stock.itemStockTitle')}/>
                                 </div>
                                 {/* ⛔ LOCKED WHILE PRICES ARE BEING EDITED — `stockLocked`, which the
                                     blue note above promises. One act at a time.
@@ -6109,7 +6111,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     "AVAILABLE" overflowed its 48px column at 390. ⚠️ SHORTENING THE
                                     VISIBLE WORD IS WHAT MADE THIS WORTH FIXING RATHER THAN NOTING: a
                                     screen reader now hears the dish's own name and "Available". */}
-                                <span className="w-12 shrink-0 flex justify-center"><Toggle on={isAvailable} disabled={stockLocked} ariaLabel={`Available — ${item.name}`} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>
+                                <span className="w-12 shrink-0 flex justify-center"><Toggle on={isAvailable} disabled={stockLocked} ariaLabel={tDash('stock.availableAria',{item:item.name})} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>
                               </div>
                             )
                           })}
@@ -6121,7 +6123,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   })}
                 </div>
                 </>
-              ):<p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>}
+              ):<p className="text-slate-400 text-sm animate-pulse">{tDash('stock.loadingMenu')}</p>}
             </div>
 
             {/* ── OPTIONS — STANDING shared-pool stock (item 3) ───────────────────────────
@@ -6150,8 +6152,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               if(total===0)return null
               return(
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mt-4">
-                  <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Options — standing stock</p>
-                  <p className="text-slate-500 text-xs mb-4">Shared across all dishes that use them. This count does <span className="font-semibold">not</span> reset per event — it&apos;s a running total for the whole service.</p>
+                  <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">{tDash('stock.optionsTitle')}</p>
+                  <p className="text-slate-500 text-xs mb-4">{tDash.rich('stock.optionsHelp',{b:chunks=><span className="font-semibold">{chunks}</span>})}</p>
                   <div className="space-y-3">
                     {buckets.map(grp=>(
                       <div key={grp.id} className="space-y-1.5">
@@ -6164,8 +6166,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <p className={`font-bold text-sm ${!isOptOn?'text-red-500':'text-slate-800'}`}>{opt.name}{opt.price_adjustment!==0&&<span className="text-slate-600 font-normal ml-1.5">{opt.price_adjustment>0?`+${truckAmount(opt.price_adjustment)}`:`-${truckAmount(Math.abs(opt.price_adjustment))}`}</span>}</p>
-                                  {!isOptOn&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">SOLD OUT</span>}
-                                  {isOptOn&&optCount!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${optCount<=3?'text-red-600 bg-red-100':optCount<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{optCount} left</span>}
+                                  {!isOptOn&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">{tDash('stock.soldOut')}</span>}
+                                  {isOptOn&&optCount!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${optCount<=3?'text-red-600 bg-red-100':optCount<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{tDash('stock.left',{count:String(optCount)})}</span>}
                                 </div>
                               </div>
                               <div className="flex flex-col items-center gap-0.5">
@@ -6183,7 +6185,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     const next=p!==null&&!isNaN(p)?Math.max(0,p):null // blank = untracked/unlimited
                                     if(next!==optCount)updateModifierOptionStock(opt.id,next)
                                   }}
-                                  className="w-16 border border-slate-200 rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" title="Standing stock — blank = unlimited"/>
+                                  className="w-16 border border-slate-200 rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" title={tDash('stock.standingTitle')}/>
                               </div>
                               <Toggle on={isOptOn} onToggle={()=>updateModifierOptionAvailable(opt.id,!isOptOn)}/>
                             </div>
@@ -6198,12 +6200,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {truckMenu&&Object.keys(menuGroups).length>0&&(
             <div className="space-y-4">
             <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 text-xs text-slate-500 space-y-1 mt-4">
-              <p className="font-bold text-slate-700">How it works</p>
-              <p>• <span className="font-semibold">Category total</span> is a shared pool across every item in that category (e.g. 30 starters tonight).</p>
-              <p>• <span className="font-semibold">Item limit</span> caps just that one item within the pool (e.g. only 8 Pepperoni) — leave it blank to draw from the pool with no cap of its own.</p>
-              <p>• Whichever runs out first applies — the category pool or the item&apos;s own limit.</p>
-              <p>• <span className="font-semibold">Available</span>: green = on sale, grey = sold out (hidden from customers).</p>
-              <p>• Edit: configure prep time, batch size, and notes per category.</p>
+              <p className="font-bold text-slate-700">{tDash('stock.howTitle')}</p>
+              <p>• {tDash.rich('stock.howCategory',{b:chunks=><span className="font-semibold">{chunks}</span>})}</p>
+              <p>• {tDash.rich('stock.howItem',{b:chunks=><span className="font-semibold">{chunks}</span>})}</p>
+              <p>• {tDash('stock.howFirst')}</p>
+              <p>• {tDash.rich('stock.howAvailable',{b:chunks=><span className="font-semibold">{chunks}</span>})}</p>
+              <p>• {tDash('stock.howEdit')}</p>
             </div>
             </div>
             )}
@@ -6217,9 +6219,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center">
             <div className="text-3xl mb-2">📡</div>
-            <h3 className="font-black text-slate-900 text-base mb-1">Offline protection kept you covered</h3>
-            <p className="text-slate-600 text-sm">Orders were paused while your device was offline. Customer orders are active again now.</p>
-            <button onClick={ackOfflinePausedNotice} className="mt-5 w-full bg-orange-600 text-white font-black text-sm py-3 rounded-xl hover:bg-orange-700 transition-colors">OK</button>
+            <h3 className="font-black text-slate-900 text-base mb-1">{tDash('offlineNotice.title')}</h3>
+            <p className="text-slate-600 text-sm">{tDash('offlineNotice.body')}</p>
+            <button onClick={ackOfflinePausedNotice} className="mt-5 w-full bg-orange-600 text-white font-black text-sm py-3 rounded-xl hover:bg-orange-700 transition-colors">{tDash('common.ok')}</button>
           </div>
         </div>
       )}
@@ -6259,15 +6261,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {finishConfirm&&(
         <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 text-base mb-1">End event?</h3>
+            <h3 className="font-black text-slate-900 text-base mb-1">{tDash('finish.title')}</h3>
             <p className="text-sm text-slate-600">
               {finishConfirm.early
-                ? `This event isn't scheduled to finish until ${finishConfirm.endTime}. No more orders will be allowed. Confirm to end event?`
-                : 'Finish this event? No more orders will be taken.'}
+                ? tDash('finish.early',{time:finishConfirm.endTime})
+                : tDash('finish.body')}
             </p>
             <div className="flex gap-2 mt-5">
-              <button onClick={()=>doFinishEvent(finishConfirm.eventId)} className="flex-1 bg-red-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-red-700">Yes</button>
-              <button onClick={()=>setFinishConfirm(null)} className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">Cancel</button>
+              <button onClick={()=>doFinishEvent(finishConfirm.eventId)} className="flex-1 bg-red-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-red-700">{tDash('common.yes')}</button>
+              <button onClick={()=>setFinishConfirm(null)} className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">{tDash('common.cancel')}</button>
             </div>
           </div>
         </div>
@@ -6278,15 +6280,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {showPauseModal&&!isDemo&&(
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 text-base text-center mb-1">Pause online orders</h3>
-            <p className="text-slate-500 text-sm text-center mb-4">Customers can still browse the menu but won't be able to order.</p>
+            <h3 className="font-black text-slate-900 text-base text-center mb-1">{tDash('pause.title')}</h3>
+            <p className="text-slate-500 text-sm text-center mb-4">{tDash('pause.body')}</p>
             <div className="space-y-2 mb-4">
-              {[{label:'10 minutes',mins:10},{label:'20 minutes',mins:20},{label:'30 minutes',mins:30}].map(({label,mins})=>(
+              {[10,20,30].map(mins=>({label:tDash('pause.minutes',{n:mins,count:String(mins)}),mins})).map(({label,mins})=>(
                 <button key={mins} onClick={()=>{const until=new Date(Date.now()+mins*60000).toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});markPending('vanPausedUntil',until);setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-orange-50 border border-orange-200 text-orange-700 font-bold py-3 rounded-xl hover:bg-orange-100 text-sm">{label}</button>
               ))}
-              <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});markPending('vanPausedUntil',until);setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Until I turn it back on</button>
+              <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});markPending('vanPausedUntil',until);setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">{tDash('pause.indefinite')}</button>
             </div>
-            <button onClick={()=>setShowPauseModal(false)} className="w-full text-slate-400 text-sm font-bold py-2">Cancel</button>
+            <button onClick={()=>setShowPauseModal(false)} className="w-full text-slate-400 text-sm font-bold py-2">{tDash('common.cancel')}</button>
           </div>
         </div>
       )}
@@ -6296,15 +6298,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Allow screen to turn off?</h3>
+              <h3 className="text-lg font-semibold text-slate-900">{tDash('screenOff.title')}</h3>
               <p className="text-sm text-slate-500 mt-2">
-                Offline order protection is currently enabled. If the screen turns off and the device loses its connection, online ordering may pause automatically.
+                {tDash('screenOff.body')}
               </p>
-              <p className="text-sm text-slate-500 mt-2">Are you sure you want to allow the screen to turn off?</p>
+              <p className="text-sm text-slate-500 mt-2">{tDash('screenOff.confirm')}</p>
             </div>
             <div className="flex gap-3">
-              <button onClick={()=>setShowScreenOffWarning(false)} className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Keep screen on</button>
-              <button onClick={confirmScreenOff} className="flex-1 bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm">Allow screen off</button>
+              <button onClick={()=>setShowScreenOffWarning(false)} className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">{tDash('screenOff.keepOn')}</button>
+              <button onClick={confirmScreenOff} className="flex-1 bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm">{tDash('screenOff.allow')}</button>
             </div>
           </div>
         </div>
@@ -6314,15 +6316,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {showKDSPicker&&(
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e=>e.target===e.currentTarget&&setShowKDSPicker(false)}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-3">
-            <h3 className="text-lg font-semibold text-slate-900">Open kitchen screen</h3>
-            <p className="text-sm text-slate-500">Choose which van's kitchen screen to open:</p>
+            <h3 className="text-lg font-semibold text-slate-900">{tDash('kds.title')}</h3>
+            <p className="text-sm text-slate-500">{tDash('kds.body')}</p>
             {vans.map(van=>(
               <button key={van.id} onClick={()=>{openKDS(van);setShowKDSPicker(false)}} className="w-full py-3 px-4 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 hover:border-orange-300 hover:bg-orange-50 text-left transition-colors flex items-center justify-between">
                 {van.name}
-                <span className="text-xs text-slate-600">Kitchen screen →</span>
+                <span className="text-xs text-slate-600">{tDash('header.kitchenScreen')} →</span>
               </button>
             ))}
-            <button onClick={()=>setShowKDSPicker(false)} className="text-sm text-slate-400 hover:text-slate-600 pt-1">Cancel</button>
+            <button onClick={()=>setShowKDSPicker(false)} className="text-sm text-slate-400 hover:text-slate-600 pt-1">{tDash('common.cancel')}</button>
           </div>
         </div>
       )}
@@ -6332,23 +6334,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
              onClick={e=>e.target===e.currentTarget&&setShowProfileModal(false)}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
-            <h3 className="text-lg font-semibold text-slate-900">Edit profile</h3>
+            <h3 className="text-lg font-semibold text-slate-900">{tDash('profile.title')}</h3>
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Name</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{tDash('profile.name')}</label>
               <input type="text" value={editProfileName} onChange={e=>setEditProfileName(e.target.value)}
                 className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm" autoFocus/>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Email</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{tDash('profile.email')}</label>
               <input type="email" value={currentUserEmail||''} disabled
                 className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 text-slate-400"/>
             </div>
             <div className="flex gap-3">
               <button onClick={()=>setShowProfileModal(false)}
-                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Cancel</button>
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">{tDash('common.cancel')}</button>
               <button onClick={saveProfile} disabled={!editProfileName.trim()||savingProfile}
                 className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40">
-                {savingProfile?'Saving...':'Save'}
+                {savingProfile?tDash('common.savingDots'):tDash('common.save')}
               </button>
             </div>
           </div>
@@ -6384,7 +6386,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Cancel order #{cancellingOrder.id}?</h3>
+              <h3 className="text-lg font-semibold text-slate-900">{tDash('cancelModal.title',{id:String(cancellingOrder.id)})}</h3>
               <p className="text-sm text-slate-500 mt-1">{cancellingOrder.customer_name} · {amountFor(cancellingOrder)(cancellingOrder.total)}</p>
             </div>
             {/* ── 🔴 WHAT HAPPENS TO THE MONEY, STATED BEFORE THE OPERATOR PRESSES ANYTHING. ────────
@@ -6403,30 +6405,30 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               const money=(m:number)=>formatMinorOrBare(m,orderMoney(cancellingOrder,truck?.money),'cancel order')
               if(refundable>0)return(
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-                  <p className="text-sm font-semibold text-amber-900">Cancel this order and refund {money(refundable)} to the customer&apos;s card?</p>
+                  <p className="text-sm font-semibold text-amber-900">{tDash('cancelModal.refundQuestion',{amount:money(refundable)})}</p>
                   <label className="flex items-start gap-2 mt-3 text-sm text-amber-900">
                     <input type="checkbox" checked={cancelRefund} onChange={e=>{setCancelRefund(e.target.checked);setCancelError(null)}} className="mt-0.5"/>
-                    <span>Refund {money(refundable)} to their card</span>
+                    <span>{tDash('cancelModal.refundTick',{amount:money(refundable)})}</span>
                   </label>
                   {cancelRefund?(
                     /* The reason for the refund IS the reason for the cancellation — asked once, below. */
-                    <p className="text-xs text-amber-800 mt-2">The reason you give below is recorded against the refund.</p>
+                    <p className="text-xs text-amber-800 mt-2">{tDash('cancelModal.reasonRecorded')}</p>
                   ):(
                     /* 🔴 THE NO-SHOW. The food was made and nobody came, so the money stays with the
                        truck — a real cancellation that must not return it. Said plainly, because an
                        unticked box beside an amount is otherwise easy to misread. */
-                    <p className="text-xs text-amber-800 mt-2">The order will be cancelled and the {money(refundable)} will stay with you. Nothing goes back to the customer&apos;s card.</p>
+                    <p className="text-xs text-amber-800 mt-2">{tDash('cancelModal.noRefund',{amount:money(refundable)})}</p>
                   )}
                 </div>
               )
               if(held)return(
                 <div className="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3">
-                  <p className="text-sm text-indigo-900">Their card is <strong>held, not charged</strong> — no money has been taken, so there is nothing to refund. Cancelling releases the hold straight away.</p>
+                  <p className="text-sm text-indigo-900">{tDash.rich('cancelModal.held',{b:chunks=><strong>{chunks}</strong>})}</p>
                 </div>
               )
               if(cashMinor>0)return(
                 <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                  <p className="text-sm text-slate-700">{money(cashMinor)} was taken in person. There is no card payment to refund — hand the money back at the truck, and use the PAID chip on the order to remove the record.</p>
+                  <p className="text-sm text-slate-700">{tDash('cancelModal.cash',{amount:money(cashMinor)})}</p>
                 </div>
               )
               return null})()}
@@ -6446,20 +6448,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 The machine value is what reaches the refund path and the audit log. */}
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Reason {cancelNeedsRefundReason?'— required':'— optional'}
+                {tDash('cancelModal.reason',{required:cancelNeedsRefundReason?'yes':'no'})}
               </label>
               <select value={cancelReason} onChange={e=>{setCancelReason(e.target.value);setCancelError(null)}} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
-                <option value="">Select a reason</option>
-                {CANCEL_REASONS.map(([v,l])=><option key={v} value={v}>{l}</option>)}
+                <option value="">{tDash('cancelModal.selectReason')}</option>
+                {CANCEL_REASONS.map(v=><option key={v} value={v}>{cancelReasonLabel(v)}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Additional note — optional</label>
-              <textarea value={cancelNote} onChange={e=>setCancelNote(e.target.value)} placeholder="Add more detail for the customer..." rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{tDash('cancelModal.noteLabel')}</label>
+              <textarea value={cancelNote} onChange={e=>setCancelNote(e.target.value)} placeholder={tDash('cancelModal.notePlaceholder')} rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
             </div>
             <div className="flex gap-3">
-              <button disabled={cancelBusy} onClick={resetCancelModal} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm disabled:opacity-50">Keep order</button>
-              <button disabled={cancelBusy} onClick={()=>confirmCancelOrder()} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50">{cancelBusy?'Refunding…':'Cancel order'}</button>
+              <button disabled={cancelBusy} onClick={resetCancelModal} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm disabled:opacity-50">{tDash('cancelModal.keep')}</button>
+              <button disabled={cancelBusy} onClick={()=>confirmCancelOrder()} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50">{cancelBusy?tDash('cancelModal.refunding'):tDash('cancelModal.confirm')}</button>
             </div>
           </div>
         </div>
@@ -6484,14 +6486,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e=>e.target===e.currentTarget&&setEditingOrder(null)}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl max-h-[85vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-black text-slate-900">Edit Order #{editingOrder.id}</h3>
+              <h3 className="font-black text-slate-900">{tDash('edit.title',{id:String(editingOrder.id)})}</h3>
               <button onClick={()=>setEditingOrder(null)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
             </div>
 
             {/* Add items */}
             {truckMenu&&(
               <div className="mb-4 space-y-3">
-                <p className="text-xs font-black text-slate-500 uppercase tracking-wide">Add items</p>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-wide">{tDash('edit.addItems')}</p>
                 {Object.entries(menuGroups).map(([cat,items])=>(
                   <div key={cat}>
                     <p className="text-xs font-black text-orange-600 uppercase tracking-wide mb-1.5">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
@@ -6517,7 +6519,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {/* Current order items */}
             {(editItems.length>0||(editingOrder.deals&&editingOrder.deals.length>0))&&(
               <div className="bg-slate-50 rounded-xl p-3 mb-4 space-y-2">
-                <p className="text-xs font-black text-slate-500 uppercase tracking-wide">Order</p>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-wide">{tDash('edit.order')}</p>
                 {editItems.map(item=>(
                   <div key={item.cartKey||item.name}>
                     <div className="flex items-center gap-2">
@@ -6568,16 +6570,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 })}
                 <div className="pt-2 border-t border-slate-200 space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Original</span>
+                    <span className="text-slate-600">{tDash('edit.original')}</span>
                     <span className="text-slate-600">{amountFor(editingOrder)(Number(editingOrder.total))}</span>
                   </div>
                   <div className="flex justify-between text-sm font-bold">
-                    <span className="text-slate-600">New total</span>
+                    <span className="text-slate-600">{tDash('edit.newTotal')}</span>
                     <span className="text-slate-900">{amountFor(editingOrder)(editTotal)}</span>
                   </div>
                   {editTotal!==Number(editingOrder.total)&&(
                     <div className={`flex justify-between text-sm font-black rounded-lg px-2 py-1.5 ${editTotal>Number(editingOrder.total)?'bg-orange-50 text-orange-600':'bg-green-50 text-green-600'}`}>
-                      <span>{editTotal>Number(editingOrder.total)?'Extra to collect':'Reduction'}</span>
+                      <span>{editTotal>Number(editingOrder.total)?tDash('edit.extraToCollect'):tDash('edit.reduction')}</span>
                       <span>{editTotal>Number(editingOrder.total)?'+':'-'}{amountFor(editingOrder)(Math.abs(editTotal-Number(editingOrder.total)))}</span>
                     </div>
                   )}
@@ -6589,31 +6591,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="mb-4">
                 <button onClick={()=>setShowEditDealModal(true)}
                   className="w-full border-2 border-dashed border-amber-300 text-amber-700 font-bold py-2 rounded-xl text-sm hover:bg-amber-50 transition-colors">
-                  + Add deal
+                  {tDash('edit.addDeal')}
                 </button>
               </div>
             )}
 
             <div className="mb-4">
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Collection time</label>
+              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">{tDash('edit.collectionTime')}</label>
               {(()=>{
                 const editModalSlots=editSlots
-                if(editSlotsLoading)return<div className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400">Loading slots…</div>
+                if(editSlotsLoading)return<div className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400">{tDash('edit.loadingSlots')}</div>
                 if(editModalSlots.length===0)return<input type="time" value={editSlot} onChange={e=>setEditSlot(e.target.value)} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"/>
                 return(
                   <select value={editSlot} onChange={e=>setEditSlot(e.target.value)} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                    <option value="">No slot</option>
+                    <option value="">{tDash('edit.noSlot')}</option>
                     {editModalSlots.map(s=>{
                       const isCurrent=s.collection_time===editingOrder?.slot
                       if(s.is_past&&!s.is_grace&&!isCurrent)return null
-                      if(s.is_grace)return<option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing{isCurrent?' · (current)':''}</option>
+                      if(s.is_grace)return<option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · {tDash('edit.afterClosing')}{isCurrent?` · ${tDash('edit.current')}`:''}</option>
                       // Same oven-occupancy indicator as Add Order (shared helper): tone +
                       // per-category composition label ("4 Pizza, 2 Other"). (current) is edit-only.
                       // ❗ = STRICTLY over the ceiling, not merely full — red alone conflates the two
                       // (tone goes red at conc >= ceiling). Same mark, same rule as the Add Order
                       // picker. Permanent property of the slot's load; unaffected by any acknowledgement.
                       const ind=editSlotIndicators.get(s.collection_time)??{emoji:'🟢',label:'',overTotal:0,overlap:null,ownLabel:false}
-                      const label=`${ind.label?` ${ind.label}`:''}${isCurrent?' · (current)':''}`
+                      const label=`${ind.label?` ${ind.label}`:''}${isCurrent?` · ${tDash('edit.current')}`:''}`
                       return<option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.overTotal>0?'❗':''}{label}</option>
                     })}
                   </select>
@@ -6625,19 +6627,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   with the "Walk-up" default (that reads like a real name) — it starts empty for
                   walk-ups; blank on save keeps the "Walk-up" display default. Never gates Save. */}
               <details className="text-xs text-slate-400">
-                <summary className="cursor-pointer select-none py-1">+ Add name / email / phone</summary>
+                <summary className="cursor-pointer select-none py-1">{tDash('edit.addContact')}</summary>
                 <div className="mt-2 flex flex-col gap-2">
-                  <input type="text" placeholder="Name — optional" value={editName} onChange={e=>setEditName(e.target.value)}
+                  <input type="text" placeholder={tDash('edit.namePlaceholder')} value={editName} onChange={e=>setEditName(e.target.value)}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
-                  <input type="email" placeholder="Email for receipt" value={editEmail} onChange={e=>setEditEmail(e.target.value)}
+                  <input type="email" placeholder={tDash('edit.emailPlaceholder')} value={editEmail} onChange={e=>setEditEmail(e.target.value)}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
-                  <input type="tel" placeholder="Phone number" value={editPhone} onChange={e=>setEditPhone(e.target.value)}
+                  <input type="tel" placeholder={tDash('edit.phonePlaceholder')} value={editPhone} onChange={e=>setEditPhone(e.target.value)}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
                 </div>
               </details>
             </div>
             <div className="mb-4">
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Notes</label>
+              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">{tDash('edit.notes')}</label>
               <textarea value={editNotes} onChange={e=>setEditNotes(e.target.value)} rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"/>
             </div>
             {/* UNPRICEABLE NEW LINE. Everything already on this order keeps the price it was placed
@@ -6647,27 +6649,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 Hidden the moment the basket changes: the verdict belonged to a different basket. */}
             {editRepriceActive&&(
               <div className="mb-3 rounded-xl border-2 border-amber-300 bg-amber-50 p-3">
-                <p className="text-sm font-black text-amber-800 mb-1">Not on the menu</p>
+                <p className="text-sm font-black text-amber-800 mb-1">{tDash('edit.repriceTitle')}</p>
                 <p className="text-xs text-amber-800 mb-2">
-                  These are new to this order and aren&apos;t on the menu, so the price couldn&apos;t be checked.
-                  Everything already on the order keeps its original price. Nothing has been saved yet.
+                  {tDash('edit.repriceBody')}
                 </p>
                 <div className="space-y-0.5">
                   {editReprice!.unresolved.map((u,i)=>(
                     <p key={`${u.name}-${i}`} className="text-xs text-amber-800">
-                      {u.kind==='deal'?'🎁 ':''}{u.name}{u.on?` (on ${u.on})`:''} — kept at <strong>{amountFor(editingOrder)(u.advisoryPrice)}</strong>
+                      {u.kind==='deal'?'🎁 ':''}{tDash.rich('edit.repriceLine',{name:u.name,hasOn:u.on?'yes':'no',on:u.on??'',amount:amountFor(editingOrder)(u.advisoryPrice),b:chunks=><strong>{chunks}</strong>})}
                     </p>
                   ))}
                 </div>
                 <div className="flex justify-between text-sm font-black text-amber-900 mt-2 pt-2 border-t border-amber-200">
-                  <span>Order total</span><span>{amountFor(editingOrder)(editReprice!.total)}</span>
+                  <span>{tDash('edit.orderTotal')}</span><span>{amountFor(editingOrder)(editReprice!.total)}</span>
                 </div>
               </div>
             )}
             <div className="flex gap-2">
-              <button onClick={()=>setEditingOrder(null)} className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Cancel</button>
+              <button onClick={()=>setEditingOrder(null)} className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">{tDash('common.cancel')}</button>
               <button onClick={()=>submitEdit(editRepriceActive?editReprice!.total:undefined)} disabled={!!actionLoading?.startsWith('edit')||!isOrderNonEmpty(editItems,editDeals)} className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-50">
-                {actionLoading?.startsWith('edit')?'Saving...':editRepriceActive?`Save at ${amountFor(editingOrder)(editReprice!.total)}`:'Save changes'}
+                {actionLoading?.startsWith('edit')?tDash('common.savingDots'):editRepriceActive?tDash('edit.saveAt',{amount:amountFor(editingOrder)(editReprice!.total)}):tDash('edit.save')}
               </button>
             </div>
           </div>
@@ -6725,14 +6726,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             ))}
             {editItemModal.allowNotes&&(
               <div className="mb-3">
-                <label className="block text-xs font-black text-slate-500 uppercase tracking-wide mb-1">Special instructions</label>
-                <textarea value={editModalNotes} onChange={e=>setEditModalNotes(e.target.value)} rows={2} placeholder="e.g. no onions"
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-wide mb-1">{tDash('edit.specialInstructions')}</label>
+                <textarea value={editModalNotes} onChange={e=>setEditModalNotes(e.target.value)} rows={2} placeholder={tDash('edit.instructionsPlaceholder')}
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"/>
               </div>
             )}
             <button onClick={()=>{addEditItem(editItemModal.item,editModalMods,editModalNotes);closeEditItemModal()}}
               className="w-full bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm">
-              Add to order
+              {tDash('edit.addToOrder')}
             </button>
           </div>
         </div>
@@ -6744,18 +6745,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <div className="fixed inset-0 bg-black/60 z-[60] flex items-end sm:items-center justify-center p-4" onClick={e=>e.target===e.currentTarget&&setShowDemoEventLock(false)}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
             <div className="flex items-start justify-between gap-3 mb-3">
-              <h3 className="font-black text-slate-900 flex items-center gap-2"><span aria-hidden>🔒</span> Manage event</h3>
-              <button onClick={()=>setShowDemoEventLock(false)} aria-label="Close" className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center leading-none">×</button>
+              <h3 className="font-black text-slate-900 flex items-center gap-2"><span aria-hidden>🔒</span> {tDash('eventBar.manageEvent')}</h3>
+              <button onClick={()=>setShowDemoEventLock(false)} aria-label={tDash('common.close')} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center leading-none">×</button>
             </div>
             <p className="text-sm text-slate-600 mb-3">
-              This is where you start and close a service, pause orders when the queue gets long, or switch to a different event.
+              {tDash('demo.lockBody')}
             </p>
             <p className="text-sm text-slate-600 mb-4">
-              We keep one event running in the demo so there&apos;s always something to play with. You get full control when you sign up.
+              {tDash('demo.lockWhy')}
             </p>
             <button onClick={()=>setShowDemoEventLock(false)}
               className="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-slate-800">
-              Got it
+              {tDash('demo.gotIt')}
             </button>
           </div>
         </div>
@@ -6812,7 +6813,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           type's kind: an event can be private while its type row is being read, and `is_private` is
           the source of truth either way (§73.1). */}
       {typePicker&&activeEvent&&(()=>{
-        const targetName=typePending===undefined?'':(eventTypeList.find(t=>t.id===typePending)?.name??'Standard')
+        const targetName=typePending===undefined?'':(eventTypeList.find(t=>t.id===typePending)?.name??tDash('typePicker.standard'))
         const targetIsPrivate=typePending!==undefined&&!!typePending
           &&eventTypeList.find(t=>t.id===typePending)?.kind==='private'
         const toPrivate=typePending!==undefined&&targetIsPrivate&&!eventIsPrivate
@@ -6821,13 +6822,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4"
           onClick={e=>e.target===e.currentTarget&&setTypePicker(false)}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 mb-1">Event type</h3>
-            <p className="text-xs text-slate-500 mb-3">This event only. Your usual settings stay as they are.</p>
+            <h3 className="font-black text-slate-900 mb-1">{tDash('typePicker.title')}</h3>
+            <p className="text-xs text-slate-500 mb-3">{tDash('typePicker.scope')}</p>
             {typePending===undefined?(
-              <div className="space-y-2" role="radiogroup" aria-label="Event type">
+              <div className="space-y-2" role="radiogroup" aria-label={tDash('typePicker.title')}>
                 {/* 🔴 STANDARD FIRST, THEN THE ROUTE'S OWN ORDER — Private, then the truck's types.
                     The same sequence the Event types grid and the Add event pill row use. */}
-                {([{id:null as string|null,name:'Standard',kind:undefined as 'custom'|'private'|undefined},
+                {([{id:null as string|null,name:tDash('typePicker.standard'),kind:undefined as 'custom'|'private'|undefined},
                    ...eventTypeList.map(t=>({id:t.id as string|null,name:t.name,kind:t.kind}))]).map((t,i)=>{
                   const on=(t.id??null)===(eventType?.id??null)
                   const dot=t.id===null?STANDARD_COLOUR:colourFor(Math.max(0,i-1))
@@ -6840,12 +6841,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         ?<span aria-hidden>🔒</span>
                         :<span aria-hidden className="w-2.5 h-2.5 rounded-full shrink-0" style={{background:dot}}/>}
                       <span className="flex-1 min-w-0">{t.name}</span>
-                      {on&&<span className="text-xs font-medium text-slate-400">Current</span>}
+                      {on&&<span className="text-xs font-medium text-slate-400">{tDash('typePicker.current')}</span>}
                     </button>
                   )
                 })}
                 <button type="button" onClick={()=>setTypePicker(false)}
-                  className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm mt-2">Close</button>
+                  className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm mt-2">{tDash('common.close')}</button>
               </div>
             ):(
               <div className="space-y-3">
@@ -6854,20 +6855,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 {toPrivate&&<p className="text-sm font-semibold text-purple-700 bg-purple-50 border border-purple-200 rounded-xl p-3">{CONFIRM_TO_PRIVATE}</p>}
                 {fromPrivate&&<p className="text-sm font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl p-3">{CONFIRM_FROM_PRIVATE}</p>}
                 <div className="text-sm text-slate-700 space-y-1">
-                  <p>• New orders use {targetName}&rsquo;s service settings.</p>
-                  <p>• Orders already placed keep their prices.</p>
-                  <p>• Your changes for this event stay.</p>
+                  <p>• {tDash('typePicker.newOrders',{type:targetName})}</p>
+                  <p>• {tDash('typePicker.placedOrders')}</p>
+                  <p>• {tDash('typePicker.changesStay')}</p>
                 </div>
                 <label className="flex items-start gap-2 text-sm text-slate-700">
                   <input type="checkbox" checked={typeClearOwn} onChange={e=>setTypeClearOwn(e.target.checked)} className="mt-0.5"/>
-                  <span>Clear my changes and use {targetName} exactly</span>
+                  <span>{tDash('typePicker.clearOwn',{type:targetName})}</span>
                 </label>
                 <div className="flex gap-2">
                   <button type="button" disabled={typeBusy} onClick={()=>{setTypePending(undefined);setTypeClearOwn(false)}}
-                    className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm disabled:opacity-50">Back</button>
+                    className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm disabled:opacity-50">{tDash('typePicker.back')}</button>
                   <button type="button" disabled={typeBusy} onClick={()=>void assignEventType(typePending??null,typeClearOwn)}
                     className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-50">
-                    {typeBusy?'Switching…':`Switch to ${targetName}`}
+                    {typeBusy?tDash('typePicker.switching'):tDash('typePicker.switchTo',{type:targetName})}
                   </button>
                 </div>
               </div>
@@ -6889,16 +6890,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center" onClick={()=>setShowQRFullscreen(false)}>
           <div className="w-[85vmin] h-[85vmin] flex-shrink-0">
             {qrFullscreenDataUrl
-              ? <img src={qrFullscreenDataUrl} className="w-full h-full object-contain" alt="Order QR code"/>
+              ? <img src={qrFullscreenDataUrl} className="w-full h-full object-contain" alt={tDash('qr.alt')}/>
               : <div className="w-full h-full flex items-center justify-center"><div className="w-8 h-8 border-2 border-slate-300 border-t-orange-600 rounded-full animate-spin"/></div>
             }
           </div>
           {/* DEMO: the truck name is a generated internal id ("Demo Kitchen (12w7he)") — hidden everywhere
               else in demo for exactly that reason. Strip the trailing "(code)" so the QR label reads a clean
               "Demo Kitchen" instead of leaking the identifier. */}
-          <p className="text-lg font-bold text-slate-900 mt-4">{(isDemo && !demoBranded) ? (truck?.name?.replace(/\s*\([^)]*\)\s*$/, '') || 'Demo') : truck?.name}</p>
-          <p className="text-xs text-slate-500 mt-1">Powered by <span className="font-semibold text-orange-600">HatchGrab</span></p>
-          <p className="text-xs text-slate-300 mt-4">Tap anywhere to close</p>
+          <p className="text-lg font-bold text-slate-900 mt-4">{(isDemo && !demoBranded) ? (truck?.name?.replace(/\s*\([^)]*\)\s*$/, '') || tDash('qr.demoName')) : truck?.name}</p>
+          <p className="text-xs text-slate-500 mt-1">{tDash.rich('qr.poweredBy',{brand:'HatchGrab',b:chunks=><span className="font-semibold text-orange-600">{chunks}</span>})}</p>
+          <p className="text-xs text-slate-300 mt-4">{tDash('qr.tapToClose')}</p>
         </div>
       )}
 

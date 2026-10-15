@@ -12,6 +12,8 @@
 
 import { useEffect } from 'react'
 import type { CapacityBreach } from '@/lib/capacity-breach'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/dashboardBanners'
 
 /** Stable signature of the current breach set — what a dismissal records. */
 export function breachSignature(breaches: CapacityBreach[]): string {
@@ -83,6 +85,7 @@ export function CapacityBreachBanner({
    *  headline and the bare order numbers exactly as it did before, so no caller is forced to change. */
   orders?: Array<{ order_key: string; id: string | number; slot?: string | null; items?: Array<{ quantity?: number }> }>
 }) {
+  const t = useT('dashboardBanners')
   const sig = breachSignature(breaches || [])
   const unreviewed = unreviewedBreaches(breaches || [], dismissedSig)
   const hasBreaches = !!breaches && breaches.length > 0
@@ -126,7 +129,7 @@ export function CapacityBreachBanner({
     >
       <div className="flex flex-col gap-0.5">
         <span className="font-bold">
-          ⚠ {n} {n === 1 ? 'slot' : 'slots'} over capacity — review
+          ⚠ {t('breachHeadline', { n, count: String(n) })}
         </span>
         {/* ONE LINE PER BREACHED SLOT: what is promised, then who is holding it. No explanation
             paragraph -- the numbers are the message. */}
@@ -177,10 +180,10 @@ export function CapacityBreachBanner({
                     ?? breaches.find(x => x.order_ids.some(id => keysHere.has(String(id))))
                   const batchM = b ? /^(.+?) (\d+)\/(\d+)$/.exec(b.reason) : null
                   const headline = batchM && (b!.over_total ?? 0) <= 0
-                    ? `${batchM[1]} over batch — ${batchM[2]} for ${slot} (${batchM[3]} per batch)`
+                    ? t('batchOver', { cat: batchM[1], count: batchM[2], slot, per: batchM[3] })
                     : b && /event-start/.test(b.reason)
-                      ? `Over capacity at event start — ${total} ${total === 1 ? 'item' : 'items'} for ${slot}`
-                      : `Kitchen over capacity — ${total} ${total === 1 ? 'item' : 'items'} cooking for ${slot}`
+                      ? t('eventStartOver', { n: total, count: String(total), slot })
+                      : t('kitchenOver', { n: total, count: String(total), slot })
                   return (
                     <span key={slot}>
                       <span className="font-semibold">
@@ -189,12 +192,12 @@ export function CapacityBreachBanner({
                       {list.length > 0 && (
                         <>
                           {'  '}
-                          {list.map(c => `#${c.id}${c.qty > 0 ? ` — ${c.qty} ${c.qty === 1 ? 'item' : 'items'}` : ''}`).join('  ·  ')}
+                          {list.map(c => (c.qty > 0 ? t('orderItems', { id: String(c.id), n: c.qty, count: String(c.qty) }) : `#${c.id}`)).join('  ·  ')}
                           {/* P4: the order(s) placed anyway, named — the over-count is theirs by choice. */}
                           {(() => {
                             const placedAnyway = breaches.filter(x => x.collection_time === slot).flatMap(x => x.override_orders ?? [])
                             return placedAnyway.length > 0
-                              ? <span className="block mt-0.5">{`Placed anyway: ${placedAnyway.map(o => `#${o.id} for ${o.slot}`).join(', ')}`}</span>
+                              ? <span className="block mt-0.5">{t('placedAnyway', { list: placedAnyway.map(o => t('placedItem', { id: String(o.id), slot: o.slot })).join(', ') })}</span>
                               : null
                           })()}
                         </>
@@ -204,7 +207,7 @@ export function CapacityBreachBanner({
                 })}
                 {orphans.length > 0 && (
                   <span className="font-semibold">
-                    {`${orphans.join(', ')} over capacity — no orders found to attribute it to`}
+                    {t('orphans', { times: orphans.join(', ') })}
                   </span>
                 )}
               </>
@@ -217,7 +220,7 @@ export function CapacityBreachBanner({
         onClick={() => onDismiss(sig)}
         className="self-end sm:self-auto underline font-bold shrink-0"
       >
-        Dismiss
+        {t('dismiss')}
       </button>
     </div>
   )

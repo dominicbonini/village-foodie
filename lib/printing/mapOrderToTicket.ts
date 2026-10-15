@@ -28,6 +28,8 @@ import { orderMoney } from '@/lib/money-format'
 import { formatSlot } from '@/lib/time-utils'
 import { chargeLinesFor, chargeSourceOf } from '@/lib/order-charge-lines'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/ticket'
 
 /** Every TicketOrder key becomes REQUIRED while keeping its original value type (which still includes
  *  `undefined` for optional props). So the key cannot be forgotten, but "deliberately absent" is still
@@ -89,6 +91,10 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
   // 🔴 NO COUNTDOWN IS COMPUTED. `minutesUntilDue` was removed from TicketOrder — see the note there.
   const collection_time = hhmm(order.slot)
 
+  // 🔴 THE TICKET'S LANGUAGE IS THE TRUCK'S (Language Phase 1b): its country's locale, carried on its time settings.
+  // Derived HERE from what the mapper already receives, so no caller (dashboard, KDS, dev preview) changes.
+  const locale = truck?.time?.locale ?? null
+
   const t: ExhaustiveTicketOrder = {
     id: order.id,
     customer_name: order.customer_name,
@@ -121,8 +127,10 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
     // 🔴 Phase 3 screens — the kitchen's words ("Service fee", "Tip"). `undefined` when there are none, which
     // is every UK order: the renderer then prints exactly what it printed before.
     adjustments: (() => {
-      const lines = chargeLinesFor(chargeSourceOf(order as unknown as Record<string, unknown>), 'kitchen')
-      return lines.length ? lines.map(l => ({ label: l.rate ? `${l.label} ${l.rate}` : l.label, minor: l.minor })) : undefined
+      const lines = chargeLinesFor(chargeSourceOf(order as unknown as Record<string, unknown>), 'kitchen', locale)
+      if (!lines.length) return undefined
+      const t = translatorFor(locale, 'ticket')
+      return lines.map(l => ({ label: l.rate ? t('chargeWithRate', { label: l.label, rate: l.rate }) : l.label, minor: l.minor }))
     })(),
     total: order.total,
 
@@ -140,6 +148,7 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
     // optimistic offline order carries the truck's (see the dashboard's optimistic insert). Null ⇒ the
     // ticket prints bare figures and warns — never a £ it cannot vouch for.
     money: orderMoney(order, truck?.money),
+    locale,
   }
   return t
 }

@@ -26,6 +26,8 @@
 // truncated value from a real one and it discloses nothing.
 import http2 from 'node:http2'
 import crypto from 'node:crypto'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/push'
 
 interface ApnsConfig { keyId: string; teamId: string; bundleId: string; key: crypto.KeyObject; host: string }
 
@@ -145,6 +147,8 @@ export interface OrderPendingPush { orderKey: string; orderNumber: string | numb
 export async function sendOrderPendingPush(
   tokens: string[],
   payload: OrderPendingPush,
+  /** Language Phase 1b: the locale of the alert's words — the truck's (`localeForTruck(truck)`). None ⇒ en-GB. */
+  locale?: string | null,
 ): Promise<{ sent: number; invalidTokens: string[]; skipped?: string }> {
   const conf = apnsConfig()
   if ('error' in conf) {
@@ -167,8 +171,9 @@ export async function sendOrderPendingPush(
   let client: http2.ClientHttp2Session | null = null
   try {
     const jwt = providerToken(cfg)
+    const t = translatorFor(locale, 'push')
     const body = JSON.stringify({
-      aps: { alert: { title: 'New order to confirm', body: `Order ${payload.orderNumber} — ${payload.truckName}` }, sound: 'default', 'content-available': 1 },
+      aps: { alert: { title: t('orderPending.title'), body: t('orderPending.body', { number: String(payload.orderNumber), truck: payload.truckName }) }, sound: 'default', 'content-available': 1 },
       type: 'order_pending', orderKey: payload.orderKey,   // custom keys → tap deep-link
     })
 

@@ -30,6 +30,7 @@ import { createClient } from '@supabase/supabase-js'
 import { resolvePrivateLink } from '@/lib/private-events/read'
 import { translatorFor } from '@/lib/i18n/translator'
 import { localeForTruck } from '@/lib/i18n/server-locale'
+import '@/lib/i18n/catalog/privateLink'
 
 export const dynamic = 'force-dynamic'
 

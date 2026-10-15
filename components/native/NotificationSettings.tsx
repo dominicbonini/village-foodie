@@ -12,6 +12,8 @@ import { Preferences } from '@capacitor/preferences'
 import { isNativeApp, getDeviceId } from '@/lib/native/device'
 import { Toggle } from '@/components/dashboard/OrderCard'
 import { requestNotificationPermission, NOTIFY_KEYS } from '@/lib/native/notifications'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/nativeShell'
 
 export function NotificationSettings({ token }: { token: string }) {
   const [ready, setReady] = useState(false)
@@ -19,6 +21,7 @@ export function NotificationSettings({ token }: { token: string }) {
   const [offlineAlerts, setOfflineAlerts] = useState(true)  // LOCAL offline/paused alerts (default ON)
   const [newOrder, setNewOrder] = useState(false)      // mirrors van_devices.notify_enabled (server push)
   const [notice, setNotice] = useState<string | null>(null) // user-facing message when permission is refused/unavailable
+  const t = useT('nativeShell')
 
   useEffect(() => {
     if (!isNativeApp()) return
@@ -45,7 +48,7 @@ export function NotificationSettings({ token }: { token: string }) {
       if (!granted) {
         // Denied / unavailable → leave the toggle OFF and tell the operator how to fix it (iOS won't re-prompt
         // once denied — they must enable it in device Settings).
-        setNotice('Notifications need to be enabled in your device Settings to turn this on.')
+        setNotice(t('notify.refused'))
         return
       }
     }
@@ -63,8 +66,8 @@ export function NotificationSettings({ token }: { token: string }) {
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-800">🔔 Notifications</p>
-          <p className="text-xs text-slate-500 mt-0.5">Alerts on this device. Turn on to choose which alerts you get.</p>
+          <p className="text-sm font-semibold text-slate-800">{t('notify.title')}</p>
+          <p className="text-xs text-slate-500 mt-0.5">{t('notify.intro')}</p>
         </div>
         <Toggle on={master} onToggle={() => toggleMaster(!master)} />
       </div>
@@ -77,15 +80,15 @@ export function NotificationSettings({ token }: { token: string }) {
         <div className="flex flex-col gap-2 pt-1 border-t border-slate-100">
           <div className="flex items-start justify-between gap-3 pt-2">
             <div className="min-w-0">
-              <p className="text-sm font-medium text-slate-800">New order alerts</p>
-              <p className="text-xs text-slate-500 mt-0.5">Get notified when a customer order needs confirming.</p>
+              <p className="text-sm font-medium text-slate-800">{t('notify.newOrder')}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('notify.newOrderHelp')}</p>
             </div>
             <Toggle on={newOrder} onToggle={() => toggleNewOrder(!newOrder)} />
           </div>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-sm font-medium text-slate-800">Offline / paused alerts</p>
-              <p className="text-xs text-slate-500 mt-0.5">Get notified when this device goes offline (and ordering pauses). <span className="text-green-600">Works offline.</span></p>
+              <p className="text-sm font-medium text-slate-800">{t('notify.offline')}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{t.rich('notify.offlineHelp', { green: c => <span className="text-green-600">{c}</span> })}</p>
             </div>
             <Toggle on={offlineAlerts} onToggle={() => toggleOffline(!offlineAlerts)} />
           </div>

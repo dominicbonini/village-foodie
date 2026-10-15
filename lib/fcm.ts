@@ -15,6 +15,8 @@
 // the variable is set this is a NO-OP that LOGS AT ERROR (see fcmConfig) — deliberately not the quiet
 // console.warn that let the APNs gap sit unnoticed for three weeks.
 import crypto from 'node:crypto'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/push'
 
 interface FcmConfig { projectId: string; clientEmail: string; privateKey: string; tokenUri: string }
 
@@ -120,6 +122,8 @@ export interface OrderPendingPush { orderKey: string; orderNumber: string | numb
 export async function sendOrderPendingPush(
   tokens: string[],
   payload: OrderPendingPush,
+  /** Language Phase 1b: the locale of the alert's words — the truck's (`localeForTruck(truck)`). None ⇒ en-GB. */
+  locale?: string | null,
 ): Promise<{ sent: number; invalidTokens: string[]; skipped?: string }> {
   const cfg = fcmConfig()
   if (!cfg) return { sent: 0, invalidTokens: [], skipped: 'not-configured' }   // fcmConfig already logged, at error
@@ -134,9 +138,11 @@ export async function sendOrderPendingPush(
   // the same two custom keys the iOS tap handler deep-links from. ⚠️ FCM data values MUST be strings —
   // a number here is rejected for the whole message with INVALID_ARGUMENT.
   const endpoint = `https://fcm.googleapis.com/v1/projects/${cfg.projectId}/messages:send`
+  // The same words as the APNs alert (lib/apns.ts), from the same messages.
+  const t = translatorFor(locale, 'push')
   const notification = {
-    title: 'New order to confirm',
-    body: `Order ${payload.orderNumber} — ${payload.truckName}`,
+    title: t('orderPending.title'),
+    body: t('orderPending.body', { number: String(payload.orderNumber), truck: payload.truckName }),
   }
 
   const invalidTokens: string[] = []

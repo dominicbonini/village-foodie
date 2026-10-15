@@ -6,6 +6,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { permittedTruckIds } from '../my-trucks/route'
+import { kitchenErrorBody } from '@/lib/i18n/kitchen-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
@@ -19,21 +21,21 @@ async function userIdFromBearer(req: NextRequest): Promise<string | null> {
 
 export async function POST(req: NextRequest) {
   const userId = await userIdFromBearer(req)
-  if (!userId) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!userId) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
   const { device_id, target_truck_id, van_id } = await req.json().catch(() => ({})) as {
     device_id?: string; target_truck_id?: string; van_id?: string | null
   }
-  if (!device_id || !target_truck_id) return NextResponse.json({ error: 'device_id and target_truck_id required' }, { status: 400 })
+  if (!device_id || !target_truck_id) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'device_and_truck_required'), { status: 400 })
 
   // GATE: user must be a member/owner of the target truck.
   const permitted = await permittedTruckIds(userId)
-  if (!permitted.has(target_truck_id)) return NextResponse.json({ error: 'not a member of that truck' }, { status: 403 })
+  if (!permitted.has(target_truck_id)) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'not_truck_member'), { status: 403 })
 
   // Resolve the van: explicit (must belong to the target truck) or the sole/first active van of the target.
   let resolvedVanId: string | null = null
   if (van_id) {
     const { data: van } = await supabaseAdmin.from('truck_vans').select('id').eq('id', van_id).eq('truck_id', target_truck_id).eq('active', true).single()
-    if (!van) return NextResponse.json({ error: 'van not found for target truck' }, { status: 404 })
+    if (!van) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'van_not_for_target'), { status: 404 })
     resolvedVanId = van.id
   } else {
     const { data: vans } = await supabaseAdmin.from('truck_vans').select('id').eq('truck_id', target_truck_id).eq('active', true).order('created_at', { ascending: true })
