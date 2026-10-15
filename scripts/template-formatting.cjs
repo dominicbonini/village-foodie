@@ -30,7 +30,11 @@ function docModule(src) {
 }
 const DOC_SRC = read('lib/outreach-doc.ts')
 const NOW = docModule(DOC_SRC)
-const HEAD = docModule(execFileSync('git', ['show', 'HEAD:lib/outreach-doc.ts'], { cwd: REPO, encoding: 'utf8' }))
+/* 🔴 PINNED TO A COMMIT, NOT HEAD. "Before formatting" is 0914760 — the last commit whose outreach-doc.ts had no
+ * template markup. It read `HEAD` until the formatting itself was committed (89b3f29), at which point "the same
+ * as HEAD" compared the new parser with itself and the control below failed — correctly — for that reason. */
+const BEFORE_REF = '0914760'
+const HEAD = docModule(execFileSync('git', ['show', `${BEFORE_REF}:lib/outreach-doc.ts`], { cwd: REPO, encoding: 'utf8' }))
 /** A broken variant: the real source with one mistake patched in — refused if the patch does not apply. */
 function variant(label, from, to) {
   if (!DOC_SRC.includes(from)) { console.log(`🔴 ${label}: THE PATCH DID NOT APPLY — its anchor has drifted`); process.exit(1) }
@@ -155,7 +159,8 @@ console.log('── the screens ────────────────
 const TAB = stripComments(read('components/admin/TemplatesPanel.tsx'))
 const COMPOSE = stripComments(read('components/admin/ComposeWindow.tsx'))
 const EDITOR = stripComments(read('components/admin/RichEmailEditor.tsx'))
-line(/<div className="flex-1 min-h-\[7rem\] flex flex-col" data-template-editor/.test(TAB)
+// ⚠️ RE-PINNED (docs/template-values-box-report.md): the wrapper is `shrink-0` — a growing editor must not shrink.
+line(/<div className="shrink-0 flex flex-col" data-template-editor/.test(TAB)
   && !/<label[^>]*>\s*<TemplateBodyEditor/.test(TAB),
   '⛔ the email editor sits in a <div>, never a <label> (the 5 October bold bug)')
 line(/<RichEmailEditor value=\{doc\} signatureLines=\{\[\]\} optOut=\{null\} templateTokens/.test(TAB)

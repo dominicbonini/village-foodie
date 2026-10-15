@@ -226,6 +226,138 @@ function shellFixture(css, { broken = false } = {}) {
 </body></html>`
 }
 
+/* ══ 🔴 THE RICH EMAIL EDITOR, MOUNTED FOR REAL (15 October 2026, docs/template-values-box-report.md) ══════
+ * REPORTED: with the new email editor, the "Values this message fills in" box was drawn ACROSS the message,
+ * two-thirds of the way down — 11229e3's overlap again. The fixture above cannot see it: its message is a
+ * `rows=15` textarea, and the new editor is a ProseMirror box that GROWS WITH ITS TEXT. So this one bundles
+ * the Templates tab's own `TemplateBodyEditor` (the real RichEmailEditor, the real markup round trip) into
+ * the same shell, with a long template, and measures the TEXT itself against the values box.
+ * ⚠️ THE WRAPPER'S CLASS IS LIFTED FROM THE SOURCE, so the fixture cannot describe a shape the panel has not;
+ * `broken: true` puts back the shrinkable wrapper (`flex-1 min-h-[7rem]`) that drew the overlay. */
+const LONG_TEMPLATE = [
+  'Hi{{contact_name_prefixed}},', '',
+  'I run villagefoodie.co.uk, the map of food trucks across East Anglia.',
+  'We built HatchGrab so trucks like {{truck_name}} can take orders ahead.',
+  'Customers order from their phone and collect at the hatch.', '',
+  'What you get:',
+  '• Order ahead, with collection times you set',
+  '• Pay at Hatch, or card when you are ready',
+  '• Your own page, with your menu and schedule',
+  '• Tickets printed in the kitchen', '',
+  '<b>No app for your customers to download.</b>',
+  'No contract, and you can stop whenever you like.',
+  'Most trucks are set up in an afternoon.', '',
+  'Plans start at £29/month, and the first month is free.',
+  'There is no commission on Pay at Hatch orders.',
+  'Card orders carry the card fee and nothing else.', '',
+  '?next_event: I see you are at {{next_event_venue}} on {{next_event_day}}.',
+  'Happy to show you a demo whenever suits.',
+  'Just reply to this email and I will set one up.', '',
+  '{{signature}}',
+  '{{opt_out}}',
+].join('\n')
+
+async function editorBundle() {
+  const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hg-tpl-ed-'))
+  fs.writeFileSync(path.join(tmp, 'entry.tsx'), `
+import React, { useRef, useState } from 'react'
+import { createRoot } from 'react-dom/client'
+import { TemplateBodyEditor } from '@/components/admin/TemplatesPanel'
+const BODY = ${JSON.stringify(LONG_TEMPLATE)}
+function H() {
+  const [b, setB] = useState(BODY)
+  const api = useRef(null)
+  return <TemplateBodyEditor body={b} onBody={setB} apiRef={api} />
+}
+createRoot(document.getElementById('editorMount')!).render(<H />)
+`)
+  const outfile = path.join(tmp, 'bundle.js')
+  await esbuild.build({
+    entryPoints: [path.join(tmp, 'entry.tsx')], bundle: true, format: 'iife', jsx: 'automatic',
+    outfile, absWorkingDir: REPO, alias: { '@': REPO }, nodePaths: [path.join(REPO, 'node_modules')],
+    define: { 'process.env.NODE_ENV': '"production"' }, logLevel: 'error',
+    // ⚠️ The Templates tab's imports read `process.env.NEXT_PUBLIC_*` at load; a browser build inlines those,
+    // a bare page has no `process` at all. An empty one is the honest stand-in: every such value is unset.
+    banner: { js: 'var process = { env: {} };' },
+  })
+  return fs.readFileSync(outfile, 'utf8').replace(/<\/script>/gi, '<\\/script>')
+}
+
+function editorShellFixture(css, js, { broken = false } = {}) {
+  const cols = lift(TAB, /gridTemplateColumns: '(270px minmax\(0, 1fr\) minmax\(0, 30%\))'/, 'pane widths')
+  const gutter = Number(lift(TAB, /const BOTTOM_GUTTER_PX = (\d+)/, 'bottom gutter'))
+  const wrap = broken ? 'flex-1 min-h-[7rem] flex flex-col' : lift(TAB, /<div className="([^"]+)" data-template-editor/, 'the email editor wrapper')
+  const values = lift(TAB, /<div className="(shrink-0 rounded-lg border border-slate-200 bg-slate-50\/60 px-3 py-2\.5)">/, 'the values box')
+  const tall = n => `<div style="height:${n}px;background:#eef2f7;border:1px solid #cbd5e1;border-radius:8px;margin:4px">filler</div>`
+  return `${HEAD(css)}
+<header id="appheader" style="position:sticky;top:0;z-index:50;height:51px;background:#0f172a"></header>
+<div id="tabbar" style="position:sticky;top:51px;z-index:40;height:41px;background:#0f172a;border-bottom:1px solid #334155"></div>
+<div class="w-full max-w-[1800px] mx-auto px-4 pt-3 pb-6">
+  <div id="switcher" class="flex items-center gap-3 flex-wrap mb-2" style="height:34px">Sequence | Templates</div>
+  <div id="panes" class="grid gap-4" style="grid-template-columns: ${cols}">
+    <div id="left" class="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
+      <div id="leftScroll" class="flex-1 min-h-0 overflow-y-auto">${tall(1600)}</div>
+    </div>
+    <div class="min-w-0 min-h-0">
+      <div id="editor" class="rounded-xl border border-slate-200 bg-white p-4 h-full min-h-0 flex flex-col">
+        <div id="centre" class="flex-1 min-h-0 overflow-y-auto space-y-3 flex flex-col">
+          <div id="nameBlock" class="shrink-0" style="height:60px">Template name</div>
+          <div id="writeBlock" class="shrink-0 border-t border-slate-100"></div>
+          <div id="subjectBlock" class="shrink-0" style="height:40px">Subject</div>
+          <div id="msgLabel" class="shrink-0" style="height:20px">Message</div>
+          <div id="bracesHint" class="shrink-0 text-[11px] text-slate-500" style="height:15px">{{double braces}} / [[square brackets]]</div>
+          <div id="message" class="${wrap}" data-template-editor><div id="editorMount"></div></div>
+          <div id="valuesBox" class="${values}">
+            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-600">Values this message fills in</p>
+            <p class="text-[12px] text-slate-500">This message has no [[bracketed values]], so nothing needs setting.</p>
+          </div>
+          <div id="notesBox" class="shrink-0 text-[11px] leading-snug text-slate-500" style="height:44px">Two grey notes about the conditional lines</div>
+        </div>
+        <div id="save" class="shrink-0 flex justify-end pt-2"><button class="text-sm font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-white">Save template</button></div>
+      </div>
+    </div>
+    <div id="right" class="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
+      <div id="rightScroll" class="flex-1 min-h-0 overflow-y-auto">${tall(1500)}</div>
+    </div>
+  </div>
+</div>
+<script>
+  var el = document.getElementById('panes')
+  var paneTop = Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY))
+  var pad = Math.round(parseFloat(getComputedStyle(el.parentElement).paddingBottom || '0') || 0)
+  el.style.height = 'calc(100vh - ' + (paneTop + pad + ${gutter}) + 'px)'
+</script>
+<script>${js}</script>
+</body></html>`
+}
+
+/** In the page: the editor's box, the values box, every line of editor TEXT, and which of those hit the box. */
+const editorGeometry = () => {
+  const box = el => { const r = el.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right } }
+  const pm = document.querySelector('#editorMount .ProseMirror')
+  const ed = document.querySelector('#editorMount > *')
+  const vb = document.getElementById('valuesBox')
+  const v = box(vb)
+  const hits = [], walker = document.createTreeWalker(pm, NodeFilter.SHOW_TEXT)
+  let lines = 0
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    if (!n.textContent.trim()) continue
+    const range = document.createRange(); range.selectNodeContents(n)
+    for (const r of range.getClientRects()) {
+      lines++
+      if (r.bottom > v.top + 0.5 && r.top < v.bottom - 0.5 && r.right > v.left && r.left < v.right) hits.push(n.textContent.slice(0, 40))
+    }
+  }
+  const s = document.getElementById('save').getBoundingClientRect(), c = document.getElementById('centre').getBoundingClientRect()
+  return {
+    editor: box(ed), values: v, lines, hits, bullets: pm.querySelectorAll('ul > li').length,
+    plansLine: [...pm.querySelectorAll('*')].some(e => /Plans start at £29\/month/.test(e.textContent || '')),
+    save: { top: s.top, bottom: s.bottom }, centreBottom: c.bottom, inner: window.innerHeight,
+    docScroll: document.documentElement.scrollHeight,
+  }
+}
+
 const rects = () => {
   const out = {}
   for (const el of document.querySelectorAll('[id]')) {
@@ -267,6 +399,7 @@ async function measure() {
   const t = (ok, label) => { lines.push(`${ok ? '✓' : '🔴'} ${label}`); if (!ok) fails++ }
 
   const css = appCss()
+  const editorJs = await editorBundle()
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hg-tpl-'))
   const write = (n, html) => { const f = path.join(tmp, n); fs.writeFileSync(f, html); return 'file://' + f }
 
@@ -390,6 +523,30 @@ async function measure() {
       t(bad.length === 0, `🔴 …and nothing overlaps at this height either (${bad.length ? 'OVERLAPPING: ' + bad.join(', ') : 'in order'})`)
       t(r.save.bottom <= 600 && r.save.top >= r.centre.bottom - 1,
         `🔴 …and Save is STILL on screen, under the scrolling editor (${r.save.top}–${r.save.bottom})`)
+    }
+
+    /* ── 🔴 THE REAL EMAIL EDITOR, A LONG TEMPLATE: NO TEXT UNDER THE VALUES BOX ─────────────────────
+     * At 1440 (the laptop) and 820 (the iPad), with a 30-line template that has a bulleted list. The values
+     * box must start at or below the editor's bottom edge, and NOT ONE LINE of editor text may intersect it.
+     * Then the CONTROL: the shrinkable wrapper that drew the overlay must fail the same two checks. */
+    for (const [w, h, broken] of [[1440, 800, false], [820, 1180, false], [1440, 800, true], [820, 1180, true]]) {
+      await eng.setViewport(w, h)
+      await eng.page.goto(write(`shell-editor-${w}${broken ? '-broken' : ''}-${eng.name}.html`, editorShellFixture(css, editorJs, { broken })))
+      try { await eng.page.waitForSelector('#editorMount .ProseMirror li', { timeout: 15000 }) } catch { /* reported below */ }
+      const g = await eng.page.evaluate(editorGeometry).catch(e => ({ error: String(e.message || e) }))
+      if (g.error) { t(false, `🔴 the real editor did not mount at ${w}×${h}${broken ? ' (control)' : ''}: ${g.error.slice(0, 100)}`); continue }
+      const below = g.values.top >= g.editor.bottom - 0.5
+      const clear = g.hits.length === 0
+      lines.push(`  ${w}×${h}${broken ? ' CONTROL (shrinkable wrapper)' : ''} real editor: ${g.lines} text lines, ${g.bullets} bullets · editor ends ${Math.round(g.editor.bottom)}, values box starts ${Math.round(g.values.top)} · ${g.hits.length} text line(s) under the box`)
+      if (!broken) {
+        t(g.lines >= 20 && g.bullets >= 4 && g.plansLine, `⚠️ the long template is really there (${g.lines} lines, ${g.bullets} bullets, the £29/month line)`)
+        t(below, `🔴 the values box starts at or below the editor's bottom edge (${Math.round(g.values.top)} ≥ ${Math.round(g.editor.bottom)})`)
+        t(clear, `🔴 …and NO editor text is under it${clear ? '' : ': ' + g.hits.slice(0, 2).join(' | ')}`)
+        t(g.save.top >= g.centreBottom - 1 && g.save.bottom <= h, `🔴 …and Save is below everything, on screen (${Math.round(g.save.top)}–${Math.round(g.save.bottom)})`)
+        t(g.docScroll === g.inner, `⚠️ …the long template scrolls the editor pane, not the page (${g.docScroll} = ${g.inner})`)
+      } else {
+        t(!below || !clear, `🔴 REPRODUCED: the shrinkable wrapper draws the values box over the text (${g.hits.length} line(s), e.g. "${(g.hits[0] || '').slice(0, 30)}")`)
+      }
     }
 
     await eng.close()

@@ -1406,8 +1406,17 @@ export default function TemplatesPanel() {
                     ⛔ IN A <div>, NEVER THE <label> ABOVE: a label forwards every click inside it to its
                     first control, and here that is the Bold button — the 5 October bold bug in
                     ComposeWindow.tsx, which is exactly how B "turned itself back on". */}
+                {/* 🔴 `shrink-0`, NOT `flex-1 min-h-[7rem]` — THE 11229e3 OVERLAP, A SECOND TIME (15 October 2026,
+                    docs/template-values-box-report.md). The rich editor GROWS WITH ITS TEXT; it is not a
+                    textarea that fills a box. As a shrinkable flex item its wrapper was squeezed to what the
+                    column had left while the editor inside kept its full height, so the text spilled down and
+                    the values box — a later sibling, painted on top — landed across the message two-thirds of
+                    the way down. A block that grows with its content must not shrink: it takes its own height,
+                    the values box follows it in normal flow (the column's `space-y-3` gap), the column's own
+                    `overflow-y-auto` scrolls a long template, and Save stays pinned below the scroller.
+                    scripts/outreach-templates-render.cjs mounts the real editor with a long template to hold this. */}
                 {draft.channel !== 'whatsapp' && (
-                  <div className="flex-1 min-h-[7rem] flex flex-col" data-template-editor onFocus={() => setLastFocus('body')}>
+                  <div className="shrink-0 flex flex-col" data-template-editor onFocus={() => setLastFocus('body')}>
                     <TemplateBodyEditor key={selected?.id ?? 'none'} body={draft.body ?? ''} apiRef={bodyApi}
                       onBody={b => setDraft(d => ({ ...d, body: b }))} />
                   </div>
@@ -1995,7 +2004,8 @@ function CondMenu({ conds, disabled, onInsert }: {
  * reset the editor and throw the caret. The document is rebuilt from the text only when the text changes
  * from OUTSIDE — Discard, or a template switch (the `key`).
  */
-function TemplateBodyEditor({ body, onBody, apiRef }: {
+// Exported for scripts/outreach-templates-render.cjs, which mounts it in a real browser.
+export function TemplateBodyEditor({ body, onBody, apiRef }: {
   body: string
   onBody: (body: string) => void
   apiRef: React.MutableRefObject<EditorApi | null>
