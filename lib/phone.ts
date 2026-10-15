@@ -18,6 +18,7 @@
 // plausible", "what is its wa.me form" and "how does it read nationally".
 import { isPossiblePhoneNumber, isValidPhoneNumber, parsePhoneNumberFromString, type CountryCode } from 'libphonenumber-js/min'
 import type { PhoneCheck } from '@/lib/country-settings-types'
+import { translatorFor } from '@/lib/i18n/translator'
 
 /** A country as `trucks.country` / `country_settings.country_code` holds it (ISO 3166 alpha-2). */
 export type PhoneCountry = string
@@ -115,10 +116,13 @@ export function phonePlaceholder(copy: PhoneCopy | null | undefined, prefix = ''
  * Without a short name or example (a country whose row lacks them) the sentence drops that part rather
  * than inventing one.
  */
-export function phoneErrorMessage(kind: 'mobile' | 'phone' | 'phone_number', copy: PhoneCopy | null | undefined): string {
-  const name = copy?.short_name ? `${copy.short_name} ` : ''
-  const eg = copy?.phone_example ? ` (e.g. ${copy.phone_example})` : ''
-  if (kind === 'mobile') return `Please enter a valid ${name}mobile${eg}`
-  if (kind === 'phone') return `Please enter a valid ${name}phone${eg}`
-  return `Enter a valid ${name}phone number${eg}.`
+export function phoneErrorMessage(kind: 'mobile' | 'phone' | 'phone_number', copy: PhoneCopy | null | undefined, locale?: string | null): string {
+  // The words: messages/en-GB.json `phone` (Language Phase 1a) — one whole sentence per kind, with and without
+  // the country's name and example.
+  const values = {
+    withName: copy?.short_name ? 'yes' : 'no', name: copy?.short_name ?? '',
+    withExample: copy?.phone_example ? 'yes' : 'no', example: copy?.phone_example ?? '',
+  }
+  const t = translatorFor(locale, 'phone')
+  return t(kind === 'mobile' ? 'invalidMobile' : kind === 'phone' ? 'invalidPhone' : 'invalidPhoneNumber', values)
 }

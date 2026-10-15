@@ -73,13 +73,28 @@ import { chargeSourceOf } from '@/lib/order-charge-lines'
 // 🔴 THE SOLD-OUT SENTENCE LIVES IN ONE PLACE. Three runtimes render it — here, the return route when the
 // OTHER trigger refused and only the machine reason survived, and the order page for a pay-at-hatch
 // refusal that has no server sentence at all. See lib/payments/sold-out-copy.
-import { soldOutRefusalMessage } from '@/lib/payments/sold-out-copy'
+import { soldOutRefusal } from '@/lib/payments/sold-out-copy'
+import { translatorFor } from '@/lib/i18n/translator'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import type { CustomerErrorCode, CustomerErrorParams } from '@/lib/i18n/customer-errors'
 import { writeCookingReservation, writeReservationRecord } from '@/lib/orders/cooking-reservation'
 import { resolveBatchReservations } from '@/lib/features'
 import type { StoredCookingReservation } from '@/lib/slot-bookings'
 
-/** The one refusal we cannot name a cause for. Every other branch says what happened. */
-const GENERIC_REFUSAL = 'Sorry — we could not place your order. No money has been taken.'
+/** What a refusal tells the customer: the sentence, in the truck's language, and the code and values it was
+ *  made from — which /api/payments/return carries to the page (?payment_failed=, and its JSON reply) so the
+ *  page renders the words from its own message file (Language Phase 1a; messages/en-GB.json `errorsCustomer`). */
+type CustomerRefusal = { customerMessage: string; customerCode: CustomerErrorCode; customerParams: CustomerErrorParams }
+function refusalFor(locale: string | null | undefined, code: CustomerErrorCode, params: CustomerErrorParams = {}): CustomerRefusal {
+  const t = translatorFor(locale, 'errorsCustomer') as unknown as (c: CustomerErrorCode, p: CustomerErrorParams) => string
+  return { customerMessage: t(code, params), customerCode: code, customerParams: params }
+}
+/** The sold-out sentence for the names the guard refused on — or, with no name to give, the one refusal we
+ *  cannot name a cause for (`order_not_placed`; it was GENERIC_REFUSAL here). Every other branch says what happened. */
+function soldOutRefusalFor(locale: string | null | undefined, names: string[]): CustomerRefusal {
+  const r = soldOutRefusal(names, 'paying', locale)
+  return r ? refusalFor(locale, r.code, r.params) : refusalFor(locale, 'order_not_placed')
+}
 
 export type PromoteResult =
   /** An order now exists for this draft — created by this call. */
@@ -87,7 +102,7 @@ export type PromoteResult =
   /** Someone else got there first, or there is no such draft. NOT an error. */
   | { status: 'already'; orderKey: string }
   /** The re-check refused. The authorisation has been cancelled; no order and no money. */
-  | { status: 'refused'; orderKey: string; reason: string; customerMessage: string; cancelled: boolean }
+  | ({ status: 'refused'; orderKey: string; reason: string; cancelled: boolean } & CustomerRefusal)
   /** We could not complete promotion for a reason that is OURS, not the customer's. Retryable. */
   | { status: 'error'; orderKey: string; detail: string }
 
@@ -158,8 +173,9 @@ export async function promoteDraft(
       await markPromotionFailed(supabase, orderKey, 'truck_missing')
       const cancelled = await releaseHold(supabase, draft)
       return { status: 'refused', orderKey, reason: 'truck_missing', cancelled,
-               customerMessage: 'This truck is no longer taking orders. No money has been taken.' }
+               ...refusalFor(null, 'truck_not_taking_orders') }
     }
+    const locale = await localeForTruck(truck)
 
     // 🔴 THE TRUCK'S CLOCK (Phase 2B) — its zone decides "today" here and in placement / auto-accept below.
     const truckTz = await truckTimeZone(truck)
@@ -209,7 +225,7 @@ export async function promoteDraft(
       await markPromotionFailed(supabase, orderKey, `option_sold_out: ${soldOutOption}`)
       const cancelled = await releaseHold(supabase, draft)
       return { status: 'refused', orderKey, reason: `option_sold_out: ${soldOutOption}`, cancelled,
-               customerMessage: soldOutRefusalMessage([soldOutOption], 'paying') ?? GENERIC_REFUSAL }
+               ...soldOutRefusalFor(locale, [soldOutOption]) }
     }
 
     // ── 3. THE LOCK. Everything binding happens inside it. ─────────────────────────────────────
@@ -238,7 +254,7 @@ export async function promoteDraft(
           await markPromotionFailed(supabase, orderKey, `category_closed: ${closed.join(', ')}`)
           const cancelled = await releaseHold(supabase, draft)
           return { status: 'refused', orderKey, reason: `category_closed: ${closed[0]}`, cancelled,
-                   customerMessage: `Sorry — ${closed[0]} closed while you were paying, so we could not place your order. No money has been taken.` }
+                   ...refusalFor(locale, 'category_closed_paying', { category: closed[0] }) }
         }
         const shortfall = await checkStockShortfall(draft.truck_id, eventRow.id, eventDate, orderLines, itemCatMap)
         if (shortfall) {
@@ -248,14 +264,14 @@ export async function promoteDraft(
           // 🔴 EVERY NAME, NOT THE FIRST. The guard can refuse on several lines at once, the page removes
           // all of them, and a sentence that admits to one is a sentence the basket then contradicts.
           return { status: 'refused', orderKey, reason: `stock: ${names}`, cancelled,
-                   customerMessage: soldOutRefusalMessage(shortfall.map(s => s.name), 'paying') ?? GENERIC_REFUSAL }
+                   ...soldOutRefusalFor(locale, shortfall.map(s => s.name)) }
         }
         const optShort = await checkOptionCeilingShortfall(supabase, draft.truck_id, eventRow.id, items as never, deals as never)
         if (optShort && optShort.length) {
           await markPromotionFailed(supabase, orderKey, `option_ceiling: ${optShort[0].name}`)
           const cancelled = await releaseHold(supabase, draft)
           return { status: 'refused', orderKey, reason: `option_ceiling: ${optShort[0].name}`, cancelled,
-                   customerMessage: soldOutRefusalMessage(optShort.map(o => o.name), 'paying') ?? GENERIC_REFUSAL }
+                   ...soldOutRefusalFor(locale, optShort.map(o => o.name)) }
         }
       }
 
@@ -402,7 +418,7 @@ export async function promoteDraft(
         await markPromotionFailed(supabase, orderKey, `insert_failed: ${insertErr?.message ?? 'unknown'}`)
         const cancelled = await releaseHold(supabase, draft)
         return { status: 'refused', orderKey, reason: 'insert_failed', cancelled,
-                 customerMessage: GENERIC_REFUSAL }
+                 ...refusalFor(locale, 'order_not_placed') }
       }
       // P2: record today's split for the promoted order (best-effort, separate UPDATE; null on failure).
       if (batchReservationsOn && claimReservation) await writeReservationRecord(supabase, { truckId: draft.truck_id, orderKey, record: claimReservation })

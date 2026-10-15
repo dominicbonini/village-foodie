@@ -9,6 +9,7 @@ import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, s
 import { tallyBasketOptionQtys, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { isModifierAvailable } from '@/lib/modifier-utils'
+import { useT } from '@/lib/i18n/client'
 
 interface Bundle {
   name: string
@@ -89,6 +90,7 @@ export function DealsModal({
 }) {
   // The basket's currency — the customer page's or the Add Order panel's provider (the truck's format).
   const fmt = useMoney()
+  const t = useT('deals')
   const amount = (major: number) => formatMajorOrBare(major, fmt, 'deals')
   const [selectedDeal, setSelectedDeal] = useState<Bundle | null>(bundles.length === 1 ? bundles[0] : null)
   const [slotSelections, setSlotSelections] = useState<Record<string, string>>({})
@@ -248,11 +250,11 @@ export function DealsModal({
           <div>
             {selectedDeal && bundles.length > 1 && (
               <button onClick={() => setSelectedDeal(null)} className="text-orange-600 text-sm font-bold flex items-center gap-1 mb-1">
-                ← Back
+                {t('back')}
               </button>
             )}
             <h3 className="font-black text-slate-900">
-              {selectedDeal ? selectedDeal.name : 'Apply a deal'}
+              {selectedDeal ? selectedDeal.name : t('title')}
             </h3>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center shrink-0">×</button>
@@ -276,7 +278,7 @@ export function DealsModal({
                     <div className="text-right shrink-0">
                       <p className="font-black text-orange-600">{amount(bundle.bundle_price)}</p>
                       {saving && saving > 0 && (
-                        <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save {amount(saving)}</span>
+                        <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">{t('save', { amount: amount(saving) })}</span>
                       )}
                     </div>
                   </div>
@@ -304,7 +306,7 @@ export function DealsModal({
               </div>
             </div>
 
-            <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-3">Select items for each slot</p>
+            <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-3">{t('selectItems')}</p>
 
             {getBundleSlotCats(selectedDeal).map((cat, index) => {
               const slotKey = String(index)
@@ -352,9 +354,9 @@ export function DealsModal({
                       }
                     }}
                     className={`w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${isFilled ? 'border-green-300' : 'border-slate-200'}`}>
-                    <option value="">Choose {cat}…</option>
+                    <option value="">{t('choose', { category: cat })}</option>
 
-                    {expandedBasketOpts.length > 0 && <option disabled>── In your basket ──</option>}
+                    {expandedBasketOpts.length > 0 && <option disabled>{t('inYourBasket')}</option>}
                     {(() => {
                       // takenByOtherSlots collects full unit keys (cartKey::unitN) from other slots
                       const takenByOtherSlots = new Set<string>(
@@ -367,19 +369,18 @@ export function DealsModal({
                       return expandedBasketOpts.map(u => {
                         const isUsed = fullyUsedKeys.has(itemKey(u))
                         const isTaken = takenByOtherSlots.has(u._unitKey)
-                        const modLabel = u.modifiers?.length ? ` (+ ${u.modifiers.map(m => m.name).join(', ')})` : ''
                         return (
                           <option key={`USE_EXISTING:${u._unitKey}`} value={`USE_EXISTING:${u._unitKey}`} disabled={isUsed || isTaken}>
-                            {u.name}{modLabel} (in basket){isUsed ? ' — already in a deal' : isTaken ? ' — selected in another slot' : ''}
+                            {t('basketUnit', { name: u.name, withMods: u.modifiers?.length ? 'yes' : 'no', mods: (u.modifiers ?? []).map(m => m.name).join(', '), state: isUsed ? 'used' : isTaken ? 'taken' : 'free' })}
                           </option>
                         )
                       })
                     })()}
 
-                    {inBasketOpts.length > 0 && <option disabled>── Add new ──</option>}
+                    {inBasketOpts.length > 0 && <option disabled>{t('addNew')}</option>}
                     {allOpts.map(item => (
                       <option key={item.name} value={item.name}>
-                        {item.name} {amount(item.price)}
+                        {t('itemWithPrice', { name: item.name, price: amount(item.price) })}
                       </option>
                     ))}
                   </select>
@@ -391,14 +392,14 @@ export function DealsModal({
                         const isSingle = (group.max_choices ?? 99) === 1
                         const isRequired = minRequiredForGroup(group) > 0
                         const unmet = validateModifierSelection([group], currentSlotMods).unmetGroupIds.length > 0
-                        const ruleHint = isRequired ? `Required${isSingle ? ' · choose one' : ''}` : (isSingle ? 'Choose one' : null)
+                        const ruleHint = isRequired ? (isSingle ? 'requiredOne' : 'required') : (isSingle ? 'one' : null)
                         // Basket-aware draw EXCLUDING this slot — so a pill reads remaining before this slot picks it.
                         const tally = dealOptionTally(slotKey)
                         return (
                           <div key={group.id}>
                             <p className="text-[10px] font-black uppercase tracking-wide mb-1.5">
                               <span className="text-slate-400">{group.name}</span>
-                              {ruleHint && <span className={`ml-2 font-bold ${unmet ? 'text-amber-600' : 'text-slate-400'}`}>· {ruleHint}{unmet ? ' (required)' : ''}</span>}
+                              {ruleHint && <span className={`ml-2 font-bold ${unmet ? 'text-amber-600' : 'text-slate-400'}`}>{t('ruleHint', { rule: ruleHint, unmet: unmet ? 'yes' : 'no' })}</span>}
                             </p>
                             <div className="flex flex-wrap gap-2">
                               {group.options.filter(isModifierAvailable).map(opt => {
@@ -440,7 +441,7 @@ export function DealsModal({
                         maxLength={60}
                         value={currentNote}
                         onChange={e => setSlotNotes(prev => ({ ...prev, [slotKey]: e.target.value }))}
-                        placeholder="Add a note, e.g. no onions (optional)"
+                        placeholder={t('notePlaceholder')}
                         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 bg-white"
                       />
                     </div>
@@ -469,7 +470,7 @@ export function DealsModal({
               const saving = Math.max(0, orig - buttonPrice)
               return saving > 0 ? (
                 <div className="bg-green-50 border border-green-200 rounded-xl p-3 mb-4 text-center">
-                  <p className="text-green-700 font-black text-sm">Save {amount(saving)}</p>
+                  <p className="text-green-700 font-black text-sm">{t('save', { amount: amount(saving) })}</p>
                   <p className="text-green-600 text-xs">{amount(orig)} → {amount(buttonPrice)}</p>
                 </div>
               ) : null
@@ -478,12 +479,12 @@ export function DealsModal({
             <div className="flex gap-2">
               <button onClick={bundles.length > 1 ? () => setSelectedDeal(null) : onClose}
                 className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">
-                {bundles.length > 1 ? 'Back' : 'Cancel'}
+                {bundles.length > 1 ? t('backButton') : t('cancel')}
               </button>
               <button onClick={applyDeal}
                 disabled={!allSlotsFilled || dealHasUnmetRequired}
                 className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-40">
-                {allSlotsFilled && dealHasUnmetRequired ? 'Choose required options' : `Apply deal · ${amount(buttonPrice)}`}
+                {allSlotsFilled && dealHasUnmetRequired ? t('chooseRequired') : t('apply', { amount: amount(buttonPrice) })}
               </button>
             </div>
           </div>

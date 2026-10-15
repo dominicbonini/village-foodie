@@ -111,25 +111,9 @@ export const CARD_BLURB = 'Order and pay on your phone. We’ll call your name w
 export const CARD_FOOTER = 'Ordering by HatchGrab'
 
 // ── THE GUEST'S PAGE ─────────────────────────────────────────────────────────────────────────────
-
-export const GUEST_PRIVATE_LABEL = 'PRIVATE EVENT'
-
-/**
- * ⛔ DECISION 7, WORD FOR WORD. `{truck}` is substituted; nothing else is.
- * 🔴 IT TELLS THE GUEST WHAT TO DO NEXT. "Not found" is what a 404 says and it is useless to someone
- * holding a printed card — this names who replaced it and who to ask.
- */
-export const LINK_REPLACED = (truckName: string) =>
-  `This link no longer works — ${truckName} has replaced it. Ask the organiser for the new link or QR code.`
-
-/** The same shape for the other way a link dies: the operator made the event public. */
-export const LINK_MADE_PUBLIC = (truckName: string) =>
-  `This link no longer works — ${truckName} has made this event public. You can order from their normal page.`
-
-export const LINK_UNKNOWN = 'This link doesn’t work. Check it with the organiser, or scan the QR code again.'
-
-export const LINK_ORDERING_OFF_GUEST =
-  'This event isn’t taking orders online. Please order at the hatch.'
+// Moved to messages/en-GB.json `privateLink` (Language Phase 1a): the label, the four titles and their
+// bodies, word for word — DECISION 7's replaced-link sentence included. app/p/[token]/page.tsx reads them in
+// the truck's language.
 
 // ── THE APPROVAL QUEUE ───────────────────────────────────────────────────────────────────────────
 

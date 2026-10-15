@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { formatTime, formatYmd, getLocalDateInTz, addDaysYmd, type TimeSettings } from '@/lib/time-utils'
 import { formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-format'
+import { translatorFor } from '@/lib/i18n/translator'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -105,16 +106,19 @@ async function callGemini(prompt: string, temperature: number, timeoutMs?: numbe
   }
 }
 
+// 🔴 THE FIXED REPLIES' WORDS ARE IN messages/en-GB.json `whatsappCustomer` (Language Phase 1a), read in the
+// truck's locale. The prompts below are not: they are instructions to the model, out of that phase's scope.
+type ReplyT = ReturnType<typeof translatorFor<'whatsappCustomer'>>
+
 // The single greeting opener, used by EVERY reply path (literals + both LLM prompts) so it can
 // be turned on/off in ONE place via isFollowUp. greetingPrefix prepends it to literal strings;
 // greetingInstruction tells the LLM prompts whether to open with it. See generateWhatsAppReply.
-const GREETING = 'Hey there 👋'
 
 // Single source for the allergen redirect — reused by the ALLERGEN_QUERY branch AND the
 // tier-3 menu-answerer's pre-LLM safety guard, so the wording can never drift between them.
-// greetingPrefix is '' on a follow-up, `${GREETING} ` on a first message.
-function allergenRedirect(truckName: string, truckEmoji: string, orderUrl: string, greetingPrefix: string): string {
-  return `${greetingPrefix}You can see our full menu and allergen information here: ${orderUrl} — ${truckName} ${truckEmoji}`
+// greetingPrefix is '' on a follow-up, the greeting and a space on a first message.
+function allergenRedirect(t: ReplyT, truckName: string, truckEmoji: string, orderUrl: string, greetingPrefix: string): string {
+  return t('allergenRedirect', { opener: greetingPrefix, url: orderUrl, truck: truckName, emoji: truckEmoji })
 }
 
 // Broad, deliberately over-triggering allergen/dietary-safety matcher. Normalises case,
@@ -155,7 +159,9 @@ export async function generateWhatsAppReply(params: ClassifierParams): Promise<W
   // Greeting toggle, computed ONCE and threaded everywhere (no scattered conditionals).
   // greetingPrefix → literal replies (menuFallback, deterministicReply, allergenRedirect,
   // specificFallback); greetingInstruction → the two LLM prompts (tier-3 MENU + SPECIFIC_QUERY).
-  const greetingPrefix = isFollowUp ? '' : `${GREETING} `
+  const t = translatorFor(params.time?.locale, 'whatsappCustomer')
+  const GREETING = t('greeting')
+  const greetingPrefix = isFollowUp ? '' : t('opener', { greeting: GREETING })
   const greetingInstruction = isFollowUp
     ? 'Do NOT open with a greeting; start directly with the answer.'
     : `Open with exactly: "${GREETING}"`
@@ -210,12 +216,12 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
   // (below) is intentionally LEFT in place as belt-and-braces. The ALLERGEN_QUERY branch redirects
   // unconditionally anyway, so this floor only changes MENU/SPECIFIC mis-classifications.
   if (mentionsAllergen(customerMessage)) {
-    return { reply: allergenRedirect(truckName, truckEmoji, orderUrl, greetingPrefix), classification }
+    return { reply: allergenRedirect(t, truckName, truckEmoji, orderUrl, greetingPrefix), classification }
   }
 
   // ── MENU_QUERY ─────────────────────────────────────────────────────────────
   if (classification === 'MENU_QUERY') {
-    const menuFallback = `${greetingPrefix}You can check out our full menu here: ${orderUrl} — ${truckName} ${truckEmoji}`
+    const menuFallback = t('menuFallback', { opener: greetingPrefix, url: orderUrl, truck: truckName, emoji: truckEmoji })
     try {
       // Availability uses the CANONICAL null-tolerant rule (`is_available !== false`) — the same as
       // app/api/menu/[truckId]/route.ts and the dashboard. is_available is nullable; NULL = available,
@@ -248,26 +254,26 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
       // Group by category NAME (from the join), find min price per category
       const byCategory: Record<string, number[]> = {}
       for (const item of items) {
-        const cat = (item.menu_categories as any)?.name || 'Other'
+        const cat = (item.menu_categories as any)?.name || t('otherCategory')
         if (!byCategory[cat]) byCategory[cat] = []
         if (typeof item.price === 'number') byCategory[cat].push(item.price)
       }
 
       const parts = Object.entries(byCategory).map(([cat, prices]) => {
         const min = prices.length ? Math.min(...prices) : null
-        return min !== null ? `${cat} from ${formatMajor(min, money)}` : cat
+        return min !== null ? t('categoryFrom', { category: cat, price: formatMajor(min, money) }) : cat
       })
 
       const menuSummary =
         parts.length === 1
           ? parts[0]
           : parts.length === 2
-          ? `${parts[0]} and ${parts[1]}`
-          : `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`
+          ? t('listTwo', { first: parts[0], second: parts[1] })
+          : t('listMany', { init: parts.slice(0, -1).join(', '), last: parts[parts.length - 1] })
 
       // Deterministic category summary — kept as the fail-safe target for EVERY tier-3 path
       // below (timeout / throw / empty / blocked / price-validation fail all land here).
-      const deterministicReply = `${greetingPrefix}We've got ${menuSummary}. Check out the full menu and order ahead here: ${orderUrl} — ${truckName} ${truckEmoji}`
+      const deterministicReply = t('menuSummary', { opener: greetingPrefix, summary: menuSummary, url: orderUrl, truck: truckName, emoji: truckEmoji })
 
       // ── Tier-3: grounded free-prose answer ──────────────────────────────────────────────
       // Replaces ONLY the success reply. The two safety guards (allergen redirect + price
@@ -278,7 +284,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
         //    MENU (e.g. "is the pepperoni pizza gluten free?"). If it matches we redirect with
         //    the SAME fixed allergen string and never call the LLM.
         if (mentionsAllergen(customerMessage)) {
-          return { reply: allergenRedirect(truckName, truckEmoji, orderUrl, greetingPrefix), classification: 'MENU_QUERY' }
+          return { reply: allergenRedirect(t, truckName, truckEmoji, orderUrl, greetingPrefix), classification: 'MENU_QUERY' }
         }
 
         // 2) PAYLOAD — built from items[] (already filtered is_available !== false, so
@@ -286,7 +292,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
         //    columns later flows through. price pre-formatted so the model quotes it verbatim.
         const menuPayload = items.map(i => ({
           name: i.name,
-          category: (i.menu_categories as any)?.name || 'Other',
+          category: (i.menu_categories as any)?.name || t('otherCategory'),
           price: typeof i.price === 'number' ? formatMajor(i.price, money) : null,
           // PRESENCE-only tags (operator declarations). Default [] when absent — but a MISSING tag
           // means "not entered", NOT "free of" / "not vegetarian"; the prompt forbids absence claims.
@@ -338,7 +344,7 @@ Rules (follow exactly — same discipline as "never make up events"):
         //    reply STATES an allergen this truck has tagged. Trigger = any allergen tag word from the
         //    payload appears (case-insensitive) in the reply. Dietary-only/plain replies have no
         //    allergen word → no caveat. Append only if not already present (no duplication).
-        const ALLERGEN_CAVEAT = 'Please double-check the full menu for allergen info — this is an automated reply.'
+        const ALLERGEN_CAVEAT = t('allergenCaveat')
         const allergenTagWords = new Set<string>()
         for (const i of items) for (const a of ((i.allergens as string[]) || [])) {
           const w = String(a).trim().toLowerCase()
@@ -373,7 +379,7 @@ Rules (follow exactly — same discipline as "never make up events"):
   // emoji once at the end; link always included.
   if (classification === 'ALLERGEN_QUERY') {
     return {
-      reply: allergenRedirect(truckName, truckEmoji, orderUrl, greetingPrefix),
+      reply: allergenRedirect(t, truckName, truckEmoji, orderUrl, greetingPrefix),
       classification: 'ALLERGEN_QUERY',
     }
   }
@@ -415,7 +421,7 @@ Instructions:
 - Sign off as: ${truckName} ${truckEmoji}
 - Never mention Village Foodie or any platform name. Never make up events.`
 
-  const specificFallback = `${greetingPrefix}Check out our latest schedule here: ${scheduleUrl}\n\n${truckName} ${truckEmoji}`
+  const specificFallback = t('specificFallback', { opener: greetingPrefix, url: scheduleUrl, truck: truckName, emoji: truckEmoji })
 
   try {
     // Same opt-in as the classifier call above; undefined => unchanged.

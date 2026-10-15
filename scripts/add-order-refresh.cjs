@@ -106,7 +106,7 @@ async function mount(Panel, props) {
   console.log('── BROKEN VARIANTS: MUST report FAILURE ─────────────────────────────────────────────────')
   const variant = (tag, patch) => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `aorf-${tag}-`))
-    for (const d of ['components', 'lib', 'app']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
+    for (const d of ['components', 'lib', 'app', 'messages']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
     fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules'))
     const f = path.join(tmp, 'components/dashboard/AddOrderPanel.tsx'); let src = fs.readFileSync(f, 'utf8')
     const out = patch(src); if (out === src) { console.log(`🔴 ${tag}: the patch did not apply`); process.exit(1) }

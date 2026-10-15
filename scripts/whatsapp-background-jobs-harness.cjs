@@ -31,6 +31,9 @@ fs.writeFileSync(cfg, JSON.stringify({
     // 🔴 EXPLICIT rootDir. Without it tsc infers the common root from whatever the imports pull in, so
     // the output layout shifts when an import is added and the requires below break for no visible reason.
     rootDir: REPO,
+    // Language Phase 1a: lib/email.ts reads its words from messages/*.json (via lib/i18n), so the compiled
+    // tree must accept a JSON import.
+    resolveJsonModule: true,
   },
   files: [
     'lib/whatsapp/meta-admin.ts', 'lib/whatsapp/maintenance.ts',

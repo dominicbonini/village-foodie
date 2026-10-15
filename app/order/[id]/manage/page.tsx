@@ -6,7 +6,8 @@ import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { formatSlot, instantOfLocal, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { ChargeRows } from '@/components/ChargeRows'
 import type { ChargeLineSource } from '@/lib/order-charge-lines'
-import { useTruckLocale } from '@/lib/i18n/client'
+import { useT, useTruckLocale } from '@/lib/i18n/client'
+import { errorText } from '@/lib/i18n/customer-errors'
 
 type OrderState = {
   /** 🔴 THE ORDER'S OWN currency and locale, from /api/orders/[id]. Missing ⇒ figures with no symbol. */
@@ -31,13 +32,19 @@ type OrderState = {
   charges?: ChargeLineSource | null
 }
 
+// The words: messages/en-GB.json `orderStatus`, and `errorsCustomer` for a refusal's code (Language Phase 1a).
 export default function ManageOrderPage() {
   const { id } = useParams<{ id: string }>()
+  const t = useT('orderStatus')
+  const tErr = useT('errorsCustomer')
   const [order, setOrder] = useState<OrderState | null>(null)
   useTruckLocale(order?.time?.locale)   // Language Phase 0: the truck's language, from the order's own settings
   const amount = (major: number) => formatMajorOrBare(major, order?.money, 'order receipt')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // A refusal's code and values beside its text (Language Phase 1a). The words are looked up when the error
+  // renders, so the load effect below needs no translator — and an effect-set fallback is a CODE (`loadFailed`).
+  const [errorCode, setErrorCode] = useState<{ code?: unknown; params?: unknown } | null>(null)
   const [cancelling, setCancelling] = useState(false)
   const [cancelled, setCancelled] = useState(false)
 
@@ -46,15 +53,15 @@ export default function ManageOrderPage() {
     fetch(`/api/orders/${id}`)
       .then(r => r.json())
       .then(data => {
-        if (data.error) setError(data.error)
+        if (data.error) { setError(data.error); setErrorCode(data) }
         else setOrder(data)
       })
-      .catch(() => setError('Could not load order'))
+      .catch(() => setError('loadFailed'))
       .finally(() => setLoading(false))
   }, [id])
 
   const handleCancel = async () => {
-    if (!confirm('Are you sure you want to cancel this order?')) return
+    if (!confirm(t('confirmCancel'))) return
     setCancelling(true)
     const res = await fetch('/api/orders/cancel', {
       method: 'POST',
@@ -63,7 +70,8 @@ export default function ManageOrderPage() {
     })
     const data = await res.json()
     if (!res.ok) {
-      setError(data.error || 'Failed to cancel order')
+      setError(errorText(tErr, data, t('cancelFailed')))
+      setErrorCode(null)
     } else {
       setCancelled(true)
     }
@@ -73,7 +81,7 @@ export default function ManageOrderPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-400 text-sm">Loading your order...</p>
+        <p className="text-slate-400 text-sm">{t('loading')}</p>
       </div>
     )
   }
@@ -83,8 +91,8 @@ export default function ManageOrderPage() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-sm">
           <div className="text-3xl mb-3">😕</div>
-          <h2 className="font-bold text-slate-900 mb-2">Something went wrong</h2>
-          <p className="text-sm text-slate-500">{error}</p>
+          <h2 className="font-bold text-slate-900 mb-2">{t('errorTitle')}</h2>
+          <p className="text-sm text-slate-500">{errorCode ? errorText(tErr, { ...errorCode, error }, error) : t.has(error as never) ? t(error as never) : error}</p>
         </div>
       </div>
     )
@@ -95,7 +103,7 @@ export default function ManageOrderPage() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-sm">
           <div className="text-3xl mb-3">✓</div>
-          <h2 className="font-bold text-slate-900 mb-2">Order cancelled</h2>
+          <h2 className="font-bold text-slate-900 mb-2">{t('cancelledTitle')}</h2>
           {/* ── 🔴 REWRITTEN 10 August 2026, BEFORE THE FIRST CARD PAYMENT EXISTED ────────────────
               It read: "If you paid online, a refund will be processed within 5-10 business days."
               Both halves were promises HatchGrab cannot keep, and they were harmless only because no
@@ -109,8 +117,7 @@ export default function ManageOrderPage() {
               ⚠️ IT STILL ANSWERS THE QUESTION THE CUSTOMER HAS. Saying nothing about money would be
               worse than over-promising: it names who to ask, which is the one thing they need. */}
           <p className="text-sm text-slate-500">
-            Your order has been cancelled. If you paid by card, any refund is handled by{' '}
-            {order?.truck_name || 'the truck'} directly — please contact them about it.
+            {t('cancelledBody', { withTruck: order?.truck_name ? 'yes' : 'no', truck: order?.truck_name ?? '' })}
           </p>
         </div>
       </div>
@@ -148,7 +155,7 @@ export default function ManageOrderPage() {
   // switched cancellation off — it used to catch 'modified' as well, telling a customer whose truck DOES
   // accept cancellations that it does not.
   const statusLabel = () => {
-    if (order.status === 'cancelled') return 'This order has already been cancelled.'
+    if (order.status === 'cancelled') return t('statusCancelled')
     // 🔴 REJECTED IS A DIFFERENT EVENT FROM CANCELLED AND SAYS SO. It used to reach the fall-through and
     // be told only that it could no longer be cancelled — true, and an answer to a question the customer
     // had not asked. Tested here, above the cutoff and policy branches, because being refused outranks
@@ -156,14 +163,14 @@ export default function ManageOrderPage() {
     // ⚠️ IT PROMISES NOTHING. No refund, no timeframe, no "we will be in touch" — the same discipline the
     // cancelled screen's own comment settled on, for the same reason: HatchGrab is never merchant of
     // record and cannot keep any of those promises. The money is answered by the Payment row above.
-    if (order.status === 'rejected') return 'This order was not accepted by the truck.'
+    if (order.status === 'rejected') return t('statusRejected')
     if (order.status === 'ready' || order.status === 'collected')
-      return 'This order can no longer be cancelled.'
-    if (isPastCutoff()) return 'The cancellation window has passed.'
-    if (!order.allow_cancellation) return 'Cancellations are not accepted for this order.'
+      return t('statusTooLate')
+    if (isPastCutoff()) return t('statusWindowPassed')
+    if (!order.allow_cancellation) return t('statusNoCancellations')
     // Any remaining status (rejected, or one added later) is genuinely past cancelling. Same wording as
     // the server's 409 for the same case, so the two layers cannot say different things.
-    return 'This order can no longer be cancelled.'
+    return t('statusTooLate')
   }
 
   return (
@@ -176,7 +183,7 @@ export default function ManageOrderPage() {
             {order.truck_name}
           </p>
           <h1 className="text-white font-black text-xl mt-0.5">
-            Order #{order.id}
+            {t('orderNumber', { id: order.id })}
           </h1>
         </div>
 
@@ -184,7 +191,7 @@ export default function ManageOrderPage() {
         <div className="px-6 py-4 border-b border-slate-100">
           {order.slot && (
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-slate-500">Pickup</span>
+              <span className="text-slate-500">{t('pickup')}</span>
               <span className="font-medium text-slate-900">
                 {formatSlot(order.slot, ts)}{order.venue_name ? ` · ${order.venue_name}` : ''}
               </span>
@@ -199,7 +206,7 @@ export default function ManageOrderPage() {
               ⚠️ 'unpaid' IS NOT AN ERROR STATE. It is every Pay-at-Hatch order ever placed, so it is
               rendered plainly rather than in red — it says what to do, not that something went wrong. */}
           <div className="flex justify-between text-sm mb-1">
-            <span className="text-slate-500">Payment</span>
+            <span className="text-slate-500">{t('payment')}</span>
             <span className={`font-medium ${order.payment_status === 'paid' ? 'text-green-600' : 'text-slate-900'}`}>
               {/* ── 🔴 'paid' IS TESTED FIRST AND ITS BRANCH IS UNTOUCHED. MONEY THAT MOVED IS NEVER DENIED. ──
                   🔴 AND THE NEW SENTENCE IS GATED ON 'unpaid', NOT ON "not paid". Those are different
@@ -212,14 +219,14 @@ export default function ManageOrderPage() {
                   wrong for them too, but it is wrong in a way that predates this change and needs copy
                   nobody has written; it is recorded rather than guessed at. */}
               {order.payment_status === 'paid'
-                ? 'Paid by card'
+                ? t('paidByCard')
                 : isTerminalUnfulfilled && order.payment_status === 'unpaid'
-                  ? 'You have not been charged for this order.'
-                  : 'Pay at the truck'}
+                  ? t('notCharged')
+                  : t('payAtTruck')}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-slate-500">Status</span>
+            <span className="text-slate-500">{t('status')}</span>
             {/* 🔴 'rejected' JOINS 'cancelled' ON THE EXISTING RED, rather than getting a colour of its
                 own: they are the two ways an order ends without being served, and the convention here
                 already reads red as terminal and green as good news. */}
@@ -228,7 +235,8 @@ export default function ManageOrderPage() {
               order.status === 'ready' ? 'text-green-500' :
               'text-slate-900'
             }`}>
-              {order.status}
+              {/* The status's name (CSS still capitalises it — listed for the languages where that is wrong). */}
+              {t.has(`statusName.${order.status}` as never) ? t(`statusName.${order.status}` as never) : order.status}
             </span>
           </div>
         </div>
@@ -238,7 +246,7 @@ export default function ManageOrderPage() {
           {(order.items || []).map((item: any, i: number) => (
             <div key={i} className="flex justify-between text-sm py-1">
               <span className="text-slate-700">
-                {item.quantity}× {item.name}
+                {t('itemLine', { quantity: String(item.quantity), name: String(item.name) })}
               </span>
               <span className="text-slate-500">
                 {amount((item.unit_price ?? item.price ?? 0) * (item.quantity || 1))}
@@ -248,7 +256,7 @@ export default function ManageOrderPage() {
           {/* Phase 3 screens: Subtotal, tax, fee and tip — nothing at all for a UK order. */}
           <ChargeRows charges={order.charges} amount={amount} textClass="text-sm py-0.5" />
           <div className="flex justify-between text-sm font-bold mt-2 pt-2 border-t border-slate-100">
-            <span>Total</span>
+            <span>{t('total')}</span>
             <span>{amount(order.total ?? 0)}</span>
           </div>
         </div>
@@ -261,11 +269,11 @@ export default function ManageOrderPage() {
                 onClick={handleCancel}
                 disabled={cancelling}
                 className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl disabled:opacity-50 transition-colors">
-                {cancelling ? 'Cancelling...' : 'Cancel order'}
+                {cancelling ? t('cancelling') : t('cancelOrder')}
               </button>
               {order.cancellation_cutoff_mins > 0 && (
                 <p className="text-xs text-slate-400 text-center mt-2">
-                  Cancellations accepted up to {order.cancellation_cutoff_mins} minutes before pickup
+                  {t('cutoffNote', { n: order.cancellation_cutoff_mins, count: String(order.cancellation_cutoff_mins) })}
                 </p>
               )}
             </>

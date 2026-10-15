@@ -45,7 +45,7 @@ const CEILING_WORSE = SIX.map(b => b.collection_time === '13:45' ? B('13:45', 3,
 
 function variant(tag, from, to) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `bbd-${tag}-`))
-  for (const d of ['components', 'lib']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
+  for (const d of ['components', 'lib', 'messages']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
   fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules'))
   const f = path.join(tmp, 'components/dashboard/CapacityBreachBanner.tsx'); const src = fs.readFileSync(f, 'utf8')
   if (src.split(from).length !== 2) { console.log(`🔴 ${tag}: anchor not found exactly once`); process.exit(1) }

@@ -17,10 +17,18 @@
 // ASCII apostrophe ('), as lib/email.ts uses throughout ("We're still confirming your payment"), and the
 // em dash (—) that every customer-facing sentence in this codebase uses mid-sentence.
 
-/** "A" · "A and B" · "A, B and C" — Oxford-free, which is how the rest of the copy reads. */
-function joinNames(names: string[]): string {
+// ── THE WORDS ARE IN messages/en-GB.json (Language Phase 1a): `errorsCustomer.sold_out_paying` /
+// `sold_out_ordering` for the sentence, `soldOut.names` for the list. The same two codes travel in a refusal's
+// `code` and the ?payment_failed= URL, so a screen renders the sentence from its own message file.
+import { translatorFor } from '@/lib/i18n/translator'
+import type { CustomerErrorCode } from '@/lib/i18n/customer-errors'
+
+/** "A" · "A and B" · "A, B and C" — Oxford-free, which is how the rest of the copy reads.
+ *  ⚠️ NOT Intl.ListFormat: en-US would add the Oxford comma and change the US sentence. The ", " between the
+ *  earlier names is still written here — listed for the language that needs its own (Phase 1a report). */
+function joinNames(names: string[], locale?: string | null): string {
   if (names.length <= 1) return names[0] ?? ''
-  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
+  return translatorFor(locale, 'soldOut')('names', { init: names.slice(0, -1).join(', '), last: names[names.length - 1] })
 }
 
 /**
@@ -43,10 +51,15 @@ export type SoldOutStage = 'paying' | 'ordering'
  * @param names the item names the guard refused on. An empty list is not describable by this sentence —
  *              the caller keeps its own generic refusal for that, and there is no wording here to guess.
  */
-export function soldOutRefusalMessage(names: string[], stage: SoldOutStage): string | null {
+export function soldOutRefusalMessage(names: string[], stage: SoldOutStage, locale?: string | null): string | null {
+  const r = soldOutRefusal(names, stage, locale)
+  return r && translatorFor(locale, 'errorsCustomer')(r.code, r.params)
+}
+
+/** The same refusal as a code and its values — what a response or the ?payment_failed= URL carries. */
+export function soldOutRefusal(names: string[], stage: SoldOutStage, locale?: string | null):
+  { code: Extract<CustomerErrorCode, 'sold_out_paying' | 'sold_out_ordering'>; params: { names: string; count: number } } | null {
   const named = names.map(n => n.trim()).filter(Boolean)
   if (!named.length) return null
-  const pronoun = named.length === 1 ? 'it' : 'them'
-  const money = stage === 'paying' ? ' and have not taken any money' : ''
-  return `${joinNames(named)} sold out while you were ${stage}. We've removed ${pronoun}${money} — please check your order before placing it again.`
+  return { code: stage === 'paying' ? 'sold_out_paying' : 'sold_out_ordering', params: { names: joinNames(named, locale), count: named.length } }
 }

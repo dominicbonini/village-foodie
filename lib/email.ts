@@ -12,6 +12,18 @@ import { formatMajor, formatMinor, type MoneyFormat } from '@/lib/money-format'
 // Phase 3 screens: the order's tax, fee and tip lines — the same list every surface draws.
 import { chargeLinesFor, chargeLineText, type ChargeLineSource } from '@/lib/order-charge-lines'
 import { formatSlot, formatYmd, type TimeSettings } from '@/lib/time-utils'
+// 🔴 EVERY CUSTOMER SENTENCE BELOW IS IN messages/en-GB.json `emailCustomer` (Language Phase 1a), read in the
+// order's language — `money.locale`, its country's — so a translated email is a translated file, not an edit
+// here. The markup stays in this file; a bold word or a link inside a sentence is a tag in its message.
+// ⚠️ The operator's "🔔 New order" email (formatNewOrderEmail) is a later phase and keeps its words here.
+import { translatorFor } from '@/lib/i18n/translator'
+
+type EmailT = ReturnType<typeof translatorFor<'emailCustomer'>>
+const emailT = (locale: string | null | undefined): EmailT => translatorFor(locale, 'emailCustomer')
+/** A bold word in an email sentence: the message's <b> tag, as the <strong> these emails always used. */
+const strong = (chunks: string) => `<strong>${chunks}</strong>`
+/** Two headlines spell their dash as an HTML entity, as they always have; their text twins use the character. */
+const dashEntity = (s: string) => s.replace(' — ', ' &mdash; ')
 
 // THE PAYMENT SENTENCE, IN ONE PLACE, FOR EVERY EMAIL THAT NEEDS ONE.
 //
@@ -43,16 +55,18 @@ export function paymentNote(
   /** Appended to the "your order is ready" line — which hardcoded ". Pay at the truck." for everyone. */
   readySuffix: string
 } {
+  const t = emailT(fmt.locale)
+  const tr = { truck: truckName }
   switch (state) {
     case 'captured':
       return {
         html: `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
-    <p style="margin:0;font-size:16px;font-weight:800;color:#166534">Paid by card</p>
-    <p style="margin:6px 0 0;font-size:13px;color:#15803d">Your payment has gone through — nothing to pay at the truck.</p>
+    <p style="margin:0;font-size:16px;font-weight:800;color:#166534">${t('payNote.capturedTitle')}</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#15803d">${t('payNote.capturedBody')}</p>
   </div>`,
-        text: `Paid by card. Your payment has gone through — nothing to pay at the truck.`,
-        short: 'Paid by card',
-        readySuffix: ' Already paid by card.',
+        text: t('payNote.capturedText'),
+        short: t('payNote.capturedTitle'),
+        readySuffix: ` ${t('payNote.capturedReady')}`,
       }
 
     case 'part_paid': {
@@ -62,19 +76,15 @@ export function paymentNote(
       // THE FIGURES COME FROM getOrderBalance VIA THE CALLER, never from this function. It renders.
       // NO FIGURES SUPPLIED means the same sentence without them. Vaguer, never wrong.
       const money = (m: number) => formatMinor(m, fmt)
-      const paidPart = amounts ? `${money(amounts.paidMinor)} of this order is paid.` : ''
+      const fig = amounts ? { paid: money(amounts.paidMinor), balance: money(amounts.balanceMinor) } : null
       return {
         html: `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
-    <p style="margin:0;font-size:16px;font-weight:800;color:#92400e">Part paid${amounts ? ` &mdash; ${money(amounts.balanceMinor)} still to pay` : ''}</p>
-    <p style="margin:6px 0 0;font-size:13px;color:#b45309">${paidPart}${amounts ? ` The remaining ${money(amounts.balanceMinor)} is due when you collect.` : 'The rest is due when you collect.'}</p>
+    <p style="margin:0;font-size:16px;font-weight:800;color:#92400e">${fig ? dashEntity(t('payNote.partPaidTitleOwing', fig)) : t('payNote.partPaidTitle')}</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#b45309">${fig ? t('payNote.partPaidBodyFigures', fig) : t('payNote.partPaidBody')}</p>
   </div>`,
-        text: amounts
-          ? `Part paid: ${money(amounts.paidMinor)} received, ${money(amounts.balanceMinor)} still to pay when you collect.`
-          : `Part paid. Some of this order is still to pay when you collect.`,
-        short: amounts ? `${money(amounts.paidMinor)} paid, ${money(amounts.balanceMinor)} still to pay` : 'Part paid',
-        readySuffix: amounts
-          ? ` ${money(amounts.balanceMinor)} still to pay.`
-          : ' Part of this order is still to pay.',
+        text: fig ? t('payNote.partPaidTextFigures', fig) : t('payNote.partPaidText'),
+        short: fig ? t('payNote.partPaidShortFigures', fig) : t('payNote.partPaidTitle'),
+        readySuffix: ` ${fig ? t('payNote.stillToPay', { amount: fig.balance }) : t('payNote.partStillToPay')}`,
       }
     }
 
@@ -83,12 +93,12 @@ export function paymentNote(
       // CARD HELD chip the operator sees, and deliberately not green: no money has moved.
       return {
         html: `<div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
-    <p style="margin:0;font-size:16px;font-weight:800;color:#3730a3">Your card is held, not charged</p>
-    <p style="margin:6px 0 0;font-size:13px;color:#4f46e5">${truckName} takes the payment when they confirm your order. Nothing to pay at the truck.</p>
+    <p style="margin:0;font-size:16px;font-weight:800;color:#3730a3">${t('payNote.heldTitle')}</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#4f46e5">${t('payNote.heldBody', tr)}</p>
   </div>`,
-        text: `Your card is held, not charged. ${truckName} takes the payment when they confirm your order — nothing to pay at the truck.`,
-        short: 'Your card is held, not charged',
-        readySuffix: ' Your card is held, not charged — nothing to pay at the truck.',
+        text: t('payNote.heldText', tr),
+        short: t('payNote.heldTitle'),
+        readySuffix: ` ${t('payNote.heldReady')}`,
       }
 
     case 'held_short': {
@@ -99,20 +109,16 @@ export function paymentNote(
       const money = (m: number) => formatMinor(m, fmt)
       const held = typeof amounts?.heldMinor === 'number' ? amounts.heldMinor : null
       const stillToPay = amounts && held !== null ? amounts.balanceMinor - held : null
+      // `held` and `stillToPay` are both set or both null (stillToPay needs held), so each sentence has two forms.
+      const fig = held !== null && stillToPay !== null ? { truck: truckName, held: money(held), owing: money(stillToPay) } : null
       return {
         html: `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
-    <p style="margin:0;font-size:16px;font-weight:800;color:#92400e">Your card is held for part of this order${stillToPay !== null ? ` &mdash; ${money(stillToPay)} still to pay` : ''}</p>
-    <p style="margin:6px 0 0;font-size:13px;color:#b45309">${held !== null ? `${truckName} takes the ${money(held)} held when they confirm your order.` : `${truckName} takes the amount held when they confirm your order.`} ${stillToPay !== null ? `The remaining ${money(stillToPay)} is due when you collect.` : 'The rest is due when you collect.'}</p>
+    <p style="margin:0;font-size:16px;font-weight:800;color:#92400e">${fig ? dashEntity(t('payNote.heldShortTitleOwing', fig)) : t('payNote.heldShortTitle')}</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#b45309">${fig ? t('payNote.heldShortBodyFigures', fig) : t('payNote.heldShortBody', tr)}</p>
   </div>`,
-        text: held !== null && stillToPay !== null
-          ? `Your card is held for ${money(held)}, which ${truckName} takes when they confirm your order. ${money(stillToPay)} of this order is still to pay when you collect.`
-          : `Your card is held for part of this order. ${truckName} takes the amount held when they confirm your order, and the rest is due when you collect.`,
-        short: stillToPay !== null
-          ? `Card held for part of this order, ${money(stillToPay)} still to pay`
-          : 'Card held for part of this order',
-        readySuffix: stillToPay !== null
-          ? ` ${money(stillToPay)} still to pay.`
-          : ' Part of this order is still to pay.',
+        text: fig ? t('payNote.heldShortTextFigures', fig) : t('payNote.heldShortText', tr),
+        short: fig ? t('payNote.heldShortShortOwing', fig) : t('payNote.heldShortShort'),
+        readySuffix: ` ${fig ? t('payNote.stillToPay', { amount: fig.owing }) : t('payNote.partStillToPay')}`,
       }
     }
 
@@ -124,12 +130,12 @@ export function paymentNote(
       // again — is the one that cannot be wrong: at worst they owe money and are told at the hatch.
       return {
         html: `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
-    <p style="margin:0;font-size:16px;font-weight:800;color:#92400e">We're still confirming your payment</p>
-    <p style="margin:6px 0 0;font-size:13px;color:#b45309">Your card was authorised, so please do not pay again — ${truckName} will confirm at the hatch.</p>
+    <p style="margin:0;font-size:16px;font-weight:800;color:#92400e">${t('payNote.unknownTitle')}</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#b45309">${t('payNote.unknownBody', tr)}</p>
   </div>`,
-        text: `We're still confirming your payment. Your card was authorised, so please do not pay again — ${truckName} will confirm at the hatch.`,
-        short: "We're still confirming your payment",
-        readySuffix: " We're still confirming your payment — please do not pay again.",
+        text: t('payNote.unknownText', tr),
+        short: t('payNote.unknownTitle'),
+        readySuffix: ` ${t('payNote.unknownReady')}`,
       }
 
     case 'hatch':
@@ -138,11 +144,11 @@ export function paymentNote(
       // a walk-up, and a card order whose hold was released without being taken all land here.
       return {
         html: `<div style="background:#f1f5f9;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
-    <p style="margin:0;font-size:16px;font-weight:800;color:#1e293b">Pay at the truck on collection</p>
+    <p style="margin:0;font-size:16px;font-weight:800;color:#1e293b">${t('payNote.hatchTitle')}</p>
   </div>`,
-        text: 'Pay at the truck on collection.',
-        short: 'Pay at the truck on collection',
-        readySuffix: ' Pay at the truck.',
+        text: t('payNote.hatchText'),
+        short: t('payNote.hatchTitle'),
+        readySuffix: ` ${t('payNote.hatchReady')}`,
       }
   }
 }
@@ -228,7 +234,7 @@ export function renderOrderLinesHtml(items: EmailOrderItem[], deals: EmailDeal[]
  * the rows add nothing and the email is byte-identical.
  */
 export function chargeRowsHtml(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string {
-  return chargeLinesFor(charges).map(l => `
+  return chargeLinesFor(charges, 'customer', money.locale).map(l => `
       <tr>
         <td style="padding:4px 0;color:#64748b">${l.label}${l.rate ? ` <span style="font-size:12px;color:#94a3b8">${l.rate}</span>` : ''}</td>
         <td style="text-align:right;padding:4px 0;color:#64748b">${formatMinor(l.minor, money)}</td>
@@ -236,7 +242,7 @@ export function chargeRowsHtml(charges: ChargeLineSource | null | undefined, mon
 }
 /** The same rows as text lines, e.g. "Sales tax 8.25%: $1.98". Empty for every UK order. */
 export function chargeTextLines(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string[] {
-  return chargeLinesFor(charges).map(l => chargeLineText(l, m => formatMinor(m, money)))
+  return chargeLinesFor(charges, 'customer', money.locale).map(l => chargeLineText(l, m => formatMinor(m, money), money.locale))
 }
 
 export function formatConfirmationEmail(params: {
@@ -319,6 +325,7 @@ export function formatConfirmationEmail(params: {
     slotAdjustedFrom: formatSlot(params.slotAdjustedFrom, params.time),
   }
   const isReady = params.variant === 'ready'
+  const t = emailT(params.money.locale)
   // ONE RESOLUTION, USED BY ALL THREE PLACES THIS EMAIL MENTIONS MONEY. The fallback is what keeps
   // every existing caller byte-identical: promote-draft still passes only `cardHeld`, and the walk-up
   // and pay-at-hatch sites still pass neither.
@@ -331,11 +338,12 @@ export function formatConfirmationEmail(params: {
       : undefined,
     params.money,
   )
+  const ids = { id: params.orderId, truck: params.truckName }
   const subject = isReady
-    ? `Order #${params.orderId} is ready — ${params.truckName}`
+    ? t('confirmation.subjectReady', ids)
     : params.autoAccepted
-      ? `Order #${params.orderId} confirmed`
-      : `Order #${params.orderId} received`
+      ? t('confirmation.subjectConfirmed', ids)
+      : t('confirmation.subjectReceived', ids)
 
   // Single-sourced line rendering (item + deal rows) — see renderOrderLinesHtml.
   const orderLinesHtml = renderOrderLinesHtml(params.items, params.deals, params.money)
@@ -347,19 +355,19 @@ export function formatConfirmationEmail(params: {
     <div style="background:${params.slotAdjustedFrom || !params.autoAccepted ? '#fff7ed' : '#f0fdf4'};border:1px solid ${params.slotAdjustedFrom || !params.autoAccepted ? '#fed7aa' : '#bbf7d0'};border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center">
       <p style="margin:0;color:${params.slotAdjustedFrom || !params.autoAccepted ? '#92400e' : '#166534'}">
         ${params.slotAdjustedFrom
-          ? `<strong style="font-size:16px">Your collection time has been updated</strong><br><span style="font-size:17px;font-weight:800">${params.slot}</span><br><span style="font-size:13px;opacity:0.85">Previously: ${params.slotAdjustedFrom}</span>`
+          ? `<strong style="font-size:16px">${t('confirmation.slotUpdated')}</strong><br><span style="font-size:17px;font-weight:800">${params.slot}</span><br><span style="font-size:13px;opacity:0.85">${t('confirmation.previously', { time: params.slotAdjustedFrom })}</span>`
           : params.autoAccepted
             ? params.slotChanged && (params.requestedSlot ?? params.slot)
-              ? `<strong style="font-size:17px;font-weight:800">Ready at ${params.slot}</strong><br><span style="font-size:13px;opacity:0.85">Your ${params.requestedSlot ?? params.slot} slot was just taken — this is the next available time.</span>`
-              : `<strong style="font-size:17px">Collection time: ${params.slot}</strong><br><span style="font-size:13px;opacity:0.85">See you at the hatch!</span>`
-            : `<strong style="font-size:16px">Preferred collection time: ${params.slot}</strong><br><span style="font-size:13px;opacity:0.85">We'll confirm your collection time when we accept your order.</span>`
+              ? `<strong style="font-size:17px;font-weight:800">${t('confirmation.readyAt', { time: params.slot })}</strong><br><span style="font-size:13px;opacity:0.85">${t('confirmation.slotTaken', { time: params.requestedSlot ?? params.slot })}</span>`
+              : `<strong style="font-size:17px">${t('confirmation.collectionTime', { time: params.slot })}</strong><br><span style="font-size:13px;opacity:0.85">${t('confirmation.seeYou')}</span>`
+            : `<strong style="font-size:16px">${t('confirmation.preferredTime', { time: params.slot })}</strong><br><span style="font-size:13px;opacity:0.85">${t('confirmation.weWillConfirm')}</span>`
         }
       </p>
     </div>` : ''
 
   const notesSection = params.notes ? `
     <div style="margin-top:12px;padding:10px;background:#f8fafc;border-radius:8px;font-size:13px;color:#64748b">
-      <strong>Special instructions:</strong> ${params.notes}
+      ${t.markup('confirmation.specialInstructions', { notes: params.notes, b: strong })}
     </div>` : ''
 
   // Collection venue — single line (matches the truck "new order" email format)
@@ -374,7 +382,7 @@ export function formatConfirmationEmail(params: {
     if (!method) return ''
     type ContactEntry = { label: string; value: string | null | undefined; isLink: boolean }
     const map: Record<string, ContactEntry> = {
-      phone:     { label: 'Call us',                  value: params.contactPhone,     isLink: false },
+      phone:     { label: t('confirmation.contactCall'), value: params.contactPhone, isLink: false },
       whatsapp:  (() => {
         // Customer-facing WhatsApp number: prefer the WhatsApp sender, fall back to the contact phone
         // (Gusto's number lives in contact_phone, not whatsapp_sender). Show the number VISIBLY in the
@@ -383,23 +391,23 @@ export function formatConfirmationEmail(params: {
         // "→ 44…"): "07380736226" (GB) → "https://wa.me/447380736226". A number that is not a plausible
         // length for its country gets no link (it had one that could not open).
         const raw = params.whatsappSender ?? params.contactPhone
-        if (!raw) return { label: 'WhatsApp us', value: null as string | null, isLink: true }
+        if (!raw) return { label: t('confirmation.contactWhatsApp'), value: null as string | null, isLink: true }
         const intl = phoneLinkDigits(raw, params.phoneCountry)
-        return { label: `WhatsApp us: ${raw}`, value: intl ? `https://wa.me/${intl}` : null, isLink: true }
+        return { label: t('confirmation.contactWhatsAppNumber', { number: raw }), value: intl ? `https://wa.me/${intl}` : null, isLink: true }
       })(),
-      facebook:  { label: 'Message us on Facebook',    value: params.socialFacebook,   isLink: true },
-      messenger: { label: 'Message us on Messenger',   value: params.socialFacebook ? `https://m.me/${params.socialFacebook.split('/').pop()}` : null, isLink: true },
-      instagram: { label: 'DM us on Instagram',        value: params.socialInstagram ? `https://instagram.com/${params.socialInstagram.replace('@', '')}` : null, isLink: true },
-      email:     { label: 'Email us',                  value: params.contactEmail,     isLink: false },
+      facebook:  { label: t('confirmation.contactFacebook'), value: params.socialFacebook, isLink: true },
+      messenger: { label: t('confirmation.contactMessenger'), value: params.socialFacebook ? `https://m.me/${params.socialFacebook.split('/').pop()}` : null, isLink: true },
+      instagram: { label: t('confirmation.contactInstagram'), value: params.socialInstagram ? `https://instagram.com/${params.socialInstagram.replace('@', '')}` : null, isLink: true },
+      email:     { label: t('confirmation.contactEmail'), value: params.contactEmail, isLink: false },
     }
     const contact = map[method]
     if (!contact?.value) return ''
     return `
     <div style="margin-top:12px;padding:14px 16px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
-      <p style="margin:0 0 6px;font-size:12px;color:#64748b;font-weight:600">Questions about your order?</p>
+      <p style="margin:0 0 6px;font-size:12px;color:#64748b;font-weight:600">${t('confirmation.questions')}</p>
       ${contact.isLink
-        ? `<a href="${contact.value}" style="color:#ea580c;font-size:14px;text-decoration:none">${contact.label} →</a>`
-        : `<p style="margin:0;font-size:14px;color:#334155">${contact.label}: ${contact.value}</p>`
+        ? `<a href="${contact.value}" style="color:#ea580c;font-size:14px;text-decoration:none">${t('confirmation.contactLink', { label: contact.label })}</a>`
+        : `<p style="margin:0;font-size:14px;color:#334155">${t('confirmation.contactValue', { label: contact.label, value: contact.value })}</p>`
       }
     </div>`
   })()
@@ -408,13 +416,16 @@ export function formatConfirmationEmail(params: {
   const cancellationSection = (params.allowCancellation && !isReady) ? `
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0">
       <p style="margin:0;font-size:12px;color:#94a3b8">
-        Need to cancel?
-        <a href="${params.baseUrl || 'https://www.hatchgrab.com'}/order/${params.orderKey}/manage" style="color:#ea580c;margin-left:4px">Cancel your order</a>
-        (up to ${params.cancellationCutoffMins ?? 30} minutes before your pickup time)
+        ${t.markup('confirmation.cancelLine', {
+          n: params.cancellationCutoffMins ?? 30,
+          count: String(params.cancellationCutoffMins ?? 30),
+          // The link sits on its own line in the markup, as it always has — the tag supplies those line breaks.
+          link: chunks => `\n        <a href="${params.baseUrl || 'https://www.hatchgrab.com'}/order/${params.orderKey}/manage" style="color:#ea580c;margin-left:4px">${chunks}</a>\n        `,
+        })}
       </p>
     </div>` : ''
 
-  const heading = isReady ? 'Your order is ready! 🎉' : params.autoAccepted ? 'Order confirmed!' : 'Order received!'
+  const heading = isReady ? t('confirmation.headingReady') : params.autoAccepted ? t('confirmation.headingConfirmed') : t('confirmation.headingReceived')
 
   const html = `<!DOCTYPE html>
 <html>
@@ -426,21 +437,21 @@ export function formatConfirmationEmail(params: {
     <p style="color:#64748b;margin:0;font-size:14px">${isReady
       // THE READY LINE ALSO SAID "Pay at the truck." TO EVERYONE, AND IT IS NOT EVEN THE PAYMENT BOX.
       // A card customer collecting an order they have already been charged for read it twice.
-      ? `Your order is ready for collection — come and collect from ${params.truckName}.${payNote.readySuffix}`
+      ? `${t('confirmation.leadReady', { truck: params.truckName })}${payNote.readySuffix}`
       : params.autoAccepted
-        ? `Thanks! We've received your order and we're getting it ready.`
-        : `Thanks! We've received your order — we'll let you know once it's confirmed.`}</p>
+        ? t('confirmation.leadConfirmed')
+        : t('confirmation.leadReceived')}</p>
   </div>
 
   ${slotSection}
 
   <div style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:12px">
-    <p style="margin:0 0 10px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em">Order #${params.orderId}</p>
+    <p style="margin:0 0 10px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em">${t('confirmation.orderNumber', { id: params.orderId })}</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px">
       ${orderLinesHtml}
       ${discountRow}
       <tr style="border-top:1px solid #e2e8f0">
-        <td style="padding-top:10px;font-weight:800;font-size:15px">Total</td>
+        <td style="padding-top:10px;font-weight:800;font-size:15px">${t('confirmation.total')}</td>
         <td style="text-align:right;padding-top:10px;font-weight:800;font-size:15px">${formatMajor(params.total, params.money)}</td>
       </tr>
     </table>
@@ -457,7 +468,7 @@ export function formatConfirmationEmail(params: {
   ${cancellationSection}
 
   <p style="text-align:center;margin-top:20px;font-size:11px;color:#94a3b8">
-    Powered by <a href="https://hatchgrab.com" style="color:#ea580c;text-decoration:none;font-weight:700">HatchGrab</a>
+    ${t.markup('confirmation.poweredBy', { brand: chunks => `<a href="https://hatchgrab.com" style="color:#ea580c;text-decoration:none;font-weight:700">${chunks}</a>` })}
   </p>
 
 </body>
@@ -465,8 +476,8 @@ export function formatConfirmationEmail(params: {
 
   const text = [
     isReady
-      ? `Order #${params.orderId} is ready to collect — ${params.truckName}`
-      : `Order #${params.orderId} ${params.autoAccepted ? 'confirmed' : 'received'} — ${params.truckName}`,
+      ? t('confirmation.textTitleReady', ids)
+      : params.autoAccepted ? t('confirmation.textTitleConfirmed', ids) : t('confirmation.textTitleReceived', ids),
     '',
     params.items.map(i => {
       const lines = [`${i.quantity}x ${i.name} — ${formatMajor(i.unit_price * i.quantity, params.money)}`]
@@ -493,17 +504,17 @@ export function formatConfirmationEmail(params: {
       return lines.join('\n')
     }).join('\n') : '',
     ...chargeTextLines(params.charges, params.money),
-    `Total: ${formatMajor(params.total, params.money)}`,
+    t('confirmation.textTotal', { amount: formatMajor(params.total, params.money) }),
     isReady
-      ? `Your order is ready for collection — come and collect.${payNote.readySuffix}`
+      ? `${t('confirmation.textReady')}${payNote.readySuffix}`
       : params.slotAdjustedFrom && params.slot
-      ? `Collection time updated to ${params.slot} (was ${params.slotAdjustedFrom}).`
+      ? t('confirmation.textSlotUpdated', { time: params.slot, previous: params.slotAdjustedFrom })
       : params.autoAccepted && params.slot
         ? params.slotChanged && params.requestedSlot
-          ? `Ready at ${params.slot}. Your ${params.requestedSlot} slot was just taken — this is the next available time.`
-          : `Collection time: ${params.slot}. See you at the hatch!`
-        : params.slot ? `Preferred collection: ${params.slot} — we'll confirm when we accept your order.` : '',
-    params.notes ? `Notes: ${params.notes}` : '',
+          ? t('confirmation.textSlotTaken', { time: params.slot, requested: params.requestedSlot })
+          : t('confirmation.textCollection', { time: params.slot })
+        : params.slot ? t('confirmation.textPreferred', { time: params.slot }) : '',
+    params.notes ? t('confirmation.textNotes', { notes: params.notes }) : '',
     '',
     // THE SAME SENTENCE IN THE PLAIN TEXT. Both halves of the email had it hardcoded, so changing only
     // the HTML would have left the text part telling a paying customer to pay again — and the text part
@@ -515,17 +526,17 @@ export function formatConfirmationEmail(params: {
       if (!method) return ''
       if (method === 'whatsapp' && params.whatsappSender) {
         const num = params.whatsappSender.replace(/[^\d+]/g, '')
-        return `Questions? Message us on WhatsApp: ${num}`
+        return t('confirmation.textWhatsApp', { value: num })
       }
-      if (method === 'email' && params.contactEmail) return `Questions? Email us: ${params.contactEmail}`
-      if (method === 'phone' && params.contactPhone) return `Questions? Call us: ${params.contactPhone}`
-      if (method === 'facebook' && params.socialFacebook) return `Questions? Message us on Facebook: ${params.socialFacebook}`
-      if (method === 'messenger' && params.socialFacebook) return `Questions? Message us on Messenger: https://m.me/${params.socialFacebook.split('/').pop()}`
-      if (method === 'instagram' && params.socialInstagram) return `Questions? DM us on Instagram: https://instagram.com/${params.socialInstagram.replace('@', '')}`
+      if (method === 'email' && params.contactEmail) return t('confirmation.textEmail', { value: params.contactEmail })
+      if (method === 'phone' && params.contactPhone) return t('confirmation.textCall', { value: params.contactPhone })
+      if (method === 'facebook' && params.socialFacebook) return t('confirmation.textFacebook', { value: params.socialFacebook })
+      if (method === 'messenger' && params.socialFacebook) return t('confirmation.textMessenger', { value: `https://m.me/${params.socialFacebook.split('/').pop()}` })
+      if (method === 'instagram' && params.socialInstagram) return t('confirmation.textInstagram', { value: `https://instagram.com/${params.socialInstagram.replace('@', '')}` })
       return ''
     })(),
     '',
-    'Powered by HatchGrab — hatchgrab.com',
+    t('common.poweredByText'),
   ].filter(Boolean).join('\n')
 
   return { subject, html, text }
@@ -714,21 +725,19 @@ export function cancellationPaymentSentence(args: {
   money: MoneyFormat
 }): { html: string; text: string } {
   const money = (m: number) => formatMinor(m, args.money)
+  const t = emailT(args.money.locale)
+  const wrap = (sentence: string) => ({ html: `<p>${sentence}</p>`, text: ` ${sentence}` })
   if (typeof args.refundedMinor === 'number' && args.refundedMinor > 0) {
-    const sentence = `${money(args.refundedMinor)} has been refunded to your card. Refunds usually take 5 to 10 business days to appear on your statement, depending on your bank.`
-    return { html: `<p>${sentence}</p>`, text: ` ${sentence}` }
+    return wrap(t('cancelSentence.refunded', { amount: money(args.refundedMinor) }))
   }
   if (args.refundDeclined) {
-    const sentence = `If you have a question about payment for this order, please contact ${args.truckName}.`
-    return { html: `<p>${sentence}</p>`, text: ` ${sentence}` }
+    return wrap(t('cancelSentence.refundDeclined', { truck: args.truckName }))
   }
   if (args.paymentState === 'held' || args.paymentState === 'held_short') {
-    const sentence = `Your card was held for this order, not charged. That hold has been released and no money has been taken.`
-    return { html: `<p>${sentence}</p>`, text: ` ${sentence}` }
+    return wrap(t('cancelSentence.heldReleased'))
   }
   if (args.paymentState === 'captured' || args.paymentState === 'part_paid') {
-    const sentence = `If you paid by card, any refund is handled by ${args.truckName} directly — please contact them about it.`
-    return { html: `<p>${sentence}</p>`, text: ` ${sentence}` }
+    return wrap(t('cancelSentence.paidContactTruck', { truck: args.truckName }))
   }
   return { html: '', text: '' }
 }
@@ -755,23 +764,26 @@ export function rejectionPaymentSentence(args: {
   paymentState?: EmailPaymentState
   /** Did the release actually succeed? From the release call's return value, never assumed. */
   holdReleased?: boolean
+  /** The order's language (its country's locale); en-GB when absent. */
+  locale?: string | null
 }): { html: string; text: string } {
+  const t = emailT(args.locale)
   const wrap = (sentence: string) => ({ html: `<p>${sentence}</p>`, text: ` ${sentence}` })
   if (args.paymentState === 'held' || args.paymentState === 'held_short') {
     return wrap(args.holdReleased
-      ? `Your card was held for this order and never charged, and that hold has now been released.`
-      : `Your card was held for this order and never charged, and that hold will clear on its own — please contact ${args.truckName} if it has not cleared within a week.`)
+      ? t('rejectSentence.heldReleased')
+      : t('rejectSentence.heldWillClear', { truck: args.truckName }))
   }
   // Pay at the hatch, or a card order whose hold had already gone. Nothing was ever taken, and this is
   // the case the overwhelming majority of rejections are in.
   if (args.paymentState === 'hatch') {
-    return wrap(`You have not been charged for this order.`)
+    return wrap(t('rejectSentence.notCharged'))
   }
   // ⚠️ SHOULD NOT HAPPEN AND IS HANDLED ANYWAY. Reject is offered on pending orders, and no capture site
   // fires before an order is confirmed — but if money HAS moved, the one thing this must not do is print
   // "you have not been charged" over a real charge.
   if (args.paymentState === 'captured' || args.paymentState === 'part_paid') {
-    return wrap(`If you paid by card for this order, please contact ${args.truckName} about it.`)
+    return wrap(t('rejectSentence.paidContactTruck', { truck: args.truckName }))
   }
   return { html: '', text: '' }
 }
@@ -803,26 +815,29 @@ export async function sendRefundEmail(params: {
   const money = (m: number) => formatMinor(m, params.money)
   const full = params.amountMinor >= params.chargedMinor
   const remaining = Math.max(0, params.chargedMinor - params.amountMinor)
-  const timing = 'Refunds usually take 5 to 10 business days to appear on your statement, depending on your bank.'
+  const t = emailT(params.money.locale)
+  const hi = t('common.hi', { withName: params.customerName ? 'yes' : 'no', name: params.customerName || '' })
+  const timing = t('refund.timing')
   const lead = full
-    ? `${params.truckName} has refunded your order. ${money(params.amountMinor)} has gone back to the card you paid with.`
-    : `${params.truckName} has refunded ${money(params.amountMinor)} of your order to the card you paid with. The rest of the order, ${money(remaining)}, is unchanged.`
+    ? t('refund.leadFull', { truck: params.truckName, amount: money(params.amountMinor) })
+    : t('refund.leadPartial', { truck: params.truckName, amount: money(params.amountMinor), remaining: money(remaining) })
+  const contact = t('refund.contact', { truck: params.truckName })
   const html = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
-      <p>Hi ${params.customerName || 'there'},</p>
+      <p>${hi}</p>
       <p>${lead}</p>
       <p style="color:#64748b;font-size:14px">${timing}</p>
-      <p>If anything looks wrong, please contact ${params.truckName}.</p>
+      <p>${contact}</p>
       <p>${params.truckName}</p>
     </div>
   `
   await sendConfirmationEmail({
     to: params.to,
     subject: full
-      ? `Your order #${params.orderId} has been refunded — ${params.truckName}`
-      : `A refund for your order #${params.orderId} — ${params.truckName}`,
+      ? t('refund.subjectFull', { id: params.orderId, truck: params.truckName })
+      : t('refund.subjectPartial', { id: params.orderId, truck: params.truckName }),
     html,
-    text: `Hi ${params.customerName || 'there'}, ${lead} ${timing} If anything looks wrong, please contact ${params.truckName}. Powered by HatchGrab — hatchgrab.com`,
+    text: `${hi} ${lead} ${timing} ${contact} ${t('common.poweredByText')}`,
     truckName: params.truckName,
   })
 }
@@ -870,22 +885,24 @@ export async function sendCancellationEmail({
   })
   const refundLine = money.html
   const refundText = money.text
+  const t = emailT(fmt.locale)
+  const named = { withName: customerName ? 'yes' : 'no', name: customerName || '' }
   const html = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
-      <p>Hi ${customerName || 'there'},</p>
-      <p>Your order <strong>#${orderId}</strong> from <strong>${truckName}</strong> has been cancelled.</p>
+      <p>${t('common.hi', named)}</p>
+      <p>${t.markup('cancellation.body', { id: orderId, truck: truckName, b: strong })}</p>
       ${reasonLine}
       ${refundLine}
-      <p>We're sorry for any inconvenience.</p>
+      <p>${t('common.sorry')}</p>
       <p>${truckName}</p>
-      <p style="color:#94a3b8;font-size:12px">Powered by HatchGrab · hatchgrab.com</p>
+      <p style="color:#94a3b8;font-size:12px">${t('common.poweredByDot')}</p>
     </div>
   `
   await sendConfirmationEmail({
     to,
-    subject: `Your order has been cancelled — ${truckName}`,
+    subject: t('cancellation.subject', { truck: truckName }),
     html,
-    text: `Hi ${customerName || 'there'}, your order #${orderId} from ${truckName} has been cancelled.${reason ? ' ' + reason : ''}${refundText} We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com`,
+    text: `${t('cancellation.textLead', { ...named, id: orderId, truck: truckName })}${reason ? ' ' + reason : ''}${refundText} ${t('common.sorry')} ${t('common.poweredByText')}`,
     truckName,
   })
 }
@@ -910,26 +927,32 @@ export async function sendEventCancellationEmail({
     ? formatYmd(eventDate, time, { weekday: 'long', day: 'numeric', month: 'long' })
     : null
   const noteLine = note ? `<p>${note}</p>` : ''
-  // Same correction as the cancellation email above, for the same reasons.
+  const t = emailT(time.locale)
+  // Same correction as the cancellation email above, for the same reasons — and the same sentence.
   const refundLine = paymentStatus === 'paid'
-    ? ` If you paid by card, any refund is handled by ${truckName} directly — please contact them about it.`
+    ? ` ${t('cancelSentence.paidContactTruck', { truck: truckName })}`
     : ''
+  const named = { withName: customerName ? 'yes' : 'no', name: customerName || '' }
+  const where = {
+    truck: truckName, withLocation: location ? 'yes' : 'no', location,
+    withDate: dateFormatted ? 'yes' : 'no', date: dateFormatted ?? '',
+  }
   const html = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
-      <p>Hi ${customerName || 'there'},</p>
-      <p>Unfortunately <strong>${truckName}</strong>'s event${location ? ` at ${location}` : ''}${dateFormatted ? ` on ${dateFormatted}` : ''} has been cancelled.</p>
+      <p>${t('common.hi', named)}</p>
+      <p>${t.markup('eventCancellation.body', { ...where, b: strong })}</p>
       ${noteLine}
-      <p>Your order <strong>#${orderId}</strong> has been cancelled.${refundLine}</p>
-      <p>We're sorry for any inconvenience.</p>
+      <p>${t.markup('eventCancellation.orderCancelled', { id: orderId, b: strong })}${refundLine}</p>
+      <p>${t('common.sorry')}</p>
       <p>${truckName}</p>
-      <p style="color:#94a3b8;font-size:12px">Powered by HatchGrab · hatchgrab.com</p>
+      <p style="color:#94a3b8;font-size:12px">${t('common.poweredByDot')}</p>
     </div>
   `
   await sendConfirmationEmail({
     to,
-    subject: `${truckName} at ${location || 'your event'} — cancelled`,
+    subject: t('eventCancellation.subject', where),
     html,
-    text: `Hi ${customerName || 'there'}, unfortunately ${truckName}'s event${location ? ` at ${location}` : ''}${dateFormatted ? ` on ${dateFormatted}` : ''} has been cancelled. Your order #${orderId} has been cancelled.${refundLine}${note ? ' ' + note : ''} We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com`,
+    text: `${t('eventCancellation.textLead', { ...named, ...where, id: orderId })}${refundLine}${note ? ' ' + note : ''} ${t('common.sorry')} ${t('common.poweredByText')}`,
     truckName,
   })
 }

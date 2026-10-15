@@ -105,7 +105,7 @@ console.log('── BROKEN VARIANT: MUST report FAILURE ────────
   // V1 — the ordering exactly as it shipped: `readyToMins` back inside the component body, BELOW the
   // memo that calls it. Rendering with a basket must throw the ReferenceError Dominic saw.
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'aor-v1-'))
-  for (const d of ['components', 'lib', 'app']) if (fs.existsSync(path.join(REPO, d))) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
+  for (const d of ['components', 'lib', 'app', 'messages']) if (fs.existsSync(path.join(REPO, d))) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
   fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules'))
   const f = path.join(tmp, 'components/dashboard/AddOrderPanel.tsx')
   let src = fs.readFileSync(f, 'utf8')

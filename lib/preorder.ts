@@ -8,6 +8,7 @@
 // Date from a local wall-clock string + compares across timezones (the §V7.4 device-local trap that
 // getBundleAvailabilityMessage falls into — deliberately NOT copied here).
 import { weekdayName, monthName } from '@/lib/time-utils'
+import { translatorFor } from '@/lib/i18n/translator'
 
 /** Per-item pre-order config — maps to the menu_items_db columns:
  *  preorder_enabled / preorder_deadline_type / preorder_deadline_value / preorder_past_action. */
@@ -140,12 +141,14 @@ export function formatPreorderLabel(
   eventDate: string,
   locale = 'en-GB',
 ): string {
-  if (state === 'closed_pending') return 'Pre-orders closed. Kitchen to approve.'
+  // The words: messages/en-GB.json `preorder` (Language Phase 1a). ⚠️ The clock is still written here as 24-hour
+  // HH:MM for every country — today's output, US included; moving it to the truck's time format is a visible
+  // change for the US and is listed in the Phase 1a report, not made here.
+  const t = translatorFor(locale, 'preorder')
+  if (state === 'closed_pending') return t('closedPending')
   const hh = String(Math.floor(mins / 60)).padStart(2, '0')
   const mm = String(mins % 60).padStart(2, '0')
-  let label = `Pre-order by ${hh}:${mm}`
-  if (date !== eventDate) label += `, ${shortDay(date, locale)}`
-  return label
+  return date !== eventDate ? t('deadlineOnDay', { time: `${hh}:${mm}`, day: shortDay(date, locale) }) : t('deadline', { time: `${hh}:${mm}` })
 }
 
 // ── PRE-ORDER OPEN-WINDOW (V8.3) — the twin of the deadline above. WHEN pre-ordering OPENS. ───────────
@@ -179,7 +182,7 @@ export function isPreorderOpenYet(rule: string | null | undefined, eventDate: st
 export function formatPreorderOpenLabel(rule: string | null | undefined, eventDate: string, locale = 'en-GB'): string | null {
   const openDate = preorderOpenDate(rule, eventDate)
   if (openDate == null) return null
-  return `Pre-orders open ${shortDay(openDate, locale)}`
+  return translatorFor(locale, 'preorder')('opens', { day: shortDay(openDate, locale) })
 }
 
 /** Operator-facing description of the open rule (for the Settings card). */

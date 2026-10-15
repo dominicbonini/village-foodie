@@ -13,7 +13,12 @@ module.exports = async function after(x) {
   const lock = JSON.parse(src('package-lock.json'))
   t('next-intl pinned to an exact version (4.14.8), lockfile agrees', pkg.dependencies['next-intl'] === '4.14.8' && lock.packages['node_modules/next-intl']?.version === '4.14.8', pkg.dependencies['next-intl'])
   const cfg = src('next.config.ts')
-  t('next.config registers the request config, and nothing else changed shape', /createNextIntlPlugin\("\.\/lib\/i18n\/request\.ts"\)/.test(cfg) && /export default withNextIntl\(nextConfig\);/.test(cfg))
+  // Language Phase 1a (docs/language-phase-1a-report.md): the same request config, now in the object form that
+  // also switches on the build's message precompile — and nothing else.
+  t('next.config registers the request config, and nothing else changed shape',
+    (/createNextIntlPlugin\("\.\/lib\/i18n\/request\.ts"\)/.test(cfg)
+      || /createNextIntlPlugin\(\{\s*requestConfig: "\.\/lib\/i18n\/request\.ts",\s*experimental: \{ messages: \{ path: "\.\/messages", format: "json", locales: "infer", precompile: true \} \},\s*\}\)/.test(cfg))
+    && /export default withNextIntl\(nextConfig\);/.test(cfg))
   const proxy = fs.existsSync(path.join(REPO, 'proxy.ts')) ? src('proxy.ts') : ''
   const appDirs = require('child_process').execSync("find app -type d -name '[[]locale[]]'", { cwd: REPO, encoding: 'utf8' }).trim()
   const anyMiddleware = require('child_process').execSync("grep -rl \"next-intl/middleware\\|next-intl/routing\\|next-intl/navigation\" app components lib proxy.ts 2>/dev/null || true", { cwd: REPO, encoding: 'utf8' }).trim()

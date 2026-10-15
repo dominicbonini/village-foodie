@@ -118,7 +118,7 @@ async function readyPress(tree, presses) {
   console.log('── BROKEN VARIANTS: MUST report FAILURE ─────────────────────────────────────────────────')
   const variant = (tag, patch) => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `rp-${tag}-`))
-    for (const d of ['lib']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
+    for (const d of ['lib', 'messages']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
     const f = path.join(tmp, 'lib/dashboard-read.ts'); const src = fs.readFileSync(f, 'utf8')
     const out = patch(src); if (out === src) { console.log(`🔴 ${tag}: the patch did not apply`); process.exit(1) }

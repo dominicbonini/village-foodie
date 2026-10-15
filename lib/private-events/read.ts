@@ -155,7 +155,7 @@ export type LinkOutcome =
   /** The token is current but ordering by link is switched off for this event. */
   | { kind: 'ordering_off'; event: PrivateEventRow; truck: PrivateLinkTruck }
   /** The token was replaced or cleared. We know whose it was, so we can say so. */
-  | { kind: 'replaced'; truckName: string; reason: 'replaced' | 'made_public' }
+  | { kind: 'replaced'; truckName: string | null; truckCountry: string | null; reason: 'replaced' | 'made_public' }
   /** No such token, ever — or it is not even shaped like one. */
   | { kind: 'unknown' }
   /** The probe itself failed. ⛔ Treated as "no access", never as "let them in". */
@@ -180,6 +180,8 @@ export interface PrivateLinkTruck {
   slug: string | null
   active: boolean | null
   logo_storage_path: string | null
+  /** The truck's country — the guest page reads in its language (Language Phase 1a). */
+  country?: string | null
 }
 
 const EVENT_COLS =
@@ -238,10 +240,12 @@ export async function resolvePrivateLink(
     if (!retired) return { kind: 'unknown' }
 
     const { data: tr } = await supabase
-      .from('trucks').select('name').eq('id', retired.truck_id).maybeSingle()
+      .from('trucks').select('name, country').eq('id', retired.truck_id).maybeSingle()
     return {
       kind: 'replaced',
-      truckName: tr?.name || 'The food truck',
+      // No name → the page's own words for "the truck" (messages/en-GB.json `privateLink.truckFallback`).
+      truckName: tr?.name || null,
+      truckCountry: tr?.country ?? null,
       reason: retired.reason === 'made_public' ? 'made_public' : 'replaced',
     }
   }
@@ -251,7 +255,7 @@ export async function resolvePrivateLink(
 
   const { data: tr, error: tErr } = await supabase
     .from('trucks')
-    .select('id, name, slug, active, logo_storage_path')
+    .select('id, name, slug, active, logo_storage_path, country')
     .eq('id', row.truck_id)
     .maybeSingle()
 

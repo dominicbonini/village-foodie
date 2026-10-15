@@ -109,7 +109,7 @@ async function view(tree, stores, { orderKeys = SEEDED, isAdmin = false, isSampl
   console.log('── BROKEN VARIANTS: MUST report FAILURE ─────────────────────────────────────────────────')
   const variant = (tag, file, patch) => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `dwo-${tag}-`))
-    for (const d of ['components', 'lib']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
+    for (const d of ['components', 'lib', 'messages']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
     const f = path.join(tmp, file); const src = fs.readFileSync(f, 'utf8')
     const out = patch(src); if (out === src) { console.log(`🔴 ${tag}: the patch did not apply`); process.exit(1) }

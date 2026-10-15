@@ -7,6 +7,7 @@
 import React from 'react'
 import { useMoney } from '@/components/MoneyContext'
 import { formatMajorOrBare } from '@/lib/money-format'
+import { useT } from '@/lib/i18n/client'
 
 interface Mod { name: string; price: number; allergens?: string[]; dietary?: string[] }
 
@@ -43,6 +44,7 @@ export function OrderLineItem({
 }: Props) {
   // The screen's currency — the basket's (the truck's) or, inside an order card, the order's own.
   const fmt = useMoney()
+  const t = useT('orderLine')   // Language Phase 1a: messages/en-GB.json `orderLine`
   const amount = (major: number) => formatMajorOrBare(major, fmt, 'order line')
   const hasMods = modifiers.length > 0
   const modSum = modifiers.reduce((s, m) => s + m.price, 0)
@@ -94,7 +96,7 @@ export function OrderLineItem({
       {/* Total footer row (customer with modifier breakdown only) */}
       {showBreakdown && (
         <div className="flex justify-between text-[10px] pl-3 text-slate-600 font-medium border-t border-slate-200 mt-0.5 pt-0.5">
-          <span>Total</span>
+          <span>{t('total')}</span>
           <span>{amount(lineTotal)}</span>
         </div>
       )}

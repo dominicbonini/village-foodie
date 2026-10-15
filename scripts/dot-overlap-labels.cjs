@@ -33,7 +33,7 @@ const ENGINE_FILES = ['lib/slot-availability.ts', 'lib/slot-display.ts', 'lib/sl
 function engine(root, tag) { const c = compile(root, ENGINE_FILES, tag); return { E: c.req('lib/slot-availability.js'), D: c.req('lib/slot-display.js'), G: c.req('lib/slot-generation.js'), out: c.out } }
 function variantRoot(tag, patches) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `dot-${tag}-`))
-  for (const d of ['lib', 'components', 'app']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
+  for (const d of ['lib', 'components', 'app', 'messages']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
   fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules'))
   for (const [rel, from, to] of patches) {
     const f = path.join(tmp, rel); const src = fs.readFileSync(f, 'utf8')

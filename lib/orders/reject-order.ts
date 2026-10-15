@@ -30,6 +30,8 @@ import {
 // uses it too, so leaving it there would have meant either a second copy or a route that imports its own
 // internals back from here. Its body is unchanged and the cancel branch's call site is untouched.
 import { rejectionPaymentSentence, notifyCustomer } from '@/lib/email'
+import { translatorFor } from '@/lib/i18n/translator'
+import { localeForTruck } from '@/lib/i18n/server-locale'
 import type { ResolvedActor, ActorSource } from '@/lib/audit/actor'
 
 // Escape operator free-text before interpolating into a customer email's HTML (prevents broken
@@ -116,7 +118,9 @@ export async function rejectOrder(
   // reject IS the credit-back. Was: releaseOptionStock (the decrement pool, removed).
   if (order.customer_email) {
     // Mirrors the cancel email's reasonLine — the operator's reason, escaped, shown to the customer.
-    const reasonLine = rejectionReason ? `<p style="color:#475569">Reason: ${escapeHtml(rejectionReason)}</p>` : ''
+    // The words: messages/en-GB.json `emailCustomer` (Language Phase 1a), in the order's language.
+    const t = translatorFor(await localeForTruck({ country: order.country }), 'emailCustomer')
+    const reasonLine = rejectionReason ? `<p style="color:#475569">${t('rejection.reason', { reason: escapeHtml(rejectionReason) })}</p>` : ''
     // ── 🔴 ONE SENTENCE ABOUT THE MONEY, AND IT REPORTS WHAT ACTUALLY HAPPENED. ────────────────
     // The state was read BEFORE the status changed and the release ran; whether the hold really went
     // back comes from the release's own return value, never from having asked for it. A pay-at-hatch
@@ -126,22 +130,23 @@ export async function rejectOrder(
       paymentState: rejectPaymentState,
       holdReleased: rejectRelease.status === 'released'
         || (rejectRelease.status === 'none' && rejectRelease.reason === 'already_released'),
+      locale: await localeForTruck({ country: order.country }),
     })
-    await notifyCustomer(truck, order.customer_email, `Order #${order.id} update`,
+    await notifyCustomer(truck, order.customer_email, t('rejection.subject', { id: order.id }),
       `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-        <h2>Order update</h2>
-        <p>Unfortunately <strong>${truck.name}</strong> is unable to fulfil order #${order.id}.</p>
+        <h2>${t('rejection.heading')}</h2>
+        <p>${t.markup('rejection.body', { truck: truck.name, id: order.id, b: chunks => `<strong>${chunks}</strong>` })}</p>
         ${reasonLine}
         ${rejectMoney.html}
-        <p>Please order at the truck on arrival. Sorry for the inconvenience.</p>
-        <p style="color:#64748b;font-size:13px">Powered by HatchGrab · hatchgrab.com</p>
+        <p>${t('rejection.orderAtTruck')}</p>
+        <p style="color:#64748b;font-size:13px">${t('common.poweredByDot')}</p>
       </body>`,
       // THE TEXT TWIN, FROM THE SAME SENTENCE. notifyCustomer's own contract: an email that states
       // what happened to a customer's money must say it in both renderings, or a text-only client
       // reads Brevo's strip of the markup and the two can disagree.
-      `Unfortunately ${truck.name} is unable to fulfil order #${order.id}.`
-      + `${rejectionReason ? ' Reason: ' + rejectionReason : ''}${rejectMoney.text}`
-      + ` Please order at the truck on arrival. Sorry for the inconvenience. Powered by HatchGrab — hatchgrab.com`)
+      t('rejection.textLead', { truck: truck.name, id: order.id })
+      + `${rejectionReason ? ' ' + t('rejection.reason', { reason: rejectionReason }) : ''}${rejectMoney.text}`
+      + ` ${t('rejection.orderAtTruck')} ${t('common.poweredByText')}`)
   }
   // ⚠️ ADDITIVE FIELD. `success` and `status` are unchanged and mean exactly what they meant; the
   // rejection did happen. `hold_release` is the money half of the answer, which had no field before

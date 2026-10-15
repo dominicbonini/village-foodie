@@ -112,7 +112,7 @@ const FILES = ['lib/orders/cooking-reservation.ts']
   {
     // V2 — the old wording, unconditional: patch the headline back to the single string.
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'sixteen-v2-'))
-    for (const d of ['components', 'lib']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true }); fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules'))
+    for (const d of ['components', 'lib', 'messages']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true }); fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules'))
     const f = path.join(tmp, 'components/dashboard/CapacityBreachBanner.tsx'); const src = fs.readFileSync(f, 'utf8')
     const from = '                        {headline}', to = "                        {`Kitchen over capacity — ${total} ${total === 1 ? 'item' : 'items'} cooking for ${slot}`}"
     if (src.split(from).length !== 2) { console.log('🔴 V2 anchor not found'); process.exit(1) }

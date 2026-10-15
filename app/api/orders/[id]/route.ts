@@ -4,6 +4,8 @@ import { resolveTruckLogo } from '@/lib/truck-logo'
 import { moneyFormatForOrder } from '@/lib/money-server'
 import { truckTimeSettings } from '@/lib/truck-time'
 import { chargesForResponse } from '@/lib/order-charge-lines'
+import { customerErrorBody } from '@/lib/i18n/customer-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -69,8 +71,10 @@ export async function GET(
     .eq('order_key', id)
     .single()
 
+  // Both 404s below are the SAME body on purpose (see the mismatch note), so both are en-GB — a translated
+  // "not found" on one of them would tell a prober the order exists (Language Phase 1a).
   if (error || !order) {
-    return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    return NextResponse.json(customerErrorBody(DEFAULT_LOCALE, 'order_not_found'), { status: 404 })
   }
 
   const truck = order.trucks as any
@@ -80,7 +84,7 @@ export async function GET(
   // the same reasoning the hidden-truck gate in /api/orders/submit uses for its own 404. Matched against
   // BOTH the slug and the id, because a truck is addressable either way across this codebase.
   if (truckParam && truckParam !== truck?.slug && truckParam !== order.truck_id) {
-    return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    return NextResponse.json(customerErrorBody(DEFAULT_LOCALE, 'order_not_found'), { status: 404 })
   }
 
   // Fetch venue name via truck_id + event_date (orders have no direct FK to truck_events)

@@ -11,6 +11,8 @@
 // order — tax included, no tip, no fee, no surcharge — gives an EMPTY list, so every surface that renders
 // the list renders nothing new and stays byte-identical.
 
+import { translatorFor } from '@/lib/i18n/translator'
+
 /** The snapshot columns a line needs (lib/order-charges.ts). All optional: an older order has none. */
 export interface ChargeLineSource {
   food_minor?: number | null
@@ -58,35 +60,41 @@ export function formatRateBps(bps: number): string {
 const pos = (n: number | null | undefined): number => (typeof n === 'number' && Number.isFinite(n) && n > 0 ? Math.round(n) : 0)
 
 /** The lines, in the order every surface draws them, each only when non-zero. Empty for every UK order. */
-export function chargeLinesFor(src: ChargeLineSource | null | undefined, audience: ChargeLineAudience = 'customer'): ChargeLine[] {
+export function chargeLinesFor(src: ChargeLineSource | null | undefined, audience: ChargeLineAudience = 'customer', locale?: string | null): ChargeLine[] {
   if (!src) return []
+  // The words: messages/en-GB.json `charges` (Language Phase 1a). The tax label is the country's own data
+  // (country_settings) and stays as it is stored; the rate is still written by hand — listed for later.
+  const t = translatorFor(locale, 'charges')
   const tax = pos(src.tax_minor)
   const fee = pos(src.service_fee_minor)
   const card = pos(src.card_surcharge_minor)
   const tip = pos(src.tip_minor)
   const lines: ChargeLine[] = []
   if (tax > 0) {
-    const label = String(src.tax_label ?? '').trim() || 'Tax'
-    lines.push({ key: 'tax', label, rate: src.tax_rate_milli ? `${formatRateMilli(src.tax_rate_milli)}%` : null, minor: tax })
+    const label = String(src.tax_label ?? '').trim() || t('taxFallback')
+    lines.push({ key: 'tax', label, rate: src.tax_rate_milli ? t('rate', { rate: formatRateMilli(src.tax_rate_milli) }) : null, minor: tax })
   }
-  if (fee > 0) lines.push({ key: 'service_fee', label: audience === 'customer' ? 'Online service fee' : 'Service fee', rate: null, minor: fee })
-  if (card > 0) lines.push({ key: 'card_fee', label: 'Card fee', rate: null, minor: card })
+  if (fee > 0) lines.push({ key: 'service_fee', label: audience === 'customer' ? t('serviceFeeCustomer') : t('serviceFee'), rate: null, minor: fee })
+  if (card > 0) lines.push({ key: 'card_fee', label: t('cardFee'), rate: null, minor: card })
   if (tip > 0) {
     lines.push({
-      key: 'tip', label: 'Tip',
-      rate: audience === 'customer' && src.tip_pct_bps ? `${formatRateBps(src.tip_pct_bps)}%` : null,
+      key: 'tip', label: t('tip'),
+      rate: audience === 'customer' && src.tip_pct_bps ? t('rate', { rate: formatRateBps(src.tip_pct_bps) }) : null,
       minor: tip,
     })
   }
   if (lines.length === 0) return []
   // 🔴 "Subtotal" IS THE FOOD AFTER ANY DISCOUNT — what the lines below it are added to.
   const food = typeof src.food_minor === 'number' && Number.isFinite(src.food_minor) ? Math.round(src.food_minor) : 0
-  return [{ key: 'subtotal', label: 'Subtotal', rate: null, minor: food }, ...lines]
+  return [{ key: 'subtotal', label: t('subtotal'), rate: null, minor: food }, ...lines]
 }
 
 /** One line as plain text, for the text email and the CSV: "Sales tax 8.25%: $1.98". */
-export function chargeLineText(line: ChargeLine, money: (minor: number) => string): string {
-  return `${line.label}${line.rate ? ` ${line.rate}` : ''}: ${money(line.minor)}`
+export function chargeLineText(line: ChargeLine, money: (minor: number) => string, locale?: string | null): string {
+  const t = translatorFor(locale, 'charges')
+  return line.rate
+    ? t('lineWithRate', { label: line.label, rate: line.rate, amount: money(line.minor) })
+    : t('line', { label: line.label, amount: money(line.minor) })
 }
 
 /** The snapshot columns off any row that carries them — a narrower object for a prop or a JSON key. */

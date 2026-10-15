@@ -20,7 +20,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { promoteDraft } from '@/lib/payments/promote-draft'
 import { keepAlive } from '@/lib/runtime/after-response'
-import { soldOutRefusalMessage } from '@/lib/payments/sold-out-copy'
+import { soldOutRefusal } from '@/lib/payments/sold-out-copy'
+import { customerErrorBody, type CustomerErrorCode, type CustomerErrorParams } from '@/lib/i18n/customer-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
 
 export const runtime = 'nodejs'
 
@@ -81,11 +83,16 @@ async function refusalOnDraft(
   }
 }
 
-/** The refusal landing URL: the customer's own event, then the sentence. Both or neither is wrong. */
-function refusedUrl(menuUrl: string, eventId: string | null, message: string): string {
+/** The refusal landing URL: the customer's own event, then the refusal.
+ *  🔴 A CODE, NOT A SENTENCE (Language Phase 1a, named difference 1; .cursor/rules/language.mdc rule 7).
+ *  `payment_failed` is a key of `errorsCustomer` in messages/en-GB.json and `payment_failed_params` its values
+ *  (JSON, only when there are any). The page renders the sentence from its own message file — exactly the
+ *  words this URL used to carry — and still shows an old link's sentence as it always did. */
+function refusedUrl(menuUrl: string, eventId: string | null, code: CustomerErrorCode, params: CustomerErrorParams): string {
   const url = new URL(menuUrl)
   if (eventId) url.searchParams.set('event_id', eventId)
-  url.searchParams.set('payment_failed', message)
+  url.searchParams.set('payment_failed', code)
+  if (Object.keys(params).length) url.searchParams.set('payment_failed_params', JSON.stringify(params))
   return url.toString()
 }
 
@@ -110,17 +117,17 @@ function namesFromReason(reason: string | null): string[] {
  * unavoidable, but it now goes through the SAME builder promoteDraft calls. One wording, one file.
  * ⚠️ The two non-sold-out branches keep their own words because they describe different facts.
  */
-function messageForRecordedReason(reason: string | null): string {
-  const generic = 'Sorry — we could not place your order. No money has been taken.'
+function refusalForRecordedReason(reason: string | null, locale: string | null | undefined): { code: CustomerErrorCode; params: CustomerErrorParams } {
+  const generic = { code: 'order_not_placed' as const, params: {} }
   if (!reason) return generic
-  if (reason === 'truck_missing') return 'This truck is no longer taking orders. No money has been taken.'
+  if (reason === 'truck_missing') return { code: 'truck_not_taking_orders', params: {} }
   const named = namesFromReason(reason)
   if (!named.length) return generic
   if (reason.startsWith('category_closed:')) {
-    return `Sorry — ${named[0]} closed while you were paying, so we could not place your order. No money has been taken.`
+    return { code: 'category_closed_paying', params: { category: named[0] } }
   }
   if (reason.startsWith('stock:') || reason.startsWith('option_sold_out:') || reason.startsWith('option_ceiling:')) {
-    return soldOutRefusalMessage(named, 'paying') ?? generic
+    return soldOutRefusal(named, 'paying', locale) ?? generic
   }
   return generic
 }
@@ -200,13 +207,17 @@ export async function GET(req: NextRequest) {
       if (!outcome.refused) {
         return reply(`${menuUrl}?confirm=${encodeURIComponent(draftKey)}`, { outcome: 'confirmed', orderKey: draftKey })
       }
-      const message = messageForRecordedReason(outcome.reason)
+      // The truck's language for the JSON reply's sentence: its country, read by the slug this request carries.
+      const { data: slugTruck } = await supabase.from('trucks').select('country').eq('slug', truck).maybeSingle()
+      const locale = await localeForTruck(slugTruck)
+      const { code, params } = refusalForRecordedReason(outcome.reason, locale)
+      const { error: message } = customerErrorBody(locale, code, params)
       console.warn(
         `[payments/return] draft=${draftKey} was already REFUSED by the other trigger (${outcome.reason}) — ` +
         `telling the customer instead of sending them to a confirmation that will never fill in.`,
       )
-      return reply(refusedUrl(menuUrl, outcome.eventId, message), {
-        outcome: 'refused', orderKey: draftKey, message, soldOut: namesFromReason(outcome.reason),
+      return reply(refusedUrl(menuUrl, outcome.eventId, code, params), {
+        outcome: 'refused', orderKey: draftKey, message, soldOut: namesFromReason(outcome.reason), code, params,
       })
     }
 
@@ -236,8 +247,8 @@ export async function GET(req: NextRequest) {
       // knows: nothing in the redirect URL carries it.
       const { eventId } = await refusalOnDraft(draftKey)
       return reply(
-        refusedUrl(menuUrl, eventId, res.customerMessage),
-        { outcome: 'refused', orderKey: draftKey, message: res.customerMessage, soldOut: namesFromReason(res.reason) },
+        refusedUrl(menuUrl, eventId, res.customerCode, res.customerParams),
+        { outcome: 'refused', orderKey: draftKey, message: res.customerMessage, soldOut: namesFromReason(res.reason), code: res.customerCode, params: res.customerParams },
       )
     }
 

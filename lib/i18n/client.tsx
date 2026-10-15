@@ -36,8 +36,19 @@ export function useTruckLocale(tag: string | null | undefined): void {
   useEffect(() => { setLocale(tag) }, [setLocale, tag])
 }
 
-/** The translator for a namespace, in the provider's locale — or en-GB when there is no provider. */
+/** The provider's locale (en-GB with no provider) — for a shared library function that takes a locale. */
+export function useAppLocale(): AppLocale {
+  return useContext(I18nContext).locale
+}
+
+/** The translator for a namespace, in the provider's locale — or en-GB when there is no provider.
+ *  ⚠️ A NAMESPACE THE PROVIDER DOES NOT SEND (Language Phase 1a): a shared control rendered under another
+ *  surface's provider — the deals picker or a stock badge on the dashboard — reads the full catalogue for the
+ *  provider's locale instead of printing its keys. Both message files are already in every client bundle
+ *  (lib/i18n/messages.ts imports them), so this costs nothing; NAMESPACES still names what each surface reads. */
 export function useT<NS extends AppNamespace>(namespace: NS) {
   const { locale, messages } = useContext(I18nContext)
-  return useMemo(() => createTranslator({ locale, messages, namespace }), [locale, messages, namespace])
+  const root = namespace.split('.')[0]
+  const source = root in (messages as Record<string, unknown>) ? messages : messagesFor(locale)
+  return useMemo(() => createTranslator({ locale, messages: source, namespace }), [locale, source, namespace])
 }

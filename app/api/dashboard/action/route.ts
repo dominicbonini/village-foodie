@@ -7,6 +7,7 @@ import { moneyFormatForOrder, moneyFormatForTruck } from '@/lib/money-server'
 import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
 import { getLocalDateInTz } from '@/lib/time-utils'
 import { formatMajor } from '@/lib/money-format'
+import { translatorFor } from '@/lib/i18n/translator'
 // 🔴 THE ONE RESOLVER EVERY EMAIL IN THIS FILE ASKS. Four sites here used to print "Pay at the truck on
 // collection" unconditionally — to customers whose card was held, and to customers already charged.
 // None of them works the answer out for itself; they all call this. See lib/payments/email-payment-state.
@@ -451,20 +452,24 @@ export async function POST(req: NextRequest) {
           refundDeclined: body.refund_declined === true,
         })
         const refundLine = cancelMoney.html
-        await notifyCustomer(truck, order.customer_email, `Your order has been cancelled — ${truck.name}`,
+        // The words: messages/en-GB.json `emailCustomer` (Language Phase 1a) — the same sentences as the
+        // customer-cancel email (lib/email.ts sendCancellationEmail), in the order's language.
+        const tCancel = translatorFor((await moneyFormatForOrder(order)).locale, 'emailCustomer')
+        const named = { withName: order.customer_name ? 'yes' : 'no', name: order.customer_name || '' }
+        await notifyCustomer(truck, order.customer_email, tCancel('cancellation.subject', { truck: truck.name }),
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
-            <p>Hi ${order.customer_name || 'there'},</p>
-            <p>Your order <strong>#${order.id}</strong> from <strong>${truck.name}</strong> has been cancelled.</p>
+            <p>${tCancel('common.hi', named)}</p>
+            <p>${tCancel.markup('cancellation.body', { id: order.id, truck: truck.name, b: chunks => `<strong>${chunks}</strong>` })}</p>
             ${reasonLine}
             ${refundLine}
-            <p>We're sorry for any inconvenience.</p>
+            <p>${tCancel('common.sorry')}</p>
             <p>${truck.name}</p>
-            <p style="color:#94a3b8;font-size:12px">Powered by HatchGrab · hatchgrab.com</p>
+            <p style="color:#94a3b8;font-size:12px">${tCancel('common.poweredByDot')}</p>
           </body>`,
           // THE TEXT TWIN, from the SAME sentence, so the two cannot disagree about money.
-          `Hi ${order.customer_name || 'there'}, your order #${order.id} from ${truck.name} has been cancelled.`
+          tCancel('cancellation.textLead', { ...named, id: order.id, truck: truck.name })
           + `${cancellationReason ? ' ' + cancellationReason : ''}${cancelMoney.text}`
-          + ` We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com`)
+          + ` ${tCancel('common.sorry')} ${tCancel('common.poweredByText')}`)
       }
       return NextResponse.json({ success: true, status: 'cancelled' })
     }
@@ -1120,9 +1125,10 @@ export async function POST(req: NextRequest) {
         // stops — two numbers a customer can check against their own memory of the order.
         const oldTotal = Number(order.total)
         const totalMoved = Number.isFinite(oldTotal) && Math.abs(oldTotal - newTotal) >= 0.005
+        const tEdit = translatorFor(editMoney.locale, 'emailCustomer')
         const subject = totalMoved
-          ? `Order #${order.id} updated - now ${formatMajor(newTotal, editMoney)} (was ${formatMajor(oldTotal, editMoney)})`
-          : `Order #${order.id} updated`
+          ? tEdit('updated.subjectTotalMoved', { id: order.id, total: formatMajor(newTotal, editMoney), previous: formatMajor(oldTotal, editMoney) })
+          : tEdit('updated.subject', { id: order.id })
 
         // Send via the shared, HatchGrab-branded, Brevo-verified sender (same path as the
         // confirmation/new-order emails) — replaces the inline notifyCustomer (Village Foodie).
@@ -2292,7 +2298,7 @@ export async function POST(req: NextRequest) {
         })
         await sendEmailUnlessDemo(truck, {
           to: ord.customer_email,
-          subject: `Your order #${ord.id} has been updated`,
+          subject: translatorFor((await moneyFormatForOrder(ord)).locale, 'emailCustomer')('updated.subjectSlotMoved', { id: ord.id }),
           html,
           text,
           senderName: truck.name,

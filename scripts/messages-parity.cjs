@@ -81,7 +81,9 @@ for (const loc of locales) {
 }
 
 // ── Phases 1a–1e: one entry per surface moved into messages/, each comparing BEFORE with AFTER. ──
-const AREAS = []
+const AREAS = [
+  '_messages-parity-1a.cjs',   // Language Phase 1a — the customer-facing text (docs/language-phase-1a-report.md)
+]
 if (AREAS.length) for (const a of AREAS) require(`./${a}`)({ t, head, msgs })
 
 console.log(`\n${fail ? '✗' : '✓'} messages-parity: ${pass} passed, ${fail} failed`)

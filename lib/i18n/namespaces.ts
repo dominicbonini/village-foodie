@@ -3,11 +3,16 @@
 // Phases 1a–1e add a namespace here when they move a surface's text into messages/.
 import type { AppNamespace } from './translator'
 
+// Language Phase 1a: the customer surfaces' namespaces. A SHARED control (the deals picker, the stock and spice
+// badges, an order line) is named by every surface that renders it — and `useT` still falls back to the full
+// catalogue for one that is not, so a missing entry here can never print keys (lib/i18n/client.tsx).
 export const NAMESPACES = {
-  order: ['order'],
-  confirmation: ['order'],
-  dashboard: ['dashboard'],
+  // The order page: its own words, the refusals it shows, and every shared piece it renders.
+  order: ['order', 'errorsCustomer', 'eventCard', 'orderLine', 'deals', 'menuBadges'],
+  // The status / manage page.
+  confirmation: ['orderStatus', 'errorsCustomer'],
+  dashboard: ['dashboard', 'orderLine', 'deals', 'menuBadges'],
   kds: [],
-  manage: [],
+  manage: ['eventCard', 'menuBadges'],
   setup: [],
 } as const satisfies Record<string, readonly AppNamespace[]>

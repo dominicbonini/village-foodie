@@ -38,7 +38,8 @@ import { computeOrderCharges, rulesFromCheckout, applyBps, type CheckoutRules, t
 import { ChargeRows } from '@/components/ChargeRows'
 import { formatRateBps, type ChargeLineSource } from '@/lib/order-charge-lines'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
-import { useT, useTruckLocale } from '@/lib/i18n/client'
+import { useT, useTruckLocale, useAppLocale } from '@/lib/i18n/client'
+import { errorText, type CustomerErrorParams } from '@/lib/i18n/customer-errors'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -109,21 +110,6 @@ interface BasketItem {
 interface AppliedDeal { bundle: Bundle; slots: Record<string, string>; itemsTakenFromBasket: string[]; modifierExtra?: number; slotModifiers?: Record<string, { name: string; price: number }[]>; slotNotes?: Record<string, string> }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function getBundleAvailabilityMessage(b: Bundle, ts: TimeSettings): string | null {
-  if (!b.start_time && !b.end_time) return null
-  // 🔴 THE TRUCK'S CLOCK (Phase 2B) — a deal's hours are the truck's, not the customer's device's.
-  const cur = getNowMinsInTz(ts.timeZone)
-  if (b.start_time) {
-    const [h, m] = b.start_time.split(':').map(Number)
-    if (cur < h * 60 + m) return `Available from ${formatTime(b.start_time, ts)}`
-  }
-  if (b.end_time) {
-    const [h, m] = b.end_time.split(':').map(Number)
-    if (cur > h * 60 + m) return `Available until ${formatTime(b.end_time, ts)} — no longer available`
-  }
-  return null
-}
 
 // Calculate the original price for a deal dynamically from chosen slot items
 function calcDealOriginalPrice(deal: AppliedDeal, menuItems: MenuItem[]): number {
@@ -263,10 +249,8 @@ function eventToVillage(e: EventData, truckName: string): VillageEvent {
 // returned a clientSecret (:2107), so when it is non-null the customer has already been shown a Payment
 // Element and may have paid on it — the supersede logic explicitly handles a `prior.promoted_at`
 // (:758), i.e. an already-paid draft. In that case we cannot say no money moved, so we do not.
-const SUBMIT_UNCONFIRMED_CARD =
-  'We couldn’t place your order. You haven’t been charged and no order was created — please try again.'
-const SUBMIT_UNCONFIRMED_CHECK =
-  'We couldn’t confirm your order went through. It may already be on the truck’s screen — please check with them before ordering again.'
+// The two sentences: messages/en-GB.json `order.submitUnconfirmedCard` / `order.submitUnconfirmedCheck`
+// (Language Phase 1a; they were the constants SUBMIT_UNCONFIRMED_CARD / _CHECK here, word for word).
 
 export default function OrderPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
@@ -302,6 +286,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // reads it. Present ONLY when an authorisation was taken and the order could not be placed — the
   // authorisation has already been cancelled by then, which is what the sentence tells the customer.
   const paymentFailedParam = searchParams.get('payment_failed')
+  // Language Phase 1a: /api/payments/return now sends a CODE (`payment_failed`) and its values (`payment_failed_params`);
+  // an older link still carries the sentence itself, and is shown as it always was.
+  const paymentFailedParamsParam = searchParams.get('payment_failed_params')
 
   // SAFETY NET ONLY — the spy lock is released by ARRIVAL, by touch/wheel, and by scrollend; this
   // fires only if none of those happen (e.g. a scrollIntoView that silently does nothing). Generous
@@ -422,6 +409,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // ⚠️ SEEDED FROM THE URL IN THE INITIALISER, not in an effect — calling setState in an effect body
   // trips react-hooks/set-state-in-effect and causes a cascading render. Same shape as confirmLoading.
   const [paymentFailedNotice, setPaymentFailedNotice] = useState<string | null>(paymentFailedParam)
+  // The refusal code's values — from the URL, or from /api/payments/return's JSON reply in place.
+  const [paymentFailedParams, setPaymentFailedParams] = useState<CustomerErrorParams>(() => {
+    try { const v = JSON.parse(paymentFailedParamsParam || '{}'); return v && typeof v === 'object' && !Array.isArray(v) ? v : {} } catch { return {} }
+  })
 
   // ── 🔴 THE IN-PAGE CARD PAYMENT. THREE STAGES AND NOTHING ELSE. ─────────────────────────────────
   //   idle        no card payment in flight (also the state after a success, which navigates away)
@@ -735,7 +726,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const eventTz = slotsTz ?? pageTs.timeZone
   // Language Phase 0: the customer sees the truck's language — its country's locale (TimeSettings carry it).
   useTruckLocale(pageTs.locale)
+  // 🔴 THE WORDS (Language Phase 1a): messages/en-GB.json `order`, and `errorsCustomer` for a server refusal's code.
   const tOrder = useT('order')
+  const tErr = useT('errorsCustomer')
+  const pageLocale = useAppLocale()
+  // ⚠️ A STATE SET INSIDE AN EFFECT HOLDS A CODE (`order.state.*`), not a sentence, so no effect has to list the
+  // translator as a dependency and re-run when the language arrives. Everything else in these states — a
+  // server's sentence, Stripe's own message — is shown as it is.
+  const stateText = (v: string | null) => (v && tOrder.has(`state.${v}` as never) ? tOrder(`state.${v}` as never) : v)
   // Live clock tick (every 30s) so ASAP + the selectable list RE-DERIVE as time passes — never
   // cached at fetch. `asapSlot` is now a useMemo (below), NOT useState (the staleness bug).
   const [nowTick, setNowTick] = useState(0)
@@ -942,7 +940,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           // ⚠️ ONE MESSAGE FOR "no such order" AND "wrong truck", because the server deliberately
           // returns the same 404 for both — a customer asking about an order on the wrong truck must
           // not learn whether it exists elsewhere. Same reasoning as the hidden-truck gate in submit.
-          setConfirmError('We couldn’t find that order.')
+          setConfirmError('confirmNotFound')
           setConfirmLoading(false)
           return
         }
@@ -952,7 +950,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         // would be actively wrong, so it is refused here with copy that says what happened rather than
         // pretending the order is missing.
         if (d?.status === 'cancelled') {
-          setConfirmError('This order has been cancelled.')
+          setConfirmError('confirmCancelled')
           setConfirmLoading(false)
           return
         }
@@ -964,7 +962,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         // the existing 😕 branch below with its "Back to truck page" link; no new component, and the
         // 'cancelled' guard above is untouched.
         if (d?.status === 'rejected') {
-          setConfirmError('This order was not accepted by the truck.')
+          setConfirmError('confirmRejected')
           setConfirmLoading(false)
           return
         }
@@ -973,7 +971,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       })
       .catch(() => {
         if (cancelled) return
-        setConfirmError('We couldn’t load that order.')
+        setConfirmError('confirmLoadFailed')
         setConfirmLoading(false)
       })
     void run()
@@ -1125,7 +1123,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     refetchMenu()
       .catch((err: any) => {
         console.error('[ORDER FORM] Menu fetch error:', err?.message || err)
-        setError('This truck is not currently taking orders.')
+        setError('menuUnavailable')
       })
       .finally(() => setLoading(false))
   }, [refetchMenu])
@@ -1269,7 +1267,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         !Object.values(d.slots || {}).some(n => n && gone.includes(String(n)))))
     }
 
-    const removed = [...new Set([...removedItems, ...removedDeals.map(n => `your ${n} deal`)])]
+    const removed = [...new Set([...removedItems, ...removedDeals.map(n => tOrder('yourNamedDeal', { name: n }))])]
     const emptied = removed.length > 0
       && keptItems.length === 0
       && appliedDeals.length - doomedDeals.length === 0
@@ -1645,14 +1643,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       })()}
       {discountAmt > 0 && (
         <div className="flex justify-between text-xs">
-          <span className="text-green-600">Code: {appliedCode?.code}</span>
+          <span className="text-green-600">{tOrder('code', { code: appliedCode?.code ?? '' })}</span>
           <span className="text-green-600 font-medium">-{amount(discountAmt)}</span>
         </div>
       )}
       {/* Phase 3 screens: Subtotal, tax, fee and tip — nothing for a UK truck. */}
       <ChargeRows charges={pageCharges?.snapshot} amount={amount} />
       <div className="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
-        <span>Total</span><span>{amount(grandTotal)}</span>
+        <span>{tOrder('total')}</span><span>{amount(grandTotal)}</span>
       </div>
     </div>
   )
@@ -1665,12 +1663,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // ("sales tax"), and only where tax is added at checkout.
   const taxNoticeEl = checkout && !checkout.taxInclusive ? (
     <p className="text-[11px] text-slate-500 mb-2" data-tax-notice>
-      Menu prices don&apos;t include {checkout.taxLabel.toLowerCase()}. It&apos;s added below.
+      {tOrder('taxNotice', { tax: checkout.taxLabel.toLowerCase() })}
     </p>
   ) : null
   // UNDER "Pay at the truck": what that choice leaves out — one line, either or both halves.
   const payAtTruckNote = checkout
-    ? [checkout.serviceFee ? 'No service fee.' : null, checkout.tipping ? 'Tip the truck in person if you like.' : null].filter(Boolean).join(' ')
+    ? [checkout.serviceFee ? tOrder('noServiceFee') : null, checkout.tipping ? tOrder('tipInPerson') : null].filter(Boolean).join(' ')
     : ''
   // The currency's own symbol, for the "Other" tip box ("$", "£", "€").
   const currencySymbol = (() => {
@@ -1691,27 +1689,27 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     <div className="mt-4" data-tip-block>
       <p className="text-sm font-bold text-slate-900 mb-2">{tOrder('tipHeading')}</p>
       <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${tipPresets.length + 2}, minmax(0, 1fr))` }}>
-        <button type="button" onClick={() => setTipSel('none')} className={tipBtn(tipSel === 'none')} aria-pressed={tipSel === 'none'}>No tip</button>
+        <button type="button" onClick={() => setTipSel('none')} className={tipBtn(tipSel === 'none')} aria-pressed={tipSel === 'none'}>{tOrder('noTip')}</button>
         {tipPresets.map(bps => (
           <button type="button" key={bps} onClick={() => setTipSel(bps)} className={tipBtn(tipSel === bps)} aria-pressed={tipSel === bps}>
             <span>{formatRateBps(bps)}%</span>
             <span className="text-xs font-medium text-slate-500">{amountMinor(applyBps(foodMinor, bps))}</span>
           </button>
         ))}
-        <button type="button" onClick={() => setTipSel('other')} className={tipBtn(tipSel === 'other')} aria-pressed={tipSel === 'other'}>Other</button>
+        <button type="button" onClick={() => setTipSel('other')} className={tipBtn(tipSel === 'other')} aria-pressed={tipSel === 'other'}>{tOrder('otherTip')}</button>
       </div>
       {tipSel === 'other' && (
         <div className="mt-2">
           <div className="flex items-center rounded-xl border border-slate-200 bg-white px-3 min-h-[44px] focus-within:ring-2 focus-within:ring-orange-400">
             <span className="text-sm text-slate-500 mr-1">{currencySymbol}</span>
-            <input type="text" inputMode="decimal" aria-label="Tip amount" value={tipOther}
+            <input type="text" inputMode="decimal" aria-label={tOrder('tipAmount')} value={tipOther}
               onChange={e => setTipOther(e.target.value)} placeholder="0.00"
               className="flex-1 text-sm font-medium text-slate-900 bg-transparent focus:outline-none py-2" />
           </div>
-          {tipOverCap && <p className="text-xs text-amber-700 mt-1">Tips can be up to {amountMinor(foodMinor)}.</p>}
+          {tipOverCap && <p className="text-xs text-amber-700 mt-1">{tOrder('tipCap', { amount: amountMinor(foodMinor) })}</p>}
         </div>
       )}
-      <p className="text-[11px] text-slate-500 mt-2">100% of your tip goes to the truck. Worked out on the food, before tax.</p>
+      <p className="text-[11px] text-slate-500 mt-2">{tOrder('tipNote')}</p>
     </div>
   ) : null
   // THE TOTALS BOX, above Place order: Subtotal (when anything follows it), tax with its rate, the online
@@ -1720,7 +1718,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     <div className="mt-4 bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-1" data-checkout-totals>
       <ChargeRows charges={pageCharges?.snapshot} amount={amount} />
       <div className="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
-        <span>Total</span><span>{amount(grandTotal)}</span>
+        <span>{tOrder('total')}</span><span>{amount(grandTotal)}</span>
       </div>
     </div>
   ) : null
@@ -1983,7 +1981,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       .catch(err => {
         console.error('[order] Stripe.js failed to load:', err)
         if (cancelled) return
-        setPayError('We could not load the card form — check your connection and try again. Your basket is saved, and you have not been charged.')
+        setPayError('cardFormLoadFailed')
         setPayStage('failed')
       })
     return () => {
@@ -2030,7 +2028,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         // customer's details are all still here, and the Element stays mounted so they can correct the
         // card and press again. Stripe's own message is shown — it is written for customers.
         console.error('[order] authorisation failed:', result.error.code, result.error.message)
-        setPayError(result.error.message || 'That payment could not be authorised. No money has been taken — please try another card, or choose Pay at the truck.')
+        setPayError(result.error.message || tOrder('authFailed'))
         setPayStage('failed')
         return
       }
@@ -2047,7 +2045,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       // ⚠️ ANY FAILURE TO ASK FALLS BACK TO THE NAVIGATION THIS REPLACES. A network blip must not strand
       // a customer whose card is authorised: the route is idempotent (promoteDraft claims once), so
       // going there for real is always safe.
-      let outcome: { outcome?: string; orderKey?: string; message?: string; soldOut?: string[] } | null = null
+      let outcome: { outcome?: string; orderKey?: string; message?: string; soldOut?: string[]; code?: string; params?: CustomerErrorParams } | null = null
       try {
         const r = await fetch(`${returnUrl}&json=1`, { cache: 'no-store' })
         outcome = r.ok ? await r.json() : null
@@ -2079,7 +2077,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         // 🔴 THE SERVER'S SENTENCE, WHOLE AND ALONE. It already names every line and already says the
         // money is untouched — lib/payments/sold-out-copy writes it once for all three routes, so there
         // is nothing left for the page to append and nothing that can drift out of step with it.
-        setPaymentFailedNotice(outcome.message || 'We could not place your order. No money has been taken.')
+        // The refusal's CODE when this page knows it (Language Phase 1a) — rendered from errorsCustomer, the same
+        // words as `message` — else the server's sentence, else this page's own fallback.
+        const refusalCode = typeof outcome.code === 'string' && tErr.has(outcome.code as never) ? outcome.code : null
+        setPaymentFailedNotice(refusalCode ?? (outcome.message || tOrder('couldNotPlace')))
+        setPaymentFailedParams(refusalCode && outcome.params && typeof outcome.params === 'object' ? outcome.params : {})
         // The sheet may be scrolled to wherever the card form was. The refusal is the only thing on
         // screen that matters now, and it renders at the top of the sheet — so go there.
         sheetScrollRef.current?.scrollTo({ top: 0 })
@@ -2100,7 +2102,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       window.location.href = `${window.location.origin}/trucks/${encodeURIComponent(slug)}/order?confirm=${encodeURIComponent(outcome.orderKey || payment.orderKey)}`
     } catch (err) {
       console.error('[order] confirmPayment threw:', err)
-      setPayError('Something went wrong taking that payment. No money has been taken — please try again, or choose Pay at the truck.')
+      setPayError(tOrder('paymentThrew'))
       setPayStage('failed')
     }
   }
@@ -2230,11 +2232,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       // (event ended) branches below are non-ok responses that DO carry JSON and must keep working
       // exactly as they do; this changes only the case where our route never answered at all.
       const data = await res.json().catch(() => null)
-      if (data === null) throw new Error(sentByCard && !hadPriorPayment ? SUBMIT_UNCONFIRMED_CARD : SUBMIT_UNCONFIRMED_CHECK)
+      if (data === null) throw new Error(sentByCard && !hadPriorPayment ? tOrder('submitUnconfirmedCard') : tOrder('submitUnconfirmedCheck'))
       // Paused (423): non-destructive — keep the basket + order UI, show a dismissible notice,
       // and let the customer wait and re-submit. Do NOT setError (page-replacing) or clear basket.
       if (res.status === 423 || data?.paused) {
-        setPauseNotice('Orders are paused right now — please check back shortly. Your order is saved here.')
+        setPauseNotice(tOrder('pausedNotice'))
         return
       }
       // Event ended (403, server status guard): the operator finished the event (possibly early).
@@ -2248,7 +2250,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       // Lock contention past the retry budget (very rare, sustained load): the server did NOT
       // insert (no-oversell guarantee). Non-destructive — keep the basket, ask to re-submit.
       if (res.status === 409 && data?.retry) {
-        setPauseNotice('We are handling a lot of orders right now — please tap Place order again in a moment. Your order is saved here.')
+        setPauseNotice(tOrder('busyNotice'))
         return
       }
       // Out of stock (409, atomic guard): non-destructive HARD STOP — cap the basket to what's
@@ -2275,20 +2277,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         // ⚠️ A MIXED RESPONSE (one line at 0, another capped to 2) reports the sell-out, because that is
         // the one the customer cannot fix by looking — the capped line's new quantity is on screen.
         const soldOutNames = shortItems.filter(s => Math.max(0, s.remaining) === 0).map(s => s.name)
-        const soldOutSentence = soldOutRefusalMessage(soldOutNames, 'ordering')
+        const soldOutSentence = soldOutRefusalMessage(soldOutNames, 'ordering', pageLocale)
         if (data.menuChanged) {
-          setMenuChangedNotice(
-            typeof data.error === 'string' && data.error
-              ? data.error
-              : 'The menu has changed. Please check your order before placing it.'
-          )
+          // The refusal's words for its code (Language Phase 1a) — the same as its `error` — else this page's fallback.
+          setMenuChangedNotice(errorText(tErr, data, tOrder('menuChangedFallback')))
         } else if (soldOutSentence) {
           setSoldOutNotice(soldOutSentence)
         } else {
           setStockNotice(
             shortItems.length
-              ? shortItems.map(s => `only ${s.remaining} ${s.name} left`).join(', ')
-              : 'some items just sold out'
+              ? shortItems.map(s => tOrder('stockOnlyLeftItem', { count: String(s.remaining), name: s.name })).join(', ')
+              : tOrder('stockSomeSoldOut')
           )
         }
         // Refresh stock_remaining badges from the authoritative menu read.
@@ -2309,13 +2308,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       // open, and the customer can switch to Pay at the truck or try again. The server composed the
       // sentence; it is rendered whole.
       if (res.status === 503 && data?.cardUnavailable) {
-        setPayError(typeof data.error === 'string' && data.error
-          ? data.error
-          : 'We could not set up card payment just now, so your order has not been placed and you have not been charged.')
+        setPayError(errorText(tErr, data, tOrder('cardSetupFallback')))
         setPayStage('failed')
         return
       }
-      if (!res.ok) throw new Error(data.error || 'Order failed')
+      if (!res.ok) throw new Error(errorText(tErr, data, tOrder('orderFailed')))
 
       // ── 🔴 AUTHORISE FIRST: NO ORDER EXISTS YET, AND THAT IS THE POINT. ──────────────────────────
       // The server priced the basket, wrote a draft and created a PaymentIntent with manual capture.
@@ -2353,7 +2350,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       setSubmittedAsapEstimate(asapChosen ? (backwardAsap || asapSlot || customerAsapTime || null) : null)
       setSubmitted(true)
     } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.')
+      setError(err.message || tOrder('somethingWrong'))
     } finally { setSubmitting(false) }
   }
 
@@ -2381,7 +2378,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // machinery it does not use.
   if (confirmOrderKey) {
     if (confirmLoading) {
-      return <Shell><Hdr slug={slug} truck={null} scrolled={false} showBack={false} /><div className="flex-1 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading your order...</p></div></Shell>
+      return <Shell><Hdr slug={slug} truck={null} scrolled={false} showBack={false} /><div className="flex-1 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">{tOrder('loadingOrder')}</p></div></Shell>
     }
     // ⚠️ THE SAME 😕 PATTERN THE REST OF THE PRODUCT USES for a customer-facing dead end — the order
     // page's own error branch below and /order/[id]/manage both render exactly this shape. Not a new
@@ -2392,8 +2389,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <div className="flex-1 flex items-center justify-center px-4">
             <div className="text-center">
               <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4 mx-auto">😕</div>
-              <p className="text-slate-600 font-medium">{confirmError || 'We couldn&apos;t find that order.'}</p>
-              <a href={`/trucks/${slug}/order`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">← Back to truck page</a>
+              {/* ⚠️ The fallback prints "&apos;" literally — it always has (a JSX entity inside a JS string); kept
+                  byte for byte and listed in the Language Phase 1a report for the phase that may change words. */}
+              <p className="text-slate-600 font-medium">{stateText(confirmError) || tOrder('confirmMissing')}</p>
+              <a href={`/trucks/${slug}/order`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">{tOrder('backToTruckPage')}</a>
             </div>
           </div>
         </Shell>
@@ -2458,15 +2457,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     )
   }
 
-  if (loading) return <Shell><Hdr slug={slug} truck={null} scrolled={false} /><div className="flex-1 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading menu...</p></div></Shell>
+  if (loading) return <Shell><Hdr slug={slug} truck={null} scrolled={false} /><div className="flex-1 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">{tOrder('loadingMenu')}</p></div></Shell>
 
   if (error && !submitted) return (
     <Shell><Hdr slug={slug} truck={truck} scrolled={false} />
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="text-center">
           <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4 mx-auto">😕</div>
-          <p className="text-slate-600 font-medium">{error}</p>
-          <a href={`/trucks/${slug}/order`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">← Back to truck page</a>
+          <p className="text-slate-600 font-medium">{stateText(error)}</p>
+          <a href={`/trucks/${slug}/order`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">{tOrder('backToTruckPage')}</a>
         </div>
       </div>
     </Shell>
@@ -2479,9 +2478,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         <div className="flex-1 flex items-center justify-center px-4">
           <div className="text-center">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4 mx-auto">🚚</div>
-            <p className="font-bold text-slate-900 mb-1">Online ordering not available</p>
-            <p className="text-slate-500 text-sm">This truck takes walk-up orders at the hatch.</p>
-            <a href={`/trucks/${slug}/order`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">← Back</a>
+            <p className="font-bold text-slate-900 mb-1">{tOrder('notAvailableTitle')}</p>
+            <p className="text-slate-500 text-sm">{tOrder('walkUpOnly')}</p>
+            <a href={`/trucks/${slug}/order`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">{tOrder('back')}</a>
           </div>
         </div>
       </Shell>
@@ -2578,14 +2577,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // network failure — which is why it names neither.
   const eventsRetryCard = (
     <div className="mt-3 bg-slate-100 rounded-xl px-4 py-4 text-center">
-      <p className="text-slate-600 text-sm font-medium">We couldn&apos;t load this truck&apos;s events.</p>
-      <p className="text-slate-400 text-xs mt-0.5 mb-3">Give it a moment, then tap to try again.</p>
+      <p className="text-slate-600 text-sm font-medium">{tOrder('eventsLoadFailed')}</p>
+      <p className="text-slate-400 text-xs mt-0.5 mb-3">{tOrder('eventsRetryHint')}</p>
       <button
         onClick={() => setReloadKey(k => k + 1)}
         disabled={eventLoading}
         className="inline-block bg-orange-600 text-white font-bold px-5 py-2 rounded-lg text-sm hover:bg-orange-700 disabled:opacity-60"
       >
-        {eventLoading ? 'Retrying…' : 'Retry'}
+        {eventLoading ? tOrder('retrying') : tOrder('retry')}
       </button>
     </div>
   )
@@ -2601,8 +2600,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       {orderingTimeNotSet && !isClosed && (
         <div ref={timeBannerRef} style={{ top: stickyTop }} className="sticky z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
           <div className="max-w-lg mx-auto">
-            <p className="font-black text-sm">Ordering isn’t available for this event yet</p>
-            <p className="text-xs text-slate-300 mt-0.5">The truck hasn’t set the event time yet — please check with them directly. You’ll be able to order here once it’s set.</p>
+            <p className="font-black text-sm">{tOrder('timeNotSetTitle')}</p>
+            <p className="text-xs text-slate-300 mt-0.5">{tOrder('timeNotSetBody')}</p>
           </div>
         </div>
       )}
@@ -2629,13 +2628,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       {isClosed && (
         <div ref={closedBannerRef} style={{ top: stickyTop }} className="sticky z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
           <div className="max-w-lg mx-auto">
-            <p className="font-black text-sm">Ordering has closed</p>
+            <p className="font-black text-sm">{tOrder('orderingHasClosed')}</p>
             <p className="text-xs text-slate-300 mt-0.5">
               {isDemo
-                ? 'This demo service has ended — that’s the event window running out, exactly as a real one would. Open your demo dashboard again and choose "Start a new service" to set up a fresh one. Your menu stays as it is.'
+                ? tOrder('closedDemo')
                 : eventEnded && !isEventClosed
-                ? 'This event has ended — no more orders are being taken.'
-                : `Online ordering for this event ended at ${formatTime(event?.end_time || '', pageTs)}. We hope to see you next time!`}
+                ? tOrder('closedEnded')
+                : tOrder('closedAt', { time: formatTime(event?.end_time || '', pageTs) })}
             </p>
           </div>
         </div>
@@ -2660,18 +2659,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   is never coming back. Distinct copy, and no "try again" invitation. */}
               <p className="text-sm font-semibold text-amber-800">
                 {truck?.pauseReason === 'account_closing'
-                  ? 'This business is no longer taking online orders'
+                  ? tOrder('pausedClosingTitle')
                   : truck?.pauseReason === 'offline'
-                    ? 'Online ordering temporarily unavailable'
-                    : 'Orders are temporarily paused'
+                    ? tOrder('pausedOfflineTitle')
+                    : tOrder('pausedTitle')
                 }
               </p>
               <p className="text-xs text-amber-700 mt-0.5">
                 {truck?.pauseReason === 'account_closing'
-                  ? 'Online ordering has closed. Please contact them directly if you need to get in touch.'
+                  ? tOrder('pausedClosingBody')
                   : truck?.pauseReason === 'offline'
-                    ? "We're having a connection issue but you can still order at the window. Check back soon!"
-                    : 'Check back shortly or order at the window when you arrive.'
+                    ? tOrder('pausedOfflineBody')
+                    : tOrder('pausedBody')
                 }
               </p>
             </div>
@@ -2680,7 +2679,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               disabled={rechecking}
               className="text-xs text-amber-700 font-medium underline flex-shrink-0 mt-0.5 disabled:opacity-60"
             >
-              {rechecking ? 'Checking…' : 'Check again'}
+              {rechecking ? tOrder('checking') : tOrder('checkAgain')}
             </button>
           </div>
         </div>
@@ -2692,9 +2691,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         {truck?.ordering_available === false && (
           <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
             <div className="text-5xl mb-4">🕐</div>
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">Orders not open yet</h2>
+            <h2 className="text-lg font-semibold text-slate-900 mb-2">{tOrder('notOpenTitle')}</h2>
             <p className="text-sm text-slate-500 max-w-xs">
-              {truckName} hasn&apos;t confirmed this event yet. Check back closer to the date or follow them on social media for updates.
+              {tOrder('notOpenBody', { truck: truckName })}
             </p>
           </div>
         )}
@@ -2716,7 +2715,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             />
           )}
           <h1 className="text-2xl font-black text-slate-900">
-            Order from {truckName}
+            {tOrder('orderFrom', { truck: truckName })}
           </h1>
           {/* Event details card.
               2b — HIDDEN IN DEMO. The whole block is the event card OR the chooser, and neither means
@@ -2724,14 +2723,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               Selection still happens in the effect above, so ordering works — only the display is gone. */}
           {isDemo ? null : eventLoading ? (
             <div className="mt-3 bg-slate-100 rounded-xl px-4 py-3 animate-pulse">
-              <p className="text-slate-400 text-sm">Loading events...</p>
+              <p className="text-slate-400 text-sm">{tOrder('loadingEvents')}</p>
             </div>
           ) : eventsError ? (
             eventsRetryCard
           ) : noEvents ? (
             <div className="mt-3 bg-slate-100 rounded-xl px-4 py-3">
-              <p className="text-slate-500 text-sm font-medium">No upcoming events in the next 2 weeks</p>
-              <p className="text-slate-400 text-xs mt-0.5">Check back soon or visit the truck page for updates</p>
+              <p className="text-slate-500 text-sm font-medium">{tOrder('noEventsTitle')}</p>
+              <p className="text-slate-400 text-xs mt-0.5">{tOrder('noEventsBody')}</p>
             </div>
           ) : events.length > 0 ? (
             <div className="mt-3 text-left">
@@ -2746,7 +2745,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               {event?.is_private && (
                 <div className="mb-2 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2">
                   <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-purple-700">
-                    Private event
+                    {tOrder('privateEvent')}
                   </p>
                   {privateHeader?.named && (
                     <p className="mt-0.5 text-sm font-semibold text-purple-900 break-words">
@@ -2768,7 +2767,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   compact
                   cornerAction={events.length > 1 && (
                     <Link href={`/trucks/${slug}`} className="text-orange-600 text-xs font-bold hover:underline">
-                      Change event
+                      {tOrder('changeEvent')}
                     </Link>
                   )}
                 />
@@ -2777,7 +2776,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 // TruckListCard as the truck profile; its Pre-order / Order now CTA deep-links to
                 // ?event_id=<truck_events.id>. Only confirmed/open events are returned by /api/events.
                 <>
-                  <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">Choose which event to order for</p>
+                  <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">{tOrder('chooseEvent')}</p>
                   {events.map((e) => {
                     // V8.3 calendar: "Pre-orders open [date]" under the card when this event's open is still
                     // in the FUTURE (rule + event date, derived — no new data). Don't fork TruckListCard.
@@ -2808,7 +2807,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         {/* MEAL DEALS — flat cards, before menu, hidden if none available */}
         {menu && menu.bundles.filter(b => b.available).length > 0 && (
           <div className="mb-4">
-            <h2 className="text-xs font-black text-orange-600 uppercase tracking-widest mb-2 px-1">🎁 Meal deals</h2>
+            <h2 className="text-xs font-black text-orange-600 uppercase tracking-widest mb-2 px-1">{tOrder('mealDeals')}</h2>
             <div className="space-y-2">
               {menu.bundles.filter(b => b.available).map(bundle => {
                 const applied = dealsApplied(bundle)
@@ -2824,10 +2823,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           <div className="flex items-center gap-2 flex-wrap">
                             <p className="font-black text-slate-900 text-sm">{bundle.name}</p>
                             {saving !== null && saving > 0 && (
-                              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save {amount(saving)}</span>
+                              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">{tOrder('save', { amount: amount(saving) })}</span>
                             )}
                             {applied > 0 && (
-                              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">✓ {applied} applied</span>
+                              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">{tOrder('dealsApplied', { count: String(applied) })}</span>
                             )}
                           </div>
                           <p className="text-slate-500 text-xs mt-0.5">{bundle.description}</p>
@@ -2836,7 +2835,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       </div>
                       <button onClick={() => !isOrderingBlocked && addDeal(bundle)} disabled={isOrderingBlocked}
                         className={`w-full font-bold text-sm py-2 rounded-xl transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
-                        {isOrderingBlocked ? (isClosed ? 'Ordering closed' : orderingTimeNotSet ? 'Set-up pending' : 'Ordering paused') : applied === 0 ? 'Add deal' : '+ Add another deal'}
+                        {isOrderingBlocked ? (isClosed ? tOrder('orderingClosed') : orderingTimeNotSet ? tOrder('setupPending') : tOrder('orderingPaused')) : applied === 0 ? tOrder('addDeal') : tOrder('addAnotherDeal')}
                       </button>
                     </div>
                     {/* Applied deal instances - compact summary */}
@@ -2861,16 +2860,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <p className="text-xs font-black text-orange-700">
                                     {appliedDeals.filter(d => d.bundle.name === bundle.name).length > 1 
-                                      ? `Deal ${localIdx + 1}` 
-                                      : 'Your deal'}
+                                      ? tOrder('dealNumber', { number: String(localIdx + 1) })
+                                      : tOrder('yourDeal')}
                                   </p>
                                   {dynSaving !== null && dynSaving > 0 && (
-                                    <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save {amount(dynSaving)}</span>
+                                    <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">{tOrder('save', { amount: amount(dynSaving) })}</span>
                                   )}
                                 </div>
                                 <p className="text-xs text-slate-600 mt-0.5 truncate">{itemsSummary}</p>
                               </div>
-                              <button onClick={() => removeDeal(globalIdx)} className="text-[10px] text-orange-400 hover:text-orange-600 font-bold shrink-0">Remove</button>
+                              <button onClick={() => removeDeal(globalIdx)} className="text-[10px] text-orange-400 hover:text-orange-600 font-bold shrink-0">{tOrder('remove')}</button>
                             </div>
                           </div>
                         )
@@ -2906,7 +2905,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             viewport that is already width-capped keeps today's look exactly. */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-2 sm:px-4 py-4 mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest">Menu</h2>
+            <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest">{tOrder('menu')}</h2>
             {/* Allergen Info — ALWAYS present (consistent, predictable entry point in every mode/state).
                 The modal resolves what to show by display_mode: confirmed card and/or confirmed per-item
                 allergens, or an honest "not provided — ask the truck" message when nothing is confirmed.
@@ -2915,7 +2914,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               onClick={() => setShowAllergenModal(true)}
               className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 underline"
             >
-              ⓘ Allergen Info
+              {tOrder('allergenInfo')}
             </button>
           </div>
           {/* Top-level category tabs — sticky below the page header (h-[60px]). Tap to filter to one
@@ -3134,7 +3133,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             </span>
                           )}
                           {isSoldOut && (
-                            <span className="text-[0.625rem] font-black text-red-500 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-full">Sold out</span>
+                            <span className="text-[0.625rem] font-black text-red-500 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-full">{tOrder('soldOut')}</span>
                           )}
                           {!isSoldOut && stockAddable != null && stockAddable <= 10 && (() => {
                             // Badge = what you can still ADD (remaining − your basket, per binding axis), so
@@ -3143,10 +3142,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             // against the category noun so it can't be misread as "3 of THIS item" when every
                             // item in the category shares the same count (e.g. 18 pizzas all "3 left").
                             const n = stockAddable
-                            const noun = stockBoundEff === 'category' && item.category ? ` ${item.category.toLowerCase()}` : ''
+                            // ⚠️ The category name is still lower-cased here, as it always was — listed for later (Phase 1a).
+                            const noun = stockBoundEff === 'category' && item.category ? item.category.toLowerCase() : ''
                             return (
                               <span className={`text-[0.625rem] font-bold px-1.5 py-0.5 rounded-full border ${n <= 3 ? 'text-red-600 bg-red-50 border-red-200' : 'text-orange-600 bg-orange-50 border-orange-200'}`}>
-                                {n <= 3 ? `Only ${n}${noun} left!` : `${n}${noun} left`}
+                                {tOrder(n <= 3 ? 'stockOnlyLeft' : 'stockLeft', { withNoun: noun ? 'yes' : 'no', noun, count: String(n) })}
                               </span>
                             )
                           })()}
@@ -3217,7 +3217,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                     :3424  'Choose required options'                (the blocked CTA)
                                   The trailing colon is the idiom this very line already used for a named
                                   group, so both branches read the same shape. */}
-                              <span className="font-semibold text-slate-600">{g.hide_name ? 'Choose:' : `${g.name}:`}</span>
+                              <span className="font-semibold text-slate-600">{g.hide_name ? tOrder('chooseLeader') : tOrder('groupLeader', { group: g.name })}</span>
                               {/* ── 🔴 "Required · Choose one" IS GONE. THE OPTIONS CARRY IT INSTEAD. ──
                                   That label said too much: on this list EVERY group is required (the
                                   previewGroups filter above is `minRequiredForGroup(g) > 0`), so
@@ -3309,7 +3309,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <span className={`font-bold text-sm ${isSoldOut ? 'text-slate-400' : 'text-slate-700'}`}>{amount(item.price)}</span>
                       <div className="flex items-center gap-2 shrink-0">
                         {isSoldOut ? (
-                          <span className="text-xs text-slate-400 font-medium px-3 py-1.5">Sold out</span>
+                          <span className="text-xs text-slate-400 font-medium px-3 py-1.5">{tOrder('soldOut')}</span>
                         ) : (hasModifiers || catAllowNotes) ? (
                           // MODIFIER items AND notes-enabled items → persistent modal button, so every add
                           // reopens the modal and can carry a DIFFERENT variant/note → distinct cartKey → its
@@ -3324,7 +3324,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                               : qty > 0 ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
                               : 'bg-orange-600 text-white hover:bg-orange-700'
                             }`}>
-                            {isOrderingBlocked ? (isClosed ? 'Closed' : orderingTimeNotSet ? 'Set-up pending' : 'Paused') : qty > 0 ? `${qty} · Add` : 'Add'}
+                            {isOrderingBlocked ? (isClosed ? tOrder('closed') : orderingTimeNotSet ? tOrder('setupPending') : tOrder('paused')) : qty > 0 ? tOrder('addMore', { count: String(qty) }) : tOrder('add')}
                           </button>
                         ) : qty > 0 ? (
                           <>
@@ -3348,7 +3348,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           // the base item quantity directly, never re-prompting the upsell per unit.
                           <button onClick={() => !isOrderingBlocked && (opensModal ? openItemModal(item, catModGroups, itemUpsells) : addItem(item))} disabled={isOrderingBlocked}
                             className={`font-bold text-xs px-3 py-1.5 rounded-lg transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
-                            {isOrderingBlocked ? (isClosed ? 'Closed' : orderingTimeNotSet ? 'Set-up pending' : 'Paused') : 'Add'}
+                            {isOrderingBlocked ? (isClosed ? tOrder('closed') : orderingTimeNotSet ? tOrder('setupPending') : tOrder('paused')) : tOrder('add')}
                           </button>
                         )}
                       </div>
@@ -3421,9 +3421,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                     is simply empty when they chose nothing. */}
                               </div>
                               <button onClick={() => !isOrderingBlocked && openItemModal(item, catModGroups, itemUpsells, v.cartKey)}
-                                disabled={isOrderingBlocked} aria-label="Edit"
+                                disabled={isOrderingBlocked} aria-label={tOrder('edit')}
                                 className="shrink-0 min-w-[2.75rem] min-h-[2.75rem] flex items-center justify-center text-slate-400 active:scale-95 disabled:opacity-40">✏️</button>
-                              {optBlockedName && <span className="text-[10px] font-bold text-orange-600 shrink-0">{buildOptionStockByName((menu?.items as any[]) || [])[optBlockedName]} {optBlockedName} left</span>}
+                              {optBlockedName && <span className="text-[10px] font-bold text-orange-600 shrink-0">{tOrder('optionLeft', { count: String(buildOptionStockByName((menu?.items as any[]) || [])[optBlockedName]), name: optBlockedName })}</span>}
                               <span className="text-xs font-bold text-slate-700 shrink-0">{amount((item.price + modSum) * v.quantity)}</span>
                             </div>
                           )
@@ -3499,10 +3499,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   would leave a customer with only the Back control. */}
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-black text-slate-900 text-lg leading-snug">
-                  {payingInSheet ? 'Pay by card' : 'Complete your order'}
+                  {payingInSheet ? tOrder('payByCardTitle') : tOrder('completeOrder')}
                 </h3>
                 {payStage !== 'authorising' && (
-                  <button onClick={() => setFormSheetOpen(false)} aria-label="Close" className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none">✕</button>
+                  <button onClick={() => setFormSheetOpen(false)} aria-label={tOrder('close')} className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none">✕</button>
                 )}
               </div>
 
@@ -3525,7 +3525,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   has always seen. ⚠️ Dismissible, and cleared by the next submit, exactly as before. */}
               {paymentFailedNotice && (
                 <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 flex items-start gap-2">
-                  <p className="flex-1 text-red-800 text-sm font-medium">{paymentFailedNotice}</p>
+                  {/* A refusal CODE (Language Phase 1a) reads as its errorsCustomer message; an older link's sentence as itself. */}
+                  <p className="flex-1 text-red-800 text-sm font-medium">{errorText(tErr, { code: paymentFailedNotice, params: paymentFailedParams, error: paymentFailedNotice }, paymentFailedNotice)}</p>
                   <button onClick={() => setPaymentFailedNotice(null)} className="text-red-400 hover:text-red-600 text-sm font-bold leading-none mt-0.5">✕</button>
                 </div>
               )}
@@ -3563,9 +3564,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     {payStage !== 'authorising' ? (
                       <button onClick={e => { e.preventDefault(); closePaymentStage() }}
                         className="text-slate-500 hover:text-slate-800 text-sm font-bold flex items-center gap-1.5 -ml-1 px-1 py-1">
-                        ← Back to my order
+                        {tOrder('backToMyOrder')}
                       </button>
-                    ) : <span className="text-sm font-bold text-slate-400">Authorising…</span>}
+                    ) : <span className="text-sm font-bold text-slate-400">{tOrder('authorising')}</span>}
                     <span className="text-lg font-black text-slate-900 tabular-nums">{amountMinor(payment.totalPence)}</span>
                   </div>
 
@@ -3576,7 +3577,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <div className="h-12 bg-slate-100 rounded-lg" />
                       <div className="h-12 bg-slate-100 rounded-lg" />
                       <div className="h-12 bg-slate-100 rounded-lg" />
-                      <p className="text-xs text-slate-400 pt-1">Loading secure card form…</p>
+                      <p className="text-xs text-slate-400 pt-1">{tOrder('loadingCardForm')}</p>
                     </div>
                   )}
 
@@ -3589,7 +3590,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
                   {payStage === 'failed' && payError && (
                     <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mt-4">
-                      <p className="text-red-800 text-sm font-medium">{payError}</p>
+                      <p className="text-red-800 text-sm font-medium">{stateText(payError)}</p>
                     </div>
                   )}
 
@@ -3599,13 +3600,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   <button onClick={e => { e.preventDefault(); void confirmCardPayment() }}
                     disabled={!elementReady || payStage === 'authorising'}
                     className="w-full bg-orange-600 text-white font-black py-4 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-4">
-                    {payStage === 'authorising' ? 'Authorising…'
-                      : !elementReady ? 'Preparing…'
-                      : payStage === 'failed' ? `Try again · ${amountMinor(payment.totalPence)}`
-                      : `Pay ${amountMinor(payment.totalPence)}`}
+                    {payStage === 'authorising' ? tOrder('authorising')
+                      : !elementReady ? tOrder('preparing')
+                      : payStage === 'failed' ? tOrder('tryAgainAmount', { amount: amountMinor(payment.totalPence) })
+                      : tOrder('payAmount', { amount: amountMinor(payment.totalPence) })}
                   </button>
                   <p className="text-[11px] text-slate-400 text-center mt-3 leading-relaxed">
-                    Your card is held, not charged, until {truck?.name ?? 'the truck'} confirms your order.
+                    {tOrder('cardHeldUntil', { withTruck: truck?.name != null ? 'yes' : 'no', truck: truck?.name ?? '' })}
                   </p>
                 </div>
               )}
@@ -3628,7 +3629,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     className="w-full flex items-center justify-between group"
                   >
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                      {(() => { const n = totalItems + appliedDeals.length; return `${n} item${n !== 1 ? 's' : ''}` })()}
+                      {(() => { const n = totalItems + appliedDeals.length; return tOrder('itemCount', { n, count: String(n) }) })()}
                     </span>
                     <div className="flex items-center gap-1.5">
                       <span className="font-black text-slate-900 text-sm">{amount(grandTotal)}</span>
@@ -3647,9 +3648,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
         {/* COLLECTION TIME */}
         {truck?.mode === 'village' && (
-          <Sec title="Collection time">
+          <Sec title={tOrder('collectionTimeTitle')}>
             {loadingSlots ? (
-              <p className="text-slate-400 text-sm animate-pulse">Loading available times...</p>
+              <p className="text-slate-400 text-sm animate-pulse">{tOrder('loadingTimes')}</p>
             ) : (
               <>
                 <div className="flex gap-3 items-stretch">
@@ -3682,13 +3683,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                               ? 'bg-white border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-orange-50'
                               : 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed'
                         }`}>
-                        <span className="text-sm font-black">⚡ ASAP</span>
+                        <span className="text-sm font-black">{tOrder('asap')}</span>
                         {/* Show the concrete earliest-fitting time ONLY once the basket has items —
                             an empty basket's "earliest" (event open) is misleading and jumps the moment
                             an item is added. Display-only; the ASAP value/computation is unchanged. */}
                         {(hasItems || !asapTime) && (
                           <span className={`text-xs mt-0.5 ${isSelected ? 'text-orange-100' : 'text-orange-400'}`}>
-                            {asapTime ? `Around ${formatTime(asapTime, pageTs)}` : 'Unavailable'}
+                            {asapTime ? tOrder('around', { time: formatTime(asapTime, pageTs) }) : tOrder('unavailable')}
                           </span>
                         )}
                       </button>
@@ -3724,7 +3725,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                 ? 'bg-orange-600 border-orange-600 text-white'
                                 : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
                             }`}>
-                            <option value="">Choose time</option>
+                            <option value="">{tOrder('chooseTime')}</option>
                             {availableSlots.length > 0
                               ? availableSlots
                                   .filter(s => {
@@ -3779,8 +3780,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     })() : (
                       // Free tier: greyed out, no badge
                       <div className="w-full h-full min-h-[68px] rounded-2xl border-2 border-slate-100 bg-slate-50 flex flex-col items-center justify-center px-3 py-3">
-                        <span className="text-xs font-black text-slate-300">Choose time</span>
-                        <span className="text-[10px] text-slate-300 mt-0.5">ASAP only</span>
+                        <span className="text-xs font-black text-slate-300">{tOrder('chooseTime')}</span>
+                        <span className="text-[10px] text-slate-300 mt-0.5">{tOrder('asapOnly')}</span>
                       </div>
                     )}
                   </div>
@@ -3789,8 +3790,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
                 {/* Confirmation */}
                 {selectedSlot
-                  ? <p className="text-green-600 text-xs font-bold mt-2">✓ Collection time: {formatSlot(selectedSlot, pageTs)}</p>
-                  : <p className="text-slate-400 text-xs mt-2">Select ASAP or choose a specific time</p>
+                  ? <p className="text-green-600 text-xs font-bold mt-2">{tOrder('collectionTimeChosen', { time: formatSlot(selectedSlot, pageTs) ?? '' })}</p>
+                  : <p className="text-slate-400 text-xs mt-2">{tOrder('selectTime')}</p>
                 }
               </>
             )}
@@ -3798,7 +3799,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         )}
 
         {/* YOUR DETAILS */}
-        <Sec title="Your details">
+        <Sec title={tOrder('yourDetails')}>
           <div className="space-y-3">
             {/* 2d — the fields stay EDITABLE and functional: /api/orders/submit requires customerEmail, so
                 the order genuinely can't be placed without one. But nothing is ever sent — the demo-truck
@@ -3806,18 +3807,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 letting someone hesitate over handing us their address. */}
             {isDemo && (
               <p className="text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 rounded-xl px-3 py-2">
-                This is a real form, so it needs an email to place the order — but nothing is sent. No
-                confirmation, no messages, nothing leaves the system.
+                {tOrder('demoFormNote')}
               </p>
             )}
-            <Fld label="Name" required><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Sarah" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
-            <Fld label="Email" required note={isDemo ? 'not used in the demo' : 'confirmation sent here'}><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="e.g. sarah@email.com" className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${emailError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{emailError && <p className="text-red-500 text-xs mt-1">Please enter a valid email (e.g. sarah@email.com)</p>}</Fld>
-            <Fld label="Phone number" note="optional"><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder={phonePlaceholder(pagePhone, 'e.g. ')} className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${phoneError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{phoneError && <p className="text-red-500 text-xs mt-1">{phoneErrorMessage('mobile', pagePhone)}</p>}</Fld>
-            <Fld label="Special instructions" note="optional"><textarea
+            <Fld label={tOrder('nameLabel')} required><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder={tOrder('namePlaceholder')} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
+            <Fld label={tOrder('emailLabel')} required note={isDemo ? tOrder('emailNoteDemo') : tOrder('emailNote')}><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder={tOrder('emailPlaceholder')} className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${emailError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{emailError && <p className="text-red-500 text-xs mt-1">{tOrder('emailInvalid')}</p>}</Fld>
+            <Fld label={tOrder('phoneLabel')} note={tOrder('optional')}><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder={phonePlaceholder(pagePhone) && tOrder('phonePlaceholder', { example: phonePlaceholder(pagePhone) })} className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${phoneError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{phoneError && <p className="text-red-500 text-xs mt-1">{phoneErrorMessage('mobile', pagePhone, pageLocale)}</p>}</Fld>
+            <Fld label={tOrder('notesLabel')} note={tOrder('optional')}><textarea
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 onFocus={e => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300)}
-                placeholder="Allergies, no onion, extra crispy…"
+                placeholder={tOrder('notesPlaceholder')}
                 rows={3}
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none"
               /></Fld>
@@ -3836,7 +3836,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
               {stockNotice && (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mt-4 flex items-start gap-2">
-                  <p className="flex-1 text-amber-800 text-sm font-medium">Sorry — {stockNotice} now. We&apos;ve updated your order — please review and confirm.</p>
+                  <p className="flex-1 text-amber-800 text-sm font-medium">{tOrder('stockNotice', { detail: stockNotice })}</p>
                   <button onClick={() => setStockNotice(null)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none mt-0.5">✕</button>
                 </div>
               )}
@@ -3874,8 +3874,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               {truck?.card_payments_ready && (
                 <div className="mt-4 space-y-1.5">
                   {([
-                    { key: true,  label: 'Pay now by card', hint: 'Secure payment through Stripe' },
-                    { key: false, label: 'Pay at the truck', hint: 'No card details needed' },
+                    { key: true,  label: tOrder('payNowByCard'), hint: tOrder('payNowByCardHint') },
+                    { key: false, label: tOrder('payAtTruck'), hint: tOrder('payAtTruckHint') },
                   ] as const).map(opt => (
                     <button
                       key={String(opt.key)}
@@ -3903,7 +3903,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
                 disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
                 className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
-                {submitting ? 'Placing order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : orderingTimeNotSet ? 'Set-up pending' : !eventLoading && !event ? 'No event available' : 'Place order'}
+                {submitting ? tOrder('placingOrder') : isClosed ? tOrder('orderingHasClosed') : isPaused ? tOrder('orderingPaused') : orderingTimeNotSet ? tOrder('setupPending') : !eventLoading && !event ? tOrder('noEvent') : tOrder('placeOrder')}
               </button>
               {/* ⚠️ The original line, unchanged, for every truck that cannot take cards — and replaced
                   only when a card is both available and chosen, so it never describes the wrong thing.
@@ -3911,15 +3911,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   on this page, and saying otherwise would promise a navigation that no longer happens. */}
               <p className="text-center text-slate-400 text-xs mt-2">
                 {truck?.card_payments_ready && payByCard
-                  ? 'You’ll pay securely by card on this page · Apple Pay and Google Pay supported'
-                  : 'Pay at the truck on collection · No card details needed'}
+                  ? tOrder('payByCardLine')
+                  : tOrder('payAtTruckLine')}
               </p>
 
               </>) : (<>
                             <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
                 disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
                 className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
-                {submitting ? 'Placing order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : orderingTimeNotSet ? 'Set-up pending' : !eventLoading && !event ? 'No event available' : 'Place order'}
+                {submitting ? tOrder('placingOrder') : isClosed ? tOrder('orderingHasClosed') : isPaused ? tOrder('orderingPaused') : orderingTimeNotSet ? tOrder('setupPending') : !eventLoading && !event ? tOrder('noEvent') : tOrder('placeOrder')}
               </button>
               {/* ── 🔴 THE CARD CHOICE. RENDERED ONLY WHEN THE TRUCK'S OPERATOR IS ACTUALLY READY. ──
                   `card_payments_ready` is false for every truck whose operator has not completed Stripe
@@ -3931,8 +3931,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               {truck?.card_payments_ready && (
                 <div className="mt-4 space-y-1.5">
                   {([
-                    { key: true,  label: 'Pay now by card', hint: 'Secure payment through Stripe' },
-                    { key: false, label: 'Pay at the truck', hint: 'No card details needed' },
+                    { key: true,  label: tOrder('payNowByCard'), hint: tOrder('payNowByCardHint') },
+                    { key: false, label: tOrder('payAtTruck'), hint: tOrder('payAtTruckHint') },
                   ] as const).map(opt => (
                     <button
                       key={String(opt.key)}
@@ -3959,8 +3959,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   on this page, and saying otherwise would promise a navigation that no longer happens. */}
               <p className="text-center text-slate-400 text-xs mt-2">
                 {truck?.card_payments_ready && payByCard
-                  ? 'You’ll pay securely by card on this page · Apple Pay and Google Pay supported'
-                  : 'Pay at the truck on collection · No card details needed'}
+                  ? tOrder('payByCardLine')
+                  : tOrder('payAtTruckLine')}
               </p>
 
               </>)}
@@ -3991,7 +3991,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 className="w-full flex items-center justify-between mb-2 group"
               >
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                  {(() => { const n = totalItems + appliedDeals.length; return `${n} item${n !== 1 ? 's' : ''}` })()}
+                  {(() => { const n = totalItems + appliedDeals.length; return tOrder('itemCount', { n, count: String(n) }) })()}
                 </span>
                 <div className="flex items-center gap-1.5">
                   <span className="font-black text-slate-900 text-sm">{amount(grandTotal)}</span>
@@ -4007,7 +4007,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             </div>
           )}
 
-          {!hasItems && <p className="text-center text-slate-400 text-xs font-medium mb-2">Add items from the menu to place an order</p>}
+          {!hasItems && <p className="text-center text-slate-400 text-xs font-medium mb-2">{tOrder('addItemsPrompt')}</p>}
 
           {/* STAGE 2 trigger — the footer button now OPENS the form sheet (commit step). Gated ONLY
               on hasItems + ordering-not-blocked; name/email/slot are filled INSIDE the sheet, so they
@@ -4016,7 +4016,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <button onClick={e => { e.preventDefault(); setFormSheetOpen(true) }}
             disabled={isOrderingBlocked || !hasItems || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
-            {isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : orderingTimeNotSet ? 'Set-up pending' : !eventLoading && !event ? 'No event available' : 'Review & order →'}
+            {isClosed ? tOrder('orderingHasClosed') : isPaused ? tOrder('orderingPaused') : orderingTimeNotSet ? tOrder('setupPending') : !eventLoading && !event ? tOrder('noEvent') : tOrder('reviewAndOrder')}
           </button>
           {/* ── 🔴 THIS LINE WAS UNGATED, AND ITS SIBLING EIGHT ROWS ABOVE IS NOT. ──────────────────
               It read "Pay at the truck on collection · No card details needed" for EVERY customer on
@@ -4029,8 +4029,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               ⚠️ A truck that cannot take cards keeps the original sentence, character for character. */}
           <p className="text-center text-slate-400 text-xs mt-1">
             {truck?.card_payments_ready
-              ? 'Pay by card or at the truck'
-              : 'Pay at the truck on collection · No card details needed'}
+              ? tOrder('payEitherLine')
+              : tOrder('payAtTruckLine')}
           </p>
         </div>
       </div>
@@ -4059,14 +4059,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   // modal + both order screens): "Required · Choose up to N" / "Required" / "Optional · …" /
                   // "Optional". Required+unmet turns it AMBER (the sole unmet cue); the cap wording is
                   // unchanged from before.
-                  const ruleHint = groupRuleLabel(group)
+                  const ruleHint = groupRuleLabel(group, 'customer', pageLocale)
                   return (
                     <div key={group.id}>
                       <p className="text-xs font-black uppercase tracking-wider mb-2">
                         {/* hide_name: AI-import-inferred custom-extra groups carry an internal
                             "Category - Name N" name — never shown to customers; a generic prompt
                             stands in. Manual / AI-extras groups (hide_name false) show their real name. */}
-                        <span className="text-slate-500">{group.hide_name ? 'Choose an option' : group.name}</span>
+                        <span className="text-slate-500">{group.hide_name ? tOrder('chooseAnOption') : group.name}</span>
                         {ruleHint && (
                           <span className={`ml-2 font-bold ${isUnmet ? 'text-amber-600' : 'text-slate-400'}`}>· {ruleHint}</span>
                         )}
@@ -4105,7 +4105,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     below reflects the selection. */}
                 {!itemModal.editCartKey && itemModal.upsells.length > 0 && (
                   <div>
-                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Goes well with</p>
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">{tOrder('goesWellWith')}</p>
                     <div className="flex flex-wrap gap-2">
                       {itemModal.upsells.map(u => {
                         const selected = modalUpsells.includes(u.name)
@@ -4134,12 +4134,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 disabled={modalUnmetGroupIds.length > 0}
                 className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
                 {modalUnmetGroupIds.length > 0
-                  ? 'Choose required options'
-                  : `${itemModal.editCartKey ? 'Save' : 'Add to basket'} · ${amount(
+                  ? tOrder('chooseRequired')
+                  : tOrder(itemModal.editCartKey ? 'modalSave' : 'modalAdd', { amount: amount(
                       itemModal.item.price
                       + modalMods.reduce((s, m) => s + m.price, 0)
                       + (itemModal.editCartKey ? 0 : itemModal.upsells.filter(u => modalUpsells.includes(u.name)).reduce((s, u) => s + u.price, 0))
-                    )}`}
+                    ) })}
               </button>
             </div>
           </div>
@@ -4171,7 +4171,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-900">Allergen information</h3>
+              <h3 className="text-lg font-semibold text-slate-900">{tOrder('allergenTitle')}</h3>
               <button onClick={() => setShowAllergenModal(false)}
                 className="text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
             </div>
@@ -4188,7 +4188,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 // Honest fallback — never invents data; directs to a human.
                 return (
                   <p className="text-sm text-slate-600">
-                    Allergen info not provided — please confirm directly with the truck.
+                    {tOrder('allergenNotProvided')}
                   </p>
                 )
               }
@@ -4198,7 +4198,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     <a href={truck.allergen_info_url} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-xl px-4 py-3
                                  text-sm text-orange-700 font-medium hover:bg-orange-100">
-                      📎 View allergen card (PDF/image)
+                      {tOrder('allergenCard')}
                     </a>
                   )}
                   {showCard && truck?.allergen_info_text && (
@@ -4206,20 +4206,20 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   )}
                   {perItem.length > 0 && (
                     <div>
-                      <p className="text-xs font-semibold text-slate-500 mb-1">Allergens used in this menu</p>
+                      <p className="text-xs font-semibold text-slate-500 mb-1">{tOrder('allergensUsed')}</p>
                       <div className="flex flex-wrap gap-1">
                         {perItem.map(a => (
                           <span key={a} className="text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg">{a}</span>
                         ))}
                       </div>
-                      <p className="text-xs text-slate-400 mt-1">See each dish for its specific allergens.</p>
+                      <p className="text-xs text-slate-400 mt-1">{tOrder('allergensSeeEach')}</p>
                     </div>
                   )}
                 </>
               )
             })()}
             <p className="text-xs text-slate-400">
-              If you have a severe allergy, please contact the vendor directly before ordering.
+              {tOrder('allergenSevere')}
             </p>
           </div>
         </div>
@@ -4251,8 +4251,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 // the database holds flat JSONB. Neither shape belongs in the markup, so both callers map to a third
 // that is neither — which is what stops the component learning about either source.
 //
-// ⚠️ PURE. No hooks, no fetches, no effects. Everything it renders arrives as a prop, so it can be
-// exercised against a database row without a browser — and it was.
+// ⚠️ PURE. No fetches, no effects, and one hook — its words, `useT('order')` (Language Phase 1a). Everything else
+// it renders arrives as a prop, so it can be exercised against a database row without a browser — and it was.
 
 /** One receipt line, normalised. Both callers map into this; the markup knows nothing else. */
 export interface ConfirmationLine {
@@ -4307,6 +4307,7 @@ function OrderConfirmation({
   /** 🔴 The truck's time settings (Phase 2B) — how the collection time reads (GB "18:30", US "6:30pm"). */
   time: TimeSettings | null | undefined
 }) {
+  const t = useT('order')
   const amount = (major: number) => formatMajorOrBare(major, money, 'order confirmation')
   const ts = timeSettingsOr(time, 'order confirmation')
   const at = (slot: string | null) => formatSlot(slot, ts)
@@ -4323,15 +4324,15 @@ function OrderConfirmation({
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-sm w-full text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
-          <h2 className="text-2xl font-black text-slate-900 mb-1">{autoAccepted ? 'Order confirmed!' : 'Order received!'}</h2>
+          <h2 className="text-2xl font-black text-slate-900 mb-1">{autoAccepted ? t('orderConfirmed') : t('orderReceived')}</h2>
           <p className="text-slate-500 mb-3 text-sm">
             {autoAccepted
-              ? <>Thanks! We&apos;ve received your order and it&apos;ll be ready soon.</>
-              : <><span className="font-semibold text-slate-700">{truckName}</span> will confirm your order shortly.</>
+              ? <>{t('thanksReady')}</>
+              : <>{t.rich('willConfirm', { truck: truckName, b: chunks => <span className="font-semibold text-slate-700">{chunks}</span> })}</>
             }
           </p>
 
-          {orderId && <p className="text-slate-400 text-sm mb-3">Order #{orderId}</p>}
+          {orderId && <p className="text-slate-400 text-sm mb-3">{t('orderNumber', { id: orderId })}</p>}
 
           {/* Collection time — promoted above the receipt */}
           {(confirmedSlot || preferredSlot) && (
@@ -4341,18 +4342,18 @@ function OrderConfirmation({
                   // Time-moved: collection time is the prominent headline; the reason is small supporting
                   // text. Subtle amber (not error) — it's a confirmed order at a slightly different time.
                   <>
-                    <p className="font-black text-amber-900 text-base">Ready at {at(confirmedSlot)}</p>
-                    <p className="text-amber-700 text-xs mt-0.5">Your {at(requestedSlot)} slot was just taken — this is the next available time.</p>
+                    <p className="font-black text-amber-900 text-base">{t('readyAt', { time: at(confirmedSlot) ?? '' })}</p>
+                    <p className="text-amber-700 text-xs mt-0.5">{t('slotTaken', { time: at(requestedSlot) ?? '' })}</p>
                   </>
                 ) : asapMoved ? (
                   <>
-                    <p className="font-black text-amber-900 text-base">Ready at {at(confirmedSlot)}</p>
-                    <p className="text-amber-700 text-xs mt-0.5">Slightly later than the {formatTime(asapEstimate!, ts)} we estimated.</p>
+                    <p className="font-black text-amber-900 text-base">{t('readyAt', { time: at(confirmedSlot) ?? '' })}</p>
+                    <p className="text-amber-700 text-xs mt-0.5">{t('laterThanEstimate', { time: formatTime(asapEstimate!, ts) })}</p>
                   </>
                 ) : (
                   <>
-                    <p className="font-bold text-green-800 mb-0.5">Collection time: {at(confirmedSlot)}</p>
-                    <p className="text-green-700 text-xs">See you at the hatch!</p>
+                    <p className="font-bold text-green-800 mb-0.5">{t('collectionTime', { time: at(confirmedSlot) ?? '' })}</p>
+                    <p className="text-green-700 text-xs">{t('seeYou')}</p>
                   </>
                 )}
               </div>
@@ -4360,11 +4361,11 @@ function OrderConfirmation({
               <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 mb-4 text-sm text-left">
                 {/* Preferred (pending) collection time is the prominent headline; the moved reason +
                     "truck will confirm" are smaller supporting lines. Reads as confirmed-at-a-time, not error. */}
-                <p className="font-black text-orange-800 text-base">Preferred collection: {at(asapMoved ? confirmedSlot : (preferredSlot || confirmedSlot))}</p>
+                <p className="font-black text-orange-800 text-base">{t('preferredCollection', { time: at(asapMoved ? confirmedSlot : (preferredSlot || confirmedSlot)) ?? '' })}</p>
                 {asapMoved && (
-                  <p className="text-orange-600 text-xs mt-0.5">Slightly later than the {formatTime(asapEstimate!, ts)} we estimated.</p>
+                  <p className="text-orange-600 text-xs mt-0.5">{t('laterThanEstimate', { time: formatTime(asapEstimate!, ts) })}</p>
                 )}
-                <p className="text-orange-600 text-xs mt-0.5">{truckName} will confirm your collection time when they accept your order.</p>
+                <p className="text-orange-600 text-xs mt-0.5">{t('willConfirmTime', { truck: truckName })}</p>
               </div>
             ) : null
           )}
@@ -4387,7 +4388,7 @@ function OrderConfirmation({
                 <div className="flex justify-between text-xs">
                   <span className="text-slate-600">
                     🎁 {deal.name}
-                    {deal.saving > 0 && <span className="ml-1.5 text-green-600 font-medium">save {amount(deal.saving)}</span>}
+                    {deal.saving > 0 && <span className="ml-1.5 text-green-600 font-medium">{t('dealSave', { amount: amount(deal.saving) })}</span>}
                   </span>
                   <span className="font-medium text-slate-700">{amount(deal.bundlePrice)}</span>
                 </div>
@@ -4414,7 +4415,7 @@ function OrderConfirmation({
             {/* Phase 3 screens: Subtotal, tax, fee and tip — nothing at all for a UK order. */}
             <ChargeRows charges={charges} amount={amount} />
             <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
-              <span className="font-black text-slate-900">Total</span>
+              <span className="font-black text-slate-900">{t('total')}</span>
               <span className="font-black text-slate-900">{amount(total)}</span>
             </div>
           </div>
@@ -4430,11 +4431,11 @@ function OrderConfirmation({
               not-paid branch, which is the safe direction: it tells a customer to expect to pay rather
               than telling them they are square when they are not. */}
           <div className="flex justify-between text-sm mb-4">
-            <span className="text-slate-500">Payment</span>
+            <span className="text-slate-500">{t('payment')}</span>
             {paymentStatus === 'paid' ? (
-              <span className="font-bold text-green-600">Paid by card</span>
+              <span className="font-bold text-green-600">{t('paidByCard')}</span>
             ) : (
-              <span className="font-bold text-slate-700">Pay at the truck</span>
+              <span className="font-bold text-slate-700">{t('payAtTruck')}</span>
             )}
           </div>
 
@@ -4447,13 +4448,12 @@ function OrderConfirmation({
           {cardFallbackNotice && (
             <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 mb-4 text-left">
               <p className="text-xs text-amber-700">
-                We couldn&apos;t start the card payment, so your order is set to pay at the truck instead.
-                Your order is placed — nothing has been charged.
+                {t('cardFallback')}
               </p>
             </div>
           )}
 
-          {email && <p className="text-slate-400 text-xs mb-6">Confirmation sent to {email}</p>}
+          {email && <p className="text-slate-400 text-xs mb-6">{t('confirmationSentTo', { email })}</p>}
           {/* Slug-based truck route (Manual s.7). Targets the truck's own order/menu
              page, the only customer route that resolves by slug for a HatchGrab truck
              (/trucks/[slug] is the discovery profile and 404s for operator-only trucks).
@@ -4462,7 +4462,7 @@ function OrderConfirmation({
              parameter and clears the in-memory basket — a soft navigation would leave both in place,
              and a customer would return to the form with an order they have already placed still in it. */}
           <a href={`/trucks/${slug}/order`} className="block w-full bg-slate-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-slate-800 transition-colors">
-            Back to {truckName}
+            {t('backTo', { truck: truckName })}
           </a>
         </div>
       </div>
@@ -4480,6 +4480,7 @@ function ItemNoteInput({
   onBlur?: () => void
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
 }) {
+  const t = useT('order')   // Language Phase 1a
   if (compact) {
     return (
       <input
@@ -4490,7 +4491,7 @@ function ItemNoteInput({
         onChange={e => onChange(e.target.value)}
         onBlur={onBlur}
         onKeyDown={onKeyDown}
-        placeholder="Any requests? e.g. no onions"
+        placeholder={t('notePlaceholderCompact')}
         className="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
       />
     )
@@ -4498,12 +4499,12 @@ function ItemNoteInput({
   return (
     <div>
       <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">
-        Any requests? <span className="font-normal normal-case text-slate-400">— optional</span>
+        {t.rich('noteHeading', { muted: chunks => <span className="font-normal normal-case text-slate-400">{chunks}</span> })}
       </p>
       <textarea
         value={value}
         onChange={e => onChange(e.target.value.slice(0, 60))}
-        placeholder="e.g. no onions, extra crispy"
+        placeholder={t('notePlaceholder')}
         rows={2}
         className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none"
       />
@@ -4523,6 +4524,7 @@ function Hdr({ slug, truck, scrolled, showBack = true, bannerRef }: { slug: stri
   // needs no extra data to know. Sticky directly under the 60px header so it stays visible while scrolling
   // a long menu — a demo indicator that scrolls away isn't doing its job. Calm, matching the dashboard.
   const isDemo = isDemoIdentifier(slug)
+  const t = useT('order')   // Language Phase 1a
   // Customer-facing name — trailing "(code)" stripped for display only. See lib/demo.ts.
   const truckName = displayTruckName(truck?.name)
   return (
@@ -4570,7 +4572,7 @@ function Hdr({ slug, truck, scrolled, showBack = true, bannerRef }: { slug: stri
            fresh menu even from the error/unavailable states (same URL otherwise). */}
         {showBack && truck && (
           <a href={`/trucks/${slug}/order`} className="text-slate-400 hover:text-white text-xs font-bold transition-colors shrink-0 z-20">
-            ← Back
+            {t('back')}
           </a>
         )}
 

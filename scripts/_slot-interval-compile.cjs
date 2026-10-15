@@ -11,6 +11,9 @@ function compile(root, files, tag, extraCompilerOptions) {
     compilerOptions: { module: 'commonjs', target: 'es2020', outDir: out, rootDir: root, skipLibCheck: true,
       esModuleInterop: true, moduleResolution: 'node', baseUrl: root, paths: { '@/*': ['./*'] },
       types: ['node'], typeRoots: [path.join(REPO, 'node_modules/@types')],
+      // Language Phase 1a: a component that reads its words (`useT`) imports lib/i18n/messages.ts, which
+      // imports messages/*.json — so a compiled tree must accept a JSON import (tsc copies the file across).
+      resolveJsonModule: true,
       // Optional per-harness additions — e.g. { jsx: 'react-jsx' } so a component can be RENDERED in a
       // harness rather than only grepped. Nothing is overridden unless a caller asks.
       ...(extraCompilerOptions || {}) },

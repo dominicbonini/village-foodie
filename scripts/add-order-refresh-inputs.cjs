@@ -164,7 +164,7 @@ async function scenario(Panel, after, { hidden = false } = {}) {
   console.log('── BROKEN VARIANTS: MUST report FAILURE ─────────────────────────────────────────────────')
   const variant = (tag, patch) => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `aori-${tag}-`))
-    for (const d of ['components', 'lib', 'app']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
+    for (const d of ['components', 'lib', 'app', 'messages']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
     fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules'))
     const f = path.join(tmp, 'components/dashboard/AddOrderPanel.tsx'); const src = fs.readFileSync(f, 'utf8')
     const out = patch(src); if (out === src) { console.log(`🔴 ${tag}: the patch did not apply`); process.exit(1) }
@@ -207,7 +207,7 @@ async function scenario(Panel, after, { hidden = false } = {}) {
     // V3 — the THROTTLE with no trailing call: a change arriving inside the 5-second window is dropped
     // for good. Patched in lib/capacity-refresh.ts (the rule lives there, not in the panel).
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'aori-v3-'))
-    for (const d of ['components', 'lib', 'app']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
+    for (const d of ['components', 'lib', 'app', 'messages']) fs.cpSync(path.join(REPO, d), path.join(tmp, d), { recursive: true })
     fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules'))
     const f = path.join(tmp, 'lib/capacity-refresh.ts'); const src = fs.readFileSync(f, 'utf8')
     const needle = 'if (now() - lastStart < minInterval) { schedule(); return false }'

@@ -730,9 +730,13 @@ function runWiringSuite(lib) {
    * anywhere can move an event's PLACE — which is asserted directly above, for every write, read or
    * unread. The count is the tripwire that makes somebody look at a new one, and it has now fired
    * twice and been right both times. */
+  /* ══ ⚠️ AND 4 AGAIN (14 October 2026, recorded in docs/language-phase-1a-report.md) ═════════════════
+   * The demo "Reset for sending" carries an event's SETTINGS onto the fresh demo event with
+   * `.update(s.columns)` (lib/demo-restart.ts). It fired this tripwire, rightly — and it is checked by hand as
+   * (4) below: the columns come from a fixed list of settings, and `truck_place_id` is not one of them. */
   const unread = ev.unreadWrites.filter(w => w.method !== 'insert')
   t(`⚠️ exactly ${unread.length} truck_events write payloads are not literal, and each is checked below`,
-    unread.length === 3)
+    unread.length === 4)
   /* ⛔ AND NONE OF THE THREE NAMES `truck_place_id`, which is the claim the count exists to protect.
    * Asserted on the payload TEXT the reader did capture, so an unreadable payload is still not an
    * unchecked one. */
@@ -752,6 +756,16 @@ function runWiringSuite(lib) {
       if (!m) return false
       const cols = m[1].split(',').map(x => x.trim().replace(/^'|'$/g, '')).filter(Boolean)
       return cols.length === 8 && !cols.includes('truck_place_id')
+    })())
+  t('🔴 (4) demo-restart `update(s.columns)` — the columns are a FIXED LIST of event settings, and `truck_place_id` is not one',
+    (() => {
+      const DR = stripComments(read('lib/demo-restart.ts'))
+      const m = DR.match(/const EVENT_SETTING_COLUMNS = \[([\s\S]*?)\] as const/)
+      if (!m) return false
+      const cols = m[1].split(',').map(x => x.trim().replace(/^'|'$/g, '')).filter(Boolean)
+      return cols.length > 0 && !cols.includes('truck_place_id')
+        && /const columns = Object\.fromEntries\(EVENT_SETTING_COLUMNS\.filter\(/.test(DR)
+        && /from\('truck_events'\)\.update\(s\.columns\)/.test(DR)
     })())
   t('🔴 …so a client PATCHing `truck_place_id` is DROPPED, not written',
     /Object\.fromEntries\(\s*\n?\s*Object\.entries\(payload\)\.filter\(\(\[k\]\) => allowed\.includes\(k\)\)/.test(E))

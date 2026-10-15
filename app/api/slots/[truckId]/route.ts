@@ -14,6 +14,8 @@ import { normaliseInterval, resolveIntervalsFor } from '@/lib/slot-interval'
 import { resolveCategoriesForVan } from '@/lib/van-category-settings'
 import { resolveBatchReservations } from '@/lib/features'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
+import { customerErrorBody } from '@/lib/i18n/customer-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -86,7 +88,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
 
   const truck = await resolveTruck(truckIdParam)
   if (!truck) {
-    return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
+    // A refusal carries a code and its values (Language Phase 1a); en-GB, as no truck is known.
+    return NextResponse.json(customerErrorBody(DEFAULT_LOCALE, 'truck_not_found'), { status: 404 })
   }
   const truckId = truck.id
   // 🔴 THE TRUCK'S CLOCK (Phase 2B): trucks.timezone, else its country's default — was a fixed London for

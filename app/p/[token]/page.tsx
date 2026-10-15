@@ -28,9 +28,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import { resolvePrivateLink } from '@/lib/private-events/read'
-import {
-  LINK_REPLACED, LINK_MADE_PUBLIC, LINK_UNKNOWN, LINK_ORDERING_OFF_GUEST, GUEST_PRIVATE_LABEL,
-} from '@/lib/private-events/copy'
+import { translatorFor } from '@/lib/i18n/translator'
+import { localeForTruck } from '@/lib/i18n/server-locale'
 
 export const dynamic = 'force-dynamic'
 
@@ -54,12 +53,12 @@ function admin() {
  * 🔴 NO TRUCK BRANDING, NO LOGO, NO LINKS ANYWHERE ELSE. A dead link should say what happened and
  * stop — sending the guest to a truck's public page would be sending them to the wrong event.
  */
-function Message({ title, body }: { title: string; body: string }) {
+function Message({ label, title, body }: { label: string; title: string; body: string }) {
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-16">
       <div className="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
         <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">
-          {GUEST_PRIVATE_LABEL}
+          {label}
         </p>
         <h1 className="mt-3 text-lg font-semibold text-slate-900">{title}</h1>
         <p className="mt-2 text-sm leading-relaxed text-slate-600">{body}</p>
@@ -73,6 +72,11 @@ export default async function PrivateLinkPage({
 }: { params: Promise<{ token: string }> }) {
   const { token } = await params
   const outcome = await resolvePrivateLink(admin(), decodeURIComponent(token || ''))
+  // The words: messages/en-GB.json `privateLink`, in the truck's language when the link names a truck, else en-GB.
+  const country = outcome.kind === 'ok' || outcome.kind === 'ordering_off' ? outcome.truck.country
+    : outcome.kind === 'replaced' ? outcome.truckCountry : null
+  const t = translatorFor(await localeForTruck({ country }), 'privateLink')
+  const label = t('guestLabel')
 
   switch (outcome.kind) {
     case 'ok': {
@@ -83,7 +87,7 @@ export default async function PrivateLinkPage({
        * ⚠️ `event_id` IS THE PARAM THE ORDER PAGE ALREADY READS (page.tsx:253), so the scoping is the
        * existing deep-link path rather than a new one. */
       const slug = outcome.truck.slug
-      if (!slug) return <Message title="This truck isn’t set up for online ordering yet." body={LINK_UNKNOWN} />
+      if (!slug) return <Message label={label} title={t('noSlugTitle')} body={t('unknownBody')} />
       redirect(`/trucks/${encodeURIComponent(slug)}/order?event_id=${encodeURIComponent(outcome.event.id)}&pt=${encodeURIComponent(token)}`)
     }
 
@@ -91,15 +95,14 @@ export default async function PrivateLinkPage({
      * gets told to order at the hatch — the event is real, so "this link doesn't work" would be a
      * lie. */
     case 'ordering_off':
-      return <Message title="Ordering online isn’t switched on" body={LINK_ORDERING_OFF_GUEST} />
+      return <Message label={label} title={t('orderingOffTitle')} body={t('orderingOffBody')} />
 
     case 'replaced':
       return (
         <Message
-          title="This link has been replaced"
-          body={outcome.reason === 'made_public'
-            ? LINK_MADE_PUBLIC(outcome.truckName)
-            : LINK_REPLACED(outcome.truckName)}
+          label={label}
+          title={t('replacedTitle')}
+          body={t(outcome.reason === 'made_public' ? 'madePublicBody' : 'replacedBody', { truck: outcome.truckName || t('truckFallback') })}
         />
       )
 
@@ -109,6 +112,6 @@ export default async function PrivateLinkPage({
     case 'unavailable':
     case 'unknown':
     default:
-      return <Message title="This link doesn’t work" body={LINK_UNKNOWN} />
+      return <Message label={label} title={t('unknownTitle')} body={t('unknownBody')} />
   }
 }

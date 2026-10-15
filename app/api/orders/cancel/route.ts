@@ -12,6 +12,9 @@ import {
   buildItemCatMap,
   normaliseOrderLines,
 } from '@/lib/slot-bookings'
+import { customerErrorBody } from '@/lib/i18n/customer-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,12 +22,15 @@ const supabase = createClient(
 )
 
 export async function POST(req: NextRequest) {
+  // Every refusal carries a code and its values (Language Phase 1a, lib/i18n/customer-errors) — en-GB until the
+  // order's truck is known, then its language.
+  let locale: AppLocale = DEFAULT_LOCALE
   try {
     // order_key is the UUID row identity (from the cancel link). Never the display id.
     const { order_key: orderKey } = await req.json()
 
     if (!orderKey) {
-      return NextResponse.json({ error: 'Order key required' }, { status: 400 })
+      return NextResponse.json(customerErrorBody(locale, 'order_key_required'), { status: 400 })
     }
 
     // Fetch order with truck settings
@@ -47,15 +53,16 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (orderError || !order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      return NextResponse.json(customerErrorBody(locale, 'order_not_found'), { status: 404 })
     }
 
     const truck = order.trucks as any
+    locale = await localeForTruck(truck)
 
     // Check cancellation is allowed for this truck
     if (!truck?.allow_customer_cancellation) {
       return NextResponse.json(
-        { error: 'This truck does not accept cancellations' },
+        customerErrorBody(locale, 'cancellations_not_accepted'),
         { status: 403 }
       )
     }
@@ -72,7 +79,7 @@ export async function POST(req: NextRequest) {
     // order, so this admits nothing that could strand money.
     if (!['pending', 'confirmed', 'modified'].includes(order.status)) {
       return NextResponse.json(
-        { error: 'This order can no longer be cancelled' },
+        customerErrorBody(locale, 'cannot_cancel'),
         { status: 409 }
       )
     }
@@ -90,7 +97,7 @@ export async function POST(req: NextRequest) {
         const cutoffTime = new Date(slotTime - truck.cancellation_cutoff_mins * 60 * 1000)
         if (new Date() > cutoffTime) {
           return NextResponse.json(
-            { error: `Orders can no longer be cancelled within ${truck.cancellation_cutoff_mins} minutes of collection` },
+            customerErrorBody(locale, 'cancel_window_passed', { n: truck.cancellation_cutoff_mins, count: String(truck.cancellation_cutoff_mins) }),
             { status: 409 }
           )
         }
@@ -104,7 +111,7 @@ export async function POST(req: NextRequest) {
       .eq('order_key', orderKey)
 
     if (cancelError) {
-      return NextResponse.json({ error: 'Failed to cancel order' }, { status: 500 })
+      return NextResponse.json(customerErrorBody(locale, 'cancel_failed'), { status: 500 })
     }
 
     // Remove from production slot (same pattern as operator cancel).
@@ -151,7 +158,7 @@ export async function POST(req: NextRequest) {
       await sendCancellationEmail({
         money: await moneyFormatForOrder(order),
         to: order.customer_email,
-        customerName: order.customer_name || 'there',
+        customerName: order.customer_name || '',   // the email says "Hi there" itself when there is no name
         orderId: order.id,
         truckName: truck?.name || '',
         reason: null,
@@ -165,6 +172,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error('[customer-cancel] error:', err)
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
+    return NextResponse.json(customerErrorBody(locale, 'something_went_wrong'), { status: 500 })
   }
 }

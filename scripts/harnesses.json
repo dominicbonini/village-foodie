@@ -123,7 +123,8 @@
     "messages-parity.cjs",
     "ui-literals.cjs",
     "demo-rebuild-replace.cjs",
-    "demo-reset-for-sending.cjs"
+    "demo-reset-for-sending.cjs",
+    "language-phase-1a.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -162,7 +163,9 @@
         "_order-charges-us.cjs",
         "_phase3-screens-us.cjs",
         "_us-readiness-us.cjs",
-        "_language-phase-0-after.cjs"
+        "_language-phase-0-after.cjs",
+        "_language-phase-1a-after.cjs",
+        "_messages-parity-1a.cjs"
       ]
     },
     "fixture_generators": {

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { getVenueSlug } from '@/lib/utils';
 import { isHatchGrab } from '@/lib/domain';
 import { formatTimeRange, formatYmd, DISCOVERY_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils';
+import { useT } from '@/lib/i18n/client';
 
 interface TruckListCardProps {
   event: VillageEvent;
@@ -115,6 +116,8 @@ function isEventLive(status?: string): boolean {
 
 export default function TruckListCard({ event, slug, hideOrderButton, forceOrderButton, compact, cornerAction, assumeHatchGrab = false, openOrderInNewTab = false, plainVenueName = false, orderOrigin, time }: TruckListCardProps) {
     const ts = time ?? DISCOVERY_TIME_SETTINGS
+    // The words: messages/en-GB.json `eventCard` (Language Phase 1a — the order page's event chooser).
+    const t = useT('eventCard')
   const liveNow = isEventLive(event.status);
   // Secondary "area" line under the venue name: village (only if not already in the name) + the
   // event's postcode, de-emphasised. Null-safe — filter drops missing parts, so a null postcode
@@ -159,7 +162,7 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
                     <span>{formatTimeRange(event.startTime, event.endTime, ts)}</span>
                     {liveNow && (
                         <span className="inline-flex items-center gap-1 text-green-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Live
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />{t('live')}
                         </span>
                     )}
                 </span>
@@ -181,7 +184,7 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
                         <Link
                             href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
                             className="group block min-w-0 cursor-pointer"
-                            title={`View venue details for ${event.venueName}`}
+                            title={t('venueDetails', { venue: event.venueName })}
                         >
                             {venueLines}
                         </Link>
@@ -217,7 +220,7 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
                                    ${liveNow ? GREEN_SOLID : ORANGE_SOLID} font-semibold
                                    px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap`}
                     >
-                        {liveNow ? 'Order now' : 'Pre-order'}
+                        {liveNow ? t('orderNow') : t('preOrder')}
                     </a>
                 )}
             </div>

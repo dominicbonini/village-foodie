@@ -40,6 +40,9 @@ import { moneyFormatForTruck } from '@/lib/money-server'
 import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
 import { formatMajor, type MoneyFormat } from '@/lib/money-format'
 import { isDemoIdentifier } from '@/lib/demo'
+import { customerErrorBody, type CustomerErrorCode, type CustomerErrorParams } from '@/lib/i18n/customer-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
 import { enforceStockLimits } from '@/lib/stock-availability'
 import { sendOrderPendingPush } from '@/lib/apns'
 // The Android mirror. Same signature, same return shape — see lib/fcm.ts's header. Aliased rather than
@@ -76,13 +79,11 @@ import { writeCookingReservation, writeReservationRecord } from '@/lib/orders/co
 export const maxDuration = 300
 
 
-/** 🔴 THE ONE SENTENCE A CUSTOMER READS WHEN A CARD ORDER CANNOT BE SET UP.
- *  It has three jobs and does them in this order: say nothing was charged (they are about to check
- *  their banking app), say the order was NOT placed (so they do not turn up expecting food), and offer
- *  the way forward that always works. Their basket is untouched on this path. */
-const CARD_UNAVAILABLE_MESSAGE =
-  'We could not set up card payment just now, so your order has not been placed and you have not been ' +
-  'charged. Your basket is saved — please try again, or choose Pay at the truck.'
+/* 🔴 THE ONE SENTENCE A CUSTOMER READS WHEN A CARD ORDER CANNOT BE SET UP — `errorsCustomer.card_unavailable`
+ * in messages/en-GB.json (Language Phase 1a; it was CARD_UNAVAILABLE_MESSAGE here, word for word).
+ * It has three jobs and does them in this order: say nothing was charged (they are about to check
+ * their banking app), say the order was NOT placed (so they do not turn up expecting food), and offer
+ * the way forward that always works. Their basket is untouched on this path. */
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -201,6 +202,10 @@ function cap(s: string) {
 // ─── Main POST handler ────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  // 🔴 EVERY REFUSAL A CUSTOMER READS CARRIES A CODE AND ITS VALUES (Language Phase 1a, lib/i18n/customer-errors):
+  // `error` is today's English, unchanged; `code` and `params` follow every existing field. en-GB until the
+  // truck is known, then the truck's language.
+  let locale: AppLocale = DEFAULT_LOCALE
   try {
     const body = await req.json()
 
@@ -254,7 +259,7 @@ export async function POST(req: NextRequest) {
 
     // ── Validate ──────────────────────────────────────────────────────────────
     if (!truckId || !customerName || !customerEmail || (!items?.length && !deals?.length)) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      return NextResponse.json(customerErrorBody(locale, 'missing_fields'), { status: 400 })
     }
 
     // ── Fetch truck (by slug or id) ───────────────────────────────────────────
@@ -276,8 +281,9 @@ export async function POST(req: NextRequest) {
 
     const truck = truckQuery.data
     if (!truck) {
-      return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
+      return NextResponse.json(customerErrorBody(locale, 'truck_not_found'), { status: 404 })
     }
+    locale = await localeForTruck(truck)
 
     // ── 🔴 ACCOUNT PENDING DELETION — ORDERING STOPS IMMEDIATELY ──────────────────────────────────
     // Read off the truck row already fetched above, so this costs NO extra query on the hottest path in
@@ -292,7 +298,8 @@ export async function POST(req: NextRequest) {
     // "no such truck". A 404 would be a lie the operator could not explain to a customer on the phone.
     if (truck.deletion_requested_at) {
       return NextResponse.json(
-        { error: 'This business is no longer accepting online orders.', code: 'account_closing' },
+        // `code` was already here; Phase 1a adds `params` after it.
+        customerErrorBody(locale, 'account_closing'),
         { status: 423 },
       )
     }
@@ -317,7 +324,7 @@ export async function POST(req: NextRequest) {
     // name), the truck is absent from both discovery feeds, and every order dies with the truck at cleanup.
     // Scoped to the `demo-` prefix ONLY — a real hidden/pre-trial truck is gated exactly as before.
     if (truck.excluded === true && !isDemoTruck) {
-      return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
+      return NextResponse.json(customerErrorBody(locale, 'truck_not_found'), { status: 404 })
     }
 
     // Use the actual truck UUID for all subsequent queries
@@ -357,7 +364,7 @@ export async function POST(req: NextRequest) {
     // Event status guard — block orders for unconfirmed events
     if (pauseEvent?.status && !['confirmed', 'open'].includes(pauseEvent.status)) {
       return NextResponse.json(
-        { error: 'This event is not available for ordering', event_status: pauseEvent.status },
+        customerErrorBody(locale, 'event_not_available', {}, { event_status: pauseEvent.status }),
         { status: 403 }
       )
     }
@@ -374,11 +381,10 @@ export async function POST(req: NextRequest) {
 
         if (offlinePaused || manualPaused) {
           return NextResponse.json(
-            {
-              error: 'Orders are currently paused',
+            customerErrorBody(locale, 'orders_paused', {}, {
               paused: true,
               reason: offlinePaused ? 'offline' : 'manual',
-            },
+            }),
             { status: 423 }
           )
         }
@@ -551,12 +557,11 @@ export async function POST(req: NextRequest) {
         + 'Refusing rather than guessing which event to price against.',
       )
       return NextResponse.json(
-        {
-          error: 'The menu has changed — please check your order before placing it.',
+        customerErrorBody(locale, 'menu_changed', {}, {
           stock: true,
           menuChanged: true,
           items: [],
-        },
+        }),
         { status: 409 },
       )
     }
@@ -591,7 +596,7 @@ export async function POST(req: NextRequest) {
           + `(truck ${resolvedTruckId}) without a valid current private link token.`,
         )
         return NextResponse.json(
-          { error: 'This event takes orders by private link only. Please use the organiser’s link or QR code.' },
+          customerErrorBody(locale, 'private_link_only'),
           { status: 403 },
         )
       }
@@ -644,14 +649,15 @@ export async function POST(req: NextRequest) {
       )
       // A modifier is named with the dish it was on, because "Truffle Shavings" alone tells a customer
       // nothing about which line to look at.
-      const label = first.kind === 'modifier' && first.on ? `${first.name} (on ${first.on})` : first.name
+      const changed: { code: CustomerErrorCode; params: CustomerErrorParams } = first.kind === 'modifier' && first.on
+        ? { code: 'menu_changed_option' as const, params: { option: first.name, item: first.on } }
+        : { code: 'menu_changed_item' as const, params: { item: first.name } }
       return NextResponse.json(
-        {
-          error: `The menu has changed — ${label} is no longer available. Please check your order before placing it.`,
+        customerErrorBody(locale, changed.code, changed.params, {
           stock: true,
           menuChanged: true,
           items: [],
-        },
+        }),
         { status: 409 },
       )
     }
@@ -710,7 +716,7 @@ export async function POST(req: NextRequest) {
         const poNowDate = getLocalDateInTz(truckTz)
         const openYet = isPreorderOpenYet((truck as any).preorder_open_rule, orderEventDate, poNowDate)
         if (!openYet && orderLines.some(l => (menuItems || []).find((m: any) => m.name === l.name)?.preorder_enabled === true)) {
-          return NextResponse.json({ error: 'Pre-orders for this event aren’t open yet — please check back when they open.', preorder_not_open: true }, { status: 403 })
+          return NextResponse.json(customerErrorBody(locale, 'preorder_not_open', {}, { preorder_not_open: true }), { status: 403 })
         }
       }
     }
@@ -773,7 +779,7 @@ export async function POST(req: NextRequest) {
     const tipChoice = parseTipChoice(tip)
     const chargeRules = await loadChargeRules(truck)
     if (tipChoice === 'invalid' || (chargeChannel === 'online_card' && tipChoice && !tipChoiceAllowed(tipChoice, chargeRules))) {
-      return NextResponse.json({ error: 'That tip option isn’t available — please choose again.', tipInvalid: true }, { status: 400 })
+      return NextResponse.json(customerErrorBody(locale, 'tip_invalid', {}, { tipInvalid: true }), { status: 400 })
     }
     const charges = computeOrderCharges({ foodMinor, rules: chargeRules, channel: chargeChannel, tip: tipChoice })
     // The GRAND total: what the card is authorised for, what total_minor stores, what the emails show.
@@ -883,18 +889,16 @@ export async function POST(req: NextRequest) {
         return null
       })()
       if (unmet) {
+        const refusal: { code: CustomerErrorCode; params: CustomerErrorParams } = unmet.soldOut
+          ? { code: 'item_sold_out' as const, params: { item: unmet.item } }
+          : unmet.overMax != null
+            ? { code: 'too_many_options' as const, params: { max: unmet.overMax, count: String(unmet.overMax), withGroup: unmet.group ? 'yes' : 'no', group: unmet.group ?? '', item: unmet.item } }
+            : unmet.group
+              ? { code: 'choose_group' as const, params: { group: unmet.group, item: unmet.item } }
+              // Hidden group → name the DISH, which the customer definitely recognises.
+              : { code: 'choose_option' as const, params: { item: unmet.item } }
         return NextResponse.json(
-          {
-            error: unmet.soldOut
-              ? `Sorry, ${unmet.item} is sold out.`
-              : unmet.overMax != null
-                ? `Please choose at most ${unmet.overMax} option${unmet.overMax !== 1 ? 's' : ''} for ${unmet.group ?? 'your choices'} (${unmet.item}).`
-                : unmet.group
-                  ? `Please choose ${unmet.group} for ${unmet.item}.`
-                  // Hidden group → name the DISH, which the customer definitely recognises.
-                  : `Please choose an option for ${unmet.item}.`,
-            requiredModifier: true,
-          },
+          customerErrorBody(locale, refusal.code, refusal.params, { requiredModifier: true }),
           { status: 400 },
         )
       }
@@ -910,7 +914,7 @@ export async function POST(req: NextRequest) {
     {
       const soldOut = await findSoldOutOption(supabase, resolvedTruckId, items, deals, eventId)
       if (soldOut) {
-        return NextResponse.json({ error: `Sorry, ${soldOut} just sold out.`, optionStock: true }, { status: 409 })
+        return NextResponse.json(customerErrorBody(locale, 'option_sold_out', { option: soldOut }, { optionStock: true }), { status: 409 })
       }
     }
 
@@ -965,7 +969,7 @@ export async function POST(req: NextRequest) {
               `intent was created — two live holds for one basket is the one outcome this must never produce.`,
             )
             return NextResponse.json(
-              { error: CARD_UNAVAILABLE_MESSAGE, cardUnavailable: true },
+              customerErrorBody(locale, 'card_unavailable', {}, { cardUnavailable: true }),
               { status: 503 },
             )
           }
@@ -1020,7 +1024,7 @@ export async function POST(req: NextRequest) {
       if (!created.ok) {
         console.error(`[submit] draft not created for truck=${resolvedTruckId}: ${created.error}`)
         return NextResponse.json(
-          { error: CARD_UNAVAILABLE_MESSAGE, cardUnavailable: true },
+          customerErrorBody(locale, 'card_unavailable', {}, { cardUnavailable: true }),
           { status: 503 },
         )
       }
@@ -1043,7 +1047,7 @@ export async function POST(req: NextRequest) {
         // retryable condition and not a fault in the customer's order. The client shows the message and
         // KEEPS THE BASKET so they can switch to paying at the truck or try again.
         return NextResponse.json(
-          { error: CARD_UNAVAILABLE_MESSAGE, cardUnavailable: true },
+          customerErrorBody(locale, 'card_unavailable', {}, { cardUnavailable: true }),
           { status: 503 },
         )
       }
@@ -1090,7 +1094,7 @@ export async function POST(req: NextRequest) {
       if (!haveLock) {
         console.warn(`[submit] lock not acquired (${lock.ok ? '' : lock.reason}) for ${resolvedTruckId} / ${orderEventDate}`)
         return NextResponse.json(
-          { error: 'We are handling a lot of orders right now — please try again', retry: true },
+          customerErrorBody(locale, 'busy_retry', {}, { retry: true }),
           { status: 409 },
         )
       }
@@ -1107,14 +1111,14 @@ export async function POST(req: NextRequest) {
         const closed = await checkClosedCategories(resolvedTruckId, eventRow.id, orderLines, itemCatMap)
         if (closed) {
           return NextResponse.json(
-            { error: `${closed[0]} is closed for this event`, categoryClosed: true, categories: closed },
+            customerErrorBody(locale, 'category_closed', { category: closed[0] }, { categoryClosed: true, categories: closed }),
             { status: 409 },
           )
         }
         const shortfall = await checkStockShortfall(resolvedTruckId, eventRow.id, orderEventDate, orderLines, itemCatMap)
         if (shortfall) {
           return NextResponse.json(
-            { error: 'Some items just sold out', stock: true, items: shortfall },
+            customerErrorBody(locale, 'items_sold_out', {}, { stock: true, items: shortfall }),
             { status: 409 },
           )
         }
@@ -1123,7 +1127,7 @@ export async function POST(req: NextRequest) {
         const optShort = await checkOptionCeilingShortfall(supabase, resolvedTruckId, eventRow.id, items, deals)
         if (optShort && optShort.length) {
           return NextResponse.json(
-            { error: `Sorry, ${optShort[0].name} just sold out.`, optionStock: true, optionName: optShort[0].name },
+            customerErrorBody(locale, 'option_sold_out', { option: optShort[0].name }, { optionStock: true, optionName: optShort[0].name }),
             { status: 409 },
           )
         }
@@ -1273,7 +1277,7 @@ export async function POST(req: NextRequest) {
         // Rolled back — NOTHING persisted (no order, no usage, option stock restored, counter not
         // advanced). Mirrors the old "Failed to save order" 500; the client retries on a clean slate.
         console.error('place_order_atomic_v2 failed (rolled back, nothing persisted):', rpcErr)
-        return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+        return NextResponse.json(customerErrorBody(locale, 'save_failed'), { status: 500 })
       }
       orderId = String((rpcData as any).order_number)
       order = { order_key: (rpcData as any).order_key }
@@ -1288,7 +1292,7 @@ export async function POST(req: NextRequest) {
     // Defensive narrowing: the only path to here is a successful RPC (every failure returned above),
     // so `order` is set — this guard satisfies the type and never fires in practice.
     if (!order) {
-      return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+      return NextResponse.json(customerErrorBody(locale, 'save_failed'), { status: 500 })
     }
 
     // ── 🔴 CAPTURE SITE 1 of 4: AUTO-ACCEPT ON THE PAY-AT-HATCH PATH, AND ONLY THAT PATH. ─────────
@@ -1596,7 +1600,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error('Order submit error:', err)
     return NextResponse.json(
-      { error: 'Something went wrong. Please try again.' },
+      customerErrorBody(locale, 'try_again'),
       { status: 500 }
     )
   }

@@ -11,6 +11,8 @@
 // in both (rare). If that ever occurs, the hardening path (A2) is to thread option id into the
 // selection. Within-group, option names are assumed distinct (a sane editor constraint).
 
+import { translatorFor } from '@/lib/i18n/translator'
+
 export interface ModRuleOption {
   id: string
   name: string
@@ -116,16 +118,12 @@ export function sortGroupsRequiredFirst<T extends ModRuleGroup>(groups: T[]): T[
  *  The base ("Required"/"Optional") is audience-agnostic. Examples: "Required · Choose up to 2"
  *  (customer) vs "Required · Customer can choose up to 2" (operator); "Optional" in both. The amber
  *  unmet cue on the order screens is separate styling, not part of this label. */
-export function groupRuleLabel(group: ModRuleGroup, audience: 'customer' | 'operator' = 'customer'): string {
+export function groupRuleLabel(group: ModRuleGroup, audience: 'customer' | 'operator' = 'customer', locale?: string | null): string {
+  // The words: messages/en-GB.json `modifierRules` (Language Phase 1a), one message per audience.
   const required = minRequiredForGroup(group) > 0
   const max = group.max_choices ?? 99
-  const cap = max === 1
-    ? (audience === 'operator' ? 'Customer chooses one' : 'Choose one')
-    : (max > 1 && max < 99)
-      ? (audience === 'operator' ? `Customer can choose up to ${max}` : `Choose up to ${max}`)
-      : null
-  const base = required ? 'Required' : 'Optional'
-  return cap ? `${base} · ${cap}` : base
+  const limit = max === 1 ? 'one' : (max > 1 && max < 99) ? 'upTo' : 'none'
+  return translatorFor(locale, 'modifierRules')(audience, { required: required ? 'yes' : 'no', limit, max: String(max) })
 }
 
 /**

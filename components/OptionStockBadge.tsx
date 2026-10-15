@@ -1,3 +1,4 @@
+'use client'
 // components/OptionStockBadge.tsx
 // Shared "N left" / sold-out badge for modifier-OPTION pills (operator AddOrderPanel + customer
 // order page). ONE source of truth for the thresholds + wording so both surfaces are identical and
@@ -11,15 +12,19 @@
 //   1–3       → "N left"   (red)      — same wording, red styling carries the urgency (no "Only"/"!")
 //   <= 0      → "sold out" (red)      — the pill is also made unselectable by the caller
 
+import { useT } from '@/lib/i18n/client'
+
+// The words: messages/en-GB.json `menuBadges` (Language Phase 1a).
 export function OptionStockBadge({ remaining }: { remaining: number | null }) {
+  const t = useT('menuBadges')
   if (remaining == null || remaining > 10) return null
   if (remaining <= 0) {
-    return <span className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded-full border text-red-600 bg-red-50 border-red-200">sold out</span>
+    return <span className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded-full border text-red-600 bg-red-50 border-red-200">{t('soldOut')}</span>
   }
   const low = remaining <= 3
   return (
     <span className={`text-[0.625rem] font-bold px-1.5 py-0.5 rounded-full border ${low ? 'text-red-600 bg-red-50 border-red-200' : 'text-orange-600 bg-orange-50 border-orange-200'}`}>
-      {remaining} left
+      {t('left', { count: String(remaining) })}
     </span>
   )
 }

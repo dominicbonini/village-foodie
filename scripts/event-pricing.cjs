@@ -710,9 +710,18 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     const D31_REMOVED = new Map([["{ data: codes },", 1], ['supabase', 1], [".from('discount_codes_db')", 1], [".select('*')", 1],
       [".eq('truck_id', truck.id)", 1], [".eq('is_active', true),", 1], ['codes: (codes || []).map(c => ({', 1], ['code: c.code,', 1],
       ['type: c.type,', 1], ['value: c.value,', 1], ['})),', 1]])
+    /* ⚠️ LANGUAGE PHASE 1a (14 October 2026, docs/language-phase-1a-report.md) — THE MENU API'S TWO REFUSALS NOW
+     * CARRY A CODE (named difference 2): their `error` text is unchanged and `code` and `params` follow every
+     * existing field. The four lines that built them are excused BY COUNT, and the companion check requires
+     * both replacements — none of them is on the price leg. */
+    const PHASE_1A_REMOVED = new Map([["return NextResponse.json({ error: 'Truck not found' }, { status: 404 })", 1],
+      ['return NextResponse.json({', 1], ["error: 'This event is not yet confirmed',", 1], ['}, { status: 404 })', 1]])
+    t('⚠️ …Language Phase 1a\'s two refusals carry a code, and both replacements are there',
+      /return NextResponse\.json\(customerErrorBody\(DEFAULT_LOCALE, 'truck_not_found'\), \{ status: 404 \}\)/.test(now)
+      && /return NextResponse\.json\(customerErrorBody\(await localeForTruck\(truck\), 'event_not_confirmed', \{\}, \{\n\s*event_status: explicitEvent\.status,\n\s*ordering_available: false,\n\s*\}\), \{ status: 404 \}\)/.test(now))
     const removed = []
     for (const [l, n] of mb) {
-      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0)
+      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0) - (PHASE_1A_REMOVED.get(l.trim()) || 0)
       if (k > 0 && l.trim() && !PHASE_2B_REMOVED.has(l.trim())) removed.push([l.trim(), k])
     }
     t('⚠️ audit D31: the public menu neither reads nor sends discount codes', !/discount_codes_db/.test(now.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n')) && !/codes: \(codes/.test(now))

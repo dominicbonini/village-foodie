@@ -262,7 +262,9 @@ async function checkAfter() {
   const OLD = { mobile: 'Please enter a valid UK mobile (e.g. 07700 900123)', phone: 'Please enter a valid UK phone (e.g. 07700 900123)', phone_number: 'Enter a valid UK phone number (e.g. 07700 900123).' }
   for (const [k, v] of Object.entries(OLD)) if (L.P.phoneErrorMessage(k, GB) !== v) fails.push(`GB ${k} message: "${L.P.phoneErrorMessage(k, GB)}" ≠ today's "${v}"`)
   for (const [f, re] of [
-    ['app/trucks/[slug]/order/page.tsx', /phoneErrorMessage\('mobile', pagePhone\)/], ['app/trucks/[slug]/order/page.tsx', /placeholder=\{phonePlaceholder\(pagePhone, 'e\.g\. '\)\}/],
+    // Language Phase 1a: the order page passes its language, and the placeholder's "e.g. " is a message around the
+    // same example — still the truck's country's (docs/language-phase-1a-report.md).
+    ['app/trucks/[slug]/order/page.tsx', /phoneErrorMessage\('mobile', pagePhone, pageLocale\)/], ['app/trucks/[slug]/order/page.tsx', /placeholder=\{phonePlaceholder\(pagePhone\) && tOrder\('phonePlaceholder', \{ example: phonePlaceholder\(pagePhone\) \}\)\}/],
     ['app/manage/[token]/page.tsx', /phoneErrorMessage\('phone', phoneCopy\)/], ['app/manage/[token]/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
     ['app/setup/page.tsx', /phoneErrorMessage\('phone_number', phoneCopy\)/], ['app/setup/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
     // Phase 2D-1: the demo modal words its box from the CHOSEN country (signupPhone), and the API from the chosen row.

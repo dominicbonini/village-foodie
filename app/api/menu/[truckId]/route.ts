@@ -28,6 +28,9 @@ import { phoneCopyForTruck } from '@/lib/phone-copy'
 import { priceAtEvent, pricingApplies, toPence, toPounds } from '@/lib/event-pricing/price'
 /* ⛔ THE AUTO-DETECT MUST NEVER PICK A PRIVATE EVENT. See the note at the `else` branch below. */
 import { isEventPrivate } from '@/lib/private-events/read'
+import { customerErrorBody } from '@/lib/i18n/customer-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 // ── PER-ROUTE CEILING ─────────────────────────────────────────────────────────────────────────────
 // THE CUSTOMER MENU. Read-only: menu items, categories, modifier groups/options, per-event stock
@@ -77,7 +80,8 @@ export async function GET(
   console.log('[MENU API] Truck found:', truck?.name, 'Error:', truckError)
 
   if (truckError || !truck) {
-    return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
+    // A refusal carries a code and its values (Language Phase 1a); en-GB, as no truck is known.
+    return NextResponse.json(customerErrorBody(DEFAULT_LOCALE, 'truck_not_found'), { status: 404 })
   }
 
   // Fetch all menu data from Supabase
@@ -175,11 +179,10 @@ export async function GET(
       .maybeSingle()
 
     if (!isDashboard && explicitEvent && !['confirmed', 'open'].includes(explicitEvent.status)) {
-      return NextResponse.json({
-        error: 'This event is not yet confirmed',
+      return NextResponse.json(customerErrorBody(await localeForTruck(truck), 'event_not_confirmed', {}, {
         event_status: explicitEvent.status,
         ordering_available: false,
-      }, { status: 404 })
+      }), { status: 404 })
     }
   } else {
     // The truck's today (Phase 2B; the UTC date was yesterday from 00:00 to 01:00 BST).
