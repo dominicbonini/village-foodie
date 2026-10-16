@@ -27,7 +27,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const description = isHG
     ? 'The food truck management platform'
     : 'Find local food trucks and pop-ups visiting villages near you.'
-  const baseUrl = isHG ? 'https://hatchgrab.com' : 'https://villagefoodie.co.uk'
+  // 🔴 Language Phase 1e (16 October 2026): the HatchGrab base is the WWW host — the one every canonical, og:url,
+  // hreflang and sitemap URL names (lib/marketing-country.ts HATCHGRAB_ORIGIN). It was the apex, which 307s to www,
+  // so the inherited og:url and every relative metadata URL resolved against a redirect. Village Foodie: unchanged.
+  const baseUrl = isHG ? 'https://www.hatchgrab.com' : 'https://villagefoodie.co.uk'
 
   // ── 🔴 THE SHARE IMAGE IS NOW ON THE SAME BRANCH AS EVERYTHING ELSE (3 September 2026) ──────────
   // It was the ONE value on this object that was not. `siteName`, `description`, `baseUrl` and the
@@ -40,12 +43,12 @@ export async function generateMetadata(): Promise<Metadata> {
   // Measured on production before the fix, not inferred — see docs/share-preview-report.md.
   //
   // ⚠️ ABSOLUTE, AND BUILT FROM THE REQUEST HOST — NOT A RELATIVE PATH.
-  // A relative URL resolves against `metadataBase`, which is the APEX (`https://hatchgrab.com`), and
+  // A relative URL resolves against `metadataBase`, which WAS the APEX (`https://hatchgrab.com`), and
   // the apex 307s to `www` for static assets — so the declared og:image was a REDIRECT rather than an
   // image. Crawlers are not obliged to follow one. `host` is whatever actually served this response,
   // so this URL cannot redirect by construction, on production or on a preview deployment.
-  // 🔴 `baseUrl` IS DELIBERATELY UNTOUCHED. og:url and metadataBase still read the apex; changing
-  // them is a separate decision and was explicitly out of scope for this change.
+  // 🔴 `baseUrl` WAS DELIBERATELY UNTOUCHED BY THAT CHANGE (og:url and metadataBase read the apex). That separate
+  // decision was taken on 16 October 2026 (Language Phase 1e): both now read the www host — see `baseUrl` above.
   //
   // 🔴 THE DIMENSIONS BELOW ARE MEASURED FROM THE FILE, NOT INTENDED. The previous pair said
   // 1200x630 over a file that was actually 2397x1270 — the tags did not describe the resource they

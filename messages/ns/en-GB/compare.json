@@ -1,0 +1,130 @@
+{
+  "eyebrow": "Cost comparison",
+  "title": "Compare your online<br></br><accent>ordering costs</accent>",
+  "system": {
+    "title": "Do you take online orders now?",
+    "yes": "Yes, with another system",
+    "no": "No, not yet"
+  },
+  "trucks": {
+    "title": "How many trucks do you run?",
+    "aria": "Number of trucks"
+  },
+  "people": {
+    "title": "{fleet, plural, one {How many people work the van?} other {How many people work across your vans?}}",
+    "one": "One",
+    "twoOrMore": "Two or more"
+  },
+  "plan": {
+    "yourChoice": "Your choice",
+    "weSuggest": "We suggest",
+    "summary": "{price} per truck per month, with {allowance} of online orders included{fleet, plural, one {} other { on each}}.",
+    "ownLogin": "Everyone gets their own login.",
+    "sharedLogin": "{plan} does not include separate logins — everyone shares one account.",
+    "switchTo": "Use {plan} instead"
+  },
+  "orders": {
+    "titleYes": "Online orders per month, per truck",
+    "count": "~{count, plural, one {# order} other {# orders}}",
+    "captionNo": "A rough guess is fine — pre-orders and queue-skippers, not cash or card at the window.",
+    "captionYes": "Only orders placed through your ordering page — not cash or card at the window.",
+    "sliderAria": "Monthly online order value per truck",
+    "overAllowance": "{allowance} of online orders included per truck. The {excess} above is charged at {pct} — <b>{over}</b> a month each.",
+    "insideAllowance": "Inside the {allowance} of online orders included — nothing on top of the plan.",
+    "acrossFleet": "Across {fleet, plural, one {# truck} other {# trucks}}: <b>{amount}</b> a month.",
+    "titleNo": "How much do you think you’d take online, per month, per truck?"
+  },
+  "fee": {
+    "title": "What do you pay per order now?",
+    "pctLabel": "Percentage",
+    "pctPlaceholder": "Your rate",
+    "pctAria": "Percentage fee",
+    "fixedLabel": "Plus per order",
+    "fixedPlaceholder": "Your fee",
+    "fixedAria": "Pence per order",
+    "modeLabel": "Their rate:",
+    "modeInclusive": "includes card processing",
+    "modeOnTop": "is charged on top",
+    "onTopNote": "Card processing of {fee} is charged on top of that, so you actually pay <b>{pct} + {fixed}</b> all in.",
+    "inclusiveNote": "Card processing of {fee} is inside that, and you’d pay it anywhere. Their own fee is <b>{pct}</b>."
+  },
+  "days": {
+    "title": "How many days a week do you trade?",
+    "help": "Events, markets, pitches — any day the van’s out."
+  },
+  "free": {
+    "title": "Your introductory offer — how many months free?",
+    "aria": "Months free",
+    "none": "Paying from day one",
+    "some": "No plan fee, no service fee"
+  },
+  "jump": {
+    "cost": "See what it costs ↓",
+    "saving": "See your saving ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Online ordering, pre-orders and your kitchen screen for</lead><figure>{amount}</figure><unit>a trading day</unit>",
+    "basedOn": "Based on {days, plural, one {# day} other {# days}} a week · {monthly} a month{fleet, plural, one {} other { per van}}"
+  },
+  "coffee": "Less than a coffee.",
+  "freeMonths": "{n, plural, one {And your first month is on us.} other {And your first # months are on us.}}",
+  "cta": {
+    "upload": "Upload my menu →",
+    "uploadSave": "Upload my menu and save {amount} →",
+    "ask": "Ask us a question",
+    "noCard": "No card needed to set up"
+  },
+  "breakdown": {
+    "title": "Your month, broken down",
+    "titleDearer": "Your month on HatchGrab",
+    "plan": "{plan} plan",
+    "over": "{pct} on the {excess} above the {allowance} included",
+    "inside": "Online orders inside the {allowance} included",
+    "total": "HatchGrab each month",
+    "freeMonths": "{n, plural, one {Month 1} other {Months 1–#}}",
+    "freeAmount": "{amount} — on us",
+    "acrossFleet": "Across {fleet, plural, one {# van} other {# vans}}",
+    "perMonth": "{amount} a month",
+    "card": "Card processing — Stripe’s {fee} per order, paid to Stripe. You’d pay much the same on a card machine at the window.",
+    "provider": "Your current provider’s own fee ({pct})"
+  },
+  "enterRate": "Enter what you pay now to see your saving.",
+  "panel": {
+    "nowYear": "<label>Right now you pay</label><fig>{amount}<q> a year</q></fig>",
+    "nowMonth": "<label>Right now you pay</label><fig>{amount}<q> a month</q></fig>",
+    "oursYear": "<label>With HatchGrab</label><fig>{amount}<q> in year one</q></fig>",
+    "oursMonth": "<label>With HatchGrab</label><fig>{amount}<q> a month</q></fig>",
+    "acrossFleet": "across {fleet, plural, one {# van} other {# vans}}"
+  },
+  "hero": {
+    "save": "<verb>You save</verb><figure>{amount}</figure><sub><num>{pct}</num> less in your first year</sub>",
+    "same": "<verb>About the same</verb><figure>{amount}</figure><sub><num>{pct}</num> more in your first year</sub>",
+    "dearer": "<lead>Everything HatchGrab does, for</lead><figure>{amount}</figure><unit>more a week</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} a month more than now} other {{amount} more per van a month than now}}"
+  },
+  "anchor": {
+    "liability": "That’s a year’s public liability cover.",
+    "weekendPitch": "That’s a weekend pitch at a food festival.",
+    "festivalPitches": "That’s a couple of festival pitches.",
+    "fryer": "That’s a new fryer and griddle.",
+    "counter": "That’s a full refit of your serving counter.",
+    "vanDeposit": "That’s a deposit on a second van.",
+    "secondVan": "That’s a second van on the road."
+  },
+  "year": {
+    "one": "Year one",
+    "two": "Year two",
+    "save": "Save {amount}<note>({pct} less)</note>",
+    "extra": "Extra {amount}<note>({pct} more)</note>",
+    "current": "Current provider <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Estimates based on the figures you enter, assuming an average order of {aov}. Card processing applies whichever provider you use. Check before deciding.",
+    "yes": "Estimates based on the figures you enter, assuming an average order of {aov}. Card processing of {fee} per order applies whichever provider you use, so it’s excluded from both sides.",
+    "onTop": "The all-in figure in question {n} includes it — the comparison does not, on either side.",
+    "check": "Check your current provider’s rates before deciding."
+  },
+  "intro": "Takes about a minute. Already using a system? We’ll compare it. Not yet? We’ll show you exactly what it costs.",
+  "twoYear": "Over two years that’s <b>{amount}</b> saved."
+}

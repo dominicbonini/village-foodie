@@ -65,4 +65,18 @@ export const NAMESPACES = {
     'manageShell', 'manageBilling', 'manageTeam'],
   // Language Phase 1c: the setup wizard.
   setup: ['setup', 'whereBased', 'tradeArea'],
+  // ── Language Phase 1e Part C: CLIENT COMPONENTS THE SERVER RENDERS IN A NON-BASE LOCALE ──────────────────────
+  // No provider: the server page knows the locale and passes `wordsFor(locale, NAMESPACES.<surface>)`
+  // (lib/i18n/server-words.ts), which the component seeds before rendering (useSeedWords), so hydration matches.
+  // Each entry names every namespace its client component's import graph reads — scripts/messages-split.cjs check 4.
+  // The public truck page (app/trucks/[slug]/TruckClient.tsx), in the truck's country's locale.
+  truckProfile: ['truckPage', 'siteFooter', 'eventCard'],
+  // The cost calculator (app/compare/CostComparison.tsx), in the visitor's country's locale.
+  compare: ['compare', 'demoUpload', 'planMeta', 'provisionContent'],
+  // The verify-email success screen (app/verify-email/VerifyEmailSuccess.tsx), in the operator's truck's locale.
+  verifyEmail: ['auth'],
+  // The marketing pages (/landing, /features, /compare and their /uk, /us addresses), in the visitor's country's locale:
+  // what their client components read under lib/i18n/locale-words.tsx — the country menu (landingNav) and the demo
+  // modal and CTAs (demoUpload; provisionContent through lib/demo-templates). The /compare calculator adds `compare`.
+  marketing: ['landingNav', 'demoUpload', 'provisionContent'],
 } as const satisfies Record<string, readonly AppNamespace[]>

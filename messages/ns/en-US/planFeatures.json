@@ -1,0 +1,39 @@
+{
+  "row": {
+    "walkup_orders": {
+      "detail": "Take and manage orders at the window, paid on your own card terminal."
+    },
+    "sold_out_toggle": {
+      "detail": "Mark any item sold out in one tap — it grays out for customers right away."
+    },
+    "online_ordering_pay_at_hatch": {
+      "detail": "Customers order ahead online and pay in person when they pick up."
+    },
+    "meal_deals_upsells": {
+      "name": "Combos & upsells"
+    },
+    "time_slot_selection": {
+      "detail": "Customers choose a pickup time slot, spreading demand across your service."
+    },
+    "whatsapp_auto_replies": {
+      "detail": "Auto-reply to WhatsApp inquiries about your menu and schedule."
+    },
+    "messenger_instagram_replies": {
+      "detail": "Same as WhatsApp auto-replies, for Messenger and Instagram inquiries."
+    },
+    "tap_to_pay": {
+      "detail": "Take card payments on a supported phone, so you don’t need a separate card reader."
+    }
+  },
+  "landing": {
+    "mergedAutoRepliesDetail": "Auto-reply to inquiries about your menu and schedule on WhatsApp, Messenger and Instagram."
+  },
+  "footnote": {
+    "n1": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorization if you tap on a phone or tablet without a dedicated reader.",
+    "n4Live": "Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From {from}, the first {count} a month are free. Correct as of {checked}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong.",
+    "n5": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers are listed in our help center."
+  },
+  "priceWord": {
+    "masked": "TBD"
+  }
+}

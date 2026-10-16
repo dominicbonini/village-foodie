@@ -84,7 +84,12 @@ const MOVED_FILE = path.join(REPO, 'scripts/fixtures/language-phase-1d-gb-moved.
 // exactly as it sees Part 1's. Where a key is in both, PART 1's as-moved text wins (it is the older text — what a
 // 756ca09-or-earlier frozen catalogue must show); under the 826471a pair the frozen file's own text wins anyway.
 const MOVED_FILE_1D2 = path.join(REPO, 'scripts/fixtures/language-phase-1d2-gb-moved.json')
-const MOVED_FILES = [MOVED_FILE_1D2, MOVED_FILE]   // applied in this order: a later file wins
+// ⚠️ RE-PINNED (Language Phase 1e): a THIRD as-moved overlay, scripts/fixtures/language-phase-1e-gb-moved.json (written by
+// Phase 1e's messages helper for every marketing GB wrong-English fix; a key that existed at eb7ed44 is recorded at its
+// eb7ed44 text). It is applied FIRST, so the older overlays win where a key is in more than one (the older text is what an
+// older frozen catalogue must show); under the eb7ed44 pair the frozen file's own text wins anyway.
+const MOVED_FILE_1E = path.join(REPO, 'scripts/fixtures/language-phase-1e-gb-moved.json')
+const MOVED_FILES = [MOVED_FILE_1E, MOVED_FILE_1D2, MOVED_FILE]   // applied in this order: a later file wins
 /** The as-moved overlays (Part 2's, then Part 1's over it) as one message tree ({} when absent or HG_MESSAGES_MOVED=off). */
 function movedTree(env = process.env) {
   if (env.HG_MESSAGES_MOVED === 'off') return {}
@@ -117,7 +122,10 @@ function mode(env = process.env) {
 // copied to the NEW path too, so a frozen mode shows the moved key exactly as it showed the old one (e.g. the 826471a en-US
 // "Mark paid & picked up" overrides under dashboard.settings.* reach completionSettings.*).
 const KEY_MOVES_FILE = path.join(REPO, 'scripts/fixtures/language-phase-1d2-key-moves.json')
-const keyMoves = () => (fs.existsSync(KEY_MOVES_FILE) ? readJson(KEY_MOVES_FILE).moves || {} : {})
+// ⚠️ RE-PINNED (Language Phase 1e): Phase 1e's own key moves (scripts/fixtures/language-phase-1e-key-moves.json, same
+// shape), merged after Part 2's — so an eb7ed44 frozen catalogue shows a key Phase 1e moved at its new path too.
+const KEY_MOVES_FILE_1E = path.join(REPO, 'scripts/fixtures/language-phase-1e-key-moves.json')
+const keyMoves = () => Object.assign({}, ...[KEY_MOVES_FILE, KEY_MOVES_FILE_1E].map(f => (fs.existsSync(f) ? readJson(f).moves || {} : {})))
 function withMoves(tree) {
   const out = JSON.parse(JSON.stringify(tree))
   for (const [from, to] of Object.entries(keyMoves())) {
@@ -202,4 +210,4 @@ function gbKeyDiff(frozenFile = FROZEN_DEFAULT, afterFile = fs.existsSync(PHASE2
   return out
 }
 
-module.exports = { REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILES, KEY_MOVES_FILE, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }
+module.exports = { REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }

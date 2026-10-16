@@ -1,6 +1,10 @@
 import { requirePlanPrice, moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
 import { perMonthLabel, formatAmount } from '@/lib/money-format'
 import { PRICE_WORD } from '@/lib/price-words'
+// Language Phase 1e: the plan descriptions are messages (`planMeta`, a namespace of six lines on purpose — this module is
+// imported by the order page, the dashboard and every gate, which must not carry the whole plan table's words).
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/planMeta'
 
 export type Plan = 'starter' | 'pro' | 'max' | 'trial' | 'tester' | 'demo'
 
@@ -280,12 +284,21 @@ export const PLAN_META: Record<Plan, {
   name: string
   description: string
 }> = {
-  starter: { name: 'Starter', description: 'Weekend traders & walk-up pitches' },
-  pro:     { name: 'Pro',     description: 'Busy trucks scaling pre-orders' },
-  max:     { name: 'Max',     description: 'High-volume operations & festivals' },
-  trial:   { name: 'Trial',   description: 'All features included — Max tier + Pay at Hatch ordering' },
-  tester:  { name: 'Tester',  description: 'Pre-launch tester — full feature access, lifetime discount' },
-  demo:    { name: 'Demo',    description: 'Prospect sandbox — full trial before signup (never public)' },
+  // 🔴 THE NAMES ARE THE PRODUCT'S TIER NAMES and stay as written in every country (like "Pay at Hatch").
+  // The DESCRIPTIONS are words (Language Phase 1e): `planMeta.description.<plan>` in messages/. This record carries
+  // the en-GB text for the surfaces that are UK-only or not yet moved (Admin, FeatureGate); a surface that knows its
+  // country asks `planDescription(plan, locale)`.
+  starter: { name: 'Starter', description: planDescription('starter', 'en-GB') },
+  pro:     { name: 'Pro',     description: planDescription('pro', 'en-GB') },
+  max:     { name: 'Max',     description: planDescription('max', 'en-GB') },
+  trial:   { name: 'Trial',   description: planDescription('trial', 'en-GB') },
+  tester:  { name: 'Tester',  description: planDescription('tester', 'en-GB') },
+  demo:    { name: 'Demo',    description: planDescription('demo', 'en-GB') },
+}
+
+/** The plan's one-line description in a locale (en-GB / en-US) — `planMeta.description.<plan>`. */
+export function planDescription(plan: Plan, locale: string | null | undefined): string {
+  return translatorFor(locale, 'planMeta')(`description.${plan}`)
 }
 
 /**

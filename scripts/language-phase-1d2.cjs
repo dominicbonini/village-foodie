@@ -103,7 +103,12 @@ function captureAll(cwd, dir, env, areas = AREAS) {
 const switchEnv = which => {
   const e = { HG_KIT_CACHE_SUFFIX: `lp1d2${which}` }
   if (which === 'F') return { ...e, HG_MESSAGES_FROZEN: path.join(REPO, FROZEN_GB), HG_MESSAGES_SOURCE: '', HG_MESSAGES_MOVED: '' }
-  if (which === 'A') return { ...e, HG_MESSAGES_FROZEN: 'off', HG_MESSAGES_SOURCE: '1' }
+  // ⚠️ RE-PINNED (Language Phase 1e): this harness asserts PART 2's END STATE. Its "current words" are the words Part 2
+  // ended with — eb7ed44's pair (scripts/fixtures/language-phase-1e-messages-before.{en-GB,en-US}.json) with every
+  // as-moved overlay — on THIS code; Phase 1e's marketing words (incl. Billing's plan rows) are proven by
+  // scripts/language-phase-1e.cjs. HG_LP1D2_A=source reads the authored files instead (only for a deliberate check).
+  if (which === 'A') return process.env.HG_LP1D2_A === 'source' ? { ...e, HG_MESSAGES_FROZEN: 'off', HG_MESSAGES_SOURCE: '1' }
+    : { ...e, HG_MESSAGES_FROZEN: path.join(REPO, 'scripts/fixtures/language-phase-1e-messages-before.en-GB.json'), HG_MESSAGES_SOURCE: '' }
   return { ...e, HG_MESSAGES_FROZEN: 'off', HG_MESSAGES_SOURCE: '' }
 }
 /** A capture directory → { 'area/viewKey': value }. */

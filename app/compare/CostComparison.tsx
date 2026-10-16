@@ -38,9 +38,16 @@ import {
   cardFees,
 } from '@/lib/plan-features'
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { toMajor, formatMajor, smallFeeLabel, minorDigits, roundsToZero, type MoneyFormat } from '@/lib/money-format'
+import { toMajor, formatMajor, smallFeeLabel, minorDigits, roundsToZero, feeLabel, pctLabel, minorUnitSuffix, type MoneyFormat } from '@/lib/money-format'
 import { moneyFormatOf } from '@/lib/country-settings-types'
 import { contactHref } from '@/lib/contact-topics'
+// Language Phase 1e: every word on this page is in messages (`compare`), read in the locale the PAGE passes in — the
+// visitor's country (app/compare/page.tsx, or the /uk and /us routes). Nothing here resolves a country itself.
+import { translatorFor } from '@/lib/i18n/translator'
+import type { AppLocale } from '@/lib/i18n/locales'
+import type { SeedWords } from '@/lib/i18n/registry'
+import { useSeedWords } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/compare'
 
 const ORANGE = '#EF8B2C'
 
@@ -165,12 +172,27 @@ function perWeek(monthly: number): number {
 // 🔴 UK high-street coffee is ~£3.50+; keep the claim true.
 const COFFEE_MAX_PER_DAY = 3.0
 
-/** "And your first month is on us." / "…first N months are on us." Nothing at zero. */
-function freeMonthsLine(n: number): string | null {
+/** The page's translator, in the locale the server page passed in. */
+function compareT(locale: AppLocale) {
+  return translatorFor(locale, 'compare')
+}
+type CompareT = ReturnType<typeof compareT>
+
+/** "And your first month is on us." / "…first N months are on us." (an ICU plural). Nothing below one. */
+function freeMonthsLine(t: CompareT, n: number): string | null {
   if (n < 1) return null
-  return n === 1
-    ? 'And your first month is on us.'
-    : `And your first ${n} months are on us.`
+  return t('freeMonths', { n })
+}
+
+// ── A PERCENTAGE THE PAGE COMPUTED, WITH A FIXED NUMBER OF DECIMALS ("3.0%", "69%", "3.07%") ─────────────
+// Language Phase 1e: this was `x.toFixed(1) + '%'` (and `.toFixed(0)`, and `.toFixed(2)` with trailing zeros
+// stripped). ⚠️ toFixed STILL DECIDES THE DIGITS — exactly as lib/money-format's `rounded` does for money — and Intl
+// only lays them out in the page's locale, so the GB output is the string the old code printed. No grouping, as
+// before ("1000%", never "1,000%").
+function pctFixed(f: Pick<MoneyFormat, 'locale'>, n: number, minDp: number, maxDp: number): string {
+  const r = Number((Number.isFinite(n) ? n : 0).toFixed(maxDp))
+  return new Intl.NumberFormat(f.locale, { style: 'percent', useGrouping: false, minimumFractionDigits: minDp, maximumFractionDigits: maxDp })
+    .format(r / 100)
 }
 
 // ── 🔴 "DOES IT RENDER AS ZERO?" ASKED OF THE FORMATTER, NOT OF THE NUMBER ─────────────────────────
@@ -219,15 +241,19 @@ function numOr(raw: string, fallback: number): number {
 // ⚠️ THE SHAPE IS DELIBERATELY UNCHANGED — same signature, same single call site, same null below the
 // threshold. Only the boundaries and the strings moved. Below £80 there is deliberately no anchor: a
 // saving that small is not made more persuasive by comparing it to anything.
-function anchor(v: number): string | null {
+// ⚠️ LANGUAGE PHASE 1e: it returns the anchor's ID now; the whole sentence ("That’s a year’s public liability
+// cover.") is the message `compare.anchor.<id>`. ⚠️ THE BANDS ARE UK FIGURES, applied to the amount in the visitor's
+// currency — a US visitor gets the same bands in dollars (listed for Dominic in the Phase 1e report).
+type AnchorId = 'liability' | 'weekendPitch' | 'festivalPitches' | 'fryer' | 'counter' | 'vanDeposit' | 'secondVan'
+function anchor(v: number): AnchorId | null {
   if (v < 80) return null
-  if (v < 250) return "a year's public liability cover"
-  if (v < 600) return 'a weekend pitch at a food festival'
-  if (v < 1200) return 'a couple of festival pitches'
-  if (v < 2500) return 'a new fryer and griddle'
-  if (v < 5000) return 'a full refit of your serving counter'
-  if (v < 12000) return 'a deposit on a second van'
-  return 'a second van on the road'
+  if (v < 250) return 'liability'
+  if (v < 600) return 'weekendPitch'
+  if (v < 1200) return 'festivalPitches'
+  if (v < 2500) return 'fryer'
+  if (v < 5000) return 'counter'
+  if (v < 12000) return 'vanDeposit'
+  return 'secondVan'
 }
 
 // ⚠️ THE PROVIDER AND THE MODAL LIVE IN ../page.tsx, NOT HERE, AND THAT IS STILL TRUE. This component
@@ -236,13 +262,24 @@ function anchor(v: number): string | null {
 // 🔴 DO NOT ADD A PROVIDER HERE TO "MAKE THIS COMPONENT SELF-CONTAINED". A second provider would give
 // these two CTAs their own `open` state, invisible to the <DemoModal /> mounted under the first one, and
 // the buttons would simply do nothing when clicked. No error, no warning — a dead CTA.
-export default function CostComparison({ settings }: {
+export default function CostComparison({ settings, locale, words }: {
   /** The marketing country's settings, read server-side by app/compare/page.tsx. */
   settings: CountrySettings
+  /** The page's language — the visitor's country's locale, decided by the server page (never re-resolved here). */
+  locale: AppLocale
+  /** Language Phase 1e Part C: that locale's overrides for NAMESPACES.compare (null for en-GB) — the browser bundle
+   *  carries only the en-GB base, so they are registered before anything here renders and hydration matches. */
+  words?: SeedWords | null
 }) {
+  useSeedWords(words)
+  const t = useMemo(() => compareT(locale), [locale])
   const { PLANS, CARD_PCT, CARD_PENCE, OVERAGE } = useMemo(() => pricingFrom(settings), [settings])
   // The marketing country's money format, and the page's helpers bound to it (same names, same calls).
   const fmt = moneyFormatOf(settings)
+  // Card processing as one phrase ("1.5% + 20p", "2.9% + 30¢") and the overage rate ("0.99%") — lib/money-format's
+  // own labels, so the coin ("p" / "¢") comes from its table and is never typed here.
+  const cardFee = feeLabel({ pct: CARD_PCT, fixedMinor: CARD_PENCE }, fmt)
+  const overagePct = pctLabel(OVERAGE, fmt)
   const gbp = (n: number, dp = 0) => gbpIn(fmt, n, dp)
   const money = (n: number) => moneyIn(fmt, n)
   const isRealSaving = (n: number) => isRealSavingIn(fmt, n)
@@ -389,13 +426,13 @@ export default function CostComparison({ settings }: {
   // cases; the middle case is the one a boolean would have got wrong. A saving that rounds away is not
   // "extra" either, so it says neither.
   // ⚠️ NO CLAIM IS INVENTED FOR THE ZERO CASE: "About the same" describes the arithmetic and stops.
-  const heroVerb = good ? 'You save' : rendersAsZero(m.saveY1) ? 'About the same' : "You'd pay extra"
   /* ── 🔴 THE THIRD CASE, NAMED, BECAUSE IT NOW RENDERS A DIFFERENT CARD ──────────────────────────
    * `good` splits "saves" from "does not save"; `rendersAsZero` splits "about the same" out of the
    * second. What is left is the one case item 6 reframes: we genuinely cost more.
-   * ⚠️ `heroVerb`'s "You'd pay extra" IS NOW UNREACHABLE ON SCREEN — the dearer branch does not render
-   * it. It is kept because `rendersAsZero` still needs the middle case and deleting the third arm would
-   * leave a ternary whose fallback silently labelled a dearer result "About the same". */
+   * ⚠️ LANGUAGE PHASE 1e: the verb is part of the hero's message now — `hero.save` ("You save") when `good`,
+   * `hero.same` ("About the same") otherwise, and the dearer case renders its own `hero.dearer`. The old third
+   * arm, "You'd pay extra", was unreachable on screen (the dearer branch never rendered it) and went with the
+   * `heroVerb` string; `dearer` below is still what keeps a dearer result from being labelled "About the same". */
   const dearer = !good && !rendersAsZero(m.saveY1)
   /** What HatchGrab costs ABOVE the current provider, per van per month. Positive only when `dearer`. */
   const extraPerTruck = m.oursPerTruck - m.theirsMonth / fleet
@@ -407,7 +444,7 @@ export default function CostComparison({ settings }: {
   return (
     <div className="min-h-screen px-5 py-10 md:py-14" style={{ backgroundColor: '#FAF8F5', color: INK }}>
       <div className="mx-auto w-full max-w-2xl">
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Cost comparison</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{t('eyebrow')}</p>
         {/* ── 🔴 THIRD WORDING, AND THIS COMMENT EXISTS SO THERE IS NOT A FOURTH. ────────────────────
             The headline has now been:
               1. "How much of your takings / are you handing over?"  — combative. It implies the reader
@@ -424,9 +461,7 @@ export default function CostComparison({ settings }: {
             ⚠️ So: if you find yourself rewording this again, check first that the new version is not
             arguing. That is what the last two were doing. */}
         <h1 className="mt-2 text-3xl font-black leading-tight tracking-tight md:text-5xl">
-          Compare your online
-          <br />
-          <span style={{ color: ORANGE }}>ordering costs</span>
+          {t.rich('title', { br: () => <br />, accent: c => <span style={{ color: ORANGE }}>{c}</span> })}
         </h1>
         {/* ⚠️ "Takes about a minute", NOT "Four quick questions". Being wrong about a count on a page
             about arithmetic undermines the arithmetic, and the count is arguable — and it is now arguable
@@ -436,8 +471,7 @@ export default function CostComparison({ settings }: {
             could not keep even on the Yes path when we come out dearer. It now says what the page DOES
             on each path and promises the outcome of neither. */}
         <p className="mt-4 max-w-lg text-base leading-relaxed text-slate-600">
-          Takes about a minute. Already using a system? We&apos;ll compare it. Not yet? We&apos;ll show
-          you exactly what it costs.
+          {t('intro')}
         </p>
 
         <div className="mt-8 space-y-4">
@@ -456,7 +490,7 @@ export default function CostComparison({ settings }: {
               ⚠️ SO THE RULE IS: worded options match the staff buttons, digits match the truck buttons.
               ⚠️ `flex-wrap` AND `min-w-0 flex-1` FOR THE SAME REASON QUESTION 2 HAS THEM: at 375px two
               labels this long on one row need to be allowed to wrap rather than overflow the card. */}
-          <Card n={STEP.system} title="Do you take online orders now?">
+          <Card n={STEP.system} title={t('system.title')}>
             {/* ── ⚠️ STACKED BELOW 640px, SIDE BY SIDE ABOVE IT — THE CTA PAIR'S OWN PATTERN ──────────
                 🔴 A CONSEQUENCE OF MATCHING THE STAFF BUTTONS' TEXT SIZE, MEASURED NOT GUESSED. At
                 `text-base` in a shared row these are 143px wide at 375px, and "Yes, with another system"
@@ -466,7 +500,7 @@ export default function CostComparison({ settings }: {
                 ⚠️ `flex-col sm:flex-row` IS COPIED FROM THE CTA PAIR in this same file, which stacks for
                 exactly this reason — two long labels that will not share a 375px row. */}
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
-              {([['yes', 'Yes, with another system'], ['no', 'No, not yet']] as const).map(([v, label]) => (
+              {([['yes', t('system.yes')], ['no', t('system.no')]] as const).map(([v, label]) => (
                 <button key={v} onClick={() => setHasSystem(v)}
                   className="min-w-0 flex-1 rounded-xl border-2 px-4 py-4 text-base font-bold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                   style={hasSystem === v
@@ -478,7 +512,7 @@ export default function CostComparison({ settings }: {
             </div>
           </Card>
 
-          <Card n={STEP.trucks} title="How many trucks do you run?" disabled={!hasSystem}>
+          <Card n={STEP.trucks} title={t('trucks.title')} disabled={!hasSystem}>
             {/* ⚠️ `flex-wrap` + `gap-2 sm:gap-3`: at 375px three buttons and the 4+ box on one row leaves
                 each button under 70px. Wrapping is what stops it overflowing. */}
             <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -502,14 +536,14 @@ export default function CostComparison({ settings }: {
                     setTrucks(Math.max(1, Math.min(50, Math.round(numOr(raw, 1)))))
                   }}
                   className="w-16 min-w-0 py-2 text-center text-base font-black tabular-nums focus:outline-none focus-visible:ring-2"
-                  aria-label="Number of trucks" />
+                  aria-label={t('trucks.aria')} />
               </div>
             </div>
           </Card>
 
           {/* ⚠️ THE TITLE FOLLOWS QUESTION 1. "each van" was wrong for a one-truck operator, who has one
               van and is being asked about "each" of it. `fleet` is already the clamped truck count. */}
-          <Card n={STEP.people} title={fleet > 1 ? 'How many people work across your vans?' : 'How many people work the van?'}
+          <Card n={STEP.people} title={t('people.title', { fleet })}
             disabled={!hasSystem}>
             {/* 🔴 ANSWERING QUESTION 2 CLEARS THE OVERRIDE (the `setPlanOverride(null)` below). Without
                 it, an operator who switched to Pro and then changed their answer to "Two or more" would
@@ -519,7 +553,7 @@ export default function CostComparison({ settings }: {
                 ⚠️ THIS COMMENT LIVES HERE, NOT NEXT TO THE onClick, BECAUSE A JSX COMMENT PLACED
                 DIRECTLY AFTER `.map(o => (` IS AN EXPRESSION, NOT A CHILD, AND FAILS THE BUILD. */}
             <div className="flex flex-wrap gap-2 sm:gap-3">
-              {([{ v: 1 as const, label: 'One' }, { v: 2 as const, label: 'Two or more' }]).map(o => (
+              {([{ v: 1 as const, label: t('people.one') }, { v: 2 as const, label: t('people.twoOrMore') }]).map(o => (
                 <button key={o.v} onClick={() => { setStaff(o.v); setPlanOverride(null) }}
                   className="min-w-0 flex-1 rounded-xl border-2 px-4 py-4 text-base font-bold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                   style={staff === o.v
@@ -550,12 +584,12 @@ export default function CostComparison({ settings }: {
                 {/* ⚠️ THE EYEBROW TELLS THE TRUTH ABOUT WHOSE DECISION THIS IS. Once someone overrides,
                     "We suggest Pro" would be a lie — we suggested Max and they declined it. */}
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  {planOverride ? 'Your choice' : 'We suggest'}
+                  {planOverride ? t('plan.yourChoice') : t('plan.weSuggest')}
                 </p>
                 <p className="mt-1 text-2xl font-black" style={{ color: INK }}>{planName}</p>
                 <p className="mt-1 text-sm text-slate-600">
-                  {gbp(plan)} per truck per month, with {tier.allowanceLabel} of online orders included
-                  {fleet > 1 ? ' on each' : ''}.{isMax ? ' Everyone gets their own login.' : ''}
+                  {t('plan.summary', { price: gbp(plan), allowance: tier.allowanceLabel, fleet })}
+                  {isMax && <>{' '}{t('plan.ownLogin')}</>}
                 </p>
                 {/* ── 🔴 THE OVERRIDE MUST NOT SILENTLY MISLEAD. ──────────────────────────────────────
                     Answered "Two or more" but running the figures on Pro: the numbers below are correct
@@ -565,7 +599,7 @@ export default function CostComparison({ settings }: {
                     they need to not be surprised later. */}
                 {staff === 2 && !isMax && (
                   <p className="mt-2 text-sm text-slate-500">
-                    Pro does not include separate logins — everyone shares one account.
+                    {t('plan.sharedLogin', { plan: PLANS.pro.name })}
                   </p>
                 )}
                 {/* ⚠️ A TEXT BUTTON, NOT A SECOND PAIR OF LARGE BUTTONS. Two big choices here would
@@ -580,7 +614,7 @@ export default function CostComparison({ settings }: {
                   }}
                   className="mt-3 text-sm font-semibold underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                   style={{ color: ORANGE }}>
-                  Use {isMax ? PLANS.pro.name : PLANS.max.name} instead
+                  {t('plan.switchTo', { plan: isMax ? PLANS.pro.name : PLANS.max.name })}
                 </button>
               </div>
             )}
@@ -592,9 +626,7 @@ export default function CostComparison({ settings }: {
               is the same quantity and every figure downstream reads it the same way. Only the words
               change, because only the certainty does. */}
           <Card n={STEP.orders}
-            title={noSystem
-              ? "How much do you think you'd take online, per month, per truck?"
-              : 'Online orders per month, per truck'}
+            title={noSystem ? t('orders.titleNo') : t('orders.titleYes')}
             disabled={!hasSystem || !staff}>
             {/* ── 🔴 THE CAPTION HAS TO EXCLUDE THE WINDOW, AND THIS IS AN HONESTY FIX. ──────────────
                 It read "One truck · about {N} orders", which named the SCOPE but never said what kind
@@ -631,7 +663,7 @@ export default function CostComparison({ settings }: {
                 ⚠️ BOTH STAY ABOVE THE SLIDER. The caption explains what to enter and has to be read
                 before the operator drags anything. */}
             <div className="flex items-baseline justify-end gap-2">
-              <span className="text-sm tabular-nums text-slate-400">~{Math.round(m.orders)} orders</span>
+              <span className="text-sm tabular-nums text-slate-400">{t('orders.count', { count: Math.round(m.orders) })}</span>
               <span className="text-3xl font-black tabular-nums">{gbp(gmv)}</span>
             </div>
             {/* ⚠️ BOTH WORDINGS DO THE SAME JOB — they keep WINDOW takings out of the figure, which is
@@ -639,26 +671,23 @@ export default function CostComparison({ settings }: {
                 asking for a guess, so it names the two kinds of order a truck would expect online
                 rather than only saying what to exclude. */}
             <p className="mt-1 text-sm leading-relaxed text-slate-600">
-              {noSystem
-                ? 'A rough guess is fine — pre-orders and queue-skippers, not cash or card at the window.'
-                : 'Only orders placed through your ordering page — not cash or card at the window.'}
+              {noSystem ? t('orders.captionNo') : t('orders.captionYes')}
             </p>
             <input type="range" min={0} max={12000} step={500} value={gmv}
               onChange={e => setGmv(numOr(e.target.value, 0))} className="hg-range mt-3"
-              aria-label="Monthly online order value per truck" />
+              aria-label={t('orders.sliderAria')} />
             {staff && (
               <p className="mt-3 text-sm leading-relaxed text-slate-600">
                 {m.excess > 0 ? (
-                  <>
-                    {tier.allowanceLabel} of online orders included per truck. The {gbp(m.excess)} above
-                    is charged at {OVERAGE}% — <strong className="tabular-nums">{gbp(m.overPerTruck, 2)}</strong> a
-                    month each.
-                  </>
+                  t.rich('orders.overAllowance', {
+                    allowance: tier.allowanceLabel, excess: gbp(m.excess), pct: overagePct, over: gbp(m.overPerTruck, 2),
+                    b: c => <strong className="tabular-nums">{c}</strong>,
+                  })
                 ) : (
-                  <>Inside the {tier.allowanceLabel} of online orders included — nothing on top of the plan.</>
+                  t('orders.insideAllowance', { allowance: tier.allowanceLabel })
                 )}
                 {fleet > 1 && (
-                  <> Across {fleet} trucks: <strong className="tabular-nums">{gbp(m.fleetGmv)}</strong> a month.</>
+                  <>{' '}{t.rich('orders.acrossFleet', { fleet, amount: gbp(m.fleetGmv), b: c => <strong className="tabular-nums">{c}</strong> })}</>
                 )}
               </p>
             )}
@@ -673,28 +702,30 @@ export default function CostComparison({ settings }: {
               card is hidden, so switching back to "Yes" restores what was typed rather than silently
               clearing it. Nothing on the No path READS them — see the results branch. */}
           {!noSystem && (
-          <Card n={STEP.fee} title="What do you pay per order now?" disabled={!hasSystem || !staff}>
+          <Card n={STEP.fee} title={t('fee.title')} disabled={!hasSystem || !staff}>
             {/* ⚠️ `min-w-0` on both halves is what stops these overflowing at 375px: without it a flex
                 child refuses to shrink below its content width and the row pushes past the card. */}
             <div className="flex gap-2 sm:gap-3">
               <label className="min-w-0 flex-1">
-                <span className="mb-1 block text-xs font-semibold text-slate-600">Percentage</span>
+                <span className="mb-1 block text-xs font-semibold text-slate-600">{t('fee.pctLabel')}</span>
                 <div className="flex items-center rounded-lg border px-3" style={{ borderColor: '#CBD5E1' }}>
                   <input type="number" step={0.1} min={0} max={30} inputMode="decimal" value={feePctRaw}
-                    onChange={e => setFeePctRaw(e.target.value)} placeholder="Your rate"
+                    onChange={e => setFeePctRaw(e.target.value)} placeholder={t('fee.pctPlaceholder')}
                     className="w-full min-w-0 py-2 text-xl font-black tabular-nums placeholder:text-base placeholder:font-semibold placeholder:text-slate-400 focus:outline-none focus-visible:ring-2"
-                    aria-label="Percentage fee" />
+                    aria-label={t('fee.pctAria')} />
                   <span className="pl-1 text-lg font-bold text-slate-400">%</span>
                 </div>
               </label>
               <label className="min-w-0 flex-1">
-                <span className="mb-1 block text-xs font-semibold text-slate-600">Plus per order</span>
+                <span className="mb-1 block text-xs font-semibold text-slate-600">{t('fee.fixedLabel')}</span>
                 <div className="flex items-center rounded-lg border px-3" style={{ borderColor: '#CBD5E1' }}>
                   <input type="number" step={1} min={0} inputMode="numeric" value={feePenceRaw}
-                    onChange={e => setFeePenceRaw(e.target.value)} placeholder="Your fee"
+                    onChange={e => setFeePenceRaw(e.target.value)} placeholder={t('fee.fixedPlaceholder')}
                     className="w-full min-w-0 py-2 text-xl font-black tabular-nums placeholder:text-base placeholder:font-semibold placeholder:text-slate-400 focus:outline-none focus-visible:ring-2"
-                    aria-label="Pence per order" />
-                  <span className="pl-1 text-lg font-bold text-slate-400">p</span>
+                    aria-label={t('fee.fixedAria')} />
+                  {/* The box takes MINOR units, so its unit is the currency's coin — "p", "¢" — from lib/money-format's
+                      table (Language Phase 1e; it was a typed "p"). */}
+                  <span className="pl-1 text-lg font-bold text-slate-400">{minorUnitSuffix(fmt.currency) ?? ''}</span>
                 </div>
               </label>
             </div>
@@ -727,12 +758,12 @@ export default function CostComparison({ settings }: {
                 ⚠️ NOT `role="radiogroup"`: that requires `role="radio"` + `aria-checked` on the halves,
                 which would mean dropping `aria-pressed` — and keeping `aria-pressed` was required. */}
             <div className="mt-3 text-sm">
-              <p id="fee-mode-label" className="mb-1 text-slate-500">Their rate:</p>
+              <p id="fee-mode-label" className="mb-1 text-slate-500">{t('fee.modeLabel')}</p>
               <div role="group" aria-labelledby="fee-mode-label"
                 className="flex rounded-lg border p-1"
                 style={{ borderColor: '#E2E8F0', backgroundColor: '#F8FAFC' }}>
-                {([{ v: 'inclusive' as const, label: 'includes card processing' },
-                   { v: 'ontop' as const, label: 'is charged on top' }]).map(o => (
+                {([{ v: 'inclusive' as const, label: t('fee.modeInclusive') },
+                   { v: 'ontop' as const, label: t('fee.modeOnTop') }]).map(o => (
                   <button key={o.v} type="button" onClick={() => setFeeMode(o.v)}
                     aria-pressed={feeMode === o.v}
                     className="flex-1 rounded-md px-3 py-1.5 text-center leading-tight transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
@@ -756,19 +787,20 @@ export default function CostComparison({ settings }: {
                 all-in total — so it is gated on the inputs being non-zero instead. */}
             {feeMode === 'inclusive' && feePct > CARD_PCT && (
               <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                Card processing of {CARD_PCT}% + {CARD_PENCE}p is inside that, and you&apos;d pay it
-                anywhere. Their own fee is{' '}
-                <strong className="tabular-nums" style={{ color: ORANGE }}>{m.theirPct.toFixed(1)}%</strong>.
+                {t.rich('fee.inclusiveNote', {
+                  fee: cardFee, pct: pctFixed(fmt, m.theirPct, 1, 1),
+                  b: c => <strong className="tabular-nums" style={{ color: ORANGE }}>{c}</strong>,
+                })}
               </p>
             )}
+            {/* ⚠️ The all-in per-order figure is a coin amount through smallFeeLabel ("40p", "50¢"); from one whole
+                unit up it is written as money ("£1.20" where the old typed suffix printed "120p"). */}
             {feeMode === 'ontop' && (feePct > 0 || feePence > 0) && (
               <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                Card processing of {CARD_PCT}% + {CARD_PENCE}p is charged on top of that, so you
-                actually pay{' '}
-                <strong className="tabular-nums" style={{ color: ORANGE }}>
-                  {(feePct + CARD_PCT).toFixed(1)}% + {feePence + CARD_PENCE}p
-                </strong>{' '}
-                all in.
+                {t.rich('fee.onTopNote', {
+                  fee: cardFee, pct: pctFixed(fmt, feePct + CARD_PCT, 1, 1), fixed: smallFeeLabel(feePence + CARD_PENCE, fmt),
+                  b: c => <strong className="tabular-nums" style={{ color: ORANGE }}>{c}</strong>,
+                })}
               </p>
             )}
           </Card>
@@ -794,7 +826,7 @@ export default function CostComparison({ settings }: {
               the card is hidden, so switching back to "No" restores what was chosen rather than silently
               returning it to 4. Nothing on the Yes path reads it. */}
           {noSystem && (
-          <Card n={STEP.days} title="How many days a week do you trade?" disabled={!hasSystem || !staff}>
+          <Card n={STEP.days} title={t('days.title')} disabled={!hasSystem || !staff}>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               {[1, 2, 3, 4, 5, 6, 7].map(n => (
                 <button key={n} onClick={() => setDays(n)}
@@ -807,7 +839,7 @@ export default function CostComparison({ settings }: {
               ))}
             </div>
             <p className="mt-3 text-sm leading-relaxed text-slate-600">
-              Events, markets, pitches — any day the van&apos;s out.
+              {t('days.help')}
             </p>
           </Card>
           )}
@@ -821,16 +853,16 @@ export default function CostComparison({ settings }: {
               and the longest of the five — but card 3 ("Online orders per month, per truck") already
               breaks the plain-question pattern, so the set was never uniform, and rewording this to match
               cards 1/2/4 would have cost the offer framing that is the point of the change. */}
-          <Card n={STEP.free} title="Your introductory offer — how many months free?" disabled={!hasSystem || !staff}>
+          <Card n={STEP.free} title={t('free.title')} disabled={!hasSystem || !staff}>
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center rounded-lg border px-2" style={{ borderColor: '#CBD5E1' }}>
                 <input type="number" step={1} min={0} max={12} inputMode="numeric" value={freeMonthsRaw}
                   onChange={e => setFreeMonthsRaw(e.target.value)}
                   className="w-14 min-w-0 py-2 text-center text-lg font-black tabular-nums focus:outline-none focus-visible:ring-2"
-                  aria-label="Months free" />
+                  aria-label={t('free.aria')} />
               </div>
               <span className="text-sm text-slate-500">
-                {free === 0 ? 'Paying from day one' : 'No plan fee, no service fee'}
+                {free === 0 ? t('free.none') : t('free.some')}
               </span>
             </div>
           </Card>
@@ -872,7 +904,7 @@ export default function CostComparison({ settings }: {
               className="text-sm font-semibold text-slate-500 underline underline-offset-4 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2">
               {/* 🔴 IT MUST NOT SAY "saving" ON THE No PATH. There is nothing to save against, and a
                   link promising one would be the page making the claim its own result refuses to. */}
-              {noSystem ? 'See what it costs ↓' : 'See your saving ↓'}
+              {noSystem ? t('jump.cost') : t('jump.saving')}
             </button>
           </p>
         )}
@@ -893,29 +925,33 @@ export default function CostComparison({ settings }: {
             <>
               <div className="overflow-hidden rounded-2xl border-2 bg-white shadow-lg" style={{ borderColor: ORANGE }}>
                 <div className="px-6 py-9 text-center">
-                  <p className="text-lg font-semibold" style={{ color: INK }}>
-                    Online ordering, pre-orders and your kitchen screen for
-                  </p>
                   {/* 🔴 PER VAN, ALWAYS. `m.oursPerTruck` is one van's plan + overage; `m.oursMonth` is
-                      the fleet. A fleet figure here would read as the price of the product. */}
-                  <p className="mt-1 font-black tabular-nums"
-                    style={{ color: ORANGE, fontSize: heroSizeFor(money(perTradingDay(m.oursPerTruck, days))), lineHeight: 0.92, letterSpacing: '-0.03em' }}>
-                    {money(perTradingDay(m.oursPerTruck, days))}
-                  </p>
-                  <p className="mt-2 text-xl font-bold text-slate-700">a trading day</p>
+                      the fleet. A fleet figure here would read as the price of the product.
+                      ⚠️ ONE SENTENCE, THREE BLOCKS (Language Phase 1e): the lead, the figure and the unit are one
+                      message whose tags render the three paragraphs, so a language can reorder them. */}
+                  {t.rich('noSystem.hero', {
+                    amount: money(perTradingDay(m.oursPerTruck, days)),
+                    lead: c => <p className="text-lg font-semibold" style={{ color: INK }}>{c}</p>,
+                    figure: c => (
+                      <p className="mt-1 font-black tabular-nums"
+                        style={{ color: ORANGE, fontSize: heroSizeFor(money(perTradingDay(m.oursPerTruck, days))), lineHeight: 0.92, letterSpacing: '-0.03em' }}>
+                        {c}
+                      </p>
+                    ),
+                    unit: c => <p className="mt-2 text-xl font-bold text-slate-700">{c}</p>,
+                  })}
                   <p className="mt-3 text-sm text-slate-500">
-                    Based on {days} day{days === 1 ? '' : 's'} a week · {money(m.oursPerTruck)} a month
-                    {fleet > 1 && ' per van'}
+                    {t('noSystem.basedOn', { days, monthly: money(m.oursPerTruck), fleet })}
                   </p>
                   <div className="mx-auto mt-5 max-w-xs border-t pt-5" style={{ borderColor: '#F1F5F9' }}>
                     {/* 🔴 THE COFFEE LINE IS CONDITIONAL AND HAS NO SUBSTITUTE. Above the threshold
                         nothing is rendered in its place — a weaker comparison ("less than a pint") would
                         be a second claim to defend, and an empty slot says nothing untrue. */}
                     {perTradingDay(m.oursPerTruck, days) < COFFEE_MAX_PER_DAY && (
-                      <p className="text-base font-semibold" style={{ color: INK }}>Less than a coffee.</p>
+                      <p className="text-base font-semibold" style={{ color: INK }}>{t('coffee')}</p>
                     )}
-                    {freeMonthsLine(free) && (
-                      <p className="mt-2 text-sm text-slate-500">{freeMonthsLine(free)}</p>
+                    {freeMonthsLine(t, free) && (
+                      <p className="mt-2 text-sm text-slate-500">{freeMonthsLine(t, free)}</p>
                     )}
                   </div>
                 </div>
@@ -923,33 +959,33 @@ export default function CostComparison({ settings }: {
                     🔴 NO AMOUNT IN THE PRIMARY LABEL on this path — the saving card's version carries the
                     saving, and there is no saving here to carry. */}
                 <div className="flex flex-col gap-2 p-4 sm:flex-row sm:gap-3">
-                  <DemoCta className={`${CTA_PRIMARY} flex-1 px-6 py-4 text-lg`}>Upload my menu →</DemoCta>
+                  <DemoCta className={`${CTA_PRIMARY} flex-1 px-6 py-4 text-lg`}>{t('cta.upload')}</DemoCta>
                   <a href={contactHref('costComparison')} className={`${CTA_SECONDARY} flex-1 px-6 py-4 text-lg`}>
-                    Ask us a question
+                    {t('cta.ask')}
                   </a>
                 </div>
                 <p className="px-6 py-3 text-center text-xs text-slate-500" style={{ backgroundColor: CREAM }}>
-                  No card needed to set up
+                  {t('cta.noCard')}
                 </p>
               </div>
 
               <div className="rounded-2xl border bg-white p-5 shadow-sm md:p-6" style={{ borderColor: '#E2E8F0' }}>
-                <p className="text-xs font-black uppercase tracking-wider text-slate-500">Your month, broken down</p>
+                <p className="text-xs font-black uppercase tracking-wider text-slate-500">{t('breakdown.title')}</p>
                 <div className="mt-4 space-y-2">
-                  <BRow label={`${planName} plan`} amount={gbp(plan, 2)} />
+                  <BRow label={t('breakdown.plan', { plan: planName })} amount={gbp(plan, 2)} />
                   {m.excess > 0 ? (
-                    <BRow label={`${OVERAGE}% on the ${gbp(m.excess)} above the ${tier.allowanceLabel} included`}
+                    <BRow label={t('breakdown.over', { pct: overagePct, excess: gbp(m.excess), allowance: tier.allowanceLabel })}
                       amount={gbp(m.overPerTruck, 2)} />
                   ) : (
-                    <BRow label={`Online orders inside the ${tier.allowanceLabel} included`} amount={gbp(0, 2)} />
+                    <BRow label={t('breakdown.inside', { allowance: tier.allowanceLabel })} amount={gbp(0, 2)} />
                   )}
                   <div className="h-px" style={{ backgroundColor: '#E2E8F0' }} />
-                  <BRow label="HatchGrab each month" amount={money(m.oursPerTruck)} bold orange />
+                  <BRow label={t('breakdown.total')} amount={money(m.oursPerTruck)} bold orange />
                   {free >= 1 && (
-                    <BRow small label={free === 1 ? 'Month 1' : `Months 1–${free}`} amount={`${gbp(0)} — on us`} />
+                    <BRow small label={t('breakdown.freeMonths', { n: free })} amount={t('breakdown.freeAmount', { amount: gbp(0) })} />
                   )}
                   {fleet > 1 && (
-                    <BRow small label={`Across ${fleet} vans`} amount={`${money(m.oursMonth)} a month`} />
+                    <BRow small label={t('breakdown.acrossFleet', { fleet })} amount={t('breakdown.perMonth', { amount: money(m.oursMonth) })} />
                   )}
                 </div>
                 {/* ── 🔴 STRIPE'S FEE, NAMED AS STRIPE'S, AND NOT IN OUR TOTAL ──────────────────────
@@ -962,8 +998,7 @@ export default function CostComparison({ settings }: {
                 <div className="mt-4 rounded-xl px-4 py-3" style={{ backgroundColor: '#F8FAFC' }}>
                   <div className="flex items-baseline justify-between gap-3 text-xs">
                     <span className="text-slate-500">
-                      Card processing — Stripe&apos;s {CARD_PCT}% + {CARD_PENCE}p per order, paid to
-                      Stripe. You&apos;d pay much the same on a card machine at the window.
+                      {t('breakdown.card', { fee: cardFee })}
                     </span>
                     <span className="shrink-0 tabular-nums text-slate-500">
                       ~{money(fleet > 1 ? m.cardPerTruck * fleet : m.cardPerTruck)}
@@ -979,7 +1014,7 @@ export default function CostComparison({ settings }: {
                they pay, there is nothing to compare against, so the result is replaced by the one sentence
                that says what to do. */
             <p className="rounded-2xl border bg-white p-6 text-center text-base font-semibold text-slate-600 shadow-sm" style={{ borderColor: '#E2E8F0' }}>
-              Enter what you pay now to see your saving.
+              {t('enterRate')}
             </p>
             ) : (
             <>
@@ -1093,11 +1128,14 @@ export default function CostComparison({ settings }: {
                           the fields the monthly framing uses throughout, so the box cannot disagree with
                           the sub-line. ⚠️ FLEET TOTALS ON BOTH, as before: the "across N trucks" note
                           below is what scopes them, and the headline is the only PER-VAN figure here. */}
-                      <span className="text-slate-500">Right now you pay</span>
-                      <span className="font-semibold tabular-nums text-slate-800">
-                        {dearer ? gbp(m.theirsMonth, 2) : gbp(m.theirsYear)}
-                        <span className="font-normal text-slate-500">{dearer ? ' a month' : ' a year'}</span>
-                      </span>
+                      {/* Language Phase 1e: label, amount and qualifier are ONE message (`panel.now…`); its tags
+                          render the same three spans, with nothing between them. */}
+                      {t.rich(dearer ? 'panel.nowMonth' : 'panel.nowYear', {
+                        amount: dearer ? gbp(m.theirsMonth, 2) : gbp(m.theirsYear),
+                        label: c => <span className="text-slate-500">{c}</span>,
+                        fig: c => <span className="font-semibold tabular-nums text-slate-800">{c}</span>,
+                        q: c => <span className="font-normal text-slate-500">{c}</span>,
+                      })}
                     </div>
                     {/* ⚠️ `mt-1`, NOT a fractional step — the two rows are ONE PAIR, not two paragraphs.
                         🔴 SEMIBOLD AND DARKER, AND DELIBERATELY NOT ORANGE. Orange belongs to the figure
@@ -1107,7 +1145,6 @@ export default function CostComparison({ settings }: {
                         that flipped with the result would present the same comparison two different ways
                         depending on who won, on a page built to be shown to people shopping around. */}
                     <div className="mt-1 flex items-baseline gap-1 whitespace-nowrap text-sm sm:text-base">
-                      <span className="text-slate-500">With HatchGrab</span>
                       {/* ── 🔴 "in year one", NOT "a year". THIS IS AN HONESTY FIX, NOT A WORDING ONE. ──
                           `m.oursY1` is `oursMonth * (12 - free)` — the free months are IN it, so it is
                           lower than every year after it. Labelled "a year" it reads as the ONGOING rate,
@@ -1118,13 +1155,15 @@ export default function CostComparison({ settings }: {
                           the two-line contrast this panel exists to create, and the detail card's YEAR TWO
                           block already carries that figure with its own saving directly beneath it. The
                           panel's job is one comparison, not a schedule. */}
-                      <span className="font-bold tabular-nums text-slate-800">
-                        {dearer ? gbp(m.oursMonth, 2) : gbp(m.oursY1)}
-                        {/* ⚠️ "a month", NOT "in year one", ON THE DEARER PATH. `oursY1` has the free
-                            months inside it, which is exactly why it needs that qualifier; a MONTHLY
-                            figure does not, and the free months are stated on their own line below. */}
-                        <span className="font-normal text-slate-500">{dearer ? ' a month' : ' in year one'}</span>
-                      </span>
+                      {/* ⚠️ "a month", NOT "in year one", ON THE DEARER PATH. `oursY1` has the free
+                          months inside it, which is exactly why it needs that qualifier; a MONTHLY
+                          figure does not, and the free months are stated on their own line below. */}
+                      {t.rich(dearer ? 'panel.oursMonth' : 'panel.oursYear', {
+                        amount: dearer ? gbp(m.oursMonth, 2) : gbp(m.oursY1),
+                        label: c => <span className="text-slate-500">{c}</span>,
+                        fig: c => <span className="font-bold tabular-nums text-slate-800">{c}</span>,
+                        q: c => <span className="font-normal text-slate-500">{c}</span>,
+                      })}
                     </div>
                     {/* ⚠️ THE AMOUNTS NO LONGER SHARE A RIGHT EDGE, AND THAT WAS THE INSTRUCTED TRADE: the
                         two labels are different lengths, so left-packed flex rows cannot align the amounts
@@ -1147,7 +1186,7 @@ export default function CostComparison({ settings }: {
                         trap the staff question's own comment records a few hundred lines above. I made it
                         here first and tsc caught it. */}
                     {fleet > 1 && (
-                      <p className="mt-2 text-right text-xs text-slate-400">across {fleet} vans</p>
+                      <p className="mt-2 text-right text-xs text-slate-400">{t('panel.acrossFleet', { fleet })}</p>
                     )}
                   </div>
                 </div>
@@ -1170,27 +1209,30 @@ export default function CostComparison({ settings }: {
                     totals are in the grey box above, so the yearly figure is a multiplication away.
                     ⚠️ SLATE, NOT ORANGE. Orange is for a figure in the operator's favour; it would be
                     the page cheering a cost. The saving case is untouched and keeps its orange. */}
+                {/* 🔴 "a week", NOT "a trading day" (1 October 2026). The trading-days question is
+                    gone from this path, so there is no divisor to make a per-DAY claim with — and
+                    inventing one from a default of 4 would put a figure on screen computed from an
+                    answer the operator was never asked for.
+                    ⚠️ LANGUAGE PHASE 1e: each hero is ONE message (`hero.dearer`, `hero.save`, `hero.same`) whose
+                    tags render the same paragraphs — the lead or verb, the figure, and the unit or percentage line. */}
                 {dearer ? (
                   <>
-                    <p className="mt-5 text-lg font-semibold" style={{ color: INK }}>
-                      Everything HatchGrab does, for
-                    </p>
-                    <p className="mt-1 font-black tabular-nums"
-                      style={{ color: SLATE, fontSize: heroSizeFor(money(perWeek(extraPerTruck))), lineHeight: 0.92, letterSpacing: '-0.03em' }}>
-                      {money(perWeek(extraPerTruck))}
-                    </p>
-                    {/* 🔴 "a week", NOT "a trading day" (1 October 2026). The trading-days question is
-                        gone from this path, so there is no divisor to make a per-DAY claim with — and
-                        inventing one from a default of 4 would put a figure on screen computed from an
-                        answer the operator was never asked for. */}
-                    <p className="mt-2 text-xl font-bold text-slate-700">more a week</p>
+                    {t.rich('hero.dearer', {
+                      amount: money(perWeek(extraPerTruck)),
+                      lead: c => <p className="mt-5 text-lg font-semibold" style={{ color: INK }}>{c}</p>,
+                      figure: c => (
+                        <p className="mt-1 font-black tabular-nums"
+                          style={{ color: SLATE, fontSize: heroSizeFor(money(perWeek(extraPerTruck))), lineHeight: 0.92, letterSpacing: '-0.03em' }}>
+                          {c}
+                        </p>
+                      ),
+                      unit: c => <p className="mt-2 text-xl font-bold text-slate-700">{c}</p>,
+                    })}
                     {/* ⚠️ NO "Based on N days" CLAUSE HERE — there is no N on this path. The sub-line is
                         the monthly difference alone, and the per-van wording moves INTO it rather than
                         being appended, so it reads as one phrase at any fleet size. */}
                     <p className="mt-3 text-sm text-slate-500">
-                      {fleet > 1
-                        ? `${money(extraPerTruck)} more per van a month than now`
-                        : `${money(extraPerTruck)} a month more than now`}
+                      {t('hero.dearerSub', { amount: money(extraPerTruck), fleet })}
                     </p>
                     <div className="mx-auto mt-5 max-w-xs border-t pt-5" style={{ borderColor: '#F1F5F9' }}>
                       {/* 🔴 THE SAME `COFFEE_MAX_PER_DAY` THRESHOLD, APPLIED TO THE FIGURE ACTUALLY SHOWN
@@ -1200,31 +1242,34 @@ export default function CostComparison({ settings }: {
                           the figure covers. ⚠️ THE CONSTANT IS DELIBERATELY NOT RENAMED — it is the
                           price of a coffee, not a statement about which period it is compared against. */}
                       {perWeek(extraPerTruck) < COFFEE_MAX_PER_DAY && (
-                        <p className="text-base font-semibold" style={{ color: INK }}>Less than a coffee.</p>
+                        <p className="text-base font-semibold" style={{ color: INK }}>{t('coffee')}</p>
                       )}
-                      {freeMonthsLine(free) && (
-                        <p className="mt-2 text-sm text-slate-500">{freeMonthsLine(free)}</p>
+                      {freeMonthsLine(t, free) && (
+                        <p className="mt-2 text-sm text-slate-500">{freeMonthsLine(t, free)}</p>
                       )}
                     </div>
                   </>
                 ) : (
                   <>
-                    <p className="mt-5 text-lg font-semibold" style={{ color: INK }}>{heroVerb}</p>
-                    <p className="mt-1 font-black tabular-nums"
-                      style={{ color: good ? ORANGE : SLATE, fontSize: heroSize, lineHeight: 0.92, letterSpacing: '-0.03em' }}>
-                      {gbp(Math.abs(m.saveY1))}
-                    </p>
                     {/* ⚠️ "in your first year" IS LOAD-BEARING. Without a timeframe the figure can be read
                         as monthly or as a lifetime total, and both misreadings flatter us. */}
-                    <p className="mt-4 text-lg font-semibold text-slate-500">
-                      <span className="tabular-nums">{Math.abs(m.pctY1).toFixed(0)}%</span>{' '}
-                      {good ? 'less' : 'more'} in your first year
-                    </p>
+                    {t.rich(good ? 'hero.save' : 'hero.same', {
+                      amount: gbp(Math.abs(m.saveY1)), pct: pctFixed(fmt, Math.abs(m.pctY1), 0, 0),
+                      verb: c => <p className="mt-5 text-lg font-semibold" style={{ color: INK }}>{c}</p>,
+                      figure: c => (
+                        <p className="mt-1 font-black tabular-nums"
+                          style={{ color: good ? ORANGE : SLATE, fontSize: heroSize, lineHeight: 0.92, letterSpacing: '-0.03em' }}>
+                          {c}
+                        </p>
+                      ),
+                      sub: c => <p className="mt-4 text-lg font-semibold text-slate-500">{c}</p>,
+                      num: c => <span className="tabular-nums">{c}</span>,
+                    })}
                   </>
                 )}
                 {anch && (
                   <p className="mx-auto mt-5 max-w-xs border-t pt-5 text-base text-slate-500" style={{ borderColor: '#F1F5F9' }}>
-                    That&apos;s {anch}.
+                    {t(`anchor.${anch}`)}
                   </p>
                 )}
               </div>
@@ -1261,7 +1306,7 @@ export default function CostComparison({ settings }: {
                   rendered it white-on-white. Nothing here uses `style`. */}
               <div className="flex flex-col gap-2 p-4 sm:flex-row sm:gap-3">
                 <DemoCta className={`${CTA_PRIMARY} flex-1 px-6 py-4 text-lg`}>
-                  {good ? `Upload my menu and save ${gbp(m.saveY1)} →` : 'Upload my menu →'}
+                  {good ? t('cta.uploadSave', { amount: gbp(m.saveY1) }) : t('cta.upload')}
                 </DemoCta>
                 {/* ── ⚠️ "Ask us a question", NOT "Talk to us" — AND NOT "Chat to us" EITHER. ─────────
                     🔴 EVERY REJECTED LABEL IMPLIED A CHANNEL WE DO NOT HAVE. "Talk to us" implies a
@@ -1277,11 +1322,11 @@ export default function CostComparison({ settings }: {
                     ⚠️ An enquiry from this page is now identifiable in Tally without anyone asking
                     "where did you come from?" in the form itself. */}
                 <a href={contactHref('costComparison')} className={`${CTA_SECONDARY} flex-1 px-6 py-4 text-lg`}>
-                  Ask us a question
+                  {t('cta.ask')}
                 </a>
               </div>
               <p className="px-6 py-3 text-center text-xs text-slate-500" style={{ backgroundColor: CREAM }}>
-                No card needed to set up
+                {t('cta.noCard')}
               </p>
             </div>
 
@@ -1294,33 +1339,33 @@ export default function CostComparison({ settings }: {
                 reader can subtract, rather than as a verdict we have drawn for them. */}
             {dearer ? (
             <div className="rounded-2xl border bg-white p-5 shadow-sm md:p-6" style={{ borderColor: '#E2E8F0' }}>
-              <p className="text-xs font-black uppercase tracking-wider text-slate-500">Your month on HatchGrab</p>
+              <p className="text-xs font-black uppercase tracking-wider text-slate-500">{t('breakdown.titleDearer')}</p>
               <div className="mt-4 space-y-2">
-                <BRow label={`${planName} plan`} amount={gbp(plan, 2)} />
+                <BRow label={t('breakdown.plan', { plan: planName })} amount={gbp(plan, 2)} />
                 {m.excess > 0 ? (
-                  <BRow label={`${OVERAGE}% on the ${gbp(m.excess)} above the ${tier.allowanceLabel} included`}
+                  <BRow label={t('breakdown.over', { pct: overagePct, excess: gbp(m.excess), allowance: tier.allowanceLabel })}
                     amount={gbp(m.overPerTruck, 2)} />
                 ) : (
-                  <BRow label={`Online orders inside the ${tier.allowanceLabel} included`} amount={gbp(0, 2)} />
+                  <BRow label={t('breakdown.inside', { allowance: tier.allowanceLabel })} amount={gbp(0, 2)} />
                 )}
                 <div className="h-px" style={{ backgroundColor: '#E2E8F0' }} />
-                <BRow label="HatchGrab each month" amount={money(m.oursPerTruck)} bold orange />
+                <BRow label={t('breakdown.total')} amount={money(m.oursPerTruck)} bold orange />
                 {/* 🔴 THEIR OWN FEE, AT THE RATE THE COMPARISON ACTUALLY USED. `m.theirPct` is the
                     PLATFORM rate with card processing taken out of it (or left out, in 'ontop' mode) —
                     the same quantity both sides are compared on. Printing the typed 4.5% here would
                     name a rate the arithmetic above does not use. */}
-                <BRow small label={`Your current provider's own fee (${m.theirPct.toFixed(2).replace(/\.?0+$/, '')}%)`}
-                  amount={`${money(m.theirsMonth / fleet)} a month`} />
+                <BRow small label={t('breakdown.provider', { pct: pctFixed(fmt, m.theirPct, 0, 2) })}
+                  amount={t('breakdown.perMonth', { amount: money(m.theirsMonth / fleet) })} />
                 {fleet > 1 && (
-                  <BRow small label={`Across ${fleet} vans`} amount={`${money(m.oursMonth)} a month`} />
+                  <BRow small label={t('breakdown.acrossFleet', { fleet })} amount={t('breakdown.perMonth', { amount: money(m.oursMonth) })} />
                 )}
               </div>
             </div>
             ) : (
             <div className="rounded-2xl border bg-white p-5 shadow-sm md:p-6" style={{ borderColor: '#E2E8F0' }}>
-              <YearLine fmt={fmt} label="Year one" theirs={m.theirsYear} ours={m.oursY1} save={m.saveY1} pct={m.pctY1} />
+              <YearLine fmt={fmt} t={t} label={t('year.one')} theirs={m.theirsYear} ours={m.oursY1} save={m.saveY1} pct={m.pctY1} />
               <div className="my-5 h-px" style={{ backgroundColor: '#F1F5F9' }} />
-              <YearLine fmt={fmt} label="Year two" theirs={m.theirsYear} ours={m.oursY2} save={m.saveY2} pct={m.pctY2} />
+              <YearLine fmt={fmt} t={t} label={t('year.two')} theirs={m.theirsYear} ours={m.oursY2} save={m.saveY2} pct={m.pctY2} />
 
               {/* Same test as the CTA: a two-year total that prints as £0 does not get announced.
                   ⚠️ THE "LEFT, NOT CENTRED, SO THE CARD SHARES ONE EDGE" RULE IS DELIBERATELY OVERRIDDEN
@@ -1338,8 +1383,7 @@ export default function CostComparison({ settings }: {
                   further to pre-compensate for that. */}
               {isRealSaving(m.twoYear) && (
                 <p className="mt-8 text-center text-base text-slate-600">
-                  Over two years that&apos;s{' '}
-                  <strong className="tabular-nums" style={{ color: ORANGE }}>{gbp(m.twoYear)}</strong> saved.
+                  {t.rich('twoYear', { amount: gbp(m.twoYear), b: c => <strong className="tabular-nums" style={{ color: ORANGE }}>{c}</strong> })}
                 </p>
               )}
               {/* ── 🔴 THE EFFECTIVE-RATE LINE WAS REMOVED (23 August 2026). DO NOT REINSTATE IT. ────────
@@ -1378,16 +1422,15 @@ export default function CostComparison({ settings }: {
             whichever way they take the money. */}
         {noSystem ? (
           <p className="mt-5 text-xs leading-relaxed text-slate-500">
-            Estimates based on the figures you enter, assuming an average order of {gbp(AOV)}. Card
-            processing applies whichever provider you use. Check before deciding.
+            {t('smallPrint.no', { aov: gbp(AOV) })}
           </p>
         ) : (
         <p className="mt-5 text-xs leading-relaxed text-slate-500">
-          Estimates based on the figures you enter, assuming an average order of {gbp(AOV)}. Card
-          processing of {CARD_PCT}% + {CARD_PENCE}p per order applies whichever provider you use, so
-          it&apos;s excluded from both sides.
-          {feeMode === 'ontop' && ' The all-in figure in question 4 includes it — the comparison does not, on either side.'}
-          {' '}Check your current provider&apos;s rates before deciding.
+          {t('smallPrint.yes', { aov: gbp(AOV), fee: cardFee })}
+          {/* ⚠️ LANGUAGE PHASE 1e (named GB fix): this said "question 4", which went stale when "Do you take online
+              orders now?" became question 1 — the fee question is STEP.fee (5). The number now comes from STEP. */}
+          {feeMode === 'ontop' && <>{' '}{t('smallPrint.onTop', { n: STEP.fee })}</>}
+          {' '}{t('smallPrint.check')}
         </p>
         )}
 
@@ -1405,7 +1448,7 @@ export default function CostComparison({ settings }: {
             default and CTA_BASE's own `inline-block` would otherwise win, leaving this control sized to
             its text instead of spanning the column. */}
         <DemoCta className={`${CTA_PRIMARY} mt-6 block w-full px-6 py-4 text-base`}>
-          Upload my menu →
+          {t('cta.upload')}
         </DemoCta>
       </div>
 
@@ -1423,10 +1466,12 @@ export default function CostComparison({ settings }: {
   )
 }
 
-function YearLine({ label, theirs, ours, save, pct, fmt }: {
+function YearLine({ label, theirs, ours, save, pct, fmt, t }: {
   label: string; theirs: number; ours: number; save: number; pct: number
   /** The marketing country's money format. */
   fmt: MoneyFormat
+  /** The page's translator (its locale is the server page's). */
+  t: CompareT
 }) {
   const gbp = (n: number, dp = 0) => gbpIn(fmt, n, dp)
   const isRealSaving = (n: number) => isRealSavingIn(fmt, n)
@@ -1444,7 +1489,10 @@ function YearLine({ label, theirs, ours, save, pct, fmt }: {
           one. ⚠️ NO NEW COPY WAS INVENTED for this case; a dedicated "Level" wording would read better
           and is a decision, not a fix. */}
       <p className="mt-1 text-2xl font-black tabular-nums" style={{ color: isRealSaving(save) ? ORANGE : SLATE }}>
-        {isRealSaving(save) ? 'Save ' : 'Extra '}{gbp(Math.abs(save))}
+        {t.rich(isRealSaving(save) ? 'year.save' : 'year.extra', {
+          amount: gbp(Math.abs(save)), pct: pctFixed(fmt, Math.abs(pct), 0, 0),
+          note: c => <span className="ml-2 text-sm font-bold text-slate-400">{c}</span>,
+        })}
         {/* ── ⚠️ "(69% less)", NOT A BARE "69%". ────────────────────────────────────────────────
             A bare percentage beside an amount does not say WHAT it is a percentage of — it can read
             as a share of the saving, or of our price, or of nothing.
@@ -1455,12 +1503,9 @@ function YearLine({ label, theirs, ours, save, pct, fmt }: {
             are deliberately the same claim at two sizes. Change one and change both.
             ⚠️ STILL SUBORDINATE: `text-sm` against the amount's `text-2xl`, and slate against its
             orange. It explains the number beside it; it is not a second number. */}
-        <span className="ml-2 text-sm font-bold text-slate-400">
-          ({Math.abs(pct).toFixed(0)}% {isRealSaving(save) ? 'less' : 'more'})
-        </span>
       </p>
       <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-500">
-        <span>Current provider <strong className="tabular-nums text-slate-700">{gbp(theirs)}</strong></span>
+        <span>{t.rich('year.current', { amount: gbp(theirs), b: c => <strong className="tabular-nums text-slate-700">{c}</strong> })}</span>
         <span className="text-slate-300">→</span>
         {/* ⚠️ "HatchGrab", NOT "HatchGrab Pro"/"HatchGrab Max" (23 August 2026). The tier is already
             stated once, in question 2 — ⚠️ QUOTATION CORRECTED 24 August 2026: that card now reads
@@ -1468,7 +1513,7 @@ function YearLine({ label, theirs, ours, save, pct, fmt }: {
             month…". The CLAIM was always true; only the quote had gone stale. Repeating it on both year
             lines made the comparison about which PLAN they would be on, when the line exists to compare
             two TOTALS. `planName` is no longer a prop of this component as a result. */}
-        <span>HatchGrab <strong className="tabular-nums" style={{ color: ORANGE }}>{gbp(ours)}</strong></span>
+        <span>{t.rich('year.ours', { amount: gbp(ours), b: c => <strong className="tabular-nums" style={{ color: ORANGE }}>{c}</strong> })}</span>
       </div>
     </div>
   )

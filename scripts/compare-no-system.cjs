@@ -38,6 +38,12 @@ function renderWith(patches, tag, opts = {}) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `cmp-${tag}-`))
   for (const d of ['app/compare', 'components/landing']) fs.mkdirSync(path.join(tmp, d), { recursive: true })
   fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
+  // ⚠️ RE-PINNED (Language Phase 1e): the calculator's words are the `compare` messages (lib/i18n/catalog/compare.ts
+  // imports messages/ns/<locale>/compare.json), read through next-intl — so the copy carries the message files and
+  // sees the repo's packages. The words rendered are en-GB (no locale passed); what changed in them is named where a
+  // check reads them (Language Phase 1e's GB fixes: curly apostrophes, "question 5") and in the variants' re-anchors.
+  fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })
+  try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch { /* already */ }
   let src = read('app/compare/CostComparison.tsx')
   // 🔴 THE FEE BOXES START EMPTY NOW (decided 10 October 2026 — no competitor prefill). Every case written
   // against the old 4.5% + 20p default therefore TYPES it — the same figures, entered by the operator
@@ -96,7 +102,7 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
    * carries none of it, and the component's own source is where that wording lives. */
   t('🔴 (a) card processing ~£70.83, named as the provider\'s and NOT in our total',
     a.includes('~£70.83') && /1\.5% \+ 20p per order, paid to/.test(a)
-    && a.includes("You'd pay much the same on a card machine at the window")
+    && a.includes("You’d pay much the same on a card machine at the window")   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
     && !/HatchGrab each month\n~/.test(a))
   t('🔴 (a) the coffee line is shown', a.includes('Less than a coffee.'))
   t('🔴 (a) "And your first month is on us."', a.includes('And your first month is on us.'))
@@ -118,7 +124,7 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
   t('⚠️ (a) the fee question is hidden, with its toggle and both sentences',
     !a.includes('What do you pay per order now?') && !a.includes('excluded from both sides'))
   t('⚠️ (a) the orders question is reworded, and the slider caption with it',
-    a.includes("How much do you think you'd take online, per month, per truck?")
+    a.includes("How much do you think you’d take online, per month, per truck?")   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
     && a.includes('A rough guess is fine — pre-orders and queue-skippers, not cash or card at the window.'))
   /* ⚠️ ASSERTED AS EXPLICIT NUMBER→TITLE PAIRS, and two earlier drafts of this check were wrong in two
    * different ways — both worth recording, because both PASSED or FAILED for reasons unrelated to the
@@ -134,7 +140,7 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
     [1, 'Do you take online orders now?'],
     [2, 'How many trucks do you run?'],
     [3, 'How many people work the van?'],
-    [4, "How much do you think you'd take online, per month, per truck?"],
+    [4, "How much do you think you’d take online, per month, per truck?"],   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
     [5, 'How many days a week do you trade?'],
     [6, 'Your introductory offer'],
   ]))
@@ -158,7 +164,7 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
     && a.includes('How many days a week do you trade?'))
   t('⚠️ …and the No path still has it at 5, with its default and helper text intact',
     /\n5\nHow many days a week do you trade\?/.test(a)
-    && a.includes("Events, markets, pitches — any day the van's out."))
+    && a.includes("Events, markets, pitches — any day the van’s out."))   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
 
   // ── (b) THE COFFEE CLAIM STOPS WHERE IT STOPS BEING TRUE ────────────────────────────────────────
   const b = renderWith([SYS('no'), STAFF(1), DAYS(2), GMV(12000)], 'b')
@@ -183,7 +189,7 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
   t('🔴 (c) …and the year schedule is replaced by the monthly breakdown',
     c.includes('Your month on HatchGrab') && !/Year one|Year two/.test(c))
   t('🔴 (c) …which names the provider\'s own fee at the rate the comparison used',
-    /Your current provider's own fee \(1%\)\n£25\.00 a month/.test(c))
+    /Your current provider’s own fee \(1%\)\n£25\.00 a month/.test(c))   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
   t('⚠️ (c) the CTA pair and the cream strip are unchanged',
     c.includes('Upload my menu →') && c.includes('Ask us a question') && c.includes('No card needed to set up'))
 
@@ -193,14 +199,14 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
   const d = resultsOf(renderWith([SYS('yes'), STAFF(1)], 'd'))
   const D_EXPECTED = [
     'See your saving ↓', 'Right now you pay', '£900', 'a year', 'With HatchGrab', '£428', 'in year one',
-    'You save', '£472', '52%', 'less in your first year', "That's a weekend pitch at a food festival.",
+    'You save', '£472', '52%', 'less in your first year', "That’s a weekend pitch at a food festival.",   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
     'Upload my menu and save £472 →', 'Ask us a question', 'No card needed to set up',
     'Year one', 'Save £472', '(52% less)', 'Current provider', '£900', '→', 'HatchGrab', '£428',
     'Year two', 'Save £433', '(48% less)', 'Current provider', '£900', '→', 'HatchGrab', '£467',
   ].join('\n')
   t('🔴 (d) 4.5% + 20p inclusive, £2,500 — the saving card is EXACTLY as before', d.startsWith(D_EXPECTED))
   t('🔴 (d) …and still carries the two-year total and the yearly small print',
-    d.includes("Over two years that's") && d.includes('excluded from both sides'))
+    d.includes("Over two years that’s") && d.includes('excluded from both sides'))   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
 
   // ── (e) MULTIPLE VANS — HEADLINE PER VAN, FLEET AS AN EXTRA LINE ────────────────────────────────
   const e1 = renderWith([SYS('no'), STAFF(1), DAYS(4), GMV(2500), TRUCKS(3)], 'e1')
@@ -328,8 +334,9 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
       [['perTradingDay(m.oursPerTruck, days) < COFFEE_MAX_PER_DAY', 'true']],
       txt => txt.includes('Less than a coffee'), [SYS('no'), STAFF(1), DAYS(2), GMV(12000)]],
     ['V3 🔴 the No path shows a per-order figure of ours',
-      [['<p className="mt-2 text-xl font-bold text-slate-700">a trading day</p>',
-        '<p className="mt-2 text-xl font-bold text-slate-700">a trading day</p><p>{money(m.oursPerTruck / m.orders)} per order</p>']],
+      // ⚠️ RE-PINNED (Language Phase 1e): RE-ANCHORED, same mutation. "a trading day" is the `unit` tag of a message now.
+      [['unit: c => <p className="mt-2 text-xl font-bold text-slate-700">{c}</p>,\n                  })}',
+        'unit: c => <p className="mt-2 text-xl font-bold text-slate-700">{c}</p>,\n                  })}<p>{money(m.oursPerTruck / m.orders)} per order</p>']],
       txt => (resultsOf(txt).match(/per order/g) || []).length !== 1],
     ['V4 🔴 amounts under £1 render as £0.80 instead of 80p',
       [['  if (Math.abs(safe) < 1) return smallFeeLabel(Math.round(Math.abs(safe) * 10 ** minorDigits(f.currency)), f)', '  // removed']],
@@ -344,7 +351,8 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
       txt => txt.includes('How many days a week do you trade?'), [SYS('yes'), STAFF(1)]],
     /* 🔴 V7 — THE SANCTIONED VOCABULARY FIX REVERTS. One object named two ways on one screen. */
     ['V7 🔴 the grey box goes back to "across N trucks"',
-      [['across {fleet} vans', 'across {fleet} trucks']],
+      // ⚠️ RE-PINNED (Language Phase 1e): RE-ANCHORED, same mutation. "across {fleet} vans" is compare.panel.acrossFleet now.
+      [["{t('panel.acrossFleet', { fleet })}", "{t('panel.acrossFleet', { fleet }).replace('vans', 'trucks')}"]],
       txt => /across \d+ trucks/.test(txt), [SYS('yes'), STAFF(1), TRUCKS(3), PCT('2.5')]],
   ]
   for (const [label, patches, caughtBy, state] of variants) {

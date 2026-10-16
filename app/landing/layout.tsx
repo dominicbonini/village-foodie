@@ -36,6 +36,10 @@
 // admin panel/API use — not a new one. force-dynamic + reading cookies means this evaluates
 // per-request. Dev is intentionally left open so local iteration isn't blocked.
 
+// 🔴 LANGUAGE PHASE 1e (16 October 2026): the loop reasoning above is about a REWRITE of '/' to this route, which no
+// longer exists — on a HatchGrab host '/' and '/landing' are now 302s to the country page (/uk, /us), which is served
+// by app/[country]/page.tsx and is NOT under this layout. This layout now wraps only the old /landing address (never
+// rendered on a HatchGrab host — the router answers it first). proxy.ts has the no-loop proof.
 export const dynamic = 'force-dynamic'
 
 // 🔴 THE GATE WAS REMOVED ON 3 SEPTEMBER 2026 — THE PAGE IS PUBLIC.

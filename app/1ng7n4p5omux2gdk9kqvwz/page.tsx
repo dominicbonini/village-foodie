@@ -16,4 +16,6 @@
 // TO RETIRE IT: delete this directory. Nothing links to it -- it exists only as a URL you hand out.
 // 🔴 US readiness (D37): the landing's tags became `generateMetadata` (they name the visitor's country), so the
 // re-export follows — same module, same tags; GB byte-identical.
+// 🔴 Language Phase 1e (16 October 2026): on a HatchGrab host this address is now part of proxy.ts's country router —
+// a 302 to /uk or /us like hatchgrab.com/ — so this module renders only on a host the router does not serve.
 export { default, generateMetadata } from '../landing/page'

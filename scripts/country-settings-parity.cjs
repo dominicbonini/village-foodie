@@ -446,6 +446,30 @@ function lp1d2RulesProved() {
   return Object.values(LP1D2_RULES).flat().filter(([k, from, to]) => !(typeof get(k) === 'string' && get(k).includes(to.trimEnd())
     && typeof moved[k] === 'string' && moved[k].includes(from.trimEnd())))
 }
+// ══ ⚠️ RE-PINNED (Language Phase 1e): the plan rows, plan descriptions, footnotes, the PDF and /compare moved their words
+// into messages/ (planFeatures, planMeta, plansPdf, compare) with NAMED GB wrong-English fixes. Those fixes are applied
+// here as sentence-piece rules DERIVED from scripts/fixtures/language-phase-1e-gb-named.json — the list
+// scripts/language-phase-1e.cjs proves equal to the actual en-GB diff (F's words → A's words) — so this list cannot excuse
+// a sentence nobody named. Each fix is split at its ICU arguments and tags; every literal piece that differs is one rule
+// (as moved → fixed). They apply in every section (all of them render these shared words). Plus ONE named code change:
+//   1e-transaction-row-id   the three fee rows carry their id first (`walkup`, `onlineIncluded`, `feeAfter`) — read by id;
+//   1e-section-id           the three feature sections carry their id (`starter`, `pro`, `max`) — words by id.
+const LP1E_ROW_IDS = ['walkup', 'onlineIncluded', 'feeAfter']
+const LP1E_RULES = (() => {
+  const file = 'scripts/fixtures/language-phase-1e-gb-named.json'
+  if (!fs.existsSync(path.join(REPO, file))) return []
+  const named = JSON.parse(read(file))
+  const pieces = s => s.split(/\{[^{}]*\}|<[^>]+>/g).map(x => x.replace(/\s+/g, ' ').trim())
+  const out = []
+  for (const [k, { before, after }] of Object.entries(named)) {
+    if (typeof before !== 'string' || typeof after !== 'string') continue
+    const b = pieces(before), a = pieces(after)
+    if (b.length !== a.length) { out.push([k, before.replace(/\s+/g, ' ').trim(), after.replace(/\s+/g, ' ').trim()]); continue }
+    b.forEach((x, i) => { if (x !== a[i] && x) out.push([k, x, a[i]]) })
+  }
+  return out.sort((x, y) => y[1].length - x[1].length)   // longest first, so a whole sentence wins over a piece of it
+})()
+const lp1eApply = x => { for (const [, from, to] of LP1E_RULES) x = x.split(from).join(to); return x }
 const allowedChange = (b, a, at = '') => {
   if (at.startsWith('admin') || at === '.text' && typeof a === 'string' && a.includes('✉️ Templates' + ADMIN_NEW_TAB)) {
     if (typeof a === 'string' && a.includes('✉️ Templates' + ADMIN_NEW_TAB)) a = a.replace('✉️ Templates' + ADMIN_NEW_TAB, '✉️ Templates')
@@ -455,6 +479,7 @@ const allowedChange = (b, a, at = '') => {
   let x = b
   for (const [from, to] of TEXT_RULES) x = from instanceof RegExp ? x.replace(from, to) : x.split(from).join(to)
   x = lp1d2Apply(x)   // ⚠️ RE-PINNED (Language Phase 1d Part 2): only in billing / payments — see LP1D2_RULES
+  x = lp1eApply(x)    // ⚠️ RE-PINNED (Language Phase 1e): the named marketing GB fixes — see LP1E_RULES
   return x !== b && x === a
 }
 // 3 · the prefill: the two boxes held "4.5" and "20" and now hold "", and they gained two placeholders.
@@ -495,6 +520,10 @@ function diff(before, after, at = '', out = { same: 0, allowed: [], bad: [] }, n
   for (const k of keys) {
     if (at === '' && k === 'api') continue
     if (!(k in after)) { out.bad.push({ at: `${at}.${k}`, before: before[k], after: '(missing)' }); continue }
+    // ⚠️ RE-PINNED (Language Phase 1e): named code change 1e-transaction-row-id — the fee rows gained their id, nothing else.
+    if (!(k in before) && k === 'id' && /\.TRANSACTION_ROWS\.([0-2])$/.test(at) && after[k] === LP1E_ROW_IDS[Number(/\.([0-2])$/.exec(at)[1])]) { out.allowed.push(`${at}.${k}`); continue }
+    //   1e-section-id   …and the three feature sections carry their id (`starter`, `pro`, `max` — PlanSectionId), nothing else.
+    if (!(k in before) && k === 'id' && /\.FEATURE_SECTIONS\.([0-2])$/.test(at) && after[k] === ['starter', 'pro', 'max'][Number(/\.([0-2])$/.exec(at)[1])]) { out.allowed.push(`${at}.${k}`); continue }
     if (!(k in before)) { out.bad.push({ at: `${at}.${k}`, before: '(missing)', after: after[k] }); continue }
     diff(before[k], after[k], `${at}.${k}`, out, norm)
   }
@@ -566,6 +595,14 @@ function diff(before, after, at = '', out = { same: 0, allowed: [], bad: [] }, n
       fails++
       console.log(`✗ Language Phase 1d Part 2's named changes: unproved ${JSON.stringify(unproved.map(r => r[0]))} · not in the render ${JSON.stringify(absent)} · plan headers ${headersOk}`)
     } else if (isAfter) console.log(`✓ Language Phase 1d Part 2's named changes are proved against the catalogue and present (${Object.values(LP1D2_RULES).flat().length} GB sentence fixes; plan headers print PLAN_META names)`)
+  }
+  // ⚠️ RE-PINNED (Language Phase 1e): the derived rules are not vacuous — at least one fixed piece is in the render and its
+  // as-moved piece is not, in every section that shows a plan row (modules, pdf, billing).
+  if (isAfter) {
+    const all = JSON.stringify(snap)
+    const seen = LP1E_RULES.filter(([, from, to]) => all.includes(to) && !all.includes(from))
+    if (!LP1E_RULES.length || !seen.length) { fails++; console.log(`✗ Language Phase 1e's named GB fixes: ${LP1E_RULES.length} rules, none present in the render`) }
+    else console.log(`✓ Language Phase 1e's named GB fixes: ${LP1E_RULES.length} rules derived from scripts/fixtures/language-phase-1e-gb-named.json, ${seen.length} present in these renders`)
   }
   if (snap.pages) {
     const cmp = snap.pages['/compare'].attrs

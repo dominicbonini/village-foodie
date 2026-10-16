@@ -45,7 +45,7 @@ import { PaymentsTab } from '@/components/manage/PaymentsTab'
 //  routes from lib/legal.ts — never type them inline.)
 import type { Plan, Feature } from '@/lib/features'
 import { PRICE_WORD } from '@/lib/price-words'
-import { planPrices, PLAN_DESCRIPTIONS, transactionRows, FEATURE_SECTIONS, footnotes, vanAddonMonthlyMinor, PAY_AT_HATCH_ROW, type PlanRowId } from '@/lib/plan-features'
+import { planPrices, planDescriptions, transactionRows, FEATURE_SECTIONS, featureSections, footnotes, priceText, vanAddonMonthlyMinor, PAY_AT_HATCH_ROW, type PlanRowId } from '@/lib/plan-features'
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
 import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 // 🔴 THE REPLY CAP'S PER-CUSTOMER LIMIT, READ FROM THE MODULE THAT DECIDES IT rather than typed into the
@@ -11625,13 +11625,15 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // Per-truck masking, same policy the Billing tab uses. Was a direct `maskPrice` import, which had no
   // truck context and would have shown a suppressed operator a real add-on price the moment the global
   // flag flipped.
-  const vanPx = usePriceMask()
+  const vanMask = usePriceMask()
   // ── THE PRICE OF EACH ADDITIONAL VAN BEYOND THE INCLUDED COUNT ──────────────────────────────────────
   // 🔴 `VAN_ADDON_PRICE` — a map of RAW POUNDS ({ pro: 29, max: 49 }) invisible to a "£29" grep and read
   // for logic, not only display — IS GONE (10 October 2026). An extra van costs the plan's own monthly
   // price from the truck's country settings, which is what that map held. Minor units, like every price.
   // TODO: Wire to Stripe billing API when payments are integrated.
   const vanSettings = useCountrySettings()
+  // Language Phase 1e: the masked word ('TBC') is shown in the truck's locale — US trucks read 'TBD'. GB identical.
+  const vanPx = (val: string) => priceText(vanMask(val), vanSettings.locale)
   const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)
   const vanAddonLabel = (unit: 'mo' | 'month') => perMonthLabel(vanAddonMinor, moneyFormatOf(vanSettings), unit)
   const INCLUDED_VANS: Record<string, number> = { starter: 1, pro: 2, max: 999, trial: 999 }
@@ -12098,7 +12100,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           </p>
           {/* 🔴 THE SHARED BADGES — components/StoreBadges.tsx. Apple's badge first and in black is a
               VENDOR RULE, not styling, which is why this is a component and not two <a> tags here. */}
-          <StoreBadges className="mt-3 flex flex-wrap items-center gap-3" />
+          <StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} />
         </Card>
       )}
 
@@ -14377,10 +14379,10 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   // down are BELOW that guard and are a PRE-EXISTING rules-of-hooks violation; they are left exactly as
   // they are rather than moved, because relocating live billing state is not this task. Do not "tidy" these
   // two down to join them.
-  const px = usePriceMask()
-  // Language Phase 1d Part 2: Billing's own words (messages `manageBilling`). The comparison's rows, fees, footnotes
-  // and plan descriptions are the shared plan data in lib/plan-features.ts / lib/features.ts (also the marketing
-  // pages'), and the price words are PRICE_WORD — both left where they are.
+  const mask = usePriceMask()
+  // Language Phase 1d Part 2: Billing's own words (messages `manageBilling`). Language Phase 1e: the comparison's rows,
+  // fees, footnotes, plan descriptions and price words are the shared `planFeatures` / `planMeta` messages (the same
+  // ones /features and the plans PDF read), in the truck's country's locale — see `cs` below.
   const t = useT('manageBilling')
   const billingTime = useTruckTime()
   // Footnote 2 does not MASK a value, it substitutes a whole different sentence, so it needs the raw
@@ -14397,6 +14399,11 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   const maxMonth = perMonthLabel(planMonthlyMinor('max', cs), money, 'month')
   const feeRows = transactionRows(cs)
   const notes = footnotes(cs)
+  // 🔴 MASK FIRST, ON THE CODE, THEN SHOW IT IN THE TRUCK'S WORDS (Language Phase 1e): a price word or the mask's
+  // stand-in becomes its `planFeatures.priceWord` message ("TBC" / US "TBD"); an amount passes through. GB unchanged.
+  const px = (val: string) => priceText(mask(val), cs.locale)
+  const sections = featureSections(cs.locale)
+  const descriptions = planDescriptions(cs.locale)
   if (!truck) return null
   const currentPlan = truck.plan
   // ── Z1: WHICH COLUMNS THE MATRIX SHOWS ──────────────────────────────────────────────────────────
@@ -14499,7 +14506,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
           {showTrialColumn && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
         </div>
         {feeRows.map(row => (
-          <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
+          <div key={row.id} className="flex items-start py-2.5 border-t border-slate-100">
             <div className="flex-1 pr-4">
               {/* ⚠️ NO pl-3 HERE EITHER. This carried the same `pl-3 sm:pl-0` the feature titles did —
                   12px of left padding on mobile only — and it is removed the same way: deleted, not
@@ -14530,8 +14537,8 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         ))}
       </div>
       {/* Feature sections */}
-      {FEATURE_SECTIONS.map(section => (
-        <div key={section.title} className="mb-2">
+      {sections.map(section => (
+        <div key={section.id} className="mb-2">
           <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
             <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">
               {section.title}
@@ -14539,7 +14546,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
             {showTrialColumn && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
           </div>
           {section.rows.map(row => (
-            <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
+            <div key={row.id} className="flex items-center py-2 border-t border-slate-100">
               <div className="flex-1 pr-4">
                 {/* ── 🔴 NO pl-3 HERE. THE INDENT WAS REMOVED, NOT CANCELLED. ────────────────────────
                     This read `text-sm text-slate-800 pl-3 sm:pl-0`. That `pl-3` put 12px of left
@@ -14654,7 +14661,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 {PLAN_META[currentPlan]?.name ?? currentPlan}
               </p>
               <p className="text-sm text-slate-700 mt-0.5">{px(prices[currentPlan])}</p>
-              <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
+              <p className="text-sm text-slate-700 mt-0.5">{descriptions[currentPlan]}</p>
               {truck.trial_expires_at && (
                 <p className="text-xs text-amber-600 mt-1">
                   {t('trialEnds', { date: formatDate(truck.trial_expires_at) })}
@@ -14781,7 +14788,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 {PLAN_META[currentPlan]?.name ?? currentPlan}
               </p>
               <p className="text-sm text-slate-700 mt-0.5">{px(prices[currentPlan])}</p>
-              <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
+              <p className="text-sm text-slate-700 mt-0.5">{descriptions[currentPlan]}</p>
             </div>
             {/* 🔴 iOS (App Store 3.1.1/3.1.3): the ENTIRE panel is gated, heading included. Gating only the
                 two buttons would leave a bordered grey box containing the words "Upgrade your plan" and
@@ -14860,8 +14867,8 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 {t('upgradeModal.title', { plan: upgradeTarget === 'max' ? 'Max' : 'Pro' })}
               </h3>
               <p className="text-sm text-slate-500 mt-1">
-                {/* The plan's one-line description is the shared plan data (PLAN_DESCRIPTIONS — the same words). */}
-                {t('upgradeModal.tagline', { price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: PLAN_DESCRIPTIONS[upgradeTarget] })}
+                {/* The plan's one-line description is the shared plan data (planDescriptions — the same messages). */}
+                {t('upgradeModal.tagline', { price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: descriptions[upgradeTarget] })}
               </p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">

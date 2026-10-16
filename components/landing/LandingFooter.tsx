@@ -12,6 +12,10 @@ import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import { CountryMenu } from '@/components/landing/CountryMenu'
 import type { VisitorCountryMenu } from '@/lib/visitor-country-types'
+// Language Phase 1e: the footer's words are `landingFooter` messages, in the page's locale (`locale` — the visitor's
+// country's; omitted = en-GB, which is today's text exactly).
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/landingFooter'
 
 // ⚠️ `landingHref` — see the long note in LandingNav.tsx for why this is a prop and not a hardcoded
 // path. Default '' keeps the bare fragment, which is the landing's own behaviour and is byte-identical.
@@ -47,7 +51,8 @@ export { APP_STORE_URL, APP_STORE_BADGE_SRC, GOOGLE_PLAY_URL, GOOGLE_PLAY_BADGE_
 import { StoreBadges } from '@/components/StoreBadges'
 import { contactHref } from '@/lib/contact-topics'
 
-export function LandingFooter({ landingHref = '', country }: { landingHref?: string; country?: VisitorCountryMenu } = {}) {
+export function LandingFooter({ landingHref = '', featuresHref = '/features', country, locale }: { landingHref?: string; featuresHref?: string; country?: VisitorCountryMenu; locale?: string } = {}) {
+  const t = translatorFor(locale, 'landingFooter')
   return (
   <footer className={HEADER_BG}>
     <div className="wrap">
@@ -66,7 +71,7 @@ export function LandingFooter({ landingHref = '', country }: { landingHref?: str
           {/* Same slogan and same line break as the hero tagline (:148), so the two agree.
               ⚠️ Deliberately WITHOUT the hero's `.lean` orange accent on "cooking." — the footer tag
               is muted #8A93A6 by design and an orange word here was not asked for. */}
-          <p className="foot-tag">Less time booking.<br />More time cooking.</p>
+          <p className="foot-tag">{t.rich('tagline', { br: () => <br /> })}</p>
         </div>
         {/* 🔴 THE RIGHT COLUMN — LINKS ON TOP, BADGE BENEATH THEM.
             Moved here 2 September 2026 on request, and only AFTER the middle position was built and
@@ -84,10 +89,10 @@ export function LandingFooter({ landingHref = '', country }: { landingHref?: str
             {/* 🔴 FEATURES IS IN THE FOOTER AT EVERY WIDTH, which is what makes the header's 820px
                 floor acceptable: below that the link still exists, here. ⚠️ `.foot-links` is a wrapping
                 flex row, so a fifth item costs nothing — unlike the nav, which must not wrap. */}
-            <a href="/features">Features</a>
-            <a href={`${landingHref}#pricing`}>Pricing</a>
-            <a href={PRIVACY_PATH}>Privacy</a>
-            <a href={TERMS_PATH}>Terms</a>
+            <a href={featuresHref}>{t('features')}</a>
+            <a href={`${landingHref}#pricing`}>{t('pricing')}</a>
+            <a href={PRIVACY_PATH}>{t('privacy')}</a>
+            <a href={TERMS_PATH}>{t('terms')}</a>
             {/* 🔴 WAS `href="#"` — a control that went nowhere, then /support, which was deleted on
                 20 August 2026. Now /contact, which serves HatchGrab chrome on this host and is the
                 Support URL given to App Store review.
@@ -95,7 +100,7 @@ export function LandingFooter({ landingHref = '', country }: { landingHref?: str
                 it is the same parameter Village Foodie's own footer Contact link sends
                 (components/Footer.tsx). Carried across so this link opens the form where it always
                 did rather than on an empty topic. */}
-            <a href={contactHref('general')}>Contact</a>
+            <a href={contactHref('general')}>{t('contact')}</a>
           </div>
             {/* ── 🔴 APP STORE BADGE ─────────────────────────────────────────────────────
                 IN THE BRAND COLUMN, UNDER THE TAGLINE — not in .foot-base and not in .foot-links.
@@ -120,7 +125,7 @@ export function LandingFooter({ landingHref = '', country }: { landingHref?: str
                 stack centred if they do not. `.foot-badge img` sets height:40px, width:auto.
                 ⚠️ The classes REPLACE the component's Tailwind defaults rather than adding to them, so
                 exactly one rule owns the gap. */}
-            <StoreBadges className="foot-apps" linkClassName="foot-badge" />
+            <StoreBadges className="foot-apps" linkClassName="foot-badge" countryCode={country?.current.code} />
             {/* Phase 2D-1: the country button, at every width — flag, full name, chevron. */}
             {country && <CountryMenu menu={country} variant="footer" />}
         </div>
@@ -148,8 +153,8 @@ export function LandingFooter({ landingHref = '', country }: { landingHref?: str
           ⚠️ NOTHING ELSE IN THE FOOTER MOVED. `.foot-base` is a `space-between` flex row with no
           nth-child rule (landing.css:329), so the two remaining spans simply sit at the two ends. */}
       <div className="foot-base">
-        <span>© 2026 HatchGrab</span>
-        <span className="vf">From the people behind <b>Village Foodie</b></span>
+        <span>{t('copyright')}</span>
+        <span className="vf">{t.rich('credit', { b: c => <b>{c}</b> })}</span>
       </div>
     </div>
   </footer>

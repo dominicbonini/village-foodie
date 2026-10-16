@@ -18,19 +18,30 @@ const read = (f) => fs.readFileSync(path.join(REPO, f), 'utf8')
 /** Strip TS/TSX comments so only what is RENDERED or shown is judged. */
 const noComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }
-const FACING = ['components/printing/PrintingSettings.tsx', 'components/printing/PrinterTypeChoice.tsx', 'lib/printing/netTransport.ts', 'lib/printing/networkGuard.ts', 'lib/printing/netAddress.ts', 'lib/printing/usePrinting.ts', 'lib/plan-features.ts', 'app/landing/page.tsx', 'content/store-listing.md', 'app/api/printing/route.ts']
+// ⚠️ RE-PINNED (Language Phase 1e): the landing's and the plan table's words are MESSAGES now (`landing.*`, `planFeatures.*`
+// in messages/en-GB.json, US overrides in messages/en-US.json). The message files join the list, and "the landing page"
+// below is its source PLUS those messages (both languages) — the words a visitor reads, wherever they are written.
+const MSG = loc => JSON.parse(read(`messages/${loc}.json`))
+const leaves = (o, p = '') => Object.entries(o || {}).flatMap(([k, v]) => (v && typeof v === 'object' ? leaves(v, `${p}${k}.`) : [[`${p}${k}`, v]]))
+const MARKETING_NS = /^(landing|landingNav|landingFooter|planFeatures|planMeta|featuresPage|plansPdf|compare)\./
+const marketingWords = () => ['en-GB', 'en-US'].flatMap(loc => leaves(MSG(loc)).filter(([k]) => MARKETING_NS.test(k)).map(([k, v]) => `${loc}:${k} = ${v}`)).join('\n')
+const landingText = () => noComments(read('app/landing/page.tsx')) + '\n' + marketingWords()
+const FACING = ['messages/en-GB.json', 'messages/en-US.json', 'components/printing/PrintingSettings.tsx', 'components/printing/PrinterTypeChoice.tsx', 'lib/printing/netTransport.ts', 'lib/printing/networkGuard.ts', 'lib/printing/netAddress.ts', 'lib/printing/usePrinting.ts', 'lib/plan-features.ts', 'app/landing/page.tsx', 'content/store-listing.md', 'app/api/printing/route.ts']
 console.log('── BROKEN VARIANT: MUST report FAILURE ──────────────────────────────────────────────────')
 {
   // Re-based 19 September 2026: this replaced "Bluetooth or wired printer" on the landing page, a phrase
   // the pricing card no longer carries, so the replace became a no-op and the variant stopped proving
   // anything. It now reinstates the word in the bullet that IS there.
-  const v1 = noComments(read('app/landing/page.tsx')).replace('Kitchen ticket printing', 'Kitchen thermal ticket printing')
+  // ⚠️ RE-PINNED (Language Phase 1e): the bullet is the message landing.pricing.max.printing — the variant reinstates the
+  // word THERE (in the words the landing renders), and the same scan as below must catch it.
+  const v1 = landingText().replace('landing.pricing.max.printing = Kitchen ticket printing', 'landing.pricing.max.printing = Kitchen thermal ticket printing')
+  if (v1 === landingText()) { console.log('  🔴 V1: THE MUTATION DID NOT APPLY'); process.exit(1) }
   const hit = /thermal/i.test(v1)
   console.log(`  ${hit ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V1 "thermal" reinstated on the landing page is caught`)
   if (!hit) process.exit(1)
 }
 console.log('\n── no "thermal" in rendered/returned strings ────────────────────────────────────────────')
-for (const f of FACING) { const s = f.endsWith('.md') ? read(f) : noComments(read(f)); const m = s.match(/.*thermal.*/i); check(!m, `${f}${m ? ' — ' + m[0].trim() : ''}`) }
+for (const f of FACING) { const s = f.endsWith('.md') || f.endsWith('.json') ? read(f) : noComments(read(f)); const m = s.match(/.*thermal.*/i); check(!m, `${f}${m ? ' — ' + m[0].trim() : ''}`) }
 console.log('\n── marketing mentions say "Bluetooth or wired" ──────────────────────────────────────────')
 {
   const pf = read('lib/plan-features.ts')
@@ -38,16 +49,23 @@ console.log('\n── marketing mentions say "Bluetooth or wired" ────�
   // `name` rather than as a literal, so the two cannot drift — which is exactly what the landing page's
   // own comment warns about ("this bullet is hand-written and nothing checks it"). Now something does.
   // Language Phase 0 (14 October 2026): each row now opens with its code id, `{ id: 'ticket_printing', name: … }`.
-  const rowName = (pf.match(/\{ id: 'ticket_printing', name: '(Kitchen ticket printing)',/) || [])[1]
+  // ⚠️ RE-PINNED (Language Phase 1e): the row is `{ id: 'ticket_printing', … }` and its words are the messages
+  // planFeatures.row.ticket_printing.*; the card's bullet is landing.pricing.max.printing, rendered as <li>{t('pricing.max.printing')}</li>.
+  // The claims are unchanged: the bullet IS the row's name (in both languages), with no parenthetical; the detail and
+  // footnote 5 say "Bluetooth or wired".
+  const gbW = Object.fromEntries(leaves(MSG('en-GB'))), usW = { ...gbW, ...Object.fromEntries(leaves(MSG('en-US'))) }
+  const rowName = /\{ id: 'ticket_printing',/.test(pf) ? gbW['planFeatures.row.ticket_printing.name'] : undefined
   const landing = noComments(read('app/landing/page.tsx'))
   check(!!rowName, `the comparison table still has a row named ${JSON.stringify(rowName ?? null)}`)
-  check(landing.includes(`<li>${rowName}</li>`), `the pricing card's bullet is that name exactly: "${rowName}"`)
-  check(!/Kitchen ticket printing \(/.test(landing),
+  check(/<li>\{t\('pricing\.max\.printing'\)\}<\/li>/.test(landing) && gbW['landing.pricing.max.printing'] === rowName && usW['landing.pricing.max.printing'] === usW['planFeatures.row.ticket_printing.name'],
+    `the pricing card's bullet is that name exactly: "${rowName}" (GB and US)`)
+  check(![gbW, usW].some(w => /\(/.test(w['landing.pricing.max.printing'] || '')),
     'and carries no parenthetical — which printers it works with is the table\'s job, not the card\'s')
-  check(/Print order tickets to a Bluetooth or wired printer in the kitchen\./.test(pf), 'plan-features row detail')
-  check(/compatible Bluetooth or wired printer \(neither supplied\)/.test(pf), 'plan-features footnote')
+  check([gbW, usW].every(w => /Print order tickets to a Bluetooth or wired printer in the kitchen\./.test(w['planFeatures.row.ticket_printing.detail'] || '')), 'plan-features row detail (GB and US)')
+  check([gbW, usW].every(w => /compatible Bluetooth or wired printer \(neither supplied\)/.test(w['planFeatures.footnote.n5'] || '')), 'plan-features footnote (GB and US)')
   check(!/Bluetooth receipt printer/.test(read('content/store-listing.md')) && /Bluetooth or wired printer/.test(read('content/store-listing.md')), 'store listing')
-  const mentions = FACING.filter(f => /landing|plan-features|store-listing/.test(f)).flatMap(f => (noComments(read(f)).match(/[^.\n]*printer[^.\n]*/gi) || []).map(x => f + ': ' + x.trim()))
+  const mentions = [...FACING.filter(f => /landing|plan-features|store-listing/.test(f)).flatMap(f => (noComments(read(f)).match(/[^.\n]*printer[^.\n]*/gi) || []).map(x => f + ': ' + x.trim())),
+    ...(marketingWords().match(/[^.\n]*printer[^.\n]*/gi) || []).map(x => 'messages: ' + x.trim())]
   for (const m of mentions) check(/Bluetooth or wired|wired printer|Bluetooth printer|the printer|your printer|a printer|no printer|kitchen printer|Compatible printers|physical printer/i.test(m), m.slice(0, 140))
 }
 console.log('\n── Bluetooth-only sentences appear ONLY inside the Bluetooth branch of the card ──────────')

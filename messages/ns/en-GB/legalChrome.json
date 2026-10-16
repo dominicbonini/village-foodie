@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "privacyTitle": "Privacy Policy — HatchGrab",
+    "privacyDescription": "How HatchGrab Ltd collects and uses personal data.",
+    "termsTitle": "Terms of Service — HatchGrab",
+    "termsDescription": "The terms of using HatchGrab."
+  },
+  "homeLabel": "HatchGrab home",
+  "privacy": "Privacy",
+  "terms": "Terms",
+  "contact": "Contact",
+  "lastUpdated": "Last updated {date}",
+  "questions": "Questions? <link>Get in touch</link> — we’re real people."
+}

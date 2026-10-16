@@ -48,13 +48,18 @@ module.exports = async function us(x) {
   head('3 · landing and features: the tags name the visitor\'s country')
   const lm = await metadataOf('app/landing/page.tsx', 'US')
   const fm = await metadataOf('app/features/page.tsx', 'US')
-  t('landing title (and OG/Twitter): "— HatchGrab US"', [lm.title.absolute, lm.openGraph.title, lm.twitter.title].every(v => v === 'Food truck & mobile catering ordering system — HatchGrab US'), lm.title.absolute)
+  // ⚠️ RE-PINNED (Language Phase 1e): the landing's tags are the messages landing.meta.title / .description, read in the
+  // country's locale — the US words (en-US, glossary: mobile catering → catering, pitch → spot, queue → line) are named
+  // here and applied to BEFORE's GB tags below, so "nothing else moves" still compares everything else.
+  const US_META_WORDS = s => s.replace(/Food truck & mobile catering ordering system/g, 'Food truck & catering ordering system')
+    .replace(/from your pitch without the queue/g, 'from your spot without the line').replace(/trucks and mobile catering — not a POS/g, 'trucks and catering — not a POS')
+  t('landing title (and OG/Twitter): "— HatchGrab US"', [lm.title.absolute, lm.openGraph.title, lm.twitter.title].every(v => v === 'Food truck & catering ordering system — HatchGrab US'), lm.title.absolute)
   t('landing description (and OG/Twitter): "US food trucks"', [lm.description, lm.openGraph.description, lm.twitter.description].every(v => v.includes('software for US food trucks') && !v.includes('UK')), lm.description)
   t('landing og:locale en_US', lm.openGraph.locale === 'en_US', lm.openGraph.locale)
   t('features title (and OG/Twitter): "— HatchGrab US"', [fm.title.absolute, fm.openGraph.title, fm.twitter.title].every(v => v === 'Plans & features compared — HatchGrab US'), fm.title.absolute)
   t('features og:locale en_US', fm.openGraph.locale === 'en_US', fm.openGraph.locale)
   const strip = o => JSON.stringify(o).replace(/HatchGrab (UK|US)/g, '#').replace(/\b(UK|US) food/g, '#').replace(/en_(GB|US)/g, '#')
-  t('nothing else in the landing tags moves (canonical, images, robots)', strip(lm) === strip(before.landingMeta))
+  t('nothing else in the landing tags moves (canonical, images, robots) — apart from the named US words', strip(lm) === US_META_WORDS(strip(before.landingMeta)))
   t('nothing else in the features tags moves', strip(fm) === strip(before.featuresMeta))
   const usOff = [GB, { ...US_ON, enabled: false }]
   const lmOff = await metadataOf('app/landing/page.tsx', 'US', usOff)

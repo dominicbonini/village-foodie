@@ -2,13 +2,17 @@
 
 import { useEffect, useMemo } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { I18nContext, useT } from '@/lib/i18n/use-t'
+import { I18nContext, useSeedWords, useT } from '@/lib/i18n/use-t'
 import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
+import type { SeedWords } from '@/lib/i18n/registry'
 import '@/lib/i18n/catalog/auth'
 
 // Language Phase 1c: the words are `auth.verifyEmail`, in the locale the page resolved on the server (the operator's
 // truck's, else en-GB). This route has no provider, so the locale is handed down and provided here.
-export default function VerifyEmailSuccess({ newEmail, locale }: { newEmail: string; locale?: AppLocale }) {
+// Language Phase 1e Part C: with that locale's overrides (`words`, null for en-GB), registered before the screen
+// renders — the browser bundle carries only the en-GB base, and hydration must see the server's words.
+export default function VerifyEmailSuccess({ newEmail, locale, words }: { newEmail: string; locale?: AppLocale; words?: SeedWords | null }) {
+  useSeedWords(words)
   useEffect(() => {
     const supabase = createSupabaseBrowserClient()
     supabase.auth.signOut().then(() => {

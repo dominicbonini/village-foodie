@@ -1,0 +1,202 @@
+{
+  "compare.anchor.counter": {
+    "before": "That's a full refit of your serving counter.",
+    "after": "That’s a full refit of your serving counter.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.anchor.festivalPitches": {
+    "before": "That's a couple of festival pitches.",
+    "after": "That’s a couple of festival pitches.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.anchor.fryer": {
+    "before": "That's a new fryer and griddle.",
+    "after": "That’s a new fryer and griddle.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.anchor.liability": {
+    "before": "That's a year's public liability cover.",
+    "after": "That’s a year’s public liability cover.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.anchor.secondVan": {
+    "before": "That's a second van on the road.",
+    "after": "That’s a second van on the road.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.anchor.vanDeposit": {
+    "before": "That's a deposit on a second van.",
+    "after": "That’s a deposit on a second van.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.anchor.weekendPitch": {
+    "before": "That's a weekend pitch at a food festival.",
+    "after": "That’s a weekend pitch at a food festival.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.breakdown.card": {
+    "before": "Card processing — Stripe's {fee} per order, paid to Stripe. You'd pay much the same on a card machine at the window.",
+    "after": "Card processing — Stripe’s {fee} per order, paid to Stripe. You’d pay much the same on a card machine at the window.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.breakdown.provider": {
+    "before": "Your current provider's own fee ({pct})",
+    "after": "Your current provider’s own fee ({pct})",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.days.help": {
+    "before": "Events, markets, pitches — any day the van's out.",
+    "after": "Events, markets, pitches — any day the van’s out.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.fee.inclusiveNote": {
+    "before": "Card processing of {fee} is inside that, and you'd pay it anywhere. Their own fee is <b>{pct}</b>.",
+    "after": "Card processing of {fee} is inside that, and you’d pay it anywhere. Their own fee is <b>{pct}</b>.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.intro": {
+    "before": "Takes about a minute. Already using a system? We'll compare it. Not yet? We'll show you exactly what it costs.",
+    "after": "Takes about a minute. Already using a system? We’ll compare it. Not yet? We’ll show you exactly what it costs.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.orders.titleNo": {
+    "before": "How much do you think you'd take online, per month, per truck?",
+    "after": "How much do you think you’d take online, per month, per truck?",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.smallPrint.check": {
+    "before": "Check your current provider's rates before deciding.",
+    "after": "Check your current provider’s rates before deciding.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.smallPrint.onTop": {
+    "before": "The all-in figure in question 4 includes it — the comparison does not, on either side.",
+    "after": "The all-in figure in question {n} includes it — the comparison does not, on either side.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.smallPrint.yes": {
+    "before": "Estimates based on the figures you enter, assuming an average order of {aov}. Card processing of {fee} per order applies whichever provider you use, so it's excluded from both sides.",
+    "after": "Estimates based on the figures you enter, assuming an average order of {aov}. Card processing of {fee} per order applies whichever provider you use, so it’s excluded from both sides.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "compare.twoYear": {
+    "before": "Over two years that's <b>{amount}</b> saved.",
+    "after": "Over two years that’s <b>{amount}</b> saved.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "contactPage.loadingForm": {
+    "before": "Loading form...",
+    "after": "Loading form…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "landing.does.slotsBody": {
+    "before": "Customers order ahead and pick a collection time. Less queues, and food ready when they arrive.",
+    "after": "Customers order ahead and pick a collection time. Fewer queues, and food ready when they arrive.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "landing.pricing.summary": {
+    "before": "Pro is {proPrice} a month with {proAllowance} of online orders included. Max is {maxPrice} with {maxAllowance}. Anything above that is {platformFee}. Standard card processing fees apply to all online orders (currently {cardFee} on standard {region}), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan. Your card terminal's own fees still apply.",
+    "after": "Pro is {proPrice} a month with {proAllowance} of online orders included. Max is {maxPrice} with {maxAllowance}. Anything above that is {platformFee}. Standard card processing fees apply to all online orders (currently {cardFee} on standard {region}), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan. Your card terminal’s own fees still apply.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "landing.testimonial.business": {
+    "before": "Nadia & Bogdan",
+    "after": "Pizzeria Gusto",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "landing.testimonial.byline": {
+    "before": "Owners, Pizzeria Gusto",
+    "after": "Nadia & Bogdan — owners",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "legalChrome.questions": {
+    "before": "Questions? <link>Get in touch</link> — we're real people.",
+    "after": "Questions? <link>Get in touch</link> — we’re real people.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "planFeatures.footnote.n1": {
+    "before": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider's standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe's own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you tap on a phone or tablet without a dedicated reader.",
+    "after": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you tap on a phone or tablet without a dedicated reader.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "planFeatures.footnote.n2": {
+    "before": "Online payments powered by Stripe Connect. Subject to {platformFee} HatchGrab platform fee plus Stripe card processing fees (~{onlineFee} per transaction on standard {region}).",
+    "after": "Online payments powered by Stripe Connect. Subject to a {platformFee} HatchGrab platform fee plus Stripe card processing fees (~{onlineFee} per transaction on standard {region}).",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "planFeatures.footnote.n5": {
+    "before": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers listed in our help centre.",
+    "after": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers are listed in our help centre.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "planFeatures.landing.offlineProtectionDetail": {
+    "before": "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+    "after": "If you lose signal, online ordering pauses so customers can’t place orders you won’t see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "planFeatures.row.offline_protection.detail": {
+    "before": "If your internet drops mid-service, orders are held safely and sync when you're back — you never lose one.",
+    "after": "If your internet drops mid-service, orders are held safely and sync when you’re back — you never lose one.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "planFeatures.row.offline_protection.name": {
+    "before": "Offline Order Protection",
+    "after": "Offline order protection",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "planFeatures.row.sms_order_alerts.detail": {
+    "before": "Text customers automatically when their order's ready. Will carry an additional charge (price to be confirmed).",
+    "after": "Text customers automatically when their order’s ready. Will carry an additional charge (price to be confirmed).",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "planFeatures.row.sold_out_toggle.name": {
+    "before": "Instant sold out toggle",
+    "after": "Instant sold-out toggle",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "planMeta.description.trial": {
+    "before": "All features included — Max tier + Pay at Hatch ordering",
+    "after": "All features included — Max plan + Pay at Hatch ordering",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "plansPdf.terms": {
+    "before": "Figures are the published plan terms at the date above and may change. Card processing fees are\n      Stripe’s own charge, not HatchGrab’s. This document is a summary, not a contract.",
+    "after": "Figures are the published plan terms at the date above and may change. Card processing fees are Stripe’s own charge, not HatchGrab’s. This document is a summary, not a contract.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "siteFooter.disclaimer": {
+    "before": "Disclaimer: Schedules are subject to change by vendors. We do our best, but we are not responsible for cancelled trucks or sold-out burgers. Always check the vendor's social media for last-minute updates.",
+    "after": "Disclaimer: Schedules are subject to change by vendors. We do our best, but we are not responsible for cancelled trucks or sold-out burgers. Always check the vendor’s social media for last-minute updates.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "truckPage.loadError.body": {
+    "before": "We couldn't load the schedule just now — this is usually a brief hiccup. Please try again.",
+    "after": "We couldn’t load the schedule just now — this is usually a brief hiccup. Please try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "truckPage.loadError.title": {
+    "before": "Couldn't load",
+    "after": "Couldn’t load",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "truckPage.loadingMap": {
+    "before": "Loading Map...",
+    "after": "Loading Map…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "truckPage.loadingSchedule": {
+    "before": "Loading schedule...",
+    "after": "Loading schedule…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "truckPage.missingEvent": {
+    "before": "<strong>Are we missing an event?</strong> <br></br>If you're the owner of this truck or just a dedicated fan, help us keep this page accurate! <br></br><link>Contact us to add missing details.</link>",
+    "after": "<strong>Are we missing an event?</strong> <br></br>If you’re the owner of this truck or just a dedicated fan, help us keep this page accurate! <br></br><link>Contact us to add missing details.</link>",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "truckPage.notFound.body": {
+    "before": "We couldn't find any details for this food truck. They might have moved or updated their profile.",
+    "after": "We couldn’t find any details for this food truck. They might have moved or updated their profile.",
+    "kind": "GB fix (moved, then fixed)"
+  }
+}

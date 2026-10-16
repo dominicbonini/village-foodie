@@ -465,6 +465,10 @@ module.exports = async function us(h) {
         //   · the notice's render: our own notices print their CODE's words; `text` (words passed on from the route) still
         //     prints as it came — the same <p>, the same fallback.
         ["                  <p>{setupNotice.text}</p>", /^                  <p>\{setupNotice\.code \? tW\(`notice\.\$\{setupNotice\.code\}`\) : setupNotice\.text\}<\/p>$/],
+        // ⚠️ RE-PINNED (Language Phase 1e): the van add-on's price WORD ("TBC" when masked) is worded in the truck's locale
+        // (lib/plan-features priceText) — the mask is `vanMask` (the new line in this hunk) and `vanPx` wraps it a few
+        // lines on, checked below with the other conditions of this assertion.
+        ["  const vanPx = usePriceMask()", /^  const vanMask = usePriceMask\(\)$/],
       ]
       const named = (l, h) => NAMED.some(([line, re]) => l === line && h.add.some(x => re.test(x)))
       const unexcused = hunks.flatMap(h => h.del.filter(l => l.trim() && !wordSite(l) && !named(l, h) && !h.add.some(x => x.includes(l.trim()))))
@@ -472,6 +476,7 @@ module.exports = async function us(h) {
         // ⚠️ RE-PINNED (Language Phase 1d Part 2): + the setup notice's new state type really is { tone, code } (the
         // named move above excuses its useState line only on that basis).
         hunks.length > 50 && unexcused.length === 0
+        && /\n  const vanPx = \(val: string\) => priceText\(vanMask\(val\), vanSettings\.locale\)\n/.test(nowR)   // ⚠️ RE-PINNED (Language Phase 1e)
         && /export interface SetupNotice \{ tone: NoticeTone; code\?: SetupNoticeCode; text\?: string \}/.test(read('lib/whatsapp/setup-machine.ts')),
         unexcused.slice(0, 8).join('\n'))
       // (C) the saves, and the moved block staying out.

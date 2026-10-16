@@ -18,12 +18,25 @@ const FROZEN_US = path.join(REPO, 'scripts/fixtures/language-phase-1d2-messages-
 const MOVED = LP2.MOVED_FILE_1D2
 
 const F_MODE = { mode: 'frozen', file: FROZEN_GB, usFile: FROZEN_US, moved: true }
-const catalogues = which => LP2.catalogues(which === 'F' ? F_MODE : { mode: 'source' })
+// ⚠️ RE-PINNED (Language Phase 1e): Part 2's "A words" are the words Part 2 ENDED with — eb7ed44's pair
+// (scripts/fixtures/language-phase-1e-messages-before.{en-GB,en-US}.json) over the current keys, with every as-moved
+// overlay — not the authored files, which now also carry Phase 1e's marketing words (proven by
+// scripts/language-phase-1e.cjs). HG_LP1D2_A=source reads the authored files instead (only for a deliberate check).
+const PART2_END_GB = path.join(REPO, 'scripts/fixtures/language-phase-1e-messages-before.en-GB.json')
+const PART2_END_US = path.join(REPO, 'scripts/fixtures/language-phase-1e-messages-before.en-US.json')
+const A_MODE = process.env.HG_LP1D2_A === 'source' || !fs.existsSync(PART2_END_GB) ? { mode: 'source' } : { mode: 'frozen', file: PART2_END_GB, usFile: PART2_END_US, moved: true }
+const catalogues = which => LP2.catalogues(which === 'F' ? F_MODE : A_MODE)
+// ⚠️ RE-PINNED (Language Phase 1e): Part 2's key moves only (scripts/fixtures/language-phase-1d2-key-moves.json) — the
+// frozen switch now also merges Phase 1e's, which scripts/language-phase-1e.cjs checks against eb7ed44.
+const part2Moves = () => (fs.existsSync(LP2.KEY_MOVES_FILE) ? LP2.readJson(LP2.KEY_MOVES_FILE).moves || {} : {})
 const moved = () => (fs.existsSync(MOVED) ? JSON.parse(fs.readFileSync(MOVED, 'utf8')) : {})
 
 function gbKeyDiff() {
-  const f = Object.fromEntries(LP2.leaves(catalogues('F')['en-GB']))
-  const a = Object.fromEntries(LP2.leaves(catalogues('A')['en-GB']))
+  // ⚠️ RE-PINNED (Language Phase 1e): with A on eb7ed44's words, BOTH sides are built over eb7ed44's KEY SET (Part 2's
+  // end state), so a key Phase 1e later moves or deletes still reads as Part 2 left it.
+  const end = A_MODE.mode === 'frozen' ? LP2.readJson(PART2_END_GB) : null
+  const f = Object.fromEntries(LP2.leaves(end ? LP2.overlay(LP2.overlay(end, LP2.movedTree()), LP2.withMoves(LP2.withInline(LP2.readJson(FROZEN_GB)))) : catalogues('F')['en-GB']))
+  const a = Object.fromEntries(LP2.leaves(end || catalogues('A')['en-GB']))
   const at0 = Object.fromEntries(LP2.leaves(LP2.readJson(FROZEN_GB)))
   const mv = moved()
   const out = {}
@@ -31,7 +44,7 @@ function gbKeyDiff() {
     if (f[k] === a[k]) continue
     out[k] = { before: f[k] ?? null, after: a[k], kind: k in mv ? (k in at0 ? `GB fix of a ${BEFORE_REF} key` : 'GB fix (moved, then fixed)') : `${BEFORE_REF} key reworded WITHOUT a recorded fix` }
   }
-  const moves = LP2.keyMoves()
+  const moves = part2Moves()
   for (const k of Object.keys(at0).sort()) if (!(k in a)) out[k] = { before: at0[k], after: null, kind: moves[k] ? `${BEFORE_REF} key MOVED to ${moves[k]} (scripts/fixtures/language-phase-1d2-key-moves.json)` : `${BEFORE_REF} key deleted` }
   return out
 }
@@ -54,7 +67,7 @@ function keyMoveProblems() {
   const at0 = Object.fromEntries(LP2.leaves(LP2.readJson(FROZEN_GB))), us0 = Object.fromEntries(LP2.leaves(LP2.readJson(FROZEN_US)))
   const A = catalogues('A'), a = Object.fromEntries(LP2.leaves(A['en-GB'])), au = Object.fromEntries(LP2.leaves(A['en-US']))
   const mv = moved(), out = []
-  for (const [from, to] of Object.entries(LP2.keyMoves())) {
+  for (const [from, to] of Object.entries(part2Moves())) {
     if (from in a) out.push(`${from}: still in en-GB`)
     if (!(to in a)) { out.push(`${to}: not in en-GB`); continue }
     if ((mv[to] ?? a[to]) !== at0[from]) out.push(`${to}: as moved ${JSON.stringify(mv[to] ?? a[to])} ≠ ${from} at ${BEFORE_REF} ${JSON.stringify(at0[from])}`)
@@ -82,4 +95,4 @@ function legalKeys() {
   return Object.keys(a).filter(k => LEGAL_NAMED.includes(k) || (fresh.has(k) && LEGAL_RE.test(a[k]))).sort()
 }
 
-module.exports = { keyMoveProblems, REPO, BEFORE_REF, FROZEN_GB, FROZEN_US, F_MODE, MOVED, catalogues, moved, gbKeyDiff, movedProblems, newKeys, legalKeys, LEGAL_NAMED, LEGAL_RE, LP2 }
+module.exports = { part2Moves, A_MODE, keyMoveProblems, REPO, BEFORE_REF, FROZEN_GB, FROZEN_US, F_MODE, MOVED, catalogues, moved, gbKeyDiff, movedProblems, newKeys, legalKeys, LEGAL_NAMED, LEGAL_RE, LP2 }

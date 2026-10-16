@@ -1,3 +1,9 @@
 {
-  "title": "Plans and features"
+  "title": "Plans and features",
+  "generated": "Generated {date}",
+  "allowanceHeading": "Online order allowance",
+  "smallPrint": "Small print",
+  "priceNoteMasked": "Prices shown as “TBC” are not yet published.",
+  "omitNote": "Prices are deliberately not included in this document.",
+  "terms": "Figures are the published plan terms at the date above and may change. Card processing fees are Stripe’s own charge, not HatchGrab’s. This document is a summary, not a contract."
 }

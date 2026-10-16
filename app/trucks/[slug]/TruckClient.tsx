@@ -15,13 +15,45 @@ import { isHatchGrab } from '@/lib/domain';
 import { hrefFromStoredUrl } from '@/lib/url-normalise';
 import { safeHref } from '@/lib/safe-href';
 import { contactHref } from '@/lib/contact-topics';
+import { I18nContext, useAppLocale, useSeedWords, useT } from '@/lib/i18n/use-t';
+import type { AppLocale } from '@/lib/i18n/locales';
+import type { SeedWords } from '@/lib/i18n/registry';
+import '@/lib/i18n/catalog/truckPage';
+
+/** The map's placeholder while its chunk loads — a component, so it reads the page's language like the rest. */
+function MapLoading() {
+  const t = useT('truckPage');
+  return <div className="w-full h-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400 font-bold">{t('loadingMap')}</div>;
+}
 
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
-  loading: () => <div className="w-full h-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400 font-bold">Loading Map...</div>
+  loading: () => <MapLoading />
 });
 
-export default function TruckClient({ slug }: { slug: string }) {
+// ── Language Phase 1e: THE TRUCK'S LANGUAGE, PROVIDED TO EVERYTHING ON THE PAGE ──────────────────────────
+// page.tsx resolves the truck's country's locale on the server (it is the truck's own page, not the visitor's)
+// and hands it down. This route has no provider, so it is provided here — the same pattern as
+// app/verify-email/VerifyEmailSuccess.tsx — and the page's own words (`truckPage`), the shared footer
+// (`siteFooter`) and the map placeholder all read it, from the first server-rendered paint. Without the prop it
+// keeps whatever language is already provided around it (en-GB when nothing is).
+// ⚠️ Language Phase 1e Part C: the browser bundle carries only the en-GB base, so page.tsx also passes `words` —
+// that locale's overrides for NAMESPACES.truckProfile (null for en-GB) — and they are registered before anything
+// below renders, so the first browser render matches the server's.
+export default function TruckClient({ slug, locale, words }: { slug: string; locale?: AppLocale; words?: SeedWords | null }) {
+  useSeedWords(words);
+  const around = useAppLocale();
+  const active = locale ?? around;
+  const i18n = useMemo(() => ({ locale: active, setLocale: () => {} }), [active]);
+  return (
+    <I18nContext.Provider value={i18n}>
+      <TruckProfile slug={slug} />
+    </I18nContext.Provider>
+  );
+}
+
+function TruckProfile({ slug }: { slug: string }) {
+  const t = useT('truckPage');
   const posthog = usePostHog();
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -83,8 +115,9 @@ export default function TruckClient({ slug }: { slug: string }) {
     if (!truckInfo) return;
     const shareUrl = window.location.href;
     const shareData = {
-      title: `${truckInfo.name} Schedule`,
-      text: `Check out where ${truckInfo.name} is pitching up next! 🚚\n\n`,
+      title: t('shareTitle', { truck: truckInfo.name }),
+      // The blank lines keep the link apart from the sentence in the share sheet; they are layout, not words.
+      text: `${t('shareText', { truck: truckInfo.name })}\n\n`,
       url: shareUrl
     };
 
@@ -93,7 +126,7 @@ export default function TruckClient({ slug }: { slug: string }) {
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(shareUrl);
-        alert('Profile link copied to clipboard! 📋');
+        alert(t('linkCopied'));
       }
     } catch (err) {
       console.error('Share failed:', err);
@@ -105,7 +138,7 @@ export default function TruckClient({ slug }: { slug: string }) {
   const getDisplayWebsite = (url: string) => {
       if (!url) return '';
       const lowerUrl = url.toLowerCase();
-      if (lowerUrl.includes('facebook.com')) return 'Facebook Page';
+      if (lowerUrl.includes('facebook.com')) return t('facebookPage');
       if (lowerUrl.includes('instagram.com')) return 'Instagram';
       if (lowerUrl.includes('tiktok.com')) return 'TikTok';
       if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) return 'X (Twitter)';
@@ -173,13 +206,13 @@ export default function TruckClient({ slug }: { slug: string }) {
                 onClick={() => setMobileView('list')} 
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${mobileView === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}
             >
-                List
+                {t('view.list')}
             </button>
             <button 
                 onClick={() => setMobileView('map')} 
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${mobileView === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}
             >
-                Map
+                {t('view.map')}
             </button>
           </div>
           
@@ -193,10 +226,10 @@ export default function TruckClient({ slug }: { slug: string }) {
                 <Link 
                     href={contactHref('addBusiness', { truck: truckInfo.name })}
                     className="flex items-center gap-1.5 bg-slate-50 hover:bg-orange-50 border border-slate-200 hover:border-orange-200 text-slate-500 hover:text-orange-600 text-[10px] font-bold px-2.5 py-1.5 rounded-full transition-all shadow-sm"
-                    title="Own this truck? Click to update your profile"
+                    title={t('ownThisTruckTitle')}
                 >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                    Own this truck?
+                    {t('ownThisTruck')}
                 </Link>
             </div>
 
@@ -245,22 +278,22 @@ export default function TruckClient({ slug }: { slug: string }) {
                   `hrefFromStoredUrl`, whose own source forbids tightening without a decision. */}
               {safeHref(truckInfo.menuUrl) && (
                 <a href={safeHref(truckInfo.menuUrl)!} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[80px] bg-slate-900 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
-                  📋 <span>Menu</span>
+                  📋 <span>{t('actions.menu')}</span>
                 </a>
               )}
               {cleanPhone && (
                 <>
                   <a href={`tel:${cleanPhone}`} className="flex-1 min-w-[80px] bg-orange-600 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-orange-700 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
-                    📞 <span>Call</span>
+                    📞 <span>{t('actions.call')}</span>
                   </a>
                   <a href={`sms:${cleanPhone}`} className="flex-1 min-w-[80px] bg-orange-600 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-orange-700 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
-                    💬 <span>Message</span>
+                    💬 <span>{t('actions.message')}</span>
                   </a>
                 </>
               )}
               <button onClick={handleProfileShare} className="flex-1 min-w-[80px] bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-slate-200 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                <span>Share</span>
+                <span>{t('actions.share')}</span>
               </button>
               {!isHatchGrab() && safeHref(truckInfo.orderUrl) && (
                 <a
@@ -269,7 +302,7 @@ export default function TruckClient({ slug }: { slug: string }) {
                   rel="noopener noreferrer"
                   className="flex-1 min-w-[80px] border border-slate-200 text-slate-600 hover:text-slate-900 font-medium py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-slate-50 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden"
                 >
-                  🔗 <span>Order</span>
+                  🔗 <span>{t('actions.order')}</span>
                 </a>
               )}
             </div>
@@ -278,49 +311,49 @@ export default function TruckClient({ slug }: { slug: string }) {
 
       <div className="flex-1 w-full max-w-6xl mx-auto p-4 pb-24 relative z-0">
         {loading ? (
-          <div className="p-12 text-center text-slate-500 animate-pulse">Loading schedule...</div>
+          <div className="p-12 text-center text-slate-500 animate-pulse">{t('loadingSchedule')}</div>
         ) : loadError ? (
           // FETCH FAILED (after bounded retries) — an HONEST error+retry, NOT "Truck not found". A
           // transient /api/discovery/events blip must never tell a customer a real truck doesn't exist.
           <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">📡</div>
-            <h2 className="text-xl font-bold text-slate-800">Couldn&apos;t load</h2>
-            <p className="text-slate-500 mt-2 max-w-sm">We couldn&apos;t load the schedule just now — this is usually a brief hiccup. Please try again.</p>
+            <h2 className="text-xl font-bold text-slate-800">{t('loadError.title')}</h2>
+            <p className="text-slate-500 mt-2 max-w-sm">{t('loadError.body')}</p>
             <button
               onClick={refetch}
               className="mt-6 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105"
             >
-              Retry
+              {t('loadError.retry')}
             </button>
           </div>
         ) : !truckInfo ? (
           // Fetch SUCCEEDED and the slug genuinely isn't in the list → real not-found (only here).
           <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">🤷‍♂️</div>
-            <h2 className="text-xl font-bold text-slate-800">Truck not found</h2>
-            <p className="text-slate-500 mt-2 max-w-sm">We couldn't find any details for this food truck. They might have moved or updated their profile.</p>
+            <h2 className="text-xl font-bold text-slate-800">{t('notFound.title')}</h2>
+            <p className="text-slate-500 mt-2 max-w-sm">{t('notFound.body')}</p>
             <Link
               href="/trucks"
               className="mt-6 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105"
             >
-              View all trucks
+              {t('notFound.cta')}
             </Link>
           </div>
         ) : truckEventsFlat.length === 0 ? (
           <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">😔</div>
-            <h2 className="text-xl font-bold text-slate-800">No upcoming events found</h2>
-            <p className="text-slate-500 mt-2 max-w-sm">We might be missing some details for this truck. Are you the owner, or do you know their schedule?</p>
+            <h2 className="text-xl font-bold text-slate-800">{t('noEvents.title')}</h2>
+            <p className="text-slate-500 mt-2 max-w-sm">{t('noEvents.body')}</p>
             <Link 
               href={contactHref('addBusiness', { truck: truckInfo.name })} 
               className="mt-6 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105"
             >
-              Drop us a message to update!
+              {t('noEvents.cta')}
             </Link>
           </div>
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
-            <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1 text-center lg:text-left">Where to Find Us</h2>
+            <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1 text-center lg:text-left">{t('whereToFind')}</h2>
             
             <div className="flex flex-col lg:flex-row gap-6 w-full">
                 
@@ -335,14 +368,18 @@ export default function TruckClient({ slug }: { slug: string }) {
                     {!truckHasOrdering && (
                     <div className="mt-8 p-6 bg-slate-100 rounded-xl text-center border border-dashed border-slate-300">
                       <p className="m-0 text-slate-600">
-                        <strong className="text-slate-800">Are we missing an event?</strong> <br />
-                        If you're the owner of this truck or just a dedicated fan, help us keep this page accurate! <br />
-                        <Link
-                          href={contactHref('addBusiness', { truck: truckInfo.name })}
-                          className="text-orange-600 font-bold hover:underline mt-2 inline-block"
-                        >
-                          Contact us to add missing details.
-                        </Link>
+                        {t.rich('missingEvent', {
+                          strong: c => <strong className="text-slate-800">{c}</strong>,
+                          br: () => <br />,
+                          link: c => (
+                            <Link
+                              href={contactHref('addBusiness', { truck: truckInfo.name })}
+                              className="text-orange-600 font-bold hover:underline mt-2 inline-block"
+                            >
+                              {c}
+                            </Link>
+                          ),
+                        })}
                       </p>
                     </div>
                     )}
@@ -366,7 +403,7 @@ export default function TruckClient({ slug }: { slug: string }) {
           onClick={openTallyPopup}
           className="pointer-events-auto bg-slate-900 text-white font-bold py-3 px-6 rounded-full shadow-lg border border-slate-700 flex items-center gap-2 hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95"
         >
-          <span>Get Weekly Schedule 🍕</span>
+          <span>{t('weeklySchedule')}</span>
         </button>
       </div>
 

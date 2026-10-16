@@ -10,6 +10,10 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { VISITOR_COUNTRY_COOKIE, VISITOR_COUNTRY_MAX_AGE, type VisitorCountryMenu } from '@/lib/visitor-country-types'
+import { switchCountryPath } from '@/lib/marketing-country'   // pure, client-safe: the country-address table
+// Language Phase 1e: the button's and the menu's labels are `landingNav.country` messages.
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/landingNav'
 
 function keepCountry(code: string) {
   try {
@@ -30,6 +34,7 @@ const Flag = ({ src }: { src: string | null }) => (src
 
 export function CountryMenu({ menu, variant }: { menu: VisitorCountryMenu; variant: 'header' | 'footer' }) {
   const router = useRouter()
+  const t = useT('landingNav')
   const [open, setOpen] = useState(false)
   const wrap = useRef<HTMLDivElement>(null)
   const button = useRef<HTMLButtonElement>(null)
@@ -55,6 +60,11 @@ export function CountryMenu({ menu, variant }: { menu: VisitorCountryMenu; varia
     keepCountry(code)
     // A ?country on the URL would outrank the cookie, so it goes; anything else on the URL stays.
     const url = new URL(window.location.href)
+    // 🔴 Language Phase 1e: on a COUNTRY address (/uk, /us/features, …) the choice goes to THE SAME PAGE in the
+    // chosen country (/uk/features → /us/features), and the cookie above makes the router agree next time — a
+    // visitor's choice always beats their location. Anywhere else (no country address) it behaves as before.
+    const there = switchCountryPath(url.pathname, code)
+    if (there) { url.searchParams.delete('country'); router.push(there + url.search + url.hash, { scroll: false }); return }
     if (url.searchParams.has('country')) { url.searchParams.delete('country'); router.replace(url.pathname + url.search + url.hash, { scroll: false }) }
     else router.refresh()
   }
@@ -70,13 +80,13 @@ export function CountryMenu({ menu, variant }: { menu: VisitorCountryMenu; varia
   return (
     <div ref={wrap} className={`cc ${variant === 'header' ? 'cc-head' : 'cc-foot'}`}>
       <button ref={button} type="button" className="cc-btn" aria-haspopup="menu" aria-expanded={open} aria-controls={listId}
-        aria-label={`Country: ${current.name}. Change country`} onClick={() => setOpen(o => !o)}>
+        aria-label={t('country.button', { name: current.name })} onClick={() => setOpen(o => !o)}>
         <Flag src={current.flag} />
         <span className="cc-name">{variant === 'header' ? current.shortName : current.name}</span>
         <Chevron />
       </button>
       {open && (
-        <ul id={listId} role="menu" aria-label="Country" className="cc-menu" onKeyDown={moveFocus}>
+        <ul id={listId} role="menu" aria-label={t('country.menu')} className="cc-menu" onKeyDown={moveFocus}>
           {options.map(o => (
             <li key={o.code} role="none">
               <button type="button" role="menuitemradio" aria-checked={o.code === current.code} className="cc-item" onClick={() => choose(o.code)}>

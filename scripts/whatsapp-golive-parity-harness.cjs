@@ -31,7 +31,11 @@ const cfg = path.join(tmp, 'tsconfig.json')
 fs.writeFileSync(cfg, JSON.stringify({
   compilerOptions: {
     module: 'commonjs', target: 'es2020', outDir: base, rootDir: REPO, skipLibCheck: true,
-    esModuleInterop: true, moduleResolution: 'node', baseUrl: REPO, paths: { '@/*': ['./*'] },
+    esModuleInterop: true,
+    // ⚠️ RE-PINNED (Language Phase 1e): lib/plan-features.ts now reads its row words from the message catalogue
+    // (lib/i18n/catalog/planFeatures.ts imports @/messages/ns/<locale>/planFeatures.json), so tsc must resolve JSON.
+    // Nothing asserted below changes.
+    resolveJsonModule: true, moduleResolution: 'node', baseUrl: REPO, paths: { '@/*': ['./*'] },
     // 🔴 typeRoots IS EXPLICIT BECAUSE THE TSCONFIG LIVES IN A TEMP DIRECTORY. Without it tsc walks up
     // from /tmp looking for node_modules/@types, finds nothing, and fails on `process` in the drift guard.
     types: ['node'], typeRoots: [path.join(REPO, 'node_modules/@types')],
@@ -62,7 +66,9 @@ const real = Module._resolveFilename
 // tsc resolves the \`@/\` alias for type-checking but leaves it in the emitted require() calls.
 Module._resolveFilename = function (req, ...rest) {
   if (req.startsWith('@/')) return real.call(this, path.join(dir, req.slice(2)), ...rest)
-  return real.call(this, req, ...rest)
+  // ⚠️ RE-PINNED (Language Phase 1e): the plan rows' words now come through lib/i18n/translator (next-intl), a
+  // package the temp tree cannot see — a bare package name falls back to the repo's node_modules.
+  try { return real.call(this, req, ...rest) } catch (e) { if (/^[a-z@]/.test(req)) return require.resolve(req, { paths: [${JSON.stringify(REPO)}] }); throw e }
 }
 const pf = require(path.join(dir, 'lib/plan-features.js'))
 const wl = require(path.join(dir, 'lib/whatsapp-live.js'))
@@ -113,8 +119,10 @@ function swap(dir, file, from, to) {
 // ⚠️ footnote '4' SINCE 16 September 2026 — it was '6' until the two auto-reply rows were merged onto
 // one footnote. A stale '6' here makes every mutation silently fail to apply, which the runner treats as
 // a hard error rather than a pass (see runCase).
-const LIVE_ROW = `footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true, max: true`
-const SOON_ROW = `footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: 'coming_soon', max: 'coming_soon'`
+// ⚠️ RE-PINNED (Language Phase 1e): the rows hold ids and cells (the words are planFeatures.row.<id>.* messages), so the
+// row is found by its ID — still distinguished only by its cells, still the full cell list.
+const LIVE_ROW = `id: 'whatsapp_auto_replies', footnote: '4', starter: false, pro: true, max: true`
+const SOON_ROW = `id: 'whatsapp_auto_replies', footnote: '4', starter: false, pro: 'coming_soon', max: 'coming_soon'`
 
 // 🔴 BOTH AUTO-REPLY ROWS NOW CARRY footnote '4', so LIVE_ROW and SOON_ROW are distinguished ONLY by
 // their cells. Keep the full cell list in each — truncating either would make `swap` hit the wrong one.
@@ -125,23 +133,27 @@ const SOON_ROW = `footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about
 // mutation applying whatever the rest of the sentence says; if the footnote is missing entirely, fail loudly.
 function fn5Tail(dir) {
   const src = fs.readFileSync(path.join(dir, PF), 'utf8')
-  const m = src.match(/^ *text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible [^\n]*\n *\},/m)
+  // ⚠️ RE-PINNED (Language Phase 1e): footnote 5's words are the message planFeatures.footnote.n5 — the compiled entry is
+  // `text: t('footnote.n5'),` followed by its closing brace; matched the same way, by its stable prefix.
+  const m = src.match(/^ *text: t\('footnote\.n5'\),?\n *\},/m)
   if (!m) { console.log("🔴 footnote 5 ('Kitchen ticket printing requires…') not found in the compiled " + PF + " — F1 cannot be built"); process.exit(1) }
   return m[0]
 }
 // The OFF branch of footnote 4's conditional text (F3).
-const FN4_OFF = `'Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.'`
+// ⚠️ RE-PINNED (Language Phase 1e): the OFF branch is the message planFeatures.footnote.n4Off — F3 swaps that call for
+// the billing sentences (a literal), exactly the broken state the variant describes.
+const FN4_OFF = `t('footnote.n4Off')`
 
 const CASES = [
   ['V1', 'flag TRUE but the WhatsApp matrix cell still says coming_soon',
-    d => swap(d, PF, LIVE_ROW, `footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: 'coming_soon', max: 'coming_soon'`)],
+    d => swap(d, PF, LIVE_ROW, SOON_ROW)],
   ['V2', 'flag TRUE and a plan cell says live where canAccess denies whatsapp_replies (starter)',
-    d => swap(d, PF, LIVE_ROW, `footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: true, pro: true, max: true`)],
+    d => swap(d, PF, LIVE_ROW, LIVE_ROW.replace('starter: false', 'starter: true'))],
   // ⚠️ NOT REQUIRED BY THE BRIEF — the other half of the same rule, included because a one-directional
   // proof of a two-directional check is the vacuous pass all over again.
   ['V3', 'flag FALSE but a plan cell still says live',
     d => swap(d, WL, 'exports.WHATSAPP_LIVE = true', 'exports.WHATSAPP_LIVE = false') &&
-         swap(d, PF, SOON_ROW, `footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true, max: true`)],
+         swap(d, PF, SOON_ROW, LIVE_ROW)],
 
   // ── THE FOOTNOTE-MERGE VARIANTS ───────────────────────────────────────────────────────────────────
   // ⚠️ NAMED F1-F3, NOT V1-V3. The brief numbers them V1-V3, but those labels were already taken by the

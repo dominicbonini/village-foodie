@@ -80,7 +80,10 @@ module.exports = function area({ t, head }) {
   head(`Phase 1d Part 2 · Manage's Payments, Billing, Reports, Team, Social, WhatsApp, domain, account and shell words that moved into messages/ — BEFORE (${BEFORE_REF}) against AFTER`)
   const F = W.catalogues('F'), A = W.catalogues('A')
   const fGB = Object.fromEntries(W.LP2.leaves(F['en-GB']))
-  const added = W.newKeys().map(([k]) => [k, fGB[k]])     // the AS-MOVED text
+  // ⚠️ RE-PINNED (Language Phase 1e): Part 2's OWN new keys — those in eb7ed44's en-GB (Part 2's end state). Keys added
+  // after it (Phase 1e's marketing words) are checked by scripts/_messages-parity-1e.cjs against eb7ed44's source.
+  const part2End = new Set(W.LP2.leaves(W.LP2.readJson(path.join(REPO, 'scripts/fixtures/language-phase-1e-messages-before.en-GB.json'))).map(([k]) => k))
+  const added = W.newKeys().filter(([k]) => part2End.has(k)).map(([k]) => [k, fGB[k]])     // the AS-MOVED text
   const changed = execSync(`git diff --name-only ${BEFORE_REF} -- app components lib`, { cwd: REPO, encoding: 'utf8' }).split('\n').filter(f => /\.(ts|tsx)$/.test(f))
   const raw = changed.map(f => { try { return execSync(`git show ${BEFORE_REF}:${JSON.stringify(f).slice(1, -1)}`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20, stdio: ['ignore', 'pipe', 'ignore'] }) } catch { return '' } }).join('\n')
   t(`the source of the ${changed.length} files this phase changed is read at ${BEFORE_REF}`, raw.length > 1000 || changed.length === 0)

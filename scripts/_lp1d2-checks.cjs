@@ -276,7 +276,7 @@ async function run(ctx) {
     const deleted = Object.entries(gbDiff).filter(([, d]) => /deleted/.test(d.kind)).map(([k]) => k)
     if (deleted.length) console.log(`  ${deleted.length} ${W.BEFORE_REF} en-GB key(s) deleted (named in the list; their words live under a new key): ${deleted.join(', ')}`)
     const km = W.keyMoveProblems()
-    t(`every key MOVED between namespaces keeps its words, GB and US (${Object.keys(W.LP2.keyMoves()).length} moves)`, km.length === 0, km.join(' · '))
+    t(`every key MOVED between namespaces keeps its words, GB and US (${Object.keys(W.part2Moves ? W.part2Moves() : W.LP2.keyMoves()).length} moves)`, km.length === 0, km.join(' · '))
     const mp = W.movedProblems()
     t(`the as-moved overlay is consistent (${Object.keys(W.moved()).length} GB fixes)`, mp.length === 0, mp.join(' · '))
   }

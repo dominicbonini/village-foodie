@@ -2,6 +2,13 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { ratelimit, strictRatelimit, eventsRatelimit, embedRatelimit, customHostRatelimit } from '@/lib/ratelimit'
 import { isCustomHost, isAllowedOnCustomHost, isAcmeChallenge } from '@/lib/custom-host'
+// Language Phase 1e — the country router. Pure decision (lib/marketing-country.ts) + the switched-on list through the
+// existing 60-second cached loader. ⚠️ lib/country-settings.ts is `server-only`: allowed here because proxy.ts always
+// runs on the Node.js runtime in Next 16 ("Proxy always runs on Node.js runtime") and Next bundles the proxy in a
+// server layer, where `server-only` resolves to its empty module.
+import { listCountrySettingsCached } from '@/lib/country-settings'
+import { MARKETING_COUNTRY, ROUTER_PATHS, countryPageOf, marketingRedirect, routableCountries } from '@/lib/marketing-country'
+import { VISITOR_COUNTRY_COOKIE, VISITOR_COUNTRY_MAX_AGE } from '@/lib/visitor-country-types'
 
 // ── Rate-limit SCOPE = a POSITIVE ALLOWLIST of ONLY the public, scraping-prone endpoints. ───────────────
 // INVERTED by design (NOT "limit every /api/* minus an exempt list"). Operator surfaces — the dashboard /
@@ -110,6 +117,19 @@ const isDemoDashboard = (p: string) => /^\/dashboard\/demo-[a-z0-9]+(\/|$)/.test
  *  lib/brand.ts (`host.includes('hatchgrab')`) so the two cannot disagree. Not imported from there:
  *  this file runs on the edge runtime and lib/brand.ts is a wider module. */
 const isHatchGrab = (host: string) => host.includes('hatchgrab')
+
+/** The switched-on countries that have a country address (lib/marketing-country.ts). 🔴 NEVER THROWS: a country list
+ *  that cannot be read is the marketing country alone — the router sends everyone to the GB page and a non-GB
+ *  country address 302s to it, rather than the root answering 500. Read ONLY on a router path or a non-GB country
+ *  page, so no other request pays for it. */
+async function liveMarketingCountries(): Promise<string[]> {
+  try {
+    return routableCountries((await listCountrySettingsCached()).filter(c => c.enabled).map(c => c.countryCode))
+  } catch (e) {
+    console.warn('[country-router] country list unreadable — routing to the marketing country:', e instanceof Error ? e.message : e)
+    return [MARKETING_COUNTRY]
+  }
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -409,6 +429,9 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── HOST-BRANDED ROOT — merged in from middleware.ts on 20 August 2026, which is now DELETED. ───────
+  // ⚠️ HISTORY (kept because it explains the guards and the placement). Since Language Phase 1e (16 October
+  // 2026) the root is no longer a rewrite to /landing on a HatchGrab host — it is the country router below.
+  // "The REWRITE" in the two notes that follow is that old line; the guard and placement reasoning carry over.
   // Next 16.1 refuses to build with both a middleware file and a proxy file present ("Please use
   // ./proxy.ts only"), so the two behaviours below now live here. They are the ONLY thing that moved.
   //
@@ -439,32 +462,69 @@ export async function proxy(request: NextRequest) {
   // (`carrySessionCookies` is defined immediately after `getUser()` above — it is needed by the auth
   //  guards as well as by the two returns below. Moved 24 August 2026; the body is unchanged.)
 
-  // ── /landing KEEPS WORKING, ON BOTH DOMAINS, BY GOING TO THE ROOT ──────────────────────────────────
-  // Exact equality, as before — '/landing/anything' is not matched, on either matcher. On hatchgrab.com
-  // the 308 lands on '/', which the branch below rewrites straight back to the landing, so the page is
-  // reachable and the address bar reads `https://www.hatchgrab.com/`. On villagefoodie.co.uk it lands
-  // on the discovery map, which is what a non-admin already got there from app/landing/layout.tsx.
-  // Phase 2D-1: the QUERY travels with it (`?country=US` is how a link picks the visitor's country) — a bare
-  // `new URL('/', …)` would drop it. No query, no change.
+  // ══ 🔴 THE COUNTRY ROUTER — HatchGrab host only (Language Phase 1e, 16 October 2026) ══════════════════════════
+  // The marketing pages have one address per country: /uk, /uk/features, /uk/compare and /us, /us/features,
+  // /us/compare (app/[country]/…, lib/marketing-country.ts). The un-prefixed addresses are the ROUTER (x-default):
+  //   hatchgrab.com/ · /landing · /features · /compare · /1ng7n4p5omux2gdk9kqvwz (the unlisted landing preview)
+  // each 302 to the visitor's country's matching page — ?country → the hg_country cookie → x-vercel-ip-country →
+  // GB, switched-on countries with an address only. Query strings other than `country` are kept. A ?country that
+  // chose is kept in the hg_country cookie (as the menu kept it before). No special treatment of crawlers.
+  // A COUNTRY page for a switched-off country 302s to the GB page of the same kind; a switched-on one is never
+  // redirected, and /uk… never is (GB is the floor).
+  //
+  // ── WHAT THIS REPLACED ──────────────────────────────────────────────────────────────────────────────────────
+  // Until today the ROOT here was a REWRITE to /landing ("the URL stays https://www.hatchgrab.com/ — which is
+  // what is submitted to Apple as the Marketing URL"), and /landing 308'd to the root on both hosts. Both
+  // decisions are REVERSED ON PURPOSE, by Dominic's spec: the root now 302s to /uk (or /us) — so Apple's
+  // Marketing URL https://www.hatchgrab.com/ answers 302 → /uk — and /landing 302s to the country page too.
+  // 302, not 308: the destination depends on the visitor and can change, so it must never be cached as permanent.
+  //
+  // ── 🔴 NO LOOP, AND WHY (the old note on the rewrite named the loop risk; this is the proof for the redirect) ──
+  //   • Every Location this block writes is a COUNTRY page. A country page is never a router path, so the router
+  //     cannot fire on it again.
+  //   • A country page redirects only when its country is switched off, and only to /uk… — which never redirects.
+  //     So the longest chain is router → /us… → /uk… (two proxy instances whose 60-second caches disagree), and it
+  //     ends.
+  //   • app/landing/layout.tsx no longer gates anything (its gate came off on 3 September 2026) and does not wrap
+  //     the country pages (they live under app/[country], not app/landing).
+  //
+  // ── 🔴 THE `pathname` GUARDS ARE STILL LOAD-BEARING ──────────────────────────────────────────────────────────
+  // Exact paths only (ROUTER_PATHS, countryPageOf). The matcher above is a negative lookahead over nearly every
+  // path, so an unguarded redirect here would send /dashboard, /manage, /kds, /login and /api/* to the landing.
+  //
+  // ── WHY HERE, AT THE BOTTOM — unchanged reasoning ────────────────────────────────────────────────────────────
+  // Every block above has already run (rate limiting, the session refresh, both auth guards, the native-app
+  // exemption), and `carrySessionCookies` copies the refreshed Set-Cookie headers onto the redirect instead of
+  // discarding them. None of these paths matches a rate-limit predicate, so `rlRemaining` is always null on them.
+  //
+  // 🔴 EVERY OTHER HOST FALLS THROUGH UNTOUCHED: villagefoodie.co.uk's root still renders app/page.tsx, its
+  // /landing still 308s to its root (below), /features and /compare still 404 there (the pages' brand gate), and
+  // the country addresses 404 there too (lib/visitor-country.ts). Custom domains returned long before this line.
+  if (isHatchGrab(host)) {
+    const routerPath = Object.prototype.hasOwnProperty.call(ROUTER_PATHS, pathname)
+    const countryPage = routerPath ? null : countryPageOf(pathname)
+    // The list is read only when it can change the answer: a router path, or a country page that is not GB's.
+    if (routerPath || (countryPage && countryPage.code !== MARKETING_COUNTRY)) {
+      const to = marketingRedirect(pathname, request.nextUrl.search, await liveMarketingCountries(), {
+        cookie: request.cookies.get(VISITOR_COUNTRY_COOKIE)?.value,
+        ip: request.headers.get('x-vercel-ip-country'),
+      })
+      if (to) {
+        const res = NextResponse.redirect(new URL(to.location, request.url), 302)
+        // The same cookie the menu writes (components/landing/CountryMenu.tsx): name, path, a year, lax.
+        if (to.remember) res.cookies.set(VISITOR_COUNTRY_COOKIE, to.remember, { path: '/', maxAge: VISITOR_COUNTRY_MAX_AGE, sameSite: 'lax' })
+        return carrySessionCookies(res)
+      }
+    }
+  }
+
+  // ── /landing ON EVERY OTHER HOST: UNCHANGED — 308 to that host's root ────────────────────────────────────────
+  // On villagefoodie.co.uk it lands on the discovery map, which is what a non-admin already got there from
+  // app/landing/layout.tsx. Phase 2D-1: the QUERY travels with it. (On a HatchGrab host the router above has
+  // already answered /landing.)
   if (pathname === '/landing') {
     const to = new URL('/', request.url); to.search = request.nextUrl.search
     return carrySessionCookies(NextResponse.redirect(to, 308))
-  }
-
-  // ── THE ROOT ───────────────────────────────────────────────────────────────────────────────────────
-  // 🔴 A REWRITE, NOT A REDIRECT. The URL stays `https://www.hatchgrab.com/` — which is what is submitted
-  // to Apple as the Marketing URL — while the landing renders beneath it. A redirect would put '/landing'
-  // in the address bar of the page Apple was given.
-  // ⚠️ NO LOOP: Next.js does not re-invoke the proxy on the path a rewrite targets, so the rewritten
-  // '/landing' render is NOT caught by the redirect above. INFERRED from documented behaviour and
-  // UNVERIFIED here, exactly as it was in middleware.ts — moving the code neither creates nor removes
-  // this risk. Note that app/landing/layout.tsx already relies on the same premise, and redirects a
-  // non-admin to /support rather than to '/' precisely to avoid the loop that would otherwise exist.
-  // 🔴 EVERY OTHER HOST FALLS THROUGH UNTOUCHED. villagefoodie.co.uk's root still renders app/page.tsx.
-  if (pathname === '/' && isHatchGrab(host)) {
-    // The query rides along so the landing's own searchParams see `?country=` (Phase 2D-1).
-    const to = new URL('/landing', request.url); to.search = request.nextUrl.search
-    return carrySessionCookies(NextResponse.rewrite(to))
   }
 
   return supabaseResponse

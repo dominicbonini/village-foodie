@@ -1,4 +1,4 @@
-import { APP_STORE_URL, APP_STORE_BADGE_SRC, GOOGLE_PLAY_URL, GOOGLE_PLAY_BADGE_SRC } from '@/lib/app-badges'
+import { APP_STORE_URL, APP_STORE_BADGE_SRC, GOOGLE_PLAY_URL, GOOGLE_PLAY_BADGE_SRC, appStoreUrlFor } from '@/lib/app-badges'
 
 /**
  * ── THE TWO STORE BADGES. ONE COMPONENT, EVERY SURFACE THAT OFFERS THE APPS. ─────────────────────
@@ -31,7 +31,11 @@ export function StoreBadges({
   className,
   linkClassName = '',
   height = 40,
-}: { className?: string; linkClassName?: string; height?: number }) {
+  countryCode,
+}: { className?: string; linkClassName?: string; height?: number
+  /** Language Phase 1e: the page's country. GB or absent ⇒ the UK storefront link, exactly as before; any other
+   *  country ⇒ the locale-free App Store link (`appStoreUrlFor`), so a US visitor is not sent to the GB store. */
+  countryCode?: string | null }) {
   const wrap = className ?? 'flex flex-wrap items-center gap-4'
   // 238.96 × 70.87 and 119.66 × 40 — the two viewBoxes. Widths derived so the reserved box is right
   // before the SVGs load; the CSS height is what actually sizes them.
@@ -40,7 +44,7 @@ export function StoreBadges({
   return (
     <div className={wrap}>
       {APP_STORE_URL && (
-        <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" className={linkClassName} aria-label="Download HatchGrab on the App Store">
+        <a href={appStoreUrlFor(countryCode)} target="_blank" rel="noopener noreferrer" className={linkClassName} aria-label="Download HatchGrab on the App Store">
           <img src={APP_STORE_BADGE_SRC} alt="Download on the App Store" width={appleW} height={height} style={{ height, width: 'auto', display: 'block' }} />
         </a>
       )}

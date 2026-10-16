@@ -8,6 +8,11 @@ import { isPriceWord } from '@/lib/price-words'   // the price words, one defini
 
 export const PRICING_PUBLISHED = process.env.NEXT_PUBLIC_PRICING_PUBLISHED === 'true'
 
+/** 🔴 WHAT A MASKED PRICE BECOMES — a CODE, like the PRICE_WORDs (Language Phase 1e). It is the en-GB word "TBC";
+ *  a surface that knows its locale shows it through lib/plan-features.ts `priceText` (US: "TBD"). Never compare a
+ *  rendered string with it — compare the value the mask returned. */
+export const MASKED_PRICE = 'TBC'
+
 // ⚠️ `Unlimited` and `—` ADDED WITH THE THREE-ROW FEE TABLE (lib/plan-features.ts). Neither is a price:
 // one says a trial's online orders are uncapped, the other says a plan has no online-order allowance at
 // all. They belong to the class this set already exists for — the comment above states the test, "they
@@ -20,7 +25,7 @@ export const PRICING_PUBLISHED = process.env.NEXT_PUBLIC_PRICING_PUBLISHED === '
  *  primitive `maskPriceFor` is built on. **Do not call it from a component**: use `usePriceMask()` from
  *  components/PricingPolicy.tsx, which knows which truck is on screen. */
 export function maskPrice(val: string): string {
-  return (PRICING_PUBLISHED || isPriceWord(val)) ? val : 'TBC'
+  return (PRICING_PUBLISHED || isPriceWord(val)) ? val : MASKED_PRICE
 }
 
 /** ── THE RULE (V11.2, per-truck suppression) ────────────────────────────────────────────────────────
@@ -38,5 +43,5 @@ export function pricesVisibleFor(hidePricing: boolean): boolean {
 /** Per-truck maskPrice. `hidePricing` false ⇒ identical to `maskPrice`. */
 export function maskPriceFor(val: string, hidePricing: boolean): string {
   if (isPriceWord(val)) return val
-  return pricesVisibleFor(hidePricing) ? val : 'TBC'
+  return pricesVisibleFor(hidePricing) ? val : MASKED_PRICE
 }

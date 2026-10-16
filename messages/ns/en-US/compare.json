@@ -1,0 +1,36 @@
+{
+  "people": {
+    "title": "{fleet, plural, one {How many people work the truck?} other {How many people work across your trucks?}}"
+  },
+  "orders": {
+    "captionNo": "A rough guess is fine — pre-orders and line-skippers, not cash or card at the window."
+  },
+  "fee": {
+    "fixedAria": "Cents per order"
+  },
+  "days": {
+    "title": "How many days a week do you operate?",
+    "help": "Events, markets, spots — any day the truck’s out."
+  },
+  "noSystem": {
+    "hero": "<lead>Online ordering, pre-orders and your kitchen screen for</lead><figure>{amount}</figure><unit>a serving day</unit>",
+    "basedOn": "Based on {days, plural, one {# day} other {# days}} a week · {monthly} a month{fleet, plural, one {} other { per truck}}"
+  },
+  "breakdown": {
+    "acrossFleet": "Across {fleet, plural, one {# truck} other {# trucks}}",
+    "card": "Card processing — Stripe’s {fee} per order, paid to Stripe. You’d pay much the same on a card reader at the window."
+  },
+  "panel": {
+    "acrossFleet": "across {fleet, plural, one {# truck} other {# trucks}}"
+  },
+  "hero": {
+    "dearerSub": "{fleet, plural, one {{amount} a month more than now} other {{amount} more per truck a month than now}}"
+  },
+  "anchor": {
+    "liability": "That’s a year’s general liability insurance.",
+    "weekendPitch": "That’s a weekend spot at a food festival.",
+    "festivalPitches": "That’s a couple of festival spots.",
+    "vanDeposit": "That’s a deposit on a second truck.",
+    "secondVan": "That’s a second truck on the road."
+  }
+}

@@ -10,10 +10,29 @@
 // ⚠️ NOTHING ELSE MOVED WITH THEM. `LandingFooter` re-exports `APP_STORE_URL` so any existing importer
 // is unaffected, and the badge MARKUP is `components/StoreBadges.tsx` — this file holds data only.
 //
+// ⚠️ THE APP STORE LINK IS PER COUNTRY SINCE LANGUAGE PHASE 1e — read it with `appStoreUrlFor(country)`.
+// `APP_STORE_URL` is still the UK listing, unchanged, for GB pages and every existing importer.
 // ⚠️ A PLAIN .ts MODULE WITH NO IMPORTS, deliberately. Manage → Settings must not pull a landing-page
 // component (and its stylesheet) into its bundle just to read two strings.
 
 export const APP_STORE_URL = 'https://apps.apple.com/gb/app/hatchgrab/id6803543106'
+
+/**
+ * ── THE LOCALE-FREE LISTING (Language Phase 1e) ─────────────────────────────────────────────────
+ * The same app with no storefront in the path. Apple sends the visitor to their own storefront, so a US
+ * visitor lands on the US App Store page instead of the UK one.
+ * 🔴 GB KEEPS `APP_STORE_URL` BYTE-IDENTICAL. A locale-free GB link would also work, but it is not the
+ * same link: a UK page's href would change and a visitor whose Apple ID is in another country would land
+ * on a different storefront than today. So the link is chosen by country instead of changed for everyone.
+ */
+export const APP_STORE_URL_ANY_STOREFRONT = 'https://apps.apple.com/app/id6803543106'
+
+/** The App Store link for a page in `countryCode`'s country: the UK listing for GB (and for a page that does
+ *  not know its country, which is every caller before Language Phase 1e), the locale-free one for any other. */
+export function appStoreUrlFor(countryCode?: string | null): string {
+  const c = (countryCode ?? '').trim().toUpperCase()
+  return !c || c === 'GB' ? APP_STORE_URL : APP_STORE_URL_ANY_STOREFRONT
+}
 
 /**
  * Apple's official badge — **BLACK**, and that is required rather than preferred. Apple: *"Whenever one

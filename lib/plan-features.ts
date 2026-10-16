@@ -1,10 +1,10 @@
-import { PLAN_META, canAccess, planPrice, planMonthlyMinor, type Plan, type Feature } from '@/lib/features'
+import { PLAN_META, canAccess, planPrice, planMonthlyMinor, planDescription, type Plan, type Feature } from '@/lib/features'
 import { requirePlanPrice, moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
 import { pctLabel, feeLabel, smallFeeLabel, formatWholeAmount } from '@/lib/money-format'
 export type { Plan }
 
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
-import { PRICE_WORD } from '@/lib/price-words'
+import { PRICE_WORD, type PriceWordId } from '@/lib/price-words'
 // 🔴 THE FREE ALLOWANCE, IMPORTED RATHER THAN RETYPED. lib/whatsapp/reply-cap.ts has NO imports of its
 // own, so this cannot create a cycle. Footnote 6 quotes this number; the Settings card quotes the same
 // constant. A hand-typed "1,000" in the footnote would be a second source of truth for a figure Meta
@@ -14,17 +14,23 @@ import { META_FREE_REPLIES_PER_MONTH } from '@/lib/whatsapp/reply-cap'
 // cannot create a cycle either. 🔴 `formatLimit` rather than a local `.toLocaleString` call: the Settings
 // card formats the same number with it, and two formatters is how "1,000" and "1000" end up on two
 // surfaces describing one allowance.
-import { META_PRICING_CHECKED_ON, META_FREE_ALLOWANCE_FROM, formatLimit } from '@/lib/whatsapp/copy'
+import { META_PRICING_CHECKED_ON_YMD, META_FREE_ALLOWANCE_FROM_YMD, formatLimit } from '@/lib/whatsapp/copy'
+// 🔴 THE WORDS ARE MESSAGES (Language Phase 1e): every row's name and detail, the section titles, the fee rows, the
+// footnotes, the allowance sentence and the price words are `planFeatures.*` in messages/en-GB.json (US words in
+// en-US.json), keyed by the row's / price word's CODE ID — so Manage › Billing, the /features table, Admin and the
+// plans PDF read the SAME messages and cannot say different things. The data below holds ids and cells only.
+import { translatorFor } from '@/lib/i18n/translator'
+import { resolveLocale } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/planFeatures'
+import { formatLongDate, type TimeSettings } from '@/lib/time-utils'
+import { MASKED_PRICE } from '@/lib/pricing'
 
-/**
- * 🔴 THE WHATSAPP ROW LABEL, IN ONE PLACE. It is simultaneously the rendered row name, the
- * ROW_FEATURE_MAP key, and the row the parity checker singles out. Three literals that had to agree by
- * hand — and the file's own comment warned that renaming the row without the key "drops the row from
- * the parity check silently, and the check then reports clean". A const makes that impossible.
- * ⚠️ lib/landing-table.ts keys its overrides on this same string. Those are separate literals by
- * design (that module is render-only), so changing this value means changing them too.
- */
-const WHATSAPP_ROW_NAME = 'WhatsApp auto-replies'
+/* ⚠️ `WHATSAPP_ROW_NAME` WAS HERE — the WhatsApp row's label, kept as one const because it was also the
+ * ROW_FEATURE_MAP key and the parity checker's test. Since Language Phase 0 all three key on the row's id
+ * ('whatsapp_auto_replies'), and since Phase 1e the label is the message `planFeatures.row.whatsapp_auto_replies.name`. */
+
+/** The translator for this module's words, in a locale (en-GB / en-US; anything else resolves to en-GB). */
+const words = (locale: string | null | undefined) => translatorFor(locale, 'planFeatures')
 
 export type FeatureValue = boolean | 'coming_soon'
 
@@ -44,17 +50,26 @@ export type PlanRowId =
 /** The row the trial column and Billing treat specially: Pay at Hatch is on for every trial. */
 export const PAY_AT_HATCH_ROW: PlanRowId = 'online_ordering_pay_at_hatch'
 
-export interface FeatureRow {
+/** A row's data: its id, its footnote number and its cells. 🔴 NO WORDS — they are messages keyed by the id. */
+interface FeatureRowData {
   id: PlanRowId
-  name: string
-  detail?: string       // plain-operator tooltip copy (the landing table's `?` hover text)
   footnote?: string
   starter: FeatureValue
   pro: FeatureValue
   max: FeatureValue
 }
 
+/** A row as the renderers read it: the data plus its words in one locale. */
+export interface FeatureRow extends FeatureRowData {
+  name: string
+  detail?: string       // plain-operator tooltip copy (the landing table's `?` hover text)
+}
+
+/** The three sections are named for a plan; the id keys the title message (`planFeatures.section.<id>`). */
+export type PlanSectionId = 'starter' | 'pro' | 'max'
+
 export interface FeatureSection {
+  id: PlanSectionId
   title: string
   rows: FeatureRow[]
 }
@@ -85,8 +100,25 @@ export function planPrices(s: CountrySettings): Record<Plan, string> {
   return Object.fromEntries((Object.keys(PLAN_META) as Plan[]).map(p => [p, planPrice(p, s)])) as Record<Plan, string>
 }
 
-export const PLAN_DESCRIPTIONS: Record<Plan, string> =
-  Object.fromEntries((Object.keys(PLAN_META) as Plan[]).map(p => [p, PLAN_META[p].description])) as Record<Plan, string>
+/** Every plan's one-line description in a locale — the `planMeta` messages (lib/features.ts `planDescription`). */
+export function planDescriptions(locale: string | null | undefined): Record<Plan, string> {
+  return Object.fromEntries((Object.keys(PLAN_META) as Plan[]).map(p => [p, planDescription(p, locale)])) as Record<Plan, string>
+}
+/** The en-GB descriptions, for surfaces that do not know a country yet (the landing page until it moves). */
+export const PLAN_DESCRIPTIONS: Record<Plan, string> = planDescriptions('en-GB')
+
+// ── 🔴 THE PRICE WORDS, SHOWN. A cell or a price carries the PRICE_WORD's CODE (or lib/pricing.ts's MASKED_PRICE, the
+// pre-launch mask's stand-in), never translated words, so the mask keeps recognising it by id. Only HERE, at display,
+// does the code become the locale's word (`planFeatures.priceWord.<id>`). Anything else (an amount) passes through.
+const PRICE_WORD_IDS = new Map<string, PriceWordId | 'masked'>([
+  ...(Object.entries(PRICE_WORD) as [PriceWordId, string][]).map(([id, code]) => [code, id] as [string, PriceWordId]),
+  [MASKED_PRICE, 'masked'],
+])
+/** A price cell or price as the locale shows it: a price word (or the mask's stand-in) in its words, an amount unchanged. */
+export function priceText(val: string, locale: string | null | undefined): string {
+  const id = PRICE_WORD_IDS.get(val)
+  return id ? words(locale)(`priceWord.${id}`) : val
+}
 
 // ── THE ONLINE-ORDER ALLOWANCE AND THE PLATFORM FEE ────────────────────────────────────────────────
 // 🔴 A DISCRIMINATED UNION, NOT A NULLABLE NUMBER. "No allowance" (starter) and "no ceiling" (trial) are
@@ -135,14 +167,15 @@ export function allowanceMinorFor(tier: 'pro' | 'max', s: CountrySettings): numb
   return a.minor
 }
 
-/** The headline allowance sentence per plan. `starter` is the word 'Pay at Hatch' (a model, not an
- *  amount — NON_SECRET_PRICE exempts it by exact string). */
+/** The headline allowance sentence per plan, in the settings' locale. `starter` is the price word 'Pay at Hatch'
+ *  (its CODE — a model, not an amount, which the mask exempts; show it through priceText). */
 export function planAllowances(s: CountrySettings): Record<'starter' | 'pro' | 'max', string> {
   const fee = platformFeeLabel(s)
+  const t = words(s.locale)
   return {
     starter: PRICE_WORD.payAtHatch,
-    pro: `First ${allowanceAmountLabel(allowanceMinorFor('pro', s), s)} of online orders included, then ${fee}`,
-    max: `First ${allowanceAmountLabel(allowanceMinorFor('max', s), s)} of online orders included, then ${fee}`,
+    pro: t('allowance', { amount: allowanceAmountLabel(allowanceMinorFor('pro', s), s), fee }),
+    max: t('allowance', { amount: allowanceAmountLabel(allowanceMinorFor('max', s), s), fee }),
   }
 }
 
@@ -183,7 +216,9 @@ export const tapToPaySurchargeLabel = (s: CountrySettings): string => smallFeeLa
 // ONLINE sentences say "standard " + the label, so the UK still reads "standard UK cards" exactly.
 // IN-PERSON sentences say the label alone, so "UK and EEA cards" became "UK cards" — the ONE accepted
 // visible change for UK trucks in the move to country_settings.
-export const cardRegionOnline = (s: CountrySettings): string => `standard ${s.cardFeeRegionLabel}`
+// ⚠️ Language Phase 1e: the planFeatures sentences say "standard {region}" whole; this fragment remains for the landing
+// page's own sentences until they move (it is the message `planFeatures.cardRegionOnline`).
+export const cardRegionOnline = (s: CountrySettings): string => words(s.locale)('cardRegionOnline', { region: s.cardFeeRegionLabel })
 export const cardRegionInPerson = (s: CountrySettings): string => s.cardFeeRegionLabel
 
 // ── 🔴 THE FEE TABLE. ONE DEFINITION, READ BY THE LANDING, THE FEATURES TABLE, BILLING, ADMIN, THE PDF ──
@@ -192,21 +227,28 @@ export const cardRegionInPerson = (s: CountrySettings): string => s.cardFeeRegio
 // STARTER's cells for it (that is how Billing once told a trial operator they were on "Pay at Hatch").
 // ⚠️ 'Unlimited', '—', 'Free', 'Pay at Hatch' and '0%' stay literal: words, not amounts, exempt from
 // the pre-launch mask by exact string.
+// ⚠️ Language Phase 1e: each row has an id (its name is `planFeatures.fee.<id>` in the settings' locale) and the cells
+// hold price-word CODES or amounts — show a cell through priceText(mask(cell), locale), mask first.
+export type TransactionRowId = 'walkup' | 'onlineIncluded' | 'feeAfter'
 export function transactionRows(s: CountrySettings): {
+  id: TransactionRowId
   name: string
   footnote?: string
   cells: Record<'trial' | 'starter' | 'pro' | 'max', string>
 }[] {
   const fee = platformFeeLabel(s)
+  const t = words(s.locale)
   return [
-    { name: 'Walk-up orders',         footnote: '1', cells: { trial: PRICE_WORD.zeroPercent, starter: PRICE_WORD.zeroPercent, pro: PRICE_WORD.zeroPercent, max: PRICE_WORD.zeroPercent } },
-    { name: 'Online orders included', footnote: '2', cells: { trial: PRICE_WORD.unlimited, starter: PRICE_WORD.none, pro: allowanceAmountLabel(allowanceMinorFor('pro', s), s), max: allowanceAmountLabel(allowanceMinorFor('max', s), s) } },
-    { name: 'Fee after that',         footnote: '2', cells: { trial: PRICE_WORD.free, starter: PRICE_WORD.payAtHatch, pro: fee, max: fee } },
+    { id: 'walkup', name: t('fee.walkup'), footnote: '1', cells: { trial: PRICE_WORD.zeroPercent, starter: PRICE_WORD.zeroPercent, pro: PRICE_WORD.zeroPercent, max: PRICE_WORD.zeroPercent } },
+    { id: 'onlineIncluded', name: t('fee.onlineIncluded'), footnote: '2', cells: { trial: PRICE_WORD.unlimited, starter: PRICE_WORD.none, pro: allowanceAmountLabel(allowanceMinorFor('pro', s), s), max: allowanceAmountLabel(allowanceMinorFor('max', s), s) } },
+    { id: 'feeAfter', name: t('fee.feeAfter'), footnote: '2', cells: { trial: PRICE_WORD.free, starter: PRICE_WORD.payAtHatch, pro: fee, max: fee } },
   ]
 }
 
-export const FEATURE_SECTIONS: FeatureSection[] = [
+// 🔴 THE DATA: ids, footnote numbers and cells. The words are added per locale by featureSections() below.
+const SECTION_DATA: { id: PlanSectionId; rows: FeatureRowData[] }[] = [
   {
+    id: 'starter',
     /* ══ 🔴 'Core operations' → 'Starter tier' → 'Starter' → 'Starter plan' (7 October 2026, Dominic) ══
      * 🟢 THE THREE GROUP HEADINGS NAME A PLAN: Starter plan · Pro plan · Max plan. The originals
      * described the KIND of feature ('Core operations', 'Online sales & automation') while the third
@@ -225,16 +267,15 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
      * 🔴 ONE SOURCE, FOUR SURFACES — /features, Manage → Billing, Admin and the plans PDF all render
      * this title. There is no landing-only override for a section TITLE and adding one would be a second
      * source of truth for a heading. */
-    title: 'Starter plan',
     rows: [
-      { id: 'discovery_map_listing', name: 'Discovery map listing',           detail: 'Your truck appears on the public HatchGrab map so nearby customers can find you.', starter: true,  pro: true,  max: true  },
-      { id: 'web_dashboard', name: 'Universal web dashboard',         detail: 'Run your service from any phone, tablet or laptop browser.', starter: true,  pro: true,  max: true  },
-      { id: 'qr_code', name: 'QR code',                          detail: 'A printable QR code that opens your menu and ordering page.', starter: true,  pro: true,  max: true  },
-      { id: 'schedule_import', name: 'Automatic schedule import',        detail: 'We fill your schedule automatically — from your website, or a photo you already post to Facebook. You just review and confirm.', starter: true,  pro: true,  max: true  },
-      { id: 'meal_deals_upsells', name: 'Meal deals & upsells',            detail: 'Bundle items into deals and offer add-ons at checkout to lift the average order.', starter: true,  pro: true,  max: true  },
-      { id: 'walkup_orders', name: 'Walk-up order processing', footnote: '1', detail: 'Take and manage orders at the hatch, paid on your own card terminal.', starter: true, pro: true, max: true },
-      { id: 'sold_out_toggle', name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
-      { id: 'online_ordering_pay_at_hatch', name: 'Online ordering — Pay at Hatch', footnote: '1', detail: 'Customers order ahead online and pay in person when they collect.', starter: true, pro: false, max: false },
+      { id: 'discovery_map_listing', starter: true,  pro: true,  max: true  },
+      { id: 'web_dashboard', starter: true,  pro: true,  max: true  },
+      { id: 'qr_code', starter: true,  pro: true,  max: true  },
+      { id: 'schedule_import', starter: true,  pro: true,  max: true  },
+      { id: 'meal_deals_upsells', starter: true,  pro: true,  max: true  },
+      { id: 'walkup_orders', footnote: '1', starter: true, pro: true, max: true },
+      { id: 'sold_out_toggle', starter: true,  pro: true,  max: true  },
+      { id: 'online_ordering_pay_at_hatch', footnote: '1', starter: true, pro: false, max: false },
       // ── 🔴 RE-MERGED, 5 September 2026. ANDROID IS LIVE ON GOOGLE PLAY. ──────────────────────────
       // These were two rows — 'iPhone and iPad kitchen app' (true/true/true) and 'Android kitchen app'
       // (coming_soon ×3) — split on 1 September because iOS was approved and Android was still in
@@ -255,7 +296,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // features on a phone, and Pizzeria Gusto run their service on phones rather than tablets —
       // naming only tablets under-claimed what a live operator does every day. Footnote 3 carries the
       // browser fallback and the "device not supplied" caveat for all three.
-      { id: 'kitchen_app', name: 'iPhone, iPad and Android kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
+      { id: 'kitchen_app', footnote: '3', starter: true, pro: true, max: true },
     ],
   },
   {
@@ -273,11 +314,11 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
      * 🔴 ONE SOURCE, FOUR SURFACES. This title renders on /features, Manage → Billing, Admin and the
      * plans PDF. There is no landing-only override for a SECTION title (lib/landing-table.ts overrides
      * row names and details only), and adding one would be a second source of truth for a heading. */
-    title: 'Pro plan',
+    id: 'pro',
     rows: [
-      { id: 'offline_protection', name: 'Offline Order Protection',                      detail: "If your internet drops mid-service, orders are held safely and sync when you're back — you never lose one.", starter: false, pro: true,           max: true           },
-      { id: 'online_payments', name: 'Online payments',                  footnote: '2', detail: 'Take card payment upfront when customers order online, via Stripe.', starter: false, pro: true,           max: true           },
-      { id: 'advance_preordering', name: 'Advance pre-ordering',                         detail: 'Let customers order for a future date or time before the event.', starter: false, pro: true,           max: true           },
+      { id: 'offline_protection', starter: false, pro: true,           max: true           },
+      { id: 'online_payments', footnote: '2', starter: false, pro: true,           max: true           },
+      { id: 'advance_preordering', starter: false, pro: true,           max: true           },
       // 🔴 PRE-ORDER DEADLINES — ADDED 2 SEPTEMBER 2026. WORDING SUPPLIED AND APPROVED BY THE OPERATOR;
       // it is not editorial and must not be "tidied". Placed immediately after Advance pre-ordering, on
       // request and because it is the same capability's second half: that row sells ordering ahead, this
@@ -302,8 +343,8 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // event start) or 'daily_cutoff' (a clock time on the event's date); an hours_before offset still
       // resolves to a time, so the wording does not exclude it.
       // 🔴 NO NEW Feature KEY, AND THAT IS DELIBERATE — see ROW_FEATURE_MAP below.
-      { id: 'preorder_deadline', name: 'Pre-order deadline',                           detail: 'Set a cut-off time for items that need notice.', starter: false, pro: true,           max: true           },
-      { id: 'time_slot_selection', name: 'Customer time slot selection',                 detail: 'Customers pick a collection time slot, spreading demand across your service.', starter: false, pro: true,           max: true           },
+      { id: 'preorder_deadline', starter: false, pro: true,           max: true           },
+      { id: 'time_slot_selection', starter: false, pro: true,           max: true           },
       /* ⚠️ RENAMED 10 October 2026 — was 'Smart Slot Management'. "Smart" is a claim the row cannot
        * keep and "slot" is our word for it; what the operator actually sets is their kitchen's
        * capacity, which is what the `detail` has always said. ⛔ THE KEY IN `ROW_FEATURE_MAP` IS
@@ -313,7 +354,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * slots to match your kitchen's capacity" described the MECHANISM in our words — "paced",
        * "slots" — and named nothing the operator does. The new one is the two things they set and the
        * one thing a customer then sees, which is the same sentence the landing page's own tile uses. */
-      { id: 'kitchen_capacity', name: 'Kitchen capacity management',                  detail: 'Set how much your kitchen can cook at a time and how long it takes. Once a slot is full, customers can’t pick it.', starter: false, pro: true,           max: true           },
+      { id: 'kitchen_capacity', starter: false, pro: true,           max: true           },
       // 🔴 MOVED OUT OF 'CORE OPERATIONS' AND OFF STARTER — 2 September 2026, ON REQUEST.
       // Before: 'Core operations', starter TRUE. After: here, starter FALSE. Trial/Pro/Max unchanged.
       // 🟢 THE SECTION MOVE IS PART OF THE CHANGE, NOT TIDYING. 'Core operations' is the section whose
@@ -331,9 +372,9 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // to starter, so the table now says no while the code says yes. That is a KNOWN, ACCEPTED gap
       // being closed separately — see docs/stock-countdown-tier-report.md 4. It is safe only because
       // nothing is on Starter yet: the platform has not launched.
-      { id: 'stock_countdown', name: 'Automated stock countdown',                    detail: 'Set a stock count and it counts down as orders come in, then sells out automatically.', starter: false, pro: true,           max: true           },
-      { id: 'auto_accept', name: 'Auto-accept online orders',                    detail: 'Online orders are accepted automatically — no need to confirm each one.', starter: false, pro: true,           max: true           },
-      { id: 'branded_qr_code', name: 'Branded QR code',                              detail: 'Add your logo to your QR code.', starter: false, pro: true,  max: true  },
+      { id: 'stock_countdown', starter: false, pro: true,           max: true           },
+      { id: 'auto_accept', starter: false, pro: true,           max: true           },
+      { id: 'branded_qr_code', starter: false, pro: true,  max: true  },
       /* ══ 🔴 MOVED HERE FROM THE 'Max tier' SECTION, 6 OCTOBER 2026, ON THE OPERATOR'S INSTRUCTION ═══
        * ⛔ IT CROSSED A SECTION BOUNDARY, AND THAT WAS CHECKED BEFORE IT MOVED. The instruction was
        * "directly after Branded QR code", and the two were in different sections — so the move changes
@@ -345,7 +386,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * ⚠️ ORDER ONLY. The name, the detail, the cells and its ROW_FEATURE_MAP entry
        * (`private_events`) are untouched; `findPlanParityViolations()` still checks the same `true`
        * cells against the same `canAccess` keys, because nothing about the row changed. */
-      { id: 'private_events', name: 'Private events', detail: 'Add private events that don’t show on the map, with their own private ordering link and QR code.', starter: false, pro: true, max: true },
+      { id: 'private_events', starter: false, pro: true, max: true },
       /* ══ 🔴 LAUNCHED, AND THE PROMISE IS CHECKED NOW (10 October 2026) ═══════════════════════════
        *
        * ⛔ **THIS ROW WAS A `true` CELL WITH NO `ROW_FEATURE_MAP` ENTRY, AND THE FILE SAID SO.** It
@@ -364,7 +405,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * badge — Dominic's own correction on 6 October — so launching it is a two-word change in this one
        * row and nothing else in any of the four renderers.
        * ⛔ STARTER STAYS `false`. The table has always said so and the gate has always agreed. */
-      { id: 'social_media_posts', name: 'Social media posts', detail: 'Upload your designs — we add your dates, places and times for each week and event automatically.', starter: false, pro: true, max: true },
+      { id: 'social_media_posts', starter: false, pro: true, max: true },
       // Auto-replies stay SPLIT across two rows. They USED to be split because WhatsApp was live and the
       // other two were not; as of 1 September 2026 ALL THREE are coming soon, so the split now carries a
       // different fact: WhatsApp is the one being built first. Do not re-merge them into one row — a
@@ -400,10 +441,10 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // 🔴 BEHIND THE SINGLE SWITCH (lib/whatsapp-live.ts). OFF is byte-identical to what production
       //    rendered at 08ac368: footnote '4', coming_soon on both tiers. ON is the go-live row.
       WHATSAPP_LIVE
-        ? { id: 'whatsapp_auto_replies', name: WHATSAPP_ROW_NAME,                  footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true, max: true }
-        : { id: 'whatsapp_auto_replies', name: WHATSAPP_ROW_NAME,                  footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+        ? { id: 'whatsapp_auto_replies', footnote: '4', starter: false, pro: true, max: true }
+        : { id: 'whatsapp_auto_replies', footnote: '4', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       // Coming soon (kept at the bottom of the section)
-      { id: 'messenger_instagram_replies', name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { id: 'messenger_instagram_replies', footnote: '4', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       // 🔴 MOVED HERE FROM THE PAYMENTS SECTION, AND FOOTNOTED. It sits with the other coming-soon
       // rows rather than among the shipped payment ones, so the block the file calls "Coming soon
       // (kept at the bottom of the section)" stays true of every row in it.
@@ -445,16 +486,16 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
        * See it above, directly after 'Private events'. ⛔ READ THE NOTE THERE BEFORE CHANGING IT: it
        * is a hard `true` with NO `ROW_FEATURE_MAP` entry, which is the one shape this block warned
        * against — and it is that way on an explicit, recorded instruction, not by oversight. */
-      { id: 'tap_to_pay', name: 'Take payment on your phone', footnote: '1', detail: 'Take card payments on a supported phone, so you don\u2019t need a separate card machine.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
-      { id: 'advanced_reporting', name: 'Advanced reporting', detail: 'Break sales down by date range, item and event to see what’s really selling.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
-      { id: 'sms_order_alerts', name: 'SMS order alerts', detail: "Text customers automatically when their order's ready. Will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { id: 'tap_to_pay', footnote: '1', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { id: 'advanced_reporting', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { id: 'sms_order_alerts', starter: false, pro: 'coming_soon', max: 'coming_soon' },
     ],
   },
   {
-    title: 'Max plan',
+    id: 'max',
     rows: [
-      { id: 'multi_device_kitchen', name: 'Multi-device kitchen sync', detail: 'Run several screens — front counter and kitchen — all showing the same live orders.', starter: false, pro: false, max: true           },
-      { id: 'multi_user_access', name: 'Multi-user access',         detail: 'Give staff their own logins with the right level of access.', starter: false, pro: false, max: true           },
+      { id: 'multi_device_kitchen', starter: false, pro: false, max: true           },
+      { id: 'multi_user_access', starter: false, pro: false, max: true           },
       // ── MOVED HERE 29 August 2026, AND IT IS THE ONE ROW THAT MOVED. ────────────────────────
       // Previously last-but-one in this section, below 'Event & festival pricing'. Every other row holds
       // its position relative to every other — only this one was lifted.
@@ -515,11 +556,11 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // have to keep. "on your own website" is close to that line — flagged to the operator, who owns
       // the wording. It is NOT a description of an embed today; if the product ever gains one, this line
       // needs re-reading rather than extending.
-      { id: 'embed_schedule', name: 'Schedule page on your own website', detail: 'Show your upcoming dates on your own website. Each one links straight through to its order page.', starter: false, pro: false, max: true },
+      { id: 'embed_schedule', starter: false, pro: false, max: true },
       /* ── 🟢 MOVED HERE 6 OCTOBER 2026, ON THE OPERATOR'S INSTRUCTION: directly after the schedule
          page, from the bottom of this section. ⚠️ ORDER ONLY — the name, the detail, the cells
          (Max only) and its ROW_FEATURE_MAP entry (`event_types`) are all untouched. */
-      { id: 'event_types', name: 'Custom event types & pricing', detail: 'Create your own event types, with custom prices and settings for events and festivals.', starter: false, pro: false, max: true },
+      { id: 'event_types', starter: false, pro: false, max: true },
       // ── 🔴 MOVED INTO THE MAX TIER SECTION, 3 SEPTEMBER 2026, ON THE OPERATOR'S INSTRUCTION. ──────
       // It was added on 3 September in 'Online sales & automation' (between 'Auto-accept online orders'
       // and 'Branded QR code') as a Pro feature. When the cells went Pro -> Max-only it became the ONLY
@@ -557,7 +598,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // ⚠️ TRIAL IS NOT STORED ON THE ROW. trialFeatureValue() (lib/landing-table.ts:41-45) returns
       // row.max for every row bar two named exceptions, and this is neither — so Trial follows max and
       // keeps the feature. Cells read: Trial ✓ · Starter — · Pro — · Max ✓.
-      { id: 'buzzer_tracking', name: 'Buzzer tracking',           detail: 'Give an order a buzzer number when you hand one out, so you know which buzzer belongs to which order.', starter: false, pro: false, max: true },
+      { id: 'buzzer_tracking', starter: false, pro: false, max: true },
       // 🔴 'coming_soon', NOT true — 14 August 2026. A TICK IS A CLAIM THAT IT WORKS, AND IT DOES NOT.
       // components/printing/PrintingSettings.tsx has NO connect(): the Phase-A stub that wrote
       // 'Demo printer (Phase A stub)' and manufactured a connected state was REMOVED, and no real
@@ -570,9 +611,9 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // ⚠️ It also cannot break findPlanParityViolations(): that guard only inspects cells that are hard
       // `true` (`row[tier] === true && !canAccess(...)`), so turning one into 'coming_soon' removes a
       // check rather than adding one. 'coming_soon' is explicitly a legitimate divergence (:231).
-      { id: 'ticket_printing', name: 'Kitchen ticket printing',  footnote: '5', detail: 'Print order tickets to a Bluetooth or wired printer in the kitchen.', starter: false, pro: false, max: true },
+      { id: 'ticket_printing', footnote: '5', starter: false, pro: false, max: true },
       // Coming soon (kept at the bottom of the section)
-      { id: 'customer_display', name: 'Customer-facing display',   detail: 'A screen customers can see showing order numbers and when they’re ready.', starter: false, pro: false, max: 'coming_soon'  },
+      { id: 'customer_display', starter: false, pro: false, max: 'coming_soon'  },
       /* ══ 🔴 ONE "coming soon" ROW BECAME TWO BUILT ONES (5 October 2026) ═══════════════════════════
        * It was `{ name: 'Event & festival pricing', … max: 'coming_soon' }` — one row for what turned
        * out to be two products on two tiers:
@@ -599,15 +640,45 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // Walk-up flow: phone number lookup in Add Order panel → auto-increment
       // Online flow: email match on order submit → auto-increment
       // Do NOT build flexible stamp criteria until V1 is live and operators request it
-      { id: 'loyalty_stamp_cards', name: 'Digital loyalty stamp cards', detail: 'Reward repeat customers with digital stamp cards — collected and redeemed automatically.', starter: false, pro: false, max: 'coming_soon' },
+      { id: 'loyalty_stamp_cards', starter: false, pro: false, max: 'coming_soon' },
     ],
   },
 ]
+
+const sectionsByLocale = new Map<string, FeatureSection[]>()
+/** 🔴 THE PLAN TABLE IN ONE LOCALE — the same sections, rows, order and cells for every locale; only the words differ
+ *  (`planFeatures.section.<id>`, `planFeatures.row.<id>.name` / `.detail`). Built once per locale. */
+export function featureSections(locale: string | null | undefined): FeatureSection[] {
+  const key = resolveLocale(locale)
+  const hit = sectionsByLocale.get(key)
+  if (hit) return hit
+  const t = words(key)
+  const built = SECTION_DATA.map(sec => ({
+    id: sec.id,
+    title: t(`section.${sec.id}`),
+    rows: sec.rows.map(r => ({ id: r.id, name: t(`row.${r.id}.name`), ...(r.footnote ? { footnote: r.footnote } : {}), detail: t(`row.${r.id}.detail`), starter: r.starter, pro: r.pro, max: r.max })),
+  }))
+  sectionsByLocale.set(key, built)
+  return built
+}
+
+/** The table with its en-GB words — for code that reads ids and cells only (the parity guard, Manage's coming-soon
+ *  lookups) and for Admin, which is HatchGrab's own UK screen. A surface shown to a truck or a visitor reads
+ *  featureSections(its locale). */
+export const FEATURE_SECTIONS: FeatureSection[] = featureSections('en-GB')
 
 // 🔴 A FUNCTION OF THE SETTINGS, BECAUSE FOOTNOTES 1 AND 2 QUOTE FEES. 3–5 are fixed text. The array's
 // ORDER AND NUMBERING ARE UNCHANGED — the manage page masks footnote 2 by the literal '2' (see the note at
 // the end of this list), so the numbers are part of the contract, not decoration.
 export function footnotes(s: CountrySettings): { number: string; text: string }[] {
+  // 🔴 THE WORDS ARE `planFeatures.footnote.n1`–`n5` in the settings' locale (Language Phase 1e); every value in them is
+  // still derived here, from the settings. The two WhatsApp dates are calendar dates written the country's way.
+  const t = words(s.locale)
+  const dates: TimeSettings = {
+    timeZone: s.defaultTimezone, locale: s.locale,
+    timeFormat: s.timeFormat === '12h' ? '12h' : '24h', dateOrder: s.dateOrder === 'mdy' ? 'mdy' : 'dmy',
+    weekStart: s.weekStart === 'sunday' ? 'sunday' : 'monday',
+  }
   return [
     {
       number: '1',
@@ -630,16 +701,11 @@ export function footnotes(s: CountrySettings): { number: string; text: string }[
       // not a long one. This has now been re-established twice; do not revisit it.
       // 🔴 10 OCTOBER 2026: "on UK and EEA cards" → "on " + the region label ("UK cards"). The ONE accepted
       // visible change of the country_settings move; every other word is as it was.
-      text: `Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your `
-        + `provider's standard fees apply. Card payments through HatchGrab via Stripe are coming soon — `
-        + `Stripe's own charge, currently around ${cardFeeInPersonLabel(s)} on ${cardRegionInPerson(s)}, plus `
-        + `${tapToPaySurchargeLabel(s)} per authorisation if you tap on a phone or tablet without a `
-        + `dedicated reader.`,
+      text: t('footnote.n1', { inPersonFee: cardFeeInPersonLabel(s), region: cardRegionInPerson(s), tapFee: tapToPaySurchargeLabel(s) }),
     },
     {
       number: '2',
-      text: `Online payments powered by Stripe Connect. Subject to ${platformFeeLabel(s)} HatchGrab platform fee plus Stripe `
-        + `card processing fees (~${cardFeeOnlineLabel(s)} per transaction on ${cardRegionOnline(s)}).`,
+      text: t('footnote.n2', { platformFee: platformFeeLabel(s), onlineFee: cardFeeOnlineLabel(s), region: s.cardFeeRegionLabel }),
     },
     {
       number: '3',
@@ -660,7 +726,7 @@ export function footnotes(s: CountrySettings): { number: string; text: string }[
       // footnote. The caveat is about not supplying HARDWARE; it was never about tablets specifically.
       // 🟢 "with Android coming soon" REMOVED 5 September 2026 — the Android app is live on Google Play.
       // Both apps are shipped, so both are present tense, which is what the standing rule above requires.
-      text: 'Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser.',
+      text: t('footnote.n3'),
     },
     {
       // 🔴 THE FINAL CLAUSE WAS REMOVED 4 September 2026 AND MUST NOT COME BACK. It read
@@ -701,8 +767,8 @@ export function footnotes(s: CountrySettings): { number: string; text: string }[
         // 🔴 NOTHING IN IT IS A LITERAL. Both dates and the allowance are interpolated, because the same
         // three constants render the Settings billing summary — and the one thing worse than a stale date
         // on a pricing surface is two surfaces carrying DIFFERENT stale dates.
-        ? `Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From ${META_FREE_ALLOWANCE_FROM} the first ${formatLimit(META_FREE_REPLIES_PER_MONTH)} a month are free. Correct at ${META_PRICING_CHECKED_ON}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong.`
-        : 'Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.',
+        ? t('footnote.n4Live', { from: formatLongDate(META_FREE_ALLOWANCE_FROM_YMD, dates), count: formatLimit(META_FREE_REPLIES_PER_MONTH), checked: formatLongDate(META_PRICING_CHECKED_ON_YMD, dates) })
+        : t('footnote.n4Off'),
     },
     {
       number: '5',
@@ -712,7 +778,7 @@ export function footnotes(s: CountrySettings): { number: string; text: string }[
       // is iOS-only by construction, and the cross-platform path ('ble') is documented there as the budget
       // fallback with limited/no paper-out status. Naming Android here would underwrite that. "The
       // HatchGrab kitchen app" stays true whichever backend lands first.
-      text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers listed in our help centre.',
+      text: t('footnote.n5'),
     },
     // 🔴 THERE IS NO FOOTNOTE 6, AND THE NUMBERING STOPS AT 5 IN BOTH FLAG STATES (16 September 2026).
     // It existed only while WHATSAPP_LIVE was true and carried the WhatsApp billing text; that text has

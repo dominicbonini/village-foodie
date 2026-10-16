@@ -22,6 +22,10 @@
 // ⚠️ ANY PDF/PRINT PATH MUST TREAT THIS FILE AS READ-ONLY. Rendering may transform characters for
 // display; it may not feed them back into the source.
 import type { CountrySettings } from '@/lib/country-settings-types'
+// Language Phase 1e: this file's words (the plan sub-lines, the landing's overrides, "Coming soon") are `planFeatures`
+// messages, read in the locale the caller passes — the same messages Billing and the PDF read.
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/planFeatures'
 import {
   planPrices, PAY_AT_HATCH_ROW, type PlanRowId,
   type FeatureValue,
@@ -32,9 +36,16 @@ import {
 export const TABLE_PLANS = ['trial', 'starter', 'pro', 'max'] as const
 export type TablePlan = (typeof TABLE_PLANS)[number]
 
-export const PLAN_SUB: Record<TablePlan, string> = { trial: '', starter: 'free forever', pro: 'per truck / month', max: 'per truck / month' }
+/** The line under each column's price, in a locale ('' for Trial). */
+export function planSubLabels(locale: string | null | undefined): Record<TablePlan, string> {
+  const t = translatorFor(locale, 'planFeatures')
+  return { trial: '', starter: t('planSub.free'), pro: t('planSub.perTruckMonth'), max: t('planSub.perTruckMonth') }
+}
+/** The en-GB sub-lines (kept for readers that pin them; renderers call planSubLabels(locale)). */
+export const PLAN_SUB: Record<TablePlan, string> = planSubLabels('en-GB')
 // Trial column shows just "Free" (not "Free trial" + a sub) — keeps the sticky header compact.
 // A function of the settings since 10 October 2026: the prices are the country's (see lib/plan-features.ts).
+// ⚠️ A price word here is its CODE (PRICE_WORD) so the mask can recognise it — show each through priceText().
 export function planPriceLabels(s: CountrySettings): Record<TablePlan, string> {
   const p = planPrices(s)
   return { trial: PRICE_WORD.free, starter: p.starter, pro: p.pro, max: p.max }
@@ -55,13 +66,16 @@ export function trialFeatureValue(row: { id: PlanRowId; max: FeatureValue }): Fe
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
 import { PRICE_WORD } from '@/lib/price-words'
 
-export const DETAIL_OVERRIDES: Partial<Record<PlanRowId, string>> = {   // keyed on row ids (Language Phase 0)
+// 🔴 Language Phase 1e: the overrides hold the MESSAGE KEY (`planFeatures.landing.*`), not the words, so the landing
+// table and the PDF print them in the visitor's locale.
+type LandingOverrideKey = 'landing.offlineProtectionDetail' | 'landing.mergedAutoRepliesName' | 'landing.mergedAutoRepliesDetail'
+export const DETAIL_OVERRIDES: Partial<Record<PlanRowId, LandingOverrideKey>> = {   // keyed on row ids (Language Phase 0)
   // 🔴 THIS STRING IS PRINTED BY THE LANDING TABLE AND THE PDF AND EXISTS IN NO ROW DEFINITION.
   // It overrides the shared detail in lib/plan-features.ts, so a grep of that file for "Android coming
   // soon" would have come back clean while the compare table and the PDF both still said it. That is
   // the exact class of miss the census was told to hunt for — a DERIVED label, not a matched one.
   // 🟢 "(Android coming soon)" removed 5 September 2026: the Android app is live on Google Play.
-  offline_protection: "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+  offline_protection: 'landing.offlineProtectionDetail',
   // 🔴 THE MERGED AUTO-REPLIES OVERRIDE WAS REMOVED 4 September 2026, WHEN WHATSAPP WENT LIVE.
   // It read: 'Auto-reply to enquiries about your menu and schedule on WhatsApp, Messenger and Instagram.'
   // That sentence described a MERGED row and is false of the WhatsApp row on its own — Messenger and
@@ -72,7 +86,7 @@ export const DETAIL_OVERRIDES: Partial<Record<PlanRowId, string>> = {   // keyed
   //    08ac368, verbatim — it describes the MERGED row that NAME_OVERRIDES and HIDDEN_ROWS below
   //    recreate in the same state, so all three move together or the table contradicts itself.
   ...(WHATSAPP_LIVE ? {} : {
-    whatsapp_auto_replies: 'Auto-reply to enquiries about your menu and schedule on WhatsApp, Messenger and Instagram.',
+    whatsapp_auto_replies: 'landing.mergedAutoRepliesDetail',
   }),
 }
 
@@ -86,12 +100,12 @@ export const DETAIL_OVERRIDES: Partial<Record<PlanRowId, string>> = {   // keyed
 // the only live channel: 'WhatsApp auto-replies' ✓/✓ and a separate 'Messenger & Instagram
 // auto-replies' reading Coming soon.
 // ⚠️ Kept as an empty map rather than deleted: `rowName()` and both renderers import it.
-export const NAME_OVERRIDES: Partial<Record<PlanRowId, string>> = WHATSAPP_LIVE ? {} : {
+export const NAME_OVERRIDES: Partial<Record<PlanRowId, LandingOverrideKey>> = WHATSAPP_LIVE ? {} : {
   // 🔴 THE MERGE, RESTORED WHILE THE SWITCH IS OFF — verbatim from 08ac368. Permissible ONLY because
   //    in this state both rows carry identical cells again (starter:false, pro/max 'coming_soon',
   //    footnote '4'), which is the precondition the comment above demands. Flipping the switch to true
   //    makes them diverge and empties this map in the same edit.
-  whatsapp_auto_replies: 'WhatsApp, Messenger & Instagram auto-replies',
+  whatsapp_auto_replies: 'landing.mergedAutoRepliesName',
 }
 
 // 🔴 ROWS THE LANDING TABLE DOES NOT PRINT. EMPTY SINCE 4 September 2026 — nothing is hidden.
@@ -121,20 +135,22 @@ export function visibleRows(section: FeatureSection): FeatureRow[] {
   return section.rows.filter(row => !HIDDEN_ROWS.has(row.id))
 }
 
-/** The row name as the landing prints it. */
-export function rowName(row: { id: PlanRowId; name: string }): string {
-  return NAME_OVERRIDES[row.id] ?? row.name
+/** The row name as the landing prints it, in a locale. `row` is a row from featureSections(the same locale). */
+export function rowName(row: { id: PlanRowId; name: string }, locale: string | null | undefined): string {
+  const key = NAME_OVERRIDES[row.id]
+  return key ? translatorFor(locale, 'planFeatures')(key) : row.name
 }
 
 /** The row description as the landing prints it, or '' when there is none. */
-export function rowDetail(row: { id: PlanRowId; detail?: string }): string {
-  return DETAIL_OVERRIDES[row.id] ?? row.detail ?? ''
+export function rowDetail(row: { id: PlanRowId; detail?: string }, locale: string | null | undefined): string {
+  const key = DETAIL_OVERRIDES[row.id]
+  return key ? translatorFor(locale, 'planFeatures')(key) : row.detail ?? ''
 }
 
-/** 🔴 THE THREE CELL GLYPHS, IN ONE PLACE. Mirrors Billing: ✓ / — / Coming soon.
- *  ⚠️ The '—' is an EM DASH and is protected — see the header. */
-export function cellLabel(value: FeatureValue): string {
+/** 🔴 THE THREE CELL GLYPHS, IN ONE PLACE. Mirrors Billing: ✓ / — / Coming soon (the words in the locale).
+ *  ⚠️ The '—' is an EM DASH and is protected — see the header. The two glyphs are not words and stay as they are. */
+export function cellLabel(value: FeatureValue, locale: string | null | undefined): string {
   if (value === true) return '✓'
-  if (value === 'coming_soon') return 'Coming soon'
+  if (value === 'coming_soon') return translatorFor(locale, 'planFeatures')('cell.comingSoon')
   return '—'
 }

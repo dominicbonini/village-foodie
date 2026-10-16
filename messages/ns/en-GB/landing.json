@@ -1,0 +1,118 @@
+{
+  "jsonLd": {
+    "subCategory": "Food truck and mobile catering ordering system",
+    "description": "Ordering, pre-orders and a kitchen screen for {country} food trucks and mobile catering.",
+    "audience": "Food truck and mobile catering operators"
+  },
+  "hero": {
+    "title": "The ordering system built for <lean>food trucks.</lean>",
+    "subSmall": "Upload your menu, no signup needed.<br></br>See a working demo in under 60 seconds.",
+    "tagline": "Less time booking.<br></br>More time <lean>cooking.</lean>",
+    "cta": "Upload my menu →",
+    "ctaNote": "No signup, no card.<br></br>See it working in under 60 seconds."
+  },
+  "shots": {
+    "kitchenAlt": "The HatchGrab kitchen screen, showing order tickets in cook order",
+    "dashboardAlt": "Taking an order on HatchGrab: the menu on the left, the running basket and total on the right",
+    "phoneAlt": "Ordering from a food truck on HatchGrab: the menu with photos and prices, and a running basket total"
+  },
+  "trust": {
+    "freeMonth": "First month 100% free, everything unlocked",
+    "noCard": "No card needed",
+    "cancel": "Cancel anytime, no contract"
+  },
+  "does": {
+    "eyebrow": "What it does",
+    "title": "Built for food trucks, not restaurants.",
+    "lede": "Most ordering systems assume a fixed address, reliable wifi and the same hours every week. You’re somewhere new every week, at different times, on patchy or no mobile coverage. HatchGrab was built for that.",
+    "slotsTitle": "Customers choose collection times",
+    "capacityTitle": "Set your kitchen capacity",
+    "capacityBody": "Set how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.",
+    "devicesTitle": "Works on any device",
+    "devicesBody": "Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.",
+    "postsTitle": "Automate your Facebook & Instagram posts",
+    "postsBody": "Upload the design you already post on Facebook or Instagram. We’ll fill in your dates, places and times, ready to share — every week or every day.",
+    "whatsappTitle": "WhatsApp auto-replies",
+    "whatsappBody": "“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to the pitch or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.",
+    "whatsappSoonTitle": "WhatsApp auto-replies <soon>Coming soon</soon>",
+    "whatsappSoonBody": "“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.",
+    "offlineTitle": "No signal? Keep serving.",
+    "offlineBody": "If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.",
+    "slotsBody": "Customers order ahead and pick a collection time. Fewer queues, and food ready when they arrive."
+  },
+  "steps": {
+    "eyebrow": "Getting going",
+    "title": "Get set up and start taking orders in about 15 minutes.",
+    "lede": "Three things to sort — and two of them just need a photo.",
+    "menuTitle": "Build your menu",
+    "menuBody": "Photograph your board or paste it in. Items, prices and extras all come across on their own. You just check they’re right.",
+    "scheduleTitle": "Add your schedule",
+    "scheduleBody": "Got it on your website? We’ll read it from there and keep it up to date. If not, photograph that too. You just approve what it finds.",
+    "shareTitle": "Share your link",
+    "shareBody": "Post it on Facebook, stick the QR on the van. Orders land on your screen, in the order you need to cook them."
+  },
+  "testimonial": {
+    "quote": "HatchGrab has made ordering so much easier. Everything's organised, we can track stock and know exactly how many pizzas we have left to sell — and the time slots are fantastic for busy villages.",
+    "award": "Mobile Pizzeria of the Year",
+    "awardScope": "Regional winner",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — owners"
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "title": "Start free. Upgrade when you need to.",
+    "trialTitle": "Your first month is completely free — every feature unlocked.",
+    "trialBody": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. <bold>Adding online payments doesn’t start your subscription</bold>. You’re only charged when you actively select a paid plan. We’ll never charge you without your clear permission. No card to start, cancel anytime.",
+    "mostTrucks": "Most trucks",
+    "planFee": "{allowance}<star>*</star>. No fee on walk-ups.",
+    "tryFree": "Try Free",
+    "starter": {
+      "lead": "Everything to run a service",
+      "walkUp": "Walk-up orders & kitchen screen",
+      "online": "Online ordering, pay at the hatch",
+      "menu": "Menu, meal deals & upsells",
+      "qr": "QR code",
+      "map": "Discovery map listing",
+      "app": "iPhone, iPad and Android kitchen app"
+    },
+    "pro": {
+      "lead": "{starterIsFree, select, yes {Everything in Free, plus} other {Everything in {starterName}, plus}}",
+      "offline": "Offline order protection",
+      "payOnline": "Take payment online",
+      "preorders": "Pre-orders & collection times",
+      "capacity": "Kitchen capacity management",
+      "privateEvents": "Private events",
+      "social": "Social media posts",
+      "whatsapp": "WhatsApp auto-replies (Messenger & Instagram coming soon)",
+      "whatsappSoon": "WhatsApp, Messenger & Instagram auto-replies <soon>Coming soon</soon>",
+      "payOnPhone": "Take payment on your phone <soon>Coming soon</soon>"
+    },
+    "max": {
+      "lead": "Everything in Pro, plus",
+      "sync": "Multi-device kitchen sync",
+      "staff": "Multi-staff logins",
+      "schedulePage": "Schedule page on your own website",
+      "printing": "Kitchen ticket printing",
+      "eventTypes": "Custom event types & pricing",
+      "loyalty": "Digital loyalty stamp cards <soon>Coming soon</soon>"
+    },
+    "compareLead": "Not sure which plan? See exactly what each one includes.",
+    "compareCta": "Compare all features →",
+    "switchHead": "Switching from another platform?",
+    "switchBody": "See what you’d be paying on HatchGrab for the same orders. Takes about a minute.",
+    "switchCta": "Compare what you’re paying",
+    "footCardFees": "*Standard card processing fees apply to all online orders (currently {cardFee} on standard {region}), including those within your allowance.",
+    "footCancel": "Cancel by doing nothing. Even if you’ve added a card for payments, we’ll never charge it for a plan unless you actively choose one.",
+    "summary": "Pro is {proPrice} a month with {proAllowance} of online orders included. Max is {maxPrice} with {maxAllowance}. Anything above that is {platformFee}. Standard card processing fees apply to all online orders (currently {cardFee} on standard {region}), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan. Your card terminal’s own fees still apply."
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Want to see how easy setup is?",
+    "lede": "Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to have a play around with in under 60 seconds. Your items, your prices. No sign-up, no card, nothing to install. Have a look, then decide.",
+    "cta": "Upload my menu now →"
+  },
+  "meta": {
+    "title": "Food truck & mobile catering ordering system — HatchGrab {country}",
+    "description": "Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen software for {country} food trucks and mobile catering — not a POS."
+  }
+}

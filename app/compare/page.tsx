@@ -23,6 +23,7 @@
 // no warning. ⚠️ THE LAYOUT RUNS FIRST AND IS STRICTER, so while the landing stays gated a non-admin is
 // stopped there even with the flag set.
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
+import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
@@ -32,6 +33,15 @@ import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'  
 import CostComparison from './CostComparison'
 // 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
+// Language Phase 1e: the calculator's words are read in THIS country's locale, handed down — CostComparison never
+// resolves a country or a language itself.
+import { localeOfCountry } from '@/lib/i18n/locales'
+// Language Phase 1e Part C: and that locale's overrides for the calculator's namespaces, so it hydrates in them.
+import { wordsFor } from '@/lib/i18n/server-words'
+import { NAMESPACES } from '@/lib/i18n/namespaces'
+// …and the page's other client components (country menu, demo modal and CTAs) read the same locale from this boundary.
+import { LocaleWords } from '@/lib/i18n/locale-words'
+import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 import '../landing/landing.css'
 
 export const dynamic = 'force-dynamic'
@@ -49,8 +59,30 @@ export const dynamic = 'force-dynamic'
 // follow at all. `follow: false` is therefore doing less work than it was, and still correct.
 // ⚠️ THIS DOES NOT MAKE IT PRIVATE. noindex is a request to well-behaved crawlers, nothing more. The
 // gate is what stops people; this only stops the page turning up in a search result.
-export const metadata = {
-  robots: { index: false, follow: false },
+// ── Language Phase 1e: A FUNCTION NOW, BECAUSE THE COUNTRY ADDRESSES NEED THEIR OWN URLS ─────────────────────
+// At the old address (no country segment) it returns exactly the object this page exported before — robots only.
+// At a COUNTRY address (/uk/compare, /us/compare — app/[country]/compare) it adds what every country page carries:
+// canonical = its own address, hreflang = every switched-on country + x-default → /compare, og:url = its own
+// address and og:locale = its country's. 🔴 STILL noindex, nofollow — and so /compare stays OUT of the sitemap for
+// every country (app/sitemap.ts).
+// ⚠️ THE OPEN GRAPH OBJECT IS THE ROOT LAYOUT'S, with url and locale replaced. A page's `openGraph` REPLACES the
+// layout's whole object rather than merging into it, so setting og:url alone would have dropped the share card,
+// title and site name this page inherited; reading `parent` keeps every other field exactly as it was.
+export async function generateMetadata({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }, parent: ResolvingMetadata): Promise<Metadata> {
+  const segment = (await params)?.country
+  if (segment === undefined) return { robots: { index: false, follow: false } }
+  // 🔴 The brand gate first, as the page does — no country is read for a host this route does not serve.
+  if (!(await onHatchGrab())) {
+    notFound()
+  }
+  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment, page: 'compare' })
+  const at = countryPageAlternates('compare', visitor.settings.countryCode, visitor.countryPage?.alternates ?? [])
+  const inherited = (await parent).openGraph
+  return {
+    robots: { index: false, follow: false },
+    alternates: { canonical: at.canonical, languages: at.languages },
+    openGraph: { ...(inherited ?? {}), url: at.canonical, locale: marketingCountry(visitor.settings).ogLocale } as Metadata['openGraph'],
+  }
 }
 
 /** The one place this route asks which brand it is serving. Same shape as app/contact/page.tsx:36. */
@@ -77,7 +109,7 @@ const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'],
 // this reason. So the chrome is wrapped twice, above and below, and the calculator sits outside both.
 const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`
 
-export default async function CostPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export default async function CostPage({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   // ── 🔴 GATE 1 OF 2: THE BRAND. THIS PAGE DOES NOT EXIST ON VILLAGE FOODIE. ────────────────────
   // Village Foodie is the CONSUMER discovery brand. Someone there is looking for a food truck, not for
   // operator plan pricing, and showing them £29/£49 tiers is the branding leak app/contact/page.tsx's
@@ -109,7 +141,8 @@ export default async function CostPage({ searchParams }: { searchParams: Promise
   // Foodie 404 costs no read. Loud: a missing row or an undecided price throws rather than rendering a
   // calculator built on borrowed figures.
   // Phase 2D-1: the visitor's country (lib/visitor-country.ts), on the server, after the host gate.
-  const visitor = await resolveVisitorCountry((await searchParams)?.country)
+  // Language Phase 1e: at a country address the country is the ADDRESS's (lib/visitor-country.ts resolveCountryPage).
+  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'compare' })
   const settings = visitor.settings
 
   // ── 🔴 THE PROVIDER AND THE MODAL CAME BACK — 3 SEPTEMBER 2026. THIS PAGE'S CTAs OPEN THE DEMO. ───
@@ -135,6 +168,7 @@ export default async function CostPage({ searchParams }: { searchParams: Promise
   // under it their own `open` state, and the modal mounted here would never see it — the CTA would look
   // dead. CostComparison.tsx deliberately renders neither.
   return (
+    <LocaleWords locale={localeOfCountry(settings)} words={wordsFor(localeOfCountry(settings), NAMESPACES.marketing)}>
     <DemoModalProvider>
       {/* 🔴 `chrome-nav-only` IS WHAT MAKES THE NAV STICK, AND IT IS NOT COSMETIC.
           `.hg-landing nav` is `position: sticky; top: 0`, and a sticky element only travels inside its
@@ -161,13 +195,13 @@ export default async function CostPage({ searchParams }: { searchParams: Promise
             its Pricing link are bare fragments that resolve against THIS page and silently do nothing —
             see the table in LandingNav.tsx. '/landing' is used rather than '/' because '/' is only the
             landing on a hatchgrab host. */}
-        <LandingNav landingHref="/landing" country={visitor.menu} />
+        <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
       </div>
 
-      <CostComparison settings={settings} />
+      <CostComparison settings={settings} locale={localeOfCountry(settings)} words={wordsFor(localeOfCountry(settings), NAMESPACES.compare)} />
 
       <div className={CHROME}>
-        <LandingFooter landingHref="/landing" country={visitor.menu} />
+        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
       </div>
 
       {/* Mounted ONCE — all three CTAs above drive this one instance. Same placement as
@@ -175,5 +209,6 @@ export default async function CostPage({ searchParams }: { searchParams: Promise
           and brings its own tokens via `hg-demo-modal`. */}
       <DemoModal />
     </DemoModalProvider>
+    </LocaleWords>
   )
 }

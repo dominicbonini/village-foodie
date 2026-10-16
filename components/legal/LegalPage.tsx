@@ -12,6 +12,9 @@
 // Plain Tailwind, app palette.
 
 import Link from 'next/link'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/legalChrome'
 
 export function LegalPage({ title, updated, children }: {
   /** ⚠️ OPTIONAL SINCE THE REAL DOCUMENTS LANDED. Both carry their own `# Heading` and
@@ -23,6 +26,9 @@ export function LegalPage({ title, updated, children }: {
   updated?: string
   children: React.ReactNode
 }) {
+  // Language Phase 1e: `legalChrome`, en-GB — the same rule as app/(legal)/layout.tsx (UK documents; this is a
+  // server component, so it asks translatorFor rather than useT).
+  const t = translatorFor(DEFAULT_LOCALE, 'legalChrome')
   return (
     <>
       {/* 🔴 NO HEADER, NO LOGO, NO PAGE CHROME HERE — app/(legal)/layout.tsx owns all of it. This component
@@ -30,7 +36,7 @@ export function LegalPage({ title, updated, children }: {
           and was the reason the logo moved between pages and scrolled away; see the layout's header note. */}
       <article className="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 px-6 py-8 sm:px-10 sm:py-10">
           {title && <h1 className="text-2xl font-black text-slate-900">{title}</h1>}
-          {updated && <p className="text-xs text-slate-400 mt-1 mb-6">Last updated {updated}</p>}
+          {updated && <p className="text-xs text-slate-400 mt-1 mb-6">{t('lastUpdated', { date: updated })}</p>}
           {/* `space-y` rather than a prose plugin — the project has no typography plugin and this needs to
               stay readable when someone pastes real legal copy in without reading this file. */}
           <div className="space-y-4 text-sm text-slate-600 leading-relaxed [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-slate-900 [&_h2]:pt-4 [&_strong]:text-slate-900 [&_a]:text-orange-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2">
@@ -39,7 +45,7 @@ export function LegalPage({ title, updated, children }: {
         </article>
 
       <p className="max-w-2xl mx-auto text-center text-xs text-slate-400 mt-6">
-        Questions? <Link href="/contact" className="text-orange-600 underline">Get in touch</Link> — we&apos;re real people.
+        {t.rich('questions', { link: c => <Link href="/contact" className="text-orange-600 underline">{c}</Link> })}
       </p>
     </>
   )

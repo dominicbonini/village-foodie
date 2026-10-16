@@ -2742,9 +2742,9 @@ function runWiringSuite(lib) {
         nowIn: 'app/manage/[token]/page.tsx',
         now: 'import { PLAN_META, canAccess, maxVans, planMonthlyMinor } from \'@/lib/features\'' },
       { was: 'import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from \'@/lib/plan-features\'',
-        reason: 'the price constants became functions of the settings (and, Language Phase 0, the line gained the row-id names)',
+        reason: 'the price constants became functions of the settings (and, Language Phase 0, the line gained the row-id names; ⚠️ RE-PINNED (Language Phase 1e): Billing reads the rows, descriptions and price words in the truck\'s locale — planDescriptions / featureSections / priceText — proven by scripts/language-phase-1e.cjs\'s Billing views)',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: 'import { planPrices, PLAN_DESCRIPTIONS, transactionRows, FEATURE_SECTIONS, footnotes, vanAddonMonthlyMinor, PAY_AT_HATCH_ROW, type PlanRowId } from \'@/lib/plan-features\'' },
+        now: 'import { planPrices, planDescriptions, transactionRows, FEATURE_SECTIONS, featureSections, footnotes, priceText, vanAddonMonthlyMinor, PAY_AT_HATCH_ROW, type PlanRowId } from \'@/lib/plan-features\'' },
       { was: 'const VAN_ADDON_PRICE: Record<string, number> = { starter: 0, pro: 29, max: 49, trial: 0 }',
         reason: 'the raw-pounds van map is DELETED; an extra van costs the plan\'s monthly price from settings',
         nowIn: 'app/manage/[token]/page.tsx',
@@ -2803,14 +2803,16 @@ function runWiringSuite(lib) {
       { was: '? `${px(\'£49/month\')} — High-volume operations & festivals`',
         reason: 'raw literal removed',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: "price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: PLAN_DESCRIPTIONS[upgradeTarget]" },
+        // ⚠️ RE-PINNED (Language Phase 1e): the description is the truck's-locale `descriptions` (planDescriptions(cs.locale)).
+        now: "price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: descriptions[upgradeTarget]" },
       // ⚠️ RE-PINNED (Language Phase 1d Part 2): the upgrade modal's tagline / mail body are ONE message each now
       // (manageBilling.upgradeModal.tagline "{price} — {description}", mailBody "…({price})…"), the price still the
       // settings value through px() — the claim (no raw £ literal; the price from settings) is asserted on that call.
       { was: ': `${px(\'£29/month\')} — Busy trucks scaling pre-orders`',
         reason: 'raw literal removed',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: "price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: PLAN_DESCRIPTIONS[upgradeTarget]" },
+        // ⚠️ RE-PINNED (Language Phase 1e): the description is the truck's-locale `descriptions` (planDescriptions(cs.locale)).
+        now: "price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: descriptions[upgradeTarget]" },
       // ⚠️ RE-PINNED (Language Phase 1d Part 2): the upgrade modal's tagline / mail body are ONE message each now
       // (manageBilling.upgradeModal.tagline "{price} — {description}", mailBody "…({price})…"), the price still the
       // settings value through px() — the claim (no raw £ literal; the price from settings) is asserted on that call.
@@ -2873,6 +2875,20 @@ function runWiringSuite(lib) {
      * form, as every build above. Each is proven elsewhere: the rendered shell / Billing / Reports / WhatsApp views are
      * byte-identical in GB (scripts/language-phase-1d2.cjs, F === BEFORE except the named changes). ══ */
     const PAGE_F = 'app/manage/[token]/page.tsx'
+    /* ══ ⚠️ RE-PINNED (Language Phase 1e): PHASE 1e'S OWN EDITS TO BILLING — the plan rows, plan descriptions and price words
+     * are read BY ID in the truck's locale (lib/plan-features.ts featureSections / planDescriptions / priceText), React keys
+     * are the row/section ids, and the App Store badge takes the truck's country. Each NEW form named exactly; proven by
+     * scripts/language-phase-1e.cjs's Billing views (GB F === BEFORE byte-identical; US listed). ══ */
+    movedEdits.push(
+      { was: 'const vanPx = usePriceMask()', nowIn: PAGE_F, now: 'const vanPx = (val: string) => priceText(vanMask(val), vanSettings.locale)', reason: "the van add-on's price word in the truck's locale (the mask is `vanMask`)" },
+      { exact: true, was: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" />', nowIn: PAGE_F, now: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} />', reason: "the App Store link follows the truck's country (GB unchanged)" },
+      { exact: true, was: 'const px = usePriceMask()', nowIn: PAGE_F, now: 'const px = (val: string) => priceText(mask(val), cs.locale)', reason: "Billing's price words in the truck's locale (the mask is `mask`)" },
+      { exact: true, was: '<div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">', nowIn: PAGE_F, now: '<div key={row.id} className="flex items-start py-2.5 border-t border-slate-100">', reason: 'React key by row id' },
+      { exact: true, was: '{FEATURE_SECTIONS.map(section => (', nowIn: PAGE_F, now: '{sections.map(section => (', reason: "the sections in the truck's locale: const sections = featureSections(cs.locale)" },
+      { exact: true, was: '<div key={section.title} className="mb-2">', nowIn: PAGE_F, now: '<div key={section.id} className="mb-2">', reason: 'React key by section id' },
+      { exact: true, was: '<div key={row.name} className="flex items-center py-2 border-t border-slate-100">', nowIn: PAGE_F, now: '<div key={row.id} className="flex items-center py-2 border-t border-slate-100">', reason: 'React key by row id' },
+      { exact: true, was: '<p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>', nowIn: PAGE_F, now: '<p className="text-sm text-slate-700 mt-0.5">{descriptions[currentPlan]}</p>', reason: "the plan description in the truck's locale: const descriptions = planDescriptions(cs.locale)" },
+    )
     movedEdits.push(
       { was: 'setupReducer, INITIAL_SETUP_STATE, setupButtonLabel, setupButtonDisabled,', nowIn: PAGE_F, now: 'setupReducer, INITIAL_SETUP_STATE, setupButtonLabelKey, setupButtonDisabled, type SetupNotice,',
         reason: 'the setup button names a KEY (manageWhatsApp.setup.button.*); notices are SetupNotice codes' },

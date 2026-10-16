@@ -37,22 +37,32 @@ import { isHatchGrabHost } from '@/lib/brand'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the chrome's CTA
+// Language Phase 1e Part C: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
+// from this boundary, seeded with that locale's overrides so a US page hydrates in US words (null for en-GB).
+import { LocaleWords } from '@/lib/i18n/locale-words'
+import { wordsFor } from '@/lib/i18n/server-words'
+import { NAMESPACES } from '@/lib/i18n/namespaces'
+import { localeOfCountry } from '@/lib/i18n/locales'
 import { FeatureComparison } from '@/components/landing/FeatureComparison'
 // 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
-import { marketingCountry } from '@/lib/marketing-meta'
+import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 import '../landing/landing.css'
 
 export const dynamic = 'force-dynamic'
 
 // 🔴 US readiness (D37): the tags name the visitor's country — lib/marketing-meta.ts. For GB every value is the
 // literal this page carried before ("UK", en_GB), byte-identical.
-export async function generateMetadata({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   // 🔴 The brand gate first, as the page does — no country is read for a host this route does not serve.
   if (!(await onHatchGrab())) {
     notFound()
   }
-  const c = marketingCountry((await resolveVisitorCountry((await searchParams)?.country)).settings)
+  // Language Phase 1e: at a COUNTRY address (/uk/features, /us/features — app/[country]/features) the country is the
+  // address's; canonical and og:url are that address, hreflang every switched-on country + x-default → /features.
+  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'features' })
+  const c = marketingCountry(visitor.settings)
+  const at = visitor.countryPage && countryPageAlternates('features', visitor.settings.countryCode, visitor.countryPage.alternates)
   return {
     // ── TITLE. Its own, in the landing's style: terms first, brand last, under Google's ~60 chars.
     // 🔴 `absolute`, NOT a bare string — app/layout.tsx declares `title: { template: '%s | HatchGrab' }`,
@@ -70,7 +80,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 
     robots: { index: true, follow: true },
 
-    alternates: { canonical: 'https://www.hatchgrab.com/features' },
+    alternates: at ? { canonical: at.canonical, languages: at.languages } : { canonical: 'https://www.hatchgrab.com/features' },
 
     // ── OPEN GRAPH + TWITTER, same shape as the landing's. The image is the EXISTING share card —
     // public/logos/hatchgrab-share-card.png — and the dimensions below are the ones read from that PNG's
@@ -78,7 +88,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     openGraph: {
       type: 'website',
       siteName: 'HatchGrab',
-      url: 'https://www.hatchgrab.com/features',
+      url: at ? at.canonical : 'https://www.hatchgrab.com/features',
       title: `Plans & features compared — HatchGrab ${c.short}`,
       description:
         'Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and '
@@ -121,7 +131,7 @@ const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'],
 // parent's box, so the nav's containing block must be the page.
 const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`
 
-export default async function FeaturesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export default async function FeaturesPage({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   // ── 🔴 THE BRAND GATE. THIS PAGE DOES NOT EXIST ON VILLAGE FOODIE. See the header note.
   // ⚠️ FIRST, AND IT NEEDS ONLY A HEADER — a visitor on the wrong brand never costs a round trip.
   if (!(await onHatchGrab())) {
@@ -129,10 +139,12 @@ export default async function FeaturesPage({ searchParams }: { searchParams: Pro
   }
   // After the host check, so the non-HatchGrab 404 costs no read. Loud: a missing row throws.
   // Phase 2D-1: the visitor's country (lib/visitor-country.ts), on the server.
-  const visitor = await resolveVisitorCountry((await searchParams)?.country)
+  // Language Phase 1e: at a country address the country is the ADDRESS's (lib/visitor-country.ts resolveCountryPage).
+  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'features' })
   const settings = visitor.settings
 
   return (
+    <LocaleWords locale={localeOfCountry(settings)} words={wordsFor(localeOfCountry(settings), NAMESPACES.marketing)}>
     <DemoModalProvider>
       <div className={CHROME}>
         {/* ⚠️ `landingHref` IS NOT OPTIONAL ON A CHILD ROUTE. The nav's logo and its Pricing link are
@@ -142,7 +154,7 @@ export default async function FeaturesPage({ searchParams }: { searchParams: Pro
             hatchgrab host, and /landing is a real route that 308s to the root on this one.
             🔴 THIS IS WHAT STEP 2c ASKS FOR: on the landing, Pricing stays `#pricing`; here it becomes
             `/landing#pricing`. One prop, both behaviours, no second nav. */}
-        <LandingNav landingHref="/landing" country={visitor.menu} />
+        <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
 
         {/* The moved section — heading, subline, table, footnotes 1–5. */}
         <FeatureComparison settings={settings} />
@@ -158,12 +170,13 @@ export default async function FeaturesPage({ searchParams }: { searchParams: Pro
             ⚠️ THE WAY BACK IS STILL THERE — the nav's own "Pricing" link resolves to /landing#pricing
             on this route, via the `landingHref` prop above, and the footer carries one too. */}
 
-        <LandingFooter landingHref="/landing" country={visitor.menu} />
+        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
       </div>
 
       {/* Mounted ONCE — the nav's CTA drives this one instance. It portals to document.body, so it is
           deliberately OUTSIDE `.hg-landing` and brings its own tokens via `hg-demo-modal`. */}
       <DemoModal />
     </DemoModalProvider>
+    </LocaleWords>
   )
 }

@@ -2923,7 +2923,8 @@ function variants() {
      * variant tree that holds only LIB_NOW fails to compile (TS2307 on '@/lib/i18n/translator'). The NOW build never
      * noticed because it compiles inside the repo, where tsc follows the imports. These are copied UNPATCHED — no
      * variant mutates them; they are only what the modules under test now import. */
-    const I18N_NAMESPACES = ['serviceSettings', 'settingsCopy', 'whereYouTrade', 'offlineProtection']
+    // ⚠️ RE-PINNED (Language Phase 1e): + planMeta — lib/features.ts reads the plan descriptions from it now (copied unpatched).
+    const I18N_NAMESPACES = ['serviceSettings', 'settingsCopy', 'whereYouTrade', 'offlineProtection', 'planMeta']
     const I18N_CLOSURE = [
       'lib/i18n/translator.ts', 'lib/i18n/locales.ts', 'lib/i18n/registry.ts', 'lib/i18n/merge.ts',
       ...I18N_NAMESPACES.map(ns => `lib/i18n/catalog/${ns}.ts`),

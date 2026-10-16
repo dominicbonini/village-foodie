@@ -178,6 +178,7 @@ async function main() {
     return
   }
   const before = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(REPO, BEFORE_FILE)))).views
+  if (process.env.HG_LP0_DUMP) fs.writeFileSync(process.env.HG_LP0_DUMP, JSON.stringify({ keys: got.keys, landing: got.landing }))   // a debugging aid: the AFTER answers, for reading a diff
 
   head('1 · date words — every answer byte-identical to BEFORE, on the server and in the browser bundle')
   for (const engine of ['server', 'chromium', 'webkit']) {
@@ -189,14 +190,44 @@ async function main() {
   t('the browser bundle answers exactly what the server answers (Chromium)', JSON.stringify(got.dates.chromium) === JSON.stringify(got.dates.server), diffJson(got.dates.server, got.dates.chromium))
   t('the browser bundle answers exactly what the server answers (WebKit)', JSON.stringify(got.dates.webkit) === JSON.stringify(got.dates.server), diffJson(got.dates.server, got.dates.webkit))
 
-  head('2 · keys separated from labels — every output byte-identical to BEFORE (GB and US)')
+  // ══ ⚠️ RE-PINNED (Language Phase 1e): LANGUAGE PHASE 1e'S NAMED CODE CHANGES, each a PRECISE transform of the BEFORE value
+  // (scripts/language-phase-1e.cjs proves the same changes against eb7ed44). Everything else stays byte-identical.
+  //   transaction-row-id (GB, US)  the fee rows carry their id first (`walkup`, `onlineIncluded`, `feeAfter`) — words read by id
+  //   us-long-dates (US)           footnote 4's WhatsApp dates through formatLongDate: "1 October 2026" → "October 1, 2026"
+  //   us-letter (US)               the plans PDF's @page size is letter for a US country (A4 for GB, unchanged)
+  //   us-cents (US)                /compare's small-fee unit is the country's minor-unit suffix: "p" → "¢" ("30p" → "30¢")
+  //   html-text-separators (GB, US) React's empty <!-- --> between adjacent text nodes, removed from BOTH sides (a JSX text
+  //                                run became one message — "Nadia <!-- -->&amp;<!-- --> Bogdan" → "Nadia &amp; Bogdan")
+  //   us-landing (US)              the -us screenshots (lib/landing-screens.ts), the Pizzeria Gusto testimonial GB-only (its
+  //                                <section class="quote-sec"> and the logo's preload link), the locale-free App Store link
+  const ROW_IDS = ['walkup', 'onlineIncluded', 'feeAfter']
+  const usDates = x => x.replace(/From 1 October 2026/g, 'From October 1, 2026').replace(/Correct at 16 September 2026/g, 'Correct at September 16, 2026')
+  const mapStr = (v, fn) => (typeof v === 'string' ? fn(v) : Array.isArray(v) ? v.map(x => mapStr(x, fn)) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, mapStr(x, fn)])) : v)
+  const SEP = /<!-- -->/g
+  const NAMED_1E = {
+    transactionRows: (cc, v) => (Array.isArray(v) && got.keys[cc].transactionRows?.[0]?.id ? v.map((r, i) => ({ id: ROW_IDS[i], ...r })) : v),
+    footnotes: (cc, v) => (cc === 'US' ? mapStr(v, usDates) : v),
+    featureComparison: (cc, v) => (cc === 'US' ? usDates(v) : v),
+    pdfHtml: (cc, v) => (cc === 'US' ? usDates(v).replace('@page { size: A4;', '@page { size: letter;') : v),
+    costComparison: (cc, v) => (cc === 'US' ? v.replace('<span class="pl-1 text-lg font-bold text-slate-400">p</span>', '<span class="pl-1 text-lg font-bold text-slate-400">¢</span>').replace(/(of [0-9.]+% \+ )([0-9]+)p( per order)/g, '$1$2¢$3') : v),
+  }
+  const landing1e = (cc, v) => {
+    let x = v.replace(SEP, '')
+    if (cc !== 'US') return x
+    x = x.replace(/\/screenshots\/(kitchen|dashboard-v4|customer-order)\.png/g, '/screenshots/$1-us.png').replace('<link rel="preload" as="image" href="/gusto-logo.png"/>', '')
+    const q = x.match(/<section class="quote-sec">(?:(?!<section)[\s\S])*?Pizzeria Gusto[\s\S]*?<\/section>/)
+    if (q) x = x.replace(q[0], '')
+    return x.replace(/https:\/\/apps\.apple\.com\/gb\/app\/hatchgrab\/id6803543106/g, 'https://apps.apple.com/app/id6803543106')
+  }
+
+  head('2 · keys separated from labels — every output byte-identical to BEFORE (GB and US), apart from Phase 1e’s named changes')
   for (const k of Object.keys(before.keys)) {
     if (k === 'contactLinks') continue   // the source changes by design; §2b of the AFTER module rebuilds the same links from ids
     if (k === 'GB' || k === 'US') {
-      for (const kk of Object.keys(before.keys[k])) { const d = diffJson(before.keys[k][kk], got.keys[k][kk]); t(`${k} · ${kk}`, d === null, d) }
+      for (const kk of Object.keys(before.keys[k])) { const d = diffJson(NAMED_1E[kk] ? NAMED_1E[kk](k, before.keys[k][kk]) : before.keys[k][kk], got.keys[k][kk]); t(`${k} · ${kk}`, d === null, d) }
     } else { const d = diffJson(before.keys[k], got.keys[k]); t(k, d === null, d) }
   }
-  for (const k of Object.keys(before.landing)) { const d = diffJson(before.landing[k], got.landing[k]); t(`landing page (${k}) rendered HTML`, d === null, d) }
+  for (const k of Object.keys(before.landing)) { const d = diffJson(landing1e(k, before.landing[k]), got.landing[k].replace(SEP, '')); t(`landing page (${k}) rendered HTML`, d === null, d) }
 
   if (AFTER_CODE) await require('./_language-phase-0-after.cjs')({ kit, t, head, read, REPO, before, got, STUBS, GB, US_ON, snake })
   console.log(`\n${fail ? '✗' : '✓'} language-phase-0: ${pass} passed, ${fail} failed`)

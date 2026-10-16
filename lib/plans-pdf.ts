@@ -16,7 +16,7 @@
 // anything that is not a handler, so "just export buildHtml from the route" is not an option —
 // which is the mechanical reason this is a lib and not a smaller change.
 import {
-  FEATURE_SECTIONS, transactionRows, footnotes, planAllowances,
+  featureSections, transactionRows, footnotes, planAllowances, priceText,
   type FeatureValue,
 } from '@/lib/plan-features'
 import type { CountrySettings } from '@/lib/country-settings-types'
@@ -29,11 +29,20 @@ import { maskPrice, PRICING_PUBLISHED } from '@/lib/pricing'
 // Language Phase 0: the document's words in the country's locale — its first message, the heading.
 import { translatorFor } from '@/lib/i18n/translator'
 import {
-  TABLE_PLANS, type TablePlan, PLAN_SUB, planPriceLabels,
+  TABLE_PLANS, type TablePlan, planSubLabels, planPriceLabels,
   trialFeatureValue, visibleRows, rowName, rowDetail, cellLabel,
 } from '@/lib/landing-table'
 import '@/lib/i18n/catalog/plansPdf'
+import '@/lib/i18n/catalog/planFeatures'
 
+// ── 🔴 THE PAGE SIZE IS THE COUNTRY'S (Language Phase 1e). A US reader prints on US Letter; A4 there is clipped or
+// shrunk. The CSS `@page` rule and Chromium's `format` both read this one answer, so they cannot disagree.
+// ⚠️ GB (and every other country) stays A4 — byte-identical HTML and the same `page.pdf` options as before.
+// The Letter countries are the ones that use it as their standard paper size; only US is switched on today.
+const LETTER_COUNTRIES = new Set(['US', 'CA'])
+export function pdfPaperOf(s: Pick<CountrySettings, 'countryCode'>): { css: string; format: 'A4' | 'Letter' } {
+  return LETTER_COUNTRIES.has(s.countryCode) ? { css: 'letter', format: 'Letter' } : { css: 'A4', format: 'A4' }
+}
 // ── 🔴 THE PRICE POLICY. ONE CONSTANT, THREE MODES, AND IT IS A DECISION NOT A DEFAULT. ─────────────
 //   'follow-flag'  prices obey NEXT_PUBLIC_PRICING_PUBLISHED exactly as Billing does. While the flag is
 //                  off the PDF prints "TBC" for £/% amounts; Free, 0%, Pay at Hatch, Unlimited and the
@@ -102,65 +111,73 @@ const esc = (s: string) =>
 // is no second victim of this class hiding in the footnotes or the plan names.
 // ⚠️ THE PATH IS THE LANDING PAGE'S OWN CHECK MARK (app/landing/page.tsx's Check component), so the
 // document and the page draw the same tick.
-const TICK = '<svg class="tick" viewBox="0 0 12 12" role="img" aria-label="Included">'
+// ⚠️ Its label is a word (`planFeatures.cell.included`), so the tick is built in the document's locale.
+const tick = (locale: string) => `<svg class="tick" viewBox="0 0 12 12" role="img" aria-label="${esc(translatorFor(locale, 'planFeatures')('cell.included'))}">`
   + '<path d="M2 6.5 L4.6 9 L10 3"/></svg>'
 
 /** 🔴 CELL CONTENT COMES FROM cellLabel(), THE SAME FUNCTION THE PAGE USES — it decides WHICH state
  *  the cell is in, and that stays the single source of truth. Only the tick's RENDERING differs here.
  *  ⚠️ The '—' it returns is an EM DASH and a protected string: escaped for HTML, never normalised, never
  *  written back. It is left as text deliberately — it IS in the production font. */
-function cellHtml(value: FeatureValue): string {
-  const label = cellLabel(value)
+function cellHtml(value: FeatureValue, locale: string): string {
   const cls = value === true ? 'yes' : value === 'coming_soon' ? 'soon' : 'no'   // the state, not the words (Language Phase 0)
-  return `<td class="c ${cls}">${label === '✓' ? TICK : esc(label)}</td>`
+  return `<td class="c ${cls}">${value === true ? tick(locale) : esc(cellLabel(value, locale))}</td>`
 }
 
 /** The document's HTML for ONE country's prices. Pure apart from reading the wordmark file. */
 export function buildPlansPdfHtml(s: CountrySettings): string {
   const wordmark = wordmarkDataUri()
+  // 🔴 THE DOCUMENT'S WORDS ARE THE COUNTRY'S LOCALE (Language Phase 1e): `plansPdf` for its own, `planFeatures` for
+  // the table's (the same messages /features and Billing read). A price is masked FIRST (on its code), then shown.
+  const locale = s.locale
+  const t = translatorFor(locale, 'plansPdf')
+  const tp = translatorFor(locale, 'planFeatures')
+  const show = (v: string) => priceText(px(v), locale)
+  const paper = pdfPaperOf(s)
   const priceLabel = planPriceLabels(s)
+  const planSub = planSubLabels(locale)
   const heads = TABLE_PLANS.map((p: TablePlan) => {
-    const price = PRICE_MODE === 'omit' ? '' : `<div class="th-price">${esc(px(priceLabel[p]))}</div>`
-    const sub = PRICE_MODE === 'omit' || !PLAN_SUB[p] ? '' : `<div class="th-sub">${esc(PLAN_SUB[p])}</div>`
+    const price = PRICE_MODE === 'omit' ? '' : `<div class="th-price">${esc(show(priceLabel[p]))}</div>`
+    const sub = PRICE_MODE === 'omit' || !planSub[p] ? '' : `<div class="th-sub">${esc(planSub[p])}</div>`
     return `<th class="c"><div class="th-plan">${esc(PLAN_META[p].name)}</div>${price}${sub}</th>`
   }).join('')
 
   const fees = PRICE_MODE === 'omit' ? '' : `
-    <tr class="grp"><td colspan="${TABLE_PLANS.length + 1}">Fees</td></tr>
+    <tr class="grp"><td colspan="${TABLE_PLANS.length + 1}">${esc(tp('feesHeading'))}</td></tr>
     ${transactionRows(s).map(row => `
       <tr>
         <td class="f"><span class="f-name">${esc(row.name)}${row.footnote ? `<sup>${esc(row.footnote)}</sup>` : ''}</span></td>
-        ${TABLE_PLANS.map(p => `<td class="c val">${esc(px(row.cells[p]))}</td>`).join('')}
+        ${TABLE_PLANS.map(p => `<td class="c val">${esc(show(row.cells[p]))}</td>`).join('')}
       </tr>`).join('')}`
 
-  const sections = FEATURE_SECTIONS.map(section => `
+  const sections = featureSections(locale).map(section => `
     <tr class="grp"><td colspan="${TABLE_PLANS.length + 1}">${esc(section.title)}</td></tr>
     ${visibleRows(section).map(row => `
       <tr>
         <td class="f">
-          <span class="f-name">${esc(rowName(row))}${row.footnote ? `<sup>${esc(row.footnote)}</sup>` : ''}</span>
-          ${rowDetail(row) ? `<span class="f-desc">${esc(rowDetail(row))}</span>` : ''}
+          <span class="f-name">${esc(rowName(row, locale))}${row.footnote ? `<sup>${esc(row.footnote)}</sup>` : ''}</span>
+          ${rowDetail(row, locale) ? `<span class="f-desc">${esc(rowDetail(row, locale))}</span>` : ''}
         </td>
-        ${TABLE_PLANS.map(p => cellHtml(p === 'trial' ? trialFeatureValue(row) : (row[p as 'starter' | 'pro' | 'max'] as FeatureValue))).join('')}
+        ${TABLE_PLANS.map(p => cellHtml(p === 'trial' ? trialFeatureValue(row) : (row[p as 'starter' | 'pro' | 'max'] as FeatureValue), locale)).join('')}
       </tr>`).join('')}`).join('')
 
   // 🔴 THE ALLOWANCE LINES AND THE FOOTNOTES TRAVEL WITH THE TABLE, ALWAYS. A comparison table sent
   // without its footnotes reads as a commitment: footnote 1 is the only place the walk-up card detail
   // lives, and footnote 4 is what makes the auto-reply rows honest. See the report's §7.
   const allowances = PRICE_MODE === 'omit' ? '' : `
-    <div class="allow"><h3>Online order allowance</h3><ul>
-      ${(['starter', 'pro', 'max'] as const).map(p => `<li><b>${esc(PLAN_META[p].name)}</b> — ${esc(px(planAllowances(s)[p]))}</li>`).join('')}
+    <div class="allow"><h3>${esc(t('allowanceHeading'))}</h3><ul>
+      ${(['starter', 'pro', 'max'] as const).map(p => `<li><b>${esc(PLAN_META[p].name)}</b> — ${esc(show(planAllowances(s)[p]))}</li>`).join('')}
     </ul></div>`
 
   const notes = footnotes(s).map(f => `<p><sup>${esc(f.number)}</sup> ${esc(f.text)}</p>`).join('')
 
   const priceNote = PRICE_MODE === 'follow-flag' && !PRICING_PUBLISHED
-    ? `<p class="tbc">Prices shown as “TBC” are not yet published.</p>` : ''
+    ? `<p class="tbc">${esc(t('priceNoteMasked'))}</p>` : ''
   const omitNote = PRICE_MODE === 'omit'
-    ? `<p class="tbc">Prices are deliberately not included in this document.</p>` : ''
+    ? `<p class="tbc">${esc(t('omitNote'))}</p>` : ''
 
   return `<!doctype html><html><head><meta charset="utf-8"><style>
-  @page { size: A4; margin: 14mm 12mm 16mm; }
+  @page { size: ${paper.css}; margin: 14mm 12mm 16mm; }
   /* 🟢 THE ONLY TWO BRAND COLOURS, INTERPOLATED FROM lib/brand.ts — see the import note above.
      Everything else on this page stays the neutral greys it already was. */
   :root { --navy: ${HATCHGRAB_NAVY_HEX}; --orange: ${HATCHGRAB_ORANGE_HEX}; }
@@ -238,16 +255,15 @@ export function buildPlansPdfHtml(s: CountrySettings): string {
     <div class="doc-head">
       ${wordmark ? `<img class="mark" src="${wordmark}" width="${WORDMARK_W}" height="${WORDMARK_H}" alt="HatchGrab">` : ''}
       <h1>${esc(translatorFor(s.locale, 'plansPdf')('title'))}</h1>
-      <span class="gen">Generated ${new Date().toISOString().slice(0, 10)}</span>
+      <span class="gen">${esc(t('generated', { date: new Date().toISOString().slice(0, 10) }))}</span>
     </div>
     <table>
       <thead><tr><th class="f"></th>${heads}</tr></thead>
       <tbody>${fees}${sections}</tbody>
     </table>
     ${allowances}
-    <div class="fn"><h3>Small print</h3>${notes}${priceNote}${omitNote}
-      <p>Figures are the published plan terms at the date above and may change. Card processing fees are
-      Stripe’s own charge, not HatchGrab’s. This document is a summary, not a contract.</p>
+    <div class="fn"><h3>${esc(t('smallPrint'))}</h3>${notes}${priceNote}${omitNote}
+      <p>${esc(t('terms'))}</p>
     </div>
   </body></html>`
 }
@@ -295,7 +311,7 @@ export async function generatePlansPdf(country: string): Promise<Buffer> {
     const page = await b.newPage()
     // ⚠️ setContent, NOT a navigation to our own URL — the note the route carried, kept with the code.
     await page.setContent(buildPlansPdfHtml(settings), { waitUntil: 'load' })
-    const pdf = await page.pdf({ format: 'A4', printBackground: true, preferCSSPageSize: true })
+    const pdf = await page.pdf({ format: pdfPaperOf(settings).format, printBackground: true, preferCSSPageSize: true })
     return Buffer.from(pdf)
   } finally {
     if (browser) await (browser as { close: () => Promise<void> }).close().catch(() => {})

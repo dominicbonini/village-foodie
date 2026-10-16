@@ -48,7 +48,12 @@ execFileSync(path.join(REPO, 'node_modules/.bin/tsc'), ['-p', cfg], { stdio: 'pi
 const Module = require('module')
 const realResolve = Module._resolveFilename
 Module._resolveFilename = function (request, ...rest) {
-  if (request.startsWith('@/')) return realResolve.call(this, path.join(out, request.slice(2)), ...rest)
+  // ⚠️ RE-PINNED (Language Phase 1e, Part C): a catalog module's en-US words are a plain `require` of
+  // `@/messages/ns/en-US/<ns>.json`, which tsc does not copy into the compiled tree — read that JSON from the repo.
+  if (request.startsWith('@/')) {
+    try { return realResolve.call(this, path.join(out, request.slice(2)), ...rest) }
+    catch (e) { if (/\.json$/.test(request)) return realResolve.call(this, path.join(REPO, request.slice(2)), ...rest); throw e }
+  }
   try { return realResolve.call(this, request, ...rest) }
   catch (e) {
     // A package import from the compiled tree (OS temp dir, no node_modules beside it) resolves from the

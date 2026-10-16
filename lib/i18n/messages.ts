@@ -29,6 +29,12 @@ export function messagesFor(locale: string | null | undefined): Messages {
   return m
 }
 
+/** A locale's OVERRIDES only (en-US's file as authored; {} for en-GB) — what lib/i18n/server-words.ts hands a page
+ *  server-rendered in that locale (Language Phase 1e Part C). */
+export function overridesFor(locale: string | null | undefined): Tree {
+  return OVERRIDES[resolveLocale(locale)] ?? {}
+}
+
 /** Only the namespaces a screen needs — what a layout's provider sends to the browser. */
 export function pickNamespaces(messages: Messages, namespaces: readonly string[]): Messages {
   const all = messages as unknown as Tree

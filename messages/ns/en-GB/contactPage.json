@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "title": "Support",
+    "description": "Get help with HatchGrab. Send us a message and we will come back to you by email."
+  },
+  "logIn": "Log in",
+  "eyebrow": "Support",
+  "title": "How can we help?",
+  "lede": "Something not working, or a question about your account? Two ways to reach us — either way we will come back to you by email.",
+  "emailUs": "Email us",
+  "formHeading": "Or fill in the form below",
+  "loadingForm": "Loading form…",
+  "formTitle": "Contact HatchGrab support",
+  "privacy": "Privacy",
+  "terms": "Terms",
+  "copyright": "© 2026 HatchGrab"
+}

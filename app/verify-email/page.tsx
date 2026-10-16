@@ -4,6 +4,8 @@ import VerifyEmailSuccess from './VerifyEmailSuccess'
 import { translatorFor } from '@/lib/i18n/translator'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
+import { wordsFor } from '@/lib/i18n/server-words'
+import { NAMESPACES } from '@/lib/i18n/namespaces'
 import '@/lib/i18n/catalog/auth'
 
 const supabase = createClient(
@@ -160,5 +162,5 @@ export default async function VerifyEmailPage({
     .update({ verified_at: new Date().toISOString() })
     .eq('id', change.id)
 
-  return <VerifyEmailSuccess newEmail={change.new_email} locale={locale} />
+  return <VerifyEmailSuccess newEmail={change.new_email} locale={locale} words={wordsFor(locale, NAMESPACES.verifyEmail)} />
 }

@@ -88,6 +88,7 @@ const AREAS = [
   '_messages-parity-2.cjs',    // Language Phase 2 — US English and the wrong-English fixes (docs/language-phase-2-report.md)
   '_messages-parity-1d.cjs',   // Language Phase 1d Part 1 — Manage's Menu, Schedule and Settings words (scripts/language-phase-1d.cjs)
   '_messages-parity-1d2.cjs',  // Language Phase 1d Part 2 — Manage's Payments, Billing, Reports, Team, Social, WhatsApp, domain, account, shell (scripts/language-phase-1d2.cjs)
+  '_messages-parity-1e.cjs',   // Language Phase 1e — the HatchGrab marketing words, the plan rows Billing shares (scripts/language-phase-1e.cjs)
 ]
 // ⚠️ RE-PINNED (Language Phase 2): the 1a / 1b / 1c areas compare the strings the surfaces rendered BEFORE their text
 // moved into messages/ with the messages that move produced. Phase 2 then changes words on purpose (proven by its own

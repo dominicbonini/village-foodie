@@ -40,7 +40,11 @@ const cfg = path.join(tmp, 'tsconfig.json')
 fs.writeFileSync(cfg, JSON.stringify({
   compilerOptions: {
     module: 'commonjs', target: 'es2020', outDir: tmp, rootDir: REPO, skipLibCheck: true,
-    esModuleInterop: true, moduleResolution: 'node', baseUrl: REPO, paths: { '@/*': ['./*'] },
+    esModuleInterop: true,
+    // ⚠️ RE-PINNED (Language Phase 1e): lib/plan-features.ts now reads its row words from the message catalogue
+    // (lib/i18n/catalog/planFeatures.ts imports @/messages/ns/<locale>/planFeatures.json), so tsc must resolve JSON.
+    // Nothing asserted below changes.
+    resolveJsonModule: true, moduleResolution: 'node', baseUrl: REPO, paths: { '@/*': ['./*'] },
     types: ['node'], typeRoots: [path.join(REPO, 'node_modules/@types')],
   },
   /* ⚠️ `whatsapp-live.ts` IS COMPILED TOO. One row in 'Pro' is a TERNARY on
@@ -61,7 +65,9 @@ const Module = require('module')
 const realResolve = Module._resolveFilename
 Module._resolveFilename = function (request, ...rest) {
   if (request.startsWith('@/')) return realResolve.call(this, path.join(tmp, request.slice(2)), ...rest)
-  return realResolve.call(this, request, ...rest)
+  // ⚠️ RE-PINNED (Language Phase 1e): the rows' words now come through lib/i18n/translator (next-intl), which the temp
+  // tree cannot see — a bare package name falls back to the repo's node_modules.
+  try { return realResolve.call(this, request, ...rest) } catch (e) { if (/^[a-z@]/.test(request)) return require.resolve(request, { paths: [REPO] }); throw e }
 }
 /* ⚠️ `findPlanParityViolations` IS IMPORTED NOW, not merely mentioned. The 'Social media posts' row is
  * mapped at launch, and the claim about it is that the guard REPORTS CLEAN — which can only be said by
@@ -125,11 +131,12 @@ head('2 · order only — the same rows, the same cells, the same keys')
      * what makes the heading accurate rather than merely tidier. */
     ['Starter plan', [
       'Discovery map listing', 'Universal web dashboard', 'QR code', 'Automatic schedule import',
-      'Meal deals & upsells', 'Walk-up order processing', 'Instant sold out toggle',
+      'Meal deals & upsells', 'Walk-up order processing', 'Instant sold-out toggle',   // ⚠️ RE-PINNED (Language Phase 1e): GB fix planFeatures.row.sold_out_toggle.name (was 'Instant sold out toggle')
       'Online ordering — Pay at Hatch', 'iPhone, iPad and Android kitchen app',
     ]],
     ['Pro plan', [
-      'Offline Order Protection', 'Online payments', 'Advance pre-ordering', 'Pre-order deadline',
+      // ⚠️ RE-PINNED (Language Phase 1e): GB fix planFeatures.row.offline_protection.name (was 'Offline Order Protection')
+      'Offline order protection', 'Online payments', 'Advance pre-ordering', 'Pre-order deadline',
       'Customer time slot selection', 'Kitchen capacity management', 'Automated stock countdown',
       'Auto-accept online orders',
       'Branded QR code',
@@ -267,7 +274,8 @@ head('3 · one source, and nobody re-sorts it on the way to a screen')
    * whole argument for using the existing cell value instead of a new badge. ⚠️ ASSERTED AS "each one
    * can draw a coming-soon cell", so a renderer that quietly stopped handling it would fail here. */
   t('🔴 every renderer already knows how to draw a `coming_soon` cell', (() => {
-    const landing = /if \(value === 'coming_soon'\) return 'Coming soon'/.test(read('lib/landing-table.ts'))
+    // ⚠️ RE-PINNED (Language Phase 1e): the landing's words are the message planFeatures.cell.comingSoon, by locale.
+    const landing = /if \(value === 'coming_soon'\) return translatorFor\(locale, 'planFeatures'\)\('cell\.comingSoon'\)/.test(read('lib/landing-table.ts'))
     const billing = /val === 'coming_soon' && \(/.test(read('app/manage/[token]/page.tsx'))
     const admin = /val === 'coming_soon' && <span/.test(read('app/admin/page.tsx'))
     // Language Phase 0 (14 October 2026): the PDF decides the class by the cell's STATE now, not its words.
@@ -299,7 +307,9 @@ head('3 · one source, and nobody re-sorts it on the way to a screen')
       /* ⚠️ `.map` OR `.flatMap` — ADMIN USES `flatMap`, and a bare `/FEATURE_SECTIONS/` is what let the
        * landing's tombstone comment pass this check in the first place. The claim is that the file
        * ITERATES the shared list, so the call is what to look for, not the name. */
-      /from '@\/lib\/plan-features'/.test(code) && /FEATURE_SECTIONS\.(map|flatMap)\(/.test(code))
+      // ⚠️ RE-PINNED (Language Phase 1e): a renderer in a locale iterates `featureSections(locale)` — the SAME list
+      // (FEATURE_SECTIONS is featureSections('en-GB')), with the words in that locale. Either call proves the claim.
+      /from '@\/lib\/plan-features'/.test(code) && (/FEATURE_SECTIONS\.(map|flatMap)\(/.test(code) || /featureSections\([\w.]+\)\.(map|flatMap)\(/.test(code) || /const (\w+) = featureSections\([\w.]+\)[\s\S]*\{\1\.(map|flatMap)\(/.test(code)))
   }
   /* ⛔ AND THE LANDING PAGE NO LONGER DOES, asserted as the absence it now is — so the table coming
    * back to that page without this list being updated fails here rather than passing quietly. */
@@ -327,8 +337,10 @@ head('3 · one source, and nobody re-sorts it on the way to a screen')
   /* ⚠️ BILLING DOES NOT EVEN FILTER — it maps `section.rows` straight through, so if the landing page
    * renders this order (it does; see docs/feature-order-report.md) Billing necessarily does too. */
   t('⚠️ Billing maps `section.rows` with no filter and no sort',
-    /\{FEATURE_SECTIONS\.map\(section => \([\s\S]{0,900}?\{section\.rows\.map\(row => \(/
-      .test(read('app/manage/[token]/page.tsx')))
+    // ⚠️ RE-PINNED (Language Phase 1e): Billing maps `featureSections(cs.locale)` (held in `sections`) — the same list in
+    // the truck's locale; still `section.rows` straight through, no filter, no sort.
+    /\{sections\.map\(section => \([\s\S]{0,900}?\{section\.rows\.map\(row => \(/
+      .test(read('app/manage/[token]/page.tsx')) && /const sections = featureSections\(cs\.locale\)/.test(read('app/manage/[token]/page.tsx')))
 }
 
 // ── SUMMARY ───────────────────────────────────────────────────────────────────────────────────────

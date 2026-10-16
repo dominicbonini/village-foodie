@@ -101,6 +101,16 @@ const NAMED = [
   //    card's words BEFORE's apart from the named ones). Claims a view only when its BEFORE has a pending card; A === F
   //    is still required of every one of them, unchanged.
   pendingCardEntry(id => /^smoke-schedule\/(GB|US)\|tab\|/.test(id)),
+  // ⚠️ RE-PINNED (Language Phase 1e): two Phase 1e US-only code changes reach Part 2's views. GB is untouched (proven:
+  // every GB view still equals BEFORE). Each is a precise transform; scripts/language-phase-1e.cjs proves them too.
+  { id: '1e-us-billing-footnote-dates', country: 'US', agent: 'FEATURES (Language Phase 1e)',
+    what: 'Billing › plan comparison footnote 4 (lib/plan-features.ts footnotes(s)): the WhatsApp dates go through formatLongDate on the country’s settings — for a US truck "From 1 October 2026 … Correct at 16 September 2026" → "From October 1, 2026 … Correct at September 16, 2026" (the same rule Part 2 named for Settings › Auto-replies, 1d2-us-whatsapp-dates).',
+    views: id => /^shell\/US\|billing\|/.test(id),
+    expect: b => mapStrings(b, s => s.replace(/From 1 October 2026/g, 'From October 1, 2026').replace(/Correct at 16 September 2026/g, 'Correct at September 16, 2026')) },
+  { id: '1e-us-app-store-link', country: 'US', agent: 'CHROME + lead (Language Phase 1e)',
+    what: 'Settings › the App Store badge (components/StoreBadges countryCode={truck?.country}, lib/app-badges appStoreUrlFor): a US truck gets the LOCALE-FREE listing https://apps.apple.com/app/id6803543106 instead of the UK storefront’s https://apps.apple.com/gb/app/hatchgrab/id6803543106. GB keeps the UK link byte-identical.',
+    views: id => /^smoke-settings\/US\|/.test(id),
+    expect: b => mapStrings(b, s => s.replace(/https:\/\/apps\.apple\.com\/gb\/app\/hatchgrab\/id6803543106/g, 'https://apps.apple.com/app/id6803543106')) },
 ]
 
 const SMOKE_SHARED = [

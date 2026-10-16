@@ -133,29 +133,29 @@ schedule/US|vanFilter|two	words
 schedule/US|vanFilter|label|all	words
 schedule/US|privateLink|on	words
 schedule/US|privateLink|copied	words
-settings/US|owner|page	code: 1d-us-settings-clock + words
-settings/US|twoVans|page	code: 1d-us-settings-clock + words
-settings/US|manager|page	code: 1d-us-settings-clock + words
-settings/US|starter|page	code: 1d-us-settings-clock + words
-settings/US|pro|page	code: 1d-us-settings-clock + words
-settings/US|legacy|page	words
-settings/US|addingVan|page	code: 1d-us-settings-clock + words
-settings/US|renamingVan|page	code: 1d-us-settings-clock + words
-settings/US|deletingVan|page	code: 1d-us-settings-clock + words
-settings/US|vanBilling|page	code: 1d-us-settings-clock + words
-settings/US|vanUpgrade|page	code: 1d-us-settings-clock + words
-settings/US|qrModal|page	code: 1d-us-settings-clock + words
-settings/US|qrPreviews|page	code: 1d-us-settings-clock + words
-settings/US|verifyError|page	code: 1d-us-settings-clock + words
-settings/US|verifying|page	code: 1d-us-settings-clock + words
-settings/US|preorders|page	code: 1d-us-settings-clock + words
-settings/US|preordersOff|page	code: 1d-us-settings-clock + words
-settings/US|emoji|page	code: 1d-us-settings-clock + words
-settings/US|kds|page	code: 1d-us-settings-clock + words
-settings/US|noCuisine|page	code: 1d-us-settings-clock + words
-settings/US|setup|page	code: 1d-us-settings-clock + words
-settings/US|trial|page	code: 1d-us-settings-clock + words
-settings/US|noBase|page	code: 1d-us-settings-clock + words
+settings/US|owner|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|twoVans|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|manager|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|starter|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|pro|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|legacy|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|addingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|renamingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|deletingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|vanBilling|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|vanUpgrade|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|qrModal|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|qrPreviews|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|verifyError|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|verifying|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|preorders|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|preordersOff|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|emoji|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|kds|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|noCuisine|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|setup|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|trial|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|noBase|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
 settings/US|whereYouTrade|set	words
 settings/US|whereYouTrade|unset	words
 settings/US|whereYouTrade|readOnly	words

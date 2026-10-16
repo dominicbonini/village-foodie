@@ -8,6 +8,9 @@
 // in place of the placeholders below.
 // /landing itself still works: middleware redirects it to '/' (308) rather than breaking the links
 // that exist to it.
+// 🔴 LANGUAGE PHASE 1e (16 October 2026) — SUPERSEDES THE ROUTING NOTES ABOVE. This module now serves the COUNTRY
+// addresses /uk and /us (app/[country]/page.tsx re-exports it; `params.country` picks the country). hatchgrab.com/,
+// /landing and the unlisted preview are proxy.ts's country router: a 302 to /uk or /us, no longer a rewrite or a 308.
 //
 // SINGLE SOURCE: the pricing cards + the full comparison table render from lib/plan-features.ts
 // (FEATURE_SECTIONS + detail + PLAN_ALLOWANCES + PLAN_PRICES + PLAN_DESCRIPTIONS + TRANSACTION_ROWS +
@@ -20,6 +23,12 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
+// Language Phase 1e Part C: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
+// from this boundary, seeded with that locale's overrides so a US page hydrates in US words (null for en-GB).
+import { LocaleWords } from '@/lib/i18n/locale-words'
+import { localeOfCountry } from '@/lib/i18n/locales'
+import { wordsFor } from '@/lib/i18n/server-words'
+import { NAMESPACES } from '@/lib/i18n/namespaces'
 // Chrome EXTRACTED 23 August 2026 so the cost comparison (now /compare) renders the same nav and footer
 // from one definition.
 // 🔴 MOVED, NOT REWRITTEN — proven byte-identical; see docs/cost-comparison-chrome-report.md §1.
@@ -38,17 +47,23 @@ import { LandingFooter } from '@/components/landing/LandingFooter'
 // planAllowances, cardFeeOnlineLabel, …) — the import is still from lib/plan-features.ts, so the guard
 // still fires on this route.
 import {
-  PLAN_DESCRIPTIONS, planAllowances, platformFeeLabel, allowanceAmountLabel, allowanceMinorFor,
-  cardFeeOnlineLabel, cardRegionOnline,
+  planDescriptions, planAllowances, platformFeeLabel, allowanceAmountLabel, allowanceMinorFor,
+  cardFeeOnlineLabel, priceText,
 } from '@/lib/plan-features'
+import { planSubLabels } from '@/lib/landing-table'
+import { PRICE_WORD } from '@/lib/price-words'   // "Pay at Hatch" is a brand: the trial banner names it through its PRICE_WORD, never inside a message
 import { PLAN_META, planMonthlyMinor, planPriceParts } from '@/lib/features'
 import { formatAmount } from '@/lib/money-format'
 import { moneyFormatOf } from '@/lib/country-settings-types'
+import { landingScreenshot } from '@/lib/landing-screens'   // the hero fan's screenshots, per country (Language Phase 1e)
 // 🔴 THE VISITOR'S COUNTRY (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
-import { marketingCountry } from '@/lib/marketing-meta'
+import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 // 🔴 THE SINGLE WHATSAPP SWITCH — one value governs every surface. See lib/whatsapp-live.ts.
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+// Language Phase 1e: every word on this page is a `landing` message, read in the visitor's country's locale.
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/landing'
 // ══ 🔴 THE ONLY ICON LIBRARY IN THIS REPOSITORY, ADDED 6 October 2026 ════════════════════════════
 // There was none before — checked across package.json and every import in app/, components/ and lib/.
 // ⛔ SIX NAMED IMPORTS, NOT `import * as icons`. lucide-react ships ~1,500 components; a namespace
@@ -69,8 +84,18 @@ const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'],
 
 // 🔴 US readiness (D37): the tags name the visitor's country — lib/marketing-meta.ts. For GB every value is the
 // literal this page carried before ("UK", en_GB), byte-identical.
-export async function generateMetadata({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
-  const c = marketingCountry((await resolveVisitorCountry((await searchParams)?.country)).settings)
+export async function generateMetadata({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  // Language Phase 1e: at a COUNTRY address (/uk, /us — app/[country]/page.tsx) the country is the address's.
+  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'landing' })
+  const c = marketingCountry(visitor.settings)
+  // 🔴 canonical and og:url = the page's own country address; hreflang = every switched-on country + x-default → '/'.
+  // With no country address (the old module path) both stay the literal they were.
+  const at = visitor.countryPage && countryPageAlternates('landing', visitor.settings.countryCode, visitor.countryPage.alternates)
+  // Language Phase 1e: the title and description are `landing.meta.*` in the page's country language (GB byte-identical;
+  // US "Food truck & catering…", "from your spot without the line"). One title and one description, used three times.
+  const tm = translatorFor(visitor.settings.locale, 'landing')
+  const metaTitle = tm('meta.title', { country: c.short })
+  const metaDescription = tm('meta.description', { country: c.short })
   return {
     // ── TITLE. Terms first, brand last, because the job of this string is to be FOUND, not to be
     // recognised — nobody is searching the brand yet. "food truck" and "mobile catering" are the two
@@ -86,7 +111,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     // past Google's ~60. CAUGHT IN THE SERVED <head>, NOT IN THE SOURCE: the source read correctly.
     // ⚠️ THE PREVIOUS TITLE HAD THE SAME DEFECT ('HatchGrab — … | HatchGrab'). It is not new — it was
     // simply never looked at in rendered output, which is the whole reason this step demanded one.
-    title: { absolute: `Food truck & mobile catering ordering system — HatchGrab ${c.short}` },
+    title: { absolute: metaTitle },
 
     // ── DESCRIPTION. There was none before; the page inherited the root layout's brand-generic one.
     // Problem-shaped, in an operator's own words, and it names the one thing this is NOT so the wrong
@@ -98,9 +123,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     // of search metadata for "ordering and kitchen-screen software", and auto-replies are not what someone
     // typing that is looking for. 🔴 If it is ever added, it is now a factual claim rather than a forbidden
     // one — but check the flag before assuming that, because metadata is the place nobody re-reads.
-    description:
-      'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
-      + `software for ${c.short} food trucks and mobile catering — not a POS.`,
+    description: metaDescription,
 
     // ── 🟢 INDEXABLE, 8 September 2026. WHAT THIS REPLACED AND WHY IT WAS WRONG:
     // the previous comment read "noindex RESTORED … the admin gate in layout.tsx is back on while the
@@ -116,7 +139,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     // the last time they were separated it cost five days of invisibility and a comment that lied.
     robots: { index: true, follow: true },
 
-    alternates: { canonical: 'https://www.hatchgrab.com/' },
+    alternates: at ? { canonical: at.canonical, languages: at.languages } : { canonical: 'https://www.hatchgrab.com/' },
 
     // ── OPEN GRAPH + TWITTER. There were none, so a link pasted into a WhatsApp group or a Facebook
     // traders' group rendered bare — which, given that outreach here happens in exactly those places,
@@ -128,20 +151,16 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     openGraph: {
       type: 'website',
       siteName: 'HatchGrab',
-      url: 'https://www.hatchgrab.com/',
-      title: `Food truck & mobile catering ordering system — HatchGrab ${c.short}`,
-      description:
-        'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
-        + `software for ${c.short} food trucks and mobile catering — not a POS.`,
+      url: at ? at.canonical : 'https://www.hatchgrab.com/',
+      title: metaTitle,
+      description: metaDescription,
       images: [{ url: 'https://www.hatchgrab.com/logos/hatchgrab-share-card.png', width: 1200, height: 630, alt: 'HatchGrab' }],
       locale: c.ogLocale,
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Food truck & mobile catering ordering system — HatchGrab ${c.short}`,
-      description:
-        'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
-        + `software for ${c.short} food trucks and mobile catering — not a POS.`,
+      title: metaTitle,
+      description: metaDescription,
       images: ['https://www.hatchgrab.com/logos/hatchgrab-share-card.png'],
     },
   }
@@ -172,8 +191,10 @@ const Check = () => (
 // Pricing-card price: the big amount + a "per truck / month" sub-line (matches the compare header wording).
 // Free/other plans show no sub. Render-only — the parts arrive already formatted from the marketing country's
 // settings (lib/features.ts planPriceParts). 🔴 It no longer splits "£29/mo" on its "/mo" (Language Phase 0).
-function PlanPrice({ price }: { price: { amount: string; perMonth: boolean } }) {
-  return <div className="plan-price">{price.amount}{price.perMonth && <span>per truck / month</span>}</div>
+// Language Phase 1e: a price WORD arrives as its code ('Free') and is shown through priceText() in the page's locale;
+// an amount passes through unchanged. The sub-line is planSubLabels(locale) (lib/landing-table.ts).
+function PlanPrice({ price, perMonthLabel, locale }: { price: { amount: string; perMonth: boolean }; perMonthLabel: string; locale: string }) {
+  return <div className="plan-price">{priceText(price.amount, locale)}{price.perMonth && <span>{perMonthLabel}</span>}</div>
 }
 
 /**
@@ -199,19 +220,35 @@ function TileIcon({ icon: Icon }: { icon: typeof Clock }) {
   return <span className="does-ico" aria-hidden="true"><Icon /></span>
 }
 
-export default async function LandingPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export default async function LandingPage({ params, searchParams }: { params?: Promise<{ country?: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   // 🔴 ONE READ, SERVER-SIDE, AND LOUD: a missing row or an undecided price throws here rather than
   // rendering a pricing section with a borrowed or blank figure.
   // Phase 2D-1: the VISITOR'S country (?country → hg_country cookie → x-vercel-ip-country → GB, switched-on
   // only — lib/visitor-country.ts), resolved here on the server so the first paint has the right prices.
-  const visitor = await resolveVisitorCountry((await searchParams)?.country)
+  // Language Phase 1e: at a country address (/uk, /us) the country is the ADDRESS's, never the visitor's.
+  const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'landing' })
   const seo = marketingCountry(visitor.settings)   // 🔴 D37: the JSON-LD's country (GB: UK, United Kingdom, en-GB)
   const s = visitor.settings
   const allowances = planAllowances(s)
   const money = moneyFormatOf(s)
+  // Language Phase 1e: the words, in the visitor's country's locale (GB → en-GB, byte-identical to before).
+  const t = translatorFor(s.locale, 'landing')
+  // The plan cards' descriptions and sub-lines, in the same locale (FEATURES' locale-aware helpers).
+  const descriptions = planDescriptions(s.locale)
+  // ⚠️ The card's sub-line is ALWAYS "per truck / month" (shown only for a priced plan) — NOT planSubLabels().starter,
+  // which is the comparison table's "free forever" and would sit under a priced Starter.
+  const perTruckMonth = planSubLabels(s.locale).pro
+  const br = () => <br />
+  const lean = (c: React.ReactNode) => <span className="lean">{c}</span>
+  const soon = (c: React.ReactNode) => <span className="soon-inline">{c}</span>
+  const feeStar = (c: React.ReactNode) => <sup className="fee-star">{c}</sup>
+  // 🔴 THE PIZZERIA GUSTO TESTIMONIAL AND AWARD ARE A UK TRUCK'S WORDS ABOUT UK VILLAGES — shown to GB visitors
+  // only (Language Phase 1e). Decided by the page's country code, never by a word.
+  const showTestimonial = s.countryCode === 'GB'
   return (
     // DemoModalProvider is a CLIENT component taking server-rendered children — that's what lets every
     // CTA below open one shared modal without the page itself becoming a client component.
+    <LocaleWords locale={localeOfCountry(s)} words={wordsFor(localeOfCountry(s), NAMESPACES.marketing)}>
     <DemoModalProvider>
     {/* 🔴 `hg-hero-watch` IS THE LANDING-ONLY SCOPE FOR THE HEADER-CTA REVEAL, AND IT IS RENDERED ON THE
         SERVER SO THE BUTTON IS HIDDEN IN THE FIRST PAINT. Every rule behind the reveal is written
@@ -227,7 +264,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
           would have left the DOM reading "Log in, Upload menu" while the eye reads "Upload menu, Log in".
           Keeping those two in step is the requirement, so the ELEMENTS move, not their painted order.
           ⚠️ /compare renders the same <LandingNav /> WITHOUT this prop and is byte-identical. */}
-      <LandingNav ctaFirst country={visitor.menu} />
+      <LandingNav ctaFirst featuresHref={visitor.paths.features} country={visitor.menu} locale={s.locale} />
 
       {/* ============ HERO ============ */}
       <header className="hero">
@@ -252,16 +289,16 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                 '@type': 'SoftwareApplication',
                 name: 'HatchGrab',
                 applicationCategory: 'BusinessApplication',
-                applicationSubCategory: 'Food truck and mobile catering ordering system',
+                applicationSubCategory: t('jsonLd.subCategory'),
                 url: 'https://www.hatchgrab.com/',
-                description: `Ordering, pre-orders and a kitchen screen for ${seo.short} food trucks and mobile catering.`,
+                description: t('jsonLd.description', { country: seo.short }),
                 inLanguage: seo.lang,
                 areaServed: { '@type': 'Country', name: seo.name },
-                audience: { '@type': 'BusinessAudience', audienceType: 'Food truck and mobile catering operators' },
+                audience: { '@type': 'BusinessAudience', audienceType: t('jsonLd.audience') },
                 publisher: { '@type': 'Organization', name: 'HatchGrab', url: 'https://www.hatchgrab.com/' },
               }) }}
             />
-            <h1>The ordering system built for <span className="lean">food trucks.</span></h1>
+            <h1>{t.rich('hero.title', { lean })}</h1>
             {/* 🔴 MOBILE-ONLY (<640px), AND IT IS `display:none` BY DEFAULT — see landing.css. A block
                 that is display:none generates no box at all, so on tablet and desktop this element is
                 not merely invisible, it takes part in no layout: the hero above 640px is untouched.
@@ -270,14 +307,14 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                 what it gets you. BOTH are sized to hold on one line from 360px up — see the width note
                 on `.hero-sub-sm` in landing.css. ⚠️ "no signup needed" moved UP into line 1 on
                 12 September, which is what allowed the separate line under the button to be deleted. */}
-            <p className="hero-sub-sm">Upload your menu, no signup needed.<br />See a working demo in under 60 seconds.</p>
-            <p className="hero-tag">Less time booking.<br />More time <span className="lean">cooking.</span></p>
+            <p className="hero-sub-sm">{t.rich('hero.subSmall', { br })}</p>
+            <p className="hero-tag">{t.rich('hero.tagline', { br, lean })}</p>
             {/* CTA row: button LEFT + text RIGHT on desktop (≥940px); stacked, full-width button + centred text on mobile. */}
             <div className="hero-cta-row">
               {/* 🔴 THE id IS THE OBSERVER'S TARGET, NOT A STYLING HOOK — nothing in landing.css selects
                   it. HeroCtaWatcher below watches this exact button to decide when the HEADER CTA
                   appears on mobile. */}
-              <DemoCta id="hero-cta" className="btn btn-primary btn-lg">Upload my menu →</DemoCta>
+              <DemoCta id="hero-cta" className="btn btn-primary btn-lg">{t('hero.cta')}</DemoCta>
               {/* ══ 🔴 BESIDE THE BUTTON, IN TWO LINES — 7 October 2026 ════════════════════════════
                   It replaced `.hero-cta-text` (a bold 1.12rem line plus a grey one) and sat UNDER the
                   button for a day; it is to its RIGHT now, which is where the block it replaced was.
@@ -287,7 +324,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                   no duplicate markup.
                   🔴 THE BREAK IS THE COPY, NOT A WRAP. Two deliberate lines, as specified; `<br />`
                   rather than two blocks so the pair stays one paragraph to a screen reader. */}
-              <p className="hero-cta-note">No signup, no card.<br />See it working in under 60 seconds.</p>
+              <p className="hero-cta-note">{t.rich('hero.ctaNote', { br })}</p>
             </div>
             {/* Renders nothing. Mounts the IntersectionObserver that reveals the header CTA on mobile. */}
             <HeroCtaWatcher targetId="hero-cta" />
@@ -318,10 +355,10 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
               ⚠️ `kitchen.png` IS BACK IN THE HERO and is no longer an unreferenced asset. */}
           <div className="fan">
             <div className="shot shot-kds">
-              <Image src="/screenshots/kitchen.png" alt="The HatchGrab kitchen screen, showing order tickets in cook order" width={320} height={240} sizes="(max-width: 939px) 58vw, 320px" priority />
+              <Image src={landingScreenshot('kitchen', s.countryCode)} alt={t('shots.kitchenAlt')} width={320} height={240} sizes="(max-width: 939px) 58vw, 320px" priority />
             </div>
             <div className="shot shot-dash">
-              <Image src="/screenshots/dashboard-v4.png" alt="Taking an order on HatchGrab: the menu on the left, the running basket and total on the right" width={800} height={551} sizes="(max-width: 939px) 72vw, 400px" priority />
+              <Image src={landingScreenshot('dashboard', s.countryCode)} alt={t('shots.dashboardAlt')} width={800} height={551} sizes="(max-width: 939px) 72vw, 400px" priority />
             </div>
             {/* 🟢 FILLED. Was the last `shot-empty` placeholder; the shot landed 2 September 2026 —
                 a real iPhone 12 Pro Max capture, 1284x2778, copied in LOSSLESSLY (verified pixel-identical
@@ -332,7 +369,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                 the `object-fit: contain` on `.shot img` would have letterboxed the shot inside its own
                 frame, with a band of frame showing above and below. */}
             <div className="shot shot-phone">
-              <Image src="/screenshots/customer-order.png" alt="Ordering from a food truck on HatchGrab: the menu with photos and prices, and a running basket total" width={1284} height={2778} sizes="(max-width: 939px) 26vw, 140px" priority />
+              <Image src={landingScreenshot('phone', s.countryCode)} alt={t('shots.phoneAlt')} width={1284} height={2778} sizes="(max-width: 939px) 26vw, 140px" priority />
             </div>
           </div>
         </div>
@@ -342,9 +379,9 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
           wash tint. Three bullets (orange ticks): row on desktop, left-aligned stack on mobile. */}
       <div className="trust-strip">
         <ul className="trust-in wrap">
-          <li><Check /> First month 100% free, everything unlocked</li>
-          <li><Check /> No card needed</li>
-          <li><Check /> Cancel anytime, no contract</li>
+          <li><Check />{' ' + t('trust.freeMonth')}</li>
+          <li><Check />{' ' + t('trust.noCard')}</li>
+          <li><Check />{' ' + t('trust.cancel')}</li>
         </ul>
       </div>
 
@@ -352,18 +389,18 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
           trust strip above and the wash "how it works" band below) */}
       <section>
         <div className="wrap">
-          <p className="eyebrow">What it does</p>
-          <h2>Built for food trucks, not restaurants.</h2>
-          <p className="lede">Most ordering systems assume a fixed address, reliable wifi and the same hours every week. You’re somewhere new every week, at different times, on patchy or no mobile coverage. HatchGrab was built for that.</p>
+          <p className="eyebrow">{t('does.eyebrow')}</p>
+          <h2>{t('does.title')}</h2>
+          <p className="lede">{t('does.lede')}</p>
           <div className="does">
             {/* ⚠️ BOTH HEADINGS NAME THE **FEATURE**, NOT THE FEELING (10 October 2026, Dominic).
                 "Kill the queue" and "Never promise a time you can't hit" were a slogan and a warning —
                 a truck owner scanning the page could not tell from either which control they were being
                 sold. The two sentences underneath are unchanged, because they were already the plain
                 version of the same two facts. */}
-            <div className="does-item"><h3><TileIcon icon={Clock} /><span>Customers choose collection times</span></h3><p>Customers order ahead and pick a collection time. Less queues, and food ready when they arrive.</p></div>
-            <div className="does-item"><h3><TileIcon icon={Gauge} /><span>Set your kitchen capacity</span></h3><p>Set how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
-            <div className="does-item"><h3><TileIcon icon={MonitorSmartphone} /><span>Works on any device</span></h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
+            <div className="does-item"><h3><TileIcon icon={Clock} /><span>{t('does.slotsTitle')}</span></h3><p>{t('does.slotsBody')}</p></div>
+            <div className="does-item"><h3><TileIcon icon={Gauge} /><span>{t('does.capacityTitle')}</span></h3><p>{t('does.capacityBody')}</p></div>
+            <div className="does-item"><h3><TileIcon icon={MonitorSmartphone} /><span>{t('does.devicesTitle')}</span></h3><p>{t('does.devicesBody')}</p></div>
             {/* ══ 🔴 REPLACED "Never type your schedule twice" — 6 October 2026, ON REQUEST ═══════════
                 Same position in the grid, same `does-item` markup and styling as the other five, which
                 are untouched. The schedule-import claim it carried is still made on this page, in the
@@ -383,7 +420,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                 for the week, so the singular and the narrower "weekly post" were both wrong — and the
                 body now says so outright ("every week or every day"), which is why the heading no
                 longer has to carry it. */}
-            <div className="does-item"><h3><TileIcon icon={ImageIcon} /><span>Automate your Facebook &amp; Instagram posts</span></h3><p>Upload the design you already post on Facebook or Instagram. We’ll fill in your dates, places and times, ready to share — every week or every day.</p></div>
+            <div className="does-item"><h3><TileIcon icon={ImageIcon} /><span>{t('does.postsTitle')}</span></h3><p>{t('does.postsBody')}</p></div>
             {/* ── MOVED TO 5th IN THE GRID, 4 September 2026, ON THE OPERATOR'S INSTRUCTION — it sat 3rd
                 for part of the same day, also on their instruction. Position here is an editorial call,
                 not a structural one: nothing reads the tile order, so it is theirs to set. Below "Never
@@ -426,13 +463,13 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                 after "No signal? Keep serving." — which is where it sat in production at 08ac368, and
                 where a not-yet-shipped capability belongs. See the OFF branch below this row. */}
             {WHATSAPP_LIVE && (
-              <div className="does-item"><h3><TileIcon icon={MessageCircle} /><span>WhatsApp auto-replies</span></h3><p>“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to the pitch or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.</p></div>
+              <div className="does-item"><h3><TileIcon icon={MessageCircle} /><span>{t('does.whatsappTitle')}</span></h3><p>{t('does.whatsappBody')}</p></div>
             )}
             {/* 🟢 "Android coming soon." REMOVED 5 September 2026 — the Android app is live on Google Play, so
                 the sentence is present tense like every other claim on this page. The three platforms are
                 COMBINED into the existing sentence rather than given a line of their own: they are one app
                 on three devices, and a separate line would read as a separate product. */}
-            <div className="does-item"><h3><TileIcon icon={WifiOff} /><span>No signal? Keep serving.</span></h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p></div>
+            <div className="does-item"><h3><TileIcon icon={WifiOff} /><span>{t('does.offlineTitle')}</span></h3><p>{t('does.offlineBody')}</p></div>
             {/* 🔴 THE NOT-LIVE TILE, AND IT IS LAST ON PURPOSE. Production at 08ac368 carried it here,
                 after "No signal? Keep serving." — a capability that has not shipped does not sit among
                 five that have. Flipping WHATSAPP_LIVE moves it up to fifth (above) in the same edit.
@@ -444,7 +481,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                 🔴 §44's rule is met twice over: the badge says it, and the body still reads "Soon your
                 WhatsApp WILL get answered". The badge is what disappears when WHATSAPP_LIVE flips. */}
             {!WHATSAPP_LIVE && (
-              <div className="does-item"><h3><TileIcon icon={MessageCircle} /><span>WhatsApp auto-replies <span className="soon-inline">Coming soon</span></span></h3><p>“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.</p></div>
+              <div className="does-item"><h3><TileIcon icon={MessageCircle} /><span>{t.rich('does.whatsappSoonTitle', { soon })}</span></h3><p>{t('does.whatsappSoonBody')}</p></div>
             )}
           </div>
         </div>
@@ -471,13 +508,13 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
           The table above is the whole specification. */}
       <section className="band">
         <div className="wrap">
-          <p className="eyebrow">Getting going</p>
-          <h2>Get set up and start taking orders in about 15 minutes.</h2>
-          <p className="lede">Three things to sort — and two of them just need a photo.</p>
+          <p className="eyebrow">{t('steps.eyebrow')}</p>
+          <h2>{t('steps.title')}</h2>
+          <p className="lede">{t('steps.lede')}</p>
           <div className="steps">
-            <div className="step"><h3>Build your menu</h3><p>Photograph your board or paste it in. Items, prices and extras all come across on their own. You just check they’re right.</p></div>
-            <div className="step"><h3>Add your schedule</h3><p>Got it on your website? We’ll read it from there and keep it up to date. If not, photograph that too. You just approve what it finds.</p></div>
-            <div className="step"><h3>Share your link</h3><p>Post it on Facebook, stick the QR on the van. Orders land on your screen, in the order you need to cook them.</p></div>
+            <div className="step"><h3>{t('steps.menuTitle')}</h3><p>{t('steps.menuBody')}</p></div>
+            <div className="step"><h3>{t('steps.scheduleTitle')}</h3><p>{t('steps.scheduleBody')}</p></div>
+            <div className="step"><h3>{t('steps.shareTitle')}</h3><p>{t('steps.shareBody')}</p></div>
           </div>
         </div>
       </section>
@@ -491,11 +528,15 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
           🔴 THE GATE IN layout.tsx AND THE noindex ABOVE STAY ON, AND THIS DOES NOT CHANGE THAT. Having their
           words is not the same as having their written permission to publish them, and no record of consent
           exists in this repository. layout.tsx's condition 1 is still unmet and still correctly worded.
-          The logo is public/gusto-logo.png, which is real and always has been. */}
+          The logo is public/gusto-logo.png, which is real and always has been.
+          🔴 GB ONLY (Language Phase 1e): a UK truck, a UK award and "busy villages" — on any other country's page the
+          whole section is left out and nothing else on the page changes. The quote is a `landing.testimonial`
+          message with NO en-US text (it is never shown there) and its straight apostrophe is kept, as above. */}
+      {showTestimonial && (
       <section className="quote-sec">
         <div className="wrap quote-in">
           <span className="quote-mark">“</span>
-          <blockquote>{"HatchGrab has made ordering so much easier. Everything's organised, we can track stock and know exactly how many pizzas we have left to sell — and the time slots are fantastic for busy villages."}</blockquote>
+          <blockquote>{t('testimonial.quote')}</blockquote>
           <div className="quote-by">
             {/* 🔴 alt="" IS DELIBERATE, NOT AN OVERSIGHT: "Pizzeria Gusto" is in the role line directly below, so an alt would announce the business name TWICE — and a MISSING alt would make some screen readers read the filename instead. */}
             {/* ══ 🔴 `sizes` ADDED 6 October 2026 — A LOAD FIX WITH NO VISUAL CHANGE ════════════════
@@ -517,35 +558,28 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                 verified in the browser (`loading=lazy`) rather than assumed from the absence of a prop. */}
             <Image className="quote-logo" src="/gusto-logo.png" alt="" width={320} height={233} sizes="96px" />
             <span className="quote-who">
-              {/* ── THE ATTRIBUTION READS: names -> role -> award (29 August 2026). ───────────────
-                  🔴 THE TRUCK NAME IS NOT REPEATED. This line held "Pizzeria Gusto" on its own; it now
-                  holds the owners' names, and the business name appears once, inside the role line
-                  beneath it. Adding the names ABOVE the existing line would have read
-                  "Pizzeria Gusto / Nadia & Bogdan / Owners, Pizzeria Gusto" — the name twice in three
-                  lines. The line was repurposed, not added to.
-                  ⚠️ THE LOGO'S alt IS STILL "Pizzeria Gusto", so a screen reader hears the business
-                  name from the image and again from the role line. Sighted readers see it once,
-                  because the logo is a picture. Fixing that means editing the logo element, which this
-                  workstream was told not to touch — flagged, not changed.
-                  ⚠️ "&" IS THE LITERAL AMPERSAND THEY USE BETWEEN TWO FIRST NAMES, written as {'&'}
-                  rather than bare so no formatter turns it into an entity or a word. */}
-              <span className="quote-name">Nadia {'&'} Bogdan</span>
-              <span className="quote-role">Owners, Pizzeria Gusto</span>
+              {/* ── THE ATTRIBUTION READS: business -> people -> award (16 October 2026, Dominic). ─────────
+                  Bold line "Pizzeria Gusto", small line "Nadia & Bogdan — owners" (it was "Nadia & Bogdan" over
+                  "Owners, Pizzeria Gusto" from 29 August). The business name still appears once only. The logo's
+                  alt is empty, so a screen reader hears it once too. */}
+              <span className="quote-name">{t('testimonial.business')}</span>
+              <span className="quote-role">{t('testimonial.byline')}</span>
               {/* ✅ Award wording CONFIRMED by Dominic, 28 August 2026 ("Mobile pizzeria of the year — regional
                   winner is correct"). Layout is set with INLINE styles (not just .cred-* classes) so it renders
                   correctly even if a stale landing.css is cached: title row (★ — text — ★) then scope beneath. */}
               <span className="quote-cred" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.15rem', marginTop: '0.35rem', width: '100%' }}>
                 <span className="cred-title" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', whiteSpace: 'nowrap', color: 'var(--orange)', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.01em' }}>
                   <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true" style={{ flex: 'none', fill: 'var(--orange)' }}><path d="M8 0l2.2 4.6 5 .7-3.6 3.5.9 5L8 11.4 3.5 13.8l.9-5L.8 5.3l5-.7z" /></svg>
-                  Mobile Pizzeria of the Year
+                  {t('testimonial.award')}
                   <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true" style={{ flex: 'none', fill: 'var(--orange)' }}><path d="M8 0l2.2 4.6 5 .7-3.6 3.5.9 5L8 11.4 3.5 13.8l.9-5L.8 5.3l5-.7z" /></svg>
                 </span>
-                <span className="cred-scope" style={{ display: 'block', textAlign: 'center', color: 'var(--ink-faint)', fontWeight: 600, fontSize: '0.68rem' }}>Regional winner</span>
+                <span className="cred-scope" style={{ display: 'block', textAlign: 'center', color: 'var(--ink-faint)', fontWeight: 600, fontSize: '0.68rem' }}>{t('testimonial.awardScope')}</span>
               </span>
             </span>
           </div>
         </div>
       </section>
+      )}
 
       {/* ══ ⛔ "Everything you need, nothing you don't" WAS DELETED — 6 October 2026 ════════════════
           The "Orders" eyebrow, its lede and the #17 Sarah ticket mock-up. Removed on request as part
@@ -569,12 +603,12 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
       <section id="pricing" className="band">
         <div className="wrap">
           <div className="price-head">
-            <p className="eyebrow">Pricing</p>
+            <p className="eyebrow">{t('pricing.eyebrow')}</p>
             {/* ⚠️ "Start free. Stay free, if that's all you need." UNTIL 6 October 2026. The old line
                 sold staying on the free tier; this one names the move the page is actually asking for.
                 ⛔ NOTHING ELSE IN THIS SECTION CHANGED — the fee paragraph, the orange trial banner, the
                 three cards, the button, the switching block and the small print are all untouched. */}
-            <h2>Start free. Upgrade when you need to.</h2>
+            <h2>{t('pricing.title')}</h2>
             {/* 🔴 THE LEDE STATES THE HEADLINE AND STOPS. The walk-up detail — the in-person rate, the
                 UK/EEA limit, the tap surcharge, "coming soon" — lives ONCE, in footnote 1, which renders
                 further down this same page. Restating any of it here is what made this section read three
@@ -585,26 +619,36 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                 NEW charge, when in fact most trucks already pay their own terminal provider and nothing
                 about that changes. It says whose fee it is and that nothing changes. Do not shorten it to
                 "fees still apply", and do not add a figure — there is deliberately no number here. */}
-            <p className="lede">Pro is {formatAmount(planMonthlyMinor('pro', s), money)} a month with {allowanceAmountLabel(allowanceMinorFor('pro', s), s)} of online orders included. Max is {formatAmount(planMonthlyMinor('max', s), money)} with {allowanceAmountLabel(allowanceMinorFor('max', s), s)}. Anything above that is {platformFeeLabel(s)}. Standard card processing fees apply to all online orders (currently {cardFeeOnlineLabel(s)} on {cardRegionOnline(s)}), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan. Your card terminal&apos;s own fees still apply.</p>
+            {/* Language Phase 1e: ONE message with its seven values (rule 2) — every amount still formatted by
+                lib/money-format.ts / lib/plan-features.ts from the country's settings, never typed. */}
+            <p className="lede">{t('pricing.summary', {
+              proPrice: formatAmount(planMonthlyMinor('pro', s), money),
+              proAllowance: allowanceAmountLabel(allowanceMinorFor('pro', s), s),
+              maxPrice: formatAmount(planMonthlyMinor('max', s), money),
+              maxAllowance: allowanceAmountLabel(allowanceMinorFor('max', s), s),
+              platformFee: platformFeeLabel(s),
+              cardFee: cardFeeOnlineLabel(s),
+              region: s.cardFeeRegionLabel,
+            })}</p>
           </div>
 
           <div className="trial-banner">
-            <strong>Your first month is completely free — every feature unlocked.</strong>
-            <span>With Pay at Hatch, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. <b><u>Adding online payments doesn’t start your subscription</u></b>. You’re only charged when you actively select a paid plan. We’ll never charge you without your clear permission. No card to start, cancel anytime.</span>
+            <strong>{t('pricing.trialTitle')}</strong>
+            <span>{t.rich('pricing.trialBody', { brand: priceText(PRICE_WORD.payAtHatch, s.locale), bold: c => <b><u>{c}</u></b> })}</span>
           </div>
 
           <div className="plans">
             {/* Starter */}
             <div className="plan">
               <div className="plan-name">{PLAN_META.starter.name}</div>
-              <div className="plan-who">{PLAN_DESCRIPTIONS.starter}</div>
-              <PlanPrice price={planPriceParts('starter', s)} />
-              <div className="plan-fee">{allowances.starter}</div>
+              <div className="plan-who">{descriptions.starter}</div>
+              <PlanPrice price={planPriceParts('starter', s)} perMonthLabel={perTruckMonth} locale={s.locale} />
+              <div className="plan-fee">{priceText(allowances.starter, s.locale)}</div>
               <ul>
-                <li className="lead">Everything to run a service</li>
-                <li>Walk-up orders &amp; kitchen screen</li>
-                <li>Online ordering, pay at the hatch</li>
-                <li>Menu, meal deals &amp; upsells</li>
+                <li className="lead">{t('pricing.starter.lead')}</li>
+                <li>{t('pricing.starter.walkUp')}</li>
+                <li>{t('pricing.starter.online')}</li>
+                <li>{t('pricing.starter.menu')}</li>
                 {/* 🔴 THE "Sold-out toggle & stock countdown" BULLET WAS REMOVED HERE — 2 September 2026,
                     on request, in two steps: "& stock countdown" went with the matrix change that moved
                     'Automated stock countdown' off Starter, then the whole bullet went.
@@ -624,8 +668,8 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                     ⚠️ THESE BULLETS ARE HAND-WRITTEN AND NOTHING CHECKS THEM AGAINST THE MATRIX. The
                     match above is deliberate, not automatic; if a row is ever renamed, this is one of
                     the places that will not follow on its own. */}
-                <li>QR code</li>
-                <li>Discovery map listing</li>
+                <li>{t('pricing.starter.qr')}</li>
+                <li>{t('pricing.starter.map')}</li>
                 {/* ⚠️ HAND-WRITTEN, NOT RENDERED FROM FEATURE_SECTIONS. This bullet is a literal twin of the
                     matrix row in lib/plan-features.ts and nothing checks the two against each other, so it
                     must be changed in the SAME commit or the same page shows two different claims. */}
@@ -633,17 +677,17 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                     its own coming-soon line was DELETED rather than un-marked — the two were split only
                     while the platforms shipped at different times. This bullet is a literal twin of the
                     matrix row and nothing checks the two against each other, so both moved in one edit. */}
-                <li>iPhone, iPad and Android kitchen app</li>
+                <li>{t('pricing.starter.app')}</li>
               </ul>
-              <DemoCta className="btn btn-ghost">Try Free</DemoCta>
+              <DemoCta className="btn btn-ghost">{t('pricing.tryFree')}</DemoCta>
             </div>
 
             {/* Pro */}
             <div className="plan hero-plan">
-              <span className="plan-tag">Most trucks</span>
+              <span className="plan-tag">{t('pricing.mostTrucks')}</span>
               <div className="plan-name">{PLAN_META.pro.name}</div>
-              <div className="plan-who">{PLAN_DESCRIPTIONS.pro}</div>
-              <PlanPrice price={planPriceParts('pro', s)} />
+              <div className="plan-who">{descriptions.pro}</div>
+              <PlanPrice price={planPriceParts('pro', s)} perMonthLabel={perTruckMonth} locale={s.locale} />
               {/* ══ 🔴 "No fee on walk-ups." — ADDED 10 October 2026, ON PRO AND MAX ONLY ═══════════════
                   ⚠️ IT IS APPENDED **HERE**, NOT IN `planAllowances()`. That constant is read by the
                   features PDF and by the comparison table as well as by this card, and the brief asks for
@@ -656,12 +700,14 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                   platform fee on any plan" all along. This puts it where a reader comparing two cards is
                   actually looking. ⚠️ STARTER IS DELIBERATELY UNTOUCHED: its fee line is "Pay at Hatch",
                   which is a model and not an allowance, and the brief names Pro and Max. */}
-              <div className="plan-fee">{allowances.pro}<sup className="fee-star">*</sup>. No fee on walk-ups.</div>
+              <div className="plan-fee">{t.rich('pricing.planFee', { allowance: allowances.pro, star: feeStar })}</div>
               <ul>
-                <li className="lead">Everything in Free, plus</li>
-                <li>Offline order protection</li>
-                <li>Take payment online</li>
-                <li>Pre-orders &amp; collection times</li>
+                {/* Language Phase 1e: "Free" is the Starter card's PRICE word, so it is only said where Starter costs nothing;
+                    a country whose Starter is priced names the plan instead. GB (Starter free) is unchanged. */}
+                <li className="lead">{t('pricing.pro.lead', { starterIsFree: planMonthlyMinor('starter', s) === 0 ? 'yes' : 'other', starterName: PLAN_META.starter.name })}</li>
+                <li>{t('pricing.pro.offline')}</li>
+                <li>{t('pricing.pro.payOnline')}</li>
+                <li>{t('pricing.pro.preorders')}</li>
                 {/* ⚠️ "Kitchen capacity management", NOT "Smart slot management" (10 October 2026).
                     "Smart" is a claim and "slot" is our word; the thing a truck sets is their kitchen's
                     capacity. ⛔ IT MATCHES THE MATRIX ROW'S OWN `name` in lib/plan-features.ts, which
@@ -670,7 +716,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                     ⛔ "Auto-accept orders" IS OFF THE CARD, on instruction. It is STILL A PRO FEATURE
                     and still in the matrix ('Auto-accept online orders', pro: true) — this card is the
                     short list, not the full one. */}
-                <li>Kitchen capacity management</li>
+                <li>{t('pricing.pro.capacity')}</li>
                 {/* 🔴 PRIVATE EVENTS IS A **PRO** FEATURE (5 October 2026), the other half of the row
                     that was "Event & festival pricing · Coming soon" on the Max card. Built, so no
                     badge — and it twins the `pro: true` cell in lib/plan-features.ts.
@@ -679,7 +725,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                     row's own `detail` already carries. 🟢 IT IS NOW BYTE-IDENTICAL TO THE ROW'S `name`
                     in lib/plan-features.ts, which already said "Private events": the card was the one
                     out of step, so this closes a gap rather than opening one. */}
-                <li>Private events</li>
+                <li>{t('pricing.pro.privateEvents')}</li>
                 {/* ⚠️ SPLIT 4 September 2026 — was one welded bullet: "WhatsApp, Messenger & Instagram
                     auto-replies — Coming soon". WhatsApp now ships and carries NO badge; the other two
                     keep theirs. Third surface of the same fact as the does-item block above and the
@@ -710,7 +756,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                     JSX comments have no leading `*`, so its line-based stripper cannot tell this prose
                     from a gate. Naming it here would have added a seventh "consumer" that gates
                     nothing. See lib/features.ts for the key and its tiers. */}
-                <li>Social media posts</li>
+                <li>{t('pricing.pro.social')}</li>
                 {/* ══ 🔴 ONE BULLET FOR ALL THREE CHANNELS AGAIN — 6 October 2026 ════════════════════
                     ⛔ THE SEPARATE "Messenger & Instagram auto-replies" BULLET IS GONE. It carried the
                     COMING SOON badge, which put a badge on the card for a channel nobody buys the plan
@@ -727,9 +773,9 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                     ⚠️ THE FLAG STILL DECIDES. With WHATSAPP_LIVE off there is nothing live to separate,
                     so the OFF branch keeps the welded badge line it has always had, verbatim. */}
                 {WHATSAPP_LIVE ? (
-                <li>WhatsApp auto-replies (Messenger &amp; Instagram coming soon)</li>
+                <li>{t('pricing.pro.whatsapp')}</li>
                 ) : (
-                <li>WhatsApp, Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>
+                <li>{t.rich('pricing.pro.whatsappSoon', { soon })}</li>
                 )}
                 {/* ══ 🔴 "Coming soon" SITS AT THE BOTTOM, GROUPED — 6 October 2026 ═══════════════════
                     ⛔ THIS BULLET DID NOT MOVE; THE TWO ABOVE IT DID NOT EITHER. What moved is
@@ -737,22 +783,22 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                     one — so the card read built, coming-soon, built, coming-soon. A reader scanning for
                     what they get today had to read every line to know which half it was in.
                     ⚠️ THE RULE IS APPLIED TO ALL THREE CARDS, and Max already satisfied it. */}
-                <li>Take payment on your phone <span className="soon-inline">Coming soon</span></li>
+                <li>{t.rich('pricing.pro.payOnPhone', { soon })}</li>
               </ul>
-              <DemoCta className="btn btn-primary">Try Free</DemoCta>
+              <DemoCta className="btn btn-primary">{t('pricing.tryFree')}</DemoCta>
             </div>
 
             {/* Max */}
             <div className="plan">
               <div className="plan-name">{PLAN_META.max.name}</div>
-              <div className="plan-who">{PLAN_DESCRIPTIONS.max}</div>
-              <PlanPrice price={planPriceParts('max', s)} />
+              <div className="plan-who">{descriptions.max}</div>
+              <PlanPrice price={planPriceParts('max', s)} perMonthLabel={perTruckMonth} locale={s.locale} />
               {/* ⚠️ THE SAME SENTENCE AS PRO'S, FOR THE SAME REASON — see the note on the Pro card. */}
-              <div className="plan-fee">{allowances.max}<sup className="fee-star">*</sup>. No fee on walk-ups.</div>
+              <div className="plan-fee">{t.rich('pricing.planFee', { allowance: allowances.max, star: feeStar })}</div>
               <ul>
-                <li className="lead">Everything in Pro, plus</li>
-                <li>Multi-device kitchen sync</li>
-                <li>Multi-staff logins</li>
+                <li className="lead">{t('pricing.max.lead')}</li>
+                <li>{t('pricing.max.sync')}</li>
+                <li>{t('pricing.max.staff')}</li>
                 {/* ⚠️ RENAMED, MOVED AND UN-BADGED 29 August 2026, to match the matrix row it twins
                     (lib/plan-features.ts, now 'Schedule page on your own website'), which moved above
                     'Kitchen ticket printing' in the same change.
@@ -766,13 +812,13 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                     ONE page, so two names for one feature is the page arguing with itself in the exact
                     way this comment already warned about. THE BULLET IS NOT A KEY — nothing joins on it;
                     it is display copy that must simply agree with the row. Change both or neither. */}
-                <li>Schedule page on your own website</li>
+                <li>{t('pricing.max.schedulePage')}</li>
                 {/* 🔴 NO "(Bluetooth or wired printer)" HERE — 19 September 2026. The card lists WHAT
                     you get; which printers it works with is a detail, and the comparison table lower down
                     this page already carries it in the row's own `detail` and footnote 5. Saying it twice
                     made the card the longest bullet in the list for the least useful reason. The bullet is
                     now byte-identical to the row's `name`, which is what the rule above asks for. */}
-                <li>Kitchen ticket printing</li>
+                <li>{t('pricing.max.printing')}</li>
                 {/* ══ 🔴 "Event & festival pricing · Coming soon" BECAME TWO BUILT ROWS (5 October 2026)
                     ⛔ ONE BULLET COULD NOT CARRY BOTH, because they are on different tiers: private
                     events are Pro (`private_events`) and custom types with their prices are Max
@@ -782,10 +828,10 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
                     the matrix rows in lib/plan-features.ts and nothing checks them against each other,
                     so a "Coming soon" left here would contradict a `true` cell in the table on the same
                     page. Change both or neither; this is the "both". */}
-                <li>Custom event types &amp; pricing</li>
-                <li>Digital loyalty stamp cards <span className="soon-inline">Coming soon</span></li>
+                <li>{t('pricing.max.eventTypes')}</li>
+                <li>{t.rich('pricing.max.loyalty', { soon })}</li>
               </ul>
-              <DemoCta className="btn btn-ghost">Try Free</DemoCta>
+              <DemoCta className="btn btn-ghost">{t('pricing.tryFree')}</DemoCta>
             </div>
           </div>
 
@@ -812,8 +858,8 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
               ⚠️ TWO ELEMENTS, TWO RULES. `.feat-cta` carries the lead-in and the centring; `.feat-btn`
               carries the button. One wrapper with both inside would have made the 10–12px gap between
               them a margin on a `<p>` inside a `<p>`, which is not legal markup. */}
-          <p className="feat-cta feat-lead">Not sure which plan? See exactly what each one includes.</p>
-          <p className="feat-btn"><a href="/features" className="btn btn-navy">Compare all features →</a></p>
+          <p className="feat-cta feat-lead">{t('pricing.compareLead')}</p>
+          <p className="feat-btn"><a href={visitor.paths.features} className="btn btn-navy">{t('pricing.compareCta')}</a></p>
 
           {/* ── 🔴 THE SWITCHING BLOCK — A SIDE DOOR, AND IT SELF-SELECTS ON ITS FIRST WORD ──────────
               Added 3 September 2026. Copy supplied and approved; it is not editorial and must not be
@@ -838,16 +884,16 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
               NEXT_PUBLIC_PRICING_PUBLISHED is 'true'; while that is unset this link lands on a redirect
               to /contact. See docs/landing-switching-block-report.md 7. */}
           <div className="switch-block">
-            <p className="switch-head">Switching from another platform?</p>
-            <p className="switch-body">See what you’d be paying on HatchGrab for the same orders. Takes about a minute.</p>
-            <p className="switch-cta"><a href="/compare">Compare what you’re paying</a></p>
+            <p className="switch-head">{t('pricing.switchHead')}</p>
+            <p className="switch-body">{t('pricing.switchBody')}</p>
+            <p className="switch-cta"><a href={visitor.paths.compare}>{t('pricing.switchCta')}</a></p>
           </div>
 
           <div className="price-foot">
             {/* ⚠️ THE WALK-UP PARAGRAPH THAT STOOD HERE WAS REMOVED, NOT SHORTENED. Footnote 1 covers it
                 and renders on this same screen, so this restated it a third time. */}
-            <p>*Standard card processing fees apply to all online orders (currently {cardFeeOnlineLabel(s)} on {cardRegionOnline(s)}), including those within your allowance.</p>
-            <p>Cancel by doing nothing. Even if you’ve added a card for payments, we’ll never charge it for a plan unless you actively choose one.</p>
+            <p>{t('pricing.footCardFees', { cardFee: cardFeeOnlineLabel(s), region: s.cardFeeRegionLabel })}</p>
+            <p>{t('pricing.footCancel')}</p>
           </div>
         </div>
       </section>
@@ -880,7 +926,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
               ⚠️ className="truck" is what sizes it (.hg-landing .truck { width: min(230px,60%); height: auto }),
               so it must stay on the <svg>; there are deliberately NO width/height attributes to fight it.
               The standalone public/illustrations/food-truck.svg (plain hex) is the spare for <img> use. */}
-          <svg className="truck" viewBox="24.0 18.0 351.5 176.0" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Food truck">
+          <svg className="truck" viewBox="24.0 18.0 351.5 176.0" xmlns="http://www.w3.org/2000/svg" role="img" aria-label={t('final.truckLabel')}>
             <g transform="translate(399.5,0) scale(-1,1)">
               <path d="M30.0 121.2 L30.0 159.3 L31.2 161.7 L35.5 165.3 L364.6 165.3 L368.2 162.4 L369.9 159.3 L369.9 30.0 L368.9 27.8 L367.2 25.9 L365.3 24.7 L362.7 24.0 L96.8 24.2 L93.4 25.9 L90.5 30.2 L74.4 85.0 L73.2 90.4 L71.3 95.4 L69.7 97.0 L36.7 111.9 L32.6 115.5 Z" fill="var(--head, #16314F)"/>
               <circle cx="95.1" cy="165.4" r="29.3" fill="#FFFFFF"/>
@@ -894,26 +940,27 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
               <rect x="162.5" y="110.7" width="153.7" height="6.2" rx="4.0" fill="var(--orange, #EF8B2C)"/>
             </g>
           </svg>
-          <h2>Want to see how easy setup is?</h2>
-          <p className="lede">Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to have a play around with in under 60 seconds. Your items, your prices. No sign-up, no card, nothing to install. Have a look, then decide.</p>
+          <h2>{t('final.title')}</h2>
+          <p className="lede">{t('final.lede')}</p>
           {/* This section keeps its heading + copy; its button opens the SAME modal every other CTA on
               the page opens. `#try` remains a valid anchor target (the return-link bounce uses it), but
               nothing scrolls here to reach the upload any more. No ✨ on page CTAs — the sparkle is the
               MODAL's cue (mirroring Manage's "✨ Import menu"), not the landing page's. */}
-          <DemoCta className="btn btn-primary btn-lg">Upload my menu now →</DemoCta>
+          <DemoCta className="btn btn-primary btn-lg">{t('final.cta')}</DemoCta>
           <ul className="proof">
-            <li><Check /> First month 100% free, everything unlocked</li>
-            <li><Check /> No card needed</li>
-            <li><Check /> Cancel anytime, no contract</li>
+            <li><Check />{' ' + t('trust.freeMonth')}</li>
+            <li><Check />{' ' + t('trust.noCard')}</li>
+            <li><Check />{' ' + t('trust.cancel')}</li>
           </ul>
         </div>
       </section>
 
       {/* ============ FOOTER ============ (slate bg = HEADER_BG from lib/brand.ts) */}
-      <LandingFooter country={visitor.menu} />
+      <LandingFooter featuresHref={visitor.paths.features} country={visitor.menu} locale={s.locale} />
       {/* Mounted ONCE — every DemoCta above drives this one instance. */}
       <DemoModal />
     </div>
     </DemoModalProvider>
+    </LocaleWords>
   )
 }

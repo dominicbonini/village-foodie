@@ -156,8 +156,12 @@ head('1 · the key is a PLAN key — Pro, Max and trial — and the preview key 
   t('🔴 the comparison table row is MAPPED to this key, so the guard checks the promise', (() => {
     const pf = codeOf(read('lib/plan-features.ts'))
     // Language Phase 0 (14 October 2026): the map is keyed on the row's CODE ID now, and each row carries one.
+    // ⚠️ RE-PINNED (Language Phase 1e): the row holds its id and cells; its NAME is the message
+    // planFeatures.row.social_media_posts.name ("Social media posts", unchanged).
+    const gbMsg = JSON.parse(read('messages/en-GB.json'))
     return /\n  social_media_posts: 'schedule_graphics',/.test(pf)
-      && /\{ id: 'social_media_posts', name: 'Social media posts',[^\n]*starter: false, pro: true, max: true \}/.test(pf)
+      && /\{ id: 'social_media_posts',[^\n]*starter: false, pro: true, max: true \}/.test(pf)
+      && gbMsg.planFeatures?.row?.social_media_posts?.name === 'Social media posts'
   })())
   t('🔴 …and `findPlanParityViolations()` reports clean with it mapped',
     Array.isArray(PF.findPlanParityViolations()) && PF.findPlanParityViolations().length === 0)
@@ -165,8 +169,9 @@ head('1 · the key is a PLAN key — Pro, Max and trial — and the preview key 
    * label (Dominic's own correction on 6 October: cells, not a badge), so this is where launching it
    * is visible, and all four renderers follow from here. */
   t('⛔ …and neither cell says `coming_soon` any more', (() => {
-    const row = (codeOf(read('lib/plan-features.ts')).match(/\{ id: 'social_media_posts', name: 'Social media posts'[^\n]*/) || [''])[0]
-    return row.length > 60 && !row.includes('coming_soon')
+    // ⚠️ RE-PINNED (Language Phase 1e): the row line is `{ id: 'social_media_posts', starter: …, pro: …, max: … }` (no name).
+    const row = (codeOf(read('lib/plan-features.ts')).match(/\{ id: 'social_media_posts',[^\n]*/) || [''])[0]
+    return row.length > 50 && /pro: true, max: true/.test(row) && !row.includes('coming_soon')
   })())
 }
 const s1 = show({ ok, bad })

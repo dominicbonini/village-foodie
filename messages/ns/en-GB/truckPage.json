@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "fallbackTitle": "Food Truck | Village Foodie",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} Logo"
+  },
+  "shareTitle": "{truck} Schedule",
+  "shareText": "Check out where {truck} is pitching up next! 🚚",
+  "linkCopied": "Profile link copied to clipboard! 📋",
+  "facebookPage": "Facebook Page",
+  "loadingMap": "Loading Map…",
+  "view": {
+    "list": "List",
+    "map": "Map"
+  },
+  "ownThisTruck": "Own this truck?",
+  "ownThisTruckTitle": "Own this truck? Click to update your profile",
+  "actions": {
+    "menu": "Menu",
+    "call": "Call",
+    "message": "Message",
+    "share": "Share",
+    "order": "Order"
+  },
+  "loadingSchedule": "Loading schedule…",
+  "loadError": {
+    "title": "Couldn’t load",
+    "body": "We couldn’t load the schedule just now — this is usually a brief hiccup. Please try again.",
+    "retry": "Retry"
+  },
+  "notFound": {
+    "title": "Truck not found",
+    "body": "We couldn’t find any details for this food truck. They might have moved or updated their profile.",
+    "cta": "View all trucks"
+  },
+  "noEvents": {
+    "title": "No upcoming events found",
+    "body": "We might be missing some details for this truck. Are you the owner, or do you know their schedule?",
+    "cta": "Drop us a message to update!"
+  },
+  "whereToFind": "Where to Find Us",
+  "missingEvent": "<strong>Are we missing an event?</strong> <br></br>If you’re the owner of this truck or just a dedicated fan, help us keep this page accurate! <br></br><link>Contact us to add missing details.</link>",
+  "weeklySchedule": "Get Weekly Schedule 🍕"
+}

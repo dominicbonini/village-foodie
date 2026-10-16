@@ -38,8 +38,13 @@ import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import { isNativeApp } from '@/lib/native/device'
 import { BrandHomeLink } from '@/components/shared/BrandHomeLink'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/legalChrome'
 
+// Language Phase 1e: the chrome's words are `legalChrome`. This route has no provider, so they read en-GB — the
+// legal documents are UK documents in UK English, and no word of this chrome differs in US English.
 export default function LegalLayout({ children }: { children: React.ReactNode }) {
+  const t = useT('legalChrome')
   // 🔴 A `mounted` TWO-PASS IS REQUIRED HERE AND WAS NOT REQUIRED IN AppHeader — the difference is real,
   // not caution. AppHeader sits behind a loading early-return on all three of its renderers, so it never
   // appears in server output at all and can evaluate the predicate directly (§40's property). THIS layout
@@ -85,7 +90,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
             kind="branding"
             className="inline-flex hover:opacity-80 transition-opacity"
             nativeClassName="inline-flex"
-            ariaLabel="HatchGrab home"
+            ariaLabel={t('homeLabel')}
             nativeAriaLabel="HatchGrab"
           >
             {/* Same call as the landing nav, so the two render at identical size at every breakpoint. */}
@@ -100,9 +105,9 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
           from a consent line should not have to go back to find the other. */}
       <footer className="shrink-0 border-t border-slate-200 bg-white">
         <div className="max-w-[1140px] mx-auto px-5 sm:px-10 py-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-500">
-          <Link href={PRIVACY_PATH} className="hover:text-slate-800 underline">Privacy</Link>
-          <Link href={TERMS_PATH} className="hover:text-slate-800 underline">Terms</Link>
-          <Link href="/contact" className="hover:text-slate-800 underline">Contact</Link>
+          <Link href={PRIVACY_PATH} className="hover:text-slate-800 underline">{t('privacy')}</Link>
+          <Link href={TERMS_PATH} className="hover:text-slate-800 underline">{t('terms')}</Link>
+          <Link href="/contact" className="hover:text-slate-800 underline">{t('contact')}</Link>
           <span className="text-slate-400">HatchGrab</span>
         </div>
       </footer>

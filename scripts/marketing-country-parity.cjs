@@ -15,6 +15,13 @@
 // must match byte for byte apart from the new flag buttons, which are named and removed before comparing.
 
 const fs = require('fs'); const path = require('path')
+// ⚠️ RE-PINNED (Language Phase 1e): this harness asserts PHASE 2D-1's claims (the visitor's country, the menu, the gates)
+// on THIS code with the words as they stood at eb7ed44 — scripts/fixtures/language-phase-1e-messages-before.{en-GB,en-US}.json
+// plus every as-moved overlay (scripts/_lp2-frozen.cjs) — because Phase 1e moves these pages' words into messages and
+// fixes some ("Less queues" → "Fewer queues", ’ …); those are proven key by key by scripts/language-phase-1e.cjs.
+// HG_MESSAGES_FROZEN=off renders the authored words (only for a deliberate check).
+// Only when run AS this harness: scripts/signup-landing-screenshots.cjs requires this module and photographs today's words.
+if (require.main === module && !process.argv.includes('--capture') && !('HG_MESSAGES_FROZEN' in process.env)) process.env.HG_MESSAGES_FROZEN = 'scripts/fixtures/language-phase-1e-messages-before.en-GB.json'
 const kit = require('./_render-kit.cjs')({ cacheTag: 'marketing-country' })
 const { REPO, h } = kit
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
@@ -71,7 +78,10 @@ async function visit(page, { rows, ip = null, cookie = null, query = {}, build =
   globalThis.__mcReq = { headers: { host: 'www.hatchgrab.com', ...(ip ? { 'x-vercel-ip-country': ip } : {}) }, cookies: cookie ? { hg_country: cookie } : {} }
   try {
     const html = await prerender(h(m[page].Page, { searchParams: Promise.resolve(query), params: Promise.resolve({}) }))
-    return { html, ...kit.textOf(html), menus: globalThis.__ccSeen }
+    // ⚠️ RE-PINNED (Language Phase 1e): the TEXT is read with React's empty `<!-- -->` text separators removed. textOf turns
+    // each into a space ("£2,000 ." where a visitor reads "£2,000."), and they vanish where a JSX run became one message.
+    // Only that 8-character comment is removed; the BEFORE snapshot was re-captured the same way at eb7ed44.
+    return { html, ...kit.textOf(html.replace(/<!-- -->/g, '')), menus: globalThis.__ccSeen }
   } finally { delete globalThis.__harnessDb; delete globalThis.__mcReq; delete globalThis.__ccSeen }
 }
 const genDate = text => text.replace(/Generated (?:[0-9]{1,2} [A-Za-z]+ [0-9]{4}|[0-9]{4}-[0-9]{2}-[0-9]{2})/g, 'Generated <date>')
@@ -85,7 +95,10 @@ async function pdfText(row) {
 async function captureBefore() {
   const GB = SEEDS.gbFromSeed(), US = SEEDS.usFromSeed()
   const out = {}
-  for (const p of Object.keys(PAGES)) { const v = await visit(p, { rows: [GB, US] }); out[p] = { text: v.text, attrs: v.attrs } }
+  // ⚠️ RE-PINNED (Language Phase 1e): captured with the MARKED build — the one section 1 compares against (the country
+  // menu replaced by an empty marker) — so the snapshot can be re-taken on a tree that has the menu. Re-taken at eb7ed44,
+  // where it was proven equal to the Phase 2D-1 snapshot before the seam change (docs/language-phase-1e report).
+  for (const p of Object.keys(PAGES)) { const v = await visit(p, { rows: [GB, US], build: 'marked' }); out[p] = { text: v.text, attrs: v.attrs } }
   out.pdf = await pdfText(GB)
   return out
 }

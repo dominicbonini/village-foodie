@@ -25,6 +25,9 @@ import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import { ContactForm } from './ContactForm'
+import { translatorFor } from '@/lib/i18n/translator'
+import type { AppLocale } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/contactPage'
 import '../landing/landing.css'
 
 // The same three faces the landing page loads, mapped to the same CSS vars the stylesheet expects.
@@ -32,7 +35,12 @@ const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], varia
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
 const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap' })
 
-export function HatchGrabContact() {
+// The support mailbox. An address, not a word: the same in every language, so it is not in messages.
+const SUPPORT_EMAIL = 'hello@hatchgrab.com'
+
+/** Language Phase 1e: the words are `contactPage`, in the visitor's country's language (page.tsx resolves it). */
+export function HatchGrabContact({ locale }: { locale: AppLocale }) {
+  const t = translatorFor(locale, 'contactPage')
   return (
     <div className={`hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
       <Script src="https://tally.so/widgets/embed.js" strategy="lazyOnload" />
@@ -47,19 +55,18 @@ export function HatchGrabContact() {
             <HatchGrabWordmark variant="dark" className="h-8 w-auto sm:w-[168px] sm:h-auto" />
           </span>
           <div className="nav-r">
-            <a href="/login" className="btn btn-ghost">Log in</a>
+            <a href="/login" className="btn btn-ghost">{t('logIn')}</a>
           </div>
         </div>
       </nav>
 
       <section>
         <div className="wrap">
-          <p className="eyebrow">Support</p>
+          <p className="eyebrow">{t('eyebrow')}</p>
           {/* 🔴 THE COPY, TWO SENTENCES, IN THE LANDING'S VOICE — plain, second person, no marketing. */}
-          <h1>How can we help?</h1>
+          <h1>{t('title')}</h1>
           <p className="lede">
-            Something not working, or a question about your account? Two ways to reach us — either
-            way we will come back to you by email.
+            {t('lede')}
           </p>
 
           {/* ── 🔴 THE TWO WAYS TO GET IN TOUCH, ABOVE THE FORM (2 September 2026) ─────────────────
@@ -93,7 +100,7 @@ export function HatchGrabContact() {
               which a Tailwind utility here would not — see the `* { margin: 0 }` note below. */}
           <div className="does" style={{ gridTemplateColumns: '1fr', marginBottom: '1.5rem' }}>
             <div className="does-item">
-              <h3>Email us</h3>
+              <h3>{t('emailUs')}</h3>
               <p>
                 {/* ⚠️ ALREADY A mailto BEFORE THIS CHANGE — carried across unchanged, not newly added.
                     No `?subject=` is prefilled; see the report for the recommendation and why it is
@@ -106,7 +113,7 @@ export function HatchGrabContact() {
                     form; it matters a lot now it is one of the two things this page offers.
                     ⚠️ INLINE, because the fix must not add a rule to landing.css — that sheet is
                     shared with the landing page and is outside this task. */}
-                <a href="mailto:hello@hatchgrab.com" style={{ textDecoration: 'underline' }}>hello@hatchgrab.com</a>
+                <a href={`mailto:${SUPPORT_EMAIL}`} style={{ textDecoration: 'underline' }}>{SUPPORT_EMAIL}</a>
               </p>
             </div>
             <div className="does-item">
@@ -115,7 +122,7 @@ export function HatchGrabContact() {
                   the thing directly beneath the heading — it explains itself. A sentence saying "the
                   form is below" costs ~38px of a 568px viewport to say what the reader can already
                   see. See docs/support-page-contact-report.md 6 for the before/after numbers. */}
-              <h3>Or fill in the form below</h3>
+              <h3>{t('formHeading')}</h3>
             </div>
           </div>
 
@@ -138,9 +145,9 @@ export function HatchGrabContact() {
               ⚠️ THE <Suspense> BOUNDARY IS REQUIRED, not decorative — ContactForm reads useSearchParams,
               and without a boundary the whole route opts out of prerendering. /support needed none
               because its iframe was static. */}
-          <Suspense fallback={<div className="lede">Loading form...</div>}>
+          <Suspense fallback={<div className="lede">{t('loadingForm')}</div>}>
             <ContactForm
-              title="Contact HatchGrab support"
+              title={t('formTitle')}
               height="700"
               className="support-frame"
               style={{ width: '100%', minHeight: '700px', border: 0 }}
@@ -175,11 +182,11 @@ export function HatchGrabContact() {
       <footer className={HEADER_BG}>
         <div className="wrap">
           <div className="foot-links">
-            <a href={PRIVACY_PATH}>Privacy</a>
-            <a href={TERMS_PATH}>Terms</a>
+            <a href={PRIVACY_PATH}>{t('privacy')}</a>
+            <a href={TERMS_PATH}>{t('terms')}</a>
           </div>
           <div className="foot-base">
-            <span>© 2026 HatchGrab</span>
+            <span>{t('copyright')}</span>
           </div>
         </div>
       </footer>

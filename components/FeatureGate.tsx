@@ -1,5 +1,7 @@
 'use client'
-import { canAccess, requiredPlan, PLAN_META, planPrice, type Plan, type Feature } from '@/lib/features'
+import { canAccess, requiredPlan, PLAN_META, planPrice, planDescription, type Plan, type Feature } from '@/lib/features'
+// Language Phase 1e: the plan's description and the masked price word in the truck's country's locale.
+import { priceText } from '@/lib/plan-features'
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { manageTabHref } from '@/lib/manage-links'
 import { usePriceMask } from '@/components/PricingPolicy'
@@ -49,7 +51,7 @@ export function FeatureGate({
           {upgradeMessage ?? `This feature requires the ${meta.name} plan`}
         </div>
         <div className="text-xs text-slate-400 mt-0.5">
-          {meta.name} · {px(planPrice(needed, settings))} · {meta.description}
+          {meta.name} · {priceText(px(planPrice(needed, settings)), settings.locale)} · {planDescription(needed, settings.locale)}
         </div>
       </div>
       {/* 🔴 iOS (App Store 3.1.1/3.1.3): the CTA goes, the EXPLANATION stays. The panel above still names

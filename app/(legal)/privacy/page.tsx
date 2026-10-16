@@ -15,10 +15,16 @@ import path from 'node:path'
 import type { Metadata } from 'next'
 import { LegalPage } from '@/components/legal/LegalPage'
 import { renderLegalMarkdown } from '@/lib/legal-markdown'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/legalChrome'
+
+// Language Phase 1e: `legalChrome.meta`, en-GB (app/(legal)/layout.tsx says why). Read at build time, like the text.
+const t = translatorFor(DEFAULT_LOCALE, 'legalChrome')
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — HatchGrab',
-  description: 'How HatchGrab Ltd collects and uses personal data.',
+  title: t('meta.privacyTitle'),
+  description: t('meta.privacyDescription'),
 }
 
 const SOURCE = fs.readFileSync(

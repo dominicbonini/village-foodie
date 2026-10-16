@@ -134,6 +134,7 @@
     "language-phase-2.cjs",
     "language-phase-1d.cjs",
     "language-phase-1d2.cjs",
+    "language-phase-1e.cjs",
     "pending-card-render.cjs",
     "generic-venue-guess.cjs"
   ],
@@ -222,7 +223,16 @@
         "_lp1d2-words.cjs",
         "_lp1d2-named.cjs",
         "_lp1d2-checks.cjs",
-        "_messages-parity-1d2.cjs"
+        "_messages-parity-1d2.cjs",
+   "_lp1e-fixtures.cjs",
+   "_lp1e-pages.cjs",
+   "_lp1e-parts.cjs",
+   "_lp1e-billing.cjs",
+   "_lp1e-router.cjs",
+   "_lp1e-named.cjs",
+   "_lp1e-words.cjs",
+   "_lp1e-checks.cjs",
+   "_messages-parity-1e.cjs"
       ]
     },
     "fixture_generators": {

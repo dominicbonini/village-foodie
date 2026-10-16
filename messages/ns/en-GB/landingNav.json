@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab home",
+  "cta": "Upload my menu →",
+  "ctaShort": "Upload menu",
+  "features": "Features",
+  "pricing": "Pricing",
+  "logIn": "Log in",
+  "country": {
+    "button": "Country: {name}. Change country",
+    "menu": "Country"
+  }
+}

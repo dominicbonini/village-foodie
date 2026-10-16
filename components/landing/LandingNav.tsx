@@ -16,6 +16,10 @@ import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { DemoCta } from '@/components/landing/DemoUpload'
 import { CountryMenu } from '@/components/landing/CountryMenu'
 import type { VisitorCountryMenu } from '@/lib/visitor-country-types'
+// Language Phase 1e: the nav's words are `landingNav` messages, in the page's locale (`locale` — the visitor's
+// country's; omitted = en-GB, which is today's text exactly).
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/landingNav'
 
 /**
  * An alternative nav CTA, for a page whose primary action is not the demo upload.
@@ -75,7 +79,8 @@ export interface NavCta {
  * ✅ SO: the landing passes nothing and keeps bare fragments — byte-identical, no behaviour change — and
  * a child route passes '/landing', which is a real route on every host.
  */
-export function LandingNav({ cta, landingHref = '', ctaFirst = false, country }: { cta?: NavCta; landingHref?: string; ctaFirst?: boolean; country?: VisitorCountryMenu } = {}) {
+export function LandingNav({ cta, landingHref = '', featuresHref = '/features', ctaFirst = false, country, locale }: { cta?: NavCta; landingHref?: string; featuresHref?: string; ctaFirst?: boolean; country?: VisitorCountryMenu; locale?: string } = {}) {
+  const t = translatorFor(locale, 'landingNav')
   // ONE definition, rendered by whichever branch `ctaFirst` selects — the two orders cannot drift apart.
   const navCta = cta ? (
     <a href={cta.href} className="btn btn-primary nav-cta">
@@ -84,8 +89,8 @@ export function LandingNav({ cta, landingHref = '', ctaFirst = false, country }:
     </a>
   ) : (
     <DemoCta className="btn btn-primary nav-cta">
-      <span className="cta-full">Upload my menu →</span>
-      <span className="cta-short">Upload menu</span>
+      <span className="cta-full">{t('cta')}</span>
+      <span className="cta-short">{t('ctaShort')}</span>
     </DemoCta>
   )
 
@@ -113,7 +118,7 @@ export function LandingNav({ cta, landingHref = '', ctaFirst = false, country }:
           so 42px sits inside it with 15px clearance top and bottom.
           w-auto + the component's width/height attributes preserve the aspect ratio → no layout shift.
           Scoped to THIS call site only: the footer, /signup, /setup and legal pages stay at 127×32. */}
-      <a href={landingHref || '#'} className="nav-logo" aria-label="HatchGrab home">
+      <a href={landingHref || '#'} className="nav-logo" aria-label={t('homeLabel')}>
         <HatchGrabWordmark variant="dark" className="h-8 w-auto sm:w-[168px] sm:h-auto" />
       </a>
       <div className="nav-r">
@@ -135,10 +140,12 @@ export function LandingNav({ cta, landingHref = '', ctaFirst = false, country }:
             about; see docs/landing-trim-report.md.
             🔴 `/features` IS AN ABSOLUTE PATH AND TAKES NO `landingHref`. It is a real route on the
             HatchGrab host at exactly one address, so unlike `#pricing` there is no fragment to resolve
-            against the current page and nothing for a child route to get wrong. */}
-        <a href="/features" className="btn btn-quiet nav-hide-md">Features</a>
-        <a href={`${landingHref}#pricing`} className="btn btn-quiet nav-hide-sm">Pricing</a>
-        <a href="/login" className="btn btn-ghost nav-hide-sm">Log in</a>
+            against the current page and nothing for a child route to get wrong.
+            ⚠️ Language Phase 1e: `featuresHref` — a country page passes its own (/uk/features, /us/features);
+            the default is the literal this link always carried ('/features', now the router). */}
+        <a href={featuresHref} className="btn btn-quiet nav-hide-md">{t('features')}</a>
+        <a href={`${landingHref}#pricing`} className="btn btn-quiet nav-hide-sm">{t('pricing')}</a>
+        <a href="/login" className="btn btn-ghost nav-hide-sm">{t('logIn')}</a>
         {/* Phase 2D-1: the country button — between the nav links and the CTA, laptop and up only
             (`.cc-head`, landing.css). Below 1024px it is in the footer only. */}
         {country && <CountryMenu menu={country} variant="header" />}
@@ -158,11 +165,11 @@ export function LandingNav({ cta, landingHref = '', ctaFirst = false, country }:
         {ctaFirst ? (
           <>
             {navCta}
-            <a href="/login" className="btn btn-quiet nav-only-sm">Log in</a>
+            <a href="/login" className="btn btn-quiet nav-only-sm">{t('logIn')}</a>
           </>
         ) : (
           <>
-            <a href="/login" className="btn btn-quiet nav-only-sm">Log in</a>
+            <a href="/login" className="btn btn-quiet nav-only-sm">{t('logIn')}</a>
             {navCta}
           </>
         )}

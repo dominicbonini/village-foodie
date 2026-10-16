@@ -1,0 +1,180 @@
+{
+  "section": {
+    "starter": "Starter plan",
+    "pro": "Pro plan",
+    "max": "Max plan"
+  },
+  "row": {
+    "discovery_map_listing": {
+      "name": "Discovery map listing",
+      "detail": "Your truck appears on the public HatchGrab map so nearby customers can find you."
+    },
+    "web_dashboard": {
+      "name": "Universal web dashboard",
+      "detail": "Run your service from any phone, tablet or laptop browser."
+    },
+    "qr_code": {
+      "name": "QR code",
+      "detail": "A printable QR code that opens your menu and ordering page."
+    },
+    "schedule_import": {
+      "name": "Automatic schedule import",
+      "detail": "We fill your schedule automatically — from your website, or a photo you already post to Facebook. You just review and confirm."
+    },
+    "meal_deals_upsells": {
+      "name": "Meal deals & upsells",
+      "detail": "Bundle items into deals and offer add-ons at checkout to lift the average order."
+    },
+    "walkup_orders": {
+      "name": "Walk-up order processing",
+      "detail": "Take and manage orders at the hatch, paid on your own card terminal."
+    },
+    "sold_out_toggle": {
+      "name": "Instant sold-out toggle",
+      "detail": "Mark any item sold out in one tap — it greys out for customers straight away."
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Online ordering — Pay at Hatch",
+      "detail": "Customers order ahead online and pay in person when they collect."
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad and Android kitchen app",
+      "detail": "The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal."
+    },
+    "offline_protection": {
+      "name": "Offline order protection",
+      "detail": "If your internet drops mid-service, orders are held safely and sync when you’re back — you never lose one."
+    },
+    "online_payments": {
+      "name": "Online payments",
+      "detail": "Take card payment upfront when customers order online, via Stripe."
+    },
+    "advance_preordering": {
+      "name": "Advance pre-ordering",
+      "detail": "Let customers order for a future date or time before the event."
+    },
+    "preorder_deadline": {
+      "name": "Pre-order deadline",
+      "detail": "Set a cut-off time for items that need notice."
+    },
+    "time_slot_selection": {
+      "name": "Customer time slot selection",
+      "detail": "Customers pick a collection time slot, spreading demand across your service."
+    },
+    "kitchen_capacity": {
+      "name": "Kitchen capacity management",
+      "detail": "Set how much your kitchen can cook at a time and how long it takes. Once a slot is full, customers can’t pick it."
+    },
+    "stock_countdown": {
+      "name": "Automated stock countdown",
+      "detail": "Set a stock count and it counts down as orders come in, then sells out automatically."
+    },
+    "auto_accept": {
+      "name": "Auto-accept online orders",
+      "detail": "Online orders are accepted automatically — no need to confirm each one."
+    },
+    "branded_qr_code": {
+      "name": "Branded QR code",
+      "detail": "Add your logo to your QR code."
+    },
+    "private_events": {
+      "name": "Private events",
+      "detail": "Add private events that don’t show on the map, with their own private ordering link and QR code."
+    },
+    "social_media_posts": {
+      "name": "Social media posts",
+      "detail": "Upload your designs — we add your dates, places and times for each week and event automatically."
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp auto-replies",
+      "detail": "Auto-reply to WhatsApp enquiries about your menu and schedule."
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger & Instagram auto-replies",
+      "detail": "Same as WhatsApp auto-replies, for Messenger and Instagram enquiries."
+    },
+    "tap_to_pay": {
+      "name": "Take payment on your phone",
+      "detail": "Take card payments on a supported phone, so you don’t need a separate card machine."
+    },
+    "advanced_reporting": {
+      "name": "Advanced reporting",
+      "detail": "Break sales down by date range, item and event to see what’s really selling."
+    },
+    "sms_order_alerts": {
+      "name": "SMS order alerts",
+      "detail": "Text customers automatically when their order’s ready. Will carry an additional charge (price to be confirmed)."
+    },
+    "multi_device_kitchen": {
+      "name": "Multi-device kitchen sync",
+      "detail": "Run several screens — front counter and kitchen — all showing the same live orders."
+    },
+    "multi_user_access": {
+      "name": "Multi-user access",
+      "detail": "Give staff their own logins with the right level of access."
+    },
+    "embed_schedule": {
+      "name": "Schedule page on your own website",
+      "detail": "Show your upcoming dates on your own website. Each one links straight through to its order page."
+    },
+    "event_types": {
+      "name": "Custom event types & pricing",
+      "detail": "Create your own event types, with custom prices and settings for events and festivals."
+    },
+    "buzzer_tracking": {
+      "name": "Buzzer tracking",
+      "detail": "Give an order a buzzer number when you hand one out, so you know which buzzer belongs to which order."
+    },
+    "ticket_printing": {
+      "name": "Kitchen ticket printing",
+      "detail": "Print order tickets to a Bluetooth or wired printer in the kitchen."
+    },
+    "customer_display": {
+      "name": "Customer-facing display",
+      "detail": "A screen customers can see showing order numbers and when they’re ready."
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digital loyalty stamp cards",
+      "detail": "Reward repeat customers with digital stamp cards — collected and redeemed automatically."
+    }
+  },
+  "landing": {
+    "offlineProtectionDetail": "If you lose signal, online ordering pauses so customers can’t place orders you won’t see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+    "mergedAutoRepliesName": "WhatsApp, Messenger & Instagram auto-replies",
+    "mergedAutoRepliesDetail": "Auto-reply to enquiries about your menu and schedule on WhatsApp, Messenger and Instagram."
+  },
+  "feesHeading": "Fees",
+  "fee": {
+    "walkup": "Walk-up orders",
+    "onlineIncluded": "Online orders included",
+    "feeAfter": "Fee after that"
+  },
+  "allowance": "First {amount} of online orders included, then {fee}",
+  "cardRegionOnline": "standard {region}",
+  "footnote": {
+    "n1": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you tap on a phone or tablet without a dedicated reader.",
+    "n2": "Online payments powered by Stripe Connect. Subject to a {platformFee} HatchGrab platform fee plus Stripe card processing fees (~{onlineFee} per transaction on standard {region}).",
+    "n3": "Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser.",
+    "n4Live": "Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From {from} the first {count} a month are free. Correct at {checked}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong.",
+    "n4Off": "Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.",
+    "n5": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers are listed in our help centre."
+  },
+  "planSub": {
+    "free": "free forever",
+    "perTruckMonth": "per truck / month"
+  },
+  "priceWord": {
+    "free": "Free",
+    "freeTrial": "Free trial",
+    "lifetime": "Lifetime",
+    "zeroPercent": "0%",
+    "payAtHatch": "Pay at Hatch",
+    "unlimited": "Unlimited",
+    "none": "—",
+    "masked": "TBC"
+  },
+  "cell": {
+    "comingSoon": "Coming soon",
+    "included": "Included"
+  }
+}

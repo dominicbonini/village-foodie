@@ -31,11 +31,28 @@ import { Suspense } from 'react';
 import { isHatchGrabHost } from '@/lib/brand';
 import { BrandHomeLink } from '@/components/shared/BrandHomeLink';
 import { ContactForm } from './ContactForm';
+import { resolveVisitorCountry } from '@/lib/visitor-country';
+import { DEFAULT_LOCALE, localeOfCountry, type AppLocale } from '@/lib/i18n/locales';
+import { translatorFor } from '@/lib/i18n/translator';
+import '@/lib/i18n/catalog/contactPage';
 
 /** The one place this route asks which brand it is serving. */
 async function onHatchGrab(): Promise<boolean> {
   const headersList = await headers();
   return isHatchGrabHost(headersList.get('host') || '');
+}
+
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+/** Language Phase 1e: the HatchGrab render's words are in the VISITOR'S country's language, resolved the way the
+ *  marketing pages resolve it (?country, the hg_country cookie, the request's country, else GB). A support page
+ *  must never fail on that lookup, so a country list that cannot be read is en-GB. Never called on Village Foodie. */
+async function hatchGrabLocale(searchParams?: SearchParams): Promise<AppLocale> {
+  try {
+    return localeOfCountry((await resolveVisitorCountry((await searchParams)?.country)).settings);
+  } catch {
+    return DEFAULT_LOCALE;
+  }
 }
 
 // ── METADATA ───────────────────────────────────────────────────────────────────────────────────────
@@ -50,22 +67,23 @@ async function onHatchGrab(): Promise<boolean> {
 // states index/follow explicitly anyway — /support did, and this is the page Apple was given.
 // ⚠️ `title: 'Support'` RENDERS AS "Support | HatchGrab" via the root layout's template. /support said
 // 'Support — HatchGrab' and rendered the brand TWICE, "Support — HatchGrab | HatchGrab". Not copied.
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
   if (!(await onHatchGrab())) return {};
+  const t = translatorFor(await hatchGrabLocale(searchParams), 'contactPage');
   return {
-    title: 'Support',
-    description: 'Get help with HatchGrab. Send us a message and we will come back to you by email.',
+    title: t('meta.title'),
+    description: t('meta.description'),
     robots: { index: true, follow: true },
   };
 }
 
-export default async function ContactPage() {
+export default async function ContactPage({ searchParams }: { searchParams: SearchParams }) {
   if (await onHatchGrab()) {
     // 🔴 DYNAMIC import, NOT A TOP-LEVEL ONE. That module imports the landing's stylesheet and three
     // next/font faces at module scope; a static import would attach their <link> tags to this route
     // for BOTH brands. Measured, not assumed — see the note in HatchGrabContact.tsx.
     const { HatchGrabContact } = await import('./HatchGrabContact');
-    return <HatchGrabContact />;
+    return <HatchGrabContact locale={await hatchGrabLocale(searchParams)} />;
   }
 
   return (

@@ -1,4 +1,4 @@
-# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 525 changed). Written by scripts/language-phase-1d2.cjs.
+# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 527 changed). Written by scripts/language-phase-1d2.cjs.
 # view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
 shell/US|shell|loading	words
 shell/US|shell|noCountrySettings	words
@@ -50,24 +50,26 @@ shell/US|shell|profileModal	words
 shell/US|shell|profileModal|saving	words
 shell/US|shell|walkthrough	words
 shell/US|shell|toasts	words
-shell/US|billing|trial	code: 1d2-billing-plan-header + words
-shell/US|billing|trial|notStarted	code: 1d2-billing-plan-header + words
-shell/US|billing|trial|expired	code: 1d2-billing-plan-header + words
-shell/US|billing|trial|ios	code: 1d2-billing-plan-header + words
-shell/US|billing|trial|notStarted|ios	code: 1d2-billing-plan-header + words
-shell/US|billing|trial|hidePricing	code: 1d2-billing-plan-header + words
-shell/US|billing|trial|upgradeMax	code: 1d2-billing-plan-header + words
-shell/US|billing|trial|upgradePro	code: 1d2-billing-plan-header + words
-shell/US|billing|trial|upgradeMax|ios	code: 1d2-billing-plan-header + words
-shell/US|billing|starter	code: 1d2-billing-plan-header
-shell/US|billing|starter|ios	code: 1d2-billing-plan-header
-shell/US|billing|starter|hidePricing	code: 1d2-billing-plan-header + words
-shell/US|billing|starter|upgradePro	code: 1d2-billing-plan-header + words
-shell/US|billing|starter|withTrialDate	code: 1d2-billing-plan-header
-shell/US|billing|pro|matrix	code: 1d2-billing-plan-header
-shell/US|billing|pro|matrix|hidePricing	code: 1d2-billing-plan-header + words
-shell/US|billing|max|matrix	code: 1d2-billing-plan-header
-shell/US|billing|max|upgradeMax	words
+shell/US|billing|trial	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|trial|notStarted	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|trial|expired	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|trial|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|trial|notStarted|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|trial|hidePricing	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|trial|upgradeMax	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|trial|upgradePro	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|trial|upgradeMax|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|starter	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates
+shell/US|billing|starter|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates
+shell/US|billing|starter|hidePricing	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|starter|upgradePro	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|starter|withTrialDate	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates
+shell/US|billing|pro	code: 1e-us-billing-footnote-dates
+shell/US|billing|pro|matrix	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates
+shell/US|billing|pro|matrix|hidePricing	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
+shell/US|billing|max	code: 1e-us-billing-footnote-dates
+shell/US|billing|max|matrix	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates
+shell/US|billing|max|upgradeMax	code: 1e-us-billing-footnote-dates + words
 shell/US|team|owner|empty	words
 shell/US|team|owner|members	words
 shell/US|team|owner|noName	words

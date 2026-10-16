@@ -39,6 +39,12 @@ const NAMED = [
   { id: '1d-us-dates-times', country: 'US', agent: 'SCHED-A / MENU-A / MENU-B',
     what: 'US dates and times on the truck’s clock where they were 24-hour / day-month: excluded-imports dates (formatNumericDate, MM/DD/YYYY), the setup wizard’s schedule read-back ("06/14/2026", "5:00 PM–9:00 PM"), DealsTab times ("11:30 AM – 2:00 PM").',
     views: id => /^menu\/US\|(deals\||menuTab\|setup\|schedule\|)/.test(id) || /^schedule\/US\|tab\|import\|/.test(id) },
+  // ⚠️ RE-PINNED (Language Phase 1e): a Phase 1e US-only change reaches Part 1's Settings view — the App Store badge links a
+  // US truck to the LOCALE-FREE listing (StoreBadges countryCode, lib/app-badges appStoreUrlFor). LISTED (US), like the
+  // clock entry below; GB is unchanged (Part 1's GB views still equal BEFORE). Proven precisely by language-phase-1d2.
+  { id: '1e-us-app-store-link', country: 'US', agent: 'CHROME + lead (Language Phase 1e)',
+    what: 'Settings › the App Store badge: a US truck links https://apps.apple.com/app/id6803543106 (locale-free) instead of the UK storefront.',
+    views: id => /^settings\/US\|[^|]+\|page$/.test(id) },
   { id: '1d-us-settings-clock', country: 'US', agent: 'SETTINGS',
     what: 'Settings on the US clock: the collection-time examples ("Customers can pick 18:00, 18:10, 18:20…" → "6:00 PM, 6:10 PM, 6:20 PM…") and the pre-order rule’s cutoff, via formatSlot; phoneErrorMessage gets the truck’s locale.',
     views: id => /^settings\/US\|[^|]+\|page$/.test(id) },
