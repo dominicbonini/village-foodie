@@ -213,7 +213,14 @@ async function main() {
   }
   const landing1e = (cc, v) => {
     let x = v.replace(SEP, '')
-    if (cc !== 'US') return x
+    // ⚠️ RE-PINNED, 16 October 2026: the testimonial's small line sits below the award — Phase 1e's ONE named transform
+    // ('testimonial-order', scripts/_lp1e-named.cjs), reused rather than restated. It must apply: a no-op throws.
+    if (cc !== 'US') {
+      const order = require('./_lp1e-named.cjs').NAMED.find(e => e.id === 'testimonial-order')
+      const y = order.apply('pages/landing|GB|html', x)
+      if (y === x) throw new Error('testimonial re-pin: the stored GB landing HTML no longer holds the old order')
+      return y
+    }
     x = x.replace(/\/screenshots\/(kitchen|dashboard-v4|customer-order)\.png/g, '/screenshots/$1-us.png').replace('<link rel="preload" as="image" href="/gusto-logo.png"/>', '')
     const q = x.match(/<section class="quote-sec">(?:(?!<section)[\s\S])*?Pizzeria Gusto[\s\S]*?<\/section>/)
     if (q) x = x.replace(q[0], '')

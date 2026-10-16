@@ -558,12 +558,11 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                 verified in the browser (`loading=lazy`) rather than assumed from the absence of a prop. */}
             <Image className="quote-logo" src="/gusto-logo.png" alt="" width={320} height={233} sizes="96px" />
             <span className="quote-who">
-              {/* ── THE ATTRIBUTION READS: business -> people -> award (16 October 2026, Dominic). ─────────
-                  Bold line "Pizzeria Gusto", small line "Nadia & Bogdan — owners" (it was "Nadia & Bogdan" over
-                  "Owners, Pizzeria Gusto" from 29 August). The business name still appears once only. The logo's
-                  alt is empty, so a screen reader hears it once too. */}
+              {/* ── THE ATTRIBUTION READS: business -> award -> people (16 October 2026, Dominic). ─────────
+                  Bold "Pizzeria Gusto", then the award, then "Nadia & Bogdan — owners" last, in the small line
+                  (it was "Nadia & Bogdan" over "Owners, Pizzeria Gusto" from 29 August). The business name
+                  appears once only; the logo's alt is empty, so a screen reader hears it once too. */}
               <span className="quote-name">{t('testimonial.business')}</span>
-              <span className="quote-role">{t('testimonial.byline')}</span>
               {/* ✅ Award wording CONFIRMED by Dominic, 28 August 2026 ("Mobile pizzeria of the year — regional
                   winner is correct"). Layout is set with INLINE styles (not just .cred-* classes) so it renders
                   correctly even if a stale landing.css is cached: title row (★ — text — ★) then scope beneath. */}
@@ -575,6 +574,8 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                 </span>
                 <span className="cred-scope" style={{ display: 'block', textAlign: 'center', color: 'var(--ink-faint)', fontWeight: 600, fontSize: '0.68rem' }}>{t('testimonial.awardScope')}</span>
               </span>
+              {/* Below the award. The inline margin matches the award's own gap above it, for the same stale-CSS reason. */}
+              <span className="quote-role" style={{ marginTop: '0.35rem' }}>{t('testimonial.byline')}</span>
             </span>
           </div>
         </div>

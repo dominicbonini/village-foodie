@@ -81,6 +81,15 @@ function source() {
   const presses = (ED.match(/onMouseDown=\{keepSelection\}/g) || []).length
   t(`⚠️ every toolbar button that acts on the selection still prevents the mousedown default (${presses})`,
     presses >= 7)
+  // ── THE EDITABLE SWITCH IS NOT AN EDIT (16 October 2026) ───────────────────────────────────────
+  /* 🔴 tiptap's `setEditable(x)` EMITS AN UPDATE unless told not to. On mount that sent the box's document up as
+   * if typed; when the signature settings had not loaded, the document was EMPTY, ComposeWindow kept it as
+   * `editedDoc`, and the due template's body never appeared (subject filled, box blank — Dominic, Suffolk Spice
+   * Fusion). Every call must pass `false`. Proven in Chromium and WebKit across 8 load orderings at the time. */
+  const editableCalls = [...ED.matchAll(/\.setEditable\(([^)]*)\)/g)].map(m => m[1])
+  t('🔴 every setEditable call passes emitUpdate=false (toggling editability must not emit a document)',
+    editableCalls.length > 0 && editableCalls.every(a => /,\s*false\s*$/.test(a)))
+
   return { ok, bad }
 }
 

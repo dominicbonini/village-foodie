@@ -463,7 +463,12 @@ export default function RichEmailEditor({
     }),
   }) ?? { bold: false, italic: false, small: false, large: false, bulletList: false, orderedList: false, link: false }
 
-  useEffect(() => { editor?.setEditable(!disabled) }, [editor, disabled])
+  /* 🔴 `false` — DO NOT EMIT (16 October 2026). tiptap's `setEditable` emits an update by default, so this
+   * effect sent the box's document up as if it were typed, the moment the editor mounted. When the signature
+   * settings had not loaded yet, that document was EMPTY, ComposeWindow stored it as the operator's own
+   * (`editedDoc`), and the template render that arrived a moment later was never shown: the due template's
+   * subject filled and its body stayed blank ("Suffolk Spice Fusion"). Toggling editability is not an edit. */
+  useEffect(() => { editor?.setEditable(!disabled, false) }, [editor, disabled])
 
   /* 🔴 THE HANDLE IS PUBLISHED IN AN EFFECT, NOT DURING RENDER, and it is torn down with the
    * component so a stale editor can never be written into. ⚠️ `focus()` FIRST: without a selection

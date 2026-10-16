@@ -14,6 +14,7 @@
 //   links-country      the page's own marketing links point at its country's addresses: /features → /uk/features,
 //                      /landing#pricing → /uk#pricing, /landing → /uk (the nav's logo, pricing and features links, the footer's)
 //   sitemap-country    /sitemap.xml keeps / and /features and adds the country addresses (each switched-on country's landing and features)
+//   testimonial-order  the landing testimonial's small line sits below the award (16 October 2026)
 //   html-text-separators  React's empty `<!-- -->` between adjacent text nodes, removed from BOTH sides (see normalize)
 // US views take the same transforms with /us (the US address) — and are LISTED besides (US behaviour; us-changed.txt).
 const ORIGIN = 'https://www.hatchgrab.com'
@@ -89,6 +90,15 @@ const NAMED = [
       const tpl = page => v.find(e => e.url === ORIGIN + ROUTER[page])
       // the router addresses stay (x-default), the country addresses follow them
       return [...v, ...live.flatMap(cc => ['landing', 'features'].map(page => ({ ...clone(tpl(page)), url: ORIGIN + countryPath(cc, page) })))]
+    },
+  },
+  {
+    id: 'testimonial-order', what: 'the landing testimonial’s small line moves BELOW the award (business → award → people; Dominic, 16 October 2026), with an inline 0.35rem top margin',
+    views: id => /^pages\/landing\|GB\|html/.test(id),
+    apply(id, v) {
+      if (typeof v !== 'string') return v
+      return v.replace(/<span class="quote-role">([\s\S]*?)<\/span>(<span class="quote-cred"[^>]*>[\s\S]*?<span class="cred-scope"[^>]*>[\s\S]*?<\/span><\/span>)/,
+        (m, role, cred) => `${cred}<span class="quote-role" style="margin-top:0.35rem">${role}</span>`)
     },
   },
   // ── COMPARE's named GB code changes (the calculator's edge cases) ──

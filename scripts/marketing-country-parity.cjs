@@ -114,6 +114,15 @@ const MENU_RE = /<div class="cc cc-(head|foot)">[\s\S]*?<\/div>/g
 
 async function compare() {
   const BEFORE = JSON.parse(read(BEFORE_FILE))
+  /* ⚠️ RE-PINNED, 16 October 2026: the landing testimonial's small line moved BELOW the award (Dominic — business →
+   * award → people). The one named difference, applied to the stored text exactly; a stored text that no longer holds
+   * the old order throws rather than passing on a no-op. */
+  {
+    const from = 'Nadia & Bogdan Owners, Pizzeria Gusto Mobile Pizzeria of the Year Regional winner'
+    const to = 'Nadia & Bogdan Mobile Pizzeria of the Year Regional winner Owners, Pizzeria Gusto'
+    if (!BEFORE.landing.text.includes(from)) throw new Error('testimonial re-pin: the stored landing text no longer holds the old order')
+    BEFORE.landing.text = BEFORE.landing.text.replace(from, to)
+  }
   const GB = SEEDS.gbFromSeed(), US_OFF = SEEDS.usFromSeed()
 
   console.log('1. UK — every page identical to BEFORE apart from the country buttons (marked build)')
