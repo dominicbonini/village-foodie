@@ -22,7 +22,8 @@ import type { CountrySettings } from '@/lib/country-settings-types'
 import { flagDataUri } from '@/lib/flags'
 import { isHatchGrabHost } from '@/lib/brand'
 import {
-  MARKETING_COUNTRY, COUNTRY_PATH_SEGMENTS, countryOfSegment, countryPagePath, pickMarketingCountry, type MarketingPage,
+  MARKETING_COUNTRY, COUNTRY_PATH_SEGMENTS, ROUTER_PATH, countryOfSegment, countryPagePath, marketingRedirect,
+  pickMarketingCountry, routableCountries, type MarketingPage,
 } from '@/lib/marketing-country'
 import { VISITOR_COUNTRY_COOKIE, type VisitorCountryMenu, type VisitorCountryOption } from '@/lib/visitor-country-types'
 
@@ -130,4 +131,33 @@ export async function visitorCountryCodeOf(req: {
   } catch {
     return MARKETING_COUNTRY
   }
+}
+
+/**
+ * 🔴 WHERE THE ROUTER WOULD SEND THIS VISITOR (Language Phase 1e tidy) — so a server-rendered link or a route handler's
+ * redirect names the visitor's country page itself ('/uk', '/us?demo=expired') instead of a router address ('/',
+ * '/landing') that costs the visitor one more 302. It IS the router's decision — lib/marketing-country.ts
+ * marketingRedirect, with the same sources and the same switched-on list proxy.ts reads — never a copy of it.
+ *   • `req` — a route handler passes its request's host, query, hg_country cookie and x-vercel-ip-country; a server
+ *     component passes nothing and this request's headers and cookies are read.
+ *   • The query travels as the router carries it (minus `country`); a #fragment is the caller's to add.
+ *   • NULL OFF A HATCHGRAB HOST: the router does not run there (Village Foodie's /landing 308s to its own root), so
+ *     the caller keeps the address it had.
+ *   • NEVER THROWS: a country list that cannot be read is GB's page, as in the router.
+ */
+export async function routedAddress(page: MarketingPage, req?: {
+  host: string | null; search?: string; cookie?: string; ip?: string | null
+}): Promise<string | null> {
+  const src = req ?? await (async () => {
+    const [h, k] = await Promise.all([headers(), cookies()])
+    return { host: h.get('host'), search: '', cookie: k.get(VISITOR_COUNTRY_COOKIE)?.value, ip: h.get('x-vercel-ip-country') }
+  })()
+  if (!isHatchGrabHost(src.host || '')) return null
+  let live: string[]
+  try {
+    live = routableCountries((await listCountrySettingsCached()).filter(c => c.enabled).map(c => c.countryCode))
+  } catch {
+    live = [MARKETING_COUNTRY]
+  }
+  return marketingRedirect(ROUTER_PATH[page], src.search ?? '', live, { cookie: src.cookie, ip: src.ip })?.location ?? null
 }

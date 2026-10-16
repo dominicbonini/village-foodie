@@ -1,7 +1,6 @@
 {
- "captured": "Language Phase 0, 14 October 2026 — every in-scope .tsx file at checkpoint 234b6a2, with its count after Phase 0 · lowered by Language Phase 1a (docs/language-phase-1a-report.md) for the files it moved into messages/ · lowered by Language Phase 1b (docs/language-phase-1b-report.md) · lowered by Language Phase 1d Part 1 (docs/language-phase-1d-part1-report.md) · lowered by Language Phase 1d Part 2 (docs/language-phase-1d-part2-report.md) · lowered by Language Phase 1e (docs/language-phase-1e-report.md)",
+ "captured": "Language Phase 0, 14 October 2026 — every in-scope .tsx file at checkpoint 234b6a2, with its count after Phase 0 · lowered by Language Phase 1a (docs/language-phase-1a-report.md) for the files it moved into messages/ · lowered by Language Phase 1b (docs/language-phase-1b-report.md) · lowered by Language Phase 1d Part 1 (docs/language-phase-1d-part1-report.md) · lowered by Language Phase 1d Part 2 (docs/language-phase-1d-part2-report.md) · lowered by Language Phase 1e (docs/language-phase-1e-report.md) · re-keyed by the Language Phase 1e tidy: app/(legal)/layout.tsx’s one string (the brand name) moved, unchanged, with its chrome to components/legal/LegalChrome.tsx",
  "counts": {
-  "app/(legal)/layout.tsx": 1,
   "app/(legal)/privacy/page.tsx": 0,
   "app/(legal)/terms/page.tsx": 0,
   "app/1ng7n4p5omux2gdk9kqvwz/page.tsx": 0,
@@ -90,6 +89,7 @@
   "components/landing/HeroCtaWatcher.tsx": 0,
   "components/landing/LandingFooter.tsx": 0,
   "components/landing/LandingNav.tsx": 0,
+  "components/legal/LegalChrome.tsx": 1,
   "components/legal/LegalPage.tsx": 0,
   "components/manage/ChargesCard.tsx": 0,
   "components/manage/DeleteAccountSection.tsx": 0,

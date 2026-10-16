@@ -25,14 +25,7 @@ function compile(root, files, tag, extraCompilerOptions) {
   const req = (rel) => {
     const real = Module._resolveFilename
     Module._resolveFilename = function (r, ...rest) {
-      // ⚠️ RE-PINNED (Language Phase 1e, Part C): a generated catalog module loads its en-US words with a plain
-      // `require('@/messages/ns/en-US/<ns>.json')` on the server branch, and tsc copies a JSON file across only for an
-      // `import`. So a `@/` file missing from the compiled tree is read from the REPO — only data files can be missing
-      // this way (every .ts the entry reaches is compiled into the tree), so nothing under test is swapped.
-      if (r.startsWith('@/')) {
-        try { return real.call(this, path.join(out, r.slice(2)), ...rest) }
-        catch (e) { if (/\.json$/.test(r)) return real.call(this, path.join(REPO, r.slice(2)), ...rest); throw e }
-      }
+      if (r.startsWith('@/')) return real.call(this, path.join(out, r.slice(2)), ...rest)
       try { return real.call(this, r, ...rest) }
       catch (e) {
         // A PACKAGE import from the compiled tree (it sits in the OS temp dir, beside no node_modules) is

@@ -35,7 +35,6 @@ const ALLOW = [
   { word: 'hatch', views: /./, near: /HatchGrab/, reason: 'the brand "HatchGrab"' },
   { word: 'collect', views: /./, near: /stamp cards — collected and redeemed/, reason: 'loyalty STAMPS are collected (US English too) — not a customer pickup' },
   { word: 'collect', views: /^parts\/legal\|US\|meta-privacy$/, near: /collects and uses personal data/, reason: 'data COLLECTION in the privacy page’s description (US English too; the legal pages’ wording is Dominic’s legal decision)' },
-  { word: 'village (area label)', views: /^parts\/(footer|truck)\|US\|/, near: /Get the village food schedule/, reason: 'the Village Foodie newsletter line in the discovery footer (the discovery product is UK-only; CHROME kept it as Village Foodie’s own words) — ⚠️ for the lead to confirm' },
 ]
 const PAY_AT_HATCH = /Pay at Hatch/g
 function usHits(id, value) {
@@ -242,7 +241,9 @@ async function run(ctx) {
   // ══ THE US-WORDS CHECK ═════════════════════════════════════════════════════════════════════════════════════
   if (on('words')) {
     head('US · THE US-WORDS CHECK — every A(US) view (pages, parts, Billing), what a person sees')
-    const usIds = Object.keys(A).filter(i => isUS(i) && area(i) !== 'router' && !/\|(html|meta)-usOff$/.test(i))
+    // ⚠️ NOT the tidy's `-discoveryOn` CONTROLS (scripts/_lp1e-parts.cjs): they force Village Foodie's prompts back on so
+    // scripts/language-phase-1e-tidy.cjs can prove those prompts are the only difference — no visitor ever sees them.
+    const usIds = Object.keys(A).filter(i => isUS(i) && area(i) !== 'router' && !/\|(html|meta)-usOff$/.test(i) && !/-discoveryOn$/.test(i))
     const all = usIds.flatMap(id => usHits(id, A[id]))
     const bad = all.filter(h => !h.allow), allowed = all.filter(h => h.allow)
     const byWord = {}

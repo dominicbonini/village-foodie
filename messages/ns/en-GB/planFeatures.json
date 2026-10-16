@@ -152,12 +152,12 @@
   "allowance": "First {amount} of online orders included, then {fee}",
   "cardRegionOnline": "standard {region}",
   "footnote": {
-    "n1": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you tap on a phone or tablet without a dedicated reader.",
+    "n1": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you take the payment on a supported phone instead of a separate card machine.",
     "n2": "Online payments powered by Stripe Connect. Subject to a {platformFee} HatchGrab platform fee plus Stripe card processing fees (~{onlineFee} per transaction on standard {region}).",
     "n3": "Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser.",
     "n4Live": "Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From {from} the first {count} a month are free. Correct at {checked}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong.",
     "n4Off": "Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.",
-    "n5": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers are listed in our help centre."
+    "n5": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Get in touch for the list of compatible printers."
   },
   "planSub": {
     "free": "free forever",

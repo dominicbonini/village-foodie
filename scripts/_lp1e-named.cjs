@@ -13,7 +13,8 @@
 //   og-locale-compare  /compare's og:locale names the page's country (it inherited the root's en_GB before)
 //   links-country      the page's own marketing links point at its country's addresses: /features → /uk/features,
 //                      /landing#pricing → /uk#pricing, /landing → /uk (the nav's logo, pricing and features links, the footer's)
-//   sitemap-country    /sitemap.xml keeps / and /features and adds the country addresses (each switched-on country's landing and features)
+//   sitemap-country    /sitemap.xml lists the country addresses (each switched-on country's landing and features); the tidy dropped / and /features
+//   legal-logo-country the legal pages' logo links to the visitor's country page (Language Phase 1e tidy)
 //   testimonial-order  the landing testimonial's small line sits below the award (16 October 2026)
 //   html-text-separators  React's empty `<!-- -->` between adjacent text nodes, removed from BOTH sides (see normalize)
 // US views take the same transforms with /us (the US address) — and are LISTED besides (US behaviour; us-changed.txt).
@@ -82,14 +83,15 @@ const NAMED = [
     },
   },
   {
-    id: 'sitemap-country', what: '/sitemap.xml keeps / and /features and adds each switched-on country’s landing and features address (GB always; /compare stays out)',
+    id: 'sitemap-country', what: '/sitemap.xml lists each switched-on country’s landing and features address (GB always; /compare stays out) in place of / and /features, which are now the router’s 302s (Language Phase 1e tidy dropped them)',
     views: id => /^parts\/sitemap\|(GB|US)\|hatchgrab/.test(id),
     apply(id, v) {
       if (!Array.isArray(v)) return v
       const p = parse(id), live = ['GB', ...(usOnOf(p) || /usOn/.test(p.variant) ? ['US'] : [])]
       const tpl = page => v.find(e => e.url === ORIGIN + ROUTER[page])
-      // the router addresses stay (x-default), the country addresses follow them
-      return [...v, ...live.flatMap(cc => ['landing', 'features'].map(page => ({ ...clone(tpl(page)), url: ORIGIN + countryPath(cc, page) })))]
+      // each country address takes the frequency and priority its router address had; the router addresses go
+      const country = live.flatMap(cc => ['landing', 'features'].map(page => ({ ...clone(tpl(page)), url: ORIGIN + countryPath(cc, page) })))
+      return [...v.filter(e => e.url !== ORIGIN + ROUTER.landing && e.url !== ORIGIN + ROUTER.features), ...country]
     },
   },
   {
@@ -99,6 +101,14 @@ const NAMED = [
       if (typeof v !== 'string') return v
       return v.replace(/<span class="quote-role">([\s\S]*?)<\/span>(<span class="quote-cred"[^>]*>[\s\S]*?<span class="cred-scope"[^>]*>[\s\S]*?<\/span><\/span>)/,
         (m, role, cred) => `${cred}<span class="quote-role" style="margin-top:0.35rem">${role}</span>`)
+    },
+  },
+  {
+    id: 'legal-logo-country', what: 'the legal pages’ logo links to the visitor’s country page (/landing → /uk, /us) — the router’s own decision made on the server, no hop (Language Phase 1e tidy)',
+    views: id => /^parts\/legal\|(GB|US)\|chrome/.test(id),
+    apply(id, v) {
+      if (typeof v !== 'string') return v
+      return v.replace(/href="\/landing"/g, `href="${countryPath(parse(id).cc, 'landing')}"`)
     },
   },
   // ── COMPARE's named GB code changes (the calculator's edge cases) ──
@@ -133,6 +143,7 @@ const US_BEHAVIOUR = [
   [/^parts\/pdf\|US\|/, 'FEATURES: US Letter page (@page size letter, format Letter), US footnote dates'],
   [/^billing\/billing\|US\|/, 'FEATURES: footnote 4’s dates via formatLongDate (“October 1, 2026”), the US price mask “TBD”'],
   [/^parts\/truck\|US\|meta/, 'CHROME: the truck page’s tags in the truck’s country (og:locale en_US)'],
+  [/^parts\/(footer|truck)\|US\|html/, 'TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links)'],
 ]
 const usBehaviour = id => (US_BEHAVIOUR.find(([re]) => re.test(id)) || [null, 'US behaviour (unclassified)'])[1]
 

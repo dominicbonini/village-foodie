@@ -75,15 +75,26 @@ async function views(ctx) {
   }
 
   // ══ the HatchGrab footer ══
+  // `discovery` as the truck page passes it (Language Phase 1e tidy: Village Foodie's prompts in GB only); code without
+  // the prop ignores it.
   const FT = await bundle('footer', "export { default as Footer } from '@/components/Footer'")
   for (const cc of ['GB', 'US']) {
-    await safeAsync(out, `footer|${cc}|html`, () => withReq(reqOf(cc), async () => kit.renderStatic(await inLocale(locale(cc), h(FT.Footer, { onOpenTally() {} }), FT))))
+    await safeAsync(out, `footer|${cc}|html`, () => withReq(reqOf(cc), async () => kit.renderStatic(await inLocale(locale(cc), h(FT.Footer, { onOpenTally() {}, discovery: cc === 'GB' }), FT))))
   }
+  // CONTROL (tidy): the US footer with `discovery` forced on — equal to the US footer of code without the prop.
+  await safeAsync(out, 'footer|US|html-discoveryOn', () => withReq(reqOf('US'), async () => kit.renderStatic(await inLocale(locale('US'), h(FT.Footer, { onOpenTally() {}, discovery: true }), FT))))
 
   // ══ the public truck page ══
   const TCF = 'app/trucks/[slug]/TruckClient.tsx'
   const TP = await bundle('truck-page', "export * from '@/app/trucks/[slug]/page'\nexport { default } from '@/app/trucks/[slug]/page'", {
     patches: [{ file: TCF, from: 'const handleProfileShare = async () => {', to: 'const handleProfileShare = ((globalThis as any).__tcH ||= {}).share = async () => {', optional: true }],
+  })
+  // CONTROL (tidy): the same page with `discovery` forced on — the patch has no anchor in code before the tidy (no-op).
+  const TPon = await bundle('truck-page-on', "export * from '@/app/trucks/[slug]/page'\nexport { default } from '@/app/trucks/[slug]/page'", {
+    patches: [
+      { file: TCF, from: 'const handleProfileShare = async () => {', to: 'const handleProfileShare = ((globalThis as any).__tcH ||= {}).share = async () => {', optional: true },
+      { file: 'app/trucks/[slug]/page.tsx', from: 'discovery={country === VILLAGE_FOODIE_COUNTRY}', to: 'discovery={true}', optional: true },
+    ],
   })
   for (const cc of ['GB', 'US']) {
     const T = TRUCKS[cc]
@@ -97,6 +108,10 @@ async function views(ctx) {
     await safeAsync(out, `truck|${cc}|html`, () => withReq(req, async () => {
       globalThis.__tcData = data; globalThis.__tcH = {}
       try { return await prerender(h(TP.default, props)) } finally { delete globalThis.__tcData }
+    }))
+    if (cc === 'US') await safeAsync(out, 'truck|US|html-discoveryOn', () => withReq(req, async () => {
+      globalThis.__tcData = data; globalThis.__tcH = {}
+      try { return await prerender(h(TPon.default, props)) } finally { delete globalThis.__tcData }
     }))
     await safeAsync(out, `truck|${cc}|share`, () => withReq(req, async () => {
       globalThis.__tcData = data; globalThis.__tcH = {}

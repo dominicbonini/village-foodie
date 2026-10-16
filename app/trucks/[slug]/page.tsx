@@ -5,8 +5,6 @@ import { VILLAGE_FOODIE_COUNTRY } from '@/lib/discovery-country';
 import { supabase } from '@/lib/supabase';
 import { localeForTruck } from '@/lib/i18n/server-locale';
 import { translatorFor } from '@/lib/i18n/translator';
-import { wordsFor } from '@/lib/i18n/server-words';
-import { NAMESPACES } from '@/lib/i18n/namespaces';
 import '@/lib/i18n/catalog/truckPage';
 
 // ── Language Phase 1e: THIS PAGE SPEAKS ITS TRUCK'S LANGUAGE, NOT THE VISITOR'S ─────────────────────────
@@ -15,7 +13,7 @@ import '@/lib/i18n/catalog/truckPage';
 // page at /trucks/<slug>/order resolves). A truck with no HatchGrab row is a discovery truck, and discovery is
 // Village Foodie's market only (lib/discovery-country.ts: a row of any other country is hidden on both sites), so
 // its country is VILLAGE_FOODIE_COUNTRY. This decides words only: a lookup that fails reads that same default.
-async function truckLocale(slug: string) {
+async function truckCountry(slug: string) {
   let country: string | null = null;
   try {
     const { data } = await supabase.from('trucks').select('country').eq('slug', slug).maybeSingle();
@@ -23,8 +21,9 @@ async function truckLocale(slug: string) {
   } catch {
     country = null;
   }
-  return localeForTruck({ country: country || VILLAGE_FOODIE_COUNTRY });
+  return country || VILLAGE_FOODIE_COUNTRY;
 }
+const truckLocale = async (slug: string) => localeForTruck({ country: await truckCountry(slug) });
 
 // This is the URL of your Trucks tab from Google Sheets
 const TRUCKS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=28504033&single=true&output=csv';
@@ -103,8 +102,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 // Finally, we load the interactive Client page we just built
 export default async function TruckProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const locale = await truckLocale(resolvedParams.slug);
-  // Language Phase 1e Part C: the locale's overrides for the client page's namespaces (null for en-GB), so it
-  // hydrates with the words rendered here (lib/i18n/server-words.ts).
-  return <TruckClient slug={resolvedParams.slug} locale={locale} words={wordsFor(locale, NAMESPACES.truckProfile)} />;
+  const country = await truckCountry(resolvedParams.slug);
+  // 🔴 VILLAGE FOODIE'S DISCOVERY PROMPTS ONLY IN ITS OWN MARKET (Language Phase 1e tidy): the newsletter, the weekly
+  // schedule button, Hire / Add my Business / Truck Directory and the claim links invite a visitor into Village
+  // Foodie, which is UK-only (lib/discovery-country.ts). A truck of any other country shows its page without them.
+  return <TruckClient slug={resolvedParams.slug} locale={await localeForTruck({ country })} discovery={country === VILLAGE_FOODIE_COUNTRY} />;
 }

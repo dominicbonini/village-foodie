@@ -22,6 +22,7 @@ translation file, never another sweep. Source: `docs/language-readiness-audit-re
      authored files by `node scripts/split-messages.cjs` (run by `npm run build` / `npm run dev`); never edit them by
      hand. `scripts/messages-split.cjs` fails if one is stale or a file reads a namespace it does not import
      (`--fix` adds the import).
+     Per-locale lazy loading was built and reverted in Phase 1e (gain ~1.5 KB gz); revisit when a non-English language is added.
    - **A refusal a route sends is `{ error, …, code, params }`** — `customerErrorBody` (customers),
      `kitchenErrorBody` (the kitchen and operator), `onboardingErrorBody` (setup, signup, auth, demo) or
      `manageErrorBody` (Manage's Menu, Schedule and Settings routes; `tradeAreaErrorBody` for lib/trade-area.ts's

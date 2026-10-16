@@ -15,9 +15,8 @@ import { isHatchGrab } from '@/lib/domain';
 import { hrefFromStoredUrl } from '@/lib/url-normalise';
 import { safeHref } from '@/lib/safe-href';
 import { contactHref } from '@/lib/contact-topics';
-import { I18nContext, useAppLocale, useSeedWords, useT } from '@/lib/i18n/use-t';
+import { I18nContext, useAppLocale, useT } from '@/lib/i18n/use-t';
 import type { AppLocale } from '@/lib/i18n/locales';
-import type { SeedWords } from '@/lib/i18n/registry';
 import '@/lib/i18n/catalog/truckPage';
 
 /** The map's placeholder while its chunk loads — a component, so it reads the page's language like the rest. */
@@ -37,22 +36,21 @@ const MapView = dynamic(() => import('@/components/MapView'), {
 // app/verify-email/VerifyEmailSuccess.tsx — and the page's own words (`truckPage`), the shared footer
 // (`siteFooter`) and the map placeholder all read it, from the first server-rendered paint. Without the prop it
 // keeps whatever language is already provided around it (en-GB when nothing is).
-// ⚠️ Language Phase 1e Part C: the browser bundle carries only the en-GB base, so page.tsx also passes `words` —
-// that locale's overrides for NAMESPACES.truckProfile (null for en-GB) — and they are registered before anything
-// below renders, so the first browser render matches the server's.
-export default function TruckClient({ slug, locale, words }: { slug: string; locale?: AppLocale; words?: SeedWords | null }) {
-  useSeedWords(words);
+// `discovery` (Language Phase 1e tidy): false for a truck outside Village Foodie's market — its page then shows none of
+// Village Foodie's discovery prompts (newsletter, weekly schedule, Hire / Add my Business / Truck Directory, the claim
+// links). Defaults to true, so a page that does not say keeps everything it had.
+export default function TruckClient({ slug, locale, discovery = true }: { slug: string; locale?: AppLocale; discovery?: boolean }) {
   const around = useAppLocale();
   const active = locale ?? around;
   const i18n = useMemo(() => ({ locale: active, setLocale: () => {} }), [active]);
   return (
     <I18nContext.Provider value={i18n}>
-      <TruckProfile slug={slug} />
+      <TruckProfile slug={slug} discovery={discovery} />
     </I18nContext.Provider>
   );
 }
 
-function TruckProfile({ slug }: { slug: string }) {
+function TruckProfile({ slug, discovery }: { slug: string; discovery: boolean }) {
   const t = useT('truckPage');
   const posthog = usePostHog();
   const router = useRouter();
@@ -222,6 +220,7 @@ function TruckProfile({ slug }: { slug: string }) {
       {/* HERO SECTION */}
       {truckInfo && (
         <div className="bg-white px-4 pt-8 pb-6 border-b border-slate-200 flex flex-col items-center text-center shadow-sm relative z-0">
+            {discovery && (
             <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
                 <Link 
                     href={contactHref('addBusiness', { truck: truckInfo.name })}
@@ -232,6 +231,7 @@ function TruckProfile({ slug }: { slug: string }) {
                     {t('ownThisTruck')}
                 </Link>
             </div>
+            )}
 
             {truckInfo.logo ? (
                 <Image src={truckInfo.logo} alt={truckInfo.name} width={96} height={96} className="w-24 h-24 object-contain rounded-full border border-slate-200 shadow-md bg-white mb-4" />
@@ -344,12 +344,14 @@ function TruckProfile({ slug }: { slug: string }) {
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">😔</div>
             <h2 className="text-xl font-bold text-slate-800">{t('noEvents.title')}</h2>
             <p className="text-slate-500 mt-2 max-w-sm">{t('noEvents.body')}</p>
+            {discovery && (
             <Link 
               href={contactHref('addBusiness', { truck: truckInfo.name })} 
               className="mt-6 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105"
             >
               {t('noEvents.cta')}
             </Link>
+            )}
           </div>
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
@@ -365,7 +367,7 @@ function TruckProfile({ slug }: { slug: string }) {
                     
                     {/* Scraped/discovery affordance — hidden on an operator-claimed/orderable truck
                         (truckHasOrdering), shown only for a scraped truck without ordering. */}
-                    {!truckHasOrdering && (
+                    {discovery && !truckHasOrdering && (
                     <div className="mt-8 p-6 bg-slate-100 rounded-xl text-center border border-dashed border-slate-300">
                       <p className="m-0 text-slate-600">
                         {t.rich('missingEvent', {
@@ -398,6 +400,7 @@ function TruckProfile({ slug }: { slug: string }) {
         )}
       </div>
 
+      {discovery && (
       <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
         <button 
           onClick={openTallyPopup}
@@ -406,8 +409,9 @@ function TruckProfile({ slug }: { slug: string }) {
           <span>{t('weeklySchedule')}</span>
         </button>
       </div>
+      )}
 
-      <Footer onOpenTally={openTallyPopup} />
+      <Footer onOpenTally={openTallyPopup} discovery={discovery} />
     </main>
   );
 }

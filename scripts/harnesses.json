@@ -135,8 +135,10 @@
     "language-phase-1d.cjs",
     "language-phase-1d2.cjs",
     "language-phase-1e.cjs",
+    "language-phase-1e-tidy.cjs",
     "pending-card-render.cjs",
-    "generic-venue-guess.cjs"
+    "generic-venue-guess.cjs",
+    "private-discovery-rows.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",

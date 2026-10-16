@@ -23,12 +23,10 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
-// Language Phase 1e Part C: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
-// from this boundary, seeded with that locale's overrides so a US page hydrates in US words (null for en-GB).
-import { LocaleWords } from '@/lib/i18n/locale-words'
+// Language Phase 1e: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
+// from this boundary.
+import { PageLocale } from '@/lib/i18n/page-locale'
 import { localeOfCountry } from '@/lib/i18n/locales'
-import { wordsFor } from '@/lib/i18n/server-words'
-import { NAMESPACES } from '@/lib/i18n/namespaces'
 // Chrome EXTRACTED 23 August 2026 so the cost comparison (now /compare) renders the same nav and footer
 // from one definition.
 // 🔴 MOVED, NOT REWRITTEN — proven byte-identical; see docs/cost-comparison-chrome-report.md §1.
@@ -248,7 +246,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
   return (
     // DemoModalProvider is a CLIENT component taking server-rendered children — that's what lets every
     // CTA below open one shared modal without the page itself becoming a client component.
-    <LocaleWords locale={localeOfCountry(s)} words={wordsFor(localeOfCountry(s), NAMESPACES.marketing)}>
+    <PageLocale locale={localeOfCountry(s)}>
     <DemoModalProvider>
     {/* 🔴 `hg-hero-watch` IS THE LANDING-ONLY SCOPE FOR THE HEADER-CTA REVEAL, AND IT IS RENDERED ON THE
         SERVER SO THE BUTTON IS HIDDEN IN THE FIRST PAINT. Every rule behind the reveal is written
@@ -962,6 +960,6 @@ export default async function LandingPage({ params, searchParams }: { params?: P
       <DemoModal />
     </div>
     </DemoModalProvider>
-    </LocaleWords>
+    </PageLocale>
   )
 }

@@ -902,9 +902,8 @@
       "mergedAutoRepliesDetail": "Auto-reply to inquiries about your menu and schedule on WhatsApp, Messenger and Instagram."
     },
     "footnote": {
-      "n1": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorization if you tap on a phone or tablet without a dedicated reader.",
-      "n4Live": "Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From {from}, the first {count} a month are free. Correct as of {checked}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong.",
-      "n5": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers are listed in our help center."
+      "n1": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorization if you take the payment on a supported phone instead of a separate card reader.",
+      "n4Live": "Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From {from}, the first {count} a month are free. Correct as of {checked}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong."
     },
     "priceWord": {
       "masked": "TBD"

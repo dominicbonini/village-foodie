@@ -10,6 +10,9 @@ import { readPrivateEventIds } from '@/lib/private-events/read'
  * written hidden anyway (lib/discovery-country.ts) — can therefore never reach this feed, the truck pages or
  * the venue pages, which all read it. On the Village Foodie host, operator events are limited the same way. */
 import { VILLAGE_FOODIE_COUNTRY, countryOf } from '@/lib/discovery-country'
+/* 🔴 A ROW NAMING NO PUBLIC PLACE ("Private Hire", "Closed", "TBC") IS NEVER SERVED — the second guard; the gate
+ * already writes such rows non-public (lib/discovery-private.ts). */
+import { isNonPublicDiscoveryRow } from '@/lib/discovery-private'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -163,6 +166,10 @@ export async function GET(req: NextRequest) {
     // neither resolves → the show_on_* gate below drops it (fail-safe: an unknown truck never surfaces).
     const truck = e.discovery_trucks || discByName.get(normalize(e.truck_name || '')) || {}
     const venue = e.venues || {}
+
+    // A private booking or a generic title ("Closed", "TBC") is not a place anyone can go — never served, whatever flags
+    // the stored row carries (rows written before 16 October 2026 were stored public).
+    if (isNonPublicDiscoveryRow(e)) return null
 
     // Master hide (replaces the old exclude_reason ~ 'y' filter) — also how a graduated truck's scraped
     // shadow is suppressed.

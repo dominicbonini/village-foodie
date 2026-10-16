@@ -56,7 +56,7 @@ import { phoneErrorMessage } from '@/lib/phone-message'
 // Phase 2D-1: the wizard's FIRST step, "Where's your truck based?" — shared with /setup.
 import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
 import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'
-import { useT, useAppLocale, useLoadedLocale } from '@/lib/i18n/use-t'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
 import { translatorFor } from '@/lib/i18n/translator'
 import { resolveLocale } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/demoGetStarted'
@@ -202,9 +202,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // same rule as /setup: the signup is for the truck being set up, not for the demo's.
   const tPage = useT('demoGetStarted')
   const pageLocale = useAppLocale()
-  // Language Phase 1e Part C: the chosen country's words load in the browser when first chosen; until they have, the
-  // wizard keeps the language it had (useLoadedLocale), so a step never mixes two.
-  const wizardLocale = useLoadedLocale(step !== 'landing' && chosenCountry ? resolveLocale(chosenCountry.locale) : null)
+  const wizardLocale = step !== 'landing' && chosenCountry ? resolveLocale(chosenCountry.locale) : null
   const tWizard = useMemo(() => (wizardLocale ? translatorFor(wizardLocale, 'demoGetStarted') : null), [wizardLocale])
   const t = tWizard ?? tPage
   const wordsLocale = wizardLocale ?? pageLocale

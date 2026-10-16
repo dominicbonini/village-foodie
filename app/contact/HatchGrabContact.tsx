@@ -23,7 +23,7 @@ import { Suspense } from 'react'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
-import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
+import { PRIVACY_PATH, TERMS_PATH, copyrightYear } from '@/lib/legal'
 import { ContactForm } from './ContactForm'
 import { translatorFor } from '@/lib/i18n/translator'
 import type { AppLocale } from '@/lib/i18n/locales'
@@ -186,7 +186,7 @@ export function HatchGrabContact({ locale }: { locale: AppLocale }) {
             <a href={TERMS_PATH}>{t('terms')}</a>
           </div>
           <div className="foot-base">
-            <span>{t('copyright')}</span>
+            <span>{t('copyright', { year: copyrightYear() })}</span>
           </div>
         </div>
       </footer>

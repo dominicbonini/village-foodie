@@ -89,3 +89,9 @@ export const LEGAL_LINKS = [
   { label: 'Privacy', href: PRIVACY_PATH },
   { label: 'Terms', href: TERMS_PATH },
 ] as const
+
+/** The year in the footers' "© {year} HatchGrab" line (Language Phase 1e tidy: it was typed as 2026) — this year in
+ *  Europe/London, at render. The same zone on the server and in the browser, so a hydrated footer agrees. */
+export function copyrightYear(now: Date = new Date()): number {
+  return Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', year: 'numeric' }).format(now))
+}

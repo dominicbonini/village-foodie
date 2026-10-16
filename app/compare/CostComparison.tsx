@@ -45,8 +45,6 @@ import { contactHref } from '@/lib/contact-topics'
 // visitor's country (app/compare/page.tsx, or the /uk and /us routes). Nothing here resolves a country itself.
 import { translatorFor } from '@/lib/i18n/translator'
 import type { AppLocale } from '@/lib/i18n/locales'
-import type { SeedWords } from '@/lib/i18n/registry'
-import { useSeedWords } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/compare'
 
 const ORANGE = '#EF8B2C'
@@ -262,16 +260,12 @@ function anchor(v: number): AnchorId | null {
 // 🔴 DO NOT ADD A PROVIDER HERE TO "MAKE THIS COMPONENT SELF-CONTAINED". A second provider would give
 // these two CTAs their own `open` state, invisible to the <DemoModal /> mounted under the first one, and
 // the buttons would simply do nothing when clicked. No error, no warning — a dead CTA.
-export default function CostComparison({ settings, locale, words }: {
+export default function CostComparison({ settings, locale }: {
   /** The marketing country's settings, read server-side by app/compare/page.tsx. */
   settings: CountrySettings
   /** The page's language — the visitor's country's locale, decided by the server page (never re-resolved here). */
   locale: AppLocale
-  /** Language Phase 1e Part C: that locale's overrides for NAMESPACES.compare (null for en-GB) — the browser bundle
-   *  carries only the en-GB base, so they are registered before anything here renders and hydration matches. */
-  words?: SeedWords | null
 }) {
-  useSeedWords(words)
   const t = useMemo(() => compareT(locale), [locale])
   const { PLANS, CARD_PCT, CARD_PENCE, OVERAGE } = useMemo(() => pricingFrom(settings), [settings])
   // The marketing country's money format, and the page's helpers bound to it (same names, same calls).

@@ -1,4 +1,5 @@
-// app/(legal)/layout.tsx
+// components/legal/LegalChrome.tsx — rendered by app/(legal)/layout.tsx (moved here from that file in the Language
+// Phase 1e tidy, unchanged but for the logo's address, which the server layout now decides — see `homeHref`).
 // THE ONE CHROME FOR EVERY LEGAL PAGE — header, logo, footer. /privacy and /terms are inside this route
 // group, so the URLs are unchanged (`(legal)` is a grouping folder, not a path segment) and NEITHER PAGE
 // CAN STYLE ITS OWN HEADER. That is the point of using a layout rather than a shared component: a component
@@ -43,7 +44,9 @@ import '@/lib/i18n/catalog/legalChrome'
 
 // Language Phase 1e: the chrome's words are `legalChrome`. This route has no provider, so they read en-GB — the
 // legal documents are UK documents in UK English, and no word of this chrome differs in US English.
-export default function LegalLayout({ children }: { children: React.ReactNode }) {
+// `homeHref` (Language Phase 1e tidy): where the logo goes — the visitor's country page ('/uk', '/us'), decided by the
+// server layout with the router's own rule, so a tap does not hop through /landing. '/landing' off a HatchGrab host.
+export function LegalChrome({ children, homeHref }: { children: React.ReactNode; homeHref: string }) {
   const t = useT('legalChrome')
   // 🔴 A `mounted` TWO-PASS IS REQUIRED HERE AND WAS NOT REQUIRED IN AppHeader — the difference is real,
   // not caution. AppHeader sits behind a loading early-return on all three of its renderers, so it never
@@ -70,7 +73,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
         <div className="h-full max-w-[1140px] mx-auto px-5 sm:px-10 flex items-center">
           {/* ── 🔴 NON-NAVIGATING INSIDE THE NATIVE SHELL (2.1 completeness, 14 August 2026) ───────────
               These are the App-Store-required in-app legal pages, so this is the ONE page a reviewer is
-              guaranteed to open — and `/landing` is the MARKETING page, which carries four "Coming soon"
+              guaranteed to open — and the landing (`homeHref`) is the MARKETING page, which carries four "Coming soon"
               strings. Inside the shell this link was the shortest route from a compliance surface to the
               product's own roadmap copy, with no back button to return from.
               🔴 DISPLAY-ONLY. Same wordmark, same `variant="dark"`, same classes, same size. Nothing an
@@ -83,10 +86,10 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
               utilities that only mean anything to a pointer, and dropping the word "home" from a label
               that no longer describes navigation.
               ⚠️ WEB IS BYTE-IDENTICAL: the component renders exactly this
-              `<Link href="/landing" class="inline-flex hover:opacity-80 transition-opacity"
+              `<Link href={homeHref} class="inline-flex hover:opacity-80 transition-opacity"
               aria-label="HatchGrab home">` in every browser and on the pre-mount pass everywhere. */}
           <BrandHomeLink
-            href="/landing"
+            href={homeHref}
             kind="branding"
             className="inline-flex hover:opacity-80 transition-opacity"
             nativeClassName="inline-flex"

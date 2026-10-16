@@ -36,11 +36,8 @@ import { resolveVisitorCountry } from '@/lib/visitor-country'
 // Language Phase 1e: the calculator's words are read in THIS country's locale, handed down — CostComparison never
 // resolves a country or a language itself.
 import { localeOfCountry } from '@/lib/i18n/locales'
-// Language Phase 1e Part C: and that locale's overrides for the calculator's namespaces, so it hydrates in them.
-import { wordsFor } from '@/lib/i18n/server-words'
-import { NAMESPACES } from '@/lib/i18n/namespaces'
 // …and the page's other client components (country menu, demo modal and CTAs) read the same locale from this boundary.
-import { LocaleWords } from '@/lib/i18n/locale-words'
+import { PageLocale } from '@/lib/i18n/page-locale'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 import '../landing/landing.css'
 
@@ -168,7 +165,7 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
   // under it their own `open` state, and the modal mounted here would never see it — the CTA would look
   // dead. CostComparison.tsx deliberately renders neither.
   return (
-    <LocaleWords locale={localeOfCountry(settings)} words={wordsFor(localeOfCountry(settings), NAMESPACES.marketing)}>
+    <PageLocale locale={localeOfCountry(settings)}>
     <DemoModalProvider>
       {/* 🔴 `chrome-nav-only` IS WHAT MAKES THE NAV STICK, AND IT IS NOT COSMETIC.
           `.hg-landing nav` is `position: sticky; top: 0`, and a sticky element only travels inside its
@@ -198,7 +195,7 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
         <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
       </div>
 
-      <CostComparison settings={settings} locale={localeOfCountry(settings)} words={wordsFor(localeOfCountry(settings), NAMESPACES.compare)} />
+      <CostComparison settings={settings} locale={localeOfCountry(settings)} />
 
       <div className={CHROME}>
         <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
@@ -209,6 +206,6 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
           and brings its own tokens via `hg-demo-modal`. */}
       <DemoModal />
     </DemoModalProvider>
-    </LocaleWords>
+    </PageLocale>
   )
 }

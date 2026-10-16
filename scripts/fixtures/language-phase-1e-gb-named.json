@@ -116,7 +116,7 @@
   },
   "planFeatures.footnote.n1": {
     "before": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider's standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe's own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you tap on a phone or tablet without a dedicated reader.",
-    "after": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you tap on a phone or tablet without a dedicated reader.",
+    "after": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you take the payment on a supported phone instead of a separate card machine.",
     "kind": "GB fix (moved, then fixed)"
   },
   "planFeatures.footnote.n2": {
@@ -126,7 +126,7 @@
   },
   "planFeatures.footnote.n5": {
     "before": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers listed in our help centre.",
-    "after": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers are listed in our help centre.",
+    "after": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Get in touch for the list of compatible printers.",
     "kind": "GB fix (moved, then fixed)"
   },
   "planFeatures.landing.offlineProtectionDetail": {

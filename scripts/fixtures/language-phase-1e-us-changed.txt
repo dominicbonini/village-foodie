@@ -1,4 +1,4 @@
-# Language Phase 1e — every US view that differs from BEFORE (eb7ed44) (52 US views; 49 changed). Written by scripts/language-phase-1e.cjs.
+# Language Phase 1e — every US view that differs from BEFORE (eb7ed44) (52 US views; 50 changed). Written by scripts/language-phase-1e.cjs.
 # view id	why (code: a named item / US code behaviour; words: the en-US words and moved messages)
 pages/landing|US|html	code: links-country + US behaviour — LANDING/SCREENSHOTS/CHROME: the -us screenshots, the Gusto testimonial GB-only, “Everything in Starter, plus” when Starter is priced, the locale-free App Store link + words
 pages/landing|US|meta	code: metadataBase-www + country-canonical + hreflang + words
@@ -20,11 +20,12 @@ parts/calc|US|fracFree	code: US behaviour — COMPARE: ¢ minor-unit suffix, fee
 parts/calc|US|fracFreeYes	code: US behaviour — COMPARE: ¢ minor-unit suffix, feeLabel “2.9% + 30¢”, pctLabel / Intl percentages + words
 parts/contact|US|html	words
 parts/contact|US|meta	code: metadataBase-www + words
+parts/legal|US|chrome	code: legal-logo-country
 parts/legal|US|meta-privacy	code: metadataBase-www
 parts/legal|US|meta-terms	code: metadataBase-www
-parts/footer|US|html	words
+parts/footer|US|html	code: US behaviour — TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links) + words
 parts/truck|US|meta	code: metadataBase-www + US behaviour — CHROME: the truck page’s tags in the truck’s country (og:locale en_US) + words
-parts/truck|US|html	words
+parts/truck|US|html	code: US behaviour — TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links) + words
 parts/truck|US|share	words
 parts/sitemap|US|hatchgrab-usOn	code: sitemap-country
 parts/pdf|US|html	code: US behaviour — FEATURES: US Letter page (@page size letter, format Letter), US footnote dates + words

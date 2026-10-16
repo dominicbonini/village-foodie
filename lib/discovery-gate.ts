@@ -42,7 +42,9 @@ import { isGenericVenueName, findVenue, normName, type VenueRow } from '@/lib/ve
 import { normalizeVenue } from '@/lib/venue-signature'
 import { scheduleKeys, eventMatchesKeys } from '@/lib/schedule-match'
 // Phase 2D-2: every comparison below stays inside ONE country (lib/discovery-country.ts).
-import { countryOf, inCountry, discoveryVisibility, DISCOVERY_DEFAULT_COUNTRY } from '@/lib/discovery-country'
+import { countryOf, inCountry, DISCOVERY_DEFAULT_COUNTRY } from '@/lib/discovery-country'
+// 16 October 2026: a row naming no public place (a private booking, "Closed", "TBC") is written non-public.
+import { discoveryRowVisibility } from '@/lib/discovery-private'
 
 export const DUP_DISTANCE_M = 500
 export const R5_ANCHOR_MAX_KM = 15
@@ -318,8 +320,9 @@ export async function admitDiscoveryEvents(
       event_date: row.event_date, start_time: row.start_time || null, end_time: row.end_time || null,
       truck_name: row.truck_name, venue_name: row.venue_name || null, village: row.village || null,
       event_notes: row.event_notes || null, source: row.source || null, ai_notes: row.ai_notes || null,
-      // Only Village Foodie's own market is ever public; every other country's row feeds outreach only.
-      visibility: 'public', ...discoveryVisibility(country), country,
+      // Only Village Foodie's own market is ever public; every other country's row feeds outreach only. A row that
+      // names no public place — a private booking or a generic title — is never public (lib/discovery-private.ts).
+      ...discoveryRowVisibility(row, country), country,
       discovery_truck_id: out.truck.id, venue_id: venue?.id ?? null,
     }, { onConflict: 'event_date,truck_name,venue_name', ignoreDuplicates: false }).select('id').single()
     if (wErr || !ins) { out.wrote = 'failed'; out.error = wErr?.message ?? 'no id returned'; outcomes.push(out); continue }

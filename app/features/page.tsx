@@ -37,11 +37,9 @@ import { isHatchGrabHost } from '@/lib/brand'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the chrome's CTA
-// Language Phase 1e Part C: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
-// from this boundary, seeded with that locale's overrides so a US page hydrates in US words (null for en-GB).
-import { LocaleWords } from '@/lib/i18n/locale-words'
-import { wordsFor } from '@/lib/i18n/server-words'
-import { NAMESPACES } from '@/lib/i18n/namespaces'
+// Language Phase 1e: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
+// from this boundary.
+import { PageLocale } from '@/lib/i18n/page-locale'
 import { localeOfCountry } from '@/lib/i18n/locales'
 import { FeatureComparison } from '@/components/landing/FeatureComparison'
 // 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
@@ -144,7 +142,7 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
   const settings = visitor.settings
 
   return (
-    <LocaleWords locale={localeOfCountry(settings)} words={wordsFor(localeOfCountry(settings), NAMESPACES.marketing)}>
+    <PageLocale locale={localeOfCountry(settings)}>
     <DemoModalProvider>
       <div className={CHROME}>
         {/* ⚠️ `landingHref` IS NOT OPTIONAL ON A CHILD ROUTE. The nav's logo and its Pricing link are
@@ -177,6 +175,6 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
           deliberately OUTSIDE `.hg-landing` and brings its own tokens via `hg-demo-modal`. */}
       <DemoModal />
     </DemoModalProvider>
-    </LocaleWords>
+    </PageLocale>
   )
 }

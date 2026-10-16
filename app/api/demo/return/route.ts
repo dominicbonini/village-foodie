@@ -15,6 +15,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { provisionDemo } from '@/lib/provision-demo'
 import { isDemoIdentifier } from '@/lib/demo'
+import { routedAddress } from '@/lib/visitor-country'
+import { VISITOR_COUNTRY_COOKIE } from '@/lib/visitor-country-types'
 
 const supabase = createClient(
   (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
@@ -23,22 +25,28 @@ const supabase = createClient(
 
 /** Land them on the landing page with a flag rather than a JSON error — this URL is clicked from an email
  *  by a non-technical person, and a raw error object is a dead end. */
-function bounce(req: NextRequest, reason: string) {
-  const url = new URL('/landing', req.url)
+// Language Phase 1e tidy: straight to the visitor's country page ('/uk?demo=expired#try') — the router's own decision
+// (routedAddress), so there is no second hop through /landing. Off a HatchGrab host it is /landing, as before.
+async function bounce(req: NextRequest, reason: string) {
+  const search = new URLSearchParams({ demo: reason }).toString()
+  const routed = await routedAddress('landing', {
+    host: req.headers.get('host'), search: `?${search}`,
+    cookie: req.cookies.get(VISITOR_COUNTRY_COOKIE)?.value, ip: req.headers.get('x-vercel-ip-country'),
+  })
+  const url = new URL(routed ?? `/landing?${search}`, req.url)
   url.hash = 'try'
-  url.searchParams.set('demo', reason)
   return NextResponse.redirect(url)
 }
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('t')?.trim()
-  if (!token || !isDemoIdentifier(token)) return bounce(req, 'invalid')
+  if (!token || !isDemoIdentifier(token)) return await bounce(req, 'invalid')
 
   const { data: truck } = await supabase
     .from('trucks').select('id, dashboard_token').eq('dashboard_token', token).single()
 
   // Expired and swept, or never existed. Either way the honest outcome is "build a new one", not an error.
-  if (!truck || !isDemoIdentifier(truck.id as string)) return bounce(req, 'expired')
+  if (!truck || !isDemoIdentifier(truck.id as string)) return await bounce(req, 'expired')
 
   try {
     const result = await provisionDemo(supabase, { existingTruckId: truck.id as string })

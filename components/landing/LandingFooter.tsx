@@ -9,7 +9,7 @@
 // component and needs no provider.
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
-import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
+import { PRIVACY_PATH, TERMS_PATH, copyrightYear } from '@/lib/legal'
 import { CountryMenu } from '@/components/landing/CountryMenu'
 import type { VisitorCountryMenu } from '@/lib/visitor-country-types'
 // Language Phase 1e: the footer's words are `landingFooter` messages, in the page's locale (`locale` — the visitor's
@@ -153,7 +153,7 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
           ⚠️ NOTHING ELSE IN THE FOOTER MOVED. `.foot-base` is a `space-between` flex row with no
           nth-child rule (landing.css:329), so the two remaining spans simply sit at the two ends. */}
       <div className="foot-base">
-        <span>{t('copyright')}</span>
+        <span>{t('copyright', { year: copyrightYear() })}</span>
         <span className="vf">{t.rich('credit', { b: c => <b>{c}</b> })}</span>
       </div>
     </div>

@@ -17,6 +17,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { isDemoIdentifier } from '@/lib/demo'
+import { routedAddress } from '@/lib/visitor-country'
+import { VISITOR_COUNTRY_COOKIE } from '@/lib/visitor-country-types'
 
 const supabase = createClient(
   (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
@@ -25,27 +27,33 @@ const supabase = createClient(
 
 const REF_SHAPE = /^[a-z0-9-]{1,80}$/
 
-function bounce(req: NextRequest, reason: string) {
-  const url = new URL('/landing', req.url)
+// Language Phase 1e tidy: straight to the visitor's country page ('/uk?demo=expired#try') — the router's own decision
+// (routedAddress), so there is no second hop through /landing. Off a HatchGrab host it is /landing, as before.
+async function bounce(req: NextRequest, reason: string) {
+  const search = new URLSearchParams({ demo: reason }).toString()
+  const routed = await routedAddress('landing', {
+    host: req.headers.get('host'), search: `?${search}`,
+    cookie: req.cookies.get(VISITOR_COUNTRY_COOKIE)?.value, ip: req.headers.get('x-vercel-ip-country'),
+  })
+  const url = new URL(routed ?? `/landing?${search}`, req.url)
   url.hash = 'try'
-  url.searchParams.set('demo', reason)
   return NextResponse.redirect(url)
 }
 
 export async function GET(req: NextRequest, ctx: { params: Promise<{ ref: string }> }) {
   const { ref } = await ctx.params
   const publicRef = (ref ?? '').trim().toLowerCase()
-  if (!REF_SHAPE.test(publicRef)) return bounce(req, 'invalid')
+  if (!REF_SHAPE.test(publicRef)) return await bounce(req, 'invalid')
 
   const { data: session } = await supabase
     .from('demo_sessions').select('truck_id, public_ref').eq('public_ref', publicRef).maybeSingle()
-  if (!session?.truck_id) return bounce(req, 'expired')
+  if (!session?.truck_id) return await bounce(req, 'expired')
 
   const { data: truck } = await supabase
     .from('trucks').select('id, dashboard_token').eq('id', session.truck_id as string).maybeSingle()
   // The row's own id is the authority — a matched session still has to point at a demo truck.
   if (!truck || !isDemoIdentifier(truck.id as string) || !isDemoIdentifier(truck.dashboard_token as string)) {
-    return bounce(req, 'expired')
+    return await bounce(req, 'expired')
   }
 
   return NextResponse.redirect(new URL(`/dashboard/${truck.dashboard_token}`, req.url))

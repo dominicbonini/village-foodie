@@ -30,9 +30,9 @@ import { HATCHGRAB_ORIGIN, MARKETING_COUNTRY, countryPagePath, routableCountries
 //
 // ── 🟢 THE COUNTRY ADDRESSES, ADDED 16 October 2026 (Language Phase 1e) ─────────────────────────────────────
 // /uk and /uk/features — and /us, /us/features while the US is switched on — are each a page's own canonical, so
-// they are listed, with the same frequency and priority as the router address of the same page. The two entries
-// above are KEPT EXACTLY: '/' and '/features' are now the router (x-default — each page's hreflang names them as
-// x-default), unchanged here as Dominic's spec asks.
+// they are listed, with the same frequency and priority the router address of the same page had.
+// ⛔ '/' AND '/features' ARE NO LONGER LISTED (Language Phase 1e tidy, Dominic): they are the router now — a 302 to
+// the visitor's country page — and a sitemap must not list a redirect. They stay each page's hreflang x-default.
 // 🔴 A SWITCHED-OFF COUNTRY IS LEFT OUT — its address 302s to the GB page, and a sitemap must not list a redirect.
 // 🔴 /compare STAYS OUT FOR EVERY COUNTRY (/uk/compare, /us/compare too): every compare address is still robots
 // noindex, and listing a page that asks not to be indexed contradicts it — the same reason /compare was excluded.
@@ -53,8 +53,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
     if (!live.includes(MARKETING_COUNTRY)) live = [MARKETING_COUNTRY, ...live]   // GB's address never redirects
     return [
-      { url: 'https://www.hatchgrab.com/', lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
-      { url: 'https://www.hatchgrab.com/features', lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
       ...live.flatMap((code): MetadataRoute.Sitemap => [
         { url: HATCHGRAB_ORIGIN + countryPagePath(code, 'landing'), lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
         { url: HATCHGRAB_ORIGIN + countryPagePath(code, 'features'), lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },

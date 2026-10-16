@@ -101,6 +101,31 @@ async function views(ctx) {
       }
     }
   }
+  // ══ THE DEMO BOUNCES (Language Phase 1e tidy) — /api/demo/return and /demo/<ref> with a refused token/ref send the visitor to
+  // the landing with ?demo=…#try. The REAL route handlers run (the refusal returns before any database read); the view is
+  // their Location (with its #fragment) and where the proxy then leaves the visitor. Code where a handler is missing
+  // records ERROR, which the comparison names.
+  const DEMO = [['api/demo/return', 'demoReturn', '/api/demo/return?t=nope'], ['demo/[ref]', 'demoRef', '/demo/NOT%20A%20REF']]
+  for (const [route, tag, url] of DEMO) {
+    if (!exists(`app/${route}/route.ts`)) continue
+    let R
+    try { R = await bundle(tag, `export { GET } from '@/app/${route}/route'`) } catch (e) { out[`router|X|${tag} bundle`] = 'ERROR ' + String(e.message).slice(0, 300); continue }
+    for (const usOn of [false, true]) for (const [host, i] of [[HG, {}], [HG, { cookie: 'US' }], [HG, { ip: 'US' }], [VF, {}]]) {
+      const o = { ...i, usOn }
+      await safeAsync(out, `router|X|${host} ${tag} ${url} c=${i.cookie || '-'} ip=${i.ip || '-'} us=${usOn ? 'on' : 'off'}`, () => withReq({ rows: usOn ? ROWS.on() : ROWS.off() }, async () => {
+        const headers = { host }
+        if (i.ip) headers['x-vercel-ip-country'] = i.ip
+        if (i.cookie) headers.cookie = `hg_country=${i.cookie}`
+        const req = new NextRequest(new URL(url, `https://${host}`), { headers })
+        const res = await ctx.kit.quietAsync(() => R.GET(req, { params: Promise.resolve({ ref: 'NOT A REF' }) }))
+        const loc = res.headers.get('location')
+        let where = loc
+        try { const x = new URL(loc); where = x.host === host ? `${x.pathname}${x.search}${x.hash}` : x.href } catch { /* as sent */ }
+        const then = where && where.startsWith('/') ? await visit(host, where.replace(/#.*$/, ''), o) : null
+        return { status: res.status, location: where, then: then && { kind: then.kind, location: then.location, ends: then.ends || null } }
+      }))
+    }
+  }
   return out
 }
 
