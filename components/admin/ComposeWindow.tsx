@@ -503,7 +503,29 @@ export default function ComposeWindow({
     // unfilled placeholders still visible as [[…]].
     setSubject(out.subject ?? ''); setBody(out.body)
     setEdited(false); setConfirmRerender(false)
-  }, [ctx])
+    // ⚠️ `offerable` and `globals` ARE DEPENDENCIES (16 October 2026). With `[ctx]` alone, a window that mounted
+    // before the templates loaded kept an empty `offerable` in this closure until something changed `ctx`.
+  }, [ctx, offerable, globals])
+
+  /* ══ 🔴 THE DUE TEMPLATE FILLS THE MESSAGE BY ITSELF (16 October 2026) ══════════════════════════════════
+   * Dominic: "when I load a truck from Admin › Outreach, the next email template due is highlighted; I have to
+   * click it to populate". The window usually mounts BEFORE the templates and the history have loaded, so the
+   * lazy seed (`seedFrom`) had nothing to seed: the window opened on Blank while the step's template — the
+   * sequence grid's answer, `initialTemplateId` — sat first among the chips, waiting for a press.
+   * Now, the moment that template is known AND loaded, it is applied exactly as a press would apply it.
+   * ⛔ ONLY WHILE THE WINDOW IS UNTOUCHED: nothing chosen (Blank), nothing typed, not a reply, not a restored
+   * draft. ⚠️ ONCE PER WINDOW: pressing Blank afterwards stays Blank, and a template the operator picked is never
+   * replaced. ⚠️ STILL ONLY `initialTemplateId` — never `suggestedId`, the low-confidence heuristic the seeding
+   * note above refuses to auto-select. Nothing is sent; it is the same selection the chip makes. */
+  const dueApplied = useRef(!!restore || !!seed.id)
+  useEffect(() => {
+    if (dueApplied.current) return
+    if (!initialTemplateId || replyTo) return
+    if (!offerable.some(t => t.id === initialTemplateId)) return
+    dueApplied.current = true
+    if (templateId !== '' || edited || subject.trim() || body.trim()) return
+    queueMicrotask(() => applyTemplate(initialTemplateId))
+  }, [initialTemplateId, offerable, replyTo, templateId, edited, subject, body, applyTemplate])
 
   // 🔴 THE PLACEHOLDER LIST IS DERIVED FROM THE TEXT ON SCREEN, NEVER HARDCODED. Today that yields
   // [[link]], [[your rate]] and [[X]] for the Hatches Up template, but nothing here names them: a
