@@ -288,7 +288,13 @@ console.log('\n── DASHBOARD ORDER: Collection times sits DIRECTLY ABOVE Kitc
   for (const [t, k] of [['Customer Collection Times', 'customerTimes'], ['Use different times for orders I add', 'differentTimes'], ['Your Collection Times', 'yourTimes'], ['Use my usual setting', 'useUsual'], ['Collection times are unavailable right now.', 'intervalsUnavailable']])
     check(GB.dashboard.settings[k] === t && page.includes(`tDash('settings.${k}')`), `copy intact: "${t}"`)
   // 18 September 2026: the one conditional hint line exists on BOTH boxes, identically (scripts/collection-times-hint.cjs proves the rule).
-  check((page.match(/collectionTimesHint\(mc\)/g) || []).length === 1 && (manage.match(/collectionTimesHint\(mc\)/g) || []).length === 1, 'the ONE conditional hint line is present once on each box')
+  // ⚠️ RE-PINNED (Language Phase 1d): Manage's hint line now reads its sentence from manageSettings.collection.misaligned
+  // (`t('collection.misaligned', { name: mc.name, mins: mc.prepMins })`) instead of collectionTimesHint(mc); the
+  // dashboard still calls collectionTimesHint. Still exactly ONE hint line on each box; scripts/collection-times-hint.cjs
+  // proves the two render the same sentence.
+  check((page.match(/collectionTimesHint\(mc\)/g) || []).length === 1
+    && (manage.match(/t\('collection\.misaligned', \{ name: mc\.name, mins: mc\.prepMins \}\)/g) || []).length === 1
+    && !/collectionTimesHint\(mc\)/.test(manage), 'the ONE conditional hint line is present once on each box')
 }
 
 console.log(`\n${fails ? '🔴 ' + fails + ' FAILED' : '✅ event override proven'}`)

@@ -1,0 +1,23 @@
+{
+  "vanGone": "That truck has gone.",
+  "sections": {
+    "vans": "TRUCKS"
+  },
+  "copyVanOne": "Copy Truck 1’s settings",
+  "phone": {
+    "vanSetup": "This truck’s usual setup — used at every event with no type."
+  },
+  "newType": {
+    "namePlaceholder": "e.g. School fair",
+    "chips": {
+      "pub": "Bar",
+      "privateHire": "Catering"
+    }
+  },
+  "summary": {
+    "collectionEvery": "pickup every {mins} min"
+  },
+  "errors": {
+    "noVans": "This account has no trucks to change."
+  }
+}

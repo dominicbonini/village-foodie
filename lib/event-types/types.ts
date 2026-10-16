@@ -201,7 +201,12 @@ export function blankTypeValues(): Pick<EventType, ServiceKey> {
  * does not exist, but a truck who does private hires wants the type now for its service settings.
  * Because a chip carries no values, offering the name promises nothing.
  */
-export const TYPE_NAME_CHIPS: readonly string[] = ['Festival', 'Pub', 'Market', 'Private hire'] as const
+/* 🔴 IDS, NOT WORDS (Language Phase 1d). Each chip's label is `eventTypes.newType.chips.<id>` in the truck's
+ * language: a NEW US truck is offered "Festival", "Bar", "Market", "Catering"; GB is offered exactly what it was.
+ * ⚠️ THE LABEL IS ONLY WHAT FILLS THE NAME FIELD. The saved name is whatever the operator then saves, and a
+ * type a truck already has keeps its stored name ("Pub" stays "Pub") — nothing looks a type up by these words. */
+export const TYPE_NAME_CHIPS = ['festival', 'pub', 'market', 'privateHire'] as const
+export type TypeNameChip = (typeof TYPE_NAME_CHIPS)[number]
 
 /** The dots beside each type's name on the setup screen, and the chip in the Add event picker. */
 export const TYPE_COLOURS = ['#E8550F', '#2563EB', '#7C3AED', '#0D9488', '#C026D3', '#CA8A04'] as const

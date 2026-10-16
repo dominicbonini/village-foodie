@@ -1,0 +1,14 @@
+{
+  "unauthorised": "Unauthorized",
+  "collection_interval_choices": "Pickup times must be every {choices} minutes.",
+  "collection_intervals_save_failed": "Pickup times could not be saved right now.",
+  "van_not_found": "That truck isn’t part of this account",
+  "first_van_self": "The first truck cannot follow itself.",
+  "no_first_van": "There is no first truck to follow.",
+  "last_van": "Cannot remove the last truck",
+  "van_capacity_save_failed": "That truck’s capacity settings could not be saved right now.",
+  "first_van_copy_failed": "The first truck’s settings could not be copied right now.",
+  "capacity_copy_failed": "The first truck’s capacity could not be copied right now.",
+  "category_copy_failed": "The first truck’s category settings could not be copied right now.",
+  "schedule_read_failed": "Couldn’t read your schedule, so places could not be figured out."
+}

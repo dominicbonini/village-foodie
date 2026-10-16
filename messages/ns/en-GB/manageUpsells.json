@@ -1,0 +1,19 @@
+{
+  "heading": "Upsells",
+  "intro": "Nudge customers to add something extra. When someone orders from one category, suggest items from another — a drink with a pizza, a sauce with a burger.",
+  "add": "+ Add upsell",
+  "toast": {
+    "updated": "Upsell rule updated",
+    "added": "Upsell rule added",
+    "removed": "Rule removed"
+  },
+  "whenAdds": "When customer adds…",
+  "suggestFrom": "Suggest items from…",
+  "chooseCategory": "Choose category",
+  "cancel": "Cancel",
+  "saveChanges": "Save changes",
+  "addRule": "Add rule",
+  "empty": "No upsell rules yet.",
+  "confirmRemove": "Remove upsell rule “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Up to {count} item suggested} other {Up to {count} items suggested}}"
+}

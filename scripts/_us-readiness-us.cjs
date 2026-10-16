@@ -24,8 +24,10 @@ module.exports = async function us(x) {
   const usToggles = await togglesView(SEEDS.usFromSeed())
   t('toggles under a US provider: the US 9, in order', usToggles.trim().replace(/\s+/g, ' ') === L.US_9.join(' '), usToggles)
   const P = read('app/manage/[token]/page.tsx')
+  // ⚠️ RE-PINNED (Language Phase 1d): the review screen's words moved to messages `manageAllergens`, so its
+  // translator (`const t = useT('manageAllergens')`) now sits between the set and the two derived lists.
   t('the review screen and table read the truck\'s list (allergenVocab / genericReplacements by the provider\'s set)',
-    /const allergenSet = useOptionalCountrySettings\(\)\?\.allergenSet\n\s+const ALLERGEN_VOCAB = allergenVocab\(allergenSet\)\n\s+const GENERIC_REPLACEMENTS = genericReplacements\(allergenSet\)/.test(P)
+    /const allergenSet = useOptionalCountrySettings\(\)\?\.allergenSet\n\s+const t = useT\('manageAllergens'\)\n\s+const ALLERGEN_VOCAB = allergenVocab\(allergenSet\)\n\s+const GENERIC_REPLACEMENTS = genericReplacements\(allergenSet\)/.test(P)
     && !/^const (GENERIC_REPLACEMENTS|isVocab)\b/m.test(P))
 
   const US_TRUCK = { id: 'us-truck', name: 'Austin Eats', dashboard_token: 'tok-test', country: 'US', currency: 'USD' }
@@ -67,19 +69,33 @@ module.exports = async function us(x) {
 
   /* ── 4 · placeholders ── */
   head('4 · Manage placeholders by address style')
-  const C = await kit.bundle('ur-placeholders', "export * from '@/lib/copy/addressPlaceholders'")
-  const gb = C.addressPlaceholders('postcode')
+  // ⚠️ RE-PINNED (Language Phase 1d): addressPlaceholders() / pastePlaceholder() are gone — the example words are ICU
+  // `select`s on {style} in messages `manageScheduleEvent` (addressPlaceholder, areaPlaceholder) and
+  // `manageScheduleImport` (pastePlaceholder, filled by pasteExampleValues(style, ts)). Rendered here exactly as the
+  // Schedule tab does (the product's translatorFor, in the truck's locale) and held to the same answers: GB = BEFORE,
+  // US = the US examples. ONE NAMED US CHANGE (scripts/_lp1d-named.cjs): the US paste example is now in the US
+  // truck's own date and clock — "Saturday, June 14, …, 5:00 PM – 9:00 PM" — where it shared the UK's
+  // "Saturday 14th June … 5pm-9pm" (the gap docs/us-readiness-sweep-report.md recommended closing).
+  const C = await kit.bundle('ur-placeholders', "export * from '@/lib/copy/addressPlaceholders'\nexport { translatorFor } from '@/lib/i18n/translator'\nimport '@/lib/i18n/catalog/manageScheduleEvent'\nimport '@/lib/i18n/catalog/manageScheduleImport'")
+  const tsOf = c => ({ timeZone: c.defaultTimezone, locale: c.locale, timeFormat: c.timeFormat === '12h' ? '12h' : '24h', dateOrder: c.dateOrder === 'mdy' ? 'mdy' : 'dmy', weekStart: c.weekStart === 'sunday' ? 'sunday' : 'monday' })
+  const holders = (style, c) => {
+    const ts = tsOf(c), tE = C.translatorFor(ts.locale, 'manageScheduleEvent'), tI = C.translatorFor(ts.locale, 'manageScheduleImport')
+    const st = C.addressStyleOf(style)
+    return { address: tE('addressPlaceholder', { style: st }), area: tE('areaPlaceholder', { style: st }), paste: tI('pastePlaceholder', C.pasteExampleValues(style, ts)) }
+  }
+  const gb = holders('postcode', SEEDS.gbFromSeed())
   t('GB address = BEFORE', gb.address === before.placeholders.address, gb.address)
   t('GB area = BEFORE', gb.area === before.placeholders.area, gb.area)
-  t('GB paste = BEFORE', C.pastePlaceholder('postcode') === before.placeholders.paste, C.pastePlaceholder('postcode'))
-  const us = C.addressPlaceholders('zip_state')
+  t('GB paste = BEFORE', gb.paste === before.placeholders.paste, gb.paste)
+  const us = holders('zip_state', SEEDS.usFromSeed())
   t('US address', us.address === 'e.g. 123 Main St, Austin, TX 78701', us.address)
   t('US area', us.area === 'e.g. Austin', us.area)
-  t('US paste names Zilker Park, Austin, 5pm-9pm', C.pastePlaceholder('zip_state') === 'Paste your schedule here e.g. Saturday 14th June, Zilker Park, Austin, 5pm-9pm', C.pastePlaceholder('zip_state'))
-  t('no style → the UK examples', JSON.stringify(C.addressPlaceholders(undefined)) === JSON.stringify(gb))
-  t('the Schedule tab reads all three from the module (no literal left)',
-    P.includes('placeholder={addressPlaceholders(tabSettings.addressFormat).address}') && P.includes('placeholder={addressPlaceholders(tabSettings.addressFormat).area}')
-    && P.includes('placeholder={pastePlaceholder(tabSettings.addressFormat)}') && !P.includes('e.g. 123 High St') && !P.includes('5pm-9pm"'))
+  t('US paste names Zilker Park, Austin, in the US truck\'s date and clock (named Language Phase 1d change)', us.paste === 'Paste your schedule here e.g. Saturday, June 14, Zilker Park, Austin, 5:00 PM – 9:00 PM', us.paste)
+  t('no style → the UK examples', JSON.stringify(holders(undefined, SEEDS.gbFromSeed())) === JSON.stringify(gb) && C.addressStyleOf(undefined) === 'postcode' && C.addressStyleOf('xx') === 'postcode')
+  t('the Schedule tab reads all three from the messages by the truck\'s style (no literal left)',
+    P.includes('const addrStyle = addressStyleOf(tabSettings.addressFormat)')
+    && P.includes("placeholder={tE('addressPlaceholder', { style: addrStyle })}") && P.includes("placeholder={tE('areaPlaceholder', { style: addrStyle })}")
+    && P.includes("placeholder={tI('pastePlaceholder', pasteExampleValues(addrStyle, ts))}") && !P.includes('e.g. 123 High St') && !P.includes('5pm-9pm"'))
   t('the seeds: GB postcode · US zip_state', SEEDS.gbFromSeed().addressFormat === 'postcode' && SEEDS.usFromSeed().addressFormat === 'zip_state')
 
   /* ── 5 · the plans PDF ── */

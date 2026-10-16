@@ -25,6 +25,10 @@
 // never offers a choice guaranteed to return an empty list.
 'use client'
 
+import { useT } from '@/lib/i18n/use-t'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/vanFilter'
+
 export type VanOption = { id: string; name: string }
 
 /** Sentinels. Deliberately not valid UUIDs, so they can never collide with a real van id. */
@@ -52,10 +56,14 @@ export function matchesVanFilter(vanId: string | null | undefined, filter: VanFi
  *  multi-truck account reads as "all my businesses". ⚠️ THIS STRING REACHES EXPORTED CSVs through
  *  Reports, so the rename changes the text at the top of a file somebody may already have on disk.
  *  Copy only: `VAN_FILTER_ALL`, the predicate and the filename suffix are untouched. */
-export function vanFilterLabel(vans: VanOption[], filter: VanFilterValue): string {
-  if (filter === VAN_FILTER_ALL) return 'All vans'
-  if (filter === VAN_FILTER_UNASSIGNED) return 'Unassigned'
-  return vans.find(v => v.id === filter)?.name ?? 'Unknown van'
+/*  🔴 THE WORDS ARE `vanFilter` MESSAGES (Language Phase 1d), in `locale` — the truck's country's (en-GB when
+ *  absent, so a caller that passes none reads exactly as before). The US says "All trucks". A van's own name is
+ *  its stored name, shown as stored. */
+export function vanFilterLabel(vans: VanOption[], filter: VanFilterValue, locale?: string | null): string {
+  const t = translatorFor(locale, 'vanFilter')
+  if (filter === VAN_FILTER_ALL) return t('all')
+  if (filter === VAN_FILTER_UNASSIGNED) return t('unassigned')
+  return vans.find(v => v.id === filter)?.name ?? t('unknown')
 }
 
 /**
@@ -105,20 +113,21 @@ export function VanFilter({
   showUnassigned?: boolean
   className?: string
 }) {
+  const t = useT('vanFilter')
   // 🔴 THE SINGLE-VAN GATE. Do not lift this to the call sites.
   if (vans.length <= 1) return null
   return (
     <select
       value={value}
       onChange={e => onChange(e.target.value)}
-      aria-label="Filter by van"
+      aria-label={t('ariaLabel')}
       // Class string matched to the existing filter dropdowns in Manage (the Reports event picker and
       // the event-edit Van picker), NOT invented — one select treatment per surface.
       className={`border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${className}`}
     >
-      <option value={VAN_FILTER_ALL}>All vans</option>
+      <option value={VAN_FILTER_ALL}>{t('all')}</option>
       {vans.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
-      {showUnassigned && <option value={VAN_FILTER_UNASSIGNED}>Unassigned</option>}
+      {showUnassigned && <option value={VAN_FILTER_UNASSIGNED}>{t('unassigned')}</option>}
     </select>
   )
 }

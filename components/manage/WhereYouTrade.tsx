@@ -3,7 +3,8 @@
 //
 // The same three things the signup step asks, as settings: the country (READ-ONLY — it is tied to the truck's
 // card payments), the town or city, and the time zone (only when the country has more than one). Words from
-// lib/settings-copy.ts (WHERE_YOU_TRADE_COPY), shared with signup.
+// messages `whereYouTrade` (Language Phase 1d) — the same messages lib/settings-copy.ts's WHERE_YOU_TRADE_COPY
+// gives signup in en-GB; here they follow the truck's language, so a US truck reads "Where you serve".
 // 🔴 Saved through `update_trade_area`, which checks the town and zone together with lib/trade-area.ts — the
 // check signup runs. A truck made before this phase has no town yet: nothing is sent until one is given, so
 // changing the zone first never meets a "tell us your town" refusal.
@@ -11,7 +12,8 @@ import { useState } from 'react'
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { Card } from '@/components/manage/primitives'
 import { TownInput, ZoneSelect, type BasePlace } from '@/components/setup/WhereBasedStep'
-import { WHERE_YOU_TRADE_COPY as COPY } from '@/lib/settings-copy'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/whereYouTrade'
 
 export interface TradeAreaTruck {
   timezone?: string | null
@@ -29,6 +31,7 @@ export function WhereYouTrade<T extends TradeAreaTruck>({ truck, api, showToast,
   readOnly?: boolean
 }) {
   const cs = useCountrySettings()
+  const t = useT('whereYouTrade')
   const [place, setPlace] = useState<BasePlace>({
     placeId: truck.base_place_id ?? null, name: truck.base_place_name ?? '', region: truck.base_region ?? null,
     lat: numOrNull(truck.base_lat), lng: numOrNull(truck.base_lng),
@@ -54,27 +57,27 @@ export function WhereYouTrade<T extends TradeAreaTruck>({ truck, api, showToast,
     } catch (e) {
       const msg = e instanceof Error ? e.message : null
       setError(msg)
-      showToast(msg ?? 'Couldn’t save settings — please try again.', 'error')
+      showToast(msg ?? t('saveFailed'), 'error')
     }
   }
 
   return (
     <Card className="p-4 space-y-4">
-      <p className="text-base font-bold text-slate-800">{COPY.settingsHeading}</p>
+      <p className="text-base font-bold text-slate-800">{t('settingsHeading')}</p>
       <div>
-        <p className="block text-xs font-bold text-slate-600 mb-1">{COPY.country.label}</p>
+        <p className="block text-xs font-bold text-slate-600 mb-1">{t('countryLabel')}</p>
         <p className="text-sm text-slate-900">{cs.name}</p>
-        <p className="text-slate-400 text-xs mt-0.5">{COPY.countryLocked}</p>
+        <p className="text-slate-400 text-xs mt-0.5">{t('countryLocked')}</p>
       </div>
       <div>
-        <label htmlFor="trade-town" className="block text-xs font-bold text-slate-600 mb-1">{COPY.town.label}</label>
+        <label htmlFor="trade-town" className="block text-xs font-bold text-slate-600 mb-1">{t('townLabel')}</label>
         {readOnly ? <p className="text-sm text-slate-900">{place.name || '—'}</p> : (
           <TownInput id="trade-town" country={cs.countryCode} value={place} onChange={setPlace} onCommit={p => save({ place: p })} />
         )}
       </div>
       {cs.timezones.length > 1 && (
         <div>
-          <label htmlFor="trade-zone" className="block text-xs font-bold text-slate-600 mb-1">{COPY.timezone.label}</label>
+          <label htmlFor="trade-zone" className="block text-xs font-bold text-slate-600 mb-1">{t('timezoneLabel')}</label>
           <ZoneSelect id="trade-zone" zones={cs.timezones} value={zone} onChange={z => { if (readOnly) return; setZone(z); save({ zone: z }) }} />
         </div>
       )}

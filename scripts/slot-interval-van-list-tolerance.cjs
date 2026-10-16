@@ -27,6 +27,10 @@ const managePage = src('app/manage/[token]/page.tsx')
 /* ⚠️ THE KITCHEN CAPACITY CARD LIVES HERE NOW (October 2026), not in page.tsx. Named once so the
  * checks below cannot drift apart from each other. */
 const NEW_CAPACITY_FILE = 'components/manage/KitchenCapacitySection.tsx'
+// ⚠️ RE-PINNED (Language Phase 1d): two sentences this file pinned in source moved to messages/en-GB.json
+// (manageSettings.collection.unavailable, errorsManage.collection_intervals_save_failed); the en-GB catalogue is read
+// so the words are still asserted exactly.
+const GB = JSON.parse(src('messages/en-GB.json'))
 const { readVanIntervalsForTruck, DEFAULT_INTERVAL } = compile(REPO, ['lib/slot-interval.ts'], 'tolerance').req('lib/slot-interval.js')
 
 // The HEAD column list, read from git rather than retyped, so this cannot drift.
@@ -154,7 +158,10 @@ console.log('\n── THE MANAGE PAGE RENDERS EVERY VAN REGARDLESS ────�
   check(vanMapStart > 0, 'the van list is a plain vans.map over the response')
   check(!/intervalsAvailable[\s\S]{0,80}vans\.map/.test(managePage), '🔴 the van map is NOT gated on intervalsAvailable')
   check(/\{!intervalsAvailable \? \(/.test(box), 'only the Collection times box branches on it')
-  check(/Collection times are unavailable right now\./.test(box), 'the disabled state shows exactly "Collection times are unavailable right now."')
+  // ⚠️ RE-PINNED (Language Phase 1d): the sentence moved to manageSettings.collection.unavailable (words unchanged);
+  // the box renders it with t('collection.unavailable') in the unavailable branch.
+  check(/\{!intervalsAvailable \? \([\s\S]{0,600}?<p className="text-xs text-slate-500">\{t\('collection\.unavailable'\)\}<\/p>/.test(box)
+    && GB.manageSettings.collection.unavailable === 'Collection times are unavailable right now.', 'the disabled state shows exactly "Collection times are unavailable right now."')
   // No controls in the unavailable branch.
   const unavail = box.slice(box.indexOf('{!intervalsAvailable ? ('), box.indexOf(') : (() => {'))
   check(!/<select|<input|updateVanSetting/.test(unavail), 'the unavailable branch renders no select, no checkbox and no save')
@@ -186,7 +193,11 @@ check(/intervalUpdates\.collection_interval_mins = collection_interval_mins/.tes
 check(/if \(Object\.keys\(updates\)\.length\) \{[\s\S]{0,200}\.update\(updates\)/.test(manage), 'the other settings are written in their own statement')
 check(/if \(Object\.keys\(intervalUpdates\)\.length\) \{[\s\S]{0,260}\.update\(intervalUpdates\)/.test(manage), 'the intervals are written in a SEPARATE statement')
 check(/const \{ error: ivErr \}[\s\S]{0,400}if \(ivErr\) \{/.test(manage), '🔴 the interval write IS error-checked')
-check(/return NextResponse\.json\(\{ error: 'Collection times could not be saved right now\.' \}, \{ status: 500 \}\)/.test(manage), '…and a failure returns a visible error, never { ok: true }')
+// ⚠️ RE-PINNED (Language Phase 1d): the refusal now goes through `refuse(code, 500)` (manageErrorBody), whose en-GB
+// sentence is errorsManage.collection_intervals_save_failed — word for word what was inline. Still a returned 500
+// inside the ivErr branch, never { ok: true }.
+check(/if \(ivErr\) \{[\s\S]{0,800}?return await refuse\('collection_intervals_save_failed', 500\)/.test(manage)
+  && GB.errorsManage.collection_intervals_save_failed === 'Collection times could not be saved right now.', '…and a failure returns a visible error, never { ok: true }')
 check(/PGRST204/.test(manage) && /42703/.test(manage), '…logged distinguishably, so the fix is identifiable')
 
 console.log('\n── NO OTHER NAMED VAN SELECT NAMES THE INTERVAL COLUMNS ────────────────────────────────')

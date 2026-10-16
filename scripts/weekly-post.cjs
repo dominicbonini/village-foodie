@@ -1673,8 +1673,11 @@ head('9c · THE WIRING')
    * button hands the event over — and the modal has exactly ONE mount in the product rather than one
    * per screen that can start a post.
    * 🔴 AND THE MODAL IS OPEN ON ARRIVAL, which is the whole point: §1 asks for one press, not two. */
+  // ⚠️ RE-PINNED (Language Phase 1d): the button's words moved to manageSchedule.card.makePost (words unchanged); the
+  // row renders `{tS('card.makePost')}`, so the label is asserted there and in the en-GB catalogue.
   t('🔴 "Make post" is on each UPCOMING event in Schedule › Events, and hands it to the social tab',
-    />Make post</.test(page)
+    />\{tS\('card\.makePost'\)\}</.test(page)
+    && JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).manageSchedule.card.makePost === 'Make post'
     && /onOpenSocial\('create', event\.id\)/.test(page)
     // ⚠️ inside the `!isPast` branch, so past and cancelled rows keep their existing treatment
     && page.indexOf("onOpenSocial('create', event.id)") > page.indexOf('{!isPast && (')
@@ -1972,12 +1975,17 @@ head('9c · THE WIRING')
      * `sg_merge_place` so the next reader knows the server kept it; forbidding the string would
      * forbid the explanation. */
     const placeCode = places.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
-    return !/Merge into another place/.test(places)
+    // ⚠️ RE-PINNED (Language Phase 1d): the places form's words moved to messages/en-GB.json `schedulePlaces`, so the
+    // absence of the Merge button's words is also asserted of that namespace, and "Restore this place" — which in the
+    // source now survives only in a comment — is asserted as the button's t('restore') call plus its en-GB text.
+    const spGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).schedulePlaces
+    return !/Merge into another place/.test(places) && !JSON.stringify(spGB).includes('Merge into another place')
       && !/sg_merge_place/.test(placeCode)
       && !/mergeTargets/.test(placeCode)
       && !/setMerging|mergeInto/.test(placeCode)
       // ⚠️ RESTORE STILL EXISTS, and it is still what un-merges a merged place
-      && /Restore this place/.test(places)
+      && /<Btn label=\{t\('restore'\)\}[^>]*\n?[^>]*onClick=\{\(\) => setFlag\(\{ is_hidden: false \}/.test(placeCode)
+      && spGB.restore === 'Restore this place'
   })())
   t('🔴 …and the server’s merge, and merged_into_id resolution, are untouched', (() => {
     const manage = fs.readFileSync(path.join(REPO, 'app/api/manage/route.ts'), 'utf8')
@@ -2013,8 +2021,14 @@ head('9c · THE WIRING')
      * `<Input` makes "the markup wrapping this field" exactly one segment. */
     const seg = card.split('<Input')
     const widths = {}
+    // ⚠️ RE-PINNED (Language Phase 1d): the labels moved from `label="Full name"` to `label={t('fullName')}`
+    // (messages/en-GB.json `schedulePlaces`). Each field's label is now read from its t() key and rendered in en-GB
+    // (next-intl, as useT does; Postcode's `style` select at a GB truck's 'postcode'), so the widths are still keyed by
+    // the words the operator sees and the same five-field layout is asserted.
+    const { createTranslator } = require(require.resolve('next-intl', { paths: [REPO] }))
+    const spT = createTranslator({ locale: 'en-GB', messages: JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')), namespace: 'schedulePlaces' })
     for (let i = 1; i < seg.length; i++) {
-      const m = /^\s*label="([^"]+)"/.exec(seg[i])
+      const m = /^\s*label="([^"]+)"/.exec(seg[i]) || (() => { const k = /^\s*label=\{t\('([^']+)'/.exec(seg[i]); return k ? [k[0], spT(k[1], { style: 'postcode' })] : null })()
       if (m) widths[m[1]] = seg[i - 1].includes('sm:col-span-2')
     }
     /* ⚠️ "Full name" IS THE LONG ONE NOW (6 October 2026). The two name labels were swapped: `name` is
@@ -2029,6 +2043,8 @@ head('9c · THE WIRING')
       && widths['Venue name'] === false && widths['Area'] === false && widths['Postcode'] === false
       /* ⛔ AND THE OLD LABEL IS GONE FROM THE CARD, so "renamed" cannot pass while both exist. */
       && !/label="Name on posts"/.test(card)
+      // ⚠️ RE-PINNED (Language Phase 1d): …nor among the card's messages, now that its labels live there.
+      && !('Name on posts' in widths)
   })())
 
   /* ══ 🔴 THE CLAIM MOVED WITH THE DRAWING — 10 OCTOBER 2026 (§2) ═════════════════════════════════

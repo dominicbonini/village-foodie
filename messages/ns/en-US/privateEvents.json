@@ -1,0 +1,9 @@
+{
+  "form": {
+    "previewNote": "How it shows on your schedule — no venue, town or ZIP code."
+  },
+  "link": {
+    "newLinkConfirm": "Make a new link? The current link stops working right away, and any QR codes you have already printed will stop working too.",
+    "newLinkHelp": "Use this if the link has gone somewhere it shouldn’t. The current link stops working right away, and printed QR codes stop working too."
+  }
+}

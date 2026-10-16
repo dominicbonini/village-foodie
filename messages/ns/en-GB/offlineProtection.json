@@ -1,0 +1,23 @@
+{
+  "explainerLead": "You must keep your dashboard or kitchen screen on and online during service.",
+  "explainerBody": "If the screen goes off, the device loses internet, or you switch to another website, offline protection takes over — either pausing ordering or turning auto-accept off, whichever you chose.",
+  "reminder": "⚠️ Keep your dashboard or kitchen screen on and online during service, or offline protection may take over.",
+  "enableConfirm": "Offline protection enabled.\n\nTo keep orders flowing, your screen must stay on. If this device loses connection, offline protection takes over in the mode you chose.\n\nMake sure Screen On is enabled on this device.",
+  "disableConfirm": "Disable offline protection for this event?\n\nIf this device loses connection, online orders will continue — customers may place orders you cannot see. Only disable if you have a reliable connection.",
+  "cardDescription": "Decides what happens to incoming orders when your device drops offline.",
+  "purpose": "If your device loses its connection, this stops orders arriving while you can’t see them.",
+  "switchLabel": "Offline order protection",
+  "switchHelp": "What happens when this van loses its connection.",
+  "modes": {
+    "pause": {
+      "label": "Pause online ordering",
+      "help": "Customers can’t order until you’re back online."
+    },
+    "no_auto_accept": {
+      "label": "Keep taking orders, confirm them yourself",
+      "help": "Auto-accept is turned off, so customers can still order but nothing is confirmed automatically. You’ll confirm each one when you’re back online — and anything still waiting is rejected automatically after your selected time, with the customer emailed to let them know."
+    }
+  },
+  "autoRejectLabel": "Reject orders waiting longer than",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} mins}}"
+}

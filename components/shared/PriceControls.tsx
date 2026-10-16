@@ -32,8 +32,9 @@ import { CONTROL_BOX } from '@/lib/ui-tokens'
 import { formatMinorOrBare, currencySymbolOrBare, editableAmount, type MoneyFormat } from '@/lib/money-format'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/priceControls'
+import '@/lib/i18n/catalog/serviceSettings'
 import {
-  priceModeChoices, priceRoundingChoices,
+  PRICE_MODE_VALUES, priceRoundingChoices,
 } from '@/lib/copy/serviceSettings'
 import {
   amountUnitFor, applyPriceRule, cleanPriceAmount, cleanTypedPrice, priceForItem, toPence, toPounds,
@@ -174,7 +175,10 @@ export function PriceModeSelect({ value, onChange, disabled, label, height, curr
   /** The TRUCK's currency symbol, for the "+ £" / "− £" labels. Required — never a typed £. */
   currencySymbol: string
 }) {
-  const choices = priceModeChoices(currencySymbol)
+  /* 🔴 THE LABELS ARE `serviceSettings.priceMode.*`, IN THE TRUCK'S LANGUAGE (Language Phase 1d) — the values are
+   * `PRICE_MODE_VALUES`, the same list `priceModeChoices` maps, so a label and a stored value cannot drift. */
+  const ts = useT('serviceSettings')
+  const choices = PRICE_MODE_VALUES.map(v => ({ value: v, label: ts(`priceMode.${v}`, { symbol: currencySymbol }) }))
   return (
     <Select className={PRICE_CONTROL_CLASS} height={height} ariaLabel={label} disabled={disabled} value={value}
       title={choices.find(c => c.value === value)?.label ?? ''}
@@ -197,10 +201,14 @@ export function PriceRoundingSelect({ value, onChange, disabled, label, faded, h
    */
   faded?: boolean
 }) {
+  /* The values from `priceRoundingChoices` (the one list); the labels `serviceSettings.priceRounding.*` in the
+   * truck's language (Language Phase 1d). */
+  const ts = useT('serviceSettings')
+  const choices = priceRoundingChoices(currencySymbol).map(c => ({ value: c.value, label: ts(`priceRounding.${c.value}`, { symbol: currencySymbol }) }))
   return (
     <Select className={PRICE_CONTROL_CLASS} height={height} ariaLabel={label} disabled={disabled} value={value} faded={faded}
-      title={priceRoundingChoices(currencySymbol).find(c => c.value === value)?.label ?? ''}
-      options={priceRoundingChoices(currencySymbol).map(c => ({ value: c.value, label: c.label }))}
+      title={choices.find(c => c.value === value)?.label ?? ''}
+      options={choices.map(c => ({ value: c.value, label: c.label }))}
       onChange={v => onChange(v as PriceRounding)} />
   )
 }

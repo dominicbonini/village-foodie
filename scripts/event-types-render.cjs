@@ -44,6 +44,19 @@ function lift(src, re, what) {
   if (!m) throw new Error(`the fixture cannot be built: no ${what} found in the source`)
   return m[1]
 }
+/* ⚠️ RE-PINNED (Language Phase 1d): Manage's Event types words moved out of lib/private-events/copy.ts,
+ * lib/copy/serviceSettings.ts, lib/copy/offlineProtection.ts and lib/settings-copy.ts into messages/en-GB.json
+ * (`privateEvents`, `serviceSettings`, `offlineProtection`, `settingsCopy`, `eventTypes`); the modules' exports now
+ * read `translatorFor(DEFAULT_LOCALE, ns)(key)`. `gbMessage(key)` is that key's en-GB text and THROWS if it is not a
+ * message, exactly as `lift` throws on a missing anchor; `liftKey` lifts the KEY the component reads (so a change of
+ * call site still stops the fixture building) and resolves it. The fixture renders the words a GB truck is served. */
+const GB_ALL = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+function gbMessage(key, what) {
+  const text = key.split('.').reduce((o, k) => (o == null ? o : o[k]), GB_ALL)
+  if (typeof text !== 'string') throw new Error(`the fixture cannot be built: ${what} reads ${key}, which is not a message`)
+  return text
+}
+function liftKey(src, re, ns, what) { return gbMessage(`${ns}.${lift(src, re, what)}`, what) }
 
 function appCss() {
   // ⚠️ `.next/static`, NOT `.next/dev`: the dev CSS is a different, unminified artefact and measuring
@@ -191,8 +204,10 @@ function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline 
    * every other string here is: if the component's wording changes this fixture stops BUILDING
    * instead of going on measuring a screen nobody is served. */
   const PE = read('lib/private-events/copy.ts')
-  const ORDERING_SECTION = lift(PE, /export const ORDERING_SECTION = '(.+?)'/, 'the ORDERING band label')
-  const PRIVATE_LINK_ROW = lift(PE, /export const PRIVATE_LINK_ROW_LABEL =\n?\s*'(.+?)'/, 'the link/QR row label')
+  // ⚠️ RE-PINNED (Language Phase 1d): ORDERING_SECTION / PRIVATE_LINK_ROW_LABEL were deleted from the copy module; the
+  // grid's plan reads `tp('grid.orderingSection')` / `tp('grid.linkRowLabel')` (privateEvents), lifted through that call.
+  const ORDERING_SECTION = liftKey(UI, /k: 'section', id: 'sec-ordering', label: tp\('([\w.]+)'\)/, 'privateEvents', 'the ORDERING band label')
+  const PRIVATE_LINK_ROW = liftKey(UI, /k: 'private-link', id: 'private-link', label: tp\('([\w.]+)'\)/, 'privateEvents', 'the link/QR row label')
   const PRIVATE_LINK_STD = lift(PE, /export const PRIVATE_LINK_STANDARD_CELL = '(.+?)'/, 'Standard\'s link/QR cell')
   const PRIVATE_TYPE_NAME = lift(PE, /export const PRIVATE_TYPE_NAME = '(.+?)'/, 'the Private type name')
 
@@ -258,10 +273,13 @@ function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline 
    * ⚠️ "Remind me to add a buzzer" IS THE LONGEST OF THE FIVE and it is last; a fixture with the old
    * short names ('Buzzers') would under-measure the 230px label column by a long way. */
   const LABELS = (() => {
+    /* ⚠️ RE-PINNED (Language Phase 1d): the labels are messages now — `serviceSettings.labels.<id>`, and the order-ready
+     * step is Settings' own `settingsCopy.orderReady.label` (re-exported, as before). The module still names each one
+     * (`<id>: gb('labels.<id>')`), so that line is lifted to prove the key, then the key's en-GB text is used. */
     const lib = read('lib/copy/serviceSettings.ts')
     const pick = (k) => k === 'order_ready'
-      ? lift(read('lib/settings-copy.ts'), /orderReady: \{\s*\n\s*label: '(.+?)'/, 'the order-ready label')
-      : lift(lib, new RegExp(`${k}: '(.+?)'`), `the ${k} label`)
+      ? liftKey(read('lib/settings-copy.ts'), /orderReady: \{\s*\n\s*label: gbSetting\('(orderReady\.label)'\)/, 'settingsCopy', 'the order-ready label')
+      : liftKey(lib, new RegExp(`${k}: gb\\('(labels\\.${k})'\\)`), 'serviceSettings', `the ${k} label`)
     const order = [...read('lib/event-types/types.ts')
       .matchAll(/label: SERVICE_SETTING_LABELS\.(\w+)/g)].map(m => m[1])
     if (order.length !== 5) throw new Error('the fixture cannot be built: SERVICE_ROWS did not yield five imported labels')
@@ -281,22 +299,27 @@ function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline 
    * protection is off in every column. So the list here is the TWO REAL MODES and no "Off".
    * ⚠️ STILL LIFTED FROM `lib/copy/offlineProtection.ts`: the shape changed, the vocabulary did not,
    * and a fixture that retyped the labels could measure a wording the screen does not have. */
+  /* ⚠️ RE-PINNED (Language Phase 1d): each `CONST = '…'` literal below became `CONST = gb('<key>')` in its copy module
+   * (offlineProtection / serviceSettings messages). The `gb('<key>')` line is lifted, so the fixture still stops
+   * building if the module stops naming that key, and the key's en-GB text is rendered. */
+  const OFF_LIB = read('lib/copy/offlineProtection.ts')
+  const SVC_LIB = read('lib/copy/serviceSettings.ts')
   const OFFLINE_LABELS = [
-    lift(read('lib/copy/offlineProtection.ts'), /OFFLINE_MODE_PAUSE_LABEL = '(.+?)'/, 'the pause label'),
-    lift(read('lib/copy/offlineProtection.ts'), /OFFLINE_MODE_NO_AUTO_ACCEPT_LABEL = '(.+?)'/, 'the no-auto-accept label')]
-  const WHEN_OFFLINE = lift(read('lib/copy/serviceSettings.ts'), /OFFLINE_WHEN_OFFLINE_LABEL = '(.+?)'/, 'the when-offline label')
-  const PRICE_TYPE_HINT = lift(read('lib/copy/serviceSettings.ts'), /PRICE_TYPE_HINT = '(.+?)'/, 'the type-a-price hint')
-  const SAME_SETTINGS_LABEL = lift(read('lib/copy/serviceSettings.ts'), /SAME_SETTINGS_ALL_VANS_LABEL = '(.+?)'/, 'the same-settings label')
-  const ALL_VANS_HEADER = lift(read('lib/copy/serviceSettings.ts'), /SAME_SETTINGS_ALL_VANS_HEADER = '(.+?)'/, 'the all-vans header')
+    liftKey(OFF_LIB, /OFFLINE_MODE_PAUSE_LABEL = gb\('(.+?)'\)/, 'offlineProtection', 'the pause label'),
+    liftKey(OFF_LIB, /OFFLINE_MODE_NO_AUTO_ACCEPT_LABEL = gb\('(.+?)'\)/, 'offlineProtection', 'the no-auto-accept label')]
+  const WHEN_OFFLINE = liftKey(SVC_LIB, /OFFLINE_WHEN_OFFLINE_LABEL = gb\('(.+?)'\)/, 'serviceSettings', 'the when-offline label')
+  const PRICE_TYPE_HINT = liftKey(SVC_LIB, /PRICE_TYPE_HINT = gb\('(.+?)'\)/, 'serviceSettings', 'the type-a-price hint')
+  const SAME_SETTINGS_LABEL = liftKey(SVC_LIB, /SAME_SETTINGS_ALL_VANS_LABEL = gb\('(.+?)'\)/, 'serviceSettings', 'the same-settings label')
+  const ALL_VANS_HEADER = liftKey(SVC_LIB, /SAME_SETTINGS_ALL_VANS_HEADER = gb\('(.+?)'\)/, 'serviceSettings', 'the all-vans header')
   const PRICE_LABELS = (() => {
-    const lib = read('lib/copy/serviceSettings.ts')
+    const lib = SVC_LIB
     return {
-      on: lift(lib, /price_change_on: '(.+?)'/, 'the change-prices label'),
-      mode: lift(lib, /price_mode: '(.+?)'/, 'the price-change label'),
-      amount: lift(lib, /price_amount: '(.+?)'/, 'the amount label'),
-      rounding: lift(lib, /price_rounding: '(.+?)'/, 'the rounding label'),
-      items: lift(lib, /item_prices: '(.+?)'/, 'the item-prices label'),
-      stdCell: lift(lib, /PRICES_STANDARD_CELL = '(.+?)'/, 'the prices Standard cell'),
+      on: liftKey(lib, /price_change_on: gb\('(.+?)'\)/, 'serviceSettings', 'the change-prices label'),
+      mode: liftKey(lib, /price_mode: gb\('(.+?)'\)/, 'serviceSettings', 'the price-change label'),
+      amount: liftKey(lib, /price_amount: gb\('(.+?)'\)/, 'serviceSettings', 'the amount label'),
+      rounding: liftKey(lib, /price_rounding: gb\('(.+?)'\)/, 'serviceSettings', 'the rounding label'),
+      items: liftKey(lib, /item_prices: gb\('(.+?)'\)/, 'serviceSettings', 'the item-prices label'),
+      stdCell: liftKey(lib, /PRICES_STANDARD_CELL = gb\('(.+?)'\)/, 'serviceSettings', 'the prices Standard cell'),
     }
   })()
   const PRICE_MODE_LABELS = ['None', '+ \u00a3', '+ %', '\u2212 \u00a3', '\u2212 %']
@@ -582,12 +605,15 @@ function panelFixture(css, typeCount, breakScroll = false, vans = 'one', inline 
     return out.join('')
   }
 
+  /* ⚠️ RE-PINNED (Language Phase 1d): the footer and subtitle are `{ts('eventTypesFooterStandard')}`,
+   * `{ts('eventTypesFooterOneEvent')}` and `{ts('eventTypesSubtitle')}` in the component, lifted through those calls.
+   * Footer line 2 is a NAMED GB FIX (scripts/fixtures/language-phase-1d-gb-named.json: "event's" → "event’s"); the
+   * fixture renders the new words, which measure the same. */
   const footer = (() => {
-    const lib = read('lib/copy/serviceSettings.ts')
-    return [lift(lib, /EVENT_TYPES_FOOTER_STANDARD =\s*\n\s*'(.+?)'/, 'footer line 1'),
-      lift(lib, /EVENT_TYPES_FOOTER_ONE_EVENT =\s*\n\s*"(.+?)"/, 'footer line 2')]
+    return [liftKey(UI, /\{ts\('(eventTypesFooterStandard)'\)\}<br \/>/, 'serviceSettings', 'footer line 1'),
+      liftKey(UI, /<br \/>\s*\n\s*\{ts\('(eventTypesFooterOneEvent)'\)\}/, 'serviceSettings', 'footer line 2')]
   })()
-  const subtitle = lift(read('lib/copy/serviceSettings.ts'), /EVENT_TYPES_SUBTITLE = '(.+?)'/, 'the subtitle')
+  const subtitle = liftKey(UI, /<p className="text-xs sm:text-\[13px\] text-slate-500">\{ts\('(eventTypesSubtitle)'\)\}<\/p>/, 'serviceSettings', 'the subtitle')
   const heading = lift(read('lib/ui-tokens.ts'), /export const SUBCARD_HEADING = '(.+?)'/, 'the section heading token')
   /* The phone picker lists the van columns and then the types, in the grid's order. */
   const pickerNames = [...(vanCols.length > 1 ? vanCols : ['Standard']), ...typeNames]
@@ -750,7 +776,8 @@ function itemsFixture(css, editing = false, longName = false) {
   const PAGE = read('app/dashboard/[token]/page.tsx')
   /* ⚠️ LIFTED FROM THE PAGE: the column header's class, the read-only price's class, the input's
    * class, and the blue note's. A re-typed copy here would keep measuring the old shape. */
-  const headCls = lift(PAGE, /<span className="(w-20 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400)">\{EVENT_PRICE_COLUMN_LABEL\}/, 'the Price column header')
+  // ⚠️ RE-PINNED (Language Phase 1d): the header reads `{tSvc('eventPriceColumnLabel')}` in place of the import.
+  const headCls = lift(PAGE, /<span className="(w-20 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400)">\{tSvc\('eventPriceColumnLabel'\)\}/, 'the Price column header')
   const plainCls = lift(PAGE, /<p data-event-price className=\{`(w-20 text-right text-sm font-bold tabular-nums) /, 'the read-only price')
   const noteCls = lift(PAGE, /<div className="(mb-4 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2)" data-price-edit-note>/, 'the edit note')
   /* ⚠️ 10 October 2026: the button is a COMPACT OUTLINED one on the title row at every width now —
@@ -766,12 +793,13 @@ function itemsFixture(css, editing = false, longName = false) {
   // measured are those messages' en-GB text, lifted through the key the page reads.
   const limitHead = liftMessage(PAGE, /<span className="w-16 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">\{tDash\('([\w.]+)'\)\}<\/span>/, 'the Limit column header')
   const onHead = liftMessage(PAGE, /<span className="w-12 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">\{tDash\('([\w.]+)'\)\}<\/span>/, 'the On column header')
-  const COPY = read('lib/copy/serviceSettings.ts')
-  const editLabel = lift(COPY, /export const EVENT_PRICE_EDIT = '(.+?)'/, 'the Edit prices label')
-  const saveLabel = lift(COPY, /export const EVENT_PRICE_SAVE = '(.+?)'/, 'the Save prices label')
-  const editNote = lift(COPY, /export const EVENT_PRICE_EDIT_NOTE =\n\s*'(.+?)'/, 'the edit note copy')
-  const liveNote = lift(COPY, /export const EVENT_PRICE_LIVE_NOTE = '(.+?)'/, 'the live note copy')
-  const cardDesc = lift(COPY, /export const EVENT_ITEMS_CARD_DESCRIPTION =\n\s*'(.+?)'/, 'the card description')
+  /* ⚠️ RE-PINNED (Language Phase 1d): the card's words are `serviceSettings` messages the page reads as `tSvc('<key>')`;
+   * each key is lifted from the page's own call and its en-GB text rendered. */
+  const editLabel = liftKey(PAGE, /\{tSvc\('(eventPriceEdit)'\)\}/, 'serviceSettings', 'the Edit prices label')
+  const saveLabel = liftKey(PAGE, /tSvc\('(eventPriceSave)'\)/, 'serviceSettings', 'the Save prices label')
+  const editNote = liftKey(PAGE, /\{tSvc\('(eventPriceEditNote)'\)\}/, 'serviceSettings', 'the edit note copy')
+  const liveNote = liftKey(PAGE, /\{tSvc\('(eventPriceLiveNote)'\)\}/, 'serviceSettings', 'the live note copy')
+  const cardDesc = liftKey(PAGE, /\{tSvc\('(eventItemsCardDescription)'\)\}/, 'serviceSettings', 'the card description')
 
   const sw = (on, locked) => `<button type="button" role="switch" aria-checked="${on}" aria-label="Available" ${locked ? 'disabled' : ''} class="relative w-11 h-6 rounded-full shrink-0 ${locked ? 'opacity-50' : ''} ${on ? 'bg-green-500' : 'bg-slate-300'}"><span class="absolute top-1 w-4 h-4 rounded-full bg-white"></span></button>`
   const limit = (locked) => `<input type="number" placeholder="–" ${locked ? 'disabled' : ''} value="8" class="w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold text-slate-900 border-slate-200 bg-slate-50 disabled:opacity-50"/>`

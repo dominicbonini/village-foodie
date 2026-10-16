@@ -345,6 +345,13 @@ export function offlineIsHandChange(event: OfflineEventOverride | null | undefin
 // 6 · WHAT THE SCREENS SAY
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
+/** The words a type summary is made of — the `eventTypes.summary` messages (Language Phase 1d). */
+export type TypeSummaryKey =
+  | 'normalSetup' | 'sameAsStandard' | 'buzzersOn' | 'buzzersOff' | 'takeCashOn' | 'takeCashOff'
+  | 'markReadyOn' | 'markReadyOff' | 'collectionEvery' | 'offlineOff' | 'offlineKeepTaking' | 'offlinePause'
+/** The screen's translator for `eventTypes.summary`, passed in so this pure module carries no catalogue. */
+export type TypeSummaryWords = (key: TypeSummaryKey, values?: { mins: number }) => string
+
 /**
  * A one-line summary of what a type changes, for the Add event picker and the dashboard chip.
  *
@@ -353,31 +360,32 @@ export function offlineIsHandChange(event: OfflineEventOverride | null | undefin
  * them now would promise a truck something the next order does not do.
  * ⚠️ A TYPE THAT CHANGES NOTHING SAYS SO, rather than rendering an empty line that reads as a loading
  * state.
+ * 🔴 THE WORDS ARE MESSAGES (`eventTypes.summary`, Language Phase 1d), in the truck's language: the screen
+ * passes its translator as `words`, so this module stays pure and no bundle that imports it for the
+ * resolvers carries the catalogue. The US says "pickup every N min".
  */
-export function summariseType(type: TypeFor | null | undefined): string {
-  if (!type) return 'Your normal setup'
+export function summariseType(type: TypeFor | null | undefined, words: TypeSummaryWords): string {
+  if (!type) return words('normalSetup')
   const parts: string[] = []
   if (type.buzzer_prompt !== null && type.buzzer_prompt !== undefined) {
-    parts.push(type.buzzer_prompt ? 'buzzers on' : 'buzzers off')
+    parts.push(words(type.buzzer_prompt ? 'buzzersOn' : 'buzzersOff'))
   }
   if (type.takes_cash !== null && type.takes_cash !== undefined) {
-    parts.push(type.takes_cash ? 'take cash on' : 'take cash off')
+    parts.push(words(type.takes_cash ? 'takeCashOn' : 'takeCashOff'))
   }
   if (type.order_ready !== null && type.order_ready !== undefined) {
-    parts.push(type.order_ready ? 'mark-ready step on' : 'mark-ready step off')
+    parts.push(words(type.order_ready ? 'markReadyOn' : 'markReadyOff'))
   }
   if (type.collection_interval_mins !== null && type.collection_interval_mins !== undefined) {
-    parts.push(`collection every ${normaliseInterval(type.collection_interval_mins)} min`)
+    parts.push(words('collectionEvery', { mins: normaliseInterval(type.collection_interval_mins) }))
   }
   /* ⚠️ ONE PHRASE FOR THE WHOLE OFFLINE ROW, because it is one row to an operator. "offline protection
    * off · pause · 15 mins" would read as three settings and two of them are meaningless on their own. */
-  if (type.offline_protection === false) parts.push('offline protection off')
+  if (type.offline_protection === false) parts.push(words('offlineOff'))
   else if (type.offline_protection === true || type.offline_protection_mode) {
-    parts.push(type.offline_protection_mode === 'no_auto_accept'
-      ? 'offline: keep taking orders'
-      : 'offline: pause ordering')
+    parts.push(words(type.offline_protection_mode === 'no_auto_accept' ? 'offlineKeepTaking' : 'offlinePause'))
   }
-  return parts.length ? parts.join(' · ') : 'Same as Standard'
+  return parts.length ? parts.join(' · ') : words('sameAsStandard')
 }
 
 /** How many of a type's four settings differ from Standard — the "Changes" tag on the setup screen. */

@@ -1,0 +1,43 @@
+{
+  "emojiPicker": {
+    "categories": {
+      "fruitVeg": "Fruits & vegetables"
+    }
+  },
+  "contact": {
+    "tickWhatsApp": "⚠️ Check “This number is on WhatsApp” on the Phone field to use WhatsApp."
+  },
+  "preorders": {
+    "modalHelp": "Check which items are pre-order. They all use the global rule ({rule})."
+  },
+  "vans": {
+    "sameAs": "{hasName, select, yes {Same as {name}} other {Same as the first truck}}",
+    "sameOn": "This truck uses the same settings, except kitchen capacity.",
+    "sameOff": "Copy the first truck’s settings — everything except kitchen capacity — and keep them in step.",
+    "takesCashHelp": "Splits the payment button into “Cash” and “Card” so your sales reconcile against the cash register. You can turn this on for a single event from the dashboard.",
+    "newPlaceholder": "e.g. Truck 2, Festival Truck"
+  },
+  "collection": {
+    "help": "How far apart pickup times are. This doesn’t change kitchen capacity or prep times.",
+    "unavailable": "Pickup times are unavailable right now.",
+    "customerTimes": "Customer pickup times",
+    "yourTimes": "Your pickup times"
+  },
+  "removeVan": {
+    "body": "This truck will be removed from your account and will no longer appear on your dashboard or in future events.",
+    "preservedEvents": "<b>✓ Preserved:</b> Past event records linked to this truck are unaffected.",
+    "removedLink": "<b>✕ Removed:</b> The truck’s kitchen screen link and settings will be deactivated.",
+    "keep": "Keep truck",
+    "remove": "Remove truck"
+  },
+  "vanUpgrade": {
+    "title": "Upgrade to add more trucks",
+    "body": "The Starter plan includes 1 truck. Upgrade to Pro or Max to add additional trucks."
+  },
+  "schedule": {
+    "urlPlaceholder": "https://yourtruck.com/events"
+  },
+  "qr": {
+    "printHelp": "Print or display this code so customers can scan and pre-order. Place it at your window, on your truck, or share it online."
+  }
+}

@@ -259,8 +259,12 @@ head('4 · THE WRITERS')
    * warn about for buzzer_count and the auto-reject delay. */
   t('⚠️ prep 0 and counts=false ARE settable — `!== undefined`, not a truthiness test',
     /counts_toward_capacity: counts_toward_capacity !== undefined \? !!counts_toward_capacity : base\.counts_toward_capacity/.test(api))
+  // ⚠️ RE-PINNED (Language Phase 1d): the inline sentence moved to errorsManage.van_capacity_save_failed and the route
+  // returns it through `refuse(code, 500)` (manageErrorBody). Named GB fix (language-phase-1d-gb-named.json):
+  // straight ' → ’ in "van’s" — the new words are accepted.
   t('🔴 a failed per-van save is VISIBLE, not a green toast on nothing',
-    /That van\\'s capacity settings could not be saved right now\./.test(api))
+    /return await refuse\('van_capacity_save_failed', 500\)/.test(api)
+    && JSON.parse(read('messages/en-GB.json')).errorsManage.van_capacity_save_failed === 'That van’s capacity settings could not be saved right now.')
   /* ⚠️ THIS CHECK WAS MATCHING THE WRONG HANDLER, and the extraction of `copyCapacityFromFirst`
    * exposed it. Its name says `set_van_same_as_first`, but three of its four regexes ran against the
    * WHOLE FILE — and the `van_category_settings` delete-then-insert they found lived in the CAPACITY
@@ -291,7 +295,10 @@ head('4 · THE WRITERS')
       && (api.match(/copyCapacityFromFirst\(/g) || []).length === 3
       && (api.match(/vanCategoryCopyRows\(/g) || []).length === 1
   })())
-  t('⛔ the first van cannot follow itself', /The first van cannot follow itself\./.test(api))
+  // ⚠️ RE-PINNED (Language Phase 1d): the sentence moved to errorsManage.first_van_self (words unchanged); the route
+  // refuses with `refuse('first_van_self', 400)`.
+  t('⛔ the first van cannot follow itself', /if \(first && first === vanId\) return await refuse\('first_van_self', 400\)/.test(api)
+    && JSON.parse(read('messages/en-GB.json')).errorsManage.first_van_self === 'The first van cannot follow itself.')
   t('🔴 switching OFF writes only the switch — the copied values stay', (() => {
     const h = api.slice(api.indexOf("action === 'set_van_same_as_first'"), api.indexOf("action === 'add_van'"))
     // the copy is inside `if (on)`; the switch write is outside it

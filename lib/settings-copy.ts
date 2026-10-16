@@ -21,6 +21,20 @@
 // the control next to the text already shows the live value. Every one of those phrases that existed
 // was either already wrong or one provisioning change away from it.
 
+// ── 🔴 LANGUAGE PHASE 1d: SETTING_COPY's AND WHERE_YOU_TRADE_COPY's WORDS LIVE IN messages/en-GB.json ───────
+// (`settingsCopy` and `whereYouTrade`; US words in en-US.json). Manage › Settings reads them with `useT`, so a
+// US truck gets its own words. The exports below are the SAME messages in en-GB, for the callers that have not
+// moved yet (the setup wizard and its review screen) — one definition of every sentence, never a second copy.
+// ⚠️ THE TRIAL AND STRIPE SENTENCES ABOVE `SETTING_COPY` ARE STILL TYPED HERE: their screens (Schedule's empty
+// state, Billing, Payments) are not Phase 1d Part 1's, and Billing/Payments must not change in it.
+import { translatorFor } from '@/lib/i18n/translator'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/settingsCopy'
+import '@/lib/i18n/catalog/whereYouTrade'
+
+const gbSetting = translatorFor(DEFAULT_LOCALE, 'settingsCopy')
+const gbTrade = translatorFor(DEFAULT_LOCALE, 'whereYouTrade')
+
 export interface SettingCopy {
   /** The control's name, exactly as Manage → Settings renders it. */
   label: string
@@ -106,36 +120,33 @@ export const CONNECTING_STRIPE_NOT_A_COMMITMENT =
   + 'pay you — your plan is separate.'
 
 export const SETTING_COPY = {
-  /** Settings → Contact Details. The sentence wraps a <select>, so it is stored as its two halves —
-   *  both surfaces render `{prefix} [15/30/60/120] {suffix}` and cannot word it differently. */
+  /** Settings → Contact Details. ⚠️ LANGUAGE PHASE 1d: the sentence that wraps the <select> is ONE message,
+   *  `settingsCopy.allowCancellation.sentence` (the select is a rich-text tag inside it). Its old two halves
+   *  (`cancelPrefix` / `cancelSuffix`) were deleted once nothing read them. */
   allowCancellation: {
-    label: 'Allow customers to cancel orders',
+    label: gbSetting('allowCancellation.label'),
     help: '',
-    cancelPrefix: 'Customers can cancel up to',
-    cancelSuffix: 'before their pickup time',
   },
 
   /** Settings → Order settings → Accepting orders. */
   autoAccept: {
-    label: 'Auto-accept orders',
-    help: 'Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity. Orders with customer notes (e.g. an allergy) will still need to be confirmed.',
+    label: gbSetting('autoAccept.label'),
+    help: gbSetting('autoAccept.help'),
   } as SettingCopy,
 
   /** Settings → Your trucks → Display settings. */
   orderReady: {
-    label: 'Order-ready step',
-    help: 'Show a “Mark ready” button on the orders screen. Kitchen screens are set separately, on each '
-      + 'device. Customers are emailed whenever an order is marked ready. Applies to all events — you can '
-      + 'still turn it on or off for a single event on its dashboard.',
+    label: gbSetting('orderReady.label'),
+    help: gbSetting('orderReady.help'),
   } as SettingCopy,
 
   /** Settings → Your trucks → Display settings. `countLabel` is the nested count row.
    *  ⚠️ THE POOL ONLY (truck_vans.buzzer_count). The per-event PROMPT (truck_events.buzzer_prompt) has
    *  no truck-level column and is not represented here or on either surface — see the report. */
   buzzers: {
-    label: 'Do you hand out buzzers for collection?',
-    help: 'Record which buzzer you gave each customer, so you know who to look for when their food is ready.',
-    countLabel: 'How many buzzers do you have?',
+    label: gbSetting('buzzers.label'),
+    help: gbSetting('buzzers.help'),
+    countLabel: gbSetting('buzzers.countLabel'),
   },
 } as const
 
@@ -144,14 +155,14 @@ export const SETTING_COPY = {
 // and Manage › Settings › Where you trade read these, so the two cannot word the same setting differently.
 // The step asks QUESTIONS and Settings shows LABELS, so each field has both — written once, here.
 export const WHERE_YOU_TRADE_COPY = {
-  stepHeading: 'Where’s your truck based?',
-  stepIntro: 'This sets your currency, prices, time zone and phone format. The country can’t be changed later, because it’s tied to your card payments.',
-  settingsHeading: 'Where you trade',
-  country: { label: 'Country', help: '' },
-  countryGuessed: 'We guessed this from where you are. Change it if it’s wrong.',
-  countryLocked: 'Your country can’t be changed',
-  town: { label: 'Town or city', help: '' },
-  townQuestion: 'Town or city you’re based in',
-  timezone: { label: 'Time zone', help: '' },
-  continueButton: 'Continue',
+  stepHeading: gbTrade('stepHeading'),
+  stepIntro: gbTrade('stepIntro'),
+  settingsHeading: gbTrade('settingsHeading'),
+  country: { label: gbTrade('countryLabel'), help: '' },
+  countryGuessed: gbTrade('countryGuessed'),
+  countryLocked: gbTrade('countryLocked'),
+  town: { label: gbTrade('townLabel'), help: '' },
+  townQuestion: gbTrade('townQuestion'),
+  timezone: { label: gbTrade('timezoneLabel'), help: '' },
+  continueButton: gbTrade('continueButton'),
 } as const

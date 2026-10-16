@@ -17,23 +17,18 @@
 //   no_content  — we loaded it and got nothing readable.
 //   no_events   — we read it fine; the thing we were looking for was not on it.
 
-export const URL_MALFORMED_MSG = "That doesn't look like a web address. Try something like yourtruck.co.uk/events"
+// ── 🔴 LANGUAGE PHASE 1d: THE WORDS ARE IN MESSAGES (`manageScheduleVerify`, one key per code below) ─────────
+// A screen reads that namespace and shows `t(verifyCode(reason))`, and `t('blockedDomain')` for the one
+// address refused before trying. The GB words are the sentences below with curly apostrophes (named fixes); the
+// US says yourtruck.com.
+// ⛔ THE ENGLISH CONSTANTS (URL_MALFORMED_MSG, VERIFY_MESSAGES, BLOCKED_DOMAIN_MSG) ARE GONE: their last readers,
+// the setup wizard and Manage › Settings, read the namespace by code now (Language Phase 1d).
 
-export const VERIFY_MESSAGES: Record<string, string> = {
-  malformed:     URL_MALFORMED_MSG,
-  launch_failed: "Verification is temporarily unavailable. Please try again in a moment.",
-  blocked:       "We couldn't access this site — it may be blocking automated checks. Try the page that lists your schedule, or add events manually.",
-  unreachable:   "We couldn't reach this website. It may be down, or the address may be wrong.",
-  no_content:    "We reached this page but couldn't read anything on it. Check it's publicly accessible.",
-  no_events:     "We couldn't find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed.",
+/** The reasons the verify route can give, each a key in `manageScheduleVerify`. */
+export const VERIFY_CODES = ['malformed', 'launch_failed', 'blocked', 'unreachable', 'no_content', 'no_events'] as const
+export type VerifyCode = typeof VERIFY_CODES[number]
+
+/** The route's `reason`, as a message key. Anything unknown reads as `unreachable`, as `VERIFY_MESSAGES` always did. */
+export function verifyCode(reason: unknown): VerifyCode {
+  return (VERIFY_CODES as readonly unknown[]).includes(reason) ? reason as VerifyCode : 'unreachable'
 }
-
-/**
- * The one address we refuse before trying.
- *
- * ⚠️ IT EXISTED TWICE IN page.tsx AND STILL DOES ONCE: `SCHED_BLOCKED_DOMAIN_MSG` in the setup wizard
- * (line ~3449) is the same sentence under another name. Only the Settings copy moved here, because
- * only the Settings card moved — unifying the wizard's is a separate change with its own blast radius,
- * and is named in docs/manage-moves-2-report.md rather than done quietly.
- */
-export const BLOCKED_DOMAIN_MSG = "Please use your website URL — Facebook and Instagram pages can't be scraped automatically."

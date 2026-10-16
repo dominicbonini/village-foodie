@@ -21,6 +21,16 @@
 //                          the proof never depends on whether someone ran the split after editing messages/*.json
 //                          (scripts/messages-split.cjs is the check that they did).
 //
+// ── LANGUAGE PHASE 1d EXTENSION (scripts/language-phase-1d.cjs) ──────────────────────────────────────────
+//   A FROZEN PAIR: when HG_MESSAGES_FROZEN names a file ending `.en-GB.json` and a sibling `.en-US.json` exists
+//   (scripts/fixtures/language-phase-1d-messages-before.{en-GB,en-US}.json = `git show 756ca09:messages/…`), the en-US
+//   catalogue is THAT file exactly (756ca09 had Phase 2's 213 overrides), not {} — and en-GB is overlaid as before.
+//   THE AS-MOVED OVERLAY: scripts/fixtures/language-phase-1d-gb-moved.json ({ "ns.key": "<today's words as moved>" },
+//   written by the 1d messages helper for every GB wrong-English fix) is applied FIRST in every frozen mode, then the
+//   frozen file over it. So a 1d key whose en-GB text is a FIX shows its as-moved text under any frozen catalogue (a key
+//   the frozen file has keeps the frozen file's text, which for a 756ca09 key is the same). That keeps every harness
+//   that runs on frozen words (language-phase-0/1a/1b/1c, Phase 2's F, money-sweep, …) blind to 1d's word fixes, as it
+//   is to Phase 2's. HG_MESSAGES_MOVED=off turns the overlay off (only for a deliberate check).
 // HG_MESSAGES_FROZEN unset, empty or "off" → the switch is off and bundles read the generated files on disk.
 // Generated files live under node_modules/.cache/lp2-messages/<content hash>/, so concurrent runs never collide.
 const fs = require('fs'); const path = require('path'); const crypto = require('crypto')
@@ -67,10 +77,27 @@ function withInline(frozen) {
   return out
 }
 
-/** The switch as the environment sets it: { mode: 'frozen', file } | { mode: 'source' } | null. */
+const MOVED_FILE = path.join(REPO, 'scripts/fixtures/language-phase-1d-gb-moved.json')
+/** The 1d as-moved overlay as a message tree ({} when the file is absent or HG_MESSAGES_MOVED=off). */
+function movedTree(env = process.env) {
+  if (env.HG_MESSAGES_MOVED === 'off' || !fs.existsSync(MOVED_FILE)) return {}
+  const out = {}
+  for (const [key, text] of Object.entries(readJson(MOVED_FILE))) {
+    const parts = key.split('.'); let o = out
+    for (const p of parts.slice(0, -1)) { if (!isObj(o[p])) o[p] = {}; o = o[p] }
+    o[parts[parts.length - 1]] = text
+  }
+  return out
+}
+
+/** The switch as the environment sets it: { mode: 'frozen', file, usFile? } | { mode: 'source' } | null. */
 function mode(env = process.env) {
   const f = env.HG_MESSAGES_FROZEN
-  if (f && f !== 'off') return { mode: 'frozen', file: path.resolve(REPO, f) }
+  if (f && f !== 'off') {
+    const file = path.resolve(REPO, f)
+    const us = file.endsWith('.en-GB.json') ? file.replace(/\.en-GB\.json$/, '.en-US.json') : null
+    return { mode: 'frozen', file, ...(us && fs.existsSync(us) ? { usFile: us } : {}), moved: env.HG_MESSAGES_MOVED !== 'off' }
+  }
   if (env.HG_MESSAGES_SOURCE === '1') return { mode: 'source' }
   return null
 }
@@ -79,7 +106,10 @@ function mode(env = process.env) {
 function catalogues(m = mode()) {
   const gb = readJson(path.join(REPO, 'messages/en-GB.json'))
   const us = readJson(path.join(REPO, 'messages/en-US.json'))
-  if (m && m.mode === 'frozen') return { 'en-GB': overlay(gb, withInline(readJson(m.file))), 'en-US': {} }
+  if (m && m.mode === 'frozen') {
+    const moved = m.moved === false ? {} : movedTree({})
+    return { 'en-GB': overlay(overlay(gb, moved), withInline(readJson(m.file))), 'en-US': m.usFile ? readJson(m.usFile) : {} }
+  }
   return { 'en-GB': gb, 'en-US': us }
 }
 
@@ -123,10 +153,14 @@ function resolveMessages(spec) {
 }
 
 /** Every en-GB key whose text differs from the frozen file, or that is new / gone: { key: { before, after } }. */
-function gbKeyDiff(frozenFile = FROZEN_DEFAULT) {
+// ⚠️ RE-PINNED (Language Phase 1d): `afterFile` is the en-GB Phase 2 ENDED with (756ca09's, stored as
+// scripts/fixtures/language-phase-1d-messages-before.en-GB.json) — Phase 2's list is about Phase 2's own changes; the
+// keys Language Phase 1d adds or fixes are proven and listed by scripts/language-phase-1d.cjs.
+const PHASE2_END_GB = path.join(REPO, 'scripts/fixtures/language-phase-1d-messages-before.en-GB.json')
+function gbKeyDiff(frozenFile = FROZEN_DEFAULT, afterFile = fs.existsSync(PHASE2_END_GB) ? PHASE2_END_GB : path.join(REPO, 'messages/en-GB.json')) {
   const before = Object.fromEntries(leaves(readJson(frozenFile)))
   const inline = Object.fromEntries(Object.entries(FROZEN_INLINE).map(([k, v]) => [k, v.text]))
-  const after = Object.fromEntries(leaves(readJson(path.join(REPO, 'messages/en-GB.json'))))
+  const after = Object.fromEntries(leaves(readJson(afterFile)))
   const out = {}
   for (const k of new Set([...Object.keys(before), ...Object.keys(after)])) {
     if (before[k] === after[k]) continue
@@ -140,4 +174,4 @@ function gbKeyDiff(frozenFile = FROZEN_DEFAULT) {
   return out
 }
 
-module.exports = { REPO, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }
+module.exports = { REPO, MOVED_FILE, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }

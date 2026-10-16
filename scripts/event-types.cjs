@@ -132,6 +132,17 @@ const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*
 const LP2F = require('./_lp2-frozen.cjs')
 const GB_MESSAGES = LP2F.catalogues({ mode: 'frozen', file: LP2F.FROZEN_DEFAULT })['en-GB']
 const GB_MSG = (p) => p.split('.').reduce((o, k) => (o == null ? undefined : o[k]), GB_MESSAGES)
+/* ⚠️ RE-PINNED (Language Phase 1d): `summariseType(type, words)` now takes the screen's translator for
+ * `eventTypes.summary` (its words moved from lib/event-types/resolve.ts into messages/en-GB.json). This is a REAL
+ * next-intl translator over messages/en-GB.json's `eventTypes` namespace, wrapped exactly as
+ * components/manage/EventTypes.tsx's `summaryWords(t)` wraps `useT('eventTypes')` — so the words asserted below are
+ * the real GB words a truck sees, not a stub's. */
+const GB_SUMMARY_WORDS = (() => {
+  const { createTranslator } = require(path.join(REPO, 'node_modules/next-intl'))
+  const gbAll = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+  const tr = createTranslator({ locale: 'en-GB', messages: { eventTypes: gbAll.eventTypes }, namespace: 'eventTypes' })
+  return (key, values) => tr(`summary.${key}`, values)
+})()
 
 function build(root, files, tag) {
   /* ⚠️ `jsx: 'react-jsx'` AND A node_modules SYMLINK INTO THE OUTPUT. `lib/buzzer.ts` carries the
@@ -607,15 +618,17 @@ head('2 · HAND CHANGE ?? TYPE ?? DEFAULT')
 head('3 · WHAT THE SCREENS SAY')
 {
   const r = NOW.resolve
+  // ⚠️ RE-PINNED (Language Phase 1d): summariseType takes a translator now — the real GB one (GB_SUMMARY_WORDS).
+  const W = GB_SUMMARY_WORDS
 
   t('🔴 the summary names only settings this build RESOLVES — no prices, no menu, no deals', (() => {
-    const s = r.summariseType(typeWith({ buzzer_prompt: true, collection_interval_mins: 10 }))
+    const s = r.summariseType(typeWith({ buzzer_prompt: true, collection_interval_mins: 10 }), W)
     return /buzzers on/.test(s) && /collection every 10 min/.test(s)
       && !/price/i.test(s) && !/item/i.test(s) && !/deal/i.test(s) && !/menu/i.test(s)
   })())
   t('⚠️ a type that changes nothing says so rather than rendering an empty line',
-    r.summariseType(typeWith({})) === 'Same as Standard' && r.summariseType(null) === 'Your normal setup')
-  t('⚠️ "off" is said out loud, not omitted', /buzzers off/.test(r.summariseType(typeWith({ buzzer_prompt: false }))))
+    r.summariseType(typeWith({}), W) === 'Same as Standard' && r.summariseType(null, W) === 'Your normal setup')
+  t('⚠️ "off" is said out loud, not omitted', /buzzers off/.test(r.summariseType(typeWith({ buzzer_prompt: false }), W)))
   t('⚠️ changedCount counts the four settings and nothing else',
     r.changedCount(typeWith({})) === 0 && r.changedCount(typeWith({ takes_cash: false })) === 1
     && r.changedCount(typeWith({ buzzer_prompt: true, takes_cash: false, order_ready: true, collection_interval_mins: 5 })) === 4
@@ -683,8 +696,13 @@ head('3 · WHAT THE SCREENS SAY')
       // ⛔ AND THE OLD SHAPE IS GONE, so nothing can still be reading values off a chip.
       && ty.TYPE_SUGGESTIONS === undefined
   })())
+  /* ⚠️ RE-PINNED (Language Phase 1d): TYPE_NAME_CHIPS are IDS now (['festival','pub','market','privateHire']); the
+   * words are `eventTypes.newType.chips.<id>`, and the popup renders `t(\`newType.chips.${id}\`)`. Same property:
+   * GB still offers "Private hire" by name. */
   t('🔴 "Private hire" IS STILL OFFERED BY NAME — a chip with no values promises nothing',
-    ty.TYPE_NAME_CHIPS.includes('Private hire'))
+    ty.TYPE_NAME_CHIPS.includes('privateHire') && GB_MSG('eventTypes.newType.chips.privateHire') === 'Private hire'
+    && /TYPE_NAME_CHIPS\.map\(id => t\(`newType\.chips\.\$\{id\}`\)\)/.test(
+      fs.readFileSync(path.join(REPO, 'components/manage/EventTypes.tsx'), 'utf8')))
   /* ══ 🔴 RE-AIMED: A NEW TYPE IS A **COPY** OF VAN 1, NOT A BLANK (5 October 2026) ═════════════
    * This asserted "every setting NULL, whichever chip was tapped", and the NULL half is now wrong on
    * purpose. Dominic, having met it on localhost: a NULL column was drawn FADED at the first van's
@@ -723,10 +741,15 @@ head('3 · WHAT THE SCREENS SAY')
    * and became misleading the moment an operator changed Standard — which is the report. */
   t('🔴 …and the popup promises a COPY, and says Standard will not change it later', (() => {
     const ui = fs.readFileSync(path.join(REPO, 'components/manage/EventTypes.tsx'), 'utf8')
-    return /It starts as a copy of Standard, and changing Standard later/.test(ui)
-      && /won\u2019t change it/.test(ui)
+    /* ⚠️ RE-PINNED (Language Phase 1d): the popup's sentence moved to `eventTypes.newType.help`, rendered as
+     * `{t('newType.help')}` — the same words are asserted on the message, and the popup must read that key. */
+    const help = GB_MSG('eventTypes.newType.help') || ''
+    return /It starts as a copy of Standard, and changing Standard later/.test(help)
+      && /won\u2019t change it/.test(help)
+      && /\{t\('newType\.help'\)\}/.test(ui)
       /* ⛔ the old promise is gone, not left adjacent — §37's rule */
       && !/It starts exactly like Standard\. Change anything after\./.test(ui)
+      && !/It starts exactly like Standard\. Change anything after\./.test(help)
       // ⛔ and it shows no per-chip description
       && !/sug\.description/.test(ui)
   })())
@@ -1038,8 +1061,11 @@ head('5 · THE WIRING')
    * separately. */
   t('⛔ THE GRID DRAWS EXACTLY VANS, ORDERING, PRICES AND SERVICE — items, stock and deals are NOT built', (() => {
     const plan = ui.slice(ui.indexOf('const plan = useMemo<PlanRow[]>'), ui.indexOf('const stripeIndex = useMemo('))
-    const sections = (plan.match(/k: 'section', id: '[^']*', label: (?:'([^']*)'|(ORDERING_SECTION))/g) || [])
-      .map(m => (m.match(/label: '([^']*)'/) || [])[1] ?? 'ORDERING')
+    /* ⚠️ RE-PINNED (Language Phase 1d): the section labels moved from literals ('VANS', ORDERING_SECTION…) to
+     * messages — `t('sections.<k>')` (eventTypes) and `tp('grid.orderingSection')` (privateEvents). Each label is
+     * resolved to its en-GB message, so the list asserted is still the screen's own words, in plan order. */
+    const sections = (plan.match(/k: 'section', id: '[^']*', label: tp?\('[^']*'\)/g) || [])
+      .map(m => { const [, ns, key] = m.match(/label: (tp?)\('([^']*)'\)/); return GB_MSG(`${ns === 'tp' ? 'privateEvents' : 'eventTypes'}.${key}`) })
     return JSON.stringify(sections) === JSON.stringify(['VANS', 'ORDERING', 'PRICES', 'SERVICE'])
       /* ⛔ AND THE STAGES THAT ARE NOT BUILT ARE NOT DRAWN, anywhere in the file. */
       && !/>Items sold</.test(codeOf(ui)) && !/'STOCK'/.test(codeOf(ui))
@@ -1056,12 +1082,14 @@ head('5 · THE WIRING')
       && !/label: 'USED BY'/.test(codeOf(ui))
   })())
   /* 🔴 …AND THE COUNT IT CARRIED IS IN THE DELETE CONFIRM, which is the one moment it is acted on. */
+  /* ⚠️ RE-PINNED (Language Phase 1d): the confirm's sentence is `eventTypes.deleteBody` (an ICU plural, `=0` is the
+   * "No upcoming events use" case), rendered as `t('deleteBody', { n: …upcoming … })`. Same words, same count source. */
   t('🔴 a type\'s upcoming-event count moved to the DELETE CONFIRM, and still reads from `upcoming`',
-    /They’ll go back to Standard/.test(ui)
-    && /typeById\.get\(confirmDelete\)\?\.upcoming/.test(ui)
+    /They’ll go back to Standard/.test(GB_MSG('eventTypes.deleteBody') || '')
+    && /t\('deleteBody', \{\s*n: typeById\.get\(confirmDelete\)\?\.upcoming/.test(ui)
     /* ⚠️ AND THE ZERO CASE READS DIFFERENTLY — "No upcoming events use X" is the reassurance that
      * makes the button safe to press; "0 upcoming events … will go back" is a sentence about nothing. */
-    && /No upcoming events use/.test(ui))
+    && /=0 \{No upcoming events use/.test(GB_MSG('eventTypes.deleteBody') || ''))
   /* ══ 🔴 THE VANS SECTION IS ONLY FOR A TRUCK WITH 2+ ACTIVE VANS ════════════════════
    * A one-van truck has nothing to make the same as anything, so the row would be a switch with no
    * meaning. ⚠️ ALSO ABSENT BEFORE THE "Same as Van 1" MIGRATION: a switch that cannot store anything
@@ -1101,9 +1129,14 @@ head('5 · THE WIRING')
   t('🔴 OFF → ON confirms with the briefed wording; ON → OFF goes straight through', (() => {
     return /if \(sameSettings\) void saveSameSettings\(false\)\s*\n?\s*else setConfirmSameSettings\(true\)/.test(ui)
       && /data-same-settings-confirm/.test(ui)
+      /* ⚠️ RE-PINNED (Language Phase 1d): the sentence is `serviceSettings.sameSettingsConfirm` and the export reads it,
+       * so this compares to the NAMED GB FIX (scripts/fixtures/language-phase-1d-gb-named.json: straight ' → ’ and
+       * '…' → ‘…’) — the new words are accepted. Same briefed wording otherwise, word for word; and the dialog
+       * must render that key (it used to render the imported constant). */
       && NOW.copyService.SAME_SETTINGS_CONFIRM
-        === "Copy Van 1's settings to every van? This copies all of Van 1's van settings, the same as "
-          + "'Same as Van 1' in Settings. Kitchen capacity has its own switch."
+        === "Copy Van 1’s settings to every van? This copies all of Van 1’s van settings, the same as "
+          + "‘Same as Van 1’ in Settings. Kitchen capacity has its own switch."
+      && /\{ts\('sameSettingsConfirm'\)\}/.test(ui)
       /* Cancel writes nothing. */
       && /onClick=\{\(\) => setConfirmSameSettings\(false\)\}/.test(ui)
   })())
@@ -1117,7 +1150,8 @@ head('5 · THE WIRING')
        * height would clip the wrap, which is the whole point of the change. */
       && /gridColumn: `2 \/ span \$\{vanCount\}`, gridRow: row, minHeight: h, background: bg \}\}>/.test(grid)
       && /<Toggle on=\{sameSettings\}/.test(grid)
-      && /if \(r\.k === 'same-settings'\) \{\s*\n\s*return <div key=\{t\.id\}/.test(grid)
+      // ⚠️ RE-PINNED (Language Phase 1d): the type loop's variable was renamed `t` → `ty` (`t` is the translator now).
+      && /if \(r\.k === 'same-settings'\) \{\s*\n\s*return <div key=\{ty\.id\}/.test(grid)
   })())
   /* ══ 🔴 RE-AIMED **TWICE**, AND THE TRAIL IS THE POINT (5 October 2026) ══════════════════════════
    * These four sentences lived in `EventTypeDashboardControl` (components/manage/EventTypes.tsx),
@@ -1146,16 +1180,22 @@ head('5 · THE WIRING')
    * addition (Dominic, 4 October): no "Set per van" ANYWHERE in the Standard column and no links out
    * — the cell renders ONE CONTROL PER VAN instead. So both of the old sentences are now forbidden
    * strings, and that is what this asserts. */
+  // ⚠️ RE-PINNED (Language Phase 1d): the column's name is `t('standard')` → eventTypes.standard ("Standard").
   t('🔴 Standard is first, and neither "Set per van" nor a Settings link survives in the modal',
-    /name: 'Standard'/.test(ui)
+    /name: t\('standard'\)/.test(ui) && GB_MSG('eventTypes.standard') === 'Standard'
     && !/Set per van/.test(codeOf(ui))
     && !/Change these in Settings, not here\./.test(ui))
   /* ⚠️ RE-AIMED (5 October 2026): the COUNT moved into the delete confirm's sentence, so the old
    * `upcoming event{` match — which was the grid ROW's wording — no longer exists. The claim is the
    * same: the panel offers all four actions and the delete says what happens to the events. */
+  /* ⚠️ RE-PINNED (Language Phase 1d): "Rename"/"Delete" are `{t('rename')}`/`{t('delete')}` (eventTypes.rename/.delete)
+   * and the confirm's sentence is `eventTypes.deleteBody`; the words are asserted on the messages. */
   t('⚠️ the panel offers rename, reorder, delete-with-confirm and names the events affected',
-    />Rename</.test(ui) && />Delete</.test(ui) && /go back to Standard/.test(ui)
-    && /upcoming event/.test(ui) && /action: 'reorder'/.test(ui))
+    />\{t\('rename'\)\}</.test(ui) && GB_MSG('eventTypes.rename') === 'Rename'
+    && />\{t\('delete'\)\}</.test(ui) && GB_MSG('eventTypes.delete') === 'Delete'
+    && /go back to Standard/.test(GB_MSG('eventTypes.deleteBody') || '')
+    && /upcoming event/.test(GB_MSG('eventTypes.deleteBody') || '') && /t\('deleteBody'/.test(ui)
+    && /action: 'reorder'/.test(ui))
   t('⚠️ on a phone it is one column with a picker above', /md:hidden/.test(ui) && /et-phone-pick/.test(ui))
   t('⚠️ the Add event picker shows the "(usual for this place)" hint',
     /\(usual for this place\)/.test(ui) && /action: 'usual_for_venue'/.test(ui))
@@ -1237,7 +1277,9 @@ head('5b · THE MODAL AND THE CARD')
       /* ⚠️ RE-AIMED AGAIN (5 October): `inheritTitle` is gone with the whole "follows Standard"
        * design, so the interval's title is just its own value. The claim is unchanged — a long option
        * truncates at rest and is recoverable from the `title`. */
-      && /title=\{`Every \$\{shown\} min`\}/.test(ctl)
+      // ⚠️ RE-PINNED (Language Phase 1d): the title is `t('intervalEvery', { mins })` → "Every {mins} min".
+      && /title=\{t\('intervalEvery', \{ mins: String\(shown\) \}\)\}/.test(ctl)
+      && GB_MSG('eventTypes.intervalEvery') === 'Every {mins} min'
       /* ⛔ AND THE DELETED CHOICE LIST HAS NOT COME BACK UNDER ITS OLD NAME.
        * ⚠️ AGAINST `codeOf`: the comment that records its deletion NAMES it, and the first draft of
        * this check read the raw source and so failed on its own explanation. A check that forbade
@@ -1282,7 +1324,8 @@ head('5b · THE MODAL AND THE CARD')
        * the reason it stopped being a link in the row label and became a pill in the band. */
       && /if \(isBand\) \{[\s\S]{0,400}style=\{\{ gridColumn: 1, gridRow: row/.test(body)
       /* 🔴 AND THE CONTROLS ARE IN THE TYPE COLUMNS, which is the same claim from the other side. */
-      && /const typeCells = types\.map\(\(t, i\) => \{/.test(ui)
+      // ⚠️ RE-PINNED (Language Phase 1d): the loop variable was renamed `t` → `ty`.
+      && /const typeCells = types\.map\(\(ty, i\) => \{/.test(ui)
       && /<TypeControl row=\{r\.row\}/.test(ui)
   })())
   /* ══ 🔴 EVERY CELL IS PLACED EXPLICITLY — THE PROPERTY THE SPANS DEPEND ON ═════════════════════
@@ -1335,7 +1378,9 @@ head('5b · THE MODAL AND THE CARD')
       /* 🔴 AND THE COMBINED COLUMN SAYS WHICH CASE IT IS: "All vans" when several vans follow each
        * other, "Standard" when there is only one. A two-van truck with the switch ON must not read
        * "Standard" over a column that is really Van 1 — the header is the only thing that says so. */
-      && /name: vans\.length > 1 \? SAME_SETTINGS_ALL_VANS_HEADER : 'Standard'/.test(ui)
+      // ⚠️ RE-PINNED (Language Phase 1d): the two names are `ts('sameSettingsAllVansHeader')` / `t('standard')`.
+      && /name: vans\.length > 1 \? ts\('sameSettingsAllVansHeader'\) : t\('standard'\)/.test(ui)
+      && GB_MSG('eventTypes.standard') === 'Standard'
       && NOW.copyService.SAME_SETTINGS_ALL_VANS_HEADER === 'All vans'
       /* and the per-van case is still one entry per van, oldest first (the route orders them) */
       && /vanColumns\.map\(v => \(\{ key: v\.id, name: v\.name, van: v as VanRow \| null \}\)\)/.test(ui)
@@ -1375,7 +1420,8 @@ head('5b · THE MODAL AND THE CARD')
     return /data-grid-standard-heading/.test(hdr)
       /* the heading spans every van column, and is ONE cell however many there are */
       && /gridColumn: `2 \/ span \$\{vanCount\}`, gridRow: 1/.test(hdr)
-      && />\s*STANDARD\s*</.test(hdr)
+      // ⚠️ RE-PINNED (Language Phase 1d): the heading is `{t('standardHeading')}` → eventTypes.standardHeading.
+      && />\s*\{t\('standardHeading'\)\}\s*</.test(hdr) && GB_MSG('eventTypes.standardHeading') === 'STANDARD'
       /* the names are centred, below it */
       && /data-grid-van-header/.test(vanHdr)
       && /justify-center/.test(vanHdr)
@@ -1384,6 +1430,8 @@ head('5b · THE MODAL AND THE CARD')
       && !/<Dot/.test(vanHdr)
       && !/>Standard<\/span>/.test(vanHdr)
       && !/>default<\/span>/.test(vanHdr)
+      // ⚠️ RE-PINNED (Language Phase 1d): the phone card's tags are messages now, so their keys are forbidden here too.
+      && !/t\('phone\.(standardTag|defaultTag)'\)/.test(vanHdr)
       /* ⛔ no tint anywhere in the grid, which is the 4 October instruction, still held */
       && !/bg-orange-50/.test(codeOf(ui))
   })())
@@ -1494,7 +1542,9 @@ head('5b · THE MODAL AND THE CARD')
     const grid = ui.slice(ui.indexOf('{/* ── THE BODY ─'), ui.indexOf('{types.length === 0 &&'))
     return /data-prices-standard-cell/.test(grid)
       && /gridColumn: `2 \/ span \$\{vanCount\}`,\s*\n\s*gridRow: `\$\{row\} \/ span \$\{1 \+ ruleRowCount\}`/.test(grid)
-      && /title=\{PRICES_TRUCK_WIDE_TITLE\}/.test(grid)
+      // ⚠️ RE-PINNED (Language Phase 1d): the title is `ts('pricesTruckWideTitle')`, the same message the export reads.
+      && /title=\{ts\('pricesTruckWideTitle'\)\}/.test(grid)
+      && GB_MSG('serviceSettings.pricesTruckWideTitle') === NOW.copyService.PRICES_TRUCK_WIDE_TITLE
       && typeof NOW.copyService.PRICES_TRUCK_WIDE_TITLE === 'string'
       && NOW.copyService.PRICES_TRUCK_WIDE_TITLE.length > 10
       /* the rule rows have NO Standard cell of their own — the span above covers them, and a second
@@ -1683,7 +1733,8 @@ head('5b · THE MODAL AND THE CARD')
   /* 🔴 THE PHONE PICKER LISTS THE VAN COLUMNS AND THEN THE TYPES, in the grid's order. */
   t('🔴 on a phone the picker lists the van columns, then the types', (() => {
     return /\.\.\.\(vanColumns\.length > 1[\s\S]{0,200}vanColumns\.map\(v => \(\{ id: `van:\$\{v\.id\}`/.test(ui)
-      && /\.\.\.types\.map\(t => \(\{ id: t\.id, name: t\.name/.test(ui)
+      // ⚠️ RE-PINNED (Language Phase 1d): the loop variable was renamed `t` → `ty` (`t` is the translator now).
+      && /\.\.\.types\.map\(ty => \(\{ id: ty\.id, name: ty\.name/.test(ui)
       && /if \(phoneSel\.startsWith\('van:'\)\)/.test(ui)
       // the selection is DERIVED, so the picker and the card below it cannot disagree
       && /const phoneSel = useMemo\(\(\) => \{/.test(ui)
@@ -1853,7 +1904,11 @@ head('5b · THE MODAL AND THE CARD')
        * literals written here: the intervals, the two offline modes, the five price modes and the
        * three roundings. That is what stops a sixth pseudo-option arriving. */
       && /TYPE_INTERVAL_CHOICES\.map\(/.test(ui)
-      && /const OFFLINE_MODE_CHOICES = OFFLINE_PROTECTION_MODES\.map\(/.test(ui)
+      /* ⚠️ RE-PINNED (Language Phase 1d): `OFFLINE_MODE_CHOICES` became `offlineModes` inside `useServiceWords()` —
+       * still built from the imported OFFLINE_PROTECTION_MODES (values), labels from `offlineProtection` messages.
+       * And with the words now in messages, the summary's "Same as Standard" key must not be rendered directly. */
+      && /const offlineModes = useMemo\(\s*\n?\s*\(\) => OFFLINE_PROTECTION_MODES\.map\(/.test(ui)
+      && !/summary\.sameAsStandard/.test(code)
   })())
   /* 🔴 A NULL SETTING RENDERS FADED, SHOWING THE VALUE IT INHERITS. One implementation of "faded"
    * (`opacity-50`), applied to the same control — not a second palette. */
@@ -1934,13 +1989,17 @@ head('5b · THE MODAL AND THE CARD')
       /* ⛔ IT DOES NOT TOUCH PRICES. They are not service columns and a type's prices are turned off
        * by its own switch — and the confirm says so. */
       && !/price_change_on|price_mode|price_amount|price_rounding/.test(fn)
-      && /are not changed/.test(ui)
-      && /MATCH_STANDARD_CONFIRM/.test(ui)
-      && /setConfirmMatch\(t\.id\)/.test(ui)
+      /* ⚠️ RE-PINNED (Language Phase 1d): the confirm's words are messages — `{t('matchKeeps')}`,
+       * `{ts('matchStandardConfirm')}`, `t('matchWillUse', { summary: summariseType(…, summaryWords(t)) })` — and
+       * the type loop's variable is `ty`. Same confirm, same sentences, same server figures. */
+      && /are not changed/.test(GB_MSG('eventTypes.matchKeeps') || '') && /\{t\('matchKeeps'\)\}/.test(ui)
+      && /\{ts\('matchStandardConfirm'\)\}/.test(ui)
+      && /setConfirmMatch\(ty\.id\)/.test(ui)
       // the confirm has to be dismissable without acting
       && /onClick=\{\(\) => setConfirmMatch\(null\)\}/.test(ui)
       /* 🔴 AND IT SHOWS WHAT THE COPY WILL BE, from the server's own figures, before it is pressed */
-      && /It will use: \{summariseType\(vanOneValues as unknown as TypeFor\)\}/.test(ui)
+      && GB_MSG('eventTypes.matchWillUse') === 'It will use: {summary}'
+      && /\{t\('matchWillUse', \{ summary: summariseType\(vanOneValues as unknown as TypeFor, summaryWords\(t\)\) \}\)\}/.test(ui)
   })())
   /* ⚠️ `NOW.types`, NOT `ty` — that local belongs to §3 and is not in scope here. The first draft
    * used it and this whole file crashed with a ReferenceError before printing §5b. */
@@ -1959,9 +2018,15 @@ head('5b · THE MODAL AND THE CARD')
     /* ⚠️ FIVE ITEMS NOW, IN THE BOARD'S ORDER: Rename · Move left · Move right · Match Standard ·
      * Delete. The order is asserted, because Match Standard sitting under Delete would put a
      * destructive-looking item above a reset one. */
-    const order = ['>Rename<', '>Move left<', '>Move right<', '{MATCH_STANDARD_LABEL}<', '>Delete<']
+    /* ⚠️ RE-PINNED (Language Phase 1d): the five items render message keys now (eventTypes rename/moveLeft/
+     * moveRight/delete, serviceSettings matchStandardLabel) and the ⋯'s label is `t('moreFor', { name: ty.name })`.
+     * Same five items, same order; their GB words are asserted on the messages. */
+    const order = ["{t('rename')}<", "{t('moveLeft')}<", "{t('moveRight')}<", "{ts('matchStandardLabel')}<", "{t('delete')}<"]
     const at = order.map(x => hdr.indexOf(x))
-    return /aria-label=\{`More for \$\{t\.name\}`\}/.test(hdr)
+    return /aria-label=\{t\('moreFor', \{ name: ty\.name \}\)\}/.test(hdr)
+      && GB_MSG('eventTypes.moreFor') === 'More for {name}'
+      && ['Rename', 'Move left', 'Move right', 'Delete'].join() === ['rename', 'moveLeft', 'moveRight', 'delete'].map(k => GB_MSG(`eventTypes.${k}`)).join()
+      && GB_MSG('serviceSettings.matchStandardLabel') === 'Match Standard'
       && at.every(i => i >= 0)
       && at.every((v, i) => i === 0 || v > at[i - 1])
   })())
@@ -1999,7 +2064,13 @@ head('5b · THE MODAL AND THE CARD')
   t('🔴 THE OFFLINE ROW IS A SWITCH, and the mode is a sub-row whose labels are IMPORTED', (() => {
     const ctl = ui.slice(ui.indexOf('function TypeControl('))
     const std = ui.slice(ui.indexOf('function OneStandardControl('), ui.indexOf('function TypeControl('))
-    return /const OFFLINE_MODE_CHOICES = OFFLINE_PROTECTION_MODES\.map\(m => \(\{ value: m\.value as string, label: m\.label \}\)\)/.test(ui)
+    /* ⚠️ RE-PINNED (Language Phase 1d): the choices are `offlineModes` in `useServiceWords()` — the VALUES from the
+     * imported OFFLINE_PROTECTION_MODES, each label `offlineProtection.modes.<value>.label`, which is the very key
+     * lib/copy/offlineProtection.ts's OFFLINE_PROTECTION_MODES labels read. One vocabulary, still not retyped. */
+    const copySrc = fs.readFileSync(path.join(REPO, 'lib/copy/offlineProtection.ts'), 'utf8')
+    return /OFFLINE_PROTECTION_MODES\.map\(m => \(\{ value: m\.value as string, label: to\(`modes\.\$\{m\.value\}\.label`\) \}\)\)/.test(ui)
+      && /export const OFFLINE_MODE_PAUSE_LABEL = gb\('modes\.pause\.label'\)/.test(copySrc)
+      && /export const OFFLINE_MODE_NO_AUTO_ACCEPT_LABEL = gb\('modes\.no_auto_accept\.label'\)/.test(copySrc)
       && OFFLINE_MODES_COUNT === 2
       /* the row's control is a Toggle in a type's cell */
       && /if \(row\.kind === 'offline'\) \{[\s\S]{0,1400}<Toggle on=\{shownOffline\}/.test(ctl)
@@ -2007,10 +2078,13 @@ head('5b · THE MODAL AND THE CARD')
        * which is what makes a van column and a type column the same kind of control. */
       && !/if \(row\.kind === 'offline'\)/.test(codeOf(std))
       /* the sub-row exists, is labelled from the copy file, and carries the mode select */
-      && /label: OFFLINE_WHEN_OFFLINE_LABEL/.test(ui)
+      // ⚠️ RE-PINNED (Language Phase 1d): the sub-row's label is `ts('offlineWhenOfflineLabel')` (the export's key).
+      && /label: ts\('offlineWhenOfflineLabel'\)/.test(ui)
       && NOW.copyService.OFFLINE_WHEN_OFFLINE_LABEL === 'When offline'
       // ⛔ neither mode label is retyped in this file
       && !new RegExp("'Pause Online Ordering'").test(ui)
+      // ⚠️ RE-PINNED (Language Phase 1d): …nor in its named-GB-fix spelling (offlineProtection.modes.pause.label).
+      && !new RegExp("'Pause online ordering'").test(ui)
       && !new RegExp("'Keep taking orders, confirm them yourself'").test(ui)
   })())
   /* 🔴 THE SUB-ROW FOLDS AWAY WHEN PROTECTION IS OFF IN **EVERY** COLUMN, and appears where it is on.
@@ -2023,7 +2097,8 @@ head('5b · THE MODAL AND THE CARD')
       /* within the row, a column with protection OFF draws a BLANK cell, not a disabled select —
        * a greyed dropdown invites a tap and reads as a value the operator chose */
       && /\{standardOfflineOn\(v\) && \(/.test(ui)
-      && /\{typeOfflineOn\(t\) && \(/.test(ui)
+      // ⚠️ RE-PINNED (Language Phase 1d): the type loop's variable was renamed `t` → `ty`.
+      && /\{typeOfflineOn\(ty\) && \(/.test(ui)
   })())
   /* ══ 🔴 THE SWITCH WRITES **ONLY** THE SWITCH, AND THAT IS A SAFETY PROPERTY ══════════════════
    * This asserted the opposite shape — "Off writes BOTH columns, so it is not mistaken for inherit" —
@@ -2137,13 +2212,42 @@ head('5b · THE MODAL AND THE CARD')
     'Collection times, untouched': ['<p className="text-sm font-semibold text-slate-800">{tDash(\'settings.intervalsTitle\')}</p>', 'dashboard.settings.intervalsTitle', 'Collection times'],
     '…and its route back': ['{tDash(\'settings.useUsual\')}', 'dashboard.settings.useUsual', 'Use my usual setting'],
   }
+  /* ⚠️ RE-PINNED (Language Phase 1d): four more lines read their words from `offlineProtection` messages (`tOff`)
+   * instead of the lib/copy/offlineProtection.ts constants the live line names. Same shape as the 1b re-pin: the LIVE
+   * side is still the exact live line; THIS side is the same line reading the key(s); and each key's en-GB text is
+   * asserted to be exactly the words the live constant had. GB_MSG is the frozen catalogue with 1d's as-moved overlay,
+   * so a key whose GB text was then deliberately fixed (purpose: can't → can’t; switchLabel: sentence case — named in
+   * scripts/fixtures/language-phase-1d-gb-named.json) is compared at its as-moved text: this proves the move, the
+   * named fix is language-phase-1d's to prove. [this file's line, [[key, exact live text], …]] */
+  const OFF_OPTION = (() => {
+    const { createTranslator } = require(path.join(REPO, 'node_modules/next-intl'))
+    const tr = createTranslator({ locale: 'en-GB', messages: { offlineProtection: GB_MESSAGES.offlineProtection }, namespace: 'offlineProtection' })
+    return (n) => tr('autoRejectOption', { n, count: String(n) })
+  })()
+  const RESTORED_P1D = {
+    'Offline order protection, with its purpose line': ['<p className="text-xs text-slate-500 mt-0.5">{tOff(\'purpose\')}</p>',
+      [['offlineProtection.purpose', "If your device loses its connection, this stops orders arriving while you can't see them."]]],
+    '…and the safety-critical ⚠️ instruction': ['{!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{tOff(\'explainerLead\')}</strong> {tOff(\'explainerBody\')}</p>}',
+      [['offlineProtection.explainerLead', 'You must keep your dashboard or kitchen screen on and online during service.'],
+       ['offlineProtection.explainerBody', 'If the screen goes off, the device loses internet, or you switch to another website, offline protection takes over — either pausing ordering or turning auto-accept off, whichever you chose.']]],
+    '…and its two MODE radios, from the shared array': ['role="radiogroup" aria-label={tOff(\'switchLabel\')}',
+      [['offlineProtection.switchLabel', 'Offline Order Protection']]],
+    /* the live `offlineAutoRejectLabel(n)` was `${n} mins`; the message is an ICU plural, so it is FORMATTED for every
+     * option the picker offers and compared to that. */
+    '…and the delay picker reads the shared options': ["{OFFLINE_AUTO_REJECT_OPTIONS.map(n=><option key={n} value={n}>{tOff('autoRejectOption',{n,count:String(n)})}</option>)}", []],
+  }
+  const offOptionsOk = NOW.copy.OFFLINE_AUTO_REJECT_OPTIONS.every(n => OFF_OPTION(n) === `${n} mins`)
   for (const [what, line] of RESTORED) {
     /* 🔴 BOTH SIDES. A line that is NOT on `origin/main` would make this check about my own text
      * rather than about the restoration, so the live file is asserted to carry it too. */
     const moved = RESTORED_P1B[what]
+    const moved1d = RESTORED_P1D[what]
     t(`✅ RESTORED · ${what}`, moved
       ? liveDash.includes(line) && codeOf(dashPage).includes(moved[0]) && GB_MSG(moved[1]) === moved[2]
-      : liveDash.includes(line) && dashPage.includes(line))
+      : moved1d
+        ? liveDash.includes(line) && codeOf(dashPage).includes(moved1d[0]) && moved1d[1].every(([k, txt]) => GB_MSG(k) === txt)
+          && (what !== '…and the delay picker reads the shared options' || offOptionsOk)
+        : liveDash.includes(line) && dashPage.includes(line))
   }
 
   /* ══ ⛔ AND NOT IN TWO PLACES. Each control appears exactly ONCE in the dashboard's own JSX. ═══════
@@ -2166,10 +2270,14 @@ head('5b · THE MODAL AND THE CARD')
       '<p className="text-sm font-semibold text-slate-800">Collection times</p>': ['<p className="text-sm font-semibold text-slate-800">{tDash(\'settings.intervalsTitle\')}</p>', 'Collection times'],
     }
     const dashTexts = (function flat(o) { return Object.values(o).flatMap(v => typeof v === 'string' ? [v] : flat(v)) })(GB_MESSAGES.dashboard)
+    /* ⚠️ RE-PINNED (Language Phase 1d): the purpose line reads `tOff('purpose')` (offlineProtection messages), so it is
+     * counted as references to that key, and its sentence must be exactly one `offlineProtection` message. */
+    const offTexts = (function flat(o) { return Object.values(o).flatMap(v => typeof v === 'string' ? [v] : flat(v)) })(GB_MESSAGES.offlineProtection)
+    ONCE_P1B['{OFFLINE_PROTECTION_PURPOSE}'] = ["{tOff('purpose')}", GB_MSG('offlineProtection.purpose'), offTexts]
     for (const needle of ONCE) {
       const moved = ONCE_P1B[needle]
       const n = page.split(moved ? moved[0] : needle).length - 1
-      const once = moved ? n === 1 && dashTexts.filter(x => x === moved[1]).length === 1 : n === 1
+      const once = moved ? n === 1 && (moved[2] || dashTexts).filter(x => x === moved[1]).length === 1 : n === 1
       t(`⛔ exactly ONE copy of "${needle.slice(0, 34)}" on the dashboard (${n})`, once)
     }
   }
@@ -2287,8 +2395,10 @@ head('5b · THE MODAL AND THE CARD')
     const page = codeOf(dashPage)
     /* Language Phase 1b re-pin: the slice still runs from the Price header to the "How it works" bullet that names
      * Available — that bullet now reads `stock.howAvailable` — and "Item limit" is the limit box's `stock.limitAria`. */
-    const head = page.slice(page.indexOf('{EVENT_PRICE_COLUMN_LABEL}'), page.indexOf("tDash.rich('stock.howAvailable'"))
-    return /\{EVENT_PRICE_COLUMN_LABEL\}/.test(page)
+    /* ⚠️ RE-PINNED (Language Phase 1d): the column header reads `{tSvc('eventPriceColumnLabel')}` (serviceSettings) in
+     * place of the EVENT_PRICE_COLUMN_LABEL import; the word is asserted on the message. */
+    const head = page.slice(page.indexOf("{tSvc('eventPriceColumnLabel')}"), page.indexOf("tDash.rich('stock.howAvailable'"))
+    return /\{tSvc\('eventPriceColumnLabel'\)\}/.test(page) && GB_MSG('serviceSettings.eventPriceColumnLabel') === 'Price'
       && /^<b>Available<\/b>/.test(GB_MSG('dashboard.stock.howAvailable') || '')
       && GB_MSG('dashboard.stock.limitAria') === 'Item limit — {item}'
       && head.length > 0 && head.includes("tDash('stock.limitAria'")
@@ -2334,9 +2444,13 @@ head('5b · THE MODAL AND THE CARD')
   })())
   t('🔴 ONE BUTTON OPENS EDIT MODE, and in edit mode it becomes Cancel + Save prices', (() => {
     const page = codeOf(dashPage)
-    return /data-price-edit-open/.test(page) && /\{EVENT_PRICE_EDIT\}/.test(page)
+    /* ⚠️ RE-PINNED (Language Phase 1d): the three buttons read `tSvc('eventPriceEdit'|'eventPriceCancel'|'eventPriceSave')`
+     * (serviceSettings) in place of the EVENT_PRICE_* imports; their words are asserted on the messages. */
+    return /data-price-edit-open/.test(page) && /\{tSvc\('eventPriceEdit'\)\}/.test(page)
+      && GB_MSG('serviceSettings.eventPriceEdit') === '✎ Edit prices'
       && /data-price-edit-actions/.test(page)
-      && /\{EVENT_PRICE_CANCEL\}/.test(page) && /EVENT_PRICE_SAVE/.test(page)
+      && /\{tSvc\('eventPriceCancel'\)\}/.test(page) && /tSvc\('eventPriceSave'\)/.test(page)
+      && GB_MSG('serviceSettings.eventPriceCancel') === 'Cancel' && GB_MSG('serviceSettings.eventPriceSave') === 'Save prices'
       /* ══ ⚠️ THE RULE CHANGED ON 10 OCTOBER AND SO DID THIS LINE ════════════════════════════════
        * It read `w-full sm:w-auto bg-slate-100` — full width under the title below `sm`, top-right
        * from `sm` up. Dominic saw that full-width grey bar on the device: a solid bar the width of
@@ -2352,8 +2466,11 @@ head('5b · THE MODAL AND THE CARD')
   t('🔴 the blue edit note is shown, with the live line only for an `open` event', (() => {
     const page = codeOf(dashPage)
     return /data-price-edit-note/.test(page)
-      && /\{EVENT_PRICE_EDIT_NOTE\}/.test(page)
-      && /\{eventPriceLive&&<p[^>]*>\{EVENT_PRICE_LIVE_NOTE\}<\/p>\}/.test(page)
+      // ⚠️ RE-PINNED (Language Phase 1d): the two notes read `tSvc('eventPriceEditNote'|'eventPriceLiveNote')`.
+      && /\{tSvc\('eventPriceEditNote'\)\}/.test(page)
+      && /\{eventPriceLive&&<p[^>]*>\{tSvc\('eventPriceLiveNote'\)\}<\/p>\}/.test(page)
+      && /^Editing prices for this event only\./.test(GB_MSG('serviceSettings.eventPriceEditNote') || '')
+      && /^Live: new orders use the new prices\./.test(GB_MSG('serviceSettings.eventPriceLiveNote') || '')
   })())
   /* ⛔ THE NOTE'S SECOND SENTENCE IS A PROMISE THIS CHECK KEEPS. Four controls must be disabled in
    * edit mode: both limit boxes and both Available switches. */
@@ -2374,7 +2491,10 @@ head('5b · THE MODAL AND THE CARD')
       // 10 October 2026: the note carries the TRUCK's currency symbol, never a typed £ — and a truck with
       // no currency (an old offline snapshot) gets no symbol rather than a guessed one.
       // Phase 2A: it takes the truck's whole money format (symbol AND locale), from /api/dashboard.
-      && /\{eventPriceOwnNote\(fallbackPrice,eventTypeName,truck\?\.money\)\}/.test(page)
+      /* ⚠️ RE-PINNED (Language Phase 1d): `eventPriceOwnNote(…)` is now the `serviceSettings.eventPriceOwnNote` message
+       * read inline with the same three inputs — the fallback, the type's name (else "menu"), the truck's money. */
+      && /\{tSvc\('eventPriceOwnNote',\{hasType:eventTypeName!=null\?'yes':'no',type:eventTypeName\?\?'',price:formatMajorOrBare\(fallbackPrice,truck\?\.money,'event price note'\)\}\)\}/.test(page)
+      && GB_MSG('serviceSettings.eventPriceOwnNote') === '{hasType, select, yes {{type} {price} · this event} other {menu {price} · this event}}'
       && /const fallbackPrice=\(itemId\?eventFallback\[itemId\]:undefined\)\?\?item\.price/.test(page)
   })())
   /* ══ 🔴 NOTHING SAVES UNTIL SAVE, AND CANCEL MAKES NO REQUEST ════════════════════════════════════
@@ -2420,18 +2540,25 @@ head('5b · THE MODAL AND THE CARD')
       && /const ALL_PLAN_ACTIONS = new Set\(\['event_item_prices', 'save_event_item_prices'\]\)/.test(r)
   })())
   t('🔴 …and the card now says prices in its description', (() => {
+    /* ⚠️ RE-PINNED (Language Phase 1d): the sentence moved from lib/copy/serviceSettings.ts into
+     * `serviceSettings.eventItemsCardDescription`, which the module's export reads and the dashboard renders via tSvc. */
     const copy = fs.readFileSync(path.join(REPO, 'lib/copy/serviceSettings.ts'), 'utf8')
-    return /Prices, item limits and availability for this event only\. Changes take effect immediately\./.test(copy)
-      && /\{EVENT_ITEMS_CARD_DESCRIPTION\}/.test(dashPage)
+    return GB_MSG('serviceSettings.eventItemsCardDescription') === 'Prices, item limits and availability for this event only. Changes take effect immediately.'
+      && /export const EVENT_ITEMS_CARD_DESCRIPTION = gb\('eventItemsCardDescription'\)/.test(copy)
+      && /\{tSvc\('eventItemsCardDescription'\)\}/.test(dashPage)
   })())
   /* ⛔ EVERY PLAN. The two actions are exempt from the Max gate, and the column carries no plan test
    * of its own — which is what makes "all plans" true rather than claimed. */
   t('⛔ the Price column has no plan gate on the screen, and its actions are plan-exempt', (() => {
     const page = codeOf(dashPage)
     // Language Phase 1b re-pin: the same end anchor as the check above (the "Available" bullet, now `stock.howAvailable`).
-    const col = page.slice(page.indexOf('{EVENT_PRICE_COLUMN_LABEL}'), page.indexOf("tDash.rich('stock.howAvailable'"))
+    /* ⚠️ RE-PINNED (Language Phase 1d): the start anchor `{EVENT_PRICE_COLUMN_LABEL}` became
+     * `{tSvc('eventPriceColumnLabel')}`. With the old anchor gone, indexOf was −1 and the slice was EMPTY, so this
+     * check passed vacuously; it now asserts the anchor exists and the column is non-empty before testing it. */
+    const colStart = page.indexOf("{tSvc('eventPriceColumnLabel')}")
+    const col = page.slice(colStart, page.indexOf("tDash.rich('stock.howAvailable'"))
     const r = fs.readFileSync(path.join(REPO, 'app/api/event-types/route.ts'), 'utf8')
-    return !/canAccess|hasFeature|plan/.test(col)
+    return colStart >= 0 && col.length > 200 && !/canAccess|hasFeature|plan/.test(col)
       && /const ALL_PLAN_ACTIONS = new Set\(\['event_item_prices', 'save_event_item_prices'\]\)/.test(r)
   })())
   /* ⚠️ THE ITEM'S ID REACHES THE DASHBOARD AND **ONLY** THE DASHBOARD. The customer payload must not
@@ -2599,6 +2726,10 @@ head('5b · THE MODAL AND THE CARD')
       /^<div key=\{s\.label\} className="bg-white rounded-xl p-2\.5 text-center border border-slate-200 shadow-sm">/,
       /^<button onClick=\{ackOfflinePausedNotice\} className="mt-5 w-full bg-orange-600 text-white font-black text-sm py-3 rounded-xl hover:bg-orange-700 transition-colors">OK<\/button>$/,
       /^const label=`\$\{ind\.label\?` \$\{ind\.label\}`:''\}\$\{isCurrent\?' · \(current\)':''\}`$/,
+      /* ⚠️ RE-PINNED (Language Phase 1d): the capacity warning's box rendered the KITCHEN_CAPACITY_WARNING import; it
+       * now renders `{tCap('warning')}` (kitchenCapacity messages). An edit, not a loss: the replacement and the
+       * message's as-moved words are asserted in "…and every ACCOUNTED EDIT" below. */
+      /^<div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">\{KITCHEN_CAPACITY_WARNING\}<\/div>$/,
     ]
     t('⚠️ …and the Language Phase 1b replacements are present (the page reads `dashboard`; each enumerated line in its new form)', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
@@ -2683,7 +2814,12 @@ head('5b · THE MODAL AND THE CARD')
         /* ② THE NAME LINE SURVIVES WITHOUT THE PRICE, and the Price column is what carries it now. */
         && /<p className=\{`font-bold text-sm \$\{!isAvailable\?'text-red-500':'text-slate-800'\}`\}>\{item\.name\}<\/p>/.test(nowPage)
         && !/\{item\.name\}<span className="text-slate-600 font-normal ml-1\.5">/.test(nowPage)
-        && /\{EVENT_PRICE_COLUMN_LABEL\}/.test(nowPage)
+        // ⚠️ RE-PINNED (Language Phase 1d): the Price column's header reads `{tSvc('eventPriceColumnLabel')}`.
+        && /\{tSvc\('eventPriceColumnLabel'\)\}/.test(nowPage)
+        /* ⚠️ RE-PINNED (Language Phase 1d): the capacity warning box (accounted above) reads `{tCap('warning')}`, whose
+         * as-moved GB words are exactly the KITCHEN_CAPACITY_WARNING constant it replaced (the later ' → ’ is a named fix). */
+        && /<div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">\{tCap\('warning'\)\}<\/div>/.test(nowPage)
+        && GB_MSG('kitchenCapacity.warning') === "⚠️ For kitchen capacity to work properly, set a prep time and batch size on your menu categories (Menu & Stock). Without them, capacity can't tell how long items take to cook."
         /* ④ THE TWO SHORTENED HEADINGS, IN THEIR OWN COLUMNS' WIDTHS. ⛔ WITHOUT THIS, DELETING BOTH
          * HEADINGS OUTRIGHT WOULD READ AS "explained" — the whole point of the companion check. */
         /* Language Phase 1b re-pin: the headings and the labels read `dashboard.stock.*` (exact text asserted). */
@@ -2730,7 +2866,9 @@ head('5b · THE MODAL AND THE CARD')
     const unexplained = gone.filter(l => !ALLOWED.some(re => re.test(l)) && !phase1bWordsMoved(l))
     // Language Phase 2's three moves (ALLOWED above), each present in its new form.
     const lp2Moved = /tDash\('eventBar\.status',\s*\{\s*tone:\s*st\.tone\s*\}\)/.test(now) && /tDash\('orders\.status',\s*\{\s*status:\s*o\.status\s*\}\)/.test(now)
-      && /settings\.capacityDesc/.test(now) && /settings\.capacityExample/.test(now)
+      /* ⚠️ RE-PINNED (Language Phase 1d): the capacity description and example moved on from `dashboard.settings.capacityDesc`
+       * / `capacityExample` to the ONE shared pair `kitchenCapacity.desc` / `.example` (read here as tCap, and by Manage). */
+      && /\{tCap\('desc'\)\}/.test(now) && /\{tCap\('example'\)\}/.test(now)
     if (!lp2Moved) unexplained.push('(Language Phase 2: the status labels / capacity description are not read from `dashboard` messages)')
     if (unexplained.length) {
       console.log('      UNEXPLAINED LOSSES: ' + unexplained.length)
@@ -2762,6 +2900,22 @@ function variants() {
       const dest = path.join(root, f)
       fs.mkdirSync(path.dirname(dest), { recursive: true })
       fs.writeFileSync(dest, f === p.file ? p.source : fs.readFileSync(path.join(REPO, f)))
+    }
+    /* ⚠️ RE-PINNED (Language Phase 1d): lib/copy/serviceSettings.ts, lib/settings-copy.ts and
+     * lib/copy/offlineProtection.ts now read their words from messages via `translatorFor(DEFAULT_LOCALE, ns)`, so a
+     * variant tree that holds only LIB_NOW fails to compile (TS2307 on '@/lib/i18n/translator'). The NOW build never
+     * noticed because it compiles inside the repo, where tsc follows the imports. These are copied UNPATCHED — no
+     * variant mutates them; they are only what the modules under test now import. */
+    const I18N_NAMESPACES = ['serviceSettings', 'settingsCopy', 'whereYouTrade', 'offlineProtection']
+    const I18N_CLOSURE = [
+      'lib/i18n/translator.ts', 'lib/i18n/locales.ts', 'lib/i18n/registry.ts', 'lib/i18n/merge.ts',
+      ...I18N_NAMESPACES.map(ns => `lib/i18n/catalog/${ns}.ts`),
+      ...I18N_NAMESPACES.flatMap(ns => [`messages/ns/en-GB/${ns}.json`, `messages/ns/en-US/${ns}.json`]),
+    ]
+    for (const f of I18N_CLOSURE) {
+      const dest = path.join(root, f)
+      fs.mkdirSync(path.dirname(dest), { recursive: true })
+      fs.copyFileSync(path.join(REPO, f), dest)
     }
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(root, 'node_modules')) } catch {}
     return build(root, LIB_NOW, `et-var-${tag}`)
@@ -2988,9 +3142,11 @@ function variants() {
 
   /* V15 — A NAME CHIP CARRIES VALUES AGAIN (§2's regression). */
   {
+    /* ⚠️ RE-PINNED (Language Phase 1d): TYPE_NAME_CHIPS are ids now (the words are eventTypes.newType.chips.<id>), so
+     * the anchor is the new declaration; the injected regression — a chip list carrying VALUES — is the same. */
     const p = patch('lib/event-types/types.ts',
-      "export const TYPE_NAME_CHIPS: readonly string[] = ['Festival', 'Pub', 'Market', 'Private hire'] as const",
-      "export const TYPE_NAME_CHIPS: readonly string[] = ['Festival', 'Pub', 'Market', 'Private hire'] as const\nexport const TYPE_SUGGESTIONS = [{ name: 'Festival', description: 'x', values: { buzzer_prompt: true } }]")
+      "export const TYPE_NAME_CHIPS = ['festival', 'pub', 'market', 'privateHire'] as const",
+      "export const TYPE_NAME_CHIPS = ['festival', 'pub', 'market', 'privateHire'] as const\nexport const TYPE_SUGGESTIONS = [{ name: 'Festival', description: 'x', values: { buzzer_prompt: true } }]")
     let detected = true
     if (p) {
       const V = buildPatched(p, 'v15')
@@ -3107,9 +3263,11 @@ function variants() {
      * The mode choices are now the list a pseudo-option would be smuggled into. */
     const sasPredicate = (ui) => !/Same as Standard/.test(codeOf(ui))
       && [...codeOf(ui).matchAll(/\{ value: '', label: /g)].length === 0
+    /* ⚠️ RE-PINNED (Language Phase 1d): `OFFLINE_MODE_CHOICES` became `offlineModes` in `useServiceWords()` (labels from
+     * `offlineProtection` messages), so the pseudo-option is smuggled into that list now. */
     const sasBack = uiSrc.replace(
-      "const OFFLINE_MODE_CHOICES = OFFLINE_PROTECTION_MODES.map(m => ({ value: m.value as string, label: m.label }))",
-      "const OFFLINE_MODE_CHOICES = [{ value: '', label: 'Same as Standard' }, ...OFFLINE_PROTECTION_MODES.map(m => ({ value: m.value as string, label: m.label }))]")
+      "() => OFFLINE_PROTECTION_MODES.map(m => ({ value: m.value as string, label: to(`modes.${m.value}.label`) })),",
+      "() => [{ value: '', label: 'Same as Standard' }, ...OFFLINE_PROTECTION_MODES.map(m => ({ value: m.value as string, label: to(`modes.${m.value}.label`) }))],")
     must('V20 ⛔ a dropdown offers "Same as Standard" again — a cross-reference instead of a setting',
       sasBack !== uiSrc && sasPredicate(uiSrc) && !sasPredicate(sasBack))
 
@@ -3272,9 +3430,10 @@ function variants() {
     /* ⚠️ RE-TARGETED: `inheritTitle` is deleted with the whole follows-Standard design, so the
      * old mutation site no longer exists. The phrase is injected where one would actually come back —
      * as a label on the Standard column's own header. */
+    // ⚠️ RE-PINNED (Language Phase 1d): the header's names are `ts('sameSettingsAllVansHeader')` / `t('standard')` now.
     const phraseBack = uiSrc.replace(
-      "          name: vans.length > 1 ? SAME_SETTINGS_ALL_VANS_HEADER : 'Standard',",
-      "          name: vans.length > 1 ? 'Varies by van' : 'Standard',")
+      "          name: vans.length > 1 ? ts('sameSettingsAllVansHeader') : t('standard'),",
+      "          name: vans.length > 1 ? 'Varies by van' : t('standard'),")
     must('V31 ⛔ "Varies by van" comes back into the modal, in place of a real value',
       phraseBack !== uiSrc && phrasePredicate(uiSrc) && !phrasePredicate(phraseBack))
 

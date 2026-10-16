@@ -18,7 +18,8 @@
 //   F       THIS code with the BEFORE words (HG_MESSAGES_FROZEN = scripts/fixtures/language-phase-2-messages-before.json,
 //           scripts/_lp2-frozen.cjs) — what the CODE changed;
 //   A       THIS code with THIS tree's words (from the authored messages/*.json, HG_MESSAGES_SOURCE=1, so a stale
-//           split never hides a word) — what a person will see.
+//           split never hides a word) — what a person will see. ⚠️ Since Language Phase 1d: the words Phase 2 ENDED
+//           with (756ca09's pair) — see switchEnv.
 // GB  · F === BEFORE in every view, except the NAMED code changes (scripts/_lp2-named.cjs), each proven to be the
 //       only difference in its view;  A vs F: every difference is a changed en-GB key's own word change (word-level
 //       hunks, ICU variants and placeholders understood), and the changed keys are exactly
@@ -83,7 +84,12 @@ function captureAll(cwd, dir, env) {
 const switchEnv = which => {
   const e = { HG_KIT_CACHE_SUFFIX: `lp2${which}` }
   if (which === 'F') return { ...e, HG_MESSAGES_FROZEN: path.join(REPO, FROZEN), HG_MESSAGES_SOURCE: '' }
-  if (which === 'A') return { ...e, HG_MESSAGES_FROZEN: 'off', HG_MESSAGES_SOURCE: '1' }
+  // ⚠️ RE-PINNED (Language Phase 1d): this harness asserts Phase 2's END STATE. Its "current words" are the words Phase 2
+  // ended with — 756ca09's pair (scripts/fixtures/language-phase-1d-messages-before.{en-GB,en-US}.json, with the 1d
+  // as-moved overlay) — not the tree's, which Language Phase 1d changes on purpose and proves in language-phase-1d.cjs.
+  // HG_LP2_A=source restores the old A (this tree's authored words).
+  if (which === 'A') return process.env.HG_LP2_A === 'source' ? { ...e, HG_MESSAGES_FROZEN: 'off', HG_MESSAGES_SOURCE: '1' }
+    : { ...e, HG_MESSAGES_FROZEN: path.join(REPO, 'scripts/fixtures/language-phase-1d-messages-before.en-GB.json'), HG_MESSAGES_SOURCE: '' }
   return { ...e, HG_MESSAGES_FROZEN: 'off', HG_MESSAGES_SOURCE: '' }
 }
 /** A capture directory → { viewId: value }. */

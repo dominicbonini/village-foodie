@@ -131,7 +131,8 @@
     "messages-split.cjs",
     "language-phase-1b.cjs",
     "language-phase-1c.cjs",
-    "language-phase-2.cjs"
+    "language-phase-2.cjs",
+    "language-phase-1d.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -194,7 +195,18 @@
         "_lp2-text.cjs",
         "_lp2-named.cjs",
         "_lp2-checks.cjs",
-        "_messages-parity-2.cjs"
+        "_messages-parity-2.cjs",
+        "_lp1d-fixtures.cjs",
+        "_lp1d-menu.cjs",
+        "_lp1d-schedule.cjs",
+        "_lp1d-settings.cjs",
+        "_lp1d-copy.cjs",
+        "_lp1d-api.cjs",
+        "_lp1d-smoke.cjs",
+        "_lp1d-words.cjs",
+        "_lp1d-named.cjs",
+        "_lp1d-checks.cjs",
+        "_messages-parity-1d.cjs"
       ]
     },
     "fixture_generators": {

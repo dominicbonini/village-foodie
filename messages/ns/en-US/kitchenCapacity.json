@@ -1,0 +1,12 @@
+{
+  "desc": "The most items your kitchen can turn out at once, across all the categories you’ve checked. Each category’s own batch size still applies on top.",
+  "example": "Example: if you can cook 4 entrées in 5 minutes, then set it to 4 items every 5 minutes. The total capacity limits orders across all selected categories so if you want to only sell a maximum of 10 appetizers and entrées every 5 minutes, then set Total capacity to 10 items every 5 minutes and check the Appetizers and Entrées boxes. This will still keep your entrées restricted to 4 items every 5 minutes.",
+  "loadVansFailed": "Could not load your trucks",
+  "noVan": "Add a truck in Settings › Truck settings to set your kitchen capacity.",
+  "boxTitleAll": "All trucks · Kitchen capacity",
+  "lead": "How many items your kitchen can make, so customers can only choose pickup times you can meet.",
+  "sameForAll": "Same kitchen capacity for all trucks?",
+  "confirmBody": "All trucks will use {van}’s kitchen capacity. Each truck’s own numbers will be replaced.",
+  "colCountsTitle": "Which categories count toward the total capacity. Cooked categories always count; check instant ones (sides, dips, drinks) to include them.",
+  "countsTick": "Check to include this instant category (sides, dips, drinks) in the shared per-window limit"
+}

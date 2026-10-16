@@ -86,6 +86,7 @@ const AREAS = [
   '_messages-parity-1b.cjs',   // Language Phase 1b — the kitchen and operator text (docs/language-phase-1b-report.md)
   '_messages-parity-1c.cjs',   // Language Phase 1c — the onboarding text (docs/language-phase-1c-report.md)
   '_messages-parity-2.cjs',    // Language Phase 2 — US English and the wrong-English fixes (docs/language-phase-2-report.md)
+  '_messages-parity-1d.cjs',   // Language Phase 1d Part 1 — Manage's Menu, Schedule and Settings words (scripts/language-phase-1d.cjs)
 ]
 // ⚠️ RE-PINNED (Language Phase 2): the 1a / 1b / 1c areas compare the strings the surfaces rendered BEFORE their text
 // moved into messages/ with the messages that move produced. Phase 2 then changes words on purpose (proven by its own

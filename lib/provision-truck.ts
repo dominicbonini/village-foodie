@@ -21,7 +21,9 @@ import { DEMO_PREFIX } from '@/lib/demo'
 // surfaces cannot disagree about what an "Indian" truck's emoji is.
 import { emojiForCuisine } from '@/lib/cuisines'
 import { getCountrySettings } from '@/lib/country-settings'
-import { checkTradeArea, TRADE_AREA_ERRORS, type TradeAreaValues } from '@/lib/trade-area'
+import { checkTradeArea, TRADE_AREA_ERRORS, type TradeAreaValues, type TradeAreaRefusal } from '@/lib/trade-area'
+// Language Phase 1d: lib/trade-area.ts refuses with a code; its words are the `tradeArea` namespace's, in the country's language.
+import '@/lib/i18n/catalog/tradeArea'
 // Language Phase 2: the first van's name is stored in the truck's country's words ("Van 1" / "Truck 1").
 import '@/lib/i18n/catalog/provisionContent'
 import { translatorFor } from '@/lib/i18n/translator'
@@ -410,18 +412,19 @@ export async function provisionTruck(
   } catch (e) {
     throw new ProvisionError('validation', e instanceof Error ? e.message : `Unknown country "${opts.country}"`)
   }
+  // Plain words (Phase 2D-1) — the same sentence signup shows (lib/trade-area.ts's code, in the country's language).
+  const tradeAreaWords = (r: TradeAreaRefusal) => translatorFor(localeOfCountry(countrySettings), 'tradeArea')(r.code, r.params)
   if (!countrySettings.enabled) {
-    // Plain words (Phase 2D-1) — the same sentence signup shows (lib/trade-area.ts).
-    throw new ProvisionError('validation', TRADE_AREA_ERRORS.countryOff(countrySettings.name))
+    throw new ProvisionError('validation', tradeAreaWords(TRADE_AREA_ERRORS.countryOff(countrySettings.name)))
   }
   // ── Phase 2D-1: THE ZONE AND WHERE THE TRUCK TRADES, checked against the same settings row ─────────────
   let tradeArea: TradeAreaValues | null = null
   if (opts.tradeArea) {
     const checked = checkTradeArea({ ...opts.tradeArea, timezone: opts.timezone ?? opts.tradeArea.timezone }, countrySettings)
-    if (!checked.ok) throw new ProvisionError('validation', checked.error)
+    if (!checked.ok) throw new ProvisionError('validation', tradeAreaWords(checked))
     tradeArea = checked.values
   } else if (opts.timezone && !countrySettings.timezones.includes(opts.timezone)) {
-    throw new ProvisionError('validation', TRADE_AREA_ERRORS.zone(countrySettings.name))
+    throw new ProvisionError('validation', tradeAreaWords(TRADE_AREA_ERRORS.zone(countrySettings.name)))
   }
   const truckTimezone = tradeArea?.timezone ?? opts.timezone ?? countrySettings.defaultTimezone
 

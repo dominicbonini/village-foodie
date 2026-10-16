@@ -26,6 +26,17 @@ import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
 import { canAccess } from '@/lib/features'
 import { countrySettingsForTruck } from '@/lib/country-settings'
 import { checkTradeArea } from '@/lib/trade-area'
+/* ── 🔴 LANGUAGE PHASE 1d: THE MENU, SCHEDULE AND SETTINGS TABS' REFUSALS CARRY A CODE ─────────────────────────────
+ * `{ error: <today's English>, …every field it already carried…, code, params }` from `manageErrorBody`
+ * (lib/i18n/manage-errors.ts), in the truck's language (`localeForTruck`; en-GB before the truck is known). Only the
+ * actions in MANAGE_TAB_ACTIONS (below) — Payments, Billing, Reports, Team, Social media, WhatsApp, the custom domain and
+ * the embed keep their bodies exactly as they were until their own phase. A database's or exception's message is
+ * passed on as it comes, without a code: it is not our sentence. */
+import { manageErrorBody, tradeAreaErrorBody, type ManageErrorCode, type ManageErrorParams } from '@/lib/i18n/manage-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/manageApi'
 /* ⚠️ THE ONE PLAN SENTENCE FOR SOCIAL MEDIA, shared with the screen and with `/api/weekly-post` — see
  * the header of `lib/copy/weeklyPost.ts` for why it is not written out twice. */
 import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
@@ -164,7 +175,7 @@ async function resolveCallerId(req: NextRequest): Promise<string | null> {
 
 type TruckAccess =
   | { ok: true; role: 'owner' | 'manager' | 'staff'; userId: string | null; operatorId: string | null; via: 'demo' | 'admin' | 'owner' | 'member' }
-  | { ok: false; status: 401 | 403; error: string }
+  | { ok: false; status: 401 | 403; error: string; code: 'sign_in_required' | 'no_truck_access' }
 
 /**
  * 🔴 THE ONE PLACE ACCESS IS DECIDED, for both GET and POST.
@@ -189,7 +200,7 @@ async function resolveTruckAccess(req: NextRequest, truck: { id: string; operato
   const userId = await resolveCallerId(req)
   // 🔴 THE INVERSION. No caller ⇒ no access. This is the line the whole workstream exists to add.
   if (!userId) {
-    return { ok: false, status: 401, error: 'Sign in required' }
+    return { ok: false, status: 401, error: 'Sign in required', code: 'sign_in_required' }
   }
 
   const { data: op } = await supabase
@@ -212,7 +223,7 @@ async function resolveTruckAccess(req: NextRequest, truck: { id: string; operato
   }
 
   // 🔴 AUTHENTICATED, BUT NOT ON THIS TRUCK. A token is not a grant.
-  return { ok: false, status: 403, error: 'You do not have access to this truck' }
+  return { ok: false, status: 403, error: 'You do not have access to this truck', code: 'no_truck_access' }
 }
 
 /**
@@ -291,6 +302,27 @@ async function getTruck(token: string) {
   return data
 }
 
+/* ══ 🔴 THE ACTIONS THE MENU, SCHEDULE AND SETTINGS TABS CALL (Language Phase 1d) ═════════════════════════════════
+ * Their refusals — including the shared token, sign-in and staff checks below, when one of THESE actions is asked
+ * for — are `{ error, …, code, params }` (`manageErrorBody`). Every other action (Payments' `update_charges`, Team,
+ * Reports' `get_recent_events` / `get_report`, WhatsApp, the custom domain, the embed, Social media's
+ * `sg_place_usual_type` / `sg_merge_place`) answers exactly as before until its own phase. */
+const MANAGE_TAB_ACTIONS: ReadonlySet<string> = new Set([
+  // Menu
+  'upsert_category', 'delete_category', 'upsert_subcategory', 'delete_subcategory', 'update_subcategory_order',
+  'bulk_delete_items', 'save_slot_capacity', 'upsert_item', 'delete_item', 'toggle_item', 'upsert_modifier_group',
+  'upsert_upsell_rule', 'delete_upsell_rule', 'get_upsell_rules', 'delete_modifier_group', 'upsert_modifier_option',
+  'delete_modifier_option', 'assign_modifier_to_category', 'unassign_modifier_from_category', 'set_item_modifier_group',
+  'set_item_modifier_groups_bulk', 'set_item_group_excluded_options', 'set_item_preorder_bulk', 'update_category_order',
+  'upsert_bundle', 'delete_bundle', 'update_bundle_default',
+  // Schedule
+  'private_link', 'private_new_link', 'upsert_event', 'update_event_deal', 'delete_event',
+  'get_exclusion_terms', 'add_exclusion_term', 'remove_exclusion_term', 'sg_places', 'sg_upsert_place',
+  // Settings
+  'update_trade_area', 'update_settings', 'get_upload_url', 'update_truck', 'get_vans', 'update_van_settings',
+  'upsert_van_category', 'set_van_same_as_first', 'set_van_capacity_same_as_first', 'add_van', 'delete_van', 'rename_van',
+])
+
 // ── GET — fetch all management data ──────────────────────────
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
@@ -347,16 +379,23 @@ export async function GET(req: NextRequest) {
 
   // Stock check: mark bundles where any slot category has no available items
   const slotKeys = ['slot_1_category', 'slot_2_category', 'slot_3_category', 'slot_4_category', 'slot_5_category', 'slot_6_category'] as const
-  const stockCheckedBundles = (bundles || []).map(b => {
+  const stockSlots = (bundles || []).map(b => {
     const slotCategories = slotKeys.map(k => (b as any)[k]).filter(Boolean) as string[]
-    if (slotCategories.length === 0) return { ...b, stock_warning: null }
+    if (slotCategories.length === 0) return null
     const unavailableSlot = slotCategories.find(slug => {
       const cat = (categories || []).find((c: any) => c.slug === slug || c.name?.toLowerCase() === slug?.toLowerCase())
       if (!cat) return false
       const catItems = (items || []).filter((i: any) => i.category_id === cat.id)
       return !catItems.some((i: any) => i.is_available && (i.stock_count === null || i.stock_count > 0))
     })
-    return { ...b, stock_warning: unavailableSlot ? `No available items in "${unavailableSlot}"` : null }
+    return unavailableSlot || null
+  })
+  // Language Phase 1d: the warning's words are `manageApi.stockWarning`, in the truck's language — read only when a
+  // deal has one, so a truck with none makes no extra read.
+  const stockT = stockSlots.some(Boolean) ? translatorFor(await localeForTruck(truck), 'manageApi') : null
+  const stockCheckedBundles = (bundles || []).map((b, i) => {
+    const slot = stockSlots[i]
+    return { ...b, stock_warning: slot && stockT ? stockT('stockWarning', { category: slot }) : null }
   })
 
   // SECURITY: never return another truck's dashboard_token (an auth credential) to the client.
@@ -504,16 +543,31 @@ async function resolveRequestedTypeId(truckId: string, raw: unknown): Promise<st
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const { token, action } = body
-  if (!token) return NextResponse.json({ error: 'Token required' }, { status: 401 })
+  // Language Phase 1d: a Menu, Schedule or Settings action's refusals carry a code (see MANAGE_TAB_ACTIONS).
+  const tabAction = MANAGE_TAB_ACTIONS.has(action)
+  if (!token) return tabAction
+    ? NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'token_required'), { status: 401 })
+    : NextResponse.json({ error: 'Token required' }, { status: 401 })
 
   const truck = await getTruck(token)
-  if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+  if (!truck) return tabAction
+    ? NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'invalid_token'), { status: 401 })
+    : NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+
+  /** The truck's language — read once, and only when a refusal needs it, so a success makes no extra read. */
+  let localeRead: Promise<AppLocale> | null = null
+  const truckLocale = () => (localeRead ??= localeForTruck(truck))
+  /** A refusal of ours: `{ error, …extra, code, params }` in the truck's language (lib/i18n/manage-errors.ts). */
+  const refuse = async (code: ManageErrorCode, status: number, params: ManageErrorParams = {}, extra?: Record<string, unknown>) =>
+    NextResponse.json(manageErrorBody(await truckLocale(), code, params, extra), { status })
 
   // ── 🔴 DENY BY DEFAULT. Was: `let requestingUserRole = 'owner'` narrowed only on a resolved
   // session. Every write below — including the 24 staff-blocked actions — now runs behind a caller
   // this route has actually established.
   const access = await resolveTruckAccess(req, truck)
-  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+  if (!access.ok) return tabAction
+    ? refuse(access.code, access.status)
+    : NextResponse.json({ error: access.error }, { status: access.status })
   const requestingUserRole = access.role
   const requestingUserId = access.userId
 
@@ -532,7 +586,8 @@ export async function POST(req: NextRequest) {
   const authMethod: 'token' | 'authenticated' = requestingUserId ? 'authenticated' : 'token'
   const canEditAllergens = requestingUserRole === 'owner' || requestingIsAdmin
   const actor: Actor = { actor_user_id: requestingUserId, actor_role: requestingUserRole, auth_method: authMethod }
-  const ALLERGEN_FORBIDDEN = NextResponse.json({ error: 'Only the owner can change allergen information' }, { status: 403 })
+  // Only the Menu and Settings actions reach this, so it is always coded (Language Phase 1d).
+  const allergenForbidden = () => refuse('allergen_owner_only', 403)
 
   // Staff gate for all write actions except update_member (staff can edit themselves)
   const staffBlockedActions = [
@@ -559,7 +614,9 @@ export async function POST(req: NextRequest) {
     'sg_places', 'sg_upsert_place', 'sg_merge_place',
   ]
   if (staffBlockedActions.includes(action) && requestingUserRole === 'staff') {
-    return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+    return tabAction
+      ? refuse('insufficient_permissions', 403)
+      : NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
   }
 
   // ── 🔴 THE FOUR CUSTOM-DOMAIN ACTIONS REFUSE A DEMO IDENTITY. ───────────────────────────────────
@@ -627,7 +684,7 @@ export async function POST(req: NextRequest) {
   if (action === 'upsert_subcategory') {
     const { id, category_id, name } = body
     const trimmed = (typeof name === 'string' ? name.trim() : '')
-    if (!trimmed) return NextResponse.json({ error: 'Name required' }, { status: 400 })
+    if (!trimmed) return await refuse('name_required', 400)
 
     // Edit existing by id
     if (id) {
@@ -637,7 +694,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ subcategory: data })
     }
 
-    if (!category_id) return NextResponse.json({ error: 'Category required' }, { status: 400 })
+    if (!category_id) return await refuse('category_required', 400)
 
     // Dedupe IN-APP (no DB unique): case-insensitive name match within this category+truck.
     // ACTIVE same-name → return it (no dup). SOFT-DELETED same-name → reactivate-and-reuse (mirrors
@@ -738,7 +795,7 @@ export async function POST(req: NextRequest) {
       // (a manager editing only price/stock sends unchanged allergens → no diff → allowed), then log.
       const { data: prevItem } = await supabase.from('menu_items_db').select('allergens, dietary_info, allergens_verified').eq('id', id).eq('truck_id', truck.id).single()
       const auditRows = diffItemAllergens({ truckId: truck.id, itemId: id, actor, prev: prevItem, next: { allergens, dietary_info, allergens_verified }, changeTypeOverride: allergenChangeType })
-      if (auditRows.length && !canEditAllergens) return ALLERGEN_FORBIDDEN
+      if (auditRows.length && !canEditAllergens) return allergenForbidden()
       const { data, error } = await supabase.from('menu_items_db')
         .update({ name, description, price, category_id, subcategory_id: subcatId, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, spiciness: spiciness ?? null, auto_accept: auto_accept ?? true, ...preorderCols, ...verifiedCol, updated_at: new Date().toISOString() })
         .eq('id', id).eq('truck_id', truck.id).select().single()
@@ -748,7 +805,7 @@ export async function POST(req: NextRequest) {
     } else {
       // New item: gate only when it's created WITH allergen data (empty = a plain item managers can add).
       const auditRows = diffItemAllergens({ truckId: truck.id, itemId: null, actor, prev: null, next: { allergens, dietary_info, allergens_verified } })
-      if (auditRows.length && !canEditAllergens) return ALLERGEN_FORBIDDEN
+      if (auditRows.length && !canEditAllergens) return allergenForbidden()
       const maxOrder = await supabase.from('menu_items_db').select('sort_order').eq('truck_id', truck.id).eq('category_id', category_id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_items_db')
@@ -789,7 +846,7 @@ export async function POST(req: NextRequest) {
   if (action === 'upsert_upsell_rule') {
     const { id, trigger_category, suggest_category, max_suggestions, show_at_checkout } = body
     if (!trigger_category || !suggest_category) {
-      return NextResponse.json({ error: 'trigger_category and suggest_category required' }, { status: 400 })
+      return await refuse('upsell_categories_required', 400)
     }
     if (id) {
       const { data, error } = await supabase
@@ -842,18 +899,18 @@ export async function POST(req: NextRequest) {
       const { data: ownGrp } = prevOpt?.group_id
         ? await supabase.from('modifier_groups').select('id').eq('id', prevOpt.group_id).eq('truck_id', truck.id).maybeSingle()
         : { data: null }
-      if (!ownGrp) return NextResponse.json({ error: 'Option not found for this truck' }, { status: 403 })
+      if (!ownGrp) return await refuse('option_not_for_truck', 403)
       const rows = optAllergenRows(prevOpt?.allergens ?? [], prevOpt?.dietary_info ?? [])
-      if (rows.length && !canEditAllergens) return ALLERGEN_FORBIDDEN
+      if (rows.length && !canEditAllergens) return allergenForbidden()
       const { data } = await supabase.from('modifier_options').update({ name, price_adjustment, type, sort_order, allergens: allergens ?? [], dietary_info: dietary_info ?? [], available: available ?? true, stock_count: stock_count ?? null }).eq('id', id).select().single()
       await logAllergenChanges(supabase, rows)
       return NextResponse.json({ option: data })
     } else {
       // Verify the SUPPLIED group_id belongs to this truck before inserting (same gate as above).
       const { data: ownGrp } = await supabase.from('modifier_groups').select('id').eq('id', group_id).eq('truck_id', truck.id).maybeSingle()
-      if (!ownGrp) return NextResponse.json({ error: 'Group not found for this truck' }, { status: 403 })
+      if (!ownGrp) return await refuse('group_not_for_truck', 403)
       const rows = optAllergenRows([], [])
-      if (rows.length && !canEditAllergens) return ALLERGEN_FORBIDDEN
+      if (rows.length && !canEditAllergens) return allergenForbidden()
       const { data, error } = await supabase.from('modifier_options').insert({ group_id, name, price_adjustment: price_adjustment || 0, type: type || 'add', sort_order: sort_order || 0, allergens: allergens ?? [], dietary_info: dietary_info ?? [], available: available ?? true, stock_count: stock_count ?? null }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       await logAllergenChanges(supabase, rows)
@@ -869,7 +926,7 @@ export async function POST(req: NextRequest) {
     const { data: ownGrp } = opt?.group_id
       ? await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).maybeSingle()
       : { data: null }
-    if (!ownGrp) return NextResponse.json({ error: 'Option not found for this truck' }, { status: 403 })
+    if (!ownGrp) return await refuse('option_not_for_truck', 403)
     await supabase.from('modifier_options').delete().eq('id', body.id)
     return NextResponse.json({ success: true })
   }
@@ -894,10 +951,10 @@ export async function POST(req: NextRequest) {
     const { group_id, menu_item_id, attached } = body
     // Verify the group belongs to this truck.
     const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', group_id).eq('truck_id', truck.id).maybeSingle()
-    if (!grp) return NextResponse.json({ error: 'Group not found for this truck' }, { status: 403 })
+    if (!grp) return await refuse('group_not_for_truck', 403)
     // Verify the item belongs to this truck.
     const { data: itm } = await supabase.from('menu_items_db').select('id').eq('id', menu_item_id).eq('truck_id', truck.id).maybeSingle()
-    if (!itm) return NextResponse.json({ error: 'Item not found for this truck' }, { status: 403 })
+    if (!itm) return await refuse('item_not_for_truck', 403)
     if (attached) {
       await supabase.from('item_modifier_groups').upsert({ menu_item_id, group_id }, { onConflict: 'menu_item_id,group_id', ignoreDuplicates: true })
     } else {
@@ -909,7 +966,7 @@ export async function POST(req: NextRequest) {
   if (action === 'set_item_modifier_groups_bulk') {
     const { group_id, menu_item_ids, attached } = body as { group_id: string; menu_item_ids: string[]; attached: boolean }
     const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', group_id).eq('truck_id', truck.id).maybeSingle()
-    if (!grp) return NextResponse.json({ error: 'Group not found for this truck' }, { status: 403 })
+    if (!grp) return await refuse('group_not_for_truck', 403)
     // Restrict to items that genuinely belong to this truck (filters out any spoofed ids).
     const { data: ownItems } = await supabase.from('menu_items_db').select('id').eq('truck_id', truck.id).in('id', menu_item_ids || [])
     const validIds = (ownItems || []).map(i => i.id)
@@ -931,9 +988,9 @@ export async function POST(req: NextRequest) {
   if (action === 'set_item_group_excluded_options') {
     const { group_id, menu_item_id, excluded_option_ids } = body as { group_id: string; menu_item_id: string; excluded_option_ids: string[] }
     const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', group_id).eq('truck_id', truck.id).maybeSingle()
-    if (!grp) return NextResponse.json({ error: 'Group not found for this truck' }, { status: 403 })
+    if (!grp) return await refuse('group_not_for_truck', 403)
     const { data: itm } = await supabase.from('menu_items_db').select('id').eq('id', menu_item_id).eq('truck_id', truck.id).maybeSingle()
-    if (!itm) return NextResponse.json({ error: 'Item not found for this truck' }, { status: 403 })
+    if (!itm) return await refuse('item_not_for_truck', 403)
     const { data: groupOpts } = await supabase.from('modifier_options').select('id').eq('group_id', group_id)
     const validOptIds = new Set((groupOpts || []).map(o => o.id))
     const cleaned = Array.from(new Set((excluded_option_ids || []).filter(id => validOptIds.has(id))))
@@ -950,7 +1007,7 @@ export async function POST(req: NextRequest) {
     // effects (menu sold-out / submit force-pending) already gate, so off-plan config is inert — but
     // reject the dedicated bulk WRITE at the source too. (Per-row edits use a 1-element bulk → same gate.)
     if (!canAccess(truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return NextResponse.json({ error: 'Pre-orders requires the Pro plan' }, { status: 403 })
+      return await refuse('preorders_pro', 403)
     }
     // SINGLE-SOURCE (V7.8 global-config): this action sets ONLY the per-item inclusion flag
     // (preorder_enabled). The deadline type/value/action live ONCE on the truck row (update_truck) and
@@ -1003,7 +1060,7 @@ export async function POST(req: NextRequest) {
    * printed cards all use — three places that would otherwise drift. */
   if (action === 'private_link') {
     if (!canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return NextResponse.json({ error: 'Private events are part of the Pro plan.', upgrade: true }, { status: 403 })
+      return await refuse('private_events_pro', 403, {}, { upgrade: true })
     }
     const eventId = String(body.id ?? '')
     const { data: ev, error } = await supabase
@@ -1011,8 +1068,8 @@ export async function POST(req: NextRequest) {
       .select('id, is_private, private_name, private_token, private_link_ordering_override, event_date, start_time, end_time')
       .eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-    if (!ev.is_private) return NextResponse.json({ error: 'This event is not private.' }, { status: 400 })
+    if (!ev) return await refuse('event_not_found', 404)
+    if (!ev.is_private) return await refuse('event_not_private', 400)
 
     const type = await readPrivateType(supabase, truck.id)
     const linkOrdering = resolveLinkOrdering(ev, type)
@@ -1040,10 +1097,11 @@ export async function POST(req: NextRequest) {
    * reached by accident: it is its own action with its own name. */
   if (action === 'private_new_link') {
     if (!canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return NextResponse.json({ error: 'Private events are part of the Pro plan.', upgrade: true }, { status: 403 })
+      return await refuse('private_events_pro', 403, {}, { upgrade: true })
     }
     const r = await replacePrivateLink(supabase, truck.id, String(body.id ?? ''))
-    if (!r.ok) return NextResponse.json({ error: r.error || 'Could not make a new link.' }, { status: 400 })
+    // `r.error` is lib/private-events/write.ts's (or the database's) — passed on as it comes; ours only when it has none.
+    if (!r.ok) return r.error ? NextResponse.json({ error: r.error }, { status: 400 }) : refuse('new_link_failed', 400)
     return NextResponse.json({
       ok: true, token: r.token,
       url: r.token ? privateLinkUrl(r.token) : null,
@@ -1076,7 +1134,7 @@ export async function POST(req: NextRequest) {
       const { data: cur } = await supabase.from('truck_events').select('status').eq('id', id).eq('truck_id', targetTruckId).single()
       const isLive = cur?.status === 'confirmed' || cur?.status === 'open'
       if (isLive && !hasValidEventTimes(start_time, end_time)) {
-        return NextResponse.json({ error: 'A live event needs a start and end time — add them before saving.' }, { status: 400 })
+        return await refuse('live_event_needs_times', 400)
       }
       const { data, error } = await supabase.from('truck_events').update({ venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: van_id ?? null, updated_at: new Date().toISOString() }).eq('id', id).eq('truck_id', targetTruckId).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
@@ -1098,13 +1156,13 @@ export async function POST(req: NextRequest) {
         const wantPrivate = body.is_private === true
         if (wantPrivate
           && !canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-          return NextResponse.json({ error: 'Private events are part of the Pro plan.', upgrade: true }, { status: 403 })
+          return await refuse('private_events_pro', 403, {}, { upgrade: true })
         }
         const pr = await applyPrivacy(supabase, targetTruckId, String(id), {
           isPrivate: wantPrivate,
           name: body.private_name,
         })
-        if (!pr.ok) return NextResponse.json({ error: pr.error || 'Could not save this event’s privacy.' }, { status: 400 })
+        if (!pr.ok) return pr.error ? NextResponse.json({ error: pr.error }, { status: 400 }) : refuse('privacy_save_failed', 400)
         savedEvent = {
           ...(savedEvent as Record<string, unknown>),
           is_private: pr.isPrivate, private_name: pr.name, private_token: pr.token,
@@ -1113,7 +1171,7 @@ export async function POST(req: NextRequest) {
     } else {
       // LIVE-TIME GATE (create): manual events auto-confirm (go live immediately) → both times required.
       if (!hasValidEventTimes(start_time, end_time)) {
-        return NextResponse.json({ error: 'Add a start and end time before this event can go live.' }, { status: 400 })
+        return await refuse('event_needs_times', 400)
       }
       const now = new Date().toISOString()
       const eventStatus = 'confirmed'
@@ -1183,13 +1241,13 @@ export async function POST(req: NextRequest) {
       if (body.is_private === true) {
         const gate = canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)
         if (!gate) {
-          return NextResponse.json({ error: 'Private events are part of the Pro plan.', upgrade: true }, { status: 403 })
+          return await refuse('private_events_pro', 403, {}, { upgrade: true })
         }
         const pr = await applyPrivacy(supabase, targetTruckId, String(data.id), {
           isPrivate: true,
           name: body.private_name,
         })
-        if (!pr.ok) return NextResponse.json({ error: pr.error || 'Could not make this event private.' }, { status: 400 })
+        if (!pr.ok) return pr.error ? NextResponse.json({ error: pr.error }, { status: 400 }) : refuse('make_private_failed', 400)
         savedEvent = { ...(savedEvent as Record<string, unknown>), is_private: true, private_name: pr.name, private_token: pr.token }
       }
 
@@ -1256,14 +1314,14 @@ export async function POST(req: NextRequest) {
     const { data: ownEvent, error: evErr } = await supabase
       .from('truck_events').select('id').eq('id', String(eventId ?? '')).eq('truck_id', truck.id).maybeSingle()
     if (evErr) return NextResponse.json({ error: evErr.message }, { status: 400 })
-    if (!ownEvent) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    if (!ownEvent) return await refuse('event_not_found', 404)
     // 🔴 …AND SO MUST THE BUNDLE (Phase 3, closing the audit-fixes follow-up). Another truck's bundle id on
     // this truck's own event is refused with the SAME answer and nothing written — the reply does not say
     // which of the two was not this truck's.
     const { data: ownBundle, error: bErr } = await supabase
       .from('bundles_db').select('id').eq('id', String(bundleId ?? '')).eq('truck_id', truck.id).maybeSingle()
     if (bErr) return NextResponse.json({ error: bErr.message }, { status: 400 })
-    if (!ownBundle) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    if (!ownBundle) return await refuse('event_not_found', 404)
     const { error } = await supabase
       .from('event_deals')
       .upsert({ event_id: eventId, bundle_id: bundleId, active, overridden: true }, { onConflict: 'event_id,bundle_id' })
@@ -1918,11 +1976,11 @@ export async function POST(req: NextRequest) {
   if (action === 'update_trade_area') {
     const cs = await countrySettingsForTruck(truck)
     const r = checkTradeArea(body, cs)
-    if (!r.ok) return NextResponse.json({ error: r.error }, { status: 400 })
+    if (!r.ok) return NextResponse.json(tradeAreaErrorBody(await truckLocale(), r), { status: 400 })
     const { data, error } = await supabase.from('trucks').update(r.values).eq('id', truck.id).select().single()
     if (error) {
       console.error('[update_trade_area] write failed:', error.message)
-      return NextResponse.json({ error: "Couldn't save settings — please try again." }, { status: 400 })
+      return await refuse('settings_save_failed', 400)
     }
     // The zone may have moved, so the truck's clock settings go back with it (as the GET builds them).
     return NextResponse.json({ truck: { ...data, time: await truckTimeSettings(data as { timezone?: string | null; country?: string | null }) } })
@@ -1955,13 +2013,13 @@ export async function POST(req: NextRequest) {
     // CHANGES (a manager saving contact/social via the same action is unaffected); log each as card_save.
     const ALLERGEN_SETTING_KEYS = ['allergen_info_url', 'allergen_info_text', 'allergen_display_mode']
     const touchedAllergenKeys = ALLERGEN_SETTING_KEYS.filter(k => k in safeData && (safeData as any)[k] !== (truck as any)[k])
-    if (touchedAllergenKeys.length && !canEditAllergens) return ALLERGEN_FORBIDDEN
+    if (touchedAllergenKeys.length && !canEditAllergens) return allergenForbidden()
     const { data, error } = await supabase.from('trucks').update(safeData).eq('id', truck.id).select().single()
     if (error) {
       // Log the real cause server-side (schema drift, constraint, etc.); show the operator a clear,
       // non-cryptic message instead of the raw "column ... does not exist".
       console.error('[update_settings] write failed:', error.message, '| fields:', Object.keys(safeData).join(', '))
-      return NextResponse.json({ error: "Couldn't save settings — please try again." }, { status: 400 })
+      return await refuse('settings_save_failed', 400)
     }
     await logAllergenChanges(supabase, touchedAllergenKeys.map(k => ({
       ...actor, truck_id: truck.id, item_id: null, change_type: 'card_save', field: 'card',
@@ -2336,13 +2394,13 @@ export async function POST(req: NextRequest) {
     // truthiness test, or the box could be ticked and never unticked.
     if (collection_interval_mins !== undefined) {
       if (!isIntervalChoice(collection_interval_mins)) {
-        return NextResponse.json({ error: `Collection times must be every ${INTERVAL_CHOICES.join(', ')} minutes.` }, { status: 400 })
+        return refuse('collection_interval_choices', 400, { choices: INTERVAL_CHOICES.join(', ') })
       }
       intervalUpdates.collection_interval_mins = collection_interval_mins
     }
     if (operator_collection_interval_mins !== undefined) {
       if (operator_collection_interval_mins !== null && !isIntervalChoice(operator_collection_interval_mins)) {
-        return NextResponse.json({ error: `Collection times must be every ${INTERVAL_CHOICES.join(', ')} minutes.` }, { status: 400 })
+        return refuse('collection_interval_choices', 400, { choices: INTERVAL_CHOICES.join(', ') })
       }
       intervalUpdates.operator_collection_interval_mins = operator_collection_interval_mins
     }
@@ -2375,7 +2433,7 @@ export async function POST(req: NextRequest) {
         if (code === 'PGRST204') console.warn(`[slot-interval] van ${vanId}: interval save rejected — columns not in PostgREST's schema cache (PGRST204); reload the schema`)
         else if (code === '42703') console.warn(`[slot-interval] van ${vanId}: interval save rejected — columns absent (42703); migration not applied`)
         else console.warn(`[slot-interval] van ${vanId}: interval save failed (${code ?? 'no code'}): ${ivErr.message}`)
-        return NextResponse.json({ error: 'Collection times could not be saved right now.' }, { status: 500 })
+        return await refuse('collection_intervals_save_failed', 500)
       }
     }
     // ── MASTER SWITCH (collection times): a Manage change RESETS this van's events ─────────────────
@@ -2516,7 +2574,7 @@ export async function POST(req: NextRequest) {
    */
   if (action === 'upsert_van_category') {
     const { vanId, categoryId, prep_secs, batch_size, counts_toward_capacity } = body
-    if (!vanId || !categoryId) return NextResponse.json({ error: 'vanId and categoryId are required' }, { status: 400 })
+    if (!vanId || !categoryId) return await refuse('van_category_ids_required', 400)
 
     /* 🔴 OWNERSHIP IS CHECKED ON BOTH IDS, not just the token. `truck` comes from the operator's
      * token, but `vanId` and `categoryId` arrive from the client — so both are confirmed to belong to
@@ -2527,8 +2585,8 @@ export async function POST(req: NextRequest) {
       supabase.from('menu_categories').select('id, prep_secs, batch_size, counts_toward_capacity')
         .eq('id', categoryId).eq('truck_id', truck.id).maybeSingle(),
     ])
-    if (!van) return NextResponse.json({ error: 'Van not found' }, { status: 404 })
-    if (!cat) return NextResponse.json({ error: 'Category not found' }, { status: 404 })
+    if (!van) return await refuse('van_not_found', 404)
+    if (!cat) return await refuse('category_not_found', 404)
 
     /* 🔴 THE FIRST EDIT SEEDS FROM WHAT THIS VAN IS ALREADY RESOLVING, SO NOTHING JUMPS. A row is a
      * WHOLE-row override carrying all three fields; writing only the edited field would leave the other
@@ -2558,7 +2616,7 @@ export async function POST(req: NextRequest) {
       const code = (upErr as { code?: string }).code
       if (code === 'PGRST205' || code === '42P01') console.warn(`[van-category-settings] van ${vanId}: table absent (${code}) — migration not applied`)
       else console.warn(`[van-category-settings] van ${vanId}: save failed (${code ?? 'no code'}): ${upErr.message}`)
-      return NextResponse.json({ error: 'That van\'s capacity settings could not be saved right now.' }, { status: 500 })
+      return await refuse('van_capacity_save_failed', 500)
     }
 
     /* 🔴 THE SAME FAN-OUT AS THE VAN FIELDS: a change to the FIRST van reaches every van following
@@ -2591,20 +2649,20 @@ export async function POST(req: NextRequest) {
    */
   if (action === 'set_van_same_as_first') {
     const { vanId, on } = body
-    if (!vanId) return NextResponse.json({ error: 'vanId is required' }, { status: 400 })
+    if (!vanId) return await refuse('van_id_required', 400)
     const { data: van } = await supabase
       .from('truck_vans').select('id').eq('id', vanId).eq('truck_id', truck.id).maybeSingle()
-    if (!van) return NextResponse.json({ error: 'Van not found' }, { status: 404 })
+    if (!van) return await refuse('van_not_found', 404)
 
     const same = await readVanSameAsFirst(supabase, truck.id)
-    if (!same.ok) return NextResponse.json({ error: 'That switch is unavailable until the database is updated.' }, { status: 503 })
+    if (!same.ok) return await refuse('switch_unavailable', 503)
     const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: same.activeById.get(id) !== false })))
     /* ⛔ THE FIRST VAN CANNOT FOLLOW ITSELF. The UI only renders the switch on vans 2+, but the
      * handler refuses it too — a van following itself would make its own edits fan out to itself. */
-    if (first && first === vanId) return NextResponse.json({ error: 'The first van cannot follow itself.' }, { status: 400 })
+    if (first && first === vanId) return await refuse('first_van_self', 400)
 
     if (on) {
-      if (!first) return NextResponse.json({ error: 'There is no first van to follow.' }, { status: 400 })
+      if (!first) return await refuse('no_first_van', 400)
       /* 🔴 COPY THE VAN'S OWN FIELDS. Read with `select('*')` so a column this deploy does not know
        * about is still carried by `vanCopyPayload`'s allowlist rather than being silently left behind —
        * and so a named select cannot 42703 the whole copy. */
@@ -2614,7 +2672,7 @@ export async function POST(req: NextRequest) {
         const { error: cpErr } = await supabase.from('truck_vans').update(payload).eq('id', vanId).eq('truck_id', truck.id)
         if (cpErr) {
           console.warn(`[van-same-as-first] van ${vanId}: copying the first van's settings failed (${(cpErr as { code?: string }).code ?? 'no code'}): ${cpErr.message}`)
-          return NextResponse.json({ error: 'The first van\'s settings could not be copied right now.' }, { status: 500 })
+          return await refuse('first_van_copy_failed', 500)
         }
       }
       /* 🔴 AND REPLACE THE CATEGORY ROWS — DELETE THEN INSERT, never a merge. If this van had its own
@@ -2631,7 +2689,7 @@ export async function POST(req: NextRequest) {
       .from('truck_vans').update({ same_as_first_van: !!on }).eq('id', vanId).eq('truck_id', truck.id)
     if (swErr) {
       console.warn(`[van-same-as-first] van ${vanId}: switch write failed (${(swErr as { code?: string }).code ?? 'no code'}): ${swErr.message}`)
-      return NextResponse.json({ error: 'That switch could not be saved right now.' }, { status: 500 })
+      return await refuse('switch_save_failed', 500)
     }
     return NextResponse.json({ ok: true, copiedFrom: on ? first : null })
   }
@@ -2666,16 +2724,16 @@ export async function POST(req: NextRequest) {
    * ⚠️ `select('*')` SO A COLUMN THIS DEPLOY DOES NOT KNOW ABOUT CANNOT 42703 THE WHOLE COPY —
    * `capacityCopyPayload`'s allowlist decides what travels, not the select.
    *
-   * @returns null on success, or a message for the caller to return.
+   * @returns null on success, or the refusal's code for the caller to return (Language Phase 1d: a code, not words).
    */
-  async function copyCapacityFromFirst(firstId: string, targetVanId: string, truckId: string): Promise<string | null> {
+  async function copyCapacityFromFirst(firstId: string, targetVanId: string, truckId: string): Promise<ManageErrorCode | null> {
     const { data: src } = await supabase.from('truck_vans').select('*').eq('id', firstId).maybeSingle()
     const payload = capacityCopyPayload(src as Record<string, unknown> | null)
     if (Object.keys(payload).length) {
       const { error: cpErr } = await supabase.from('truck_vans').update(payload).eq('id', targetVanId).eq('truck_id', truckId)
       if (cpErr) {
         console.warn(`[van-capacity-copy] van ${targetVanId}: copying the first van's capacity failed (${(cpErr as { code?: string }).code ?? 'no code'}): ${cpErr.message}`)
-        return 'The first van\'s capacity could not be copied right now.'
+        return 'capacity_copy_failed'
       }
     }
     const srcRows = await readVanCategorySettings(supabase, firstId)
@@ -2686,7 +2744,7 @@ export async function POST(req: NextRequest) {
       const { error: insErr } = await supabase.from('van_category_settings').insert(rows)
       if (insErr) {
         console.warn(`[van-capacity-copy] van ${targetVanId}: copying category rows failed (${(insErr as { code?: string }).code ?? 'no code'}): ${insErr.message}`)
-        return 'The first van\'s category settings could not be copied right now.'
+        return 'category_copy_failed'
       }
     }
     return null
@@ -2694,30 +2752,30 @@ export async function POST(req: NextRequest) {
 
   if (action === 'set_van_capacity_same_as_first') {
     const { vanId, on } = body
-    if (!vanId) return NextResponse.json({ error: 'vanId is required' }, { status: 400 })
+    if (!vanId) return await refuse('van_id_required', 400)
     const { data: van } = await supabase
       .from('truck_vans').select('id').eq('id', vanId).eq('truck_id', truck.id).maybeSingle()
-    if (!van) return NextResponse.json({ error: 'Van not found' }, { status: 404 })
+    if (!van) return await refuse('van_not_found', 404)
 
     const same = await readVanSameAsFirst(supabase, truck.id)
-    if (!same.ok) return NextResponse.json({ error: 'That switch is unavailable until the database is updated.' }, { status: 503 })
+    if (!same.ok) return await refuse('switch_unavailable', 503)
     const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: same.activeById.get(id) !== false })))
     /* ⛔ THE FIRST VAN CANNOT FOLLOW ITSELF — its own edits would fan out to itself. */
-    if (first && first === vanId) return NextResponse.json({ error: 'The first van cannot follow itself.' }, { status: 400 })
+    if (first && first === vanId) return await refuse('first_van_self', 400)
 
     if (on) {
-      if (!first) return NextResponse.json({ error: 'There is no first van to follow.' }, { status: 400 })
+      if (!first) return await refuse('no_first_van', 400)
       /* 🔴 `select('*')` SO A COLUMN THIS DEPLOY DOES NOT KNOW ABOUT CANNOT 42703 THE WHOLE COPY —
        * `capacityCopyPayload`'s allowlist decides what travels, not the select. */
       const failure = await copyCapacityFromFirst(first, vanId as string, truck.id)
-      if (failure) return NextResponse.json({ error: failure }, { status: 500 })
+      if (failure) return refuse(failure, 500)
     }
 
     const { error: swErr } = await supabase
       .from('truck_vans').update({ capacity_same_as_first_van: !!on }).eq('id', vanId).eq('truck_id', truck.id)
     if (swErr) {
       console.warn(`[van-capacity-same-as-first] van ${vanId}: switch write failed (${(swErr as { code?: string }).code ?? 'no code'}): ${swErr.message}`)
-      return NextResponse.json({ error: 'That switch could not be saved right now.' }, { status: 500 })
+      return await refuse('switch_save_failed', 500)
     }
     return NextResponse.json({ ok: true, copiedFrom: on ? first : null })
   }
@@ -2725,7 +2783,7 @@ export async function POST(req: NextRequest) {
   if (action === 'add_van') {
     const { name } = body
     if (!name?.trim()) {
-      return NextResponse.json({ error: 'Name required' }, { status: 400 })
+      return await refuse('name_required', 400)
     }
 
     /* ── 🔴 THE NEW VAN'S KITCHEN CAPACITY IS DECIDED BEFORE IT EXISTS ──────────────────────────
@@ -2771,7 +2829,7 @@ export async function POST(req: NextRequest) {
       const failure = await copyCapacityFromFirst(first, newId, truck.id)
       /* ⚠️ A COPY FAILURE DOES NOT FAIL THE VAN. The van exists and is usable; its capacity can be set
        * on the screen. Returning an error here would leave a created van behind an error message. */
-      if (failure) console.warn(`[add-van] van ${newId}: ${failure}`)
+      if (failure) console.warn(`[add-van] van ${newId}: ${manageErrorBody(DEFAULT_LOCALE, failure).error}`)
       if (same.ok && answerIsYes) {
         const { error: flagErr } = await supabase
           .from('truck_vans').update({ capacity_same_as_first_van: true }).eq('id', newId).eq('truck_id', truck.id)
@@ -2793,7 +2851,7 @@ export async function POST(req: NextRequest) {
       .eq('active', true)
       .neq('id', vanId)
     if ((count ?? 0) === 0) {
-      return NextResponse.json({ error: 'Cannot remove the last van' }, { status: 400 })
+      return await refuse('last_van', 400)
     }
     // Soft delete — preserves all historical orders, events, and reports
     await supabase
@@ -2807,7 +2865,7 @@ export async function POST(req: NextRequest) {
   if (action === 'rename_van') {
     const { vanId, name } = body
     if (!name?.trim()) {
-      return NextResponse.json({ error: 'Name required' }, { status: 400 })
+      return await refuse('name_required', 400)
     }
     const { error } = await supabase
       .from('truck_vans')
@@ -3213,7 +3271,7 @@ export async function POST(req: NextRequest) {
   if (action === 'add_exclusion_term') {
     const { normaliseExclusionTerm } = await import('@/lib/schedule-extract')
     const normalised = normaliseExclusionTerm(body.term ?? '')
-    if (!normalised) return NextResponse.json({ error: 'Empty term' }, { status: 400 })
+    if (!normalised) return await refuse('empty_term', 400)
     const { data: upserted } = await supabase.from('excluded_terms').upsert(
       { truck_id: truck.id, term: normalised },
       { onConflict: 'truck_id,term' }
@@ -3308,7 +3366,7 @@ export async function POST(req: NextRequest) {
       .limit(2000)
     if (evErr) {
       console.error('[sg_places] schedule read failed:', evErr.code, evErr.message)
-      return NextResponse.json({ error: "Couldn't read your schedule, so places could not be worked out." }, { status: 400 })
+      return await refuse('schedule_read_failed', 400)
     }
     const events = (evRows ?? []) as PlaceEvent[]
 
@@ -3329,7 +3387,7 @@ export async function POST(req: NextRequest) {
       // 🔴 THE MIGRATION NOT BEING APPLIED LANDS HERE (PGRST205/42703). Named, not swallowed: a pane
       // that showed "no places yet" on a missing table would look like a truck with no schedule.
       console.error('[sg_places] places read failed:', before.error.code, before.error.message)
-      return NextResponse.json({ error: "Couldn't load places. If this is new, the schedule-places migration may not be applied yet." }, { status: 400 })
+      return await refuse('places_load_failed_migration', 400)
     }
 
     /* ── 🔴 THE IDEMPOTENT SEED ───────────────────────────────────────────────────────────────────
@@ -3386,7 +3444,7 @@ export async function POST(req: NextRequest) {
     const after = plan.inserts.length || plan.adopts.length || plan.fills.length ? await readPlaces() : before
     if (after.error) {
       console.error('[sg_places] re-read failed:', after.error.code, after.error.message)
-      return NextResponse.json({ error: "Couldn't load places." }, { status: 400 })
+      return await refuse('places_load_failed', 400)
     }
     const places = after.rows
 
@@ -3533,9 +3591,9 @@ export async function POST(req: NextRequest) {
 
     if (!id) {
       // ── "+ New place" — a manual place, no venue anchor ─────────────────────────────────────────
-      if (!name) return NextResponse.json({ error: 'A place needs a name.' }, { status: 400 })
+      if (!name) return await refuse('place_name_required', 400)
       const name_key = normalisePlaceName(name)
-      if (!name_key) return NextResponse.json({ error: 'That name has no letters or numbers in it.' }, { status: 400 })
+      if (!name_key) return await refuse('place_name_no_letters', 400)
       /* 🔴 CONFLICT-TOLERANT, AND IT ANSWERS WITH THE EXISTING ROW. Typing the name of a place the
        * seeder already created is not an error to show an operator — it is the place they were looking
        * for. `ignoreDuplicates` then a read-back returns it, selected, rather than a red message.
@@ -3548,7 +3606,7 @@ export async function POST(req: NextRequest) {
       )
       if (error) {
         console.error('[sg_upsert_place] insert failed:', error.code, error.message)
-        return NextResponse.json({ error: "Couldn't add that place." }, { status: 400 })
+        return await refuse('place_add_failed', 400)
       }
       const { data: row } = await supabase.from('truck_places')
         .select('id').eq('truck_id', truck.id).eq('name_key', name_key).maybeSingle()
@@ -3561,7 +3619,7 @@ export async function POST(req: NextRequest) {
      * a cleared box means "not set". */
     const patch: Record<string, unknown> = {}
     if ('name' in body) {
-      if (!name) return NextResponse.json({ error: 'A place needs a name.' }, { status: 400 })
+      if (!name) return await refuse('place_name_required', 400)
       /* 🔴 `name_key` IS NOT RE-DERIVED FROM AN EDITED NAME, and this is the one that would be easy to
        * get wrong. The key is what the truck's EVENTS say; "Name on posts" is what the operator wants
        * the public to read. Re-keying on a rename would silently orphan every event at that place —
@@ -3590,7 +3648,7 @@ export async function POST(req: NextRequest) {
       .update(patch).eq('id', id).eq('truck_id', truck.id)
     if (error) {
       console.error('[sg_upsert_place] update failed:', error.code, error.message)
-      return NextResponse.json({ error: "Couldn't save that place." }, { status: 400 })
+      return await refuse('place_save_failed', 400)
     }
     return NextResponse.json({ ok: true, id })
   }
@@ -3733,6 +3791,6 @@ export async function POST(req: NextRequest) {
   }
 
 
-  return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+  return refuse('unknown_action', 400)
 }
 

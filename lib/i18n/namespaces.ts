@@ -10,7 +10,7 @@ export const NAMESPACES = {
   // The order page: its own words, the refusals it shows, and every shared piece it renders.
   order: ['order', 'errorsCustomer', 'eventCard', 'orderLine', 'deals', 'menuBadges', 'demo',
     // Language Phase 1c: the demo sign-up flow it can open (DemoGetStarted) and the pieces that flow renders.
-    'demoGetStarted', 'cuisinePicker', 'whereBased'],
+    'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea'],
   // The status / manage page.
   confirmation: ['orderStatus', 'errorsCustomer'],
   // Language Phase 1b: the kitchen surfaces and every shared piece they render (scripts/messages-split.cjs walks each
@@ -18,12 +18,31 @@ export const NAMESPACES = {
   dashboard: ['dashboard', 'orderCard', 'addOrder', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'userMenu',
     'orderLine', 'deals', 'menuBadges', 'printing', 'nativeShell',
     // Language Phase 1c: the demo sign-up flow with its pieces.
-    'demoGetStarted', 'cuisinePicker', 'whereBased'],
+    'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea',
+    // Language Phase 1d (Schedule B): the private link & QR panel (components/manage/PrivateLinkPanel.tsx).
+    'privateEvents',
+    // Language Phase 1d (Settings): the kitchen-capacity explainer and <BatchSizeSelect>, one namespace for both surfaces.
+    'kitchenCapacity',
+    // …and the two copy modules whose en-GB exports the dashboard still renders (lib/copy/offlineProtection, serviceSettings).
+    'offlineProtection', 'serviceSettings'],
   kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell',
-    'demoGetStarted', 'cuisinePicker', 'whereBased'],   // Language Phase 1c
+    'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea',   // Language Phase 1c
+    // Language Phase 1d (Settings): copy modules the KDS imports, whose en-GB exports read these namespaces.
+    'offlineProtection', 'serviceSettings'],
   manage: ['eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell',
     // Language Phase 1c: the cuisine and price controls, the walkthrough, and the where-based step.
-    'cuisinePicker', 'priceControls', 'walkthrough', 'whereBased'],
+    'cuisinePicker', 'priceControls', 'walkthrough', 'whereBased', 'tradeArea',
+    // Language Phase 1d (Menu A): the allergen wizard and card, Upsells, Custom extras, Deals.
+    'manageAllergens', 'manageUpsells', 'manageExtras', 'manageDeals',
+    // Language Phase 1d (Menu B): the menu editor and its import wizard.
+    'manageMenu', 'manageMenuImport',
+    // Language Phase 1d (Schedule A): the events list, Add/Edit event, the importer, the verify messages, the places.
+    'manageSchedule', 'manageScheduleEvent', 'manageScheduleImport', 'manageScheduleVerify', 'schedulePlaces',
+    // Language Phase 1d (Schedule B): the Event types grid and picker, the private-event words and link panel, the van filter.
+    'eventTypes', 'privateEvents', 'vanFilter',
+    // Language Phase 1d (Settings): the Settings tab, the copy modules it reads, Kitchen capacity, Where you trade.
+    'manageSettings', 'serviceSettings', 'offlineProtection', 'kitchenCapacity', 'settingsCopy', 'whereYouTrade',
+    'stockCopy', 'managePrimitives'],
   // Language Phase 1c: the setup wizard.
-  setup: ['setup', 'whereBased'],
+  setup: ['setup', 'whereBased', 'tradeArea'],
 } as const satisfies Record<string, readonly AppNamespace[]>

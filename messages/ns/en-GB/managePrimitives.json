@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Show allergens against each dish",
+    "recommended": "Recommended",
+    "perDishBody": "Review every dish and confirm its allergens. Customers see per-dish tags plus an allergen summary card derived from them.",
+    "cardTitle": "Show an allergen card",
+    "cardBody": "Upload or paste a single allergen card (PDF, image, or text), shown as-is. Per-dish tags stay hidden."
+  }
+}

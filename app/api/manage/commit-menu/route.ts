@@ -8,6 +8,11 @@ import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { commitMenu, clearMenu } from '@/lib/menu-commit'
 import type { Actor } from '@/lib/allergen-audit'
+// Language Phase 1d: a refusal of ours is `{ error: <today's English>, …, code, params }` (lib/i18n/manage-errors.ts), in the
+// truck's language (en-GB before the truck is known). A database's or exception's message is passed on as it comes.
+import { manageErrorBody } from '@/lib/i18n/manage-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { localeForTruck } from '@/lib/i18n/server-locale'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,11 +24,11 @@ export async function POST(req: NextRequest) {
 
   const { data: truck } = await supabase
     .from('trucks')
-    .select('id')
+    .select('id, country')
     .eq('dashboard_token', token)
     .single()
 
-  if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
 
   // ── CLEAR-BEFORE-RETRY (opt-in; default OFF so the operator path is byte-identical) ──────────────
   // commitMenu is neither transactional nor idempotent, so committing twice APPENDS — which is correct
@@ -35,14 +40,15 @@ export async function POST(req: NextRequest) {
     const { data: t } = await supabase.from('trucks').select('setup_step').eq('id', truck.id).single()
     const inSetup = t?.setup_step != null && t.setup_step !== 'done'
     if (!inSetup) {
-      return NextResponse.json({ error: 'clearFirst is only permitted on a truck still in setup.' }, { status: 400 })
+      return NextResponse.json(manageErrorBody(await localeForTruck(truck), 'clear_first_setup_only'), { status: 400 })
     }
     // clearMenu deletes exactly what commitMenu writes (items + groups→options/links + categories), in the
     // module that owns that graph — not reconstructed here from partial FK knowledge.
     try {
       await clearMenu(supabase, truck.id)
     } catch (e) {
-      return NextResponse.json({ error: `Could not clear the previous attempt: ${e instanceof Error ? e.message : 'unknown'}` }, { status: 500 })
+      // The reason is the exception's own text, passed in as a value (it is not our sentence).
+      return NextResponse.json(manageErrorBody(await localeForTruck(truck), 'clear_failed', { reason: e instanceof Error ? e.message : 'unknown' }), { status: 500 })
     }
   }
 

@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Collection times",
+    "takes_cash": "Do you take cash?",
+    "offline_protection": "Offline order protection",
+    "buzzer_prompt": "Remind me to add a buzzer"
+  },
+  "typeFollowsVanTitle": "Follows each van’s usual setting",
+  "sameSettingsAllVansLabel": "Same settings for all vans",
+  "sameSettingsAllVansHeader": "All vans",
+  "sameSettingsConfirm": "Copy Van 1’s settings to every van? This copies all of Van 1’s van settings, the same as ‘Same as Van 1’ in Settings. Kitchen capacity has its own switch.",
+  "eventTypesFooterStandard": "Standard is your usual setup. Changing it here also changes it in Settings.",
+  "eventTypesFooterOneEvent": "To change a setting for one event only, use that event’s dashboard.",
+  "eventTypesSubtitle": "Changes save as you go.",
+  "matchStandardLabel": "Match Standard",
+  "matchStandardConfirm": "Put every setting on this type back to Standard? Anything you changed here will be cleared.",
+  "priceLabels": {
+    "price_change_on": "Change prices",
+    "price_mode": "Price change",
+    "price_amount": "Amount",
+    "price_rounding": "Rounding",
+    "item_prices": "Item prices"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Set each price myself"
+  },
+  "priceRounding": {
+    "none": "None",
+    "nearest_1": "Nearest {symbol}1",
+    "up_1": "Always round up"
+  },
+  "pricesStandardCell": "Your menu prices",
+  "pricesTruckWideTitle": "Your prices are the same for every van",
+  "pricesMenuCell": "Menu",
+  "pricesTypeOffCell": "Menu prices",
+  "itemPricesShow": "Show prices",
+  "itemPricesHide": "Hide prices",
+  "priceItemsHeading": "Set the price of each item",
+  "priceItemsOpen": "See or change each item’s price ›",
+  "priceItemsClose": "Hide item prices ⌃",
+  "ownPriceCount": "{n, plural, one {{count} item has its own price} other {{count} items have their own price}}",
+  "priceTypeHint": "Press a price to type your own.",
+  "pricesLiveNotice": "This event is live. New orders use the new prices. Orders already placed keep theirs.",
+  "placeTypeHelper": "Add event picks this type whenever you choose this place.",
+  "postPictureStandardNote": "Event posts here use your standard design.",
+  "eventItemsCardDescription": "Prices, item limits and availability for this event only. Changes take effect immediately.",
+  "eventPriceColumnLabel": "Price",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · this event} other {menu {price} · this event}}",
+  "eventPriceEdit": "✎ Edit prices",
+  "eventPriceCancel": "Cancel",
+  "eventPriceSave": "Save prices",
+  "eventPriceEditNote": "Editing prices for this event only. Item limits and availability are locked until you save.",
+  "eventPriceLiveNote": "Live: new orders use the new prices.",
+  "offlineWhenOfflineLabel": "When offline"
+}

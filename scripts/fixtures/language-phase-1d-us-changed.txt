@@ -1,0 +1,318 @@
+# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 316 changed). Written by scripts/language-phase-1d.cjs.
+# view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
+menu/US|menuTab|list	words
+menu/US|menuTab|list|open	words
+menu/US|menuTab|list|openSides	words
+menu/US|menuTab|empty	words
+menu/US|menuTab|noEdit	words
+menu/US|menuTab|editCat|new	words
+menu/US|menuTab|editCat|existing	words
+menu/US|menuTab|editItem|new	words
+menu/US|menuTab|editItem|existing	words
+menu/US|menuTab|editItem|spicy	words
+menu/US|menuTab|deleteItem	words
+menu/US|menuTab|subcats	words
+menu/US|menuTab|import|catRename	words
+menu/US|menuTab|import|catRename|error	words
+menu/US|menuTab|import|catNew	words
+menu/US|menuTab|import|catDelete	words
+menu/US|menuTab|allergen|processing	words
+menu/US|menuTab|allergen|review	words
+menu/US|menuTab|allergen|idle	words
+menu/US|menuTab|import|upload	words
+menu/US|menuTab|import|processing	words
+menu/US|menuTab|import|offer	words
+menu/US|menuTab|import|review1	words
+menu/US|menuTab|import|review2	words
+menu/US|menuTab|import|review1|open	words
+menu/US|menuTab|import|discard	words
+menu/US|menuTab|import|allergens|chooser	words
+menu/US|menuTab|import|allergens|card	words
+menu/US|menuTab|import|allergens|review	words
+menu/US|menuTab|import|allergens|cardParsed	words
+menu/US|menuTab|import|prep	words
+menu/US|menuTab|import|saving	words
+menu/US|menuTab|import|done	words
+menu/US|menuTab|setup|intro	words
+menu/US|menuTab|setup|schedule|chooser	words
+menu/US|menuTab|setup|schedule|website	words
+menu/US|menuTab|setup|schedule|photo	words
+menu/US|menuTab|setup|schedule|manual	words
+menu/US|menuTab|setup|schedule|verifyError	words
+menu/US|menuTab|setup|schedule|verified	words
+menu/US|menuTab|setup|schedule|extracted	code: 1d-us-dates-times + words
+menu/US|menuTab|setup|settings	code: 1d-cancel-row-sentence + words
+menu/US|menuTab|setup|done	words
+menu/US|wizard|card	words
+menu/US|wizard|card|withText	words
+menu/US|wizard|card|upload	words
+menu/US|wizard|card|parsed	words
+menu/US|wizard|import	words
+menu/US|wizard|cardOnly	words
+menu/US|extras|list	words
+menu/US|extras|open	words
+menu/US|extras|editOption	words
+menu/US|extras|empty	words
+menu/US|extras|upsellAdding	words
+menu/US|deals|list	code: 1d-us-dates-times
+menu/US|deals|empty	words
+menu/US|deals|new	code: 1d-us-dates-times + words
+menu/US|deals|edit	code: 1d-us-dates-times + words
+menu/US|capacity|oneVan	words
+menu/US|capacity|twoVans	words
+menu/US|capacity|confirmAllSame	words
+menu/US|capacity|unavailable	words
+schedule/US|tab|list	code: 1d-us-address-style + words
+schedule/US|tab|list|past	code: 1d-us-address-style + words
+schedule/US|tab|list|oneVan	code: 1d-us-address-style + words
+schedule/US|tab|list|vanFilter	code: 1d-us-address-style + words
+schedule/US|tab|list|expanded	code: 1d-us-address-style + words
+schedule/US|tab|empty	words
+schedule/US|tab|pending	code: 1d-us-address-style + words
+schedule/US|tab|starter	code: 1d-us-address-style + words
+schedule/US|tab|eventTypes	words
+schedule/US|tab|add|picker	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
+schedule/US|tab|add|phone2	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
+schedule/US|tab|add|addressOpen	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
+schedule/US|tab|add|errors	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
+schedule/US|tab|add|private	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
+schedule/US|tab|add|upload	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
+schedule/US|tab|add|uploadProcessing	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
+schedule/US|tab|add|uploadReview	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
+schedule/US|tab|tidy	code: 1d-us-address-style + words
+schedule/US|tab|edit	code: 1d-us-address-style + words
+schedule/US|tab|edit|times|morning	code: 1d-us-address-style+1d-us-hour-pickers + words
+schedule/US|tab|edit|times|noon	code: 1d-us-address-style+1d-us-hour-pickers + words
+schedule/US|tab|edit|times|evening	code: 1d-us-address-style+1d-us-hour-pickers + words
+schedule/US|tab|edit|times|midnight	code: 1d-us-address-style+1d-us-hour-pickers + words
+schedule/US|tab|edit|private	code: 1d-us-address-style+1d-us-hour-pickers + words
+schedule/US|tab|edit|saving	code: 1d-us-address-style+1d-us-hour-pickers + words
+schedule/US|tab|import|paste	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
+schedule/US|tab|import|text	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
+schedule/US|tab|import|processing	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
+schedule/US|tab|import|review	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
+schedule/US|tab|import|reviewEditing	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
+schedule/US|tab|import|saving	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
+schedule/US|tab|cancel	code: 1d-us-address-style + words
+schedule/US|tab|cancel|none	code: 1d-us-address-style + words
+schedule/US|tab|privateLink	code: 1d-us-address-style + words
+schedule/US|places|list|default	code: 1d-us-address-style + words
+schedule/US|places|list|selected	code: 1d-us-address-style + words
+schedule/US|places|list|hidden	code: 1d-us-address-style + words
+schedule/US|places|list|search	code: 1d-us-address-style
+schedule/US|places|list|starError	code: 1d-us-address-style + words
+schedule/US|places|list|empty	code: 1d-us-address-style
+schedule/US|places|detail|p1	code: 1d-us-address-style
+schedule/US|places|detail|p2	code: 1d-us-address-style
+schedule/US|places|detail|p3	code: 1d-us-address-style
+schedule/US|places|tidy	code: 1d-us-address-style + words
+schedule/US|places|tidy|hidden	code: 1d-us-address-style + words
+schedule/US|timeSelect|07:00	code: 1d-us-hour-pickers
+schedule/US|timeSelect|07:00|end	code: 1d-us-hour-pickers
+schedule/US|timeSelect|12:00	code: 1d-us-hour-pickers
+schedule/US|timeSelect|12:00|end	code: 1d-us-hour-pickers
+schedule/US|timeSelect|12:05	code: 1d-us-hour-pickers
+schedule/US|timeSelect|12:05|end	code: 1d-us-hour-pickers
+schedule/US|timeSelect|18:45	code: 1d-us-hour-pickers
+schedule/US|timeSelect|18:45|end	code: 1d-us-hour-pickers
+schedule/US|timeSelect|23:55	code: 1d-us-hour-pickers
+schedule/US|timeSelect|23:55|end	code: 1d-us-hour-pickers
+schedule/US|timeSelect|00:00	code: 1d-us-hour-pickers
+schedule/US|timeSelect|00:00|end	code: 1d-us-hour-pickers
+schedule/US|timeSelect|empty	code: 1d-us-hour-pickers
+schedule/US|timeSelect|empty|end	code: 1d-us-hour-pickers
+schedule/US|badge|e4	words
+schedule/US|eventTypes|grid	words
+schedule/US|eventTypes|empty	words
+schedule/US|eventTypes|loading	words
+schedule/US|eventTypes|locked	words
+schedule/US|eventTypes|noItems	words
+schedule/US|eventTypes|twoVans	words
+schedule/US|eventTypes|modal	words
+schedule/US|vanFilter|two	words
+schedule/US|vanFilter|label|all	words
+schedule/US|privateLink|on	words
+schedule/US|privateLink|copied	words
+settings/US|owner|page	code: 1d-us-settings-clock + words
+settings/US|twoVans|page	code: 1d-us-settings-clock + words
+settings/US|manager|page	code: 1d-us-settings-clock + words
+settings/US|starter|page	code: 1d-us-settings-clock + words
+settings/US|pro|page	code: 1d-us-settings-clock + words
+settings/US|legacy|page	words
+settings/US|addingVan|page	code: 1d-us-settings-clock + words
+settings/US|renamingVan|page	code: 1d-us-settings-clock + words
+settings/US|deletingVan|page	code: 1d-us-settings-clock + words
+settings/US|vanBilling|page	code: 1d-us-settings-clock + words
+settings/US|vanUpgrade|page	code: 1d-us-settings-clock + words
+settings/US|qrModal|page	code: 1d-us-settings-clock + words
+settings/US|qrPreviews|page	code: 1d-us-settings-clock + words
+settings/US|verifyError|page	code: 1d-us-settings-clock + words
+settings/US|verifying|page	code: 1d-us-settings-clock + words
+settings/US|preorders|page	code: 1d-us-settings-clock + words
+settings/US|preordersOff|page	code: 1d-us-settings-clock + words
+settings/US|emoji|page	code: 1d-us-settings-clock + words
+settings/US|kds|page	code: 1d-us-settings-clock + words
+settings/US|noCuisine|page	code: 1d-us-settings-clock + words
+settings/US|setup|page	code: 1d-us-settings-clock + words
+settings/US|trial|page	code: 1d-us-settings-clock + words
+settings/US|noBase|page	code: 1d-us-settings-clock + words
+settings/US|whereYouTrade|set	words
+settings/US|whereYouTrade|unset	words
+settings/US|whereYouTrade|readOnly	words
+settings/US|whereYouTrade|error	words
+settings/US|capacityEdit|none	words
+copy/US|serviceSettings|EVENT_TYPES_FOOTER_ONE_EVENT	words
+copy/US|serviceSettings|SAME_SETTINGS_CONFIRM	words
+copy/US|serviceSettings|TYPE_FOLLOWS_VAN_TITLE	words
+copy/US|offlineProtection|OFFLINE_MODE_NO_AUTO_ACCEPT_HELP	words
+copy/US|offlineProtection|OFFLINE_MODE_PAUSE_HELP	words
+copy/US|offlineProtection|OFFLINE_MODE_PAUSE_LABEL	words
+copy/US|offlineProtection|OFFLINE_PROTECTION_MODES	words
+copy/US|offlineProtection|OFFLINE_PROTECTION_PURPOSE	words
+copy/US|offlineProtection|OFFLINE_PROTECTION_SWITCH_LABEL	words
+copy/US|addressPlaceholders|addressPlaceholders|0	code: 1d-us-address-style+1d-us-paste-example + words
+copy/US|addressPlaceholders|addressPlaceholders|1	code: 1d-us-address-style+1d-us-paste-example + words
+copy/US|addressPlaceholders|addressPlaceholders|2	code: 1d-us-address-style+1d-us-paste-example + words
+copy/US|addressPlaceholders|pastePlaceholder|0	code: 1d-us-paste-example + words
+copy/US|addressPlaceholders|pastePlaceholder|1	code: 1d-us-paste-example + words
+copy/US|addressPlaceholders|pastePlaceholder|2	code: 1d-us-paste-example + words
+copy/US|scheduleVerify|BLOCKED_DOMAIN_MSG	words
+copy/US|scheduleVerify|URL_MALFORMED_MSG	words
+copy/US|scheduleVerify|VERIFY_MESSAGES	words
+copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC	words
+copy/US|kitchenCapacity|KITCHEN_CAPACITY_EXAMPLE	words
+copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING	words
+copy/US|privateEvents|NEW_LINK_CONFIRM	words
+copy/US|privateEvents|PRIVATE_PREVIEW_NOTE	words
+copy/US|eventTypes|TYPE_NAME_CHIPS	words
+copy/US|tradeArea|check|badZone	code: named difference 1 (zone_unknown) + words
+copy/US|tradeArea|check|noTown	code: named difference 1 (town_missing)
+copy/US|tradeArea|check|townLong	code: named difference 1 (town_too_long)
+copy/US|tradeArea|signup|off	words
+api/US|manage|noToken	code: named difference 1 (token_required)
+api/US|manage|badToken	code: named difference 1 (invalid_token)
+api/US|manage|noUser	code: named difference 1 (sign_in_required)
+api/US|manage|notThisTruck	code: named difference 1 (no_truck_access)
+api/US|manage|staff	code: named difference 1 (insufficient_permissions)
+api/US|manage|allergenOwnerOnly	code: named difference 1 (allergen_owner_only)
+api/US|manage|allergenOwnerOnly.settings	code: named difference 1 (allergen_owner_only)
+api/US|manage|subcatNoName	code: named difference 1 (name_required)
+api/US|manage|subcatNoCategory	code: named difference 1 (category_required)
+api/US|manage|upsellMissing	code: named difference 1 (upsell_categories_required) + words
+api/US|manage|optionNotMine	code: named difference 1 (option_not_for_truck)
+api/US|manage|optionGroupNotMine	code: named difference 1 (group_not_for_truck)
+api/US|manage|deleteOptionNotMine	code: named difference 1 (option_not_for_truck)
+api/US|manage|itemGroupNotMine	code: named difference 1 (group_not_for_truck)
+api/US|manage|itemGroupItemNotMine	code: named difference 1 (item_not_for_truck)
+api/US|manage|bulkGroupNotMine	code: named difference 1 (group_not_for_truck)
+api/US|manage|excludedItemNotMine	code: named difference 1 (item_not_for_truck)
+api/US|manage|preorderNotPro	code: named difference 1 (preorders_pro) + words
+api/US|manage|privateLinkNotPro	code: named difference 1 (private_events_pro)
+api/US|manage|privateLinkNoEvent	code: named difference 1 (event_not_found)
+api/US|manage|privateLinkNotPrivate	code: named difference 1 (event_not_private)
+api/US|manage|newLinkNotPro	code: named difference 1 (private_events_pro)
+api/US|manage|editLiveNoTimes	code: named difference 1 (live_event_needs_times)
+api/US|manage|editPrivateNotPro	code: named difference 1 (private_events_pro)
+api/US|manage|createNoTimes	code: named difference 1 (event_needs_times)
+api/US|manage|createPrivateNotPro	code: named difference 1 (private_events_pro)
+api/US|manage|dealNoEvent	code: named difference 1 (event_not_found)
+api/US|manage|dealNoBundle	code: named difference 1 (event_not_found)
+api/US|manage|emptyTerm	code: named difference 1 (empty_term)
+api/US|manage|placesScheduleFail	code: named difference 1 (schedule_read_failed) + words
+api/US|manage|placesLoadFail	code: named difference 1 (places_load_failed_migration) + words
+api/US|manage|placeNoName	code: named difference 1 (place_name_required)
+api/US|manage|placeNoLetters	code: named difference 1 (place_name_no_letters)
+api/US|manage|placeAddFail	code: named difference 1 (place_add_failed) + words
+api/US|manage|placeEditNoName	code: named difference 1 (place_name_required)
+api/US|manage|placeSaveFail	code: named difference 1 (place_save_failed) + words
+api/US|manage|tradeZone	code: named difference 1 (zone_unknown) + words
+api/US|manage|tradeNoTown	code: named difference 1 (town_missing)
+api/US|manage|tradeTownLong	code: named difference 1 (town_too_long)
+api/US|manage|tradeDbFail	code: named difference 1 (settings_save_failed) + words
+api/US|manage|settingsDbFail	code: named difference 1 (settings_save_failed) + words
+api/US|manage|intervalBad	code: named difference 1 (collection_interval_choices) + words
+api/US|manage|operatorIntervalBad	code: named difference 1 (collection_interval_choices) + words
+api/US|manage|intervalSaveFail	code: named difference 1 (collection_intervals_save_failed) + words
+api/US|manage|vanCatIds	code: named difference 1 (van_category_ids_required) + words
+api/US|manage|vanCatNoVan	code: named difference 1 (van_not_found) + words
+api/US|manage|vanCatNoCat	code: named difference 1 (category_not_found)
+api/US|manage|vanCatSaveFail	code: named difference 1 (van_capacity_save_failed) + words
+api/US|manage|set_van_same_as_first.noVanId	code: named difference 1 (van_id_required) + words
+api/US|manage|set_van_same_as_first.noVan	code: named difference 1 (van_not_found) + words
+api/US|manage|set_van_same_as_first.self	code: named difference 1 (first_van_self) + words
+api/US|manage|set_van_same_as_first.noFirst	code: named difference 1 (no_first_van) + words
+api/US|manage|set_van_same_as_first.copyFail	code: named difference 1 (first_van_copy_failed) + words
+api/US|manage|set_van_same_as_first.switchFail	code: named difference 1 (switch_save_failed)
+api/US|manage|set_van_capacity_same_as_first.noVanId	code: named difference 1 (van_id_required) + words
+api/US|manage|set_van_capacity_same_as_first.noVan	code: named difference 1 (van_not_found) + words
+api/US|manage|set_van_capacity_same_as_first.self	code: named difference 1 (first_van_self) + words
+api/US|manage|set_van_capacity_same_as_first.noFirst	code: named difference 1 (no_first_van) + words
+api/US|manage|set_van_capacity_same_as_first.copyFail	code: named difference 1 (capacity_copy_failed) + words
+api/US|manage|set_van_capacity_same_as_first.switchFail	code: named difference 1 (switch_save_failed)
+api/US|manage|capacityCategoryCopyFail	code: named difference 1 (category_copy_failed) + words
+api/US|manage|addVanNoName	code: named difference 1 (name_required)
+api/US|manage|renameVanNoName	code: named difference 1 (name_required)
+api/US|manage|deleteLastVan	code: named difference 1 (last_van) + words
+api/US|manage|unknownAction	code: named difference 1 (unknown_action)
+api/US|manageGET|stockWarning	words
+api/US|eventTypes|badJson	code: named difference 1 (bad_request)
+api/US|eventTypes|noToken	code: named difference 1 (token_required)
+api/US|eventTypes|badToken	code: named difference 1 (invalid_token)
+api/US|eventTypes|notMax	code: named difference 1 (event_types_max)
+api/US|eventTypes|loadNotEntitled	code: named difference 1 (event_types_max)
+api/US|eventTypes|privateNotPro	code: named difference 1 (private_events_pro)
+api/US|eventTypes|createNoName	code: named difference 1 (type_name_required)
+api/US|eventTypes|createTaken	code: named difference 1 (type_name_taken)
+api/US|eventTypes|updateNoId	code: named difference 1 (id_required) + words
+api/US|eventTypes|updateNoName	code: named difference 1 (type_name_required)
+api/US|eventTypes|matchNoId	code: named difference 1 (id_required) + words
+api/US|eventTypes|reorderNoIds	code: named difference 1 (ids_required) + words
+api/US|eventTypes|deleteNoId	code: named difference 1 (id_required) + words
+api/US|eventTypes|assignNoEvent	code: named difference 1 (event_id_required) + words
+api/US|eventTypes|assignUnknownEvent	code: named difference 1 (event_not_found)
+api/US|eventTypes|assignUnknownType	code: named difference 1 (event_type_not_found)
+api/US|eventTypes|itemPricesNoEvent	code: named difference 1 (event_id_required) + words
+api/US|eventTypes|itemPricesUnknownEvent	code: named difference 1 (event_not_found)
+api/US|eventTypes|saveItemPricesNoEvent	code: named difference 1 (event_id_required) + words
+api/US|eventTypes|saveItemPricesUnknownEvent	code: named difference 1 (event_not_found)
+api/US|eventTypes|typePricingNoId	code: named difference 1 (id_required) + words
+api/US|eventTypes|typePricingNoRow	code: named difference 1 (type_prices_read_failed)
+api/US|eventTypes|typeItemPriceMissing	code: named difference 1 (id_and_item_required) + words
+api/US|eventTypes|typeItemPriceNoType	code: named difference 1 (event_type_not_found)
+api/US|eventTypes|typeItemPriceNoItem	code: named difference 1 (item_not_found)
+api/US|eventTypes|privateNotReady	code: named difference 1 (private_not_ready)
+api/US|eventTypes|unknownAction	code: named difference 1 (unknown_action)
+api/US|eventTypes|loadWithPricesVanNoName	words
+api/US|eventsAction|noToken	code: named difference 1 (token_and_action_required)
+api/US|eventsAction|badToken	code: named difference 1 (truck_not_found)
+api/US|eventsAction|confirmFlags	code: named difference 1 (auto_open_close_required) + words
+api/US|eventsAction|confirmNoTimes	code: named difference 1 (event_needs_times)
+api/US|eventsAction|confirmPrivateNoTimes	code: named difference 1 (private_needs_times)
+api/US|eventsAction|confirmChooseVan	code: named difference 1 (choose_truck_for_event)
+api/US|eventsAction|confirmPrivateNotPro	code: named difference 1 (private_events_pro)
+api/US|eventsAction|openNoTimes	code: named difference 1 (event_needs_times)
+api/US|eventsAction|cancelNotMine	code: named difference 1 (event_not_found)
+api/US|eventsAction|restoreNotMine	code: named difference 1 (event_not_found)
+api/US|eventsAction|unknownAction	code: named difference 1 (unknown_action)
+api/US|events|noTruck	code: named difference 1 (truck_param_required) + words
+api/US|eventsManage|noToken	code: named difference 1 (token_required)
+api/US|eventsManage|badToken	code: named difference 1 (truck_not_found)
+api/US|affected|missing	code: named difference 1 (missing_params) + words
+api/US|affected|badToken	code: named difference 1 (unauthorised)
+api/US|commitMenu|badToken	code: named difference 1 (unauthorised)
+api/US|commitMenu|clearFirstLive	code: named difference 1 (clear_first_setup_only) + words
+api/US|commitMenu|clearFails	code: named difference 1 (clear_failed)
+api/US|allergens|noToken	code: named difference 1 (unauthorised)
+api/US|allergens|badToken	code: named difference 1 (unauthorised)
+api/US|allergens|aiFailed	code: named difference 1 (ai_failed)
+api/US|allergens|parseFailed	code: named difference 1 (allergens_parse_failed)
+api/US|menu|noToken	code: named difference 1 (unauthorised)
+api/US|menu|badToken	code: named difference 1 (unauthorised)
+api/US|menu|aiFailed	code: named difference 1 (ai_failed)
+api/US|menu|parseFailed	code: named difference 1 (menu_failed)
+api/US|schedule|noToken	code: named difference 1 (token_required)
+api/US|schedule|badToken	code: named difference 1 (unauthorised)
+api/US|schedule|extractFailed	code: named difference 1 (events_extract_failed)
+api/US|verify|noToken	code: named difference 1 (token_required)
+api/US|verify|badUrl	code: named difference 1 (invalid_url)
+api/US|verify|badToken	code: named difference 1 (invalid_token)

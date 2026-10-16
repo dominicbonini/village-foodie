@@ -42,6 +42,82 @@ const codeOnly = src => src.split('\n')
   .join('\n')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 
+// ⚠️ RE-PINNED (Language Phase 1d): Manage's Menu, Schedule and Settings words moved out of the JSX and the copy
+// modules into messages/en-GB.json, read with `useT(ns)` / `translatorFor(locale, ns)`. The checks below that pin
+// WORDS now read them from the catalogue. `gbWords` is the en-GB text AS MOVED: a deliberate GB wording fix
+// (scripts/fixtures/language-phase-1d-gb-named.json) reads as its pre-fix text via scripts/fixtures/
+// language-phase-1d-gb-moved.json — the same overlay every frozen-words harness uses — so "no word changed"
+// still means the move changed no word; the fixes themselves are proven and named by language-phase-1d.
+const GB_MSG = JSON.parse(read('messages/en-GB.json'))
+const GB_MOVED = JSON.parse(read('scripts/fixtures/language-phase-1d-gb-moved.json'))
+const msgAt = (o, key) => key.split('.').reduce((x, k) => (x && typeof x === 'object' ? x[k] : undefined), o)
+const gbWords = nsKey => (nsKey in GB_MOVED ? GB_MOVED[nsKey] : msgAt(GB_MSG, nsKey))
+/** `src` with every plain `x('key')` call of a translator declared in it (`const x = useT('ns')`, or one passed in
+ *  `bound`) replaced by the en-GB words as moved: `{x('key')}` → the bare text (a JSX text node, as it was written
+ *  before the move), any other `x('key')` → a quoted literal. ⚠️ Resolved PER TOP-LEVEL FUNCTION, because the page
+ *  binds `t` to a different namespace in each component. A call to a key the catalogue does not have, or one with
+ *  values, is LEFT AS CODE — so a wrong key still fails whatever check reads the words. */
+function withGbWords(src, bound = {}) {
+  const chunks = src.split(/\n(?=(?:export )?(?:default )?function )/)
+  return chunks.map(chunk => {
+    const tr = { ...bound }
+    for (const m of chunk.matchAll(/const (\w+) = useT\('(\w+)'\)/g)) tr[m[1]] = m[2]
+    const names = Object.keys(tr)
+    if (!names.length) return chunk
+    chunk = withGbRichAndPlurals(chunk, tr)
+    const re = new RegExp(`(=)?(\\{)?\\b(${names.join('|')})\\('([\\w.]+)'\\)(\\})?`, 'g')
+    return chunk.replace(re, (all, eq, open, name, key, close) => {
+      const words = gbWords(`${tr[name]}.${key}`)
+      if (typeof words !== 'string') return all
+      if (eq && open && close) return `=${JSON.stringify(words)}`     // label={t('k')} → label="words"
+      if (open && close) return words                                 // {t('k')} → a text node
+      const lit = words.includes("'") ? JSON.stringify(words) : `'${words}'`
+      return `${eq || ''}${open || ''}${lit}${close || ''}`
+    })
+  }).join('\n')
+}
+/** The two call shapes `withGbWords` leaves alone that Settings uses for words which WERE plain JSX: a whole-message
+ *  plural with LITERAL values (`{t('k', { n: 15, count: '15' })}` → "15 minutes") and `{t.rich('k', { …tags })}`,
+ *  drawn as the JSX it replaced — each `<tag>…</tag>` becomes `<span>…</span>`, placeholders stay `{name}`. */
+function withGbRichAndPlurals(chunk, tr) {
+  const names = Object.keys(tr).join('|')
+  const plural = (msg, n) => {
+    const m = /^\{n, plural, one \{(.*)\} other \{(.*)\}\}$/.exec(msg)
+    return m ? (n === 1 ? m[1] : m[2]) : null
+  }
+  chunk = chunk.replace(new RegExp(`\\{(${names})\\('([\\w.]+)', \\{ n: (\\d+), count: '(\\d+)' \\}\\)\\}`, 'g'),
+    (all, name, key, n, count) => {
+      const w = gbWords(`${tr[name]}.${key}`)
+      const branch = typeof w === 'string' ? plural(w, Number(n)) : null
+      return branch == null ? all : branch.replace(/\{count\}/g, count)
+    })
+  const open = new RegExp(`\\{(${names})\\.rich\\('([\\w.]+)',`, 'g')
+  let out = '', from = 0, m
+  while ((m = open.exec(chunk))) {
+    let depth = 0, i = m.index + 1 + m[1].length + 5        // at the `(` of `.rich(`
+    for (; i < chunk.length; i++) { if (chunk[i] === '(') depth++; else if (chunk[i] === ')' && --depth === 0) break }
+    const w = gbWords(`${tr[m[1]]}.${m[2]}`)
+    if (chunk[i + 1] !== '}' || typeof w !== 'string') continue
+    /* An EMPTY tag (`<select></select>`) is a control placed inside the sentence — `select: () => (<select …/>)` —
+     * so it is drawn as that JSX, which is what stood between the two halves of the sentence before. */
+    const call = chunk.slice(m.index, i)
+    const control = tag => {
+      const at = call.indexOf(`${tag}: () => (`)
+      if (at < 0) return ''
+      let d = 0, j = at + tag.length + 8
+      for (; j < call.length; j++) { if (call[j] === '(') d++; else if (call[j] === ')' && --d === 0) break }
+      return call.slice(at + tag.length + 9, j)
+    }
+    out += chunk.slice(from, m.index)
+      + w.split(/(<[a-z]+><\/[a-z]+>)/).map((part, k) => (k % 2
+        ? control(part.slice(1, part.indexOf('>')))
+        : part.replace(/<(\/?)[a-z]+>/g, '<$1span>'))).join('')
+    from = i + 2
+    open.lastIndex = from
+  }
+  return out + chunk.slice(from)
+}
+
 const LIB = 'lib/schedule-graphics/places.ts'
 const ROUTE = 'app/api/manage/route.ts'
 const MIGRATION1 = 'supabase/migrations/20261003_truck_places.sql'
@@ -696,8 +772,15 @@ function runWiringSuite(lib) {
   const SQL1 = read(MIGRATION1)
   const SQL2 = read(MIGRATION2)
   const R = stripComments(read(ROUTE))
-  const U = stripComments(read(PLACES_UI))
-  const P = stripComments(read(PAGE))
+  // ⚠️ RE-PINNED (Language Phase 1d): the Places screen and the Manage page read their words with `useT(ns)` now,
+  // so the two sources every check below reads are taken with those calls RESOLVED to the en-GB words as moved
+  // (`withGbWords`, top of file). Code is untouched by it — only `x('key')` calls of a declared translator are
+  // replaced — so the checks on code shapes read exactly what they read before, and the checks on WORDS
+  // (e.g. "+ New place", "Tidy up places", "Address details", the Add event form's field labels, the van picker's
+  // "Van", "Import schedule") find them at the same sites, from the catalogue. A key the catalogue lacks stays code
+  // and still fails.
+  const U = withGbWords(stripComments(read(PLACES_UI)))
+  const P = withGbWords(stripComments(read(PAGE)))
 
   // ════════════════════════════════════════════════════════════════════════════════════════════
   // 🔴 THE `truck_events` AUDIT — the one that matters, because that table runs live ordering
@@ -1002,8 +1085,11 @@ function runWiringSuite(lib) {
       && /inline\?: boolean/.test(et)
       /* ONE width expression, ONE header button, ONE footer — both shells use them */
       && n(/GRID_LABEL_W \+ GRID_COL_W \* valueColumnCount \+ MODAL_SIDE_PADDING/g) === 1
-      && n(/label="\+ New event type"/g) === 1
-      && n(/\{EVENT_TYPES_FOOTER_STANDARD\}/g) === 1
+      // ⚠️ RE-PINNED (Language Phase 1d): the button's words are eventTypes.newTypeButton and the footer is
+      // serviceSettings.eventTypesFooterStandard (read as `ts`), no longer a literal / an imported constant.
+      // Still ONE header button and ONE footer, and they still say the same words.
+      && n(/label=\{t\('newTypeButton'\)\}/g) === 1 && gbWords('eventTypes.newTypeButton') === '+ New event type'
+      && n(/\{ts\('eventTypesFooterStandard'\)\}/g) === 1
       /* the inline box is the shared Card's own classes, left-aligned (no mx-auto) */
       && /bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden/.test(et)
       && !/mx-auto/.test(et)
@@ -1103,7 +1189,8 @@ function runWiringSuite(lib) {
   t('🔴 "COPY A RECENT EVENT" IS REPLACED BY THE PLACE LIST IN THE LEFT PANE',
     !/Copy a recent event/.test(P)
     && /<PlaceList/.test(P)
-    && /label="Search places"/.test(read(PLACES_UI)))
+    // ⚠️ RE-PINNED (Language Phase 1d): the search label is `t('searchLabel')` (schedulePlaces) — read resolved.
+    && /label="Search places"/.test(withGbWords(read(PLACES_UI))))
   /* 🔴 BUG 2: BOTH SECTIONS ALWAYS. There is no `showAll` state and no "No places match" on an empty
    * search — the only empty states are "nothing matches <typed>" and "no places yet". */
   /* ⚠️ CODE-ONLY, AND `showAllPlaces` NOT `showAll`. The removal notes in SchedulePlaces.tsx NAME the
@@ -1113,11 +1200,15 @@ function runWiringSuite(lib) {
     !/Show all places/.test(codeOnly(read(PAGE))) && !/showAllPlaces/.test(codeOnly(read(PAGE)))
     && !/Show all places/.test(codeOnly(read(PLACES_UI))) && !/showAllPlaces/.test(codeOnly(read(PLACES_UI))))
   t('🔴 …and FAVOURITES and ALL PLACES are both rendered unconditionally', (() => {
-    const U2 = read(PLACES_UI)
+    // ⚠️ RE-PINNED (Language Phase 1d): the group headings are `t('favourites')` / `t('allPlaces')` — read
+    // resolved — and "Nothing matches “…”" is `t('noMatch', { search })`, a call with a value, so it is asserted as
+    // that call plus the catalogue's words.
+    const U2 = withGbWords(read(PLACES_UI))
     return /favourites\.length > 0 && \(/.test(U2) && /others\.length > 0 && \(/.test(U2)
       && />Favourites</.test(U2) && />All places</.test(U2)
       // the only "nothing matches" line is behind a typed search
-      && /Nothing matches/.test(U2) && /nothingAtAll \?/.test(U2)
+      && /\{t\('noMatch', \{ search: search\.trim\(\) \}\)\}/.test(U2)
+      && gbWords('schedulePlaces.noMatch').startsWith('Nothing matches') && /nothingAtAll \?/.test(U2)
   })())
   /* 🔴 BUG 1: THE STAR TOGGLES IN PLACE. The write is optimistic, there is no refetch on either
    * outcome, and a failure reverts the star and shows one line. */
@@ -1142,7 +1233,9 @@ function runWiringSuite(lib) {
     const fn = R.slice(R.indexOf('async function resolveEventPlaceId('), R.indexOf('// ── Auth helper'))
     t('🔴 a typed venue name looks for an existing place ("The" or no "The") BEFORE the upsert can make one',
       /placeForTypedName\(name_key, rows\)/.test(fn) && fn.indexOf('placeForTypedName(') < fn.indexOf(".upsert(")
-      && /from '@\/lib\/schedule-graphics\/places'/.test(R.slice(0, 8000)) && /\n  placeForTypedName,\n/.test(R.slice(0, 8000)))
+      // ⚠️ RE-PINNED (Language Phase 1d): the route's import block grew by the 1d i18n imports and their header
+      // (~1,000 characters), pushing the places import past 8,000. The window is the import block, now 9,000.
+      && /from '@\/lib\/schedule-graphics\/places'/.test(R.slice(0, 9000)) && /\n  placeForTypedName,\n/.test(R.slice(0, 9000)))
     t('⚠️ a copied link to a place that is gone falls through to the name instead of linking nothing',
       /if \(picked\) return resolvePlaceMerge\(picked, placesById\(all\)\)\.id/.test(fn) && !/if \(!picked\) return null/.test(fn))
   }
@@ -1159,7 +1252,10 @@ function runWiringSuite(lib) {
     /\+ New place/.test(P)
     && /const startNewPlace = \(\) => \{[\s\S]{0,200}truck_place_id: null[\s\S]{0,200}setAddrOpen\(true\)/.test(P))
   t('⚠️ the one muted line, only when a place was picked, in the sticky footer',
-    /Filled from \$\{pickedPlace\?\.name \?\? 'that place'\}/.test(P))
+    // ⚠️ RE-PINNED (Language Phase 1d): the template literal is `tE('filledFrom', { place: … })` now
+    // (manageScheduleEvent.filledFrom = "Filled from {place}", fallback `tE('thatPlace')` = "that place").
+    /tE\('filledFrom', \{ place: pickedPlace\?\.name \?\? 'that place' \}\)/.test(P)
+    && gbWords('manageScheduleEvent.filledFrom') === 'Filled from {place}')
   /* ⚠️ RE-POINTED: "Upload schedule" is no longer a label in this modal — the flow lives behind the
    * Schedule header's own "✨ Import schedule" button. The FORM's fields are unchanged. */
   t('⚠️ every existing form field is still there, and the upload flow still exists',
@@ -1192,7 +1288,9 @@ function runWiringSuite(lib) {
   t('⚠️ the list has both groups, the star toggle and the Show-hidden escape',
     /Favourites/.test(U) && /All places/.test(U)
     && /is_favourite \? '★' : '☆'/.test(U)
-    && /Show hidden places \(\$\{hiddenCount\}\)/.test(U))
+    // ⚠️ RE-PINNED (Language Phase 1d): the escape is `t('showHidden', { count: hiddenCount })` now, a call with a
+    // value, so it is asserted as that call plus schedulePlaces.showHidden = "Show hidden places ({count})".
+    && /t\('showHidden', \{ count: hiddenCount \}\)/.test(U) && gbWords('schedulePlaces.showHidden') === 'Show hidden places ({count})')
   /* ⚠️ TWO CONTROLS NOW, NOT THREE (October 2026). "Merge into another place" was removed from this
    * screen on instruction; the SERVER's `sg_merge_place` and `merged_into_id` resolution are untouched
    * and are asserted in scripts/weekly-post.cjs §9c, so the capability is still covered — what changed
@@ -1207,7 +1305,10 @@ function runWiringSuite(lib) {
      * the value GOES rather than what it IS — and with the social screen's own copy of the field
      * removed, this card is the one editor again, so it has to name the thing. "Venue" is the poster's
      * own item name and "Area" is the field below it, which is where the word comes from. */
-    && ['Full name', 'Venue name', 'Address', 'Area', 'Postcode'].every(f => U.includes(`label="${f}"`))
+    && ['Full name', 'Venue name', 'Address', 'Area'].every(f => U.includes(`label="${f}"`))
+    // ⚠️ RE-PINNED (Language Phase 1d): "Postcode" is `t('postcode', { style: addrStyle })` now — a select on the
+    // address style whose `other` (every UK truck) is still "Postcode" — so the fifth field is asserted as that call.
+    && /label=\{t\('postcode', \{ style: addrStyle \}\)\}/.test(U) && /\bother \{Postcode\}/.test(gbWords('schedulePlaces.postcode'))
     /* ⛔ AND THE OLD LABEL IS GONE, so "renamed" cannot pass while both exist. */
     && !U.includes('label="Name on posts"'))
   /* ══ ⛔ CARD 2 — "Events here" — IS DELETED, AND SO IS THIS CHECK'S CLAIM (5 October 2026) ════════
@@ -1222,8 +1323,10 @@ function runWiringSuite(lib) {
     !/Events here/.test(codeOnly(U)) && !/traded_last_year === 1/.test(codeOnly(U)))
   t('🔴 …and the list row still shows Next-or-Last, from the shared builder',
     // Phase 2B: the line is in the truck's words, so it is handed the truck's time settings.
-    /placeSubLine\(p, ts\)/.test(U)
-    && /export const placeSubLine = \(p: Place, ts: TimeSettings \| null \| undefined\): string => placeWhenLine\(p, ymd => shortDay\(ymd, ts\), ts\)/.test(U))
+    // ⚠️ RE-PINNED (Language Phase 1d): the row passes the line's words from `schedulePlaces` (`whenWords`), and
+    // placeSubLine / placeWhenLine take them as an optional last argument. Still the shared builder, still Next-or-Last.
+    /placeSubLine\(p, ts, whenWords\)/.test(U)
+    && /export const placeSubLine = \(p: Place, ts: TimeSettings \| null \| undefined, words\?: PlaceWhenWords\): string =>\s*placeWhenLine\(p, ymd => shortDay\(ymd, ts\), ts, words\)/.test(U))
   /* 🔴 THE BREAKPOINT IS `md` (768px) NOW, NOT `lg`. Measured: at 820px (iPad portrait) the 380px
    * list sits beside the form with no horizontal scroll, so an iPad gets the two-pane layout the
    * mockup asks for. See scripts/schedule-places-render.cjs and the report. */
@@ -1313,7 +1416,8 @@ function runWiringSuite(lib) {
     && /process-schedule/.test(P))
   t('⚠️ …and it still carries the whole flow: drop zone, paste box and review',
     (() => {
-      const RAW = read(PAGE)
+      // ⚠️ RE-PINNED (Language Phase 1d): "Or paste schedule text" is `tI('orPaste')` (manageScheduleImport) — read resolved.
+      const RAW = withGbWords(read(PAGE))
       const i = RAW.indexOf('{showImportModal && (')
       const blk = RAW.slice(i, i + 6000)
       return /type="file" accept="image\/\*,\.pdf"/.test(blk)
@@ -1346,8 +1450,12 @@ function runWiringSuite(lib) {
     && /<Select\s*\n\s*ariaLabel="Van"/.test(P))
   t('🔴 the van FILTER says "vans" — it predicates on `van_id`, so "All trucks" was simply wrong',
     (() => {
-      const V = read('components/manage/VanFilter.tsx')
-      return /return 'All vans'/.test(V) && /\?\? 'Unknown van'/.test(V)
+      // ⚠️ RE-PINNED (Language Phase 1d): VanFilter's words are `vanFilter` messages — `t` is
+      // `translatorFor(locale, 'vanFilter')` in vanFilterLabel and `useT('vanFilter')` in the component — so the
+      // file is read with every `t('key')` resolved to its en-GB words. The logic lines are asserted as before.
+      const V = withGbWords(read('components/manage/VanFilter.tsx'), { t: 'vanFilter' })
+      return /const t = translatorFor\(locale, 'vanFilter'\)/.test(V) && /const t = useT\('vanFilter'\)/.test(V)
+        && /return 'All vans'/.test(V) && /\?\? 'Unknown van'/.test(V)
         && /<option value=\{VAN_FILTER_ALL\}>All vans<\/option>/.test(V)
         && /aria-label="Filter by van"/.test(V)
         && !/All trucks<\/option>/.test(V)
@@ -1448,7 +1556,9 @@ function runWiringSuite(lib) {
   // ════════════════════════════════════════════════════════════════════════════════════════════
   // PART A · SETTINGS AS ONE LIST WITH STICKY JUMP TABS
   // ════════════════════════════════════════════════════════════════════════════════════════════
-  const RAWP = read(PAGE)
+  // ⚠️ RE-PINNED (Language Phase 1d): the page's words are `t('key')` calls now — resolved to the en-GB words as
+  // moved, for the same reason and in the same way as `P` above (Settings' jump bar, sections and headings).
+  const RAWP = withGbWords(read(PAGE))
 
   t('🔴 eight sections, in the brief\'s order, each id matching its label',
     /const SETTINGS_SECTIONS: \{ id: string; label: string \}\[\] = \[/.test(P)
@@ -1629,11 +1739,24 @@ function runWiringSuite(lib) {
       const i = src.indexOf('function SettingsTab({ userRole, truck,')
       const seg = src.slice(i, src.indexOf('\nfunction ', i + 50))
       // user-visible text: JSX text nodes and quoted strings, comments stripped first
-      return new Set((codeOnly(seg).match(/>[^<>{}\n]{3,}</g) || []).map(x => x.slice(1, -1).trim()).filter(Boolean))
+      // ⚠️ RE-PINNED (Language Phase 1d): `&apos;` is read as the `'` it renders — the words moved into messages
+      // are plain text, so "doesn&apos;t" before and "doesn't" after are the same words on screen.
+      return new Set((codeOnly(seg).match(/>[^<>{}\n]{3,}</g) || []).map(x => x.slice(1, -1).trim().replace(/&apos;/g, "'")).filter(Boolean))
     }
+    // ⚠️ RE-PINNED (Language Phase 1d): `RAWP` is the page with its `t('key')` calls resolved to the en-GB words as
+    // moved (see `withGbWords`, which also draws `t.rich` sentences and literal-count plurals as the JSX they replaced).
     const before = strings(base), after = strings(RAWP)
     const added = [...after].filter(x => !before.has(x))
     const allowed = new Set(SETTINGS_LABELS)
+    /* ⚠️ RE-PINNED (Language Phase 1d): WORDS THAT WERE A SHARED CONSTANT AND ARE NOW A TEXT NODE. Settings rendered
+     * `{SETTING_COPY.autoAccept.label}`, `{OFFLINE_PROTECTION_EXPLAINER_LEAD}` … — invisible to this diff, which reads
+     * text nodes. Resolved from messages they ARE text nodes, so they show up as "added". Allowed ONLY when the very
+     * string is a constant's value in the copy module it moved out of, as that module stood at 756ca09 (the commit
+     * Phase 1d started from) — i.e. the words were already on this screen, and the move did not change them. */
+    const COPY_MODULES_756 = ['lib/settings-copy.ts', 'lib/copy/offlineProtection.ts', 'lib/copy/serviceSettings.ts']
+      .map(f => require('child_process').execFileSync('git', ['show', `756ca09:${f}`], { cwd: REPO, encoding: 'utf8' }))
+      .join('\n').replace(/'\s*\+\s*'/g, '').replace(/\\'/g, "'")
+    for (const x of added) if (COPY_MODULES_756.includes(`'${x}'`) || COPY_MODULES_756.includes(`"${x}"`)) allowed.add(x)
     /* ══ ⚠️ ONE MORE ALLOWED ADDITION, AND IT IS AN ADDITION RATHER THAN A CHANGE ══════════════════
      * `'Following your truck setting.'` is a NEW sub-label under each van's "Do you take cash?" switch,
      * from the per-van cash work (20261012): a van with no value of its own shows the truck's, and the
@@ -1671,10 +1794,19 @@ function runWiringSuite(lib) {
      * Payments, unchanged. ALLOWED TO BE ABSENT HERE ONLY if each string is present in the file it moved
      * to — the filter below reads that file, so a string that vanished from both still fails. */
     const movedToPayments = (() => {
-      const src = read('components/manage/TakingPaymentPanel.tsx')
+      // ⚠️ RE-PINNED (Language Phase 1d): `&apos;` read as `'`, as `strings` now reads it (above).
+      const src = read('components/manage/TakingPaymentPanel.tsx').replace(/&apos;/g, "'")
       return new Set([...before].filter(x => src.includes(x)))
     })()
-    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY, ...MOVED_TO_SCHEDULE_MODAL, ...MOVED_TO_SERVICE_COPY, ...movedToPayments])
+    /* ⚠️ RE-PINNED (Language Phase 1d): the seven "N days before" options are ONE plural message drawn in a loop —
+     * `{[7, 6, 5, 4, 3, 2, 1].map(d => … t('preorders.openDaysBefore', { n: d, count: String(d) }) …)}` — which a
+     * static read cannot unroll. Allowed to be absent as text ONLY while that loop is in Settings and the en-GB
+     * plural gives each of the seven exactly the words it had. */
+    const daysLoop = /\{\[7, 6, 5, 4, 3, 2, 1\]\.map\(d => <option key=\{d\} value=\{`\$\{d\}d`\}>\{t\('preorders\.openDaysBefore', \{ n: d, count: String\(d\) \}\)\}<\/option>\)\}/.test(RAWP)
+    const daysMsg = /^\{n, plural, one \{(.*)\} other \{(.*)\}\}$/.exec(gbWords('manageSettings.preorders.openDaysBefore') || '')
+    const MOVED_TO_DAYS_PLURAL = daysLoop && daysMsg
+      ? [7, 6, 5, 4, 3, 2, 1].map(d => (d === 1 ? daysMsg[1] : daysMsg[2]).replace('{count}', String(d))) : []
+    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY, ...MOVED_TO_SCHEDULE_MODAL, ...MOVED_TO_SERVICE_COPY, ...movedToPayments, ...MOVED_TO_DAYS_PLURAL])
     const removed = [...before].filter(x => !after.has(x)).filter(x => !removable.has(x))
     const badAdded = added.filter(x => !allowed.has(x))
     if (badAdded.length || removed.length) {
@@ -1690,8 +1822,13 @@ function runWiringSuite(lib) {
     const copy = read('lib/copy/serviceSettings.ts')
     const pairs = [['takes_cash', 'Do you take cash?'], ['collection_interval_mins', 'Collection times'],
       ['offline_protection', 'Offline order protection']]
-    const rendered = pairs.every(([k]) => RAWP.includes(`SERVICE_SETTING_LABELS.${k}`))
-    const spelled = pairs.every(([k, words]) => new RegExp(`${k}:\\s*'${words.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`).test(copy))
+    /* ⚠️ RE-PINNED (Language Phase 1d): Settings renders them as `tSvc('labels.<id>')` (the `serviceSettings`
+     * namespace) and SERVICE_SETTING_LABELS reads the SAME keys (`<id>: gb('labels.<id>')`), so the words are spelled
+     * once, in messages/en-GB.json — asserted there, and both readers asserted to read that key. */
+    const RAW_PAGE = read(PAGE)
+    const rendered = pairs.every(([k]) => RAW_PAGE.includes(`{tSvc('labels.${k}')}`))
+    const spelled = pairs.every(([k, words]) => copy.includes(`${k}: gb('labels.${k}')`)
+      && gbWords(`serviceSettings.labels.${k}`) === words)
     return rendered && spelled
   })())
 
@@ -1699,7 +1836,9 @@ function runWiringSuite(lib) {
    * must be present, word for word, in the file it moved to. Without this, allowing a removal would be
    * indistinguishable from allowing a deletion. */
   t('🔴 every capacity label that left Settings is present in Menu › Kitchen capacity', (() => {
-    const cap = read('components/manage/KitchenCapacitySection.tsx')
+    // ⚠️ RE-PINNED (Language Phase 1d): the screen's words are `t('key')` of `useT('kitchenCapacity')` — read resolved
+    // to the en-GB words (labels and the two fixed titles); the per-van title is a call with a value, asserted below.
+    const cap = withGbWords(read('components/manage/KitchenCapacitySection.tsx'))
     /* ⚠️ "Kitchen capacity" IS NO LONGER A TEXT NODE (4 October 2026). The box's heading is a `title`
      * PROP now, because the screen draws one box ("All vans · Kitchen capacity") or one per van
      * ("<van name> · Kitchen capacity"), and a one-van truck keeps the plain words. So it is asserted
@@ -1710,8 +1849,11 @@ function runWiringSuite(lib) {
     const missing = LABELS.filter(l => !cap.includes('>' + l + '<'))
     /* 🔴 THE THREE TITLES, EACH CHECKED. If one of them lost the words, this screen would have a box
      * with no name — and the other two would still pass a looser `cap.includes('Kitchen capacity')`. */
-    const titles = ["'All vans · Kitchen capacity'", "'Kitchen capacity'", '· Kitchen capacity`']
+    const titles = ["'All vans · Kitchen capacity'", "'Kitchen capacity'"]
     const missingTitles = titles.filter(x => !cap.includes(x))
+    // ⚠️ RE-PINNED (Language Phase 1d): the per-van title `${v.name} · Kitchen capacity` is
+    // `t('boxTitleVan', { van: v.name })` = "{van} · Kitchen capacity".
+    if (!(cap.includes("t('boxTitleVan', { van: v.name })") && gbWords('kitchenCapacity.boxTitleVan') === '{van} · Kitchen capacity')) missingTitles.push('· Kitchen capacity`')
     if (missing.length) console.log('      labels missing from the new file: ' + JSON.stringify(missing))
     if (missingTitles.length) console.log('      box titles missing: ' + JSON.stringify(missingTitles))
     return missing.length === 0 && missingTitles.length === 0
@@ -1768,9 +1910,15 @@ function runWiringSuite(lib) {
   /* ⚠️ AND THE TWO EXPLANATORY PARAGRAPHS — the mockup's "How capacity works" — travelled as the same
    * shared constants, so their wording cannot have changed in the move. */
   t('⚠️ the capacity explainer is still the shared constants, not retyped prose', (() => {
+    /* ⚠️ RE-PINNED (Language Phase 1d): the constants are messages now. The screen reads `{t('desc')}`,
+     * `{t('example')}`, `{t('warning')}` of `useT('kitchenCapacity')`, and lib/kitchen-capacity.ts's constants read
+     * the SAME keys (`KITCHEN_CAPACITY_DESC = gb('desc')` …) — still one definition, not retyped prose. */
     const cap = read('components/manage/KitchenCapacitySection.tsx')
-    return /\{KITCHEN_CAPACITY_DESC\}/.test(cap) && /\{KITCHEN_CAPACITY_EXAMPLE\}/.test(cap)
-      && /\{KITCHEN_CAPACITY_WARNING\}/.test(cap)
+    const lib = read('lib/kitchen-capacity.ts')
+    return /const t = useT\('kitchenCapacity'\)/.test(cap)
+      && /\{t\('desc'\)\}/.test(cap) && /\{t\('example'\)\}/.test(cap) && /\{t\('warning'\)\}/.test(cap)
+      && /export const KITCHEN_CAPACITY_DESC = gb\('desc'\)/.test(lib) && /export const KITCHEN_CAPACITY_EXAMPLE = gb\('example'\)/.test(lib)
+      && /export const KITCHEN_CAPACITY_WARNING = gb\('warning'\)/.test(lib)
   })())
 
   /* ══ ⛔ NOTHING WENT MISSING ═══════════════════════════════════════════════════════
@@ -2626,7 +2774,78 @@ function runWiringSuite(lib) {
         reason: 'money sweep: each Reports row carries its order\'s format',
         nowIn: 'app/manage/[token]/page.tsx',
         now: 'total: (item.unit_price || 0) * (item.quantity || 1), fmt: orderFormat(o, truckFmt) })' },
+      /* ══ ⚠️ RE-PINNED (Language Phase 1d): THE PHASE'S OWN CODE EDITS — lines it changed in a hunk that reads no
+       * message (so `p1dMoved` below does not account them), each named with its NEW form, as every build above. ══ */
+      { was: 'suffix?: string', nowIn: 'app/manage/[token]/page.tsx', now: 'sentence?: (control: React.ReactNode) => React.ReactNode',
+        reason: 'the settings review: a control inside a sentence is one message with the control as a tag, not prefix + suffix' },
+      { was: '{item.secondary && item.secondary.visible && (', nowIn: 'app/manage/[token]/page.tsx', now: '{item.secondary && item.secondary.visible && (() => {',
+        reason: 'the secondary control is built once and placed inside its sentence, or after its label' },
+      { was: '<span className="text-xs text-slate-600">{item.secondary.label}</span>', nowIn: 'app/manage/[token]/page.tsx',
+        now: ': <><span className="text-xs text-slate-600">{sec.label}</span>{control}</>}', reason: 'the label branch of the same row' },
+      { was: '{item.secondary.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}', nowIn: 'app/manage/[token]/page.tsx',
+        now: '{sec.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}', reason: 'the same options, read off `sec`' },
+      { was: '{item.secondary.suffix && <span className="text-xs text-slate-600">{item.secondary.suffix}</span>}', nowIn: 'app/manage/[token]/page.tsx',
+        now: '? <span className="text-xs text-slate-600">{sec.sentence(control)}</span>', reason: 'the suffix is the rest of the one sentence' },
+      { was: "<span className=\"text-xs text-slate-400\">{[bundle.start_time, bundle.end_time].filter(Boolean).join(' – ')}</span>", nowIn: 'app/manage/[token]/page.tsx',
+        now: "{[formatSlot(bundle.start_time, ts), formatSlot(bundle.end_time, ts)].filter(Boolean).join(' – ')}", reason: "a deal's hours in the truck's clock" },
+      { was: "const [importModalTitle, setImportModalTitle] = useState('Import schedule')", nowIn: 'app/manage/[token]/page.tsx',
+        now: "const [importModalTitle, setImportModalTitle] = useState<'import' | 'found'>('import')", reason: 'the title is a code set in an effect; the render supplies the words' },
+      { was: "setImportModalTitle('Import schedule')", nowIn: 'app/manage/[token]/page.tsx', now: "setImportModalTitle('import')", reason: 'the same code' },
+      { was: '? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName })', nowIn: 'app/manage/[token]/page.tsx',
+        now: '? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName, words: previewWords })', reason: "the preview's placeholder words from manageScheduleEvent" },
+      { was: 'form: editingEvent, vanName: previewVanName,', nowIn: 'app/manage/[token]/page.tsx', now: 'form: editingEvent, vanName: previewVanName, words: previewWords,',
+        reason: "the one-line preview's placeholder words likewise" },
+      /* `getMissingLabel` had no caller — removed, not moved; the page records it where it stood. */
+      ...['const getMissingLabel = (ev: any) => {', "if (!ev.event_date) return 'Add date'", "if (!ev.venue_name) return 'Add venue'",
+        "if (!ev.start_time) return 'Add start time'", "if (!ev.end_time) return 'Add end time'", "return ''"].map(was => ({ was, nowIn: 'app/manage/[token]/page.tsx',
+        now: '`getMissingLabel` WAS HERE, UNUSED — nothing called it. Removed with Language Phase 1d rather than moved.', reason: 'dead code, removed' })),
+      { was: "<p className=\"text-xs text-slate-400\">{ev.event_date}{ev.town ? ` · ${ev.town}` : ''}</p>", nowIn: 'app/manage/[token]/page.tsx',
+        now: '{parseDDMMYYYY(ev.event_date) ? formatNumericDate(parseDDMMYYYY(ev.event_date), ts) : ev.event_date}{ev.town ?', reason: "the importer's DD/MM/YYYY through the truck's date order — GB reads as before" },
+      { was: '{FOOD_EMOJI_CATEGORIES.map(({ label, emojis }) => (', nowIn: 'app/manage/[token]/page.tsx', now: '{FOOD_EMOJI_CATEGORIES.map(({ label, emojis }, i) => (',
+        reason: "the category's words by position, from emojiPicker.categories" },
+      /* the verify messages that moved into lib/copy/scheduleVerify.ts on 4 October are `manageScheduleVerify` messages now —
+       * each claimed in messages/en-GB.json, in its GB-fixed spelling (curly apostrophes; scripts/fixtures/language-phase-1d-gb-named.json) */
+      { was: 'malformed:     URL_MALFORMED_MSG,', nowIn: 'lib/copy/scheduleVerify.ts', now: "export const VERIFY_CODES = ['malformed', 'launch_failed', 'blocked', 'unreachable', 'no_content', 'no_events'] as const",
+        reason: 'the reasons are codes; their words are manageScheduleVerify.<code>' },
+      ...['launch_failed', 'blocked', 'unreachable', 'no_content', 'no_events'].map(code => ({
+        was: JSON.stringify(gbWords(`manageScheduleVerify.${code}`)), nowIn: 'messages/en-GB.json', now: `"${code}": ${JSON.stringify(msgAt(GB_MSG, `manageScheduleVerify.${code}`))}`,
+        reason: `the "${code}" verify message is manageScheduleVerify.${code}` })),
     ]
+    /* ⚠️ RE-PINNED (Language Phase 1d): CLAIMS WHOSE NEW FORM PHASE 1d REWROTE. Each entry above still names the line it
+     * replaced; its `now` moved on with 1d's word move, so the claim is re-pointed to the form that stands today. */
+    const P1D_NOW = {
+      'placeholder={addressPlaceholders(tabSettings.addressFormat).address} />': "placeholder={tE('addressPlaceholder', { style: addrStyle })} />",
+      'placeholder={addressPlaceholders(tabSettings.addressFormat).area} />': "placeholder={tE('areaPlaceholder', { style: addrStyle })} />",
+      'export const URL_MALFORMED_MSG = "That doesn\'t look like a web address.': ['messages/en-GB.json', '"malformed": "That doesn’t look like a web address.'],
+      'export const VERIFY_MESSAGES: Record<string, string> = {': ['lib/copy/scheduleVerify.ts', 'export function verifyCode(reason: unknown): VerifyCode {'],
+      '{SERVICE_SETTING_LABELS.takes_cash}</p>': "{tSvc('labels.takes_cash')}</p>",
+      '{SERVICE_SETTING_LABELS.offline_protection}': "{tSvc('labels.offline_protection')}",
+      '{SERVICE_SETTING_LABELS.collection_interval_mins}</p>': "{tSvc('labels.collection_interval_mins')}</p>",
+      "ariaLabel={label ? `${label} hour` : 'Hour'}": "ariaLabel={label ? t('time.hourOf', { label }) : t('time.hour')}",
+      "ariaLabel={label ? `${label} minute` : 'Minute'}": "ariaLabel={label ? t('time.minuteOf', { label }) : t('time.minute')}",
+      'hours.map(h => ({ value: h, label: h }))': 'hours.map(h => ({ value: h, label: hourLabel(h) }))',
+      "{ value: '', label: 'Select a van' }": "{ value: '', label: tE('selectVan') }",
+      "import { previewEventFromForm, previewLine, vanForPlace, PREVIEW_PLACEHOLDERS } from '@/lib/schedule-graphics/event-preview'":
+        "import { previewEventFromForm, previewLine, vanForPlace } from '@/lib/schedule-graphics/event-preview'",
+      "<strong>{vanPx(vanAddonLabel('month'))}</strong>": "price: vanPx(vanAddonLabel('month')), b: chunks => <strong>{chunks}</strong>",
+      "Add truck — {vanPx(vanAddonLabel('mo'))}": "{t('vanBilling.add', { price: vanPx(vanAddonLabel('mo')) })}",
+    }
+    for (const m of movedEdits) {
+      const to = P1D_NOW[m.now]
+      if (to) Object.assign(m, Array.isArray(to) ? { nowIn: to[0], now: to[1] } : { now: to })
+    }
+    /* …and the words those re-pointed claims carried, asserted where they live now (as moved; GB-fixed spellings are
+     * proven by language-phase-1d): the address examples' UK branch, the van picker's placeholder, the time boxes'
+     * labels, and the extra-truck button. */
+    const p1dWordsHold = /other \{e\.g\. 123 High St, Wickhambrook\}/.test(gbWords('manageScheduleEvent.addressPlaceholder'))
+      && /other \{e\.g\. Wickhambrook\}/.test(gbWords('manageScheduleEvent.areaPlaceholder'))
+      && gbWords('manageScheduleEvent.selectVan') === 'Select a van'
+      && gbWords('manageScheduleEvent.time.hourOf') === '{label} hour' && gbWords('manageScheduleEvent.time.hour') === 'Hour'
+      && gbWords('manageScheduleEvent.time.minuteOf') === '{label} minute' && gbWords('manageScheduleEvent.time.minute') === 'Minute'
+      && gbWords('manageSettings.vanBilling.add') === 'Add truck — {price}'
+      && /<b>\{price\}<\/b>/.test(gbWords('manageSettings.vanBilling.body'))
+      && gbWords('manageScheduleVerify.malformed') === "That doesn't look like a web address. Try something like yourtruck.co.uk/events"
+    if (!p1dWordsHold) { console.log('      ⛔ A RE-PINNED (Phase 1d) CLAIM\'S WORDS ARE NOT THE WORDS IT CARRIED'); return false }
     const PHASE_2B_LEFT = [
       /^import \{ formatTime, getLocalDateInTz \} from '@\/lib\/time-utils'$/, /^interface Truck \{ custom_domain\?/,
       /^const now = new Date\(\)$/, /new Date\(`\$\{[\w.]+\}T/, /toLocaleTimeString\(\[\]/, /toLocaleDateString\('en-GB'/,
@@ -2651,8 +2870,36 @@ function runWiringSuite(lib) {
       /^const contactPhoneErr = \(form\.contact_phone \|\| ''\)\.trim\(\) !== '' && !isValidUKPhone\(form\.contact_phone \|\| ''\)$/,
       /^<Input label="Phone" required type="tel" .*placeholder="07700 900123" error=\{contactPhoneErr \? 'Please enter a valid UK phone \(e\.g\. 07700 900123\)' : undefined\} \/>$/,
     ]
+    /* ══ ⚠️ RE-PINNED (Language Phase 1d): THE WORDS LEFT THE PAGE FOR messages/en-GB.json ═══════════════════════════
+     * Phase 1d rewrote every line of Menu, Schedule and Settings that carried words into a `t('key')` read (and its
+     * imports of the copy constants). `RAWP` resolves the plain reads back to their words, so most of those lines are
+     * themselves again; what cannot be resolved statically is a line whose words were a template — counts, plurals,
+     * `{n} item{n === 1 ? '' : 's'}` — and is now one ICU message. Those are accounted HERE, not waived:
+     * a lost line is a 1d word move ONLY IF Phase 1d's own diff (756ca09 → now) removed it, from the page or a file
+     * named in MOVED_INTO, IN A HUNK THAT ADDS A MESSAGE READ (`t…('key'` / `t….rich(` / `translatorFor(` / `gb('`)
+     * — so a hunk that only deleted code is still a loss — or it is an `import` line of that diff. The words
+     * themselves are proven by scripts/language-phase-1d.cjs (rendered before vs after) and messages-parity. */
+    const p1dMoved = new Map()
+    for (const f of ['app/manage/[token]/page.tsx', ...MOVED_INTO]) {
+      // the translators this file declares (`const tE = useT('manageScheduleEvent')`, `= translatorFor(…)`), and `gb(` reads
+      const names = [...new Set([...read(f).matchAll(/const (\w+) = (?:useT|translatorFor)\(/g)].map(m => m[1]))]
+      const P1D_READ = new RegExp(`\\b(?:${[...names, 'gb', 'gbSetting'].join('|')})(?:\\.rich)?\\(|\\b\\w*[wW]ords\\.\\w+`)
+      const diff = require('child_process').execFileSync('git', ['diff', '-U0', '756ca09', '--', f],
+        { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+      for (const hunk of diff.split(/\n(?=@@ )/).slice(1)) {
+        const body = hunk.split('\n').slice(1)
+        const plus = body.filter(x => x.startsWith('+')).map(x => x.slice(1))
+        const reads = plus.some(x => P1D_READ.test(x))
+        for (const x of body.filter(y => y.startsWith('-')).map(y => y.slice(1).trim())) {
+          if (reads || /^import /.test(x)) p1dMoved.set(norm(x), (p1dMoved.get(norm(x)) || 0) + 1)
+        }
+      }
+    }
     const unexplained = gone.filter(l => {
       if (!l) return false
+      // ⚠️ RE-PINNED (Language Phase 1d): see `p1dMoved` above — consumed as a multiset, one excuse per removal.
+      // Whitespace-blind (`norm`), as `movedTo` is: a line that reached a MOVED_INTO file was reformatted on the way.
+      if ((p1dMoved.get(norm(l)) || 0) > 0) { p1dMoved.set(norm(l), p1dMoved.get(norm(l)) - 1); return false }
       /* ⛔ COMMENT-STRIPPING RESIDUE IS NOT A LOST LINE. `blockStrip` removes the body of a block
        * comment, so a JSX line that was only `{/* … *\/}` collapses to `{}` — a token pair that
        * carries no code at all. There are 387 of them in the baseline and 416 in the working tree, so
@@ -2717,7 +2964,7 @@ function runWiringSuite(lib) {
     {
       const code = now.join('\n')
       const oldForms = /toLocaleDateString\('en-GB'|toLocaleTimeString\(|\.getHours\(\)|toISOString\(\)\.split\('T'\)\[0\]|new Date\(`\$\{[\w.]+\}T|'Europe\/London'|const days = \['Sun'/
-      const newForms = [/isPlausiblePhone\(form\.contact_phone \|\| '', phoneCopy\.phoneCountry, phoneCopy\.phoneCheck\)/, /placeholder=\{phonePlaceholder\(phoneCopy\)\} error=\{contactPhoneErr \? phoneErrorMessage\('phone', phoneCopy\) : undefined\}/,
+      const newForms = [/isPlausiblePhone\(form\.contact_phone \|\| '', phoneCopy\.phoneCountry, phoneCopy\.phoneCheck\)/, /placeholder=\{phonePlaceholder\(phoneCopy\)\} error=\{contactPhoneErr \? phoneErrorMessage\('phone', phoneCopy, ts\.locale\) : undefined\}/, // ⚠️ RE-PINNED (Language Phase 1d): the error is worded in the truck's locale (`ts.locale`)
         /const ts = useTruckTime\(\)/, /<TruckTimeContext\.Provider value=\{truck\.time \?\? null\}>/, /formatShortOrdinalDate\(/,
         /formatNumericDate\(localDateOfInstant\(createdAt, ts\.timeZone\), ts\)/, /formatTrialEndDate\(truck\.trial_expires_at, mgTime!\)/,
         /time=\{truck\.time \?\? null\} \/>\}/, /const isoDate = \(offset: number\) => addDaysYmd\(getLocalDateInTz\(ts\.timeZone\), offset\)/]
@@ -2751,7 +2998,10 @@ function runWiringSuite(lib) {
     const contact = RAWP.slice(RAWP.indexOf('id="contact"'), RAWP.indexOf(`id="${after}"`))
     return /\{\/\* Cancellation policy \*\/\}/.test(sec)
       && /allow_customer_cancellation/.test(sec)
-      && /SETTING_COPY\.allowCancellation\.label/.test(sec)      // the wording is the same constant
+      // ⚠️ RE-PINNED (Language Phase 1d): the same words are the `settingsCopy` message SETTING_COPY's label reads
+      // (`tSet('allowCancellation.label')`) — asserted on the raw section, since `RAWP` shows it resolved.
+      && (() => { const raw = read(PAGE); return /\{tSet\('allowCancellation\.label'\)\}/.test(raw.slice(raw.indexOf('id="order-settings"'), raw.indexOf('id="truck-settings"'))) })()
+      && gbWords('settingsCopy.allowCancellation.label') === 'Allow customers to cancel orders'
       && !/Cancellation policy/.test(contact)                    // and it is no longer in Contact
       && i > 0 && j > i
   })())
@@ -2761,11 +3011,15 @@ function runWiringSuite(lib) {
    * no new wording was invented — and the duplicate label line inside the row went with it, so the
    * words appear exactly once. */
   t('🔴 "Allow customers to cancel orders" HAS ITS OWN HEADING, from SETTING_COPY', (() => {
-    const sec = RAWP.slice(RAWP.indexOf('id="order-settings"'), RAWP.indexOf('id="truck-settings"'))
-    const head = /<p className="text-base font-bold text-slate-800">\{SETTING_COPY\.allowCancellation\.label\}<\/p>/
-    return head.test(sec)
+    // ⚠️ RE-PINNED (Language Phase 1d): SETTING_COPY.allowCancellation.label is the `settingsCopy` message now, read
+    // as `tSet('allowCancellation.label')` — the same key, so still the setting's own words; raw section, read once.
+    const RAW = read(PAGE)
+    const sec = RAW.slice(RAW.indexOf('id="order-settings"'), RAW.indexOf('id="truck-settings"'))
+    const head = /<p className="text-base font-bold text-slate-800">\{tSet\('allowCancellation\.label'\)\}<\/p>/
+    return head.test(sec) && gbWords('settingsCopy.allowCancellation.label') === 'Allow customers to cancel orders'
+      && /label: gbSetting\('allowCancellation\.label'\)/.test(read('lib/settings-copy.ts'))
       // ⚠️ ONCE, not twice — the row's own duplicate label line is gone.
-      && (sec.match(/SETTING_COPY\.allowCancellation\.label/g) || []).length === 1
+      && (sec.match(/allowCancellation\.label/g) || []).length === 1
   })())
   /* ⛔ THE STRAY LINE ABOVE THE WORDING. `pt-3 border-t border-slate-100` was a DIVIDER separating
    * this group from the contact fields above it in its old home. Carried into a card of its own it drew
@@ -3055,7 +3309,10 @@ function runWiringSuite(lib) {
        * ⚠️ THE END IS THE NEXT SIBLING COMMENT, which is a real boundary in the file. */
       && (() => {
         const end = RAWP.indexOf('⛔ THE "Filled from" LINE AND THE TWO BUTTONS ARE NOT HERE ANY MORE', pane)
-        return end > pane && /Filled from \{pickedPlace\?\.name/.test(RAWP.slice(pane, end))
+        // ⚠️ RE-PINNED (Language Phase 1d): the line is `tE('filledFrom', { place: pickedPlace?.name … })` now
+        // (manageScheduleEvent.filledFrom = "Filled from {place}").
+        return end > pane && /tE\('filledFrom', \{ place: pickedPlace\?\.name/.test(RAWP.slice(pane, end))
+          && gbWords('manageScheduleEvent.filledFrom') === 'Filled from {place}'
       })()
   })())
   t('⛔ …and the FOOTER is back to just Cancel and Add event', (() => {
@@ -3125,7 +3382,11 @@ function runWiringSuite(lib) {
   })())
   t('🔴 nothing unfilled can render as "undefined" or "Invalid date"',
     /export const PREVIEW_PLACEHOLDERS/.test(read(PREVIEW_LIB))
-    && /const date = isYmd\(form\.event_date\) \? toDdMmYyyy\(form\.event_date\) : PREVIEW_PLACEHOLDERS\.date/.test(read(PREVIEW_LIB))
+    // ⚠️ RE-PINNED (Language Phase 1d): the placeholder is `dateWord` — the form's words (manageScheduleEvent.previewDate,
+    // "Pick a date"), else PREVIEW_PLACEHOLDERS.date — never the raw value.
+    && /const date = isYmd\(form\.event_date\) \? toDdMmYyyy\(form\.event_date\) : dateWord/.test(read(PREVIEW_LIB))
+    && /const dateWord = input\.words\?\.date \?\? PREVIEW_PLACEHOLDERS\.date/.test(read(PREVIEW_LIB))
+    && gbWords('manageScheduleEvent.previewDate') === 'Pick a date'
     && !/new Date\(form\./.test(read(PREVIEW_LIB)))
   t('🔴 THE VAN DEFAULT NEVER PRE-SELECTS AN INACTIVE VAN, and never overrides a chosen one',
     /activeVanIds: vans\.map\(v => v\.id\)/.test(P)
@@ -3214,9 +3475,12 @@ function runVariants() {
       P => !P.placeWhenLine({ last_event_date: '2026-10-06', last_start_time: '17:00:00', last_end_time: '20:00:00' }, d => d).includes('17:00')],
     /* ⚠️ RE-ANCHORED (Phase 2B, 10 October 2026): placeWhenLine and timeRangeLabel take the truck's time
      * settings now. Same variant, same meaning. */
+    // ⚠️ RE-PINNED (Language Phase 1d): placeWhenLine gained an optional `words?: PlaceWhenWords` parameter
+    // (the places list passes the line's words from `schedulePlaces`). Anchor updated to the new
+    // signature; the injected Next-first branch and the assertion are unchanged.
     ['W5e 🔴 …and goes back to preferring Next over Last',
-      changed(LIB_SRC, "export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string, ts: TimeSettings | null | undefined): string {\n  if (p.last_event_date) {",
-        "export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string, ts: TimeSettings | null | undefined): string {\n  if (p.next_event_date) {\n    const tn = timeRangeLabel(p.next_start_time, p.next_end_time, ts)\n    return `Next: ${fmtDay(p.next_event_date)}${tn ? ` \u00b7 ${tn}` : ''}`\n  }\n  if (p.last_event_date) {", 'W5e'),
+      changed(LIB_SRC, "export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string, ts: TimeSettings | null | undefined, words?: PlaceWhenWords): string {\n  if (p.last_event_date) {",
+        "export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string, ts: TimeSettings | null | undefined, words?: PlaceWhenWords): string {\n  if (p.next_event_date) {\n    const tn = timeRangeLabel(p.next_start_time, p.next_end_time, ts)\n    return `Next: ${fmtDay(p.next_event_date)}${tn ? ` \u00b7 ${tn}` : ''}`\n  }\n  if (p.last_event_date) {", 'W5e'),
       P => P.placeWhenLine({ last_event_date: '2026-10-06', next_event_date: '2026-10-20' }, d => d).startsWith('Next')],
 
     /* ⚠️ RE-ANCHORED (3 October 2026): the line now carries the retired-row guard
@@ -3443,7 +3707,9 @@ function runVariants() {
     /* 🔴 THE WORDING GUARD. One word changed in Settings must fail, or "no wording changed" is a
      * claim rather than a check. */
     ['W32 🔴 ONE WORD OF SETTINGS COPY IS CHANGED',
-      changed(read(PAGE), '>New to HatchGrab?<', '>New to Hatchgrab?<', 'W32'),
+      // ⚠️ RE-PINNED (Language Phase 1d): the words are `t('walkthrough.title')` now, so the one-word change is made
+      // to the page as the wording check reads it — with its message reads resolved to the en-GB words.
+      changed(withGbWords(read(PAGE)), '>New to HatchGrab?<', '>New to Hatchgrab?<', 'W32'),
       src => {
         const base = require('child_process')
           .execFileSync('git', ['show', '197cb8c:app/manage/[token]/page.tsx'], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
@@ -3577,13 +3843,15 @@ function runVariants() {
       changed(read(PAGE), 'compact\n' + ' '.repeat(24) + 'hideOrderButton',
         'compact', 'W35'),
       src => /compact\s*\n?\s*hideOrderButton/.test(src)],
+    // ⚠️ RE-PINNED (Language Phase 1d): the unfilled-date word is `dateWord` (the caller's words, else
+    // PREVIEW_PLACEHOLDERS.date) — W36, W51 and the check they break are anchored on that form; same meaning.
     ['W36 🔴 an unfilled date is handed to the card raw, so it renders "Invalid Date"',
-      changed(read(PREVIEW_LIB), "  const date = isYmd(form.event_date) ? toDdMmYyyy(form.event_date) : PREVIEW_PLACEHOLDERS.date",
+      changed(read(PREVIEW_LIB), "  const date = isYmd(form.event_date) ? toDdMmYyyy(form.event_date) : dateWord",
         "  const date = String(form.event_date ?? '')", 'W36'),
-      src => /isYmd\(form\.event_date\) \? toDdMmYyyy\(form\.event_date\) : PREVIEW_PLACEHOLDERS\.date/.test(src)],
+      src => /isYmd\(form\.event_date\) \? toDdMmYyyy\(form\.event_date\) : dateWord/.test(src)],
     ['W51 🔴 the preview hands the card a raw ISO date again — "2026-10-22" on screen',
-      changed(read(PREVIEW_LIB), 'isYmd(form.event_date) ? toDdMmYyyy(form.event_date) : PREVIEW_PLACEHOLDERS.date',
-        'isYmd(form.event_date) ? form.event_date : PREVIEW_PLACEHOLDERS.date', 'W51'),
+      changed(read(PREVIEW_LIB), 'isYmd(form.event_date) ? toDdMmYyyy(form.event_date) : dateWord',
+        'isYmd(form.event_date) ? form.event_date : dateWord', 'W51'),
       src => /toDdMmYyyy\(form\.event_date\)/.test(src)],
 
     ['W37 🔴 the van default overrides a van the operator already chose',

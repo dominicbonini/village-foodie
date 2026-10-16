@@ -255,9 +255,7 @@
     "windowAria": "Capacity window (minutes)",
     "windowEvery": "every {duration}",
     "assignTruck": "Assign a truck to this event before setting kitchen capacity.",
-    "setCapacityFirst": "Set a capacity to choose which categories count.",
-    "capacityDesc": "The most items your kitchen can turn out at once, across all the categories you’ve ticked. Each category’s own batch size still applies on top.",
-    "capacityExample": "Example: if you can cook 4 mains in 5 minutes, then set it to 4 items every 5 minutes. The total capacity limits orders across all selected categories so if you want to only sell a maximum of 10 starters and mains every 5 minutes, then set Total Capacity to 10 items every 5 minutes and select Starters and Mains tickbox. This will still keep your mains restricted to 4 items every 5 minutes."
+    "setCapacityFirst": "Set a capacity to choose which categories count."
   },
   "common": {
     "saving": "Saving…",

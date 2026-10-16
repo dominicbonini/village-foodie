@@ -21,6 +21,15 @@
 
 import { SETTING_COPY } from '@/lib/settings-copy'
 import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
+import { translatorFor } from '@/lib/i18n/translator'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/serviceSettings'
+
+/* ── 🔴 LANGUAGE PHASE 1d: THE WORDS LIVE IN messages/en-GB.json `serviceSettings` (US in en-US.json) ──────────
+ * A screen that knows its truck reads them with `useT('serviceSettings')`, so a US truck gets its own words
+ * ("Pickup times", "Same settings for all trucks"). The exports below are the SAME messages in en-GB, kept for
+ * the callers that have not moved yet — one definition of every sentence, never a second typed copy. */
+const gb = translatorFor(DEFAULT_LOCALE, 'serviceSettings')
 
 /**
  * The five service settings an event type can set, keyed by their `SERVICE_ROWS` id.
@@ -29,7 +38,7 @@ import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
  */
 export const SERVICE_SETTING_LABELS = {
   /** Settings → Your trucks → Kitchen, the Collection times sub-card heading. */
-  collection_interval_mins: 'Collection times',
+  collection_interval_mins: gb('labels.collection_interval_mins'),
 
   /**
    * 🔴 RE-EXPORTED FROM lib/settings-copy.ts, NOT RETYPED. Settings renders
@@ -44,10 +53,10 @@ export const SERVICE_SETTING_LABELS = {
   order_ready: SETTING_COPY.orderReady.label,
 
   /** Settings → Order settings, the cash-split row. */
-  takes_cash: 'Do you take cash?',
+  takes_cash: gb('labels.takes_cash'),
 
   /** Settings → Your trucks → Kitchen, the offline-protection card heading. */
-  offline_protection: 'Offline order protection',
+  offline_protection: gb('labels.offline_protection'),
 
   /**
    * The dashboard's Settings tab, the buzzer-prompt card heading.
@@ -55,7 +64,7 @@ export const SERVICE_SETTING_LABELS = {
    * October 2026 and was relabelled `'Buzzers'` on the way — which is how a setting ended up with two
    * names and why this file exists. The string here is that card's title, unchanged.
    */
-  buzzer_prompt: 'Remind me to add a buzzer',
+  buzzer_prompt: gb('labels.buzzer_prompt'),
 } as const
 
 export type ServiceSettingId = keyof typeof SERVICE_SETTING_LABELS
@@ -79,7 +88,7 @@ export type ServiceSettingId = keyof typeof SERVICE_SETTING_LABELS
  * ONE van's value while the others may differ, and the words say so without claiming a number the
  * screen cannot show.
  */
-export const TYPE_FOLLOWS_VAN_TITLE = "Follows each van's usual setting"
+export const TYPE_FOLLOWS_VAN_TITLE = gb('typeFollowsVanTitle')
 
 /**
  * ── ⛔ `TAKES_CASH_ALL_VANS_TITLE` IS DELETED, AND ITS DELETION IS THE FIX ────────────────────────
@@ -112,8 +121,8 @@ export const TYPE_FOLLOWS_VAN_TITLE = "Follows each van's usual setting"
  * they all the same?" is a question about the vans, and caching it would give two answers that could
  * disagree. **Nothing is written on load.**
  */
-export const SAME_SETTINGS_ALL_VANS_LABEL = 'Same settings for all vans'
-export const SAME_SETTINGS_ALL_VANS_HEADER = 'All vans'
+export const SAME_SETTINGS_ALL_VANS_LABEL = gb('sameSettingsAllVansLabel')
+export const SAME_SETTINGS_ALL_VANS_HEADER = gb('sameSettingsAllVansHeader')
 
 /**
  * The confirm shown on OFF → ON, verbatim as instructed.
@@ -126,9 +135,7 @@ export const SAME_SETTINGS_ALL_VANS_HEADER = 'All vans'
  * expected it to would otherwise think the copy had half-failed.
  * ⚠️ ON → OFF ASKS NOTHING AND COPIES NOTHING: every van keeps the values it has.
  */
-export const SAME_SETTINGS_CONFIRM =
-  "Copy Van 1's settings to every van? This copies all of Van 1's van settings, the same as "
-  + "'Same as Van 1' in Settings. Kitchen capacity has its own switch."
+export const SAME_SETTINGS_CONFIRM = gb('sameSettingsConfirm')
 
 /**
  * ── 🔴 "Remind me to add a buzzer": WHAT STANDARD'S SWITCH ACTUALLY WRITES, AND THE MISMATCH ─────
@@ -164,13 +171,11 @@ export const BUZZER_STANDARD_WRITES_RACK = true
  * (`update_van_settings` / `update_truck`), not a second path of their own. If that ever stops being
  * true, this sentence is the thing that becomes a lie.
  */
-export const EVENT_TYPES_FOOTER_STANDARD =
-  'Standard is your usual setup. Changing it here also changes it in Settings.'
-export const EVENT_TYPES_FOOTER_ONE_EVENT =
-  "To change a setting for one event only, use that event's dashboard."
+export const EVENT_TYPES_FOOTER_STANDARD = gb('eventTypesFooterStandard')
+export const EVENT_TYPES_FOOTER_ONE_EVENT = gb('eventTypesFooterOneEvent')
 
 /** The header's one remaining subtitle. "Grey = same as Standard" is gone — nothing is grey now. */
-export const EVENT_TYPES_SUBTITLE = 'Changes save as you go.'
+export const EVENT_TYPES_SUBTITLE = gb('eventTypesSubtitle')
 
 /**
  * The ⋯ menu's reset item, and what it asks before doing it.
@@ -178,9 +183,8 @@ export const EVENT_TYPES_SUBTITLE = 'Changes save as you go.'
  * ⚠️ IT SETS EVERY SETTING ON THAT TYPE BACK TO NULL, which is what the type started as. The confirm
  * exists because it is the one item in that menu that discards work the operator did.
  */
-export const MATCH_STANDARD_LABEL = 'Match Standard'
-export const MATCH_STANDARD_CONFIRM =
-  'Put every setting on this type back to Standard? Anything you changed here will be cleared.'
+export const MATCH_STANDARD_LABEL = gb('matchStandardLabel')
+export const MATCH_STANDARD_CONFIRM = gb('matchStandardConfirm')
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // EVENT PRICING (§70, October 2026)
@@ -199,15 +203,15 @@ export const MATCH_STANDARD_CONFIRM =
 
 export const PRICE_SETTING_LABELS = {
   /** The switch that turns a type's pricing on. Off = the type charges menu prices exactly. */
-  price_change_on: 'Change prices',
+  price_change_on: gb('priceLabels.price_change_on'),
   /** The across-the-board rule's mode. */
-  price_mode: 'Price change',
+  price_mode: gb('priceLabels.price_mode'),
   /** The rule's amount. The box's suffix is `amountUnitFor(mode, symbol)` — '%' or the truck's currency symbol. */
-  price_amount: 'Amount',
+  price_amount: gb('priceLabels.price_amount'),
   /** Applied after the rule, never to a typed price. */
-  price_rounding: 'Rounding',
+  price_rounding: gb('priceLabels.price_rounding'),
   /** The per-item section's own row, with the Hide/Show button at its right. */
-  item_prices: 'Item prices',
+  item_prices: gb('priceLabels.item_prices'),
 } as const
 
 /**
@@ -231,11 +235,11 @@ export const PRICE_SETTING_LABELS = {
 // LABELS carry the TRUCK'S currency symbol ("+ £" in the UK, "+ $" in the US), not a typed £.
 export const PRICE_MODE_VALUES = ['add_amount', 'add_pct', 'sub_amount', 'sub_pct', 'none'] as const
 export const priceModeChoices = (currencySymbol: string) => [
-  { value: 'add_amount', label: `+ ${currencySymbol}` },
-  { value: 'add_pct', label: '+ %' },
-  { value: 'sub_amount', label: `− ${currencySymbol}` },
-  { value: 'sub_pct', label: '− %' },
-  { value: 'none', label: 'Set each price myself' },
+  { value: 'add_amount', label: gb('priceMode.add_amount', { symbol: currencySymbol }) },
+  { value: 'add_pct', label: gb('priceMode.add_pct') },
+  { value: 'sub_amount', label: gb('priceMode.sub_amount', { symbol: currencySymbol }) },
+  { value: 'sub_pct', label: gb('priceMode.sub_pct') },
+  { value: 'none', label: gb('priceMode.none') },
 ] as const
 
 /**
@@ -251,13 +255,13 @@ export const PRICE_MODES_WITH_AMOUNT: readonly string[] =
 /** The three roundings. ⚠️ 'None' here means no rounding, which IS the absence of the step. */
 // The whole-unit rounding names the truck's currency ("Nearest £1", "Nearest $1").
 export const priceRoundingChoices = (currencySymbol: string) => [
-  { value: 'none', label: 'None' },
-  { value: 'nearest_1', label: `Nearest ${currencySymbol}1` },
-  { value: 'up_1', label: 'Always round up' },
+  { value: 'none', label: gb('priceRounding.none') },
+  { value: 'nearest_1', label: gb('priceRounding.nearest_1', { symbol: currencySymbol }) },
+  { value: 'up_1', label: gb('priceRounding.up_1') },
 ] as const
 
 /** The Standard column's one cell on the "Change prices" row. */
-export const PRICES_STANDARD_CELL = 'Your menu prices'
+export const PRICES_STANDARD_CELL = gb('pricesStandardCell')
 
 /**
  * ── 🔴 PRICES ARE TRUCK-WIDE, NEVER PER VAN, AND THIS CELL IS WHERE THAT IS SAID ─────────────────
@@ -266,10 +270,10 @@ export const PRICES_STANDARD_CELL = 'Your menu prices'
  * another at the same pitch — so the Standard side of the PRICES rows is ONE cell spanning every van
  * column. The title is what stops that reading as "the other vans have no price setting".
  */
-export const PRICES_TRUCK_WIDE_TITLE = 'Your prices are the same for every van'
+export const PRICES_TRUCK_WIDE_TITLE = gb('pricesTruckWideTitle')
 
 /** The item rows' Standard cell heading — the menu price column. */
-export const PRICES_MENU_CELL = 'Menu'
+export const PRICES_MENU_CELL = gb('pricesMenuCell')
 
 /**
  * ── ⛔ UNUSED SINCE 5 October 2026, AND KEPT ONLY AS A RECORD OF WHAT WAS LOST ───────────────────
@@ -283,7 +287,7 @@ export const PRICES_MENU_CELL = 'Menu'
  * "N typed" for an EVENT. Restoring it is one cell in the band's `typeCells` branch if Dominic wants
  * it back; it was dropped to follow "a band like PRICES and SERVICE" literally.
  */
-export const PRICES_TYPE_OFF_CELL = 'Menu prices'
+export const PRICES_TYPE_OFF_CELL = gb('pricesTypeOffCell')
 
 /** The text button at the right of the "Item prices" row. State is per browser session only. */
 /* ══ 🔴 "Show prices" / "Hide prices", AND NO COUNT (5 October 2026) ════════════════════════════
@@ -291,8 +295,8 @@ export const PRICES_TYPE_OFF_CELL = 'Menu prices'
  * nobody acts on (an operator does not decide whether to unfold a list based on its length), and
  * "items" in a PRICES band invited the reading that the band was about availability. The pill now
  * names what it reveals. */
-export const ITEM_PRICES_SHOW = 'Show prices'
-export const ITEM_PRICES_HIDE = 'Hide prices'
+export const ITEM_PRICES_SHOW = gb('itemPricesShow')
+export const ITEM_PRICES_HIDE = gb('itemPricesHide')
 
 /**
  * ══ 🔴 §2 · THE PHONE CARD'S OWN WORDS FOR THE ITEM PRICES (10 October 2026) ══════════════════════
@@ -307,17 +311,17 @@ export const ITEM_PRICES_HIDE = 'Hide prices'
  * least defensible. Every other mode has an across-the-board rule that already answers "what will this
  * cost", so the list is an optional second look and gets a real button.
  */
-export const PRICE_ITEMS_HEADING = 'Set the price of each item'
+export const PRICE_ITEMS_HEADING = gb('priceItemsHeading')
 /** ⚠️ "›" AND "⌃", THE SAME TWO GLYPHS THE REST OF THIS PRODUCT USES for "opens" and "closes". */
-export const PRICE_ITEMS_OPEN = 'See or change each item\u2019s price \u203a'
-export const PRICE_ITEMS_CLOSE = 'Hide item prices \u2303'
+export const PRICE_ITEMS_OPEN = gb('priceItemsOpen')
+export const PRICE_ITEMS_CLOSE = gb('priceItemsClose')
 /**
  * ⛔ IT WAS `"2 set by hand"`. "Set by hand" names the MECHANISM; an operator wants to know that two
  * dishes are not following the rule. ⚠️ **HIDDEN AT ZERO**, because "0 items have their own price" is
  * a sentence about nothing — the absence of overrides is the normal state and needs no line.
  */
 export const ownPriceCount = (n: number) =>
-  n === 1 ? '1 item has its own price' : `${n} items have their own price`
+  gb('ownPriceCount', { n, count: String(n) })
 
 /**
  * The DASHBOARD SHEET's footer line.
@@ -329,7 +333,7 @@ export const ownPriceCount = (n: number) =>
  * ⚠️ IT SURVIVES ON THE SHEET, which is a different screen with room for it and a different audience
  * (somebody at a hatch mid-service who did not set the event up).
  */
-export const PRICE_TYPE_HINT = 'Press a price to type your own.'
+export const PRICE_TYPE_HINT = gb('priceTypeHint')
 
 /**
  * ── 🔴 THE LIVE-EVENT NOTICE, WORD FOR WORD ──────────────────────────────────────────────────────
@@ -340,8 +344,7 @@ export const PRICE_TYPE_HINT = 'Press a price to type your own.'
  * ⚠️ DO NOT SOFTEN IT TO "may use". An operator changing prices mid-service needs to know that the
  * next order through the hatch is at the new price.
  */
-export const PRICES_LIVE_NOTICE =
-  'This event is live. New orders use the new prices. Orders already placed keep theirs.'
+export const PRICES_LIVE_NOTICE = gb('pricesLiveNotice')
 
 /* ══ ⛔ THE SHEET'S SIX STRINGS ARE DELETED (5 October 2026) ══════════════════════════════════════
  *   PRICES_SHEET_TITLE · PRICES_CHOICE_OWN · PRICES_CHOICE_MENU · PRICES_SHEET_SAVE ·
@@ -361,7 +364,7 @@ export const PRICES_LIVE_NOTICE =
  * in Add event each time this place is picked, and choosing a different type there for ONE event does
  * not change what is stored here.
  */
-export const PLACE_TYPE_HELPER = 'Add event picks this type whenever you choose this place.'
+export const PLACE_TYPE_HELPER = gb('placeTypeHelper')
 
 /**
  * The line under "Picture for posts" when a place has none.
@@ -369,14 +372,13 @@ export const PLACE_TYPE_HELPER = 'Add event picks this type whenever you choose 
  * about their posts; this says their standard design is being used, which is both true and reassuring
  * — most places should never need their own.
  */
-export const POST_PICTURE_STANDARD_NOTE = 'Event posts here use your standard design.'
+export const POST_PICTURE_STANDARD_NOTE = gb('postPictureStandardNote')
 
 /** The Menu & Stock card's own description, which the Price column changed. */
-export const EVENT_ITEMS_CARD_DESCRIPTION =
-  'Prices, item limits and availability for this event only. Changes take effect immediately.'
+export const EVENT_ITEMS_CARD_DESCRIPTION = gb('eventItemsCardDescription')
 
 /** The column header. ⚠️ Kept short — it sits over a 20-unit column beside Item limit. */
-export const EVENT_PRICE_COLUMN_LABEL = 'Price'
+export const EVENT_PRICE_COLUMN_LABEL = gb('eventPriceColumnLabel')
 
 /**
  * The line under an item whose price THIS EVENT has changed: "menu £12.00 · this event", or
@@ -397,7 +399,7 @@ export const EVENT_PRICE_COLUMN_LABEL = 'Price'
  *                       (an offline snapshot from before 10 October 2026) ⇒ the figure with no symbol.
  */
 export const eventPriceOwnNote = (fallbackPounds: number, typeName: string | null | undefined, money: MoneyFormat | null | undefined): string =>
-  `${typeName ?? 'menu'} ${formatMajorOrBare(fallbackPounds, money, 'event price note')} · this event`
+  gb('eventPriceOwnNote', { hasType: typeName != null ? 'yes' : 'no', type: typeName ?? '', price: formatMajorOrBare(fallbackPounds, money, 'event price note') })
 
 /* ══ 🔴 THE PRICE COLUMN IS READ-ONLY UNTIL "✎ Edit prices" (5 October 2026, Dominic) ═════════════
  * ⛔ IT WAS AN OPEN INPUT BESIDE Item limit, AND THAT WAS THE DEFECT. Prices change rarely and are
@@ -408,9 +410,9 @@ export const eventPriceOwnNote = (fallbackPounds: number, typeName: string | nul
  * Cancel means no request was ever made. */
 
 /** The header button that opens edit mode. ⚠️ The pencil is in the string, so every surface agrees. */
-export const EVENT_PRICE_EDIT = '✎ Edit prices'
-export const EVENT_PRICE_CANCEL = 'Cancel'
-export const EVENT_PRICE_SAVE = 'Save prices'
+export const EVENT_PRICE_EDIT = gb('eventPriceEdit')
+export const EVENT_PRICE_CANCEL = gb('eventPriceCancel')
+export const EVENT_PRICE_SAVE = gb('eventPriceSave')
 
 /**
  * The blue note under the card header while editing.
@@ -419,8 +421,7 @@ export const EVENT_PRICE_SAVE = 'Save prices'
  * really are disabled in edit mode — one act at a time, so a half-finished price edit cannot be
  * entangled with a stock change the operator did mean to keep.
  */
-export const EVENT_PRICE_EDIT_NOTE =
-  'Editing prices for this event only. Item limits and availability are locked until you save.'
+export const EVENT_PRICE_EDIT_NOTE = gb('eventPriceEditNote')
 
 /**
  * The extra line when the event is LIVE.
@@ -428,7 +429,7 @@ export const EVENT_PRICE_EDIT_NOTE =
  * always-editable box; this sits under a header for as long as the editor is open, and the sentence
  * that matters while deciding a number is the first one.
  */
-export const EVENT_PRICE_LIVE_NOTE = 'Live: new orders use the new prices.'
+export const EVENT_PRICE_LIVE_NOTE = gb('eventPriceLiveNote')
 
 /**
  * The sub-row the offline-protection SWITCH reveals when it is on.
@@ -441,4 +442,4 @@ export const EVENT_PRICE_LIVE_NOTE = 'Live: new orders use the new prices.'
  * ⚠️ THE MODE'S LABELS STILL COME FROM `OFFLINE_PROTECTION_MODES`, unchanged — this is a change of
  * SHAPE, not of vocabulary, so Settings › Kitchen and the dashboard still word them identically.
  */
-export const OFFLINE_WHEN_OFFLINE_LABEL = 'When offline'
+export const OFFLINE_WHEN_OFFLINE_LABEL = gb('offlineWhenOfflineLabel')

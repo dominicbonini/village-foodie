@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Allow customers to cancel orders",
+    "sentence": "Customers can cancel up to <select></select> before their pickup time"
+  },
+  "autoAccept": {
+    "label": "Auto-accept orders",
+    "help": "Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity. Orders with customer notes (e.g. an allergy) will still need to be confirmed."
+  },
+  "orderReady": {
+    "label": "Order-ready step",
+    "help": "Show a “Mark ready” button on the orders screen. Kitchen screens are set separately, on each device. Customers are emailed whenever an order is marked ready. Applies to all events — you can still turn it on or off for a single event on its dashboard."
+  },
+  "buzzers": {
+    "label": "Do you hand out buzzers for collection?",
+    "help": "Record which buzzer you gave each customer, so you know who to look for when their food is ready.",
+    "countLabel": "How many buzzers do you have?"
+  }
+}

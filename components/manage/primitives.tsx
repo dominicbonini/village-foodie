@@ -10,6 +10,8 @@ import { UK_14, allergenVocab } from '@/lib/allergens'
 import { useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 import { type ReactNode, type HTMLAttributes, type RefObject } from 'react'
 import { GREEN_SOLID } from '@/lib/ui-tokens'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/managePrimitives'
 
 export function Spinner() { return <div className="w-5 h-5 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" /> }
 
@@ -184,6 +186,8 @@ export const DIETARY_VOCAB = ['Vegetarian', 'Vegan', 'Halal', 'Kosher', 'Gluten 
 // CONTROLLED: the operator SELECTS a mode (highlighted), then a separate "Next" advances — no auto-advance
 // on click (so they can change their mind before proceeding). Both wizards render their own Next/Skip below.
 export function AllergenModeChooser({ value, onChange }: { value: 'per_dish' | 'card' | null; onChange: (mode: 'per_dish' | 'card') => void }) {
+  // Language Phase 1d: the words are `managePrimitives.allergenMode` in messages/.
+  const t = useT('managePrimitives')
   const card = (mode: 'per_dish' | 'card', selectedBorder: string) =>
     `text-left border-2 rounded-xl p-4 transition-colors ${value === mode ? `${selectedBorder} bg-orange-50/40 ring-2 ring-orange-300` : 'border-slate-200 hover:border-orange-300'}`
   return (
@@ -191,17 +195,17 @@ export function AllergenModeChooser({ value, onChange }: { value: 'per_dish' | '
       <button type="button" aria-pressed={value === 'per_dish'} onClick={() => onChange('per_dish')} className={card('per_dish', 'border-orange-400')}>
         <div className="flex items-center gap-2 mb-1">
           <span className="text-lg">🍽️</span>
-          <span className="font-bold text-slate-900 text-sm">Show allergens against each dish</span>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">Recommended</span>
+          <span className="font-bold text-slate-900 text-sm">{t('allergenMode.perDishTitle')}</span>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">{t('allergenMode.recommended')}</span>
         </div>
-        <p className="text-xs text-slate-500">Review every dish and confirm its allergens. Customers see per-dish tags plus an allergen summary card derived from them.</p>
+        <p className="text-xs text-slate-500">{t('allergenMode.perDishBody')}</p>
       </button>
       <button type="button" aria-pressed={value === 'card'} onClick={() => onChange('card')} className={card('card', 'border-orange-400')}>
         <div className="flex items-center gap-2 mb-1">
           <span className="text-lg">🛡️</span>
-          <span className="font-bold text-slate-900 text-sm">Show an allergen card</span>
+          <span className="font-bold text-slate-900 text-sm">{t('allergenMode.cardTitle')}</span>
         </div>
-        <p className="text-xs text-slate-500">Upload or paste a single allergen card (PDF, image, or text), shown as-is. Per-dish tags stay hidden.</p>
+        <p className="text-xs text-slate-500">{t('allergenMode.cardBody')}</p>
       </button>
     </div>
   )

@@ -12,10 +12,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { generateQRWithLogo } from '@/lib/generateQRCode'
-import {
-  LINK_QR_TITLE, LINK_COPY, LINK_COPIED, QR_DOWNLOAD, TABLE_CARDS, NEW_LINK, NEW_LINK_CONFIRM,
-  LINK_OFF_NOTICE, CARD_SCAN, CARD_BLURB, CARD_FOOTER, PRIVATE_PUBLIC_NAME,
-} from '@/lib/private-events/copy'
+/* 🔴 EVERY WORD IS A `privateEvents` MESSAGE (Language Phase 1d), in the truck's language — the panel's, the
+ * confirm's and the printed cards'. The US says "right away". */
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/privateEvents'
 
 export interface PrivateLinkData {
   eventId: string
@@ -44,20 +44,22 @@ export interface PrivateLinkData {
  * ⚠️ THE QR IS A DATA URI ALREADY IN HAND, so the print window needs no network and cannot race the
  * print dialog with an image that has not loaded.
  */
-function printTableCards(d: PrivateLinkData, qrDataUrl: string) {
-  const title = (d.name || PRIVATE_PUBLIC_NAME).replace(/[<>&]/g, '')
+type PrivateEventsT = ReturnType<typeof useT<'privateEvents'>>
+
+function printTableCards(d: PrivateLinkData, qrDataUrl: string, t: PrivateEventsT) {
+  const title = (d.name || t('publicName')).replace(/[<>&]/g, '')
   const truck = d.truckName.replace(/[<>&]/g, '')
   const card = `
     <div class="card">
       <div class="truck">${truck}</div>
       <div class="event">${title}</div>
       <img class="qr" src="${qrDataUrl}" alt="" />
-      <div class="scan">${CARD_SCAN}</div>
-      <div class="blurb">${CARD_BLURB}</div>
-      <div class="foot">${CARD_FOOTER}</div>
+      <div class="scan">${t('cards.scan')}</div>
+      <div class="blurb">${t('cards.blurb')}</div>
+      <div class="foot">${t('cards.footer')}</div>
     </div>`
   const html = `<!doctype html>
-<html><head><meta charset="utf-8"><title>${truck} — table cards</title>
+<html><head><meta charset="utf-8"><title>${t('cards.printTitle', { truck })}</title>
 <style>
   @page { size: A4; margin: 0; }
   * { box-sizing: border-box; }
@@ -92,6 +94,7 @@ export function PrivateLinkPanel({
   onReplaced?: (next: { token: string; url: string }) => void
   editable?: boolean
 }) {
+  const t = useT('privateEvents')
   const [qr, setQr] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -136,14 +139,14 @@ export function PrivateLinkPanel({
     a.href = qr
     /* The file name says which event it is, so a truck with three private bookings in a week does not
      * end up with qr-code(2).png. */
-    a.download = `${(data.name || PRIVATE_PUBLIC_NAME).replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-qr.png`
+    a.download = `${(data.name || t('publicName')).replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-qr.png`
     a.click()
-  }, [qr, data.name])
+  }, [qr, data.name, t])
 
-  /** ⛔ CONFIRMED FIRST, AND THE CONFIRM NAMES THE PAPER. See NEW_LINK_CONFIRM. */
+  /** ⛔ CONFIRMED FIRST, AND THE CONFIRM NAMES THE PAPER. See `privateEvents.link.newLinkConfirm`. */
   const makeNewLink = useCallback(async () => {
     if (!editable || busy) return
-    if (!window.confirm(NEW_LINK_CONFIRM)) return
+    if (!window.confirm(t('link.newLinkConfirm'))) return
     setBusy(true); setErr(null)
     try {
       const token = window.location.pathname.split('/')[2] || ''
@@ -152,28 +155,28 @@ export function PrivateLinkPanel({
         body: JSON.stringify({ token, action: 'private_new_link', id: data.eventId }),
       })
       const j = await r.json()
-      if (!r.ok || !j?.ok) { setErr(j?.error || 'Could not make a new link.'); return }
+      if (!r.ok || !j?.ok) { setErr(j?.error || t('link.newLinkFailed')); return }
       onReplaced?.({ token: String(j.token), url: String(j.url) })
     } catch {
-      setErr('Could not make a new link.')
+      setErr(t('link.newLinkFailed'))
     } finally {
       setBusy(false)
     }
-  }, [editable, busy, data.eventId, onReplaced])
+  }, [editable, busy, data.eventId, onReplaced, t])
 
   /* ── ORDERING BY LINK IS OFF: there is no link, and saying so is the whole panel ──────────────── */
   if (!data.linkOrdering || !data.url) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-        <h3 className="text-sm font-semibold text-slate-900">{LINK_QR_TITLE}</h3>
-        <p className="mt-2 text-xs leading-relaxed text-slate-600">{LINK_OFF_NOTICE}</p>
+        <h3 className="text-sm font-semibold text-slate-900">{t('link.title')}</h3>
+        <p className="mt-2 text-xs leading-relaxed text-slate-600">{t('link.offNotice')}</p>
       </div>
     )
   }
 
   return (
     <div className="rounded-xl border border-purple-200 bg-white p-4">
-      <h3 className="text-sm font-semibold text-slate-900">{LINK_QR_TITLE}</h3>
+      <h3 className="text-sm font-semibold text-slate-900">{t('link.title')}</h3>
       {data.name && <p className="mt-0.5 text-xs text-slate-500">{data.name}</p>}
 
       <div className="mt-3 flex flex-col items-center gap-3 sm:flex-row sm:items-start">
@@ -183,7 +186,7 @@ export function PrivateLinkPanel({
 
         <div className="min-w-0 flex-1">
           <label className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-            Private link
+            {t('link.label')}
           </label>
           <div className="mt-1 flex items-center gap-2">
             {/* 🔴 `readOnly`, NOT `disabled`: the operator must be able to select the text by hand when
@@ -198,7 +201,7 @@ export function PrivateLinkPanel({
               type="button" onClick={copy}
               className="shrink-0 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
             >
-              {copied ? LINK_COPIED : LINK_COPY}
+              {copied ? t('link.copied') : t('link.copy')}
             </button>
           </div>
 
@@ -207,13 +210,13 @@ export function PrivateLinkPanel({
               type="button" onClick={download} disabled={!qr}
               className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              {QR_DOWNLOAD}
+              {t('link.qrDownload')}
             </button>
             <button
-              type="button" onClick={() => qr && printTableCards(data, qr)} disabled={!qr}
+              type="button" onClick={() => qr && printTableCards(data, qr, t)} disabled={!qr}
               className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              {TABLE_CARDS}
+              {t('link.tableCards')}
             </button>
           </div>
         </div>
@@ -228,11 +231,10 @@ export function PrivateLinkPanel({
             type="button" onClick={makeNewLink} disabled={busy}
             className="rounded-lg border border-red-400 bg-white px-2.5 py-1.5 text-xs font-bold text-red-700 hover:bg-red-100 disabled:opacity-60"
           >
-            {busy ? 'Working…' : NEW_LINK}
+            {busy ? t('link.working') : t('link.newLink')}
           </button>
           <p className="mt-2 text-[11px] leading-relaxed text-red-800">
-            Use this if the link has gone somewhere it shouldn’t. The current link stops working
-            straight away, and printed QR codes stop working too.
+            {t('link.newLinkHelp')}
           </p>
           {err && <p className="mt-2 text-[11px] font-semibold text-red-700">{err}</p>}
         </div>

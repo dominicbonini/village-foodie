@@ -17,7 +17,7 @@
   "noVan": {
     "title": "Add a van",
     "detail": "Events run against a van — without one there is nothing to take orders through.",
-    "where": "Settings → Vans"
+    "where": "Settings → Your trucks"
   },
   "kitchenCapacityUnset": {
     "title": "Set your kitchen capacity",

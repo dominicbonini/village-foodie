@@ -1,4 +1,4 @@
-# Language Phase 2 — every US view that differs from BEFORE (2149 US views; 1350 changed). Written by scripts/language-phase-2.cjs.
+# Language Phase 2 — every US view that differs from BEFORE (2149 US views; 1357 changed). Written by scripts/language-phase-2.cjs.
 # view id	why (named code change in F, or words only)
 1a/orderPage/US|loading	words
 1a/orderPage/US|eventsError	words
@@ -1088,6 +1088,12 @@
 1b/printing/test|US|58|noName	code: P2-us-clock-tickets + words
 1b/printing/test|US|80	code: P2-us-clock-tickets + words
 1b/printing/test|US|80|noName	code: P2-us-clock-tickets + words
+1c/api/US|setup|countryMissing	code: 1d-setup-trade-area-codes
+1c/api/US|setup|countryUnknown	code: 1d-setup-trade-area-codes
+1c/api/US|setup|countryOff	code: 1d-setup-trade-area-codes
+1c/api/US|setup|zoneBad	code: 1d-setup-trade-area-codes
+1c/api/US|setup|townMissing	code: 1d-setup-trade-area-codes
+1c/api/US|setup|townLong	code: 1d-setup-trade-area-codes
 1c/api/US|cancel-email-change|noChangeId	words
 1c/api/US|change-email|brevoFails	words
 1c/api/US|change-email|ok	words
@@ -1288,6 +1294,7 @@
 1c/setup/US|page|identity|serverError	words
 1c/setup/US|page|identity|otherCountry	words
 1c/setup/US|page|identity|noCountries	words
+1c/setup/US|step|allErrors	code: 1d-setup-step-fixture
 1c/setup/US|provision|operator|minimal	words
 1c/setup/US|provision|operator|signup	words
 1c/setup/US|provision|operator|whatsapp	words
@@ -1343,7 +1350,7 @@
 2/extra/US|card|sep|compact	code: P2-us-clock
 2/extra/US|card|oct|full	code: P2-us-clock
 2/extra/US|card|oct|compact	code: P2-us-clock
-2/extra/US|manage|schedule|cards	code: P2-us-clock
+2/extra/US|manage|schedule|cards	code: P2-us-clock+1d-us-address-style
 2/extra/US|rows|demo|pizza	code: P2-demo-US + words
 2/extra/US|rows|demo|burgers	code: P2-demo-US + words
 2/extra/US|rows|demo|curries	code: P2-demo-US + words

@@ -46,6 +46,10 @@ let pass = 0, fail = 0
 const t = (label, ok) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label) } }
 const head = (s) => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 92 - s.length)))
 const read = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
+// ⚠️ RE-PINNED (Language Phase 1d): lib/private-events/copy.ts's words moved into messages/en-GB.json
+// (`privateEvents`), and Manage's Schedule words into `manageScheduleEvent`. `msgGB('ns.key')` reads the GB
+// words at a key so a moved sentence is still asserted EXACTLY.
+const msgGB = (k) => k.split('.').reduce((o, p) => (o == null ? undefined : o[p]), JSON.parse(read('messages/en-GB.json')))
 const exists = (p) => fs.existsSync(path.join(REPO, p))
 /** 🔴 COMMENTS STRIPPED BEFORE ANY SOURCE-TEXT COUNT. A rule written in prose about a column must
  *  never be mistaken for a write of it — that is how "one writer" claims become false. */
@@ -829,13 +833,20 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       && /const ids = customs\.map\(t => t\.id\)/.test(ui)
       /* ⚠️ THE DISABLED STATES USE THE CUSTOM INDEX TOO — with Private at grid index 0, `i === 0`
        * would have disabled Move left on the first custom type one column too late. */
-      && /customIndexOf\(t\.id\) === 0/.test(ui)
-      && /customIndexOf\(t\.id\) === customCount - 1/.test(ui))
+      // ⚠️ RE-PINNED (Language Phase 1d): the grid's `t =>` loop variable is `ty` now (`t` is the translator).
+      && /customIndexOf\(ty\.id\) === 0/.test(ui)
+      && /customIndexOf\(ty\.id\) === customCount - 1/.test(ui))
     t('⛔ …and its ⋯ menu offers ONLY Match Standard — no rename, move or delete',
-      /\{t\.kind !== 'private' && \(/.test(ui) && (ui.match(/t\.kind !== 'private'/g) || []).length >= 2)
-    t('🔴 …and it is drawn with a lock, not a colour dot', /t\.kind === 'private' \? \(/.test(ui))
+      // ⚠️ RE-PINNED (Language Phase 1d): loop variable `t` → `ty`; the two gated menu items are counted on `ty`
+      // (the `customs` filter, which still says `t =>`, used to make up the third match).
+      /\{ty\.kind !== 'private' && \(/.test(ui) && (ui.match(/ty\.kind !== 'private'/g) || []).length >= 2)
+    // ⚠️ RE-PINNED (Language Phase 1d): loop variable `t` → `ty`.
+    t('🔴 …and it is drawn with a lock, not a colour dot', /ty\.kind === 'private' \? \(/.test(ui))
+    // ⚠️ RE-PINNED (Language Phase 1d): ORDERING_SECTION was deleted from copy.ts; the band's label is
+    // tp('grid.orderingSection') and its GB words are asserted at privateEvents.grid.orderingSection.
     t('🔴 the ORDERING section exists and holds the one row no other type has',
-      /k: 'section', id: 'sec-ordering', label: ORDERING_SECTION/.test(ui)
+      /k: 'section', id: 'sec-ordering', label: tp\('grid\.orderingSection'\)/.test(ui)
+      && msgGB('privateEvents.grid.orderingSection') === 'ORDERING'
       && /k: 'private-link'/.test(ui))
     t("⛔ Standard's cell on that row is a STATEMENT, not a switch that could only be off",
       /data-private-link-standard/.test(ui) && /PRIVATE_LINK_STANDARD_CELL/.test(ui))
@@ -862,8 +873,17 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       })
       t(`⛔ no screen re-types "${str}" (${typed.join(', ') || 'none'})`, typed.length === 0)
     }
-    t('🔴 …and the copy module defines them all',
-      COPY_STRINGS.every(s2 => read('lib/private-events/copy.ts').includes(s2)))
+    // ⚠️ RE-PINNED (Language Phase 1d): the copy module's words are the `privateEvents` messages now (copy.ts's
+    // header says so; its remaining constants read them through translatorFor). "Defines them all" = each word is
+    // either still a literal in copy.ts or an exact leaf of privateEvents in messages/en-GB.json — still ONE home.
+    t('🔴 …and the copy module defines them all', (() => {
+      const leaves = []
+      const walkLeaves = (o) => { for (const v of Object.values(o || {})) { if (typeof v === 'string') leaves.push(v); else walkLeaves(v) } }
+      walkLeaves(msgGB('privateEvents'))
+      const copy = read('lib/private-events/copy.ts')
+      return leaves.length > 10
+        && COPY_STRINGS.every(s2 => copy.includes(`'${s2}'`) || leaves.includes(s2))
+    })())
   }
 
   /* ── 🔴 BYTE-IDENTITY: A TRUCK WITH NO PRIVATE EVENTS IS UNTOUCHED ───────────────────────────
@@ -1004,9 +1024,11 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       /\{privateChosen && \(/.test(ui) && /data-private-panel/.test(ui))
     t('⛔ …and the two sentences are ONE BLOCK, above the name field (Dominic, 5 October)', (() => {
       const panel = ui.slice(ui.indexOf('data-private-panel'), ui.indexOf('data-private-panel') + 1400)
-      const help = panel.indexOf('PRIVATE_TICK_HELP')
-      const promise = panel.indexOf('PRIVATE_LINK_PROMISE')
-      const name = panel.indexOf('PRIVATE_NAME_LABEL')
+      // ⚠️ RE-PINNED (Language Phase 1d): PRIVATE_TICK_HELP / PRIVATE_LINK_PROMISE / PRIVATE_NAME_LABEL are
+      // tp('form.help') / tp('form.linkPromise') / tp('form.nameLabel') now; same order asserted.
+      const help = panel.indexOf("tp('form.help')")
+      const promise = panel.indexOf("tp('form.linkPromise')")
+      const name = panel.indexOf("tp('form.nameLabel')")
       return help > 0 && promise > help && name > promise
     })())
 
@@ -1043,17 +1065,26 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       /const confirmPrivate = !!evForPrivacy && !!privateTypeId/.test(page)
       && /is_private: confirmPrivate/.test(page))
     t('⛔ …and shows the missing-times prompt when Private is selected with no times',
-      /PRIVATE_NEEDS_TIMES/.test(page))
+      // ⚠️ RE-PINNED (Language Phase 1d): {PRIVATE_NEEDS_TIMES} → {tP('form.needsTimes')} in the approval card,
+      // with the GB sentence asserted at privateEvents.form.needsTimes.
+      /\{tP\('form\.needsTimes'\)\}/.test(page)
+      && msgGB('privateEvents.form.needsTimes') === 'Add a start and end time — a private event taking orders by link needs them.')
 
     /* 🔴 THE DASHBOARD'S TWO CONFIRMS, both directions, with words about what the PUBLIC sees.
      * ⚠️ RE-AIMED AT THE PAGE (5 October 2026) — they are in the type picker behind `Manage event ▾`
      * now. The sentences and the rule that decides when each shows are unchanged. */
     t('🔴 switching TO private confirms, and the sentence is about the map and the link',
       /CONFIRM_TO_PRIVATE/.test(dash)
-      && /This hides the address and the event from the map/.test(read('lib/private-events/copy.ts')))
+      // ⚠️ RE-PINNED (Language Phase 1d): copy.ts's CONFIRM_TO_PRIVATE now reads gb('confirmToPrivate'); the
+      // sentence is asserted in messages/en-GB.json at privateEvents.confirmToPrivate.
+      && /export const CONFIRM_TO_PRIVATE = gb\('confirmToPrivate'\)/.test(read('lib/private-events/copy.ts'))
+      && /This hides the address and the event from the map/.test(msgGB('privateEvents.confirmToPrivate')))
     t('🔴 switching FROM private confirms, and names the link stopping',
       /CONFIRM_FROM_PRIVATE/.test(dash)
-      && /the private link will stop working/.test(read('lib/private-events/copy.ts')))
+      // ⚠️ RE-PINNED (Language Phase 1d): copy.ts's CONFIRM_FROM_PRIVATE now reads gb('confirmFromPrivate'); the
+      // sentence is asserted in messages/en-GB.json at privateEvents.confirmFromPrivate.
+      && /export const CONFIRM_FROM_PRIVATE = gb\('confirmFromPrivate'\)/.test(read('lib/private-events/copy.ts'))
+      && /the private link will stop working/.test(msgGB('privateEvents.confirmFromPrivate')))
     t('⛔ …and neither shows on a switch that does not cross the privacy line',
       /const toPrivate=typePending!==undefined&&targetIsPrivate&&!eventIsPrivate/.test(dash)
       && /const fromPrivate=typePending!==undefined&&!targetIsPrivate&&eventIsPrivate/.test(dash))
@@ -1120,7 +1151,8 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       return fn.length > 400 && !/<select/.test(fn) && /<Select\b/.test(fn)
     })())
     t('⛔ …and so does the Van field',
-      /<Select\s*\n\s*ariaLabel="Van"/.test(page)
+      // ⚠️ RE-PINNED (Language Phase 1d): ariaLabel="Van" → ariaLabel={tE('van')}; GB word at manageScheduleEvent.van.
+      /<Select\s*\n\s*ariaLabel=\{tE\('van'\)\}/.test(page) && msgGB('manageScheduleEvent.van') === 'Van'
       && !/<select\s*\n\s*value=\{editingEvent\.van_id/.test(page))
   }
 

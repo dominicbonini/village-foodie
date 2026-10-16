@@ -19,6 +19,15 @@ export const PREVIEW_PLACEHOLDERS = {
   time: '--:--',
 } as const
 
+/** 🔴 THE PLACEHOLDER WORDS IN THE TRUCK'S LANGUAGE (Language Phase 1d). The Add event form passes them from
+ *  `manageScheduleEvent`; a caller that passes none gets the English above, which is what the form always showed. */
+export interface PreviewWords {
+  venue?: string
+  date?: string
+  /** The card's truck name when the truck has none. */
+  truck?: string
+}
+
 /** The form fields the preview reads. A subset of the Add event form's state. */
 export interface PreviewForm {
   venue_name?: string | null
@@ -84,11 +93,14 @@ export function previewEventFromForm(input: {
   truckName: string
   /** The van's display name, when the truck has more than one and one is chosen. */
   vanName?: string | null
+  words?: PreviewWords
 }): VillageEvent {
   const { form, truckName } = input
+  const venueWord = input.words?.venue ?? PREVIEW_PLACEHOLDERS.venue
+  const dateWord = input.words?.date ?? PREVIEW_PLACEHOLDERS.date
   const txt = (v: unknown): string => String(v ?? '').trim()
 
-  const venueName = txt(form.venue_name) || PREVIEW_PLACEHOLDERS.venue
+  const venueName = txt(form.venue_name) || venueWord
   /* 🔴 THE CARD'S DATE CONTRACT IS 'DD/MM/YYYY', NOT 'YYYY-MM-DD' — fixed 5 October 2026.
    * THE BUG: the preview showed "2026-10-22" where every other surface shows "Thu 22 Oct".
    * THE CAUSE: `TruckListCard.formatStandardDate` SPLITS ON '/' (components/TruckListCard.tsx:93).
@@ -101,7 +113,7 @@ export function previewEventFromForm(input: {
    * preview rendering the public page's own component.
    * ⚠️ THE PLACEHOLDER IS LEFT ALONE. "Pick a date" has no slashes, so the card returns it verbatim,
    * which is exactly what an unfilled field should show. */
-  const date = isYmd(form.event_date) ? toDdMmYyyy(form.event_date) : PREVIEW_PLACEHOLDERS.date
+  const date = isYmd(form.event_date) ? toDdMmYyyy(form.event_date) : dateWord
   const startTime = txt(form.start_time) || PREVIEW_PLACEHOLDERS.time
   const endTime = txt(form.end_time) || PREVIEW_PLACEHOLDERS.time
 
@@ -110,7 +122,7 @@ export function previewEventFromForm(input: {
     date,
     startTime,
     endTime,
-    truckName: txt(truckName) || 'Your truck',
+    truckName: txt(truckName) || (input.words?.truck ?? 'Your truck'),
     venueName,
     status: 'unconfirmed',
     village: txt(form.town) || undefined,
@@ -135,11 +147,12 @@ export function previewLine(input: {
   vanName?: string | null
   fmtDay: (ymd: string | null) => string
   fmtTimes: (start: string | null | undefined, end: string | null | undefined) => string
+  words?: PreviewWords
 }): string {
   const { form, vanName, fmtDay, fmtTimes } = input
   const parts: string[] = []
   const venue = String(form.venue_name ?? '').trim()
-  parts.push(venue || PREVIEW_PLACEHOLDERS.venue)
+  parts.push(venue || (input.words?.venue ?? PREVIEW_PLACEHOLDERS.venue))
   const day = isYmd(form.event_date) ? fmtDay(form.event_date) : ''
   if (day) parts.push(day)
   const times = fmtTimes(form.start_time, form.end_time)

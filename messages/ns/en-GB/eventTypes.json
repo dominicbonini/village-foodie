@@ -1,0 +1,85 @@
+{
+  "title": "Event types",
+  "newTypeButton": "+ New event type",
+  "close": "Close",
+  "loading": "Loading…",
+  "missingTitle": "Event types aren’t switched on yet.",
+  "missingBody": "The database update for this feature hasn’t been applied. Nothing is broken — every event is using your normal setup.",
+  "maxPlanFallback": "Event types are part of the Max plan.",
+  "maxPlanBody": "Events that already have a type keep using it. To add, change or assign types, move to Max.",
+  "column": "Column",
+  "vanGone": "That van has gone.",
+  "typeGone": "That type has gone.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "More for {name}",
+  "rename": "Rename",
+  "moveLeft": "Move left",
+  "moveRight": "Move right",
+  "delete": "Delete",
+  "sections": {
+    "vans": "VANS",
+    "prices": "PRICES",
+    "itemPrices": "ITEM PRICES",
+    "service": "SERVICE"
+  },
+  "labelFor": "{label} for {name}",
+  "intervalEvery": "Every {mins} min",
+  "noTypes": "You have no event types yet, so every event uses your normal setup.",
+  "renameTitle": "Rename this type",
+  "name": "Name",
+  "cancel": "Cancel",
+  "save": "Save",
+  "copyVanOne": "Copy Van 1’s settings",
+  "thisType": "this type",
+  "matchTitle": "Match Standard for “{name}”?",
+  "matchKeeps": "Anything you changed on a single event’s dashboard stays as it is, and this type’s prices are not changed.",
+  "matchWillUse": "It will use: {summary}",
+  "deleteTitle": "Delete “{name}”?",
+  "deleteBody": "{n, plural, =0 {No upcoming events use “{name}”.} one {{count} upcoming event uses “{name}”. They’ll go back to Standard.} other {{count} upcoming events use “{name}”. They’ll go back to Standard.}} Anything you changed on a single event stays as it is.",
+  "keep": "Keep",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "default",
+    "vanSetup": "This van’s usual setup — used at every event with no type.",
+    "standardSetup": "Your usual setup — used at every event with no type.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} upcoming event} other {{upcomingCount} upcoming events}} · {changed, plural, =0 {nothing changed yet} other {{changedCount} of {total} changed}}",
+    "noMenuItems": "No menu items yet — add them in Menu › Items."
+  },
+  "newType": {
+    "title": "New event type",
+    "namePlaceholder": "e.g. School fete",
+    "help": "Tap a name or type your own. It starts as a copy of Standard, and changing Standard later won’t change it. Change anything after.",
+    "create": "Create",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Pub",
+      "market": "Market",
+      "privateHire": "Private hire"
+    }
+  },
+  "select": {
+    "label": "Event type",
+    "usual": "{name} is usual for this place."
+  },
+  "summary": {
+    "normalSetup": "Your normal setup",
+    "sameAsStandard": "Same as Standard",
+    "buzzersOn": "buzzers on",
+    "buzzersOff": "buzzers off",
+    "takeCashOn": "take cash on",
+    "takeCashOff": "take cash off",
+    "markReadyOn": "mark-ready step on",
+    "markReadyOff": "mark-ready step off",
+    "collectionEvery": "collection every {mins} min",
+    "offlineOff": "offline protection off",
+    "offlineKeepTaking": "offline: keep taking orders",
+    "offlinePause": "offline: pause ordering"
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong",
+    "couldNotLoad": "Could not load",
+    "couldNotSave": "Could not save",
+    "noVans": "This truck has no vans to change."
+  }
+}

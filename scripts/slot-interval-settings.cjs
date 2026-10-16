@@ -25,6 +25,13 @@ const ivLib       = strip(src('lib/slot-interval.ts'))
 const mig         = src('supabase/migrations/20260917_van_collection_intervals.sql')
 const { INTERVAL_CHOICES, isIntervalChoice, normaliseInterval } = compile(REPO, ['lib/slot-interval.ts'], 'settings').req('lib/slot-interval.js')
 const { intervalExample } = compile(REPO, ['lib/slot-generation.ts'], 'settings2').req('lib/slot-generation.js')
+// ⚠️ RE-PINNED (Language Phase 1d): the box's words and the 400's sentence moved out of the source into
+// messages/en-GB.json (manageSettings.collection.*, serviceSettings.labels.*, errorsManage.*). The copy checks
+// below now read the en-GB catalogue and RENDER the message (next-intl's own createTranslator, so plurals and
+// selects resolve exactly as on the page) — the words are still asserted exactly, only their home moved.
+const GB = JSON.parse(src('messages/en-GB.json'))
+const { createTranslator } = require(require.resolve('next-intl', { paths: [REPO] }))
+const gbT = (ns) => createTranslator({ locale: 'en-GB', messages: GB, namespace: ns })
 
 // The van destructure IS the allowlist: a key not named is dropped silently.
 const vanKeys = (manage.match(/const \{ vanId,([^}]+)\} = body/) || [])[1].split(',').map(s => s.trim()).filter(Boolean)
@@ -58,7 +65,12 @@ check(vanKeys.includes('collection_interval_mins') && vanKeys.includes('operator
 check(/if \(collection_interval_mins !== undefined\) \{\s*if \(!isIntervalChoice\(collection_interval_mins\)\)/.test(manage), 'customer value validated with isIntervalChoice')
 check(/if \(operator_collection_interval_mins !== undefined\) \{\s*if \(operator_collection_interval_mins !== null && !isIntervalChoice\(operator_collection_interval_mins\)\)/.test(manage), '🔴 override: NULL accepted explicitly, anything else validated — so the box can be unticked')
 check(/intervalUpdates\.operator_collection_interval_mins = operator_collection_interval_mins/.test(manage), '…and the value (including null) is written, not skipped (into intervalUpdates — see the tolerance harness)')
-check((manage.match(/Collection times must be every \$\{INTERVAL_CHOICES\.join\(', '\)\} minutes\./g) || []).length === 2, 'both return a visible 400, not a silent drop')
+// ⚠️ RE-PINNED (Language Phase 1d): the sentence moved to errorsManage.collection_interval_choices and the route
+// returns it through `refuse(code, 400, params)` (manageErrorBody). Still asserted: BOTH branches refuse, with a 400,
+// listing INTERVAL_CHOICES — and the en-GB sentence is word for word what was inline.
+check((manage.match(/return refuse\('collection_interval_choices', 400, \{ choices: INTERVAL_CHOICES\.join\(', '\) \}\)/g) || []).length === 2
+  && gbT('errorsManage')('collection_interval_choices', { choices: '5, 10, 15, 20, 30' }) === 'Collection times must be every 5, 10, 15, 20, 30 minutes.',
+  'both return a visible 400, not a silent drop')
 check(/status: 400/.test(manage.slice(manage.indexOf('collection_interval_mins !== undefined'))), 'the refusal is an HTTP 400')
 
 console.log('\n── get_vans: the intervals come from a SEPARATE read, NOT the van-list select ──────────')
@@ -145,17 +157,43 @@ check(rawPage.indexOf('{/* Kitchen capacity — ONE aligned grid') === -1,
  * ⚠️ THE TWO ARE INDEPENDENT and both are needed — the first says WHERE the box is, the second says
  * the words come from the one place that owns them. Dropping either was a silent weakening. */
 const serviceCopy = src('lib/copy/serviceSettings.ts')
-check(/<p className=\{`\$\{SUBCARD_HEADING\} mb-1`\}>\{SERVICE_SETTING_LABELS\.collection_interval_mins\}<\/p>/.test(box),
-  'the title is rendered from SERVICE_SETTING_LABELS, not retyped')
-check(/collection_interval_mins: 'Collection times'/.test(serviceCopy),
+const tS = gbT('manageSettings')
+// ⚠️ RE-PINNED (Language Phase 1d): SERVICE_SETTING_LABELS' text moved to serviceSettings.labels.* and the page now
+// reads it with `tSvc` (useT('serviceSettings')) — the SAME message the SERVICE_SETTING_LABELS export reads in en-GB,
+// so the title still comes from the one place that owns it, never retyped.
+check(/<p className=\{`\$\{SUBCARD_HEADING\} mb-1`\}>\{tSvc\('labels\.collection_interval_mins'\)\}<\/p>/.test(box)
+  && /collection_interval_mins: gb\('labels\.collection_interval_mins'\)/.test(serviceCopy),
+  'the title is rendered from serviceSettings.labels (what SERVICE_SETTING_LABELS reads), not retyped')
+// ⚠️ RE-PINNED (Language Phase 1d): the literal moved from lib/copy/serviceSettings.ts to the en-GB catalogue.
+check(gbT('serviceSettings')('labels.collection_interval_mins') === 'Collection times',
   'title is exactly "Collection times"')
-check(/How far apart collection times are\. This doesn&apos;t change kitchen capacity or prep times\./.test(box), 'intro is exactly the one specified line')
-check(/<span className="text-sm font-semibold text-slate-800">Customer Collection Times<\/span>/.test(box), 'first select label is "Customer Collection Times"')
-check(/<span className="text-sm font-semibold text-slate-800">Your Collection Times<\/span>/.test(box), 'second select label is "Your Collection Times"')
-check(/<span className="text-sm text-slate-800">Use different times for orders I add<\/span>/.test(box), 'checkbox label is "Use different times for orders I add"')
-check(/\{overrideOn \? 'Customers can pick ' : 'You and your customers can pick '\}/.test(box), '🔴 the line under the first select switches wording with the box')
-check(/You can pick \{intervalExample\(operator\)\}/.test(box), 'the line under the second select reads "You can pick …"')
-check(/Every \{n\} minutes/.test(box) && (box.match(/INTERVAL_CHOICES\.map/g) || []).length === 2, 'both selects use "Every N minutes" from INTERVAL_CHOICES')
+// ⚠️ RE-PINNED (Language Phase 1d): the intro moved to manageSettings.collection.help. Named GB fix
+// (language-phase-1d-gb-named.json): straight ' → ’ in "doesn’t" — the new words are accepted.
+check(/<p className="text-xs text-slate-500 mb-3">\{t\('collection\.help'\)\}<\/p>/.test(box)
+  && tS('collection.help') === 'How far apart collection times are. This doesn’t change kitchen capacity or prep times.', 'intro is exactly the one specified line')
+// ⚠️ RE-PINNED (Language Phase 1d): the two select labels moved to manageSettings.collection.customerTimes / yourTimes.
+// Named GB fix: "Customer Collection Times" / "Your Collection Times" → sentence case — the new words are accepted.
+check(/<span className="text-sm font-semibold text-slate-800">\{t\('collection\.customerTimes'\)\}<\/span>/.test(box)
+  && tS('collection.customerTimes') === 'Customer collection times', 'first select label is "Customer collection times" (named GB fix: sentence case)')
+check(/<span className="text-sm font-semibold text-slate-800">\{t\('collection\.yourTimes'\)\}<\/span>/.test(box)
+  && tS('collection.yourTimes') === 'Your collection times', 'second select label is "Your collection times" (named GB fix: sentence case)')
+// ⚠️ RE-PINNED (Language Phase 1d): moved to manageSettings.collection.differentTimes, words unchanged.
+check(/<span className="text-sm text-slate-800">\{t\('collection\.differentTimes'\)\}<\/span>/.test(box)
+  && tS('collection.differentTimes') === 'Use different times for orders I add', 'checkbox label is "Use different times for orders I add"')
+// ⚠️ RE-PINNED (Language Phase 1d): the switch is now a `select` in manageSettings.collection.canPick, keyed by
+// `who: overrideOn ? 'customers' : 'everyone'` — the same two openings are rendered and asserted.
+check(/t\('collection\.canPick', \{ who: overrideOn \? 'customers' : 'everyone', example: pickExample\(customer\) \}\)/.test(box)
+  && tS('collection.canPick', { who: 'customers', example: 'X' }) === 'Customers can pick X'
+  && tS('collection.canPick', { who: 'everyone', example: 'X' }) === 'You and your customers can pick X', '🔴 the line under the first select switches wording with the box')
+// ⚠️ RE-PINNED (Language Phase 1d): manageSettings.collection.youCanPick; the example is `pickExample`, which is
+// intervalExample with each time put through the truck's clock (GB 24h prints it unchanged).
+check(/t\('collection\.youCanPick', \{ example: pickExample\(operator\) \}\)/.test(box)
+  && tS('collection.youCanPick', { example: 'X' }) === 'You can pick X'
+  && /const pickExample = \(iv: number\) => intervalExample\(iv\)\.replace\(/.test(rawPage), 'the line under the second select reads "You can pick …"')
+// ⚠️ RE-PINNED (Language Phase 1d): "Every {n} minutes" moved to manageSettings.collection.everyMinutes (a plural).
+check((box.match(/t\('collection\.everyMinutes', \{ n, count: String\(n\) \}\)/g) || []).length === 2
+  && INTERVAL_CHOICES.every(n => tS('collection.everyMinutes', { n, count: String(n) }) === `Every ${n} minutes`)
+  && (box.match(/INTERVAL_CHOICES\.map/g) || []).length === 2, 'both selects use "Every N minutes" from INTERVAL_CHOICES')
 // No stray copy: every quoted sentence in the box must be one V4 named.
 {
   const ALLOWED = ['Collection times', 'How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.',
@@ -166,7 +204,16 @@ check(/Every \{n\} minutes/.test(box) && (box.match(/INTERVAL_CHOICES\.map/g) ||
   // 18 September 2026: ONE conditional line under the selects — the misaligned-prep hint. Its sentence
   // comes from collectionTimesHint (lib/slot-interval), so it is not literal prose here; it is allowed by
   // asserting the single call, and nothing else.
-  check((box.match(/collectionTimesHint\(mc\)/g) || []).length === 1 && /misalignedCookingCategory\(overrideOn \? operator : customer, categories\)/.test(box), 'the ONE conditional hint line (misalignedCookingCategory → collectionTimesHint), and no other addition')
+  // ⚠️ RE-PINNED (Language Phase 1d): Manage's hint sentence moved from collectionTimesHint(mc) to the message
+  // manageSettings.collection.misaligned (same words; named GB fix adds the "1 minute" plural). Still ONE call.
+  check((box.match(/t\('collection\.misaligned', \{ name: mc\.name, mins: mc\.prepMins \}\)/g) || []).length === 1 && /misalignedCookingCategory\(overrideOn \? operator : customer, categories\)/.test(box), 'the ONE conditional hint line (misalignedCookingCategory → manageSettings.collection.misaligned), and no other addition')
+  // ⚠️ RE-PINNED (Language Phase 1d): with the words in messages, the prose scan below sees no text at all, so the
+  // "no extra text" guarantee is ALSO held on the message keys the box reads: exactly the V4 set, nothing added.
+  const V4_KEYS = ['collection.help', 'collection.unavailable', 'collection.customerTimes', 'collection.everyMinutes', 'collection.canPick',
+                   'collection.differentTimes', 'collection.yourTimes', 'collection.youCanPick', 'collection.misaligned']
+  const usedKeys = [...new Set([...strip(box).matchAll(/\bt\('([^']+)'/g)].map(m => m[1]))]
+  const strayKeys = usedKeys.filter(k => !V4_KEYS.includes(k))
+  check(strayKeys.length === 0 && (strip(box).match(/\btSvc\('/g) || []).length === 1, `no extra message in the box (${usedKeys.length} keys)${strayKeys.length ? ' — found: ' + JSON.stringify(strayKeys) : ''}`)
   const noComments = strip(box)
   const prose = [...noComments.matchAll(/>([^<>{}]*[a-z]{3}[^<>{}]*)</g)].map(m => m[1].trim()).filter(Boolean)
   const stray = prose.filter(t => !ALLOWED.some(a => a.trim() === t || t === a))

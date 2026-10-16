@@ -14,8 +14,10 @@ import type enGB from '@/messages/en-GB.json'
 import { translatorFor, type AppNamespace } from './translator'
 
 type Catalog = typeof enGB
-/** The namespaces whose keys are refusal codes. */
-export type ErrorNamespace = { [K in keyof Catalog]: K extends `errors${string}` ? K : never }[keyof Catalog]
+/** The namespaces whose keys are refusal codes. ⚠️ `tradeArea` (Language Phase 1d) is one too: lib/trade-area.ts's
+ *  refusals are codes shared by signup, provisioning and Manage, so they have their own namespace rather than a copy
+ *  in each `errors…` one (lib/i18n/manage-errors.ts, `tradeAreaErrorBody`). */
+export type ErrorNamespace = { [K in keyof Catalog]: K extends `errors${string}` | 'tradeArea' ? K : never }[keyof Catalog]
 export type ErrorCode<NS extends ErrorNamespace> = Extract<keyof Catalog[NS], string>
 export type ErrorParams = Record<string, string | number>
 

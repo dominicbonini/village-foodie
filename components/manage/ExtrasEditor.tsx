@@ -15,13 +15,16 @@
 // ══════════════════════════════════════════════════════════════
 import { useState, Fragment } from 'react'
 import { minRequiredForGroup } from '@/lib/modifier-rules'
-import { DEFAULT_STOCK_SCOPE_NOTE } from '@/lib/copy/stock'
 import { Card, Badge, EmptyState, Input, Btn, AllergenToggles, DietaryToggles } from './primitives'
 // 🔴 THE TRUCK'S MONEY FORMAT — every figure here, the worked examples included. This editor is rendered
 // only inside the manage page's CountrySettingsProvider (Modifiers tab).
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { moneyFormatOf } from '@/lib/country-settings-types'
 import { formatMajor, currencySymbol } from '@/lib/money-format'
+// Language Phase 1d: this editor's words (manageExtras).
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/manageExtras'
+import '@/lib/i18n/catalog/stockCopy'
 
 export interface ExtrasEditorGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 export interface ExtrasEditorOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number; allergens?: string[]; dietary_info?: string[]; available?: boolean; stock_count?: number | null }
@@ -38,7 +41,7 @@ export interface ExtrasEditorProps {
   showToast: (m: string, t?: any) => void
   // Reserved for label phrasing when groupRuleLabel is wired in (not referenced by this region yet).
   audience?: 'operator' | 'customer'
-  // Header copy — defaults match the manage Custom Extras section.
+  // Header copy — defaults (messages: manageExtras) match the manage Custom Extras section.
   title?: string
   description?: string
   note?: string
@@ -56,14 +59,19 @@ export interface ExtrasEditorProps {
 
 export default function ExtrasEditor({
   groups, options, items, categories, assignments, showToast,
-  title = 'Custom Extras',
+  title: titleProp,
   description,
-  note = 'Create a group of options and assign it to a menu category. All items in that category will offer those options when customers order.',
-  addLabel = '+ Add customisation',
+  note: noteProp,
+  addLabel: addLabelProp,
   onCreateGroup, onUpdateGroup, onDeleteGroup, onSaveOption, onDeleteOption, onToggleAssign, onToggleOption,
 }: ExtrasEditorProps) {
   const fmt = moneyFormatOf(useCountrySettings())
   const amount = (major: number) => formatMajor(major, fmt)
+  const t = useT('manageExtras')
+  const tStock = useT('stockCopy')   // the shared stock scope note, in the truck's language (Language Phase 1d)
+  const title = titleProp ?? t('title')
+  const note = noteProp ?? t('note')
+  const addLabel = addLabelProp ?? t('addLabel')
   // ── Ephemeral UI state (owned here; never leaks to the caller) ────────────────
   const [newGroupName, setNewGroupName] = useState('')
   const [showNewGroup, setShowNewGroup] = useState(false)
@@ -145,7 +153,7 @@ export default function ExtrasEditor({
       <div className="flex items-center justify-between mt-10 mb-4">
         <div>
           <h2 className="font-black text-slate-900 text-lg">{title}</h2>
-          <p className="text-slate-400 text-sm mt-0.5">{description ?? `Add paid or free options customers can choose when ordering — e.g. Extra Cheese +${amount(1.5)}, No Onion ${formatMajor(0, fmt, { trimWhole: true })}`}</p>
+          <p className="text-slate-400 text-sm mt-0.5">{description ?? t('description', { price: amount(1.5), zero: formatMajor(0, fmt, { trimWhole: true }) })}</p>
         </div>
         {canAddGroup && <Btn label={addLabel} onClick={() => { setShowNewGroup(true); setNewGroupName('') }} />}
       </div>
@@ -153,7 +161,7 @@ export default function ExtrasEditor({
 
       <div className="space-y-4">
       {groups.length === 0 && (
-        <EmptyState icon="⚙️" title="No custom extras yet" body={`Create a group like "Pizza extras" and add options like "Extra Cheese +${amount(1)}"`} />
+        <EmptyState icon="⚙️" title={t('emptyTitle')} body={t('emptyBody', { price: amount(1) })} />
       )}
 
       {groups.map(group => {
@@ -172,8 +180,8 @@ export default function ExtrasEditor({
               <div className="flex-1 min-w-0">
                 {!isOpen && <p className="font-black text-slate-900">{group.name}</p>}
                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                  <span className="text-slate-400 text-xs">{opts.length} option{opts.length !== 1 ? 's' : ''}</span>
-                  {attachedCount > 0 && <Badge label={`${attachedCount} dish${attachedCount !== 1 ? 'es' : ''}`} colour="green" />}
+                  <span className="text-slate-400 text-xs">{t('optionCount', { n: opts.length, count: String(opts.length) })}</span>
+                  {attachedCount > 0 && <Badge label={t('dishCount', { n: attachedCount, count: String(attachedCount) })} colour="green" />}
                 </div>
               </div>
               <span className={`transition-transform inline-block text-slate-400 text-xs flex-shrink-0 ${isOpen ? 'rotate-90' : ''}`}>▶</span>
@@ -204,14 +212,14 @@ export default function ExtrasEditor({
                         onClick={() => startRename(group)}
                         className="text-xs text-slate-500 hover:text-orange-600 font-bold px-2 py-1 rounded-lg hover:bg-orange-50 transition-colors"
                       >
-                        Rename
+                        {t('rename')}
                       </button>
                     )}
                     {canDeleteGroup && (
                       <button
                         onClick={() => onDeleteGroup?.(group)}
                         className="text-slate-400 hover:text-red-500 px-1.5 py-1 rounded-lg hover:bg-red-50 transition-colors text-sm"
-                        title="Delete group"
+                        title={t('deleteGroup')}
                       >
                         🗑
                       </button>
@@ -228,8 +236,8 @@ export default function ExtrasEditor({
                       onChange={e => rules(group, { is_required: e.target.checked })}
                       className="w-4 h-4 accent-orange-500"
                     />
-                    <span className="text-sm font-medium text-slate-700">Required</span>
-                    <span className="text-xs text-slate-400">(customer must choose)</span>
+                    <span className="text-sm font-medium text-slate-700">{t('required')}</span>
+                    <span className="text-xs text-slate-400">{t('requiredHint')}</span>
                   </label>
                   {/* Option (A) control: TWO buttons — "Choose one" (max 1, radio) + "Choose multiple"
                       (max > 1) — plus a dropdown ENABLED ONLY under "Choose multiple" (greyed/disabled
@@ -237,24 +245,24 @@ export default function ExtrasEditor({
                       Dropdown values: "Up to 2"…"Up to 10" → max N; "Unlimited" → 99 sentinel.
                       The caller derives min from Required + clamps. */}
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-slate-400 mr-1">Selection:</span>
+                    <span className="text-xs text-slate-400 mr-1">{t('selection')}</span>
                     {(() => {
                       const m = group.max_choices ?? 99
                       const isOne = m === 1
                       const btn = (active: boolean) => `text-xs font-bold px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`
                       return (
                         <>
-                          <button type="button" onClick={() => rules(group, { max_choices: 1 })} className={btn(isOne)}>Choose one</button>
-                          <button type="button" onClick={() => { if (isOne) rules(group, { max_choices: 2 }) }} className={btn(!isOne)}>Choose multiple</button>
+                          <button type="button" onClick={() => rules(group, { max_choices: 1 })} className={btn(isOne)}>{t('chooseOne')}</button>
+                          <button type="button" onClick={() => { if (isOne) rules(group, { max_choices: 2 }) }} className={btn(!isOne)}>{t('chooseMultiple')}</button>
                           <select
-                            aria-label="Maximum choices"
+                            aria-label={t('maxChoices')}
                             disabled={isOne}
                             value={isOne ? '' : String(m)}
                             onChange={e => { const v = e.target.value; if (v) rules(group, { max_choices: v === '99' ? 99 : parseInt(v) }) }}
                             className={`text-xs font-bold px-2 py-1.5 rounded-lg border bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400 ${isOne ? 'border-slate-200 text-slate-300 cursor-not-allowed' : 'border-slate-900 text-slate-900'}`}>
                             {isOne && <option value="" disabled>—</option>}
-                            {Array.from({ length: 9 }, (_, i) => i + 2).map(n => <option key={n} value={n}>Up to {n}</option>)}
-                            <option value="99">Unlimited</option>
+                            {Array.from({ length: 9 }, (_, i) => i + 2).map(n => <option key={n} value={n}>{t('upTo', { n: String(n) })}</option>)}
+                            <option value="99">{t('unlimited')}</option>
                           </select>
                         </>
                       )
@@ -264,15 +272,15 @@ export default function ExtrasEditor({
 
                 {/* ── Options ── */}
                 <div>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Options</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">{t('options')}</p>
                   {opts.map(opt => (
                     <div key={opt.id} className="flex items-center gap-2 py-1.5">
-                      <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${opt.type === 'remove' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700'}`}>{opt.type}</span>
+                      <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${opt.type === 'remove' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700'}`}>{t('optionType', { type: opt.type })}</span>
                       <span className="flex-1 text-sm text-slate-800 font-medium">{opt.name}</span>
                       {/* Sold-out / stock at-a-glance (D1/D2). Sold out = manual (available=false) OR stock 0. */}
-                      {(opt.available === false || opt.stock_count === 0) && <span className="text-[10px] font-bold bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full">Sold out</span>}
-                      {opt.available !== false && opt.stock_count != null && opt.stock_count > 0 && <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">{opt.stock_count} left</span>}
-                      <span className="text-sm font-bold text-orange-600">{opt.price_adjustment > 0 ? `+${amount(opt.price_adjustment)}` : opt.price_adjustment < 0 ? `-${amount(Math.abs(opt.price_adjustment))}` : 'Free'}</span>
+                      {(opt.available === false || opt.stock_count === 0) && <span className="text-[10px] font-bold bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full">{t('soldOut')}</span>}
+                      {opt.available !== false && opt.stock_count != null && opt.stock_count > 0 && <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">{t('left', { count: String(opt.stock_count) })}</span>}
+                      <span className="text-sm font-bold text-orange-600">{opt.price_adjustment > 0 ? t('priceAdd', { price: amount(opt.price_adjustment) }) : opt.price_adjustment < 0 ? t('priceRemove', { price: amount(Math.abs(opt.price_adjustment)) }) : t('free')}</span>
                       {canSaveOption && <button onClick={() => { setEditingOption(opt); setPriceInput(opt.price_adjustment ? String(opt.price_adjustment) : '') }} className="text-slate-300 hover:text-orange-500 text-xs px-1.5 py-0.5 rounded hover:bg-orange-50">✏️</button>}
                       {canDeleteOption && <button onClick={() => onDeleteOption?.(opt)} className="text-slate-300 hover:text-red-500 text-xs px-1.5 py-0.5 rounded hover:bg-red-50">🗑️</button>}
                     </div>
@@ -282,7 +290,7 @@ export default function ExtrasEditor({
                       onClick={() => { setEditingOption({ group_id: group.id, type: 'add', price_adjustment: 0, sort_order: opts.length }); setPriceInput('') }}
                       className="text-xs text-orange-600 font-bold hover:text-orange-700 mt-1"
                     >
-                      + Add option
+                      {t('addOption')}
                     </button>
                   )}
                 </div>
@@ -307,7 +315,7 @@ export default function ExtrasEditor({
                     // it hides options (the per-dish detail is still printed by the withExc block below).
                     const summaryCats = [
                       ...categories.map(c => ({ id: c.id, name: c.name, items: items.filter(i => i.category_id === c.id) })),
-                      { id: '__uncat__', name: 'Uncategorized', items: items.filter(i => !i.category_id) },
+                      { id: '__uncat__', name: t('uncategorized'), items: items.filter(i => !i.category_id) },
                     ]
                     const chunks: string[] = []
                     for (const cat of summaryCats) {
@@ -316,22 +324,22 @@ export default function ExtrasEditor({
                       const n = inCat.length, m = cat.items.length
                       const catStar = inCat.some(i => excNames(i.id).length > 0) ? ' *' : ''
                       if (n === m) chunks.push(`${cat.name}${catStar}`)
-                      else if (m > 4) chunks.push(`${cat.name} (${n} of ${m})${catStar}`)
+                      else if (m > 4) chunks.push(`${t('catPartial', { name: cat.name, n: String(n), m: String(m) })}${catStar}`)
                       else chunks.push(inCat.map(i => `${i.name}${excNames(i.id).length ? ' *' : ''}`).join(', '))
                     }
                     return (
                       <>
                         <div className="flex items-center justify-between mb-1.5">
-                          <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Offered on</p>
-                          <button onClick={() => setMatrixModalGroupId(group.id)} className="text-xs font-bold text-orange-600 hover:text-orange-700">Edit per-dish options</button>
+                          <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('offeredOn')}</p>
+                          <button onClick={() => setMatrixModalGroupId(group.id)} className="text-xs font-bold text-orange-600 hover:text-orange-700">{t('editPerDish')}</button>
                         </div>
                         {offered.length === 0 ? (
-                          <p className="text-xs text-slate-400">Not offered on any dish yet.</p>
+                          <p className="text-xs text-slate-400">{t('notOffered')}</p>
                         ) : (
                           <>
                             <p className="text-xs text-slate-600">{chunks.join(' · ')}</p>
                             {withExc.map(i => (
-                              <p key={i.id} className="text-[10px] text-orange-500 mt-0.5">* {i.name}: {excNames(i.id).join(', ')} hidden</p>
+                              <p key={i.id} className="text-[10px] text-orange-500 mt-0.5">{t('hiddenOptions', { dish: i.name, options: excNames(i.id).join(', ') })}</p>
                             ))}
                           </>
                         )}
@@ -351,7 +359,7 @@ export default function ExtrasEditor({
                   const required = minRequiredForGroup({ ...group, options: [] } as any) > 0
                   const cats = [
                     ...categories.map(c => ({ id: c.id, name: c.name, items: items.filter(i => i.category_id === c.id) })),
-                    { id: '__uncat__', name: 'Uncategorized', items: items.filter(i => !i.category_id) },
+                    { id: '__uncat__', name: t('uncategorized'), items: items.filter(i => !i.category_id) },
                   ].filter(c => c.items.length > 0)
                   const tickBtn = (on: boolean, disabled: boolean, locked: boolean, title: string, onClick: () => void) => (
                     <button type="button" disabled={disabled} title={title} onClick={onClick}
@@ -363,10 +371,10 @@ export default function ExtrasEditor({
                     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setMatrixModalGroupId(null)}>
                       <div className="bg-white rounded-2xl p-5 w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-1">
-                          <h3 className="font-black text-slate-900">{group.name} — per-dish options</h3>
+                          <h3 className="font-black text-slate-900">{t('matrix.title', { group: group.name })}</h3>
                           <button onClick={() => setMatrixModalGroupId(null)} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
                         </div>
-                        <p className="text-xs text-slate-400 mb-3">Tick &quot;Include&quot; to add the group to a dish, then tick which options it shows. Saves instantly.</p>
+                        <p className="text-xs text-slate-400 mb-3">{t('matrix.help')}</p>
                         <div className="overflow-x-auto">
                           {/* Fixed layout + a shared colgroup pin every category's columns to the same x. The
                               Dish col gets an EXPLICIT width so it can't collapse (which overlapped the headers
@@ -380,11 +388,11 @@ export default function ExtrasEditor({
                             </colgroup>
                             <thead>
                               <tr>
-                                <th className="text-left font-bold text-slate-400 uppercase tracking-wide pb-1.5 pr-3">Dish</th>
-                                <th className="text-center font-bold text-slate-400 uppercase tracking-wide pb-1.5 px-2">Include</th>
+                                <th className="text-left font-bold text-slate-400 uppercase tracking-wide pb-1.5 pr-3">{t('matrix.dish')}</th>
+                                <th className="text-center font-bold text-slate-400 uppercase tracking-wide pb-1.5 px-2">{t('matrix.include')}</th>
                                 {opts.map(o => (
                                   <th key={o.id} className="text-center font-bold text-slate-600 pb-1.5 px-1 leading-tight">
-                                    {o.name}{o.price_adjustment > 0 && <span className="text-orange-500"> +{amount(o.price_adjustment)}</span>}
+                                    {o.name}{o.price_adjustment > 0 && <span className="text-orange-500"> {t('priceAdd', { price: amount(o.price_adjustment) })}</span>}
                                   </th>
                                 ))}
                               </tr>
@@ -408,7 +416,7 @@ export default function ExtrasEditor({
                                               const partial = offeringCount > 0 && !allOn
                                               return (
                                                 <button type="button"
-                                                  title={allOn ? `Remove ${group.name} from all ${cat.name}` : `Offer ${group.name} on all ${cat.name}`}
+                                                  title={allOn ? t('matrix.removeAll', { group: group.name, category: cat.name }) : t('matrix.offerAll', { group: group.name, category: cat.name })}
                                                   onClick={e => {
                                                     e.stopPropagation()
                                                     if (allOn) cat.items.forEach(it => { if (linkedIds.has(it.id)) onToggleAssign?.(it.id, group.id, true) })
@@ -421,7 +429,7 @@ export default function ExtrasEditor({
                                             })()}
                                             <span className="text-[11px] font-black text-slate-500 uppercase tracking-wide">{cat.name}</span>
                                           </span>
-                                          <span className="flex items-center gap-2"><span className="text-[10px] font-bold text-slate-400">{offeringCount} of {cat.items.length} offer this</span><span className="text-slate-400">{open ? '▾' : '▸'}</span></span>
+                                          <span className="flex items-center gap-2"><span className="text-[10px] font-bold text-slate-400">{t('matrix.offerCount', { n: String(offeringCount), total: String(cat.items.length) })}</span><span className="text-slate-400">{open ? '▾' : '▸'}</span></span>
                                         </span>
                                       </td>
                                     </tr>
@@ -434,7 +442,7 @@ export default function ExtrasEditor({
                                           <td className="py-1.5 pr-3 text-slate-700 font-medium truncate" title={it.name}>{it.name}</td>
                                           <td className="text-center py-1.5 px-2">
                                             {tickBtn(offered, false, false,
-                                              offered ? 'Offered — click to remove the group from this dish' : 'Not offered — click to add',
+                                              offered ? t('matrix.offeredRemoveGroup') : t('matrix.notOfferedAdd'),
                                               () => onToggleAssign?.(it.id, group.id, offered))}
                                           </td>
                                           {opts.map(o => {
@@ -444,7 +452,7 @@ export default function ExtrasEditor({
                                             return (
                                               <td key={o.id} className="text-center py-1.5 px-1">
                                                 {tickBtn(on, disabled, locked,
-                                                  !offered ? 'Add the group to this dish first' : locked ? 'A required group needs at least one option for each dish' : (on ? 'Offered — click to remove' : 'Not offered — click to add'),
+                                                  !offered ? t('matrix.addGroupFirst') : locked ? t('matrix.requiredNeedsOne') : (on ? t('matrix.offeredRemove') : t('matrix.notOfferedAdd')),
                                                   () => onToggleOption?.(it.id, group.id, o.id, on))}
                                               </td>
                                             )
@@ -475,17 +483,17 @@ export default function ExtrasEditor({
       {showNewGroup && canAddGroup && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 mb-4">New custom extra</h3>
+            <h3 className="font-black text-slate-900 mb-4">{t('newGroup.title')}</h3>
             <Input
-              label="Group name"
+              label={t('newGroup.name')}
               required
               value={newGroupName}
               onChange={v => setNewGroupName(v)}
-              placeholder='e.g. Pizza extras'
+              placeholder={t('newGroup.placeholder')}
             />
             <div className="flex gap-2 mt-4">
-              <Btn label="Cancel" colour="slate" onClick={() => { setShowNewGroup(false); setNewGroupName('') }} />
-              <Btn label={savingGroup ? 'Saving...' : 'Save'} loading={savingGroup} onClick={handleCreateGroup} />
+              <Btn label={t('cancel')} colour="slate" onClick={() => { setShowNewGroup(false); setNewGroupName('') }} />
+              <Btn label={savingGroup ? t('saving') : t('save')} loading={savingGroup} onClick={handleCreateGroup} />
             </div>
           </div>
         </div>
@@ -495,19 +503,19 @@ export default function ExtrasEditor({
       {editingOption && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => {}}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 mb-4">{editingOption.id ? 'Edit option' : 'New option'}</h3>
+            <h3 className="font-black text-slate-900 mb-4">{editingOption.id ? t('option.editTitle') : t('option.newTitle')}</h3>
             <div className="space-y-3">
-              <Input label="Option name" required value={editingOption.name || ''} onChange={v => setEditingOption(p => ({...p!, name: v}))} placeholder='e.g. Extra Cheese' />
+              <Input label={t('option.name')} required value={editingOption.name || ''} onChange={v => setEditingOption(p => ({...p!, name: v}))} placeholder={t('option.placeholder')} />
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Type</label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">{t('option.type')}</label>
                   <select value={editingOption.type || 'add'} onChange={e => setEditingOption(p => ({...p!, type: e.target.value}))}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                    <option value="add">Add</option>
-                    <option value="remove">Remove</option>
+                    <option value="add">{t('option.add')}</option>
+                    <option value="remove">{t('option.remove')}</option>
                   </select>
                 </div>
-                <Input label={`Price adjustment (${currencySymbol(fmt)})`} type="text" inputMode="decimal" value={priceInput} onChange={setPriceInput} placeholder="0" hint="0 = free" />
+                <Input label={t('option.price', { symbol: currencySymbol(fmt) })} type="text" inputMode="decimal" value={priceInput} onChange={setPriceInput} placeholder="0" hint={t('option.priceHint')} />
               </div>
 
               {/* Sold-out + stock (Stage D1). Sold out → available=false → option hides for
@@ -522,18 +530,18 @@ export default function ExtrasEditor({
                     onChange={e => setEditingOption(p => ({ ...p!, available: !e.target.checked } as any))}
                     className="w-4 h-4 accent-orange-500"
                   />
-                  <span className="text-sm font-medium text-slate-700">Sold out</span>
+                  <span className="text-sm font-medium text-slate-700">{t('option.soldOut')}</span>
                 </label>
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Stock count <span className="text-slate-400 font-normal">(optional)</span></label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">{t.rich('option.stock', { opt: c => <span className="text-slate-400 font-normal">{c}</span> })}</label>
                   <input
-                    type="number" min="0" inputMode="numeric" placeholder="∞ untracked"
+                    type="number" min="0" inputMode="numeric" placeholder={t('option.stockPlaceholder')}
                     value={(editingOption as any).stock_count ?? ''}
                     onChange={e => setEditingOption(p => ({ ...p!, stock_count: e.target.value === '' ? null : parseInt(e.target.value) } as any))}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
                   />
-                  <p className="text-[10px] text-slate-400 mt-0.5">{DEFAULT_STOCK_SCOPE_NOTE}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">Shared pool across all dishes using this option.</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{tStock('defaultScopeNote')}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{t('option.sharedPool')}</p>
                 </div>
               </div>
 
@@ -541,15 +549,15 @@ export default function ExtrasEditor({
                   Shown to the customer at selection + carried to basket/ticket/email. Reuses the
                   item-editor toggle pattern. */}
               <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Allergens</label>
-                <p className="text-xs text-slate-400 mt-0.5 mb-2">This option's own allergens (separate from the dish)</p>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('option.allergens')}</label>
+                <p className="text-xs text-slate-400 mt-0.5 mb-2">{t('option.allergensHelp')}</p>
                 <AllergenToggles
                   value={(editingOption as any).allergens || []}
                   onChange={next => setEditingOption(prev => prev ? { ...prev, allergens: next } as any : prev)}
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Dietary</label>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('option.dietary')}</label>
                 <div className="mt-2">
                   <DietaryToggles
                     value={(editingOption as any).dietary_info || []}
@@ -559,8 +567,8 @@ export default function ExtrasEditor({
               </div>
             </div>
             <div className="flex gap-2 mt-4">
-              <Btn label="Cancel" colour="slate" onClick={() => setEditingOption(null)} />
-              <Btn label={savingOption ? 'Saving...' : 'Save'} loading={savingOption} onClick={handleSaveOption} />
+              <Btn label={t('cancel')} colour="slate" onClick={() => setEditingOption(null)} />
+              <Btn label={savingOption ? t('saving') : t('save')} loading={savingOption} onClick={handleSaveOption} />
             </div>
           </div>
         </div>

@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Your allergen card",
+    "intro": "Customers see this <b>exactly as you write it</b> — nothing is rewritten. Type or paste below, or upload a photo/PDF and we’ll read the text in for you to check.",
+    "empty": "No allergen card yet.",
+    "placeholder": "e.g. All our fish & chips contain wheat and milk. Fryer is shared with items containing gluten and nuts. Vegan options available — ask staff.",
+    "reading": "Reading image…",
+    "upload": "📷 Upload image / PDF",
+    "uploadNote": "We read the text off your image so you can review it — the image isn’t stored."
+  },
+  "cardUpload": {
+    "dishFallback": "Dish",
+    "question": "Do you have an allergen card to upload?",
+    "perDish": "{detected, select, yes {Upload one and we’ll use it to build your dish allergens. Detected allergens will be visible on the next page where you confirm each dish.} other {Upload one and we’ll use it to build your dish allergens.}}",
+    "cardOnly": "Upload the allergen card customers will see.",
+    "yes": "Yes",
+    "no": "No",
+    "noProblem": "No problem — you don’t need one. Continue with the button below.",
+    "analysing": "Analysing card…",
+    "dropzone": "Drag and drop or tap to choose",
+    "imageOrPdf": "Image or PDF",
+    "or": "or",
+    "pastePlaceholder": "Paste your allergen card text here…",
+    "process": "Process card",
+    "cardRead": "Card read ✓",
+    "unmatchedHeading": "Couldn’t auto-match these — assign or dismiss",
+    "quotedName": "“{name}”",
+    "ambiguous": "Ambiguous — matches several dishes; pick the right one.",
+    "assignTo": "Assign to dish…",
+    "dismiss": "Dismiss",
+    "blanket": "The card says <b>{list}</b> may be present across <b>all</b> dishes. Add to every dish? (you’ll still confirm each) <muted>— off by default</muted>",
+    "kitchenNotes": "Kitchen notes (saved to your allergen info)",
+    "matchSummary": "{n, plural, =0 {{matched} matched to a dish.} one {{matched} matched to a dish. {count} needs your assignment.} other {{matched} matched to a dish. {count} need your assignment.}}"
+  },
+  "savedCard": {
+    "showLess": "Show less",
+    "showMore": "Show more",
+    "fileOnly": "A card file is saved for this truck, but no summary text was stored. Open the original to read it.",
+    "viewOriginal": "View original card"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Couldn’t read the allergen card — try again",
+      "confirmed": "{name} confirmed",
+      "undo": "Undo",
+      "saveFailed": "Couldn’t save — please try again",
+      "imageFailed": "Couldn’t read that image — type or paste your card instead",
+      "cardRead": "{n, plural, one {Card read — {matched} matched, {count} needs assignment} other {Card read — {matched} matched, {count} need assignment}}"
+    },
+    "genericWarn": {
+      "text": "“{generic}” was detected but isn’t specific. Pick {picks} if this dish contains {family} — or leave them unselected if it doesn’t.",
+      "andOr": "{a} and/or {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Confirmed",
+      "confirmed": "Confirmed",
+      "needsReview": "Needs review"
+    },
+    "confirm": {
+      "confirming": "Confirming…",
+      "confirmed": "Confirmed ✓",
+      "confirm": "Confirm",
+      "changed": "· changed",
+      "changedTitle": "Edited since you last confirmed — confirm again"
+    },
+    "allergens": "Allergens",
+    "dietary": "Dietary",
+    "uncategorised": "Uncategorised",
+    "review": {
+      "progress": "{confirmed} of {total} confirmed",
+      "allConfirmed": "✓ All confirmed",
+      "list": "List",
+      "table": "Table",
+      "detected": "Detected from your menu — <b>check these</b>. Allergens stay hidden from customers until you confirm each dish.",
+      "viewOnly": "👁 View only — only the owner can confirm or change allergens.",
+      "emptyTitle": "No menu items",
+      "emptyBody": "Add menu items first, then set their allergens here.",
+      "dish": "Dish",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Reading allergen information…",
+      "saved": "🛡️ Allergen card saved",
+      "viewOriginal": "View original card",
+      "replace": "Replace card",
+      "uploadHelp": "Upload your allergen card (photo/PDF) or paste your allergen info — our AI structures it for customers.",
+      "add": "Add allergen card",
+      "viewOnly": "👁 View only — only the owner can add the allergen card.",
+      "intro": "Customers will see this card as the menu’s allergen reference. Per-dish allergens stay hidden in card-only mode (your dish data is kept for if you switch to per-dish later)."
+    },
+    "subtitle": {
+      "choose": "Choose how customers see allergen info",
+      "card": "Add your allergen card",
+      "cardOptional": "Add an allergen card (optional)",
+      "review": "Check & confirm each dish"
+    },
+    "heading": {
+      "import": "Allergens",
+      "standalone": "Allergen setup"
+    },
+    "nav": {
+      "next": "Next →",
+      "back": "← Back",
+      "skip": "Skip for now",
+      "saving": "Saving…",
+      "done": "Done",
+      "saveLater": "Save & finish later",
+      "close": "Close",
+      "finish": "Finish",
+      "skipImport": "Skip allergen setup for now"
+    },
+    "hint": {
+      "skipDefers": "Skip defers — dishes you haven’t confirmed stay hidden from customers until their allergens are confirmed.",
+      "importIncomplete": "Confirm every dish to continue — or “Skip allergen setup for now”."
+    }
+  }
+}

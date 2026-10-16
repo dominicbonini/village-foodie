@@ -1,0 +1,12 @@
+{
+  "status": {
+    "cancelled": "Canceled"
+  },
+  "toast": {
+    "eventCancelled": "Event canceled",
+    "eventCancelledOrders": "Event canceled · {count, plural, one {# order} other {# orders}} canceled"
+  },
+  "conflict": {
+    "overlap": "This event’s time overlaps another event on the same day — a single truck can’t be in two places at once. Check before approving."
+  }
+}

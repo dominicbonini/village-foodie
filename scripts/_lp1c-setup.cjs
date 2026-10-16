@@ -65,6 +65,7 @@ async function views(ctx) {
     "export { Select, PriceModeSelect, PriceRoundingSelect, PriceAmountInput, PriceCell } from '@/components/shared/PriceControls'",
     "export { default as AppHeader } from '@/components/shared/AppHeader'",
     "export { I18nContext } from '@/lib/i18n/use-t'",
+    "export { translatorFor } from '@/lib/i18n/translator'",
   ].join('\n'), {
     patches: [
       { file: FILES.page, states: ['name', 'busy', 'error', 'contactPhone', 'phoneIsWhatsapp', 'phoneError', 'stage', 'baseChoice', 'baseErrors', 'checking'] },
@@ -76,6 +77,13 @@ async function views(ctx) {
     ],
   })
 
+  // ⚠️ RE-PINNED (Language Phase 1d, API agent): lib/trade-area.ts and baseAnswerErrors now hand back a REFUSAL —
+  // { code, params } — and the step renders its words from `tradeArea`. Where a view records that value itself (the
+  // baseAnswerErrors result, the BaseErrors a press sets), the new code's refusal is read back as its en-GB words, so
+  // the view still proves the SAME sentence reaches the screen. Only when the code has refusals (TRADE_REFUSALS).
+  const TRADE_REFUSALS = /TradeAreaRefusal/.test(ctx.read('components/setup/WhereBasedStep.tsx'))
+  const refusalWords = v => (!TRADE_REFUSALS ? v : JSON.parse(JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x) && typeof x.code === 'string' && x.params && Object.keys(x).length === 2
+    ? M.translatorFor('en-GB', 'tradeArea')(x.code, x.params) : x))))
   const out = {}
   for (const C of [ctx.GB, ctx.US]) {
     const cc = C.cc
@@ -122,7 +130,7 @@ async function views(ctx) {
     for (const [k, a] of Object.entries(ERR_CASES)) {
       const shown = a.country === 'ZZ' ? answer(cc) : a
       page(`based|errors|${k}`, { ...ready, baseChoice: shown, baseErrors: errs(a) })
-      out[`${cc}|baseAnswerErrors|${k}`] = JSON.stringify(errs(a))
+      out[`${cc}|baseAnswerErrors|${k}`] = JSON.stringify(refusalWords(errs(a)))
     }
     // the identity step, every state
     const id = { ...ready, stage: 'identity' }
@@ -149,7 +157,7 @@ async function views(ctx) {
       try { await kit.quietAsync(async () => { await b.onClick({ preventDefault() {} }) }) } catch (e) { rec.push(['THREW', String(e && e.message)]) } finally {
         globalThis.fetch = realFetch; delete globalThis.__lpRec; delete globalThis.__ms
       }
-      out[`${cc}|press|${key}`] = JSON.stringify({ disabled: b.disabled, set: rec })
+      out[`${cc}|press|${key}`] = JSON.stringify({ disabled: b.disabled, set: refusalWords(rec) })
     }
     const cont = 'Continue'
     for (const [k, a] of Object.entries(ERR_CASES)) {
@@ -176,7 +184,12 @@ async function views(ctx) {
     step('us', { value: answer('US') })
     step('usChicago', { value: answer('US', { timezone: 'America/Los_Angeles' }) })
     step('gb', { value: answer('GB') })
-    step('allErrors', { value: answer('US', { timezone: 'Europe/London' }), errors: { country: 'Choose a country.', timezone: 'Bad zone.', town: 'Add your town.' } })
+    // ⚠️ RE-PINNED (Language Phase 1d): the step takes REFUSALS now, so on that code this view passes three real ones;
+    // the invented sentences BEFORE showed become those refusals' words — named in scripts/_lp2-named.cjs
+    // (1d-setup-step-fixture), so the rest of the view is still compared byte for byte.
+    step('allErrors', { value: answer('US', { timezone: 'Europe/London' }), errors: TRADE_REFUSALS
+      ? { country: { code: 'country_missing', params: {} }, timezone: { code: 'zone_unknown', params: { country: 'United States' } }, town: { code: 'town_missing', params: {} } }
+      : { country: 'Choose a country.', timezone: 'Bad zone.', town: 'Add your town.' } })
     step('realErrors', { value: answer(cc), errors: errs(answer(cc, { timezone: 'Mars/Olympus' })) })
     step('oneCountry', { countries: COUNTRIES.filter(x => x.code === cc) })
     step('noFlag', { countries: COUNTRIES.map(x => ({ ...x, flag: null })) })

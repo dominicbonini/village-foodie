@@ -8,8 +8,14 @@ import { hasValidEventTimes } from '@/lib/time-utils'
 /* ── 🔴 PRIVATE EVENTS (20261014) ──────────────────────────────────────────────────────────────── */
 import { applyPrivacy } from '@/lib/private-events/write'
 import { isEventPrivate } from '@/lib/private-events/read'
-import { PRIVATE_NEEDS_TIMES } from '@/lib/private-events/copy'
 import { canAccess } from '@/lib/features'
+// Language Phase 1d: a refusal of ours is `{ error: <today's English>, …, code, params }` (lib/i18n/manage-errors.ts), in the
+// truck's language (en-GB before the truck is known). A database's or exception's message is passed on as it comes.
+import { manageErrorBody, type ManageErrorCode, type ManageErrorParams } from '@/lib/i18n/manage-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/manageApi'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,11 +36,14 @@ export async function POST(req: NextRequest) {
   const { token, action, eventId, payload } = body
 
   if (!token || !action) {
-    return NextResponse.json({ error: 'Token and action required' }, { status: 400 })
+    return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'token_and_action_required'), { status: 400 })
   }
 
   const truck = await getTruck(token)
-  if (!truck) return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
+  if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'truck_not_found'), { status: 404 })
+  /** A refusal of ours, in the truck's language (read only when one is sent). */
+  const refuse = async (code: ManageErrorCode, status: number, params: ManageErrorParams = {}, extra?: Record<string, unknown>) =>
+    NextResponse.json(manageErrorBody(await localeForTruck(truck), code, params, extra), { status })
 
   const now = new Date().toISOString()
 
@@ -43,10 +52,7 @@ export async function POST(req: NextRequest) {
     const { auto_open, auto_close, venue_address, customer_note } = payload
 
     if (typeof auto_open !== 'boolean' || typeof auto_close !== 'boolean') {
-      return NextResponse.json(
-        { error: 'auto_open and auto_close are required' },
-        { status: 400 }
-      )
+      return refuse('auto_open_close_required', 400)
     }
 
     // FIX 3 (single-van auto-assign): on confirm, if this event has no van and the
@@ -67,10 +73,8 @@ export async function POST(req: NextRequest) {
       const stillPrivate = payload.is_private === undefined
         ? await isEventPrivate(supabase, eventId, 'events/action confirm')
         : payload.is_private === true
-      return NextResponse.json(
-        { error: stillPrivate ? PRIVATE_NEEDS_TIMES : 'Add a start and end time before this event can go live.' },
-        { status: 400 },
-      )
+      /* ⚠️ `private_needs_times` IS `privateEvents.form.needsTimes` (the approval card's line) word for word. */
+      return refuse(stillPrivate ? 'private_needs_times' : 'event_needs_times', 400)
     }
     const soleVanId = ev?.van_id ? null : await getSoleActiveVanId(supabase, truck.id)
     const vanPatch = (!ev?.van_id) ? { van_id: soleVanId } : {}
@@ -102,10 +106,7 @@ export async function POST(req: NextRequest) {
         .eq('truck_id', truck.id)
         .eq('active', true)
       if ((count ?? 0) > 1) {
-        return NextResponse.json(
-          { error: 'Choose which truck is working this event before it can go live.' },
-          { status: 400 },
-        )
+        return refuse('choose_truck_for_event', 400)
       }
       // Zero active vans falls THROUGH deliberately: there is nothing to choose, so blocking would
       // strand a truck that has not set a van up yet — the same posture the time gate takes toward
@@ -146,7 +147,7 @@ export async function POST(req: NextRequest) {
       const wantPrivate = payload.is_private === true
       if (wantPrivate
         && !canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-        return NextResponse.json({ error: 'Private events are part of the Pro plan.', upgrade: true }, { status: 403 })
+        return refuse('private_events_pro', 403, {}, { upgrade: true })
       }
       const pr = await applyPrivacy(supabase, truck.id, eventId, {
         isPrivate: wantPrivate,
@@ -156,7 +157,7 @@ export async function POST(req: NextRequest) {
       })
       if (!pr.ok) {
         return NextResponse.json(
-          { ok: true, warning: pr.error || 'The event is live, but its privacy could not be saved.' },
+          { ok: true, warning: pr.error || translatorFor(await localeForTruck(truck), 'manageApi')('privacyNotSaved') },
         )
       }
       return NextResponse.json({ ok: true, isPrivate: pr.isPrivate, token: pr.token })
@@ -174,7 +175,7 @@ export async function POST(req: NextRequest) {
       .eq('truck_id', truck.id)
       .single()
     if (!hasValidEventTimes(openEv?.start_time, openEv?.end_time)) {
-      return NextResponse.json({ error: 'Add a start and end time before this event can go live.' }, { status: 400 })
+      return refuse('event_needs_times', 400)
     }
     const { error } = await supabase
       .from('truck_events')
@@ -264,7 +265,7 @@ export async function POST(req: NextRequest) {
     if (eventRowErr) console.warn('[cancel] event detail fetch failed — suppression, email locality and slot-usage rebuild will be skipped:', eventRowErr.message)
     if (!eventRow || eventRow.truck_id !== truck.id) {
       console.warn(`[cancel] refused: event ${eventId} is not owned by truck ${truck.id} (or could not be read)`)
-      return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+      return refuse('event_not_found', 404)
     }
 
     const { error } = await supabase
@@ -359,7 +360,7 @@ export async function POST(req: NextRequest) {
       .eq('id', eventId)
       .eq('truck_id', truck.id)
       .single()
-    if (!eventRow) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    if (!eventRow) return refuse('event_not_found', 404)
 
     const { error } = await supabase
       .from('truck_events')
@@ -380,5 +381,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
-  return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+  return refuse('unknown_action', 400)
 }

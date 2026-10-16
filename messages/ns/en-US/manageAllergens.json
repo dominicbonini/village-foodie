@@ -1,0 +1,11 @@
+{
+  "cardEditor": {
+    "placeholder": "e.g. All our tacos contain wheat and milk. Fryer is shared with items containing gluten and nuts. Vegan options available — ask staff."
+  },
+  "cardUpload": {
+    "analysing": "Analyzing card…"
+  },
+  "wizard": {
+    "uncategorised": "Uncategorized"
+  }
+}

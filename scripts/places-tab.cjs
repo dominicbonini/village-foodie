@@ -29,6 +29,10 @@ let pass = 0, fail = 0
 const t = (label, ok) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label) } }
 const head = (s) => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 92 - s.length)))
 const read = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
+// ⚠️ RE-PINNED (Language Phase 1d): Manage's Schedule words moved into messages/en-GB.json, read via
+// useT(ns). `msgGB('ns.key')` reads the GB words at a key so a moved literal is still asserted EXACTLY.
+const GB_MESSAGES = JSON.parse(read('messages/en-GB.json'))
+const msgGB = (k) => k.split('.').reduce((o, p) => (o == null ? undefined : o[p]), GB_MESSAGES)
 /* 🔴 `exists` IS BACK (6 October 2026), for one claim worth making directly: `PlacesTab.tsx` is
  * DELETED, not merely unmounted. An unmounted component is a component somebody re-mounts.
  * ⛔ ITS FIRST LIFE WAS DIFFERENT AND IS WORTH RECORDING: it guarded a hand-listed set of poster files
@@ -388,8 +392,12 @@ head('2 · the place\'s event type is a PILL ROW — one selected, and no "Autom
     const write = code.indexOf("await api('sg_place_usual_type'")
     return save > 0 && write > save
   })())
+  // ⚠️ RE-PINNED (Language Phase 1d): the toast's template literal moved to manageSchedule.toast.placeTypeFailed;
+  // asserted as the call (with the place's name) at the same site AND the GB sentence at that key.
   t('⛔ …and a failed place write never fails the event save',
-    /Event saved\. \$\{pickedPlace\.name\}’s usual type was not/.test(MANAGE))
+    /const tS = useT\('manageSchedule'\)/.test(MANAGE)
+    && /showToast\(tS\('toast\.placeTypeFailed', \{\s*place: pickedPlace\.name,/.test(MANAGE)
+    && /^Event saved\. \{place\}’s usual type was not — \{reason\}\.$/.test(msgGB('manageSchedule.toast.placeTypeFailed')))
   /* ⚠️ `'standard'` IS THE LITERAL ON THE WIRE for Standard — it has no `event_types` row. */
   t('⛔ …and Standard goes on the wire as the literal, never as a uuid',
     /typeId: chosenPrivate \? privateTypeId : \(eventTypeId \?\? 'standard'\)/.test(codeOf(MANAGE)))
@@ -644,8 +652,14 @@ head('4 · hiding a place is in Add event now, and there is still only one list'
      * the value GOES rather than what it IS, and with the social screen's own copy of the field removed
      * this card is the one editor again — so it has to name the thing. "Venue" is the poster's own item
      * name and "Area" is the field below it. */
-    const five = ['Full name', 'Venue name', 'Address', 'Area', 'Postcode']
-      .every(f => detail.includes(`label="${f}"`))
+    // ⚠️ RE-PINNED (Language Phase 1d): the five labels are t('<key>') calls on useT('schedulePlaces') now;
+    // each is asserted as that call in PlaceDetail AND the GB words at schedulePlaces.<key>.
+    // (Postcode is an ICU select whose `other` branch is the GB word.)
+    const five = detail.includes("useT('schedulePlaces')")
+      && [['Full name', 'fullName'], ['Venue name', 'venueName'], ['Address', 'address'], ['Area', 'area']]
+        .every(([f, k]) => detail.includes(`label={t('${k}')}`) && msgGB(`schedulePlaces.${k}`) === f)
+      && detail.includes("label={t('postcode', { style: addrStyle })}")
+      && /other \{Postcode\}/.test(msgGB('schedulePlaces.postcode'))
     /* ⛔ THE `key` IS NOT DECORATION. `PlaceDetail` holds the five fields as LOCAL DRAFT STATE and
      * saves them ON BLUR, so without a remount per place the pane shows the previous place's values
      * and blurring writes them onto the current one. That was a real defect on the deleted tab. */
@@ -661,18 +675,24 @@ head('4 · hiding a place is in Add event now, and there is still only one list'
   t('🔴 "Name on posts" writes `short_name` — the column the renderer actually prints', (() => {
     const detail = SHARED.slice(SHARED.indexOf('export function PlaceDetail'),
       SHARED.indexOf('export function TidyUpPlaces'))
-    const bound = (label, field) => new RegExp(
-      `label="${label}"[^>]*?onBlur=\\{\\(\\) => saveField\\('${field}'`, 's').test(detail)
-    return bound('Venue name', 'short_name')
-      && bound('Full name', 'name')
+    // ⚠️ RE-PINNED (Language Phase 1d): labels are t('venueName') / t('fullName') now; the binding is
+    // asserted on the call, and the call's GB words are asserted to be the label the check names.
+    const bound = (label, key, field) => msgGB(`schedulePlaces.${key}`) === label && new RegExp(
+      `label=\\{t\\('${key}'\\)\\}[^>]*?onBlur=\\{\\(\\) => saveField\\('${field}'`, 's').test(detail)
+    return bound('Venue name', 'venueName', 'short_name')
+      && bound('Full name', 'fullName', 'name')
       /* ⛔ AND THE OLD LABEL IS GONE, so "renamed" cannot pass while both exist. */
       && !detail.includes('label="Name on posts"')
+      // ⚠️ RE-PINNED (Language Phase 1d): …and no schedulePlaces message carries the old label either.
+      && !Object.values(msgGB('schedulePlaces')).some(v => v === 'Name on posts')
       /* ⛔ AND THE RENDERER STILL PREFERS IT. If that ever changes, these labels become wrong again. */
       && /const short = String\(place\?\.short_name \?\? ''\)\.trim\(\)\s*\n\s*if \(short\) return short/
         .test(read('lib/weekly-post/week-data.ts'))
   })())
+  // ⚠️ RE-PINNED (Language Phase 1d): the hint moved to schedulePlaces.venueHint.
   t('⚠️ …and "Venue name" says what blank means',
-    /hint="Leave blank to use the full name\."/.test(SHARED))
+    /hint=\{t\('venueHint'\)\}/.test(SHARED)
+    && msgGB('schedulePlaces.venueHint') === 'Leave blank to use the full name.')
   /* ══ ⛔ AND THIS SCREEN IS THE **ONLY** WRITER AGAIN — 9 OCTOBER 2026 ════════════════════════════
    * The field was copied to the Location settings pane on 7 October, writing the same column through
    * the same action, and the claim then was that one writer meant the two screens could not disagree.
@@ -719,8 +739,11 @@ head('4 · hiding a place is in Add event now, and there is still only one list'
    * moment they discover a pitch they do not want offered.
    * 🔴 THE `×` IS INSIDE THE ROW'S OWN CLICK TARGET, so both `preventDefault` and `stopPropagation`
    * are required: without them, hiding a place would also PICK it and close the step. */
+  // ⚠️ RE-PINNED (Language Phase 1d): the aria-label moved to manageScheduleEvent.hidePlace.
   t('🔴 each suggestion row has a `×` with an aria-label',
-    /aria-label="Hide this place"/.test(MANAGE))
+    /const tE = useT\('manageScheduleEvent'\)/.test(MANAGE)
+    && /aria-label=\{tE\('hidePlace'\)\}/.test(MANAGE)
+    && msgGB('manageScheduleEvent.hidePlace') === 'Hide this place')
   t('⛔ …and pressing it cannot also select the place',
     /e\.preventDefault\(\); e\.stopPropagation\(\); void hidePlace\(pl, true\)/.test(MANAGE))
   t('🔴 …and it calls the EXISTING action, optimistically, with a rollback',
@@ -735,9 +758,16 @@ head('4 · hiding a place is in Add event now, and there is still only one list'
     && /hidden: rows\.filter\(p => p\.is_hidden\)/.test(MANAGE))
   t('🔴 …and the hidden group is offered only when some MATCH what was typed',
     /\{placeSuggestions\.hidden\.length > 0 && !hiddenShown && \(/.test(MANAGE)
-    && /hidden place\{placeSuggestions\.hidden\.length === 1 \? '' : 's'\} match · Show hidden/.test(MANAGE))
+    // ⚠️ RE-PINNED (Language Phase 1d): the count sentence moved to manageScheduleEvent.hiddenMatch, keyed by
+    // the same count. Its GB wording is a NAMED GB fix (singular "1 hidden place matches", was "…place match"),
+    // accepted as the new words.
+    && /\{tE\('hiddenMatch', \{ count: placeSuggestions\.hidden\.length \}\)\}/.test(MANAGE)
+    && msgGB('manageScheduleEvent.hiddenMatch')
+      === '{count, plural, one {# hidden place matches} other {# hidden places match}} · Show hidden')
   t('⚠️ …and "Show again" restores through the same action',
-    /Show again/.test(MANAGE) && /void hidePlace\(pl, false\)/.test(MANAGE))
+    // ⚠️ RE-PINNED (Language Phase 1d): "Show again" moved to manageScheduleEvent.showAgain.
+    /\{tE\('showAgain'\)\}/.test(MANAGE) && msgGB('manageScheduleEvent.showAgain') === 'Show again'
+    && /void hidePlace\(pl, false\)/.test(MANAGE))
   /* ⚠️ "Show hidden" IS PER-OPEN. Hidden places are somewhere to go and get one back, not a view to
    * work in — the same reasoning the deleted tab's own section carried. */
   t('⚠️ "Show hidden" is per-open state, not remembered',

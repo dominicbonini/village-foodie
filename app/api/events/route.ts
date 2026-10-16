@@ -11,6 +11,13 @@ import { readPrivateEventIds } from '@/lib/private-events/read'
 import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 import { truckTimeSettings } from '@/lib/truck-time'
 import { getLocalDateInTz, addDaysYmd, formatOrdinalDate, type TimeSettings } from '@/lib/time-utils'
+// Language Phase 1d: the refusal of ours carries a code (lib/i18n/manage-errors.ts); "Today · …" / "Tomorrow · …" are
+// messages (`manageApi.eventsFeed`) in the truck's language. A database's message is passed on as it comes.
+import { manageErrorBody } from '@/lib/i18n/manage-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/manageApi'
 
 export const revalidate = 0
 
@@ -22,18 +29,18 @@ function toddmmyyyy(isoDate: string): string {
 /** "Today · Friday 9th October" / "Tomorrow · …" / "Wednesday 14th October" — on the TRUCK's clock and in
  *  its country's order (Phase 2B). It was the server's clock: UTC on Vercel, so from 00:00 to 01:00 BST
  *  today's event read "Tomorrow". GB wording is unchanged. */
-function formatFriendly(isoDate: string, ts: TimeSettings): string {
+function formatFriendly(isoDate: string, ts: TimeSettings, t: ReturnType<typeof translatorFor<'manageApi'>>): string {
   const today = getLocalDateInTz(ts.timeZone)
   const base = formatOrdinalDate(isoDate, ts)
-  if (isoDate === today) return `Today · ${base}`
-  if (isoDate === addDaysYmd(today, 1)) return `Tomorrow · ${base}`
+  if (isoDate === today) return t('eventsFeed.today', { date: base })
+  if (isoDate === addDaysYmd(today, 1)) return t('eventsFeed.tomorrow', { date: base })
   return base
 }
 
 export async function GET(req: NextRequest) {
   const truckSlug = req.nextUrl.searchParams.get('truck')
   if (!truckSlug) {
-    return NextResponse.json({ error: 'truck param required' }, { status: 400 })
+    return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'truck_param_required'), { status: 400 })
   }
 
 
@@ -123,6 +130,7 @@ export async function GET(req: NextRequest) {
    * leaky. */
   const privacy = await readPrivateEventIds(supabase, (rows || []).map(e => e.id), '/api/events')
 
+  const tFeed = translatorFor(await localeForTruck(truck), 'manageApi')
   const seen = new Set<string>()
   const events = (rows || []).map(e => {
     /* ⛔ THE DEDUP KEY IS BUILT ON THE **REAL** VENUE NAME, BEFORE ANY SUBSTITUTION — §70.2 names this
@@ -137,7 +145,7 @@ export async function GET(req: NextRequest) {
       id:            e.id,
       date:          toddmmyyyy(e.event_date),
       date_iso:      e.event_date,
-      date_friendly: formatFriendly(e.event_date, ts),
+      date_friendly: formatFriendly(e.event_date, ts, tFeed),
       start_time:    e.start_time || '',
       end_time:      e.end_time || '',
       truck_name:    truck.name,

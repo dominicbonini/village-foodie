@@ -11,5 +11,10 @@
 //   - Events the operator has set a specific amount for on their dashboard KEEP that value.
 //   - Per-event amounts are set on that event's dashboard (Menu & Stock), which this note points to.
 // Presentational string only — it must not encode or change any stock behaviour.
-export const DEFAULT_STOCK_SCOPE_NOTE =
-  'Default for every event. To set a different amount for one event, change it on that event’s dashboard — events you’ve already set there keep their own amount.'
+// 🔴 LANGUAGE PHASE 1d: the words live in messages/en-GB.json `stockCopy.defaultScopeNote`; a screen reads them
+// with `useT('stockCopy')`. This export is the same message in en-GB, for the callers that have not moved yet.
+import { translatorFor } from '@/lib/i18n/translator'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/stockCopy'
+
+export const DEFAULT_STOCK_SCOPE_NOTE = translatorFor(DEFAULT_LOCALE, 'stockCopy')('defaultScopeNote')

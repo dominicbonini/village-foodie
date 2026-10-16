@@ -37,9 +37,7 @@
     "customerTimes": "Customer pickup times",
     "yourTimes": "Your pickup times",
     "colCountsTitle": "Which categories count toward the total capacity. Cooked categories always count; check instant ones (sides, dips, drinks) to include them.",
-    "countsTick": "Check to include this instant category (sides, dips, drinks) in the shared per-window limit",
-    "capacityDesc": "The most items your kitchen can turn out at once, across all the categories you’ve checked. Each category’s own batch size still applies on top.",
-    "capacityExample": "Example: if you can cook 4 entrées in 5 minutes, then set it to 4 items every 5 minutes. The total capacity limits orders across all selected categories so if you want to only sell a maximum of 10 appetizers and entrées every 5 minutes, then set Total Capacity to 10 items every 5 minutes and check the Appetizers and Entrées boxes. This will still keep your entrées restricted to 4 items every 5 minutes."
+    "countsTick": "Check to include this instant category (sides, dips, drinks) in the shared per-window limit"
   },
   "stock": {
     "howCategory": "<b>Category total</b> is a shared pool across every item in that category (e.g. 30 appetizers tonight).",

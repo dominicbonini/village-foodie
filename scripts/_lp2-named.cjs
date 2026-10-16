@@ -89,6 +89,28 @@ const NAMED = [
     what: 'A queued buzzer removal with no number shows `buzzer.removed` ("Buzzer removed") instead of `removedNumber` with an empty number ("Buzzer  removed", two spaces). The other buzzer messages take a has/had flag instead of printing "null" — with the frozen words that is invisible.',
     views: id => /^1b\/(dashboard|kds)\//.test(id),
     expect: b => mapStrings(b, s => s.replace(/Buzzer {2}removed/g, 'Buzzer removed')) },
+  // ── LANGUAGE PHASE 1d PART 1 (Manage: Menu, Schedule, Settings — scripts/language-phase-1d.cjs) ─────────────────
+  // Re-pins: the 1d code changes that reach a Phase 1a/1b/1c/2 view. The words are frozen (scripts/_lp2-frozen.cjs
+  // applies 1d's as-moved overlay too), so only CODE changes show here, each precise.
+  { id: '1d-setup-trade-area-codes', part: 'Language Phase 1d (API agent: lib/trade-area.ts codes)', country: 'both',
+    what: 'Signup’s trade-area refusals (/api/setup create_truck: country missing / unknown / off, zone, town missing / too long) gain "code" and "params", LAST — named difference 1, with the `tradeArea` codes; `error` and every other field unchanged. (language-phase-1d proves each code’s words are the error, in its copy area.)',
+    views: id => /^1c\/api\/(GB|US)\|setup\|(countryMissing|countryUnknown|countryOff|zoneBad|townMissing|townLong)$/.test(id),
+    expect: (b, id) => {
+      const country = /\/GB\|/.test(id) ? 'United Kingdom' : 'United States'
+      const [code, params] = { countryMissing: ['country_missing', {}], countryUnknown: ['country_missing', {}], countryOff: ['country_off', { country }], zoneBad: ['zone_unknown', { country }], townMissing: ['town_missing', {}], townLong: ['town_too_long', {}] }[id.split('|').pop()]
+      if (!b || typeof b !== 'object' || typeof b.body !== 'string') return b
+      return { ...b, body: b.body.replace(/\}$/, `,"code":${JSON.stringify(code)},"params":${JSON.stringify(params)}}`) }
+    } },
+  { id: '1d-setup-step-fixture', part: 'Language Phase 1d (fixture re-pin)', country: 'both',
+    what: 'FIXTURE, not product: the setup step’s "every error" view handed the step three invented sentences; the step takes trade-area REFUSALS now, so the fixture passes three real ones and the step shows their words ("Choose a country." → "Choose the country your truck is based in.", "Bad zone." → the zone sentence, "Add your town." → "Tell us the town or city you’re based in.").',
+    views: id => /^1c\/setup\/(GB|US)\|step\|allErrors$/.test(id),
+    expect: b => mapStrings(b, s => s.replace('>Choose a country.<', '>Choose the country your truck is based in.<')
+      .replace('>Bad zone.<', '>That time zone isn&#x27;t one we offer in United States. Choose one from the list.<')
+      .replace('>Add your town.<', '>Tell us the town or city you’re based in.<')) },
+  { id: '1d-us-address-style', part: 'Language Phase 1d (SCHED-A: US address style)', country: 'US',
+    what: 'Manage › Schedule’s event card for a US truck (address_format zip_state) says "ZIP code" where it said "postcode" ("Add a postcode with Edit to put it on the map." → "Add a ZIP code with …").',
+    views: id => /^2\/extra\/US\|manage\|schedule\|/.test(id),
+    expect: b => mapStrings(b, s => s.replace(/Add a postcode with/g, 'Add a ZIP code with')) },
   // ⚠️ NOT AN ENTRY, BECAUSE NO VIEW CHANGES: lib/printing/ticket.ts `padBetween` no longer adds a separating space
   // when there is no left label (Part 2, dates agent). It differs only for a right-aligned value at least as long as
   // the whole line (an absurd 43-character phone at 58 mm); every GB ticket this harness prints (1b printing, ~250 at

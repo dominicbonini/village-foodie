@@ -1,0 +1,8 @@
+{
+  "favRemoveAria": "Remove {name} from favorites",
+  "favAddAria": "Add {name} to favorites",
+  "favourites": "Favorites",
+  "favAddFailed": "Couldn’t add that favorite.",
+  "favRemoveFailed": "Couldn’t remove that favorite.",
+  "pickPlace": "Pick a place to clean up."
+}

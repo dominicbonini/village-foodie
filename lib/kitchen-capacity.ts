@@ -2,18 +2,23 @@
 // SINGLE SOURCE for the kitchen-capacity description copy and the "needs prep
 // config" warning, shared by the Manage Settings card and the dashboard
 // Menu & Stock card so the two surfaces never drift (Manual s.14 / DRY s.3).
+//
+// 🔴 LANGUAGE PHASE 1d: THE WORDS LIVE IN messages/en-GB.json `kitchenCapacity` (US in en-US.json) — ONE
+// explainer, read with `useT('kitchenCapacity')` by Menu › Kitchen capacity AND the dashboard's card (which
+// read `dashboard.settings.capacityDesc` / `capacityExample` until then — two copies of one paragraph, and the
+// two had already drifted: Manage's had straight apostrophes). The exports below are the same messages in
+// en-GB, for the callers that have not moved yet.
+import { translatorFor } from '@/lib/i18n/translator'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/kitchenCapacity'
+
+const gb = translatorFor(DEFAULT_LOCALE, 'kitchenCapacity')
 
 /** Canonical kitchen-capacity description — identical on both surfaces. */
-export const KITCHEN_CAPACITY_DESC =
-  "The most items your kitchen can turn out at once, across all the categories you've ticked. " +
-  "Each category's own batch size still applies on top."
+export const KITCHEN_CAPACITY_DESC = gb('desc')
 
 /** Canonical worked example — rendered as a second paragraph on both surfaces. */
-export const KITCHEN_CAPACITY_EXAMPLE =
-  "Example: if you can cook 4 mains in 5 minutes, then set it to 4 items every 5 minutes. The total " +
-  "capacity limits orders across all selected categories so if you want to only sell a maximum of 10 " +
-  "starters and mains every 5 minutes, then set Total Capacity to 10 items every 5 minutes and select " +
-  "Starters and Mains tickbox. This will still keep your mains restricted to 4 items every 5 minutes."
+export const KITCHEN_CAPACITY_EXAMPLE = gb('example')
 
 /**
  * Canonical "how do I switch it off" line. Its wording is tied to the CONTROL: BatchSizeSelect
@@ -21,14 +26,10 @@ export const KITCHEN_CAPACITY_EXAMPLE =
  * infinity symbol is literally what the operator sees. If that option's label ever changes, change this
  * line in the same commit — a help text naming a glyph the control no longer shows is worse than none.
  */
-export const KITCHEN_CAPACITY_NO_LIMIT =
-  "Leave at the infinity symbol for no limit."
+export const KITCHEN_CAPACITY_NO_LIMIT = gb('noLimit')
 
 /** Canonical warning copy shown when capacity is set but categories are under-configured. */
-export const KITCHEN_CAPACITY_WARNING =
-  "⚠️ For kitchen capacity to work properly, set a prep time and batch size on " +
-  "your menu categories (Menu & Stock). Without them, capacity can't tell how long " +
-  "items take to cook."
+export const KITCHEN_CAPACITY_WARNING = gb('warning')
 
 // ── Shared kitchen-capacity GRID template (DRY §3) ─────────────────────────────
 // ONE 4-column template — Category · Items · Prep · Counts — shared by the SIX sibling grids across
@@ -103,15 +104,20 @@ export const PREP_TIME_OPTIONS: number[] = [
   ...Array.from({ length: 10 }, (_, i) => 360 + i * 60),    // 360,420,…,900   (6m … 15m)
 ]
 
-/** Human label for a prep_secs value: "Instant" (0), "30s", "1m", "1m 30s", "2m", … "20m". */
-export function formatPrepSecs(secs: number | null | undefined): string {
+/**
+ * Human label for a prep_secs value: "Instant" (0), "30s", "1m", "1m 30s", "2m", … "20m".
+ * 🔴 THE WORDS AND UNITS ARE `kitchenCapacity.prepSecs.*` (Language Phase 1d), in `locale` — the truck's country's;
+ * en-GB when absent, which is exactly the old text. The dashboard and Manage share it.
+ */
+export function formatPrepSecs(secs: number | null | undefined, locale?: string | null): string {
+  const t = translatorFor(locale ?? DEFAULT_LOCALE, 'kitchenCapacity')
   const v = Number(secs) || 0
-  if (v <= 0) return 'Instant'
+  if (v <= 0) return t('prepSecs.instant')
   const m = Math.floor(v / 60)
   const s = v % 60
-  if (m === 0) return `${s}s`
-  if (s === 0) return `${m}m`
-  return `${m}m ${s}s`
+  if (m === 0) return t('prepSecs.seconds', { s: String(s) })
+  if (s === 0) return t('prepSecs.minutes', { m: String(m) })
+  return t('prepSecs.minutesSeconds', { m: String(m), s: String(s) })
 }
 
 /**
@@ -121,9 +127,9 @@ export function formatPrepSecs(secs: number | null | undefined): string {
  * so the dropdown can SELECT it without snapping. The component never writes on mount, so an
  * untouched off-grid category keeps its exact prep_secs (the engine-safety guarantee). Sorted asc.
  */
-export function prepTimeOptionsFor(storedSecs: number | null | undefined): { secs: number; label: string }[] {
+export function prepTimeOptionsFor(storedSecs: number | null | undefined, locale?: string | null): { secs: number; label: string }[] {
   const stored = Number(storedSecs) || 0
   const set = new Set<number>([0, ...PREP_TIME_OPTIONS])
   if (stored > 0) set.add(stored)                          // off-grid extra (no-op if already on grid)
-  return [...set].sort((a, b) => a - b).map(secs => ({ secs, label: formatPrepSecs(secs) }))
+  return [...set].sort((a, b) => a - b).map(secs => ({ secs, label: formatPrepSecs(secs, locale) }))
 }

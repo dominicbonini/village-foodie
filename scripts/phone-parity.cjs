@@ -274,7 +274,9 @@ async function checkAfter() {
     // Language Phase 1a: the order page passes its language, and the placeholder's "e.g. " is a message around the
     // same example — still the truck's country's (docs/language-phase-1a-report.md).
     ['app/trucks/[slug]/order/page.tsx', /phoneErrorMessage\('mobile', pagePhone, pageLocale\)/], ['app/trucks/[slug]/order/page.tsx', /placeholder=\{phonePlaceholder\(pagePhone\) && tOrder\('phonePlaceholder', \{ example: phonePlaceholder\(pagePhone\) \}\)\}/],
-    ['app/manage/[token]/page.tsx', /phoneErrorMessage\('phone', phoneCopy\)/], ['app/manage/[token]/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
+    // ⚠️ RE-PINNED (Language Phase 1d): Manage's phone box now also passes the truck's locale (useTruckTime().locale),
+    // so the words follow the truck's language — still from the truck's own settings (phoneCopy), the property pinned.
+    ['app/manage/[token]/page.tsx', /phoneErrorMessage\('phone', phoneCopy, ts\.locale\)/], ['app/manage/[token]/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
     ['app/setup/page.tsx', /phoneErrorMessage\('phone_number', phoneCopy\)/], ['app/setup/page.tsx', /placeholder=\{phonePlaceholder\(phoneCopy\)\}/],
     // Phase 2D-1: the demo modal words its box from the CHOSEN country (signupPhone), and the API from the chosen row.
     // Re-pinned 15 October 2026 (docs/language-phase-1c-report.md): the modal now holds the malformed-number error as

@@ -1,0 +1,43 @@
+{
+  "publicName": "Private event",
+  "chip": "Private",
+  "grid": {
+    "orderingSection": "ORDERING",
+    "linkRowLabel": "Take orders by private link and QR code",
+    "columnTitle": "The built-in Private type. It cannot be renamed, moved or deleted.",
+    "maxOnly": "Max only"
+  },
+  "form": {
+    "help": "Shows on your schedule as “Private event” with the date and times only — never the address, the map or Village Foodie.",
+    "linkPromise": "Guests order by a private link and QR code — you’ll get them after saving.",
+    "nameLabel": "Event name",
+    "nameHelp": "Guests see this at the top of the order page.",
+    "namePlaceholder": "Sarah & Tom’s wedding",
+    "previewNote": "How it shows on your schedule — no venue, town or postcode.",
+    "needsTimes": "Add a start and end time — a private event taking orders by link needs them."
+  },
+  "link": {
+    "button": "Link & QR",
+    "title": "Private link & QR code",
+    "label": "Private link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "qrDownload": "Download QR",
+    "tableCards": "Print table cards",
+    "newLink": "Make a new link",
+    "working": "Working…",
+    "newLinkConfirm": "Make a new link? The current link stops working straight away, and any QR codes you have already printed will stop working too.",
+    "newLinkHelp": "Use this if the link has gone somewhere it shouldn’t. The current link stops working straight away, and printed QR codes stop working too.",
+    "newLinkFailed": "Could not make a new link.",
+    "offNotice": "Ordering by private link is switched off for this event, so there is no link to share. The event still shows on your schedule as “Private event”."
+  },
+  "cards": {
+    "printTitle": "{truck} — table cards",
+    "scan": "Scan to order",
+    "blurb": "Order and pay on your phone. We’ll call your name when it’s ready.",
+    "footer": "Ordering by HatchGrab"
+  },
+  "noSinglePost": "Private events don’t get their own post — they appear on your weekly poster as “Private event”.",
+  "confirmToPrivate": "This hides the address and the event from the map. Guests will need the private link to order.",
+  "confirmFromPrivate": "This makes the event public: its address and map pin will show, and the private link will stop working."
+}

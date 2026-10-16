@@ -19,9 +19,13 @@ import { Btn, Card, Input, Spinner } from '@/components/manage/primitives'
 /* ⛔ `FeatureGate`, `Plan`, `WEEKLY_POST_PLAN_REFUSAL` AND `WeeklyPostApp` WERE IMPORTED HERE. All four
  * belonged to `WeeklyPostPane`, which moved to components/manage/SocialPosts.tsx — see the tombstone
  * below. Nothing else in this file is gated or knows about a plan. */
-import { placeWhenLine, timeRangeLabel } from '@/lib/schedule-graphics/places'
-import { formatYmd, type TimeSettings } from '@/lib/time-utils'
+import { placeWhenLine, timeRangeLabel, type PlaceWhenWords } from '@/lib/schedule-graphics/places'
+import { formatShortDate, type TimeSettings } from '@/lib/time-utils'
 import { useTruckTime } from '@/components/TruckTimeContext'
+import { useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
+import { addressStyleOf, upperCasesPostcode } from '@/lib/copy/addressPlaceholders'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/schedulePlaces'
 
 export interface Place {
   id: string
@@ -108,18 +112,20 @@ const msgOf = (e: unknown, fallback: string): string => {
   return m || fallback
 }
 
-/** "Tue 13 Oct" (GB) / "Tue, Oct 13" (US) — in the truck's words (Phase 2B). ⚠️ A calendar date, formatted
- *  pinned to UTC by `formatYmd`, never `new Date(str)` in the device's zone. */
+/** "Tue 13 Oct" (GB) / "Tue, Oct 13" (US) — in the truck's words (Phase 2B). ⚠️ A calendar date, never
+ *  `new Date(str)` in the device's zone. Language Phase 1d: `formatShortDate`, so September reads "Sep" here as
+ *  on every other Manage date (it read Intl's en-GB "Sept"). */
 export function shortDay(ymd: string | null, ts: TimeSettings | null | undefined): string {
   if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return ''
-  return formatYmd(ymd, ts, { weekday: 'short', day: 'numeric', month: 'short' })
+  return formatShortDate(ymd, ts)
 }
 
 /** Re-exported so the modal has one import for the pair. The rule itself lives in the shared lib. */
 export const timeRange = timeRangeLabel
 
-/** The one muted line under a place's name — "Last: Tue 6 Oct · 17:00–20:00". */
-export const placeSubLine = (p: Place, ts: TimeSettings | null | undefined): string => placeWhenLine(p, ymd => shortDay(ymd, ts), ts)
+/** The one muted line under a place's name — "Last: Tue 6 Oct · 17:00–20:00", in `words` when given. */
+export const placeSubLine = (p: Place, ts: TimeSettings | null | undefined, words?: PlaceWhenWords): string =>
+  placeWhenLine(p, ymd => shortDay(ymd, ts), ts, words)
 
 /** Hidden or merged: out of the list unless the operator asks for them. */
 export const isRetired = (p: Place): boolean => p.is_hidden || !!p.merged_into_id
@@ -128,7 +134,9 @@ export const isRetired = (p: Place): boolean => p.is_hidden || !!p.merged_into_i
 // THE HOOK — one owner of the list, and the only thing that seeds
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 export function usePlaces(api: Api, enabled: boolean) {
+  const t = useT('schedulePlaces')
   const [places, setPlaces] = useState<Place[] | null>(null)
+  /** ⚠️ A CODE OR THE SERVER'S OWN MESSAGE, never our sentence (set in an effect) — and nothing renders it today. */
   const [error, setError] = useState<string | null>(null)
   /** A star that failed to save, shown as one short line rather than a toast. */
   const [starError, setStarError] = useState<string | null>(null)
@@ -187,7 +195,7 @@ export function usePlaces(api: Api, enabled: boolean) {
         if (runId.current !== mine) return
         /* ⚠️ `[]` AS WELL AS THE MESSAGE. The Add event form must stay usable with no places at all,
          * so the list resolves to empty rather than staying in a spinner for ever. */
-        setPlaces([]); setError(msgOf(e, 'Couldn’t load places.'))
+        setPlaces([]); setError(msgOf(e, 'load_failed'))
       } finally {
         if (runId.current === mine) inFlight.current = false
       }
@@ -220,9 +228,9 @@ export function usePlaces(api: Api, enabled: boolean) {
       await api('sg_upsert_place', { id: p.id, is_favourite: next })
     } catch (e: unknown) {
       patchLocal(p.id, { is_favourite: p.is_favourite })
-      setStarError(msgOf(e, `Couldn’t ${next ? 'add' : 'remove'} that favourite.`))
+      setStarError(msgOf(e, next ? t('favAddFailed') : t('favRemoveFailed')))
     }
-  }, [api, patchLocal])
+  }, [api, patchLocal, t])
 
   return { places: places ?? [], loading, error, starError, reload, patchLocal, setFavourite }
 }
@@ -276,6 +284,13 @@ export function PlaceList({
   hiddenSection?: boolean
 }) {
   const ts = useTruckTime() // the truck's words for the Last/Next line (Phase 2B)
+  const t = useT('schedulePlaces')
+  const addrStyle = addressStyleOf(useOptionalCountrySettings()?.addressFormat)
+  const whenWords: PlaceWhenWords = {
+    last: (day, times) => times ? t('lastLineTimes', { day, times }) : t('lastLine', { day }),
+    next: (day, times) => times ? t('nextLineTimes', { day, times }) : t('nextLine', { day }),
+    none: t('noEvents'),
+  }
   const { favourites, others, hidden } = useMemo(() => {
     const q = search.trim().toLowerCase()
     const matches = (p: Place) => !q
@@ -302,7 +317,7 @@ export function PlaceList({
       <button
         type="button"
         onClick={() => onFavourite(p, !p.is_favourite)}
-        aria-label={p.is_favourite ? `Remove ${p.name} from favourites` : `Add ${p.name} to favourites`}
+        aria-label={p.is_favourite ? t('favRemoveAria', { name: p.name }) : t('favAddAria', { name: p.name })}
         aria-pressed={p.is_favourite}
         className="px-1.5 text-base leading-none self-center text-orange-500 hover:scale-110 transition-transform"
       >
@@ -318,12 +333,12 @@ export function PlaceList({
           <span className="min-w-0 flex-1 truncate text-sm font-bold text-slate-900">
             {p.name}
             {isRetired(p) && (
-              <span className="ml-1.5 text-xs font-bold text-slate-400">{p.merged_into_id ? '· merged' : '· hidden'}</span>
+              <span className="ml-1.5 text-xs font-bold text-slate-400">{p.merged_into_id ? t('merged') : t('hidden')}</span>
             )}
           </span>
           {typeLabelFor?.(p)}
         </span>
-        <span className="block text-xs text-slate-400 truncate">{placeSubLine(p, ts)}</span>
+        <span className="block text-xs text-slate-400 truncate">{placeSubLine(p, ts, whenWords)}</span>
       </button>
     </li>
   )
@@ -337,8 +352,8 @@ export function PlaceList({
   return (
     <div className="flex flex-col min-h-0 h-full">
       <div className="p-3 pb-2 shrink-0">
-        <Input label="Search places" value={search} onChange={onSearch}
-          placeholder="Name, area or postcode" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
+        <Input label={t('searchLabel')} value={search} onChange={onSearch}
+          placeholder={t('searchPlaceholder', { style: addrStyle })} autoCapitalize="none" autoCorrect="off" spellCheck={false} />
         {/* 🔴 ONE SHORT LINE, NOT A TOAST — see `setFavourite`. */}
         {starError && <p className="text-xs text-red-500 mt-1">{starError}</p>}
       </div>
@@ -346,23 +361,23 @@ export function PlaceList({
       <div className="flex-1 min-h-0 overflow-y-auto px-3 pb-2">
         {nothingAtAll ? (
           <p className="text-xs text-slate-400 py-3">
-            {emptyHint ?? 'No places yet. They appear here from your schedule.'}
+            {emptyHint ?? t('emptyHint')}
           </p>
         ) : favourites.length === 0 && others.length === 0 && hidden.length === 0 ? (
           // ⚠️ ONLY REACHABLE WITH A SEARCH TYPED — `nothingAtAll` covers the no-places case above, so
           // this can never be the thing an operator sees on opening the modal (bug 2).
-          <p className="text-xs text-slate-400 py-3">Nothing matches “{search.trim()}”.</p>
+          <p className="text-xs text-slate-400 py-3">{t('noMatch', { search: search.trim() })}</p>
         ) : (
           <>
             {favourites.length > 0 && (
               <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide px-1 pt-1 pb-0.5">Favourites</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide px-1 pt-1 pb-0.5">{t('favourites')}</p>
                 <ul className="divide-y divide-slate-100">{favourites.map(p => row(p))}</ul>
               </div>
             )}
             {others.length > 0 && (
               <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide px-1 pt-3 pb-0.5">All places</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide px-1 pt-3 pb-0.5">{t('allPlaces')}</p>
                 <ul className="divide-y divide-slate-100">{others.map(p => row(p))}</ul>
               </div>
             )}
@@ -372,8 +387,8 @@ export function PlaceList({
               * the one thing the section itself already shows. */}
             {hidden.length > 0 && (
               <div data-hidden-places>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide px-1 pt-3 pb-0.5">Hidden places</p>
-                <p className="px-1 pb-1 text-[11px] leading-relaxed text-slate-400">{HIDDEN_PLACES_NOTE}</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wide px-1 pt-3 pb-0.5">{t('hiddenPlaces')}</p>
+                <p className="px-1 pb-1 text-[11px] leading-relaxed text-slate-400">{t('hiddenNote')}</p>
                 <ul className="divide-y divide-slate-100">{hidden.map(p => row(p, true))}</ul>
               </div>
             )}
@@ -392,7 +407,7 @@ export function PlaceList({
  * is the one thing the section itself already shows. What an operator cannot see is the CONSEQUENCE
  * (they are out of Add event) and the WAY BACK (open one), which is what this says.
  */
-const HIDDEN_PLACES_NOTE = 'Hidden places stay out of Add event. Open one to restore it.'
+/* ⚠️ THE SENTENCE IS `schedulePlaces.hiddenNote` (Language Phase 1d). */
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE DETAIL — reused by Tidy up, logic unchanged
@@ -407,6 +422,8 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
   showToast: (msg: string, kind?: 'success' | 'error') => void
   onChanged: (keepId?: string | null) => void
 }) {
+  const t = useT('schedulePlaces')
+  const addrStyle = addressStyleOf(useOptionalCountrySettings()?.addressFormat)
   // ⚠️ LOCAL DRAFT STATE, SAVED ON BLUR. The caller gives this a `key` of the place id, so it remounts
   // when the selection changes and a draft can never leak from one place onto another.
   const [name, setName] = useState(place.name)
@@ -419,13 +436,13 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
   const saveField = async (field: string, value: string, was: string | null) => {
     if (value.trim() === String(was ?? '').trim()) return
     try { await api('sg_upsert_place', { id: place.id, [field]: value }); onChanged() }
-    catch (e: unknown) { showToast(msgOf(e, 'Couldn’t save'), 'error') }
+    catch (e: unknown) { showToast(msgOf(e, t('saveFailed')), 'error') }
   }
 
   const setFlag = async (patch: Record<string, boolean>, done: string) => {
     setBusy(true)
     try { await api('sg_upsert_place', { id: place.id, ...patch }); showToast(done, 'success'); onChanged() }
-    catch (e: unknown) { showToast(msgOf(e, 'Couldn’t save'), 'error') }
+    catch (e: unknown) { showToast(msgOf(e, t('saveFailed')), 'error') }
     finally { setBusy(false) }
   }
 
@@ -471,21 +488,22 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
           * poster's own item is called "Venue" too, and "Area" beside it is the field below. One word
           * for one thing, on both screens. */}
         <div className="sm:col-span-2 min-w-0">
-          <Input label="Full name" value={name} onChange={setName}
+          <Input label={t('fullName')} value={name} onChange={setName}
             onBlur={() => saveField('name', name, place.name)} />
         </div>
         <div className="sm:col-span-2 min-w-0">
-          <Input label="Address" value={address} onChange={setAddress}
+          <Input label={t('address')} value={address} onChange={setAddress}
             onBlur={() => saveField('address', address, place.address)} />
         </div>
-        <Input label="Venue name" value={shortName} onChange={setShortName}
+        <Input label={t('venueName')} value={shortName} onChange={setShortName}
           onBlur={() => saveField('short_name', shortName, place.short_name)}
-          hint="Leave blank to use the full name." />
-        <Input label="Area" value={area} onChange={setArea}
+          hint={t('venueHint')} />
+        <Input label={t('area')} value={area} onChange={setArea}
           onBlur={() => saveField('area', area, place.area)} />
-        <Input label="Postcode" value={postcode} onChange={setPostcode}
+        {/* ⚠️ A UK POSTCODE CAPITALISES AS IT IS TYPED; A US ZIP CODE IS DIGITS (address style, Language Phase 1d). */}
+        <Input label={t('postcode', { style: addrStyle })} value={postcode} onChange={setPostcode}
           onBlur={() => saveField('postcode', postcode, place.postcode)}
-          autoCapitalize="characters" autoCorrect="off" spellCheck={false} />
+          autoCapitalize={upperCasesPostcode(addrStyle) ? 'characters' : 'none'} autoCorrect="off" spellCheck={false} />
       </Card>
 
       {/* ══ ⛔ THE "Events here" CARD AND THE "Favourite" BUTTON ARE DELETED (5 October 2026) ═══════
@@ -507,11 +525,11 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
         {isRetired(place) ? (
           // ⚠️ ONE CONTROL, ONE OUTCOME: restoring a merged place also un-merges it, or it would come
           // back into the list showing none of its own events (they all resolve to the target).
-          <Btn label="Restore this place" colour="slate" size="sm" loading={busy}
-            onClick={() => setFlag({ is_hidden: false }, 'Place restored')} />
+          <Btn label={t('restore')} colour="slate" size="sm" loading={busy}
+            onClick={() => setFlag({ is_hidden: false }, t('restored'))} />
         ) : (
-          <Btn label="Hide this place" colour="ghost" size="sm" loading={busy}
-            onClick={() => setFlag({ is_hidden: true }, 'Place hidden')} />
+          <Btn label={t('hide')} colour="ghost" size="sm" loading={busy}
+            onClick={() => setFlag({ is_hidden: true }, t('hiddenToast'))} />
         )}
       </div>
 
@@ -528,6 +546,7 @@ export function TidyUpPlaces({ ctl, api, showToast, onBack }: {
   showToast: (msg: string, kind?: 'success' | 'error') => void
   onBack: () => void
 }) {
+  const t = useT('schedulePlaces')
   const [search, setSearch] = useState('')
   const [showHidden, setShowHidden] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -540,7 +559,7 @@ export function TidyUpPlaces({ ctl, api, showToast, onBack }: {
     <div className="flex flex-col min-h-0 flex-1">
       <button type="button" onClick={onBack}
         className="self-start text-xs font-bold text-orange-600 hover:text-orange-700 mb-2 shrink-0">
-        ← Back to add event
+        {t('back')}
       </button>
       {ctl.loading ? (
         <div className="py-12 flex justify-center"><Spinner /></div>
@@ -560,7 +579,7 @@ export function TidyUpPlaces({ ctl, api, showToast, onBack }: {
                 /* 🔴 THE WAY BACK. Without it a hidden place is unreachable and hiding is a one-way door. */
                 <button type="button" onClick={() => setShowHidden(h => !h)}
                   className="text-xs font-bold text-slate-500 hover:text-slate-700">
-                  {showHidden ? 'Hide hidden places' : `Show hidden places (${hiddenCount})`}
+                  {showHidden ? t('hideHidden') : t('showHidden', { count: hiddenCount })}
                 </button>
               ) : null}
             />
@@ -570,7 +589,7 @@ export function TidyUpPlaces({ ctl, api, showToast, onBack }: {
               <PlaceDetail key={selected.id} place={selected} api={api}
                 showToast={showToast} onChanged={(id) => { ctl.reload(); if (id) setSelectedId(id) }} />
             ) : (
-              <Card className="p-8 text-center"><p className="text-sm text-slate-400">Pick a place to tidy up.</p></Card>
+              <Card className="p-8 text-center"><p className="text-sm text-slate-400">{t('pickPlace')}</p></Card>
             )}
           </div>
         </div>

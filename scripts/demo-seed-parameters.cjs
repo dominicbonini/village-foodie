@@ -106,7 +106,7 @@ async function board(seedDemoOrders, E, opts) {
   const SEED_FILES = ['lib/seed-demo-orders.ts', 'lib/slot-availability.ts']
   const variant = (tag, patch) => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `dsp-${tag}-`))
-    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
+    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true }); fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })   // ⚠️ RE-PINNED (Language Phase 1d): lib/ now reaches catalogs (settingsCopy, whereYouTrade) that import messages/ns/** — the copy needs them to compile
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
     const f = path.join(tmp, 'lib/seed-demo-orders.ts'); const src = fs.readFileSync(f, 'utf8')
     const out = patch(src); if (out === src) { console.log(`🔴 ${tag}: the patch did not apply`); process.exit(1) }
@@ -147,7 +147,7 @@ async function board(seedDemoOrders, E, opts) {
     // V4 — THE THREE-HOUR WINDOW RESTORED. The board is scaled to the windows it can plan into, so a
     // shorter service is also a thinner one: this is the shape Dominic called "thin".
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'dsp-v4-'))
-    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
+    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true }); fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })   // ⚠️ RE-PINNED (Language Phase 1d): lib/ now reaches catalogs (settingsCopy, whereYouTrade) that import messages/ns/** — the copy needs them to compile
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
     const f = path.join(tmp, 'lib/provision-demo-event.ts'); const src = fs.readFileSync(f, 'utf8')
     if (src.split('export const DEMO_WINDOW_HOURS = 4').length !== 2) { console.log('🔴 v4: the window constant was not found exactly once'); process.exit(1) }
@@ -171,7 +171,7 @@ async function board(seedDemoOrders, E, opts) {
   {
     // V6 — THE CLAMP REMOVED: a late creation runs past midnight into the next day.
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'dsp-v6-'))
-    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
+    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true }); fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })   // ⚠️ RE-PINNED (Language Phase 1d): lib/ now reaches catalogs (settingsCopy, whereYouTrade) that import messages/ns/** — the copy needs them to compile
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
     const f = path.join(tmp, 'lib/provision-demo-event.ts'); const src = fs.readFileSync(f, 'utf8')
     const needle = "const end = rawEndMins >= 24 * 60 ? '23:59' : toHHMM(rawEndMins)"
@@ -187,7 +187,7 @@ async function board(seedDemoOrders, E, opts) {
     // V7 — THE WRONG PANEL: the replacement test removed, so a rebuilt board's seeded orders read as the
     // visitor's own and the "real order lands" prompt fires over the introduction.
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'dsp-v7-'))
-    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
+    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true }); fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })   // ⚠️ RE-PINNED (Language Phase 1d): lib/ now reaches catalogs (settingsCopy, whereYouTrade) that import messages/ns/** — the copy needs them to compile
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
     const f = path.join(tmp, 'lib/demo-board-build.ts'); const src = fs.readFileSync(f, 'utf8')
     const needle = '  return !baseline.some(k => now.has(k))'

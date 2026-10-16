@@ -1,0 +1,10 @@
+{
+  "labels": {
+    "collection_interval_mins": "Pickup times"
+  },
+  "typeFollowsVanTitle": "Follows each truck’s usual setting",
+  "sameSettingsAllVansLabel": "Same settings for all trucks",
+  "sameSettingsAllVansHeader": "All trucks",
+  "sameSettingsConfirm": "Copy Truck 1’s settings to every truck? This copies all of Truck 1’s truck settings, the same as ‘Same as Truck 1’ in Settings. Kitchen capacity has its own switch.",
+  "pricesTruckWideTitle": "Your prices are the same for every truck"
+}

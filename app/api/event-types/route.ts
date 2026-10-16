@@ -77,11 +77,23 @@ import { resolveVanTakesCash } from '@/lib/event-types/resolve'
 import { OFFLINE_PROTECTION_MODES } from '@/lib/copy/offlineProtection'
 /* 🔴 THE BUILT-IN PRIVATE TYPE (20261014). Created lazily; never upserted — see its header. */
 import { ensurePrivateType, readTypeKinds } from '@/lib/private-events/type'
+/* ── 🔴 LANGUAGE PHASE 1d: EVERY REFUSAL OF OURS CARRIES A CODE ──────────────────────────────────────────────────
+ * `{ error: <today's English>, …every field it already carried…, code, params }` (`manageErrorBody`,
+ * lib/i18n/manage-errors.ts), in the truck's language; en-GB before the truck is known. A database's message is passed
+ * on as it comes, without a code. The words this route SENDS (the upgrade line, a van's fallback name, the
+ * uncategorised group) are messages too, in the truck's language. */
+import { manageErrorBody, type ManageErrorCode, type ManageErrorParams } from '@/lib/i18n/manage-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/errorsManage'
+import '@/lib/i18n/catalog/manageApi'
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
 type TruckRow = {
   id: string; name: string
+  country?: string | null
   plan: string | null
   feature_overrides: Record<string, boolean> | null
   trial_expires_at: string | null
@@ -93,8 +105,9 @@ async function getTruck(token: string): Promise<TruckRow | null> {
   return (data as TruckRow | null) ?? null
 }
 
-/** The gate. ⚠️ Returns the same message the panel shows, so a blocked call and a blocked screen agree. */
-const UPGRADE_MESSAGE = 'Event types are part of the Max plan.'
+/** The gate. ⚠️ Returns the same message the panel shows, so a blocked call and a blocked screen agree.
+ *  Language Phase 1d: a code — its words are `errorsManage.event_types_max`, in the truck's language. */
+const UPGRADE_MESSAGE: ManageErrorCode = 'event_types_max'
 const allowed = (truck: TruckRow): boolean =>
   canAccess(truck.plan as never, 'event_types', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
 
@@ -111,7 +124,7 @@ const allowed = (truck: TruckRow): boolean =>
  * checked only `privateAllowed` would hand Pro the whole Max screen. Both, each on what it guards.
  * ⚠️ THE MESSAGES DIFFER ON PURPOSE — a Pro truck told "Event types are part of the Max plan" while
  * looking at a screen they are entitled to would have no idea what to do. */
-const PRIVATE_UPGRADE_MESSAGE = 'Private events are part of the Pro plan.'
+const PRIVATE_UPGRADE_MESSAGE: ManageErrorCode = 'private_events_pro'
 const privateAllowed = (truck: TruckRow): boolean =>
   canAccess(truck.plan as never, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
 
@@ -159,7 +172,7 @@ const cleanName = (raw: unknown): string =>
 // also make is a number the operator is promised and not charged.
 
 /** The menu items the grid and the sheet price, with their categories in MENU order. */
-async function loadMenuForPricing(truckId: string) {
+async function loadMenuForPricing(truckId: string, uncategorisedName: string) {
   const [{ items }, { data: cats }] = await Promise.all([
     loadPricingItems(supabase, truckId),
     supabase.from('menu_categories')
@@ -187,7 +200,7 @@ async function loadMenuForPricing(truckId: string) {
   const orphan = items.filter(it => !it.categoryId || !catRows.some(c => c.id === it.categoryId))
   if (orphan.length) {
     categories.push({
-      id: '\u0000uncategorised', name: 'Uncategorized',
+      id: '\u0000uncategorised', name: uncategorisedName,
       items: orphan.map(it => ({ id: it.id, name: it.name, price: toPounds(it.pricePence) })),
     })
   }
@@ -195,10 +208,10 @@ async function loadMenuForPricing(truckId: string) {
 }
 
 /** The grid's pricing payload: every type's setup and typed rows, plus the menu. */
-async function loadPricingPayload(truckId: string) {
+async function loadPricingPayload(truckId: string, uncategorisedName: string) {
   const [typePricing, menu] = await Promise.all([
     readTypePricingForTruck(supabase, truckId),
-    loadMenuForPricing(truckId),
+    loadMenuForPricing(truckId, uncategorisedName),
   ])
   /* ⚠️ `pricingReady: false` MEANS "20261011 IS NOT APPLIED", and the grid draws no PRICES section
    * rather than controls that would 400. It is the same honesty `missingTable` already provides for
@@ -331,12 +344,18 @@ type EventTypeServiceValues = Record<ServiceKey, boolean | number | string | nul
 
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>
-  try { body = await req.json() } catch { return NextResponse.json({ error: 'Bad request' }, { status: 400 }) }
+  try { body = await req.json() } catch { return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'bad_request'), { status: 400 }) }
 
   const token = String(body.token ?? '')
-  if (!token) return NextResponse.json({ error: 'Token required' }, { status: 401 })
+  if (!token) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'token_required'), { status: 401 })
   const truck = await getTruck(token)
-  if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+  if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'invalid_token'), { status: 401 })
+  /** The truck's language — read once, and only when a refusal or a word needs it. */
+  let localeRead: Promise<AppLocale> | null = null
+  const truckLocale = () => (localeRead ??= localeForTruck(truck))
+  /** A refusal of ours: `{ error, …extra, code, params }` in the truck's language (lib/i18n/manage-errors.ts). */
+  const refuse = async (code: ManageErrorCode, status: number, params: ManageErrorParams = {}, extra?: Record<string, unknown>) =>
+    NextResponse.json(manageErrorBody(await truckLocale(), code, params, extra), { status })
 
   const action = String(body.action ?? '')
   const canWrite = allowed(truck)
@@ -371,16 +390,16 @@ export async function POST(req: NextRequest) {
   const PRIVATE_ACTIONS = new Set(['set_private_link_ordering'])
   if (PRIVATE_ACTIONS.has(action)) {
     if (!privateAllowed(truck)) {
-      return NextResponse.json({ error: PRIVATE_UPGRADE_MESSAGE, upgrade: true }, { status: 403 })
+      return refuse(PRIVATE_UPGRADE_MESSAGE, 403, {}, { upgrade: true })
     }
   } else if (!ALL_PLAN_ACTIONS.has(action) && !READ_ACTIONS.has(action) && !canWrite) {
-    return NextResponse.json({ error: UPGRADE_MESSAGE, upgrade: true }, { status: 403 })
+    return refuse(UPGRADE_MESSAGE, 403, {}, { upgrade: true })
   }
 
   /* ⛔ AND `load` IS OPEN TO EITHER KEY. A Pro truck must be able to SEE Standard + Private; without
    * this it would reach a screen it is entitled to and be told to upgrade. */
   if (READ_ACTIONS.has(action) && !canWrite && !privateAllowed(truck)) {
-    return NextResponse.json({ error: UPGRADE_MESSAGE, upgrade: true }, { status: 403 })
+    return refuse(UPGRADE_MESSAGE, 403, {}, { upgrade: true })
   }
 
   /* ══ 🔴 THE PRICE CUSTOMERS PAY AT THIS EVENT, PER ITEM — EVERY PLAN ══════════════════════════════
@@ -395,10 +414,10 @@ export async function POST(req: NextRequest) {
    * with an × beside it. */
   if (action === 'event_item_prices') {
     const eventId = String(body.eventId ?? '')
-    if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+    if (!eventId) return await refuse('event_id_required', 400)
     const { data: ev } = await supabase
       .from('truck_events').select('id, status').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    if (!ev) return await refuse('event_not_found', 404)
     const pricing = await readEventPricing(supabase, eventId)
     const { items } = await loadPricingItems(supabase, truck.id)
     const charged: Record<string, number> = {}
@@ -454,10 +473,10 @@ export async function POST(req: NextRequest) {
    */
   if (action === 'save_event_item_prices') {
     const eventId = String(body.eventId ?? '')
-    if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+    if (!eventId) return await refuse('event_id_required', 400)
     const { data: ev } = await supabase
       .from('truck_events').select('id').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    if (!ev) return await refuse('event_not_found', 404)
 
     const raw = (body.prices && typeof body.prices === 'object' ? body.prices : {}) as Record<string, unknown>
     /* ⚠️ EVERY ITEM ID IS CHECKED AGAINST THIS TRUCK'S OWN ITEMS. The map arrives from a client and
@@ -518,7 +537,7 @@ export async function POST(req: NextRequest) {
     })
     if (!type) {
       return NextResponse.json(
-        { error: 'Private events are not available yet — the database migration has not been applied.' },
+        manageErrorBody(await truckLocale(), 'private_not_ready'),
         { status: 400 },
       )
     }
@@ -627,10 +646,12 @@ export async function POST(req: NextRequest) {
       value: gridValues.length ? gridValues[0] : null,
     }
 
+    /* The name a van with none is shown under — a word, in the truck's language; read only when a van needs it. */
+    const vanFallbackName = vanRows.some(v => v.name == null) ? translatorFor(await truckLocale(), 'manageApi')('vanFallback') : ''
     return NextResponse.json({
       missingTable: !ok,
       readOnly: !canWrite,
-      upgradeMessage: canWrite ? null : UPGRADE_MESSAGE,
+      upgradeMessage: canWrite ? null : translatorFor(await truckLocale(), 'errorsManage')(UPGRADE_MESSAGE),
       /* ══ 🔴 PRIVATE IS **FIRST** AMONG THE TYPES — STRAIGHT AFTER STANDARD (5 October 2026) ══════
        * It was last. Dominic reversed it, and the reason is that Private is the one column every
        * truck has: putting it after however many custom types a truck happens to have made meant its
@@ -712,7 +733,7 @@ export async function POST(req: NextRequest) {
        * aggregate does — never from the select above, which must not name that column. */
       vans: vanRows.map(v => ({
         id: v.id,
-        name: v.name ?? 'Van',
+        name: v.name ?? vanFallbackName,
         order_ready: v.order_ready_enabled === true,
         /* 🔴 THE BUZZER ROW'S VALUE IS THE RACK — `buzzer_count !== null`, lib/buzzer.ts's rule — and
          * that is now also what Standard's switch WRITES, through the same `update_van_settings`
@@ -738,7 +759,7 @@ export async function POST(req: NextRequest) {
        * the menu — so they are opt-in rather than paid for on every mount of that modal.
        * ⚠️ PROBED AND FAIL-OPEN. Before 20261011 is applied, `pricing` is absent from the response
        * and the grid draws no PRICES section — which is honest: there is nowhere to store a price. */
-      ...(body.withPrices === true ? await loadPricingPayload(truck.id) : {}),
+      ...(body.withPrices === true ? await loadPricingPayload(truck.id, translatorFor(await truckLocale(), 'manageApi')('uncategorised')) : {}),
       /* What the Standard column shows. `perVan: true` ⇒ the screen prints "Set per van". */
       standard: {
         /* ⚠️ THE BUZZER PROMPT'S DEFAULT IS "this van has a rack", not a column — lib/buzzer.ts's
@@ -771,7 +792,7 @@ export async function POST(req: NextRequest) {
   // ── CREATE ──────────────────────────────────────────────────────────────────────────────────────
   if (action === 'create') {
     const name = cleanName(body.name)
-    if (!name) return NextResponse.json({ error: 'Give the type a name.' }, { status: 400 })
+    if (!name) return await refuse('type_name_required', 400)
 
     /* ⚠️ THE NEXT SORT VALUE IS READ, NOT COUNTED. A truck who deleted their second of three types has
      * sort values 0 and 2; counting rows would hand the new type 2 as well and the order would depend
@@ -812,7 +833,7 @@ export async function POST(req: NextRequest) {
       /* 23505 is the (truck_id, lower(name)) unique index. It is the one error an operator can cause
        * by hand, so it gets a sentence rather than a code. */
       if ((error as { code?: string }).code === '23505') {
-        return NextResponse.json({ error: `You already have a type called “${name}”.` }, { status: 400 })
+        return refuse('type_name_taken', 400, { name })
       }
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
@@ -822,14 +843,14 @@ export async function POST(req: NextRequest) {
   // ── UPDATE one setting, or the name ─────────────────────────────────────────────────────────────
   if (action === 'update') {
     const id = String(body.id ?? '')
-    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+    if (!id) return await refuse('id_required', 400)
 
     /* ⚠️ AN ALLOWLIST, AND NOTHING SPREADS `body`. A client PATCHing `truck_id` or `id` is dropped
      * rather than honoured — the same discipline `sg_upsert_place` and `update_settings` follow. */
     const patch: Record<string, unknown> = {}
     if ('name' in body) {
       const name = cleanName(body.name)
-      if (!name) return NextResponse.json({ error: 'Give the type a name.' }, { status: 400 })
+      if (!name) return await refuse('type_name_required', 400)
       patch.name = name
     }
     for (const k of SERVICE_KEYS) {
@@ -844,7 +865,7 @@ export async function POST(req: NextRequest) {
       .from('event_types').update(patch).eq('id', id).eq('truck_id', truck.id)
     if (error) {
       if ((error as { code?: string }).code === '23505') {
-        return NextResponse.json({ error: `You already have a type called “${patch.name}”.` }, { status: 400 })
+        return refuse('type_name_taken', 400, { name: String(patch.name) })
       }
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
@@ -868,7 +889,7 @@ export async function POST(req: NextRequest) {
    */
   if (action === 'match_standard') {
     const id = String(body.id ?? '')
-    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+    if (!id) return await refuse('id_required', 400)
     const seed = await vanOneServiceValues(truck.id, truck.takes_cash ?? null)
     const patch: Record<string, unknown> = { updated_at: new Date().toISOString() }
     for (const k of SERVICE_KEYS) patch[k] = cleanValue(k, seed[k])
@@ -881,7 +902,7 @@ export async function POST(req: NextRequest) {
   // ── REORDER ─────────────────────────────────────────────────────────────────────────────────────
   if (action === 'reorder') {
     const ids = Array.isArray(body.ids) ? body.ids.map(String) : []
-    if (!ids.length) return NextResponse.json({ error: 'ids required' }, { status: 400 })
+    if (!ids.length) return await refuse('ids_required', 400)
     /* ⚠️ ONE UPDATE PER ROW, EACH SCOPED BY truck_id. An upsert of the whole list would need every
      * column (name is NOT NULL) and would let a caller rewrite a name through the reorder path. */
     for (let i = 0; i < ids.length; i++) {
@@ -895,7 +916,7 @@ export async function POST(req: NextRequest) {
   // ── DELETE ──────────────────────────────────────────────────────────────────────────────────────
   if (action === 'delete') {
     const id = String(body.id ?? '')
-    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+    if (!id) return await refuse('id_required', 400)
     /* 🔴 ITS EVENTS BECOME STANDARD, AND THE DATABASE DOES IT. `event_type_id` is
      * `on delete set null`, so no bulk update runs here and no event is lost — which is exactly what
      * the delete confirm on the panel says happens.
@@ -910,20 +931,20 @@ export async function POST(req: NextRequest) {
   // ── ASSIGN a type to one event, from the dashboard or the Add event modal ───────────────────────
   if (action === 'assign') {
     const eventId = String(body.eventId ?? '')
-    if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+    if (!eventId) return await refuse('event_id_required', 400)
     const rawType = body.typeId === null || body.typeId === '' ? null : String(body.typeId ?? '')
 
     /* The event must be this truck's. ⚠️ Checked by a read rather than trusted, because `eventId`
      * arrives from a client. */
     const { data: ev } = await supabase
       .from('truck_events').select('id').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-    if (!ev) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    if (!ev) return await refuse('event_not_found', 404)
 
     let typeId: string | null = null
     if (rawType) {
       const { data: t } = await supabase
         .from('event_types').select('id').eq('id', rawType).eq('truck_id', truck.id).maybeSingle()
-      if (!t) return NextResponse.json({ error: 'Event type not found' }, { status: 404 })
+      if (!t) return await refuse('event_type_not_found', 404)
       typeId = String((t as { id: string }).id)
     }
 
@@ -1068,7 +1089,7 @@ export async function POST(req: NextRequest) {
   // ── A TYPE'S PRICE SETTINGS: the switch, the mode, the amount, the rounding ──────────────────
   if (action === 'set_type_pricing') {
     const id = String(body.id ?? '')
-    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+    if (!id) return await refuse('id_required', 400)
 
     const patch = cleanPricingPatch(body)
     /* 🔴 THE SWITCH ONLY, OR THE RULE ONLY, OR BOTH — WHICHEVER THE BODY CARRIES. `in` and not a
@@ -1104,7 +1125,7 @@ export async function POST(req: NextRequest) {
      * read, so whether this save would move a price is unknown — and writing the patch anyway is
      * exactly the silent price change this exists to prevent. */
     if (!current.ok || !row) {
-      return NextResponse.json({ error: 'Could not read this type\u2019s prices; nothing was saved' }, { status: 400 })
+      return await refuse('type_prices_read_failed', 400)
     }
     const wasOn = row.price_change_on === true
     const lockIn = shouldLockIn({
@@ -1117,7 +1138,7 @@ export async function POST(req: NextRequest) {
     if (lockIn) {
       const { ok, items } = await loadPricingItems(supabase, truck.id)
       if (!ok) {
-        return NextResponse.json({ error: 'Could not read the menu; nothing was saved' }, { status: 400 })
+        return await refuse('menu_read_failed', 400)
       }
       const freeze = lockedInPrices(
         items,
@@ -1160,7 +1181,7 @@ export async function POST(req: NextRequest) {
   if (action === 'set_type_item_price') {
     const id = String(body.id ?? '')
     const itemId = String(body.itemId ?? '')
-    if (!id || !itemId) return NextResponse.json({ error: 'id and itemId required' }, { status: 400 })
+    if (!id || !itemId) return await refuse('id_and_item_required', 400)
 
     /* ⚠️ BOTH IDS ARE VERIFIED AGAINST THIS TRUCK, not trusted. They arrive from a client, and
      * `event_item_prices` has no RLS policy that could tell one truck's type from another's — the
@@ -1170,8 +1191,8 @@ export async function POST(req: NextRequest) {
       supabase.from('event_types').select('id').eq('id', id).eq('truck_id', truck.id).maybeSingle(),
       supabase.from('menu_items_db').select('id').eq('id', itemId).eq('truck_id', truck.id).maybeSingle(),
     ])
-    if (!t) return NextResponse.json({ error: 'Event type not found' }, { status: 404 })
-    if (!item) return NextResponse.json({ error: 'Item not found' }, { status: 404 })
+    if (!t) return await refuse('event_type_not_found', 404)
+    if (!item) return await refuse('item_not_found', 404)
 
     const price = cleanTypedPrice(body.price)
     if (price === null) {
@@ -1234,5 +1255,5 @@ export async function POST(req: NextRequest) {
    * ⛔ `assign` WITH `clearOwn` STILL CLEARS BOTH the columns and the rows, and that is unchanged —
    * "Clear my changes and use <type> exactly" has to mean it. */
 
-  return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+  return await refuse('unknown_action', 400)
 }

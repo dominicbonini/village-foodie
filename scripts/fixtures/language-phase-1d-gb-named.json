@@ -1,0 +1,652 @@
+{
+  "errorsManage.auto_open_close_required": {
+    "before": "auto_open and auto_close are required",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.capacity_copy_failed": {
+    "before": "The first van's capacity could not be copied right now.",
+    "after": "The first van’s capacity could not be copied right now.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.category_copy_failed": {
+    "before": "The first van's category settings could not be copied right now.",
+    "after": "The first van’s category settings could not be copied right now.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.clear_first_setup_only": {
+    "before": "clearFirst is only permitted on a truck still in setup.",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.event_id_required": {
+    "before": "eventId required",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.first_van_copy_failed": {
+    "before": "The first van's settings could not be copied right now.",
+    "after": "The first van’s settings could not be copied right now.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.id_and_item_required": {
+    "before": "id and itemId required",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.id_required": {
+    "before": "id required",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.ids_required": {
+    "before": "ids required",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.missing_params": {
+    "before": "Missing params",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.place_add_failed": {
+    "before": "Couldn't add that place.",
+    "after": "Couldn’t add that place.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.place_save_failed": {
+    "before": "Couldn't save that place.",
+    "after": "Couldn’t save that place.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.places_load_failed": {
+    "before": "Couldn't load places.",
+    "after": "Couldn’t load places.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.places_load_failed_migration": {
+    "before": "Couldn't load places. If this is new, the schedule-places migration may not be applied yet.",
+    "after": "Couldn’t load places. If this is new, the schedule-places migration may not be applied yet.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.preorders_pro": {
+    "before": "Pre-orders requires the Pro plan",
+    "after": "Pre-orders are part of the Pro plan.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.schedule_read_failed": {
+    "before": "Couldn't read your schedule, so places could not be worked out.",
+    "after": "Couldn’t read your schedule, so places could not be worked out.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.settings_save_failed": {
+    "before": "Couldn't save settings — please try again.",
+    "after": "Couldn’t save settings — please try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.truck_param_required": {
+    "before": "truck param required",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.upsell_categories_required": {
+    "before": "trigger_category and suggest_category required",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.van_capacity_save_failed": {
+    "before": "That van's capacity settings could not be saved right now.",
+    "after": "That van’s capacity settings could not be saved right now.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.van_category_ids_required": {
+    "before": "vanId and categoryId are required",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.van_id_required": {
+    "before": "vanId is required",
+    "after": "Something went wrong — refresh the page and try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "eventTypes.phone.vanSetup": {
+    "before": "This van's usual setup — used at every event with no type.",
+    "after": "This van’s usual setup — used at every event with no type.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "goLive.noVan.where": {
+    "before": "Settings → Vans",
+    "after": "Settings → Your trucks",
+    "kind": "GB fix of a 756ca09 key"
+  },
+  "kitchenCapacity.desc": {
+    "before": "The most items your kitchen can turn out at once, across all the categories you've ticked. Each category's own batch size still applies on top.",
+    "after": "The most items your kitchen can turn out at once, across all the categories you’ve ticked. Each category’s own batch size still applies on top.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "kitchenCapacity.example": {
+    "before": "Example: if you can cook 4 mains in 5 minutes, then set it to 4 items every 5 minutes. The total capacity limits orders across all selected categories so if you want to only sell a maximum of 10 starters and mains every 5 minutes, then set Total Capacity to 10 items every 5 minutes and select Starters and Mains tickbox. This will still keep your mains restricted to 4 items every 5 minutes.",
+    "after": "Example: if you can cook 4 mains in 5 minutes, then set it to 4 items every 5 minutes. The total capacity limits orders across all selected categories so if you want to only sell a maximum of 10 starters and mains every 5 minutes, then set Total capacity to 10 items every 5 minutes and tick the Starters and Mains boxes. This will still keep your mains restricted to 4 items every 5 minutes.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "kitchenCapacity.instantNote": {
+    "before": "Instant items don't count towards kitchen capacity — customers receive them immediately.",
+    "after": "Instant items don’t count towards kitchen capacity — customers receive them immediately.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "kitchenCapacity.warning": {
+    "before": "⚠️ For kitchen capacity to work properly, set a prep time and batch size on your menu categories (Menu & Stock). Without them, capacity can't tell how long items take to cook.",
+    "after": "⚠️ For kitchen capacity to work properly, set a prep time and batch size on your menu categories (Menu & Stock). Without them, capacity can’t tell how long items take to cook.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageAllergens.cardUpload.matchSummary": {
+    "before": "{n, plural, =0 {{matched} matched to a dish.} other {{matched} matched to a dish. {count} need your assignment.}}",
+    "after": "{n, plural, =0 {{matched} matched to a dish.} one {{matched} matched to a dish. {count} needs your assignment.} other {{matched} matched to a dish. {count} need your assignment.}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageAllergens.wizard.cardPanel.intro": {
+    "before": "Customers will see this card as the menu's allergen reference. Per-dish allergens stay hidden in card-only mode (your dish data is kept for if you switch to per-dish later).",
+    "after": "Customers will see this card as the menu’s allergen reference. Per-dish allergens stay hidden in card-only mode (your dish data is kept for if you switch to per-dish later).",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageAllergens.wizard.hint.importIncomplete": {
+    "before": "Confirm every dish to continue — or “Skip Allergen setup for now”.",
+    "after": "Confirm every dish to continue — or “Skip allergen setup for now”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageAllergens.wizard.nav.skipImport": {
+    "before": "Skip Allergen setup for now",
+    "after": "Skip allergen setup for now",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageAllergens.wizard.toast.cardRead": {
+    "before": "{n, plural, other {Card read — {matched} matched, {count} need assignment}}",
+    "after": "{n, plural, one {Card read — {matched} matched, {count} needs assignment} other {Card read — {matched} matched, {count} need assignment}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageApi.stockWarning": {
+    "before": "No available items in \"{category}\"",
+    "after": "No available items in “{category}”",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageApi.uncategorised": {
+    "before": "Uncategorized",
+    "after": "Uncategorised",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageDeals.emptyBody": {
+    "before": "Create a bundle deal like \"Lunch Deal — any pizza + drink + dip for {price}\"",
+    "after": "Create a bundle deal like “Lunch Deal — any pizza + drink + dip for {price}”",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageDeals.manualHelp": {
+    "before": "This deal won't appear on events unless you enable it in the Schedule tab.",
+    "after": "This deal won’t appear on events unless you enable it in the Schedule tab.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageDeals.saving": {
+    "before": "Saving...",
+    "after": "Saving…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageExtras.confirmDeleteGroup": {
+    "before": "Delete \"{name}\"? All options will be removed and it will be unassigned from all categories.",
+    "after": "Delete “{name}”? All options will be removed and it will be unassigned from all categories.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageExtras.emptyBody": {
+    "before": "Create a group like \"Pizza extras\" and add options like \"Extra Cheese +{price}\"",
+    "after": "Create a group like “Pizza extras” and add options like “Extra Cheese +{price}”",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageExtras.matrix.help": {
+    "before": "Tick \"Include\" to add the group to a dish, then tick which options it shows. Saves instantly.",
+    "after": "Tick “Include” to add the group to a dish, then tick which options it shows. Saves instantly.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageExtras.option.allergensHelp": {
+    "before": "This option's own allergens (separate from the dish)",
+    "after": "This option’s own allergens (separate from the dish)",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageExtras.saving": {
+    "before": "Saving...",
+    "after": "Saving…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageExtras.title": {
+    "before": "Custom Extras",
+    "after": "Custom extras",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageExtras.uncategorized": {
+    "before": "Uncategorized",
+    "after": "Uncategorised",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.allergens.needReview": {
+    "before": "{count, plural, one {# dish} other {# dishes}} need review — customers can't see allergen info until confirmed",
+    "after": "{count, plural, one {# dish needs} other {# dishes need}} review — customers can’t see allergen info until confirmed",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.allergens.pastePlaceholder": {
+    "before": "Paste your allergen information here...",
+    "after": "Paste your allergen information here…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.allergens.reading": {
+    "before": "Reading allergen information...",
+    "after": "Reading allergen information…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.category.prepHelp": {
+    "before": "Set to Instant for items like drinks or dips. These won't count toward kitchen capacity.",
+    "after": "Set to Instant for items like drinks or dips. These won’t count toward kitchen capacity.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.confirmDelete.empty": {
+    "before": "Delete \"{name}\"? This cannot be undone.",
+    "after": "Delete “{name}”? This cannot be undone.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.confirmDelete.withItems": {
+    "before": "Delete \"{name}\"? This will also delete {count, plural, one {# item} other {# items}} in this category. This cannot be undone.",
+    "after": "Delete “{name}”? This will also delete {count, plural, one {# item} other {# items}} in this category. This cannot be undone.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.deleteItem.body": {
+    "before": "This item will be hidden from your menu immediately. It won't appear on the customer order page or in the Add Order panel.",
+    "after": "This item will be hidden from your menu immediately. It won’t appear on the customer order page or in the Add order panel.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.empty.note": {
+    "before": "Works with photos, screenshots, PDFs and plain text. You can review and edit everything before it's saved.",
+    "after": "Works with photos, screenshots, PDFs and plain text. You can review and edit everything before it’s saved.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.item.noGroups": {
+    "before": "No option groups yet — create them in Extras & Upsells.",
+    "after": "No option groups yet — create them in Extras & upsells.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.newCategory.notesHelp": {
+    "before": "Lets customers add a note to each item (e.g. \"no onion\"). The truck can always add item notes regardless. All orders also have an order-level notes field.",
+    "after": "Lets customers add a note to each item (e.g. “no onion”). The truck can always add item notes regardless. All orders also have an order-level notes field.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.saving": {
+    "before": "Saving...",
+    "after": "Saving…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenu.summary": {
+    "before": "{categories, plural, one {# category} other {# categories}} · {items} items",
+    "after": "{categories, plural, one {# category} other {# categories}} · {items, plural, one {# item} other {# items}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.allergens.skip": {
+    "before": "Skip Allergen setup for now",
+    "after": "Skip allergen setup for now",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.allergensNotSet.title": {
+    "before": "⚠ Allergens & dietary aren't set yet",
+    "after": "⚠ Allergens & dietary aren’t set yet",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.catError.clash": {
+    "before": "There's already a category called \"{name}\".",
+    "after": "There’s already a category called “{name}”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.discard.body": {
+    "before": "Your changes won't be saved — the imported items, prep times and kitchen capacity won't be added.",
+    "after": "Your changes won’t be saved — the imported items, prep times and kitchen capacity won’t be added.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.done.allSet": {
+    "before": "You're all set!",
+    "after": "You’re all set!",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.done.explore": {
+    "before": "I'll explore myself",
+    "after": "I’ll explore myself",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.offer.body": {
+    "before": "We saved the menu you uploaded — {count} items. Use it as your starting point, or upload a different one.",
+    "after": "We saved the menu you uploaded — {count, plural, one {# item} other {# items}}. Use it as your starting point, or upload a different one.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.review.incomplete": {
+    "before": "Enter a name to add this item — empty rows aren't imported.",
+    "after": "Enter a name to add this item — empty rows aren’t imported.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.review.noPriceBody": {
+    "before": "Set a price for each, or mark it free — otherwise it would go live at {zero}. You can't continue until these are sorted.",
+    "after": "Set a price for each, or mark it free — otherwise it would go live at {zero}. You can’t continue until these are sorted.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.review.ready": {
+    "before": "{count} items ready to add. Uncheck any you don't want.",
+    "after": "{count, plural, one {# item} other {# items}} ready to add. Uncheck any you don’t want.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.schedule.blockedDomain": {
+    "before": "Please use your website URL — Facebook and Instagram pages can't be scraped automatically.",
+    "after": "Please use your website URL — Facebook and Instagram pages can’t be scraped automatically.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.schedule.keepChecking": {
+    "before": "We'll keep checking this page and send any new dates for your approval.",
+    "after": "We’ll keep checking this page and send any new dates for your approval.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.schedule.manualTitle": {
+    "before": "I'll add my dates myself",
+    "after": "I’ll add my dates myself",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.schedule.noneFound": {
+    "before": "We couldn't find any dates in that — try a clearer photo, or add a date yourself.",
+    "after": "We couldn’t find any dates in that — try a clearer photo, or add a date yourself.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.schedule.photoDesc": {
+    "before": "Snap or paste your dates — we'll read them in for you to check.",
+    "after": "Snap or paste your dates — we’ll read them in for you to check.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.schedule.saveFailed": {
+    "before": "We read your schedule, but couldn't save it just now — try again.",
+    "after": "We read your schedule, but couldn’t save it just now — try again.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.schedule.websiteDesc": {
+    "before": "We'll check it regularly and send new dates for your approval.",
+    "after": "We’ll check it regularly and send new dates for your approval.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.settingsReview.anchorContact": {
+    "before": "Settings → Contact Details",
+    "after": "Settings → Contact details",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.settingsReview.intro": {
+    "before": "We've set you up with some common settings. Worth a quick look — you can change any of these later in Settings.",
+    "after": "We’ve set you up with some common settings. Worth a quick look — you can change any of these later in Settings.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.settingsReview.saveFailed": {
+    "before": "Couldn't save that — you can change it in Settings.",
+    "after": "Couldn’t save that — you can change it in Settings.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.toast.cardRead": {
+    "before": "Card read — {matched} matched, {pending} need your assignment",
+    "after": "Card read — {matched} matched, {pending, plural, one {# needs} other {# need}} your assignment",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.toast.finishFailed": {
+    "before": "Couldn't mark setup complete — you can still continue.",
+    "after": "Couldn’t mark setup complete — you can still continue.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.toast.scheduleReadFailed": {
+    "before": "Couldn't read that schedule — try a clearer photo or type your dates in.",
+    "after": "Couldn’t read that schedule — try a clearer photo or type your dates in.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.upload.later": {
+    "before": "I'll do this later",
+    "after": "I’ll do this later",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.welcome.body": {
+    "before": "{name} is set up. Next we'll add your menu, then your first event.",
+    "after": "{name} is set up. Next we’ll add your menu, then your first event.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageMenuImport.welcome.go": {
+    "before": "Let's go",
+    "after": "Let’s go",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSchedule.conflict.overlap": {
+    "before": "This event's time overlaps another event on the same day — a single van can't be in two places at once. Check before approving.",
+    "after": "This event’s time overlaps another event on the same day — a single van can’t be in two places at once. Check before approving.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSchedule.header.scraperManual": {
+    "before": "You're managing your schedule manually",
+    "after": "You’re managing your schedule manually",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSchedule.list.found": {
+    "before": "We found {count, plural, one {# event} other {# events}} for you — review and approve before they go live.",
+    "after": "We found {count, plural, one {# event for you — review and approve before it goes live.} other {# events for you — review and approve before they go live.}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageScheduleEvent.hiddenMatch": {
+    "before": "{count, plural, one {# hidden place} other {# hidden places}} match · Show hidden",
+    "after": "{count, plural, one {# hidden place matches} other {# hidden places match}} · Show hidden",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageScheduleEvent.saving": {
+    "before": "Saving...",
+    "after": "Saving…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageScheduleImport.analysing": {
+    "before": "Analysing...",
+    "after": "Analysing…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageScheduleImport.review.saving": {
+    "before": "Saving...",
+    "after": "Saving…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageScheduleVerify.blocked": {
+    "before": "We couldn't access this site — it may be blocking automated checks. Try the page that lists your schedule, or add events manually.",
+    "after": "We couldn’t access this site — it may be blocking automated checks. Try the page that lists your schedule, or add events manually.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageScheduleVerify.blockedDomain": {
+    "before": "Please use your website URL — Facebook and Instagram pages can't be scraped automatically.",
+    "after": "Please use your website URL — Facebook and Instagram pages can’t be scraped automatically.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageScheduleVerify.malformed": {
+    "before": "That doesn't look like a web address. Try something like yourtruck.co.uk/events",
+    "after": "That doesn’t look like a web address. Try something like yourtruck.co.uk/events",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageScheduleVerify.no_content": {
+    "before": "We reached this page but couldn't read anything on it. Check it's publicly accessible.",
+    "after": "We reached this page but couldn’t read anything on it. Check it’s publicly accessible.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageScheduleVerify.no_events": {
+    "before": "We couldn't find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed.",
+    "after": "We couldn’t find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageScheduleVerify.unreachable": {
+    "before": "We couldn't reach this website. It may be down, or the address may be wrong.",
+    "after": "We couldn’t reach this website. It may be down, or the address may be wrong.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.collection.customerTimes": {
+    "before": "Customer Collection Times",
+    "after": "Customer collection times",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.collection.help": {
+    "before": "How far apart collection times are. This doesn't change kitchen capacity or prep times.",
+    "after": "How far apart collection times are. This doesn’t change kitchen capacity or prep times.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.collection.misaligned": {
+    "before": "{name} takes {mins} minutes to cook, so some times between batches will show as full.",
+    "after": "{name} takes {mins, plural, one {# minute} other {# minutes}} to cook, so some times between batches will show as full.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.collection.yourTimes": {
+    "before": "Your Collection Times",
+    "after": "Your collection times",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.contact.title": {
+    "before": "Contact Details",
+    "after": "Contact details",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.details.descriptionPlaceholder": {
+    "before": "Tell customers about your food...",
+    "after": "Tell customers about your food…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.orders.emailNotificationsHelp": {
+    "before": "{hasEmail, select, yes {When on, an email is sent to {email} for every new order. Customer order emails are sent either way.} other {When on, an email is sent to the truck's contact email for every new order. Customer order emails are sent either way.}}",
+    "after": "{hasEmail, select, yes {When on, an email is sent to {email} for every new order. Customer order emails are sent either way.} other {When on, an email is sent to the truck’s contact email for every new order. Customer order emails are sent either way.}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.preorders.approvalHelp": {
+    "before": "Customers can still order, but the order needs your approval (won't auto-accept).",
+    "after": "Customers can still order, but the order needs your approval (won’t auto-accept).",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.preorders.soldOutHelp": {
+    "before": "Customers can't order it after the deadline.",
+    "after": "Customers can’t order it after the deadline.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.qr.noUrl": {
+    "before": "No order URL — slug not set",
+    "after": "No order link yet — your truck’s page address isn’t set.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.removeVan.removedLink": {
+    "before": "<b>✕ Removed:</b> The van's kitchen screen link and settings will be deactivated.",
+    "after": "<b>✕ Removed:</b> The van’s kitchen screen link and settings will be deactivated.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.schedule.autoDesc": {
+    "before": "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page.",
+    "after": "Tell us where you post your schedule and we’ll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.schedule.checking": {
+    "before": "Checking...",
+    "after": "Checking…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.schedule.checkingHelp": {
+    "before": "This can take up to 2 minutes — please keep this page open and don't close the tab.",
+    "after": "This can take up to 2 minutes — please keep this page open and don’t close the tab.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.schedule.checkingWebsite": {
+    "before": "Checking your website...",
+    "after": "Checking your website…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.schedule.eitherWay": {
+    "before": "Either way, if we find your events listed elsewhere, we'll still send these to you for approval. Nothing goes live until you confirm it.",
+    "after": "Either way, if we find your events listed elsewhere, we’ll still send these to you for approval. Nothing goes live until you confirm it.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.schedule.manual": {
+    "before": "I'll add events myself",
+    "after": "I’ll add events myself",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageSettings.vans.takesCashHelp": {
+    "before": "Splits the payment button into \"Cash\" and \"Card\" so your takings reconcile against the till. You can turn this on for a single event from the dashboard.",
+    "after": "Splits the payment button into “Cash” and “Card” so your takings reconcile against the till. You can turn this on for a single event from the dashboard.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageUpsells.confirmRemove": {
+    "before": "Remove upsell rule \"{trigger} → {suggest}\"?",
+    "after": "Remove upsell rule “{trigger} → {suggest}”?",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageUpsells.upTo": {
+    "before": "{n, plural, other {Up to {count} items suggested}}",
+    "after": "{n, plural, one {Up to {count} item suggested} other {Up to {count} items suggested}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "nativeShell.setup.goToVans": {
+    "before": "Go to Settings → Vans",
+    "after": "Go to Settings → Your trucks",
+    "kind": "GB fix of a 756ca09 key"
+  },
+  "nativeShell.setup.noVanBody": {
+    "before": "This truck has no active van yet. Activate one in <b>Settings → Vans</b>, then this device sets up automatically — no further steps here.",
+    "after": "This truck has no active van yet. Activate one in <b>Settings → Your trucks</b>, then this device sets up automatically — no further steps here.",
+    "kind": "GB fix of a 756ca09 key"
+  },
+  "offlineProtection.modes.no_auto_accept.help": {
+    "before": "Auto-accept is turned off, so customers can still order but nothing is confirmed automatically. You'll confirm each one when you're back online — and anything still waiting is rejected automatically after your selected time, with the customer emailed to let them know.",
+    "after": "Auto-accept is turned off, so customers can still order but nothing is confirmed automatically. You’ll confirm each one when you’re back online — and anything still waiting is rejected automatically after your selected time, with the customer emailed to let them know.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "offlineProtection.modes.pause.help": {
+    "before": "Customers can't order until you're back online.",
+    "after": "Customers can’t order until you’re back online.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "offlineProtection.modes.pause.label": {
+    "before": "Pause Online Ordering",
+    "after": "Pause online ordering",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "offlineProtection.purpose": {
+    "before": "If your device loses its connection, this stops orders arriving while you can't see them.",
+    "after": "If your device loses its connection, this stops orders arriving while you can’t see them.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "offlineProtection.switchLabel": {
+    "before": "Offline Order Protection",
+    "after": "Offline order protection",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "serviceSettings.eventTypesFooterOneEvent": {
+    "before": "To change a setting for one event only, use that event's dashboard.",
+    "after": "To change a setting for one event only, use that event’s dashboard.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "serviceSettings.sameSettingsConfirm": {
+    "before": "Copy Van 1's settings to every van? This copies all of Van 1's van settings, the same as 'Same as Van 1' in Settings. Kitchen capacity has its own switch.",
+    "after": "Copy Van 1’s settings to every van? This copies all of Van 1’s van settings, the same as ‘Same as Van 1’ in Settings. Kitchen capacity has its own switch.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "serviceSettings.typeFollowsVanTitle": {
+    "before": "Follows each van's usual setting",
+    "after": "Follows each van’s usual setting",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "tradeArea.country_off": {
+    "before": "Trucks can't sign up in {country} yet. Choose another country.",
+    "after": "Trucks can’t sign up in {country} yet. Choose another country.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "tradeArea.zone_unknown": {
+    "before": "That time zone isn't one we offer in {country}. Choose one from the list.",
+    "after": "That time zone isn’t one we offer in {country}. Choose one from the list.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "dashboard.settings.capacityDesc": {
+    "before": "The most items your kitchen can turn out at once, across all the categories you’ve ticked. Each category’s own batch size still applies on top.",
+    "after": null,
+    "kind": "756ca09 key deleted"
+  },
+  "dashboard.settings.capacityExample": {
+    "before": "Example: if you can cook 4 mains in 5 minutes, then set it to 4 items every 5 minutes. The total capacity limits orders across all selected categories so if you want to only sell a maximum of 10 starters and mains every 5 minutes, then set Total Capacity to 10 items every 5 minutes and select Starters and Mains tickbox. This will still keep your mains restricted to 4 items every 5 minutes.",
+    "after": null,
+    "kind": "756ca09 key deleted"
+  }
+}

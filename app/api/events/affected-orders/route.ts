@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+// Language Phase 1d: a refusal of ours is `{ error: <today's English>, …, code, params }` (lib/i18n/manage-errors.ts), in the
+// truck's language (en-GB before the truck is known). A database's or exception's message is passed on as it comes.
+import { manageErrorBody } from '@/lib/i18n/manage-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,7 +15,7 @@ export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
 
   if (!eventId || !token) {
-    return NextResponse.json({ error: 'Missing params' }, { status: 400 })
+    return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'missing_params'), { status: 400 })
   }
 
   // Verify token belongs to a real truck
@@ -21,7 +25,7 @@ export async function GET(req: NextRequest) {
     .eq('dashboard_token', token)
     .single()
 
-  if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
 
   // Count active orders for this event.
   // 'modified' ADDED: this number is shown to an operator before a destructive event action, and an edited

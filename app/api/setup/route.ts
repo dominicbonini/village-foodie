@@ -19,9 +19,11 @@ import type { CountrySettings } from '@/lib/country-settings-types'
 import { checkSignupCountry, checkTradeArea } from '@/lib/trade-area'
 // Language Phase 1c: a refusal of ours is `{ ok: false, error, code, params }` (lib/i18n/onboarding-errors.ts). Its
 // words are en-GB until the chosen signup country is known, then that country's (docs/language-phase-1c-report.md).
-// ⚠️ PASSED ON AS THEY COME, WITHOUT A CODE: lib/trade-area.ts's country, zone and town sentences (that module returns
-// words, not reasons, and is shared with Manage), provisionTruck's exception message and the database's error.
+// ⚠️ PASSED ON AS THEY COME, WITHOUT A CODE: provisionTruck's exception message and the database's error.
+// Language Phase 1d: lib/trade-area.ts's country, zone and town refusals are codes now, so they are
+// `{ ok: false, error, code, params }` too — from the `tradeArea` namespace (`tradeAreaErrorBody`), `error` unchanged.
 import { onboardingErrorBody, type OnboardingErrorCode, type OnboardingErrorParams } from '@/lib/i18n/onboarding-errors'
+import { tradeAreaErrorBody } from '@/lib/i18n/manage-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
@@ -100,13 +102,13 @@ export async function POST(req: NextRequest) {
     let countryRow: CountrySettings | null = null
     if (/^[A-Z]{2}$/.test(countryCode)) { try { countryRow = await getCountrySettings(countryCode) } catch { countryRow = null } }
     const countryError = checkSignupCountry(countryCode, countryRow)
-    if (countryError || !countryRow) return NextResponse.json({ ok: false, error: countryError }, { status: 400 })
+    if (countryError || !countryRow) return NextResponse.json({ ok: false, ...tradeAreaErrorBody(await signupLocale(), countryError ?? { code: 'country_missing', params: {} }) }, { status: 400 })
     const trade = checkTradeArea({
       timezone: body.timezone, base_place_id: body.base_place_id, base_place_name: body.base_place_name,
       base_region: body.base_region, base_lat: body.base_lat, base_lng: body.base_lng,
       base_region_code: body.base_region_code,
     }, countryRow)
-    if (!trade.ok) return NextResponse.json({ ok: false, error: trade.error }, { status: 400 })
+    if (!trade.ok) return NextResponse.json({ ok: false, ...tradeAreaErrorBody(await localeForTruck({ country: countryRow.countryCode }), trade) }, { status: 400 })
 
     // The chosen country's own phone check (country_settings.phone_check) decides, and its words refuse.
     const signupPhone = phoneCopyOf(countryRow)

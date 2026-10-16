@@ -59,9 +59,11 @@ export interface MenuExtraction {
   existing_categories: string[]
 }
 
-/** Raised when the model could not be reached or returned something unparseable. */
+/** Raised when the model could not be reached or returned something unparseable. Language Phase 1d: it carries the
+ *  refusal's code (`errorsManage`) — app/api/manage/process-menu sends `{ error, code, params }` from it; `message` stays
+ *  the en-GB sentence for the demo provisioner and the logs. */
 export class MenuExtractionError extends Error {
-  constructor(message: string) { super(message); this.name = 'MenuExtractionError' }
+  constructor(message: string, readonly code: 'ai_failed' | 'menu_failed' = 'menu_failed') { super(message); this.name = 'MenuExtractionError' }
 }
 
 /**
@@ -305,7 +307,7 @@ Response format:
 
   if (!responseText) {
     console.error('[menu-extract] All retries failed:', lastError)
-    throw new MenuExtractionError('AI processing failed — please try again')
+    throw new MenuExtractionError('AI processing failed — please try again', 'ai_failed')
   }
 
   try {

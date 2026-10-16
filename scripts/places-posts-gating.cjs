@@ -38,6 +38,10 @@
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
+// ⚠️ RE-PINNED (Language Phase 1d): the private preview's words moved into messages/*.json (`privateEvents`),
+// read via useT('privateEvents'). `msgAt` reads the words at a key so a moved literal is still asserted EXACTLY.
+const MSG = { 'en-GB': JSON.parse(read('messages/en-GB.json')), 'en-US': JSON.parse(read('messages/en-US.json')) }
+const msgAt = (loc, k) => k.split('.').reduce((o, p) => (o == null ? undefined : o[p]), MSG[loc])
 /** 🔴 CODE, NOT PROSE. Every count in this repo taken over a whole file has eventually been satisfied
  *  by a comment quoting the string it was looking for. */
 const codeOf = src => src
@@ -391,7 +395,11 @@ head('5 · the Add/Edit preview shows a private event as a private event')
     branch.length > 200
     && /text-purple-700/.test(branch)
     && /🔒/.test(branch)
-    && /\{PRIVATE_PUBLIC_LABEL\}/.test(branch))
+    // ⚠️ RE-PINNED (Language Phase 1d): the title is tP('publicName') (useT('privateEvents')), not the imported
+    // constant; asserted as that call in the branch AND the GB words at privateEvents.publicName.
+    && /const tP = useT\('privateEvents'\)/.test(code)
+    && /<span aria-hidden="true">🔒<\/span>\{tP\('publicName'\)\}/.test(branch)
+    && msgAt('en-GB', 'privateEvents.publicName') === 'Private event')
   t('⛔ …and it renders NO venue, town, postcode or address — not even greyed out',
     branch.length > 200
     && !/venue_name/.test(branch) && !/\btown\b/.test(branch)
@@ -403,15 +411,28 @@ head('5 · the Add/Edit preview shows a private event as a private event')
     && /previewVanName/.test(branch))
   /* ⚠️ THE WORDS ARE THE PUBLIC SURFACES' OWN CONSTANT, so the operator's preview and a customer's
    * card cannot be two different pairs of words. */
-  t('⚠️ "Private event" is the shared constant, not two more words',
-    /import \{ PRIVATE_PUBLIC_LABEL \} from '@\/lib\/private-events\/resolve'/.test(code))
+  // ⚠️ RE-PINNED (Language Phase 1d): the preview no longer imports PRIVATE_PUBLIC_LABEL; it reads
+  // privateEvents.publicName. The claim (preview title and the public card's title are ONE string) is now
+  // asserted as: that message equals the constant's value lifted from resolve.ts, in GB, and en-US does not
+  // override it with different words (it falls back to GB). A value-equality, not a shared symbol.
+  t('⚠️ "Private event" is the shared constant, not two more words', (() => {
+    const lifted = (read('lib/private-events/resolve.ts')
+      .match(/export const PRIVATE_PUBLIC_LABEL = '([^']+)'/) || [])[1]
+    const us = msgAt('en-US', 'privateEvents.publicName')
+    return !!lifted
+      && /\{tP\('publicName'\)\}/.test(code)
+      && msgAt('en-GB', 'privateEvents.publicName') === lifted
+      && (us === undefined || us === lifted)
+  })())
   /* 🔴 AND THE LINE UNDER IT. "Filled from …" answers "will editing this change the place?"; on a
    * private event the question is "where did my venue go?", and that is what this answers. */
-  const COPY = read('lib/private-events/copy.ts')
+  // ⚠️ RE-PINNED (Language Phase 1d): PRIVATE_PREVIEW_NOTE was deleted from lib/private-events/copy.ts; the
+  // sentence is privateEvents.form.previewNote, asserted exactly in en-GB (en-US says "ZIP code").
   t('🔴 the line under the card names the three fields that are not published',
-    /export const PRIVATE_PREVIEW_NOTE =\s*\n\s*'How it shows on your schedule — no venue, town or postcode\.'/.test(COPY))
+    msgAt('en-GB', 'privateEvents.form.previewNote') === 'How it shows on your schedule — no venue, town or postcode.')
+  // ⚠️ RE-PINNED (Language Phase 1d): {PRIVATE_PREVIEW_NOTE} → {tP('form.previewNote')} at the same site.
   t('⛔ …and it REPLACES "Filled from", rather than sitting beside it',
-    /\{previewIsPrivate \? \(\s*\n\s*<p className="text-\[11px\] text-slate-400 -mt-1">\{PRIVATE_PREVIEW_NOTE\}<\/p>\s*\n\s*\) : !editingEvent\.id && editingEvent\.truck_place_id \? \(/.test(code))
+    /\{previewIsPrivate \? \(\s*\n\s*<p className="text-\[11px\] text-slate-400 -mt-1">\{tP\('form\.previewNote'\)\}<\/p>\s*\n\s*\) : !editingEvent\.id && editingEvent\.truck_place_id \? \(/.test(code))
   /* ⚠️ NOT CONDITIONAL ON A PICKED PLACE. It is true of every private event, typed address or not —
    * which "Filled from" is not, and that difference is why the two lines are not one. */
   t('⚠️ …and the private line is NOT conditional on `truck_place_id`',

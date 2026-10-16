@@ -15,6 +15,16 @@ const kit = require('./_render-kit.cjs')({ cacheTag: 'signup-country' })
 const { REPO } = kit
 const SEEDS = require('./_country-settings-gb.cjs')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
+// ⚠️ RE-PINNED (Language Phase 1d): lib/trade-area.ts refuses with a CODE and params; the sentence is the `tradeArea`
+// namespace's message. This renders it as the product does (next-intl over messages/en-GB.json), so a refusal is
+// checked on its code + params AND on the sentence that code renders to. The GB words are unchanged except the two
+// named fixes (scripts/fixtures/language-phase-1d-gb-named.json: tradeArea.country_off / zone_unknown, ' → ’).
+const tTA = (() => { const { createTranslator } = require(path.join(REPO, 'node_modules/next-intl'))
+  return createTranslator({ locale: 'en-GB', messages: JSON.parse(read('messages/en-GB.json')), namespace: 'tradeArea' }) })()
+const COUNTRY_OFF_US = 'Trucks can’t sign up in United States yet. Choose another country.'
+const ZONE_GB = 'That time zone isn’t one we offer in United Kingdom. Choose one from the list.'
+const refusedAs = (j, code, params, words) => j && j.code === code && JSON.stringify(j.params) === JSON.stringify(params)
+  && tTA(code, params) === words && (!('error' in j) || j.error === words)
 const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))
 
 let failures = 0, checks = 0
@@ -88,9 +98,11 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
 
   console.log('3. Refusals, in plain words, and nothing written')
   const off = await createTruck([GB(), US_OFF()], { ...BASE_GB, country: 'US', timezone: 'America/Chicago', contact_phone: '(201) 555-0123' })
-  ok(off.status === 400 && off.json.error === "Trucks can't sign up in United States yet. Choose another country." && !off.truck, 'switched-off US refused', off.json)
+  // ⚠️ RE-PINNED (Language Phase 1d): the body keeps `error` (now with the named GB fix ’) and gains code + params.
+  ok(off.status === 400 && off.json.error === COUNTRY_OFF_US && refusedAs(off.json, 'country_off', { country: 'United States' }, COUNTRY_OFF_US) && !off.truck, 'switched-off US refused', off.json)
   const zone = await createTruck([GB(), US_ON()], { ...BASE_GB, timezone: 'America/New_York' })
-  ok(zone.status === 400 && zone.json.error === "That time zone isn't one we offer in United Kingdom. Choose one from the list." && !zone.truck, 'GB with a New York zone refused', zone.json)
+  // ⚠️ RE-PINNED (Language Phase 1d): the body keeps `error` (now with the named GB fix ’) and gains code + params.
+  ok(zone.status === 400 && zone.json.error === ZONE_GB && refusedAs(zone.json, 'zone_unknown', { country: 'United Kingdom' }, ZONE_GB) && !zone.truck, 'GB with a New York zone refused', zone.json)
   const noC = await createTruck([GB()], { ...BASE_GB, country: undefined })
   ok(noC.status === 400 && noC.json.error === 'Choose the country your truck is based in.' && !noC.truck, 'no country refused', noC.json)
   const fr = await createTruck([GB()], { ...BASE_GB, country: 'FR' })
@@ -198,10 +210,12 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   globalThis.__harnessDb = kit.fakeDb({ country_settings: [GB(), US_OFF()].map(snake), trucks: [] }); m.lib.clearCountrySettingsCache()
   let pe = null
   try { await kit.quietAsync(() => m.lib.provisionTruck(globalThis.__harnessDb, { kind: 'operator', country: 'US', name: 'Harness Kitchen', van: { kitchen_capacity: null } })) } catch (e) { pe = e }
-  ok(pe && pe.message === "Trucks can't sign up in United States yet. Choose another country.", 'provisionTruck · switched-off US refused in plain words', pe && pe.message)
+  // ⚠️ RE-PINNED (Language Phase 1d): provisionTruck renders the tradeArea code in the country's language — the named GB fix ’.
+  ok(pe && pe.message === COUNTRY_OFF_US && tTA('country_off', { country: 'United States' }) === pe.message, 'provisionTruck · switched-off US refused in plain words', pe && pe.message)
   pe = null
   try { await kit.quietAsync(() => m.lib.provisionTruck(globalThis.__harnessDb, { kind: 'operator', country: 'GB', timezone: 'America/Chicago', name: 'Harness Kitchen', van: { kitchen_capacity: null } })) } catch (e) { pe = e }
-  ok(pe && pe.message === "That time zone isn't one we offer in United Kingdom. Choose one from the list.", 'provisionTruck · off-list zone refused', pe && pe.message)
+  // ⚠️ RE-PINNED (Language Phase 1d): provisionTruck renders the tradeArea code in the country's language — the named GB fix ’.
+  ok(pe && pe.message === ZONE_GB && tTA('zone_unknown', { country: 'United Kingdom' }) === pe.message, 'provisionTruck · off-list zone refused', pe && pe.message)
   delete globalThis.__harnessDb
 
   console.log('10. Admin create-truck — the Country select, no hard-coded GB')
@@ -222,7 +236,8 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   const aNone = await adminCreate([GB()], {})
   ok(aNone.status === 400 && aNone.json.error === 'Choose the country the truck is based in.' && !aNone.truck, 'admin · no country refused', aNone.json)
   const aOff = await adminCreate([GB(), US_OFF()], { country: 'US' })
-  ok(aOff.status === 400 && !aOff.truck && /Trucks can't sign up in United States yet/.test(aOff.json.error || ''), 'admin · switched-off US refused', aOff.json)
+  // ⚠️ RE-PINNED (Language Phase 1d): the same sentence with the named GB fix (can't → can’t).
+  ok(aOff.status === 400 && !aOff.truck && /Trucks can’t sign up in United States yet/.test(aOff.json.error || ''), 'admin · switched-off US refused', aOff.json)
   ok(!/country: 'GB'/.test(read('app/api/admin/create-truck/route.ts')), "admin route · no hard-coded 'GB'")
   ok(/useSignupCountries\(showNewTruck\)/.test(read('app/admin/page.tsx')) && /country: newTruckCountry/.test(read('app/admin/page.tsx')), 'admin form · Country select of switched-on countries, sent with the create')
 
@@ -234,9 +249,15 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   const r1 = TA.checkTradeArea({ timezone: 'Europe/London', base_place_name: 'Sudbury', country: 'US', currency: 'USD' }, gbFacts)
   ok(r1.ok && !('country' in r1.values) && !('currency' in r1.values), 'the written values hold no country or currency, whatever is sent', r1)
   const r2 = TA.checkTradeArea({ timezone: 'America/Chicago', base_place_name: 'Sudbury' }, gbFacts)
-  ok(!r2.ok && r2.error === "That time zone isn't one we offer in United Kingdom. Choose one from the list.", 'an off-list zone is refused in words')
+  // ⚠️ RE-PINNED (Language Phase 1d): checkTradeArea returns { ok:false, code, params } — no words; the words are the
+  // tradeArea message that code renders to (with the named GB fix ’).
+  ok(!r2.ok && !('error' in r2) && refusedAs(r2, 'zone_unknown', { country: 'United Kingdom' }, ZONE_GB), 'an off-list zone is refused in words', r2)
   const wyt = read('components/manage/WhereYouTrade.tsx')
-  ok(/COPY\.countryLocked/.test(wyt) && /cs\.timezones\.length > 1/.test(wyt) && /update_trade_area/.test(wyt), 'Settings card · country read-only with "Your country can’t be changed", zone only if more than one')
+  // ⚠️ RE-PINNED (Language Phase 1d): the card reads its words from messages `whereYouTrade` via useT, not
+  // WHERE_YOU_TRADE_COPY — the same property: the locked line is shown, and its words are unchanged.
+  ok(/useT\('whereYouTrade'\)/.test(wyt) && /\{t\('countryLocked'\)\}/.test(wyt)
+    && JSON.parse(read('messages/en-GB.json')).whereYouTrade.countryLocked === 'Your country can’t be changed'
+    && /cs\.timezones\.length > 1/.test(wyt) && /update_trade_area/.test(wyt), 'Settings card · country read-only with "Your country can’t be changed", zone only if more than one')
 
   console.log(`\n${failures ? '🔴' : '✅'} signup-country: ${checks - failures}/${checks} checks passed`)
   if (failures) process.exit(1)

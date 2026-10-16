@@ -9,7 +9,9 @@ import { scanUrl } from '@/lib/custom-domain/copy'   // the one builder for the 
 /* ✅ RESTORED IN FULL (5 October 2026). It had been trimmed to two strings when the offline-protection
  * control moved into the deleted "This event" card; the card is gone and the card's copy came back
  * with it, so this file imports the same set `origin/main` does. */
-import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, type OfflineProtectionMode, OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_AUTO_REJECT_LABEL, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS, offlineAutoRejectLabel, OFFLINE_PROTECTION_PURPOSE } from '@/lib/copy/offlineProtection'
+// Language Phase 1d: the offline-protection card's WORDS are `offlineProtection` messages read with useT (tOff) in the
+// truck's language; only the mode values and the delay numbers come from the module now.
+import { OFFLINE_PROTECTION_MODES, type OfflineProtectionMode, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS } from '@/lib/copy/offlineProtection'
 import AppHeader from '@/components/shared/AppHeader'
 import { playNewOrder, playOrderDue, installAudioUnlock, primeAudio } from '@/lib/audio'
 
@@ -53,11 +55,8 @@ import {
 /* 🔴 THE ONE FORMATTER FOR "what is this private event called" — shared with the Events list, so a
  * blank name degrades to the generic label in one place rather than in three. */
 import { privateDisplayName } from '@/lib/private-events/resolve'
-import {
-  EVENT_ITEMS_CARD_DESCRIPTION, EVENT_PRICE_COLUMN_LABEL, eventPriceOwnNote,
-  EVENT_PRICE_EDIT, EVENT_PRICE_CANCEL, EVENT_PRICE_SAVE,
-  EVENT_PRICE_EDIT_NOTE, EVENT_PRICE_LIVE_NOTE,
-} from '@/lib/copy/serviceSettings'
+/* Language Phase 1d: the "Prices for this event" card's words are `serviceSettings` messages (tSvc), read in the
+ * truck's language — the keys mirror lib/copy/serviceSettings.ts's EVENT_PRICE_* / EVENT_ITEMS_* constants. */
 // 🔴 EVERY AMOUNT ON THIS SCREEN, IN ITS OWN CURRENCY (Phase 2A). An order's figures are in ITS currency
 // (orders.currency, orderMoney); the menu, the Add Order panel and the event-price note in the TRUCK's —
 // both from /api/dashboard's truck.money, which the offline snapshot keeps. ⚠️ A truck object with no
@@ -136,7 +135,7 @@ import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, instantOfLocal, clockOfInstantInTz, formatInstantClock, formatSlot, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, formatLongDate, localDateOfInstant } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_DARK } from '@/lib/event-display'
 import { useAndroidBack } from '@/lib/native/backHandler'
-import { KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
@@ -150,6 +149,9 @@ import { WALK_UP_NAME, isWalkUp } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/dashboard'
+import '@/lib/i18n/catalog/kitchenCapacity'
+import '@/lib/i18n/catalog/offlineProtection'
+import '@/lib/i18n/catalog/serviceSettings'
 import { clearDemoWelcomeSeen } from '@/lib/demo-board-build'   // a restarted service re-introduces itself
 
 /** The ONLY list of valid ?tab= values, shared by the tab bar and the URL validator — so a tab cannot be
@@ -276,6 +278,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useTruckLocale(dashTime.locale)   // Language Phase 0: the truck's country's locale for this screen's words
   // Language Phase 1b: every word on this screen is a message in `dashboard` (messages/en-GB.json).
   const tDash=useT('dashboard')
+  const tCap=useT('kitchenCapacity')   // Language Phase 1d: the capacity explainer, one message shared with Manage
+  const tOff=useT('offlineProtection')   // Language Phase 1d: the offline-protection card, in the truck's language
+  const tSvc=useT('serviceSettings')     // Language Phase 1d: the per-event prices card
   // 🔴 A useCallback READS THE WORDS THROUGH THIS REF, NEVER THE TRANSLATOR ITSELF. The translator would otherwise
   // be one of its dependencies, and the callback (openOrderFromPush → the push listener's setup) would be rebuilt
   // when the truck's language arrives. Kept current after every render; read only when the callback runs.
@@ -2391,11 +2396,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // choke point every path to set_offline_protection goes through, so the guard belongs here.
     if(isDemo)return
     if(value===true){
-      const confirmed=window.confirm(OFFLINE_PROTECTION_ENABLE_CONFIRM)
+      const confirmed=window.confirm(tOff('enableConfirm'))
       if(!confirmed)return
       if(!keepScreenOn)applyKeepScreenOn(true)
     }else{
-      const confirmed=window.confirm(OFFLINE_PROTECTION_DISABLE_CONFIRM)
+      const confirmed=window.confirm(tOff('disableConfirm'))
       if(!confirmed)return
     }
     // SERVICE-ROLE write (was a direct supabaseBrowser anon update → RLS silently no-op'd it, so the
@@ -5032,9 +5037,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">{OFFLINE_PROTECTION_SWITCH_LABEL}{demoLockChip}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_PURPOSE}</p>
-                  {!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>}
+                  <p className="text-sm font-semibold text-slate-800">{tOff('switchLabel')}{demoLockChip}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{tOff('purpose')}</p>
+                  {!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{tOff('explainerLead')}</strong> {tOff('explainerBody')}</p>}
                 </div>
                 <Toggle on={isDemo?false:effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)} disabled={isOffline||isDemo}/>
                 </div>
@@ -5047,10 +5052,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     ⚠️ `role="radio"` + `aria-checked` in a `radiogroup`: these are one choice with two
                     states, not two toggles. */}
                 {!isDemo&&effectiveOfflineProtection&&(
-                  <div role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL} className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
+                  <div role="radiogroup" aria-label={tOff('switchLabel')} className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
                     {/* MOVED DOWN FROM THE HEADING. It describes the CHOICE below it, so it reads as the
                         options' lead-in rather than as a summary of the whole box. */}
-                    <p className="text-xs text-slate-500">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
+                    <p className="text-xs text-slate-500">{tOff('cardDescription')}</p>
                     {OFFLINE_PROTECTION_MODES.map(m=>(
                       <div key={m.value} className="flex flex-col gap-2">
                       <button type="button" role="radio" aria-checked={effectiveOfflineMode===m.value}
@@ -5067,8 +5072,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                           {effectiveOfflineMode===m.value&&<span className="w-2 h-2 rounded-full bg-orange-500"/>}
                         </span>
                         <span className="min-w-0">
-                          <span className="block text-sm font-semibold text-slate-800">{m.label}</span>
-                          <span className="block text-xs text-slate-500">{m.help}</span>
+                          <span className="block text-sm font-semibold text-slate-800">{tOff(`modes.${m.value}.label`)}</span>
+                          <span className="block text-xs text-slate-500">{tOff(`modes.${m.value}.help`)}</span>
                         </span>
                       </button>
                       {/* ── 🔴 THE DELAY BELONGS TO THIS OPTION, SO IT SITS INSIDE IT. ────────────────
@@ -5086,15 +5091,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       {m.value==='no_auto_accept'&&effectiveOfflineMode==='no_auto_accept'&&(
                         <div className="pl-6">
                           <div className="flex items-center justify-between gap-3">
-                            <span className="text-xs font-semibold text-slate-800">{OFFLINE_AUTO_REJECT_LABEL}</span>
+                            <span className="text-xs font-semibold text-slate-800">{tOff('autoRejectLabel')}</span>
                             <select
                               value={effectiveAutoRejectMins ?? OFFLINE_AUTO_REJECT_DEFAULT_MINS}
-                              aria-label={OFFLINE_AUTO_REJECT_LABEL}
+                              aria-label={tOff('autoRejectLabel')}
                               disabled={isOffline}
                               onChange={e=>void setAutoRejectMins(parseInt(e.target.value))}
                               className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-orange-400"
                             >
-                              {OFFLINE_AUTO_REJECT_OPTIONS.map(n=><option key={n} value={n}>{offlineAutoRejectLabel(n)}</option>)}
+                              {OFFLINE_AUTO_REJECT_OPTIONS.map(n=><option key={n} value={n}>{tOff('autoRejectOption',{n,count:String(n)})}</option>)}
                             </select>
                           </div>
                         </div>
@@ -5746,7 +5751,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       onChange={e=>saveCapacityWindow(parseInt(e.target.value))}
                       className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
                       {Array.from({length:20},(_,i)=>i+1).concat((capacityWindowMins>20)?[capacityWindowMins]:[]).map(n=>(
-                        <option key={n} value={n}>{tDash('settings.windowEvery',{duration:formatPrepSecs(n*60)})}</option>
+                        <option key={n} value={n}>{tDash('settings.windowEvery',{duration:formatPrepSecs(n*60,dashTime.locale)})}</option>
                       ))}
                     </select>
                     <span/>
@@ -5759,13 +5764,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     <p className="text-xs text-slate-400 mt-1.5">{tDash('settings.setCapacityFirst')}</p>
                   )}
                   {kitchenCapacityNeedsPrepWarning(kitchenCapacity, truckMenu?.categories)&&(
-                    <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
+                    <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{tCap('warning')}</div>
                   )}
-                  {/* Language Phase 2: the explainer is messages dashboard.settings.capacityDesc / capacityExample —
-                      en-GB word for word lib/kitchen-capacity's KITCHEN_CAPACITY_DESC / _EXAMPLE, which Manage
-                      still renders inline until Language Phase 1d. */}
-                  <p className="text-xs text-slate-400 mt-2">{tDash('settings.capacityDesc')}</p>
-                  <p className="text-xs text-slate-400 mt-1">{tDash('settings.capacityExample')}</p>
+                  {/* Language Phase 1d: the explainer is ONE message pair, kitchenCapacity.desc / .example, read here and by
+                      Menu › Kitchen capacity (it was dashboard.settings.capacityDesc / capacityExample here and a
+                      second, drifted copy inline in Manage). */}
+                  <p className="text-xs text-slate-400 mt-2">{tCap('desc')}</p>
+                  <p className="text-xs text-slate-400 mt-1">{tCap('example')}</p>
                 </div>
               </div>
             )}
@@ -5817,11 +5822,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <div className="flex items-center gap-2 w-full sm:w-auto" data-price-edit-actions>
                     <button type="button" onClick={cancelPriceEdit} disabled={priceSaving}
                       className="flex-1 sm:flex-none bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-lg hover:bg-slate-200 text-xs disabled:opacity-50">
-                      {EVENT_PRICE_CANCEL}
+                      {tSvc('eventPriceCancel')}
                     </button>
                     <button type="button" onClick={()=>void savePriceEdit()} disabled={priceSaving}
                       className="flex-1 sm:flex-none bg-orange-600 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-orange-700 text-xs disabled:opacity-50">
-                      {priceSaving?tDash('common.saving'):EVENT_PRICE_SAVE}
+                      {priceSaving?tDash('common.saving'):tSvc('eventPriceSave')}
                     </button>
                   </div>
                 ):(
@@ -5830,7 +5835,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <button type="button" onClick={()=>setPriceEditing(true)} disabled={!priceReady||!activeEvent}
                     data-price-edit-open
                     className="shrink-0 border border-slate-300 bg-white text-slate-700 font-bold px-2.5 py-1 rounded-lg hover:bg-slate-50 text-xs disabled:opacity-40">
-                    {EVENT_PRICE_EDIT}
+                    {tSvc('eventPriceEdit')}
                   </button>
                 )}
               </div>
@@ -5839,15 +5844,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   PRICE does not: it is a row in `event_item_prices` for this event and it stays until
                   the operator clears it. One sentence cannot claim both, and the false half would be
                   the one about money. */}
-              <p className="text-slate-500 text-xs mb-4">{EVENT_ITEMS_CARD_DESCRIPTION}</p>
+              <p className="text-slate-500 text-xs mb-4">{tSvc('eventItemsCardDescription')}</p>
               {/* 🔴 THE EDIT-MODE NOTE, BLUE, UNDER THE HEADER. Its second sentence is a promise the
                   screen keeps: the limit steppers and the Available switches really are disabled
                   below. The live line is added only for an `open` event, from the server's own
                   `live` flag, so the screen and the route cannot disagree about that. */}
               {priceEditing&&(
                 <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2" data-price-edit-note>
-                  <p className="text-xs text-blue-800">{EVENT_PRICE_EDIT_NOTE}</p>
-                  {eventPriceLive&&<p className="text-xs font-semibold text-blue-900 mt-0.5">{EVENT_PRICE_LIVE_NOTE}</p>}
+                  <p className="text-xs text-blue-800">{tSvc('eventPriceEditNote')}</p>
+                  {eventPriceLive&&<p className="text-xs font-semibold text-blue-900 mt-0.5">{tSvc('eventPriceLiveNote')}</p>}
                 </div>
               )}
               {truckMenu&&stockLoading?(
@@ -5875,7 +5880,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       its own column at 390px. ⚠️ THE FULL WORDS SURVIVE WHERE THERE IS ROOM FOR THEM:
                       every limit input and every switch keeps its own `aria-label`, so a screen reader
                       still hears "Available" and not "On". */}
-                  <span className="w-20 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{EVENT_PRICE_COLUMN_LABEL}</span>
+                  <span className="w-20 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tSvc('eventPriceColumnLabel')}</span>
                   <span className="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tDash('stock.colLimit')}</span>
                   <span className="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tDash('stock.colOn')}</span>
                 </div>
@@ -6011,7 +6016,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                       — that is not "this event only", and labelling it so would tell
                                       the operator a festival-wide price was a one-off. */}
                                   {priceOwn&&(
-                                    <p className="text-[11px] text-blue-500 mt-0.5">{eventPriceOwnNote(fallbackPrice,eventTypeName,truck?.money)}</p>
+                                    <p className="text-[11px] text-blue-500 mt-0.5">{tSvc('eventPriceOwnNote',{hasType:eventTypeName!=null?'yes':'no',type:eventTypeName??'',price:formatMajorOrBare(fallbackPrice,truck?.money,'event price note')})}</p>
                                   )}
                                 </div>
                                 {/* ══ 🔴 THE PRICE COLUMN — WHAT CUSTOMERS PAY AT THIS EVENT ════════════

@@ -1,0 +1,20 @@
+{
+  "toast": {
+    "demoGone": "Your demo menu is no longer available — please upload it again to continue."
+  },
+  "processing": {
+    "title": "Analyzing your menu",
+    "body": "AI is reading and categorizing your items…"
+  },
+  "review": {
+    "noPriceBody": "Set a price for each, or mark it free — otherwise it would go live at {zero}. You can’t continue until these are fixed."
+  },
+  "extras": {
+    "introSetup": "Some dishes can be set up as <b>one customizable item</b> or kept as <b>separate dishes</b>. Choose how each should appear. You can change this later.",
+    "intro": "Some dishes can be set up as <b>one customizable item</b> or kept as <b>separate dishes</b>. Choose how each should appear. You can change this later in Settings."
+  },
+  "schedule": {
+    "urlPlaceholder": "https://yourtruck.com/events",
+    "dateTbc": "Date TBD"
+  }
+}

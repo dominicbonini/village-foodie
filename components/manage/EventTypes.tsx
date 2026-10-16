@@ -48,19 +48,12 @@ import {
   colourFor, STANDARD_COLOUR, TYPE_INTERVAL_CHOICES,
   type EventType, type ServiceRow,
 } from '@/lib/event-types/types'
-import { summariseType, changedCount, SERVICE_ROW_COUNT, type TypeFor } from '@/lib/event-types/resolve'
+import { summariseType, changedCount, SERVICE_ROW_COUNT, type TypeFor, type TypeSummaryWords } from '@/lib/event-types/resolve'
 import { OFFLINE_PROTECTION_MODES } from '@/lib/copy/offlineProtection'
-/* 🔴 EVERY WORD ON THIS SCREEN THAT ALSO APPEARS ON ANOTHER ONE COMES FROM HERE. */
-import {
-  SAME_SETTINGS_ALL_VANS_LABEL, SAME_SETTINGS_ALL_VANS_HEADER, SAME_SETTINGS_CONFIRM,
-  EVENT_TYPES_FOOTER_STANDARD, EVENT_TYPES_FOOTER_ONE_EVENT, EVENT_TYPES_SUBTITLE,
-  MATCH_STANDARD_LABEL, MATCH_STANDARD_CONFIRM,
-  PRICE_SETTING_LABELS, PRICES_STANDARD_CELL, PRICES_TRUCK_WIDE_TITLE,
-  PRICES_MENU_CELL, ITEM_PRICES_SHOW, ITEM_PRICES_HIDE,
-  OFFLINE_WHEN_OFFLINE_LABEL, 
-  PRICE_MODES_WITH_AMOUNT,
-  PRICE_ITEMS_HEADING, PRICE_ITEMS_OPEN, PRICE_ITEMS_CLOSE, ownPriceCount,
-} from '@/lib/copy/serviceSettings'
+/* 🔴 EVERY WORD ON THIS SCREEN THAT ALSO APPEARS ON ANOTHER ONE COMES FROM ONE PLACE — since Language Phase 1d
+ * the `serviceSettings`, `offlineProtection` and `settingsCopy` messages (the copy modules' own keys), read here
+ * with `useServiceWords()` in the truck's language. Only the VALUE list is still imported from the module. */
+import { PRICE_MODES_WITH_AMOUNT, type ServiceSettingId } from '@/lib/copy/serviceSettings'
 /* The rack size Settings' own buzzer toggle writes when it is switched ON. Standard's buzzer switch
  * makes the same call, so it must use the same default rather than pick a number. */
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
@@ -74,13 +67,20 @@ import { normaliseInterval } from '@/lib/slot-interval'
 /* ⚠️ `PRIVATE_LINK_STANDARD_CELL` IS DELIBERATELY NOT IMPORTED (5 October 2026). "Open to everyone"
  * was removed from the screen; the constant survives in the copy module as the record of why, and
  * `scripts/event-types.cjs` asserts the string reaches no screen — an import here would fail it. */
-import {
-  ORDERING_SECTION, PRIVATE_LINK_ROW_LABEL, PRIVATE_COLUMN_TITLE, MAX_ONLY_TITLE,
-  /* 🔴 THE PURPLE PANEL'S WORDS — the same constants the old separate tick used, so replacing the
-   * control did not reword the explanation. */
-  PRIVATE_TICK_HELP, PRIVATE_LINK_PROMISE, PRIVATE_NAME_LABEL, PRIVATE_NAME_HELP,
-  PRIVATE_NAME_PLACEHOLDER,
-} from '@/lib/private-events/copy'
+/* 🔴 LANGUAGE PHASE 1d: THIS FILE'S OWN WORDS ARE `eventTypes` MESSAGES and the private-event words are
+ * `privateEvents` (the ones lib/private-events/copy.ts held — the purple panel's sentences are still the same
+ * words the old separate tick used). Read in the truck's language; the US gets "Bar", "Catering", "school fair",
+ * "trucks" and "pickup every N min". A type's NAME is the truck's stored value and is shown as stored. */
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/eventTypes'
+import '@/lib/i18n/catalog/privateEvents'
+import '@/lib/i18n/catalog/serviceSettings'
+import '@/lib/i18n/catalog/offlineProtection'
+import '@/lib/i18n/catalog/settingsCopy'
+
+type EventTypesT = ReturnType<typeof useT<'eventTypes'>>
+/** `summariseType`'s words, from this screen's translator. */
+const summaryWords = (t: EventTypesT): TypeSummaryWords => (key, values) => t(`summary.${key}`, values)
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // SHARED
@@ -127,13 +127,27 @@ export interface StandardValues {
   offline_protection: { enabled: boolean; mode: string; perVan: boolean }
 }
 
+/* ── 🔴 A FAILURE IS HELD AS A CODE OR THE SERVER'S OWN TEXT, NEVER AS OUR SENTENCE (Language Phase 1d) ───
+ * `load` runs from an effect, so the message state holds `{ code }` for our words and the render turns it into
+ * the truck's language. The route's own `error` text is shown as it comes (the route is not this file's). */
+type EventTypesErrorCode = 'somethingWentWrong' | 'couldNotLoad' | 'couldNotSave' | 'noVans'
+class EventTypesError extends Error {
+  constructor(public code: EventTypesErrorCode | null, message: string) { super(message) }
+}
+type Msg = { text?: string; code?: EventTypesErrorCode; bad: boolean }
+/** What a caught failure shows: the server's text, a thrown error's text, or our fallback's code. */
+const failure = (e: unknown, fallback: EventTypesErrorCode): Msg =>
+  e instanceof EventTypesError && e.code ? { code: e.code, bad: true }
+    : e instanceof Error ? { text: e.message, bad: true }
+    : { code: fallback, bad: true }
+
 const api = async (token: string, body: Record<string, unknown>) => {
   const r = await fetch('/api/event-types', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token, ...body }),
   })
   const j = await r.json().catch(() => ({}))
-  if (!r.ok) throw new Error(j.error || 'Something went wrong')
+  if (!r.ok) throw new EventTypesError(j.error ? null : 'somethingWentWrong', j.error || '')
   return j
 }
 
@@ -178,7 +192,28 @@ const api = async (token: string, body: Record<string, unknown>) => {
  * function (`claim_order_for_auto_reject`) that resolves `coalesce(event_override, van)` and cannot
  * read this resolver.
  */
-const OFFLINE_MODE_CHOICES = OFFLINE_PROTECTION_MODES.map(m => ({ value: m.value as string, label: m.label }))
+/* ⚠️ THE MODE CHOICES ARE BUILT IN `useServiceWords()` NOW (Language Phase 1d): the values from
+ * `OFFLINE_PROTECTION_MODES`, the labels `offlineProtection.modes.<value>.label` in the truck's language. */
+
+/**
+ * ── 🔴 THE SHARED SETTING WORDS, IN THE TRUCK'S LANGUAGE (Language Phase 1d) ─────────────────────────────
+ * `ts` reads `serviceSettings` (the keys mirror lib/copy/serviceSettings.ts's constants), `rowLabel` is a
+ * SERVICE_ROWS row's name — `serviceSettings.labels.<id>`, except the order-ready step, which is Settings' own
+ * `settingsCopy.orderReady.label`, exactly as `SERVICE_SETTING_LABELS` re-exports it — and `offlineModes` are the
+ * two offline modes. `SERVICE_ROWS[].label` is the en-GB export; this screen never renders it.
+ */
+function useServiceWords() {
+  const ts = useT('serviceSettings')
+  const tc = useT('settingsCopy')
+  const to = useT('offlineProtection')
+  const rowLabel = useCallback((row: ServiceRow): string => (row.id === 'order_ready'
+    ? tc('orderReady.label')
+    : ts(`labels.${row.id as Exclude<ServiceSettingId, 'order_ready'>}`)), [ts, tc])
+  const offlineModes = useMemo(
+    () => OFFLINE_PROTECTION_MODES.map(m => ({ value: m.value as string, label: to(`modes.${m.value}.label`) })),
+    [to])
+  return { ts, rowLabel, offlineModes }
+}
 
 /**
  * ── 🔴 DO THIS TRUCK'S ACTIVE VANS DISAGREE ON THIS ROW? ──────────────────────────────────────────
@@ -333,12 +368,13 @@ const MODAL_SIDE_PADDING = 16
  * closes over nothing, so there is no reason for it to live inside.
  */
 function MaxBadge() {
+  const tp = useT('privateEvents')
   return (
     <span
-      title={MAX_ONLY_TITLE}
+      title={tp('grid.maxOnly')}
       className="ml-1.5 inline-flex shrink-0 items-center gap-0.5 rounded-full border border-amber-300 bg-amber-50 px-1.5 py-px text-[9px] font-bold normal-case tracking-wide text-amber-700"
     >
-      <span aria-hidden="true">🔒</span>{MAX_ONLY_TITLE}
+      <span aria-hidden="true">🔒</span>{tp('grid.maxOnly')}
     </span>
   )
 }
@@ -446,6 +482,9 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
 }) {
   // The TRUCK's currency symbol for the price-rule labels ("+ £", "Nearest £1") — from the manage page's
   // CountrySettingsProvider, never a typed £ (10 October 2026).
+  const t = useT('eventTypes')
+  const tp = useT('privateEvents')
+  const { ts, rowLabel, offlineModes } = useServiceWords()
   const currencySym = useTruckCurrencySymbol()
   const truckMoney = useTruckMoney()
   const [loading, setLoading] = useState(true)
@@ -464,7 +503,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
   const [readOnly, setReadOnly] = useState(false)
   const [upgradeMessage, setUpgradeMessage] = useState<string | null>(null)
   const [missingTable, setMissingTable] = useState(false)
-  const [msg, setMsg] = useState<{ text: string; bad: boolean } | null>(null)
+  const [msg, setMsg] = useState<Msg | null>(null)
   const [busy, setBusy] = useState(false)
   const [creating, setCreating] = useState(false)
   const [menuFor, setMenuFor] = useState<string | null>(null)
@@ -519,7 +558,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
       setPricingReady(r.pricingReady === true)
       setPricing((r.pricing ?? {}) as Record<string, TypePricingRow>)
       setMenu((r.menu ?? { categories: [] }) as PricingMenu)
-    } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'Could not load', bad: true }) }
+    } catch (e) { setMsg(failure(e, 'couldNotLoad')) }
     finally { setLoading(false) }
   }, [token])
 
@@ -529,7 +568,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
   const act = async (body: Record<string, unknown>, after?: () => void) => {
     setBusy(true); setMsg(null)
     try { await api(token, body); await load(); after?.() }
-    catch (e) { setMsg({ text: e instanceof Error ? e.message : 'Could not save', bad: true }) }
+    catch (e) { setMsg(failure(e, 'couldNotSave')) }
     finally { setBusy(false) }
   }
 
@@ -602,7 +641,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
       }
       await load()
     } catch (e) {
-      setMsg({ text: e instanceof Error ? e.message : 'Could not save', bad: true })
+      setMsg(failure(e, 'couldNotSave'))
       await load()
     } finally { setStandardBusy(false); setConfirmSameSettings(false) }
   }
@@ -622,7 +661,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
       await api(token, { action: 'set_private_link_ordering', on })
       await load()
     } catch (e) {
-      setMsg({ text: e instanceof Error ? e.message : 'Could not save', bad: true })
+      setMsg(failure(e, 'couldNotSave'))
       await load()
     } finally { setStandardBusy(false) }
   }
@@ -658,7 +697,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
       await manageApi(write.action, { vanId, ...write.payload })
       await load()
     } catch (e) {
-      setMsg({ text: e instanceof Error ? e.message : 'Could not save', bad: true })
+      setMsg(failure(e, 'couldNotSave'))
       await load()
     } finally { setStandardBusy(false) }
   }
@@ -671,12 +710,12 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
       if (write.scope === 'truck') {
         await manageApi(write.action, { data: write.payload })
       } else {
-        if (vanIds.length === 0) throw new Error('This truck has no vans to change.')
+        if (vanIds.length === 0) throw new EventTypesError('noVans', '')
         for (const vanId of vanIds) await manageApi(write.action, { vanId, ...write.payload })
       }
       await load()
     } catch (e) {
-      setMsg({ text: e instanceof Error ? e.message : 'Could not save', bad: true })
+      setMsg(failure(e, 'couldNotSave'))
       await load()
     } finally { setStandardBusy(false) }
   }
@@ -753,10 +792,10 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
     () => [
       ...(vanColumns.length > 1
         ? vanColumns.map(v => ({ id: `van:${v.id}`, name: v.name, vanId: v.id }))
-        : [{ id: null as string | null, name: 'Standard', vanId: null as string | null }]),
-      ...types.map(t => ({ id: t.id, name: t.name, vanId: null as string | null })),
+        : [{ id: null as string | null, name: t('standard'), vanId: null as string | null }]),
+      ...types.map(ty => ({ id: ty.id, name: ty.name, vanId: null as string | null })),
     ],
-    [vanColumns, types],
+    [vanColumns, types, t],
   )
   /**
    * ── 🔴 WHICH COLUMN THE PHONE IS SHOWING, DERIVED — NOT STORED ────────────────────────────────
@@ -798,10 +837,10 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
        * a column that is really Van 1 — the header is the only thing that says so. */
       : [{
           key: 'standard',
-          name: vans.length > 1 ? SAME_SETTINGS_ALL_VANS_HEADER : 'Standard',
+          name: vans.length > 1 ? ts('sameSettingsAllVansHeader') : t('standard'),
           van: null as VanRow | null,
         }]
-  ), [vanColumns, vans.length])
+  ), [vanColumns, vans.length, t, ts])
 
   const canEditStandard = editable && !standardBusy && !!manageApi
 
@@ -892,8 +931,8 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
      * asserts a one-van truck shows no VANS row.
      * ⚠️ ALSO ABSENT BEFORE THE "Same as Van 1" MIGRATION (`sameSettingsAvailable`). */
     if (vans.length > 1 && sameSettingsAvailable) {
-      out.push({ k: 'section', id: 'sec-vans', label: 'VANS' })
-      out.push({ k: 'same-settings', id: 'same-settings', label: SAME_SETTINGS_ALL_VANS_LABEL })
+      out.push({ k: 'section', id: 'sec-vans', label: t('sections.vans') })
+      out.push({ k: 'same-settings', id: 'same-settings', label: ts('sameSettingsAllVansLabel') })
     }
     /* ══ 🔴 ORDERING, ABOVE PRICES AND BELOW VANS (20261014) ══════════════════════════════════════
      * One row, and it belongs to the Private column: Standard's cell is a STATEMENT ("Open to
@@ -905,21 +944,21 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
      * ⚠️ IT SITS ABOVE PRICES BECAUSE IT DECIDES WHETHER THERE IS ANYTHING TO PRICE. If a private
      * event takes no orders online, its prices never reach a customer. */
     if (privateType) {
-      out.push({ k: 'section', id: 'sec-ordering', label: ORDERING_SECTION })
-      out.push({ k: 'private-link', id: 'private-link', label: PRIVATE_LINK_ROW_LABEL })
+      out.push({ k: 'section', id: 'sec-ordering', label: tp('grid.orderingSection') })
+      out.push({ k: 'private-link', id: 'private-link', label: tp('grid.linkRowLabel') })
     }
     if (pricingReady) {
-      out.push({ k: 'section', id: 'sec-prices', label: 'PRICES' })
-      out.push({ k: 'price-switch', id: 'price-on', label: PRICE_SETTING_LABELS.price_change_on })
+      out.push({ k: 'section', id: 'sec-prices', label: t('sections.prices') })
+      out.push({ k: 'price-switch', id: 'price-on', label: ts('priceLabels.price_change_on') })
       if (anyPriceOn) {
-        out.push({ k: 'price-rule', id: 'price-mode', label: PRICE_SETTING_LABELS.price_mode, which: 'mode', indent: true })
-        out.push({ k: 'price-rule', id: 'price-amount', label: PRICE_SETTING_LABELS.price_amount, which: 'amount', indent: true })
-        out.push({ k: 'price-rule', id: 'price-rounding', label: PRICE_SETTING_LABELS.price_rounding, which: 'rounding', indent: true })
+        out.push({ k: 'price-rule', id: 'price-mode', label: ts('priceLabels.price_mode'), which: 'mode', indent: true })
+        out.push({ k: 'price-rule', id: 'price-amount', label: ts('priceLabels.price_amount'), which: 'amount', indent: true })
+        out.push({ k: 'price-rule', id: 'price-rounding', label: ts('priceLabels.price_rounding'), which: 'rounding', indent: true })
         /* ITEM PRICES IS A SECTION BAND NOW, NOT A ROW (5 October 2026). The pill sits right after
          * the heading text, inside the band: the grid scrolls SIDEWAYS, so anything further right is
          * off-screen on exactly the truck with enough types to need it. It counts the items, so
          * "Show 23 items" says what is about to unfold. */
-        out.push({ k: 'items-band', id: 'sec-items', label: 'ITEM PRICES' })
+        out.push({ k: 'items-band', id: 'sec-items', label: t('sections.itemPrices') })
         if (showItems) {
           for (const c of menu.categories) {
             out.push({ k: 'category', id: `cat-${c.id}`, label: c.name })
@@ -930,11 +969,11 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
         }
       }
     }
-    out.push({ k: 'section', id: 'sec-service', label: 'SERVICE' })
+    out.push({ k: 'section', id: 'sec-service', label: t('sections.service') })
     for (const row of SERVICE_ROWS) {
-      out.push({ k: 'service', id: `svc-${row.id}`, label: row.label, row })
+      out.push({ k: 'service', id: `svc-${row.id}`, label: rowLabel(row), row })
       if (row.id === 'offline_protection' && anyOfflineOn) {
-        out.push({ k: 'offline-mode', id: 'offline-mode', label: OFFLINE_WHEN_OFFLINE_LABEL, indent: true })
+        out.push({ k: 'offline-mode', id: 'offline-mode', label: ts('offlineWhenOfflineLabel'), indent: true })
       }
     }
     /* ══ ⛔ THE "USED BY / Upcoming events" SECTION IS REMOVED (5 October 2026) ══════════════════
@@ -947,7 +986,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
      * (`countUpcomingByType` in the route, unchanged), so nothing was lost but the two rows.
      * ⚠️ AND PRIVATE CANNOT BE DELETED, so that confirm is never reached for it. */
     return out
-  }, [pricingReady, anyPriceOn, showItems, menu, anyOfflineOn, vans.length, sameSettingsAvailable, privateType])
+  }, [pricingReady, anyPriceOn, showItems, menu, anyOfflineOn, vans.length, sameSettingsAvailable, privateType, t, tp, ts, rowLabel])
 
   /**
    * ── 🔴 THE ZEBRA STRIPE, RESTARTING AFTER EVERY HEADING ───────────────────────────────────────
@@ -1006,7 +1045,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
         * a tablet in portrait — 1000px of dialog on an 820px screen would clip the close button.
         * ⚠️ THE NUMBERS COME FROM THE SAME CONSTANTS THE GRID USES. Two places computing the same
         * width from different literals is how the empty band appeared in the first place. */}
-      <div role={inline ? undefined : 'dialog'} aria-modal={inline ? undefined : true} aria-label="Event types"
+      <div role={inline ? undefined : 'dialog'} aria-modal={inline ? undefined : true} aria-label={t('title')}
         data-event-types-modal
         /* ⚠️ `valueColumnCount`, NOT `types.length + 1`. A two-van truck with two types now has FOUR
           * value columns, and the dialog has to be as wide as its content or the empty band this
@@ -1022,11 +1061,11 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
         {/* ── HEADER ───────────────────────────────────────────────────────────────────────────── */}
         <div className="shrink-0 flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-slate-200">
           <div className="min-w-0 flex-1">
-            <h2 className="font-bold text-slate-900 text-lg">Event types</h2>
+            <h2 className="font-bold text-slate-900 text-lg">{t('title')}</h2>
             {/* 🔴 "Grey = same as Standard" IS GONE. Nothing on this screen is grey-as-a-legend any
               * more: a faded control shows the value it inherits, which needs no key. A legend for a
               * state that no longer exists is worse than no legend. */}
-            <p className="text-xs sm:text-[13px] text-slate-500">{EVENT_TYPES_SUBTITLE}</p>
+            <p className="text-xs sm:text-[13px] text-slate-500">{ts('eventTypesSubtitle')}</p>
           </div>
           {/* ── 🔴 "+ New event type" IS A **MAX** ACTION (20261014) ─────────────────────────────
             * A Pro truck reaches this screen for its Private type and must not be able to make
@@ -1034,13 +1073,13 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
             * app/api/event-types/route.ts refuses `create` on the server, which is the rule — the
             * screen decides what is drawn, the route decides what is done. */}
           <div className="flex shrink-0 items-center">
-            <Btn label="+ New event type" colour="ghost" disabled={!editable || !canTypes}
+            <Btn label={t('newTypeButton')} colour="ghost" disabled={!editable || !canTypes}
               onClick={() => setCreating(true)} />
             {!canTypes && canPrivate && <MaxBadge />}
           </div>
           {/* ⚠️ NO ✕ WHEN INLINE — there is nothing to close; the pill above is how you leave. */}
           {!inline && (
-            <button type="button" onClick={() => onClose?.()} aria-label="Close"
+            <button type="button" onClick={() => onClose?.()} aria-label={t('close')}
               className="shrink-0 w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-lg font-bold">✕</button>
           )}
         </div>
@@ -1049,23 +1088,22 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
           * a second vertical scroller inside a card is the "two scrollbars" shape this app avoids. The
           * grid's own SIDEWAYS scroller is inside and is unaffected by either. */}
         <div className={inline ? '' : 'flex-1 min-h-0 overflow-y-auto'}>
-          {loading && <p className="text-sm text-slate-400 p-5">Loading…</p>}
+          {loading && <p className="text-sm text-slate-400 p-5">{t('loading')}</p>}
 
           {!loading && missingTable && (
             <div className="p-5">
-              <p className="text-sm font-bold text-slate-800">Event types aren’t switched on yet.</p>
+              <p className="text-sm font-bold text-slate-800">{t('missingTitle')}</p>
               <p className="text-sm text-slate-600 mt-1">
-                The database update for this feature hasn’t been applied. Nothing is broken — every
-                event is using your normal setup.
+                {t('missingBody')}
               </p>
             </div>
           )}
 
           {!loading && readOnly && (
             <div className="m-4 p-3 rounded-xl border border-amber-200 bg-amber-50">
-              <p className="text-sm font-bold text-amber-900">{upgradeMessage ?? 'Event types are part of the Max plan.'}</p>
+              <p className="text-sm font-bold text-amber-900">{upgradeMessage ?? t('maxPlanFallback')}</p>
               <p className="text-sm text-amber-800 mt-1">
-                Events that already have a type keep using it. To add, change or assign types, move to Max.
+                {t('maxPlanBody')}
               </p>
             </div>
           )}
@@ -1073,7 +1111,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
           {msg && (
             <p className={`m-4 text-sm rounded-xl px-3 py-2 border ${msg.bad
               ? 'text-red-700 bg-red-50 border-red-200'
-              : 'text-slate-600 bg-slate-50 border-slate-200'}`}>{msg.text}</p>
+              : 'text-slate-600 bg-slate-50 border-slate-200'}`}>{msg.code ? t(`errors.${msg.code}`) : msg.text}</p>
           )}
 
           {!loading && !missingTable && standard && (
@@ -1084,8 +1122,8 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                   {/* 🔴 THE PICKER LISTS THE VAN COLUMNS AND THEN THE TYPES, in the grid's order, so
                     * picking a name on a phone picks the same column that name heads on a tablet.
                     * ⚠️ THE LABEL IS NOT "Event type" ANY MORE — the list is no longer only types. */}
-                  <label className="block text-xs font-bold text-slate-600 mb-1" htmlFor="et-phone-pick">Column</label>
-                  <Select className="w-full" ariaLabel="Column"
+                  <label className="block text-xs font-bold text-slate-600 mb-1" htmlFor="et-phone-pick">{t('column')}</label>
+                  <Select className="w-full" ariaLabel={t('column')}
                     value={phoneSel ?? ''}
                     options={columns.map(c => ({ value: c.id ?? '', label: c.name }))}
                     onChange={v => setPhoneType(v || null)} />
@@ -1104,7 +1142,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                   }
                   if (phoneSel.startsWith('van:')) {
                     const van = vans.find(v => v.id === phoneSel.slice(4))
-                    if (!van) return <p className="text-sm text-slate-400">That van has gone.</p>
+                    if (!van) return <p className="text-sm text-slate-400">{t('vanGone')}</p>
                     return (
                       <StandardCard standard={standard} van={van} editable={editable}
                         onStandard={(r, v) => void saveStandard(r, v)}
@@ -1112,22 +1150,22 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                         standardBusy={standardBusy || !manageApi} />
                     )
                   }
-                  const t = typeById.get(phoneSel)
-                  if (!t) return <p className="text-sm text-slate-400">That type has gone.</p>
+                  const ty = typeById.get(phoneSel)
+                  if (!ty) return <p className="text-sm text-slate-400">{t('typeGone')}</p>
                   return (
                     <TypeCard
-                      type={t} standard={standard} editable={editable}
-                      colour={colourFor(types.findIndex(x => x.id === t.id))}
-                      pricing={pricingReady ? pricing[t.id] : undefined}
+                      type={ty} standard={standard} editable={editable}
+                      colour={colourFor(types.findIndex(x => x.id === ty.id))}
+                      pricing={pricingReady ? pricing[ty.id] : undefined}
                       /* 🔴 §2 · THE MENU AND THE PER-ITEM WRITE, so the phone card can show and edit the
                        * item prices. ⚠️ `setTypeItemPrice` IS THE GRID'S OWN SETTER — the same
                        * `set_type_item_price` action, not a phone-only path. */
                       menu={menu}
-                      onSetItemPrice={(itemId, price) => setTypeItemPrice(t.id, itemId, price)}
-                      onPatch={v => void patch(t.id, v)}
-                      onPatchPricing={v => void patchPricing(t.id, v)}
-                      onRename={() => { setRenaming(t.id); setRenameTo(t.name) }}
-                      onDelete={() => setConfirmDelete(t.id)}
+                      onSetItemPrice={(itemId, price) => setTypeItemPrice(ty.id, itemId, price)}
+                      onPatch={v => void patch(ty.id, v)}
+                      onPatchPricing={v => void patchPricing(ty.id, v)}
+                      onRename={() => { setRenaming(ty.id); setRenameTo(ty.name) }}
+                      onDelete={() => setConfirmDelete(ty.id)}
                     />
                   )
                 })()}
@@ -1174,7 +1212,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                   <div data-grid-standard-heading
                     className={`${CELL_DIVIDER} px-2.5 flex items-center justify-center ${SUBCARD_HEADING}`}
                     style={{ gridColumn: `2 / span ${vanCount}`, gridRow: 1, height: ROW_H.category, background: WHITE_BG }}>
-                    STANDARD
+                    {t('standardHeading')}
                   </div>
                   {/* ── HEADER ROW 1-2: one cell per type, spanning both header rows ───────────────
                     * 🔴 THE ⋯ IS `absolute` AT THE RIGHT EDGE AND THE NAME IS CENTRED IN THE WHOLE
@@ -1183,9 +1221,9 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                     * while "Pub" sat dead centre, and the two headers did not line up with each other
                     * or with the switches under them. Taking the button out of the flow is what lets
                     * every title be centred on its column. */}
-                  {types.map((t, i) => (
-                    <div key={t.id} data-grid-type-header
-                      {...(t.kind === 'private' ? { 'data-private-column': true } : {})}
+                  {types.map((ty, i) => (
+                    <div key={ty.id} data-grid-type-header
+                      {...(ty.kind === 'private' ? { 'data-private-column': true } : {})}
                       className={`${CELL_DIVIDER} relative px-7 flex items-center justify-center gap-1.5 min-w-0`}
                       style={{ gridColumn: 2 + vanCount + i, gridRow: '1 / span 2', background: WHITE_BG }}>
                       {/* ── 🔴 THE BUILT-IN PRIVATE COLUMN READS AS BUILT-IN (20261014) ────────────
@@ -1196,19 +1234,19 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                         * delete this" — the Max badges on the PRICES rows are a different mark in a
                         * different place, and conflating them would tell a Pro truck that the feature
                         * they are entitled to is locked. */}
-                      {t.kind === 'private' ? (
-                        <span aria-hidden="true" className="text-[11px] leading-none text-purple-500" title={PRIVATE_COLUMN_TITLE}>🔒</span>
+                      {ty.kind === 'private' ? (
+                        <span aria-hidden="true" className="text-[11px] leading-none text-purple-500" title={tp('grid.columnTitle')}>🔒</span>
                       ) : (
                         <Dot colour={colourFor(i)} />
                       )}
                       <span
-                        className={`text-[13px] font-bold truncate ${t.kind === 'private' ? 'text-purple-700' : 'text-slate-800'}`}
-                        title={t.kind === 'private' ? PRIVATE_COLUMN_TITLE : t.name}
-                      >{t.name}</span>
-                      <button type="button" aria-label={`More for ${t.name}`} disabled={!editable}
-                        onClick={e => { e.stopPropagation(); setMenuFor(menuFor === t.id ? null : t.id) }}
+                        className={`text-[13px] font-bold truncate ${ty.kind === 'private' ? 'text-purple-700' : 'text-slate-800'}`}
+                        title={ty.kind === 'private' ? tp('grid.columnTitle') : ty.name}
+                      >{ty.name}</span>
+                      <button type="button" aria-label={t('moreFor', { name: ty.name })} disabled={!editable}
+                        onClick={e => { e.stopPropagation(); setMenuFor(menuFor === ty.id ? null : ty.id) }}
                         className="absolute right-1 top-1/2 -translate-y-1/2 w-[26px] h-[26px] rounded-lg border border-slate-200 text-slate-500 font-bold disabled:text-slate-300 leading-none">⋯</button>
-                      {menuFor === t.id && (
+                      {menuFor === ty.id && (
                         <div className="absolute right-1 top-[52px] z-10 w-[170px] bg-white rounded-xl shadow-xl border border-slate-100 p-1.5 text-sm text-left"
                           onClick={e => e.stopPropagation()}>
                           {/* ⛔ PRIVATE OFFERS **ONLY** "Match Standard" (20261014, decision 1). Rename,
@@ -1218,19 +1256,19 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                             * rename/delete/move handlers filter on the truck and the id, and
                             * scripts/private-events.cjs asserts the kind check), because the screen
                             * decides what is drawn and the route decides what is done. */}
-                          {t.kind !== 'private' && (
+                          {ty.kind !== 'private' && (
                             <>
                           <button type="button" className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50"
-                            onClick={() => { setRenaming(t.id); setRenameTo(t.name); setMenuFor(null) }}>Rename</button>
+                            onClick={() => { setRenaming(ty.id); setRenameTo(ty.name); setMenuFor(null) }}>{t('rename')}</button>
                           {/* ⚠️ DISABLED AT THE ENDS OF THE **CUSTOM** LIST, not of the grid. With
                             * Private at grid index 0, `i === 0` would have disabled Move left on the
                             * first custom type one column too late. */}
-                          <button type="button" disabled={customIndexOf(t.id) === 0}
+                          <button type="button" disabled={customIndexOf(ty.id) === 0}
                             className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50 disabled:text-slate-300"
-                            onClick={() => void move(t.id, -1)}>Move left</button>
-                          <button type="button" disabled={customIndexOf(t.id) === customCount - 1}
+                            onClick={() => void move(ty.id, -1)}>{t('moveLeft')}</button>
+                          <button type="button" disabled={customIndexOf(ty.id) === customCount - 1}
                             className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50 disabled:text-slate-300"
-                            onClick={() => void move(t.id, 1)}>Move right</button>
+                            onClick={() => void move(ty.id, 1)}>{t('moveRight')}</button>
                             </>
                           )}
                           {/* 🔴 THE WAY BACK TO INHERITING, AND THE ONLY ONE. ⚠️ IT CLEARS THE SERVICE
@@ -1239,10 +1277,10 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                             * prices are turned off by its own switch, which is where an operator is
                             * looking when they want that. Said out loud in the confirm. */}
                           <button type="button" className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50"
-                            onClick={() => { setConfirmMatch(t.id); setMenuFor(null) }}>{MATCH_STANDARD_LABEL}</button>
-                          {t.kind !== 'private' && (
+                            onClick={() => { setConfirmMatch(ty.id); setMenuFor(null) }}>{ts('matchStandardLabel')}</button>
+                          {ty.kind !== 'private' && (
                             <button type="button" className="block w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-50 text-red-700"
-                              onClick={() => { setConfirmDelete(t.id); setMenuFor(null) }}>Delete</button>
+                              onClick={() => { setConfirmDelete(ty.id); setMenuFor(null) }}>{t('delete')}</button>
                           )}
                         </div>
                       )}
@@ -1314,8 +1352,8 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                                   * nobody acts on, and "items" in a PRICES band invited the reading
                                   * that the band was about availability. */}
                                 {showItems
-                                  ? `${ITEM_PRICES_HIDE} \u25b4`
-                                  : `${ITEM_PRICES_SHOW} \u25be`}
+                                  ? `${ts('itemPricesHide')} \u25b4`
+                                  : `${ts('itemPricesShow')} \u25be`}
                               </button>
                             )}
                           </div>
@@ -1431,8 +1469,8 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                               gridRow: `${row} / span ${1 + ruleRowCount}`,
                               background: WHITE_BG,
                             }}
-                            title={PRICES_TRUCK_WIDE_TITLE}>
-                            <span className="text-[13px] text-slate-600">{PRICES_STANDARD_CELL}</span>
+                            title={ts('pricesTruckWideTitle')}>
+                            <span className="text-[13px] text-slate-600">{ts('pricesStandardCell')}</span>
                           </div>
                         )]
                       }
@@ -1443,11 +1481,11 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                           <div key="std"
                             className={`${CELL_DIVIDER} px-2.5 flex items-center justify-center border-t border-slate-100`}
                             style={{ gridColumn: `2 / span ${vanCount}`, gridRow: row, minHeight: h, background: bg }}
-                            title={PRICES_TRUCK_WIDE_TITLE}>
+                            title={ts('pricesTruckWideTitle')}>
                             <span className={r.k === 'price-item'
                               ? 'text-[13px] text-slate-700 tabular-nums'
                               : 'text-[13px] text-slate-600'}>
-                              {r.k === 'price-item' ? formatMajor(r.item.price, truckMoney) : PRICES_MENU_CELL}
+                              {r.k === 'price-item' ? formatMajor(r.item.price, truckMoney) : ts('pricesMenuCell')}
                             </span>
                           </div>
                         )]
@@ -1458,9 +1496,9 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                           <div key={v.key} className={`${CELL_DIVIDER} ${base}`}
                             style={{ gridColumn: 2 + i, gridRow: row, minHeight: h, background: bg }}>
                             {standardOfflineOn(v) && (
-                              <Select className="w-full" height={GRID_CONTROL_H} ariaLabel={`${OFFLINE_WHEN_OFFLINE_LABEL} for ${v.name}`}
+                              <Select className="w-full" height={GRID_CONTROL_H} ariaLabel={t('labelFor', { label: ts('offlineWhenOfflineLabel'), name: v.name })}
                                 disabled={!canEditStandard} value={standardOfflineMode(v)}
-                                options={OFFLINE_MODE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
+                                options={offlineModes.map(c => ({ value: c.value, label: c.label }))}
                                 onChange={m => onStandardOfflineMode(v, m)} />
                             )}
                           </div>
@@ -1502,7 +1540,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                             className={`${CELL_DIVIDER} ${base}`}
                             style={{ gridColumn: `2 / span ${vanCount}`, gridRow: row, minHeight: h, background: bg }}>
                             <Toggle on={sameSettings} disabled={!canEditStandard} compact
-                              ariaLabel={SAME_SETTINGS_ALL_VANS_LABEL}
+                              ariaLabel={ts('sameSettingsAllVansLabel')}
                               onToggle={() => {
                                 if (sameSettings) void saveSameSettings(false)
                                 else setConfirmSameSettings(true)
@@ -1527,7 +1565,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                           style={{ gridColumn: 2 + i, gridRow: row, minHeight: h, background: bg }}>
                           <OneStandardControl row={sr} editable={canEditStandard} dense
                             value={v.van ? vanValue(sr, v.van) : standardValue(sr, standard)}
-                            label={`${sr.label} for ${v.name}`}
+                            label={t('labelFor', { label: rowLabel(sr), name: v.name })}
                             onChange={value => (v.van
                               ? void saveStandardForVan(sr, v.van.id, value)
                               : void saveStandard(sr, value))} />
@@ -1536,27 +1574,27 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                     })()
 
                     // ── THE TYPE COLUMNS ─────────────────────────────────────────────────────────
-                    const typeCells = types.map((t, i) => {
+                    const typeCells = types.map((ty, i) => {
                       const col = 2 + vanCount + i
                       const cellStyle = { gridColumn: col, gridRow: row, minHeight: h, background: bg }
                       if (isBand || r.k === 'category') {
                         /* ⛔ NO `border-t` ON A CATEGORY ROW — see the Standard side's note. The
                          * vertical divider stays. */
                         return (
-                          <div key={t.id}
+                          <div key={ty.id}
                             className={`${CELL_DIVIDER} ${r.k === 'category' ? '' : 'border-t border-slate-100'}`}
                             style={cellStyle} />
                         )
                       }
-                      const pr = pricing[t.id]
+                      const pr = pricing[ty.id]
                       const on = pr?.price_change_on === true
                       const setup = setupOf(pr)
                       if (r.k === 'price-switch') {
                         return (
-                          <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
+                          <div key={ty.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
                             <Toggle on={on} disabled={!editable} compact
-                              ariaLabel={`${PRICE_SETTING_LABELS.price_change_on} for ${t.name}`}
-                              onToggle={() => patchPricing(t.id, { price_change_on: !on })} />
+                              ariaLabel={t('labelFor', { label: ts('priceLabels.price_change_on'), name: ty.name })}
+                              onToggle={() => patchPricing(ty.id, { price_change_on: !on })} />
                           </div>
                         )
                       }
@@ -1581,20 +1619,20 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                          * `PRICE_MODE_CHOICES` itself. */
                         const ruleLive = on && PRICE_MODES_WITH_AMOUNT.includes(pr!.price_mode ?? '')
                         return (
-                          <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
+                          <div key={ty.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
                             {on && r.which === 'mode' && (
                               <PriceModeSelect currencySymbol={currencySym} value={pr!.price_mode} disabled={!editable} height={GRID_CONTROL_H}
-                                label={`${PRICE_SETTING_LABELS.price_mode} for ${t.name}`}
+                                label={t('labelFor', { label: ts('priceLabels.price_mode'), name: ty.name })}
                                 /* ⚠️ THE MODE AND THE AMOUNT ARE SENT TOGETHER, so the route validates
                                  * the stored amount against the NEW unit — "10" meant as £10 must not
                                  * survive a switch to "+ %" as 10%. `cleanPriceAmount` re-checks it
                                  * against the ceiling of the new unit and nulls it if it cannot hold. */
-                                onChange={m => patchPricing(t.id, { price_mode: m, price_amount: pr!.price_amount })} />
+                                onChange={m => patchPricing(ty.id, { price_mode: m, price_amount: pr!.price_amount })} />
                             )}
                             {ruleLive && r.which === 'amount' && (
                               <PriceAmountInput currencySymbol={currencySym} mode={pr!.price_mode} value={pr!.price_amount} disabled={!editable} height={GRID_CONTROL_H}
-                                label={`${PRICE_SETTING_LABELS.price_amount} for ${t.name}`}
-                                onCommit={v => patchPricing(t.id, { price_amount: v, price_mode: pr!.price_mode })} />
+                                label={t('labelFor', { label: ts('priceLabels.price_amount'), name: ty.name })}
+                                onCommit={v => patchPricing(ty.id, { price_amount: v, price_mode: pr!.price_mode })} />
                             )}
                             {ruleLive && r.which === 'rounding' && (
                               <PriceRoundingSelect currencySymbol={currencySym} value={pr!.price_rounding} disabled={!editable} height={GRID_CONTROL_H}
@@ -1609,8 +1647,8 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                                  * settled. The ONLY grey left in this grid is a menu price in a column
                                  * that is not changing prices, which is a statement of fact rather
                                  * than a control at reduced strength. */
-                                label={`${PRICE_SETTING_LABELS.price_rounding} for ${t.name}`}
-                                onChange={v => patchPricing(t.id, { price_rounding: v })} />
+                                label={t('labelFor', { label: ts('priceLabels.price_rounding'), name: ty.name })}
+                                onChange={v => patchPricing(ty.id, { price_rounding: v })} />
                             )}
                           </div>
                         )
@@ -1618,7 +1656,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
 
                       if (r.k === 'price-item') {
                         return (
-                          <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
+                          <div key={ty.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
                             {/* 🔴 THE PRICE SHOWN IS `priceForItem` — THE FUNCTION THE SUBMIT ROUTE
                               * CHARGES WITH (inside <PriceCell>). An off type shows the MENU price in
                               * grey and is not pressable: `grey` is the fact, not a disabled control. */}
@@ -1630,9 +1668,9 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                                * absent — but passing it only here means the Standard column cannot
                                * start showing them if a default ever changes. */
                               showDiff
-                              label={`${r.item.name} for ${t.name}`}
-                              onType={v => setTypeItemPrice(t.id, r.item.id, v)}
-                              onClear={() => setTypeItemPrice(t.id, r.item.id, null)} />
+                              label={t('labelFor', { label: r.item.name, name: ty.name })}
+                              onType={v => setTypeItemPrice(ty.id, r.item.id, v)}
+                              onClear={() => setTypeItemPrice(ty.id, r.item.id, null)} />
                           </div>
                         )
                       }
@@ -1645,14 +1683,14 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                        * whole reason the two keys were split (lib/features.ts). */
                       if (r.k === 'private-link') {
                         return (
-                          <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
-                            {t.kind === 'private' && (
+                          <div key={ty.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
+                            {ty.kind === 'private' && (
                               <Toggle
-                                on={t.private_link_ordering !== false}
+                                on={ty.private_link_ordering !== false}
                                 disabled={!privateEditable}
                                 compact
-                                ariaLabel={`${PRIVATE_LINK_ROW_LABEL} for ${t.name}`}
-                                onToggle={() => void saveLinkOrdering(t.private_link_ordering === false)}
+                                ariaLabel={t('labelFor', { label: tp('grid.linkRowLabel'), name: ty.name })}
+                                onToggle={() => void saveLinkOrdering(ty.private_link_ordering === false)}
                               />
                             )}
                           </div>
@@ -1662,14 +1700,14 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                        * there is nothing here to be on or off — and a greyed control would invite a
                        * tap and read as "off for this type", which would mean nothing. */
                       if (r.k === 'same-settings') {
-                        return <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle} />
+                        return <div key={ty.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle} />
                       }
                       if (r.k === 'offline-mode') {
                         return (
-                          <div key={t.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
-                            {typeOfflineOn(t) && (
-                              <Select className="w-full" height={GRID_CONTROL_H} ariaLabel={`${OFFLINE_WHEN_OFFLINE_LABEL} for ${t.name}`}
-                                disabled={!editable} value={typeOfflineMode(t, standard)}
+                          <div key={ty.id} className={`${CELL_DIVIDER} ${base}`} style={cellStyle}>
+                            {typeOfflineOn(ty) && (
+                              <Select className="w-full" height={GRID_CONTROL_H} ariaLabel={t('labelFor', { label: ts('offlineWhenOfflineLabel'), name: ty.name })}
+                                disabled={!editable} value={typeOfflineMode(ty, standard)}
                                 /* ⛔ NO FADE (5 October 2026). A faded mode meant "this type has no
                                  * mode of its own, so you are looking at Standard's" — the subscription
                                  * that made Market move when Van 1 moved, in miniature. A type holds
@@ -1677,16 +1715,16 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                                  * will be used, crisp. The only fade left on this screen is the price
                                  * Rounding, where the column is NOT NULL and there is genuinely no
                                  * other way to say "not chosen". */
-                                options={OFFLINE_MODE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
-                                onChange={m => patch(t.id, { offline_protection: true, offline_protection_mode: m })} />
+                                options={offlineModes.map(c => ({ value: c.value, label: c.label }))}
+                                onChange={m => patch(ty.id, { offline_protection: true, offline_protection_mode: m })} />
                             )}
                           </div>
                         )
                       }
                       return (
-                        <div key={t.id} className={`${CELL_DIVIDER} ${base} gap-2`} style={cellStyle}>
-                          <TypeControl row={r.row} type={t} standard={standard} editable={editable} dense
-                            onPatch={v => patch(t.id, v)} />
+                        <div key={ty.id} className={`${CELL_DIVIDER} ${base} gap-2`} style={cellStyle}>
+                          <TypeControl row={r.row} type={ty} standard={standard} editable={editable} dense
+                            onPatch={v => patch(ty.id, v)} />
                         </div>
                       )
                     })
@@ -1698,7 +1736,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
 
               {types.length === 0 && (
                 <p className="px-5 pb-4 text-xs text-slate-500">
-                  You have no event types yet, so every event uses your normal setup.
+                  {t('noTypes')}
                 </p>
               )}
             </>
@@ -1710,8 +1748,8 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
           * changes it in Settings" is true only because `saveStandard` calls Settings' own action. The
           * old footer said the opposite — "Change it in Settings" — because Standard was read-only. */}
         <div className="shrink-0 px-4 sm:px-5 py-3 border-t border-slate-200 text-[13px] text-slate-500 leading-relaxed">
-          {EVENT_TYPES_FOOTER_STANDARD}<br />
-          {EVENT_TYPES_FOOTER_ONE_EVENT}
+          {ts('eventTypesFooterStandard')}<br />
+          {ts('eventTypesFooterOneEvent')}
         </div>
       </div>
 
@@ -1729,14 +1767,14 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
         <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
           onClick={e => { if (e.target === e.currentTarget) setRenaming(null) }}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-4 space-y-3">
-            <p className="font-bold text-slate-900">Rename this type</p>
+            <p className="font-bold text-slate-900">{t('renameTitle')}</p>
             {/* ⚠️ THE SHARED <Input>, which is what every other text box in Manage is. The local box
               * here was `rounded-xl px-3 py-2 h-11` with a hand-written aria-label; `Input` carries its
               * own <label> and the page's focus ring. */}
-            <Input label="Name" value={renameTo} onChange={setRenameTo} maxLength={MAX_TYPE_NAME} />
+            <Input label={t('name')} value={renameTo} onChange={setRenameTo} maxLength={MAX_TYPE_NAME} />
             <div className="flex gap-2 justify-end">
-              <Btn label="Cancel" colour="slate" size="sm" onClick={() => setRenaming(null)} />
-              <Btn label="Save" size="sm" disabled={!editable || !renameTo.trim()}
+              <Btn label={t('cancel')} colour="slate" size="sm" onClick={() => setRenaming(null)} />
+              <Btn label={t('save')} size="sm" disabled={!editable || !renameTo.trim()}
                 onClick={() => void act({ action: 'update', id: renaming, name: renameTo }, () => setRenaming(null))} />
             </div>
           </div>
@@ -1754,11 +1792,11 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
         <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
           onClick={e => { if (e.target === e.currentTarget) setConfirmSameSettings(false) }}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-4 space-y-3" data-same-settings-confirm>
-            <p className="font-bold text-slate-900">{SAME_SETTINGS_ALL_VANS_LABEL}</p>
-            <p className="text-sm text-slate-600">{SAME_SETTINGS_CONFIRM}</p>
+            <p className="font-bold text-slate-900">{ts('sameSettingsAllVansLabel')}</p>
+            <p className="text-sm text-slate-600">{ts('sameSettingsConfirm')}</p>
             <div className="flex gap-2 justify-end">
-              <Btn label="Cancel" colour="slate" size="sm" onClick={() => setConfirmSameSettings(false)} />
-              <Btn label="Copy Van 1’s settings" size="sm" disabled={!editable || standardBusy}
+              <Btn label={t('cancel')} colour="slate" size="sm" onClick={() => setConfirmSameSettings(false)} />
+              <Btn label={t('copyVanOne')} size="sm" disabled={!editable || standardBusy}
                 onClick={() => void saveSameSettings(true)} />
             </div>
           </div>
@@ -1771,16 +1809,15 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
           onClick={e => { if (e.target === e.currentTarget) setConfirmMatch(null) }}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-4 space-y-3">
             <p className="font-bold text-slate-900">
-              {MATCH_STANDARD_LABEL} for “{typeById.get(confirmMatch)?.name ?? 'this type'}”?
+              {t('matchTitle', { name: typeById.get(confirmMatch)?.name ?? t('thisType') })}
             </p>
-            <p className="text-sm text-slate-600">{MATCH_STANDARD_CONFIRM}</p>
+            <p className="text-sm text-slate-600">{ts('matchStandardConfirm')}</p>
             {/* ⚠️ IT SAYS WHAT SURVIVES. Per-event changes are not touched by this — it writes the
               * TYPE's columns only — and an operator about to press it should not have to guess.
               * ⚠️ AND PRICES ARE NOT TOUCHED EITHER (5 October). They are not service columns and are
               * not in `SERVICE_KEYS`; a type's prices are turned off by its own switch. */}
             <p className="text-xs text-slate-500">
-              Anything you changed on a single event’s dashboard stays as it is, and this type’s prices
-              are not changed.
+              {t('matchKeeps')}
             </p>
             {/* 🔴 WHAT THE COPY WILL ACTUALLY BE, BEFORE IT IS PRESSED. `vanOneValues` is the SERVER'S
               * own `vanOneServiceValues` — the same values `match_standard` will write — summarised by
@@ -1791,11 +1828,11 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
               * the thing the route copies, and using it here would let the promise and the write
               * disagree about a truck whose vans differ. */}
             <p className="text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
-              It will use: {summariseType(vanOneValues as unknown as TypeFor)}
+              {t('matchWillUse', { summary: summariseType(vanOneValues as unknown as TypeFor, summaryWords(t)) })}
             </p>
             <div className="flex gap-2 justify-end">
-              <Btn label="Cancel" colour="slate" size="sm" onClick={() => setConfirmMatch(null)} />
-              <Btn label={MATCH_STANDARD_LABEL} size="sm" disabled={!editable}
+              <Btn label={t('cancel')} colour="slate" size="sm" onClick={() => setConfirmMatch(null)} />
+              <Btn label={ts('matchStandardLabel')} size="sm" disabled={!editable}
                 onClick={() => void matchStandard(confirmMatch)} />
             </div>
           </div>
@@ -1808,7 +1845,7 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
           onClick={e => { if (e.target === e.currentTarget) setConfirmDelete(null) }}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-4 space-y-3">
             <p className="font-bold text-slate-900">
-              Delete “{typeById.get(confirmDelete)?.name ?? 'this type'}”?
+              {t('deleteTitle', { name: typeById.get(confirmDelete)?.name ?? t('thisType') })}
             </p>
             {/* ══ 🔴 THE COUNT LIVES HERE NOW (5 October 2026) ════════════════════════════════════
               * It was a row at the bottom of the grid ("USED BY / Upcoming events"), on screen all the
@@ -1819,19 +1856,15 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
               * the reassurance that makes the button safe to press, where "0 upcoming events use
               * Festival. They'll go back to Standard." is a sentence about nothing. */}
             <p className="text-sm text-slate-600">
-              {(typeById.get(confirmDelete)?.upcoming ?? 0) === 0
-                ? <>No upcoming events use “{typeById.get(confirmDelete)?.name ?? 'this type'}”.</>
-                : <>
-                    {typeById.get(confirmDelete)?.upcoming} upcoming event
-                    {(typeById.get(confirmDelete)?.upcoming ?? 0) === 1 ? '' : 's'} use
-                    {(typeById.get(confirmDelete)?.upcoming ?? 0) === 1 ? 's' : ''}{' '}
-                    “{typeById.get(confirmDelete)?.name ?? 'this type'}”. They’ll go back to Standard.
-                  </>}
-              {' '}Anything you changed on a single event stays as it is.
+              {t('deleteBody', {
+                n: typeById.get(confirmDelete)?.upcoming ?? 0,
+                count: String(typeById.get(confirmDelete)?.upcoming ?? 0),
+                name: typeById.get(confirmDelete)?.name ?? t('thisType'),
+              })}
             </p>
             <div className="flex gap-2 justify-end">
-              <Btn label="Keep" colour="slate" size="sm" onClick={() => setConfirmDelete(null)} />
-              <Btn label="Delete" colour="red" size="sm" disabled={!editable}
+              <Btn label={t('keep')} colour="slate" size="sm" onClick={() => setConfirmDelete(null)} />
+              <Btn label={t('delete')} colour="red" size="sm" disabled={!editable}
                 onClick={() => void act({ action: 'delete', id: confirmDelete }, () => setConfirmDelete(null))} />
             </div>
           </div>
@@ -1930,11 +1963,12 @@ function OneStandardControl({ row, value, label, title, editable, onChange, dens
   editable: boolean
   onChange: (value: boolean | number | string) => void
 }) {
+  const t = useT('eventTypes')
   if (row.kind === 'interval') {
     return (
       <Select className="flex-1" height={dense ? GRID_CONTROL_H : undefined} ariaLabel={label} disabled={!editable}
-        value={String(value)} title={title ?? `Every ${value} min`}
-        options={TYPE_INTERVAL_CHOICES.map(n => ({ value: String(n), label: `Every ${n} min` }))}
+        value={String(value)} title={title ?? t('intervalEvery', { mins: String(value) })}
+        options={TYPE_INTERVAL_CHOICES.map(n => ({ value: String(n), label: t('intervalEvery', { mins: String(n) }) }))}
         onChange={v => onChange(Number(v))} />
     )
   }
@@ -2008,6 +2042,8 @@ function TypeControl({ row, type, standard, editable, onPatch, dense = false }: 
   /** ⚠️ The grid only — the phone card keeps the full-size controls. See `OneStandardControl`. */
   dense?: boolean
 }) {
+  const t = useT('eventTypes')
+  const { rowLabel } = useServiceWords()
   /* ══ 🔴 A TYPE HOLDS ITS OWN VALUES. NOTHING HERE "FOLLOWS STANDARD" ANY MORE ══════════════════
    * Dominic, 5 October 2026: "Service rows no longer draw faded 'following' values. Every cell is
    * that column's own value. Changing Standard never changes a type."
@@ -2035,9 +2071,9 @@ function TypeControl({ row, type, standard, editable, onPatch, dense = false }: 
     const shown = type.collection_interval_mins
       ?? (standardIsPerVan(row, standard) ? TYPE_INTERVAL_CHOICES[0] : standard.collection_interval_mins.value)
     return (
-      <Select className="flex-1" height={dense ? GRID_CONTROL_H : undefined} ariaLabel={`${row.label} for ${type.name}`} disabled={!editable}
-        value={String(shown)} title={`Every ${shown} min`}
-        options={TYPE_INTERVAL_CHOICES.map(n => ({ value: String(n), label: `Every ${n} min` }))}
+      <Select className="flex-1" height={dense ? GRID_CONTROL_H : undefined} ariaLabel={t('labelFor', { label: rowLabel(row), name: type.name })} disabled={!editable}
+        value={String(shown)} title={t('intervalEvery', { mins: String(shown) })}
+        options={TYPE_INTERVAL_CHOICES.map(n => ({ value: String(n), label: t('intervalEvery', { mins: String(n) }) }))}
         onChange={v => onPatch({ collection_interval_mins: Number(v) })} />
     )
   }
@@ -2053,7 +2089,7 @@ function TypeControl({ row, type, standard, editable, onPatch, dense = false }: 
       : standard.offline_protection.enabled
     return (
       <Toggle on={shownOffline} disabled={!editable} compact={dense}
-        ariaLabel={`${row.label} for ${type.name}`}
+        ariaLabel={t('labelFor', { label: rowLabel(row), name: type.name })}
         onToggle={() => onPatch({ offline_protection: !shownOffline })} />
     )
   }
@@ -2068,7 +2104,7 @@ function TypeControl({ row, type, standard, editable, onPatch, dense = false }: 
 
   return (
     <Toggle on={shown} disabled={!editable} compact={dense}
-      ariaLabel={`${row.label} for ${type.name}`}
+      ariaLabel={t('labelFor', { label: rowLabel(row), name: type.name })}
       /* ⚠️ TAPPING STORES THE OPPOSITE OF WHAT IT SHOWS, which is what a switch does. */
       onToggle={() => onPatch({ [key]: !shown })} />
   )
@@ -2100,18 +2136,19 @@ function StandardCard({ standard, van, editable, onStandard, onStandardVan, stan
   onStandardVan: (row: ServiceRow, vanId: string, value: boolean | number | string) => void
   standardBusy: boolean
 }) {
+  const t = useT('eventTypes')
+  const { ts, rowLabel, offlineModes } = useServiceWords()
   const canEdit = editable && !standardBusy
+  const columnName = van ? van.name : t('standard')
   return (
     <div className="rounded-2xl border border-slate-200 p-4 space-y-2">
       <div className="flex items-center gap-2">
         <Dot colour={STANDARD_COLOUR} />
-        <p className="font-bold text-slate-900 min-w-0 flex-1 truncate">{van ? van.name : 'Standard'}</p>
-        <span className="text-xs text-slate-400 shrink-0">{van ? 'Standard' : 'default'}</span>
+        <p className="font-bold text-slate-900 min-w-0 flex-1 truncate">{columnName}</p>
+        <span className="text-xs text-slate-400 shrink-0">{van ? t('phone.standardTag') : t('phone.defaultTag')}</span>
       </div>
       <p className="text-xs text-slate-500">
-        {van
-          ? `This van's usual setup — used at every event with no type.`
-          : 'Your usual setup — used at every event with no type.'}
+        {van ? t('phone.vanSetup') : t('phone.standardSetup')}
       </p>
       {SERVICE_ROWS.map(row => {
         /* ⛔ NO `truckLevel` BRANCH (5 October 2026). Cash became a van setting, so every service row
@@ -2121,12 +2158,12 @@ function StandardCard({ standard, van, editable, onStandard, onStandardVan, stan
           <div key={row.id}>
             <div className="flex items-center justify-between gap-3 text-sm py-1.5 border-t border-slate-100">
               <span className="text-slate-700 min-w-0 flex-1">
-                {row.label}
+                {rowLabel(row)}
   
               </span>
               <span className="flex items-center gap-2 shrink-0 max-w-[55%]">
                 <OneStandardControl row={row} editable={canEdit} value={value}
-                  label={`${row.label} for ${van ? van.name : 'Standard'}`}
+                  label={t('labelFor', { label: rowLabel(row), name: columnName })}
                   onChange={v => (van ? onStandardVan(row, van.id, v) : onStandard(row, v))} />
               </span>
             </div>
@@ -2136,12 +2173,12 @@ function StandardCard({ standard, van, editable, onStandard, onStandardVan, stan
               * on at the hatch. Indented, and absent when the switch is off, exactly as in the grid. */}
             {row.id === 'offline_protection' && value === true && (
               <div className="flex items-center justify-between gap-3 text-sm pl-4 pb-1.5">
-                <span className="text-[13px] font-semibold text-slate-700 min-w-0 flex-1">{OFFLINE_WHEN_OFFLINE_LABEL}</span>
+                <span className="text-[13px] font-semibold text-slate-700 min-w-0 flex-1">{ts('offlineWhenOfflineLabel')}</span>
                 <span className="shrink-0 max-w-[55%]">
-                  <Select className="w-full" ariaLabel={`${OFFLINE_WHEN_OFFLINE_LABEL} for ${van ? van.name : 'Standard'}`}
+                  <Select className="w-full" ariaLabel={t('labelFor', { label: ts('offlineWhenOfflineLabel'), name: columnName })}
                     disabled={!canEdit}
                     value={van ? van.offline_mode : (standard.offline_protection.mode ?? 'pause')}
-                    options={OFFLINE_MODE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
+                    options={offlineModes.map(c => ({ value: c.value, label: c.label }))}
                     onChange={m => (van ? onStandardVan(row, van.id, m) : onStandard(row, m))} />
                 </span>
               </div>
@@ -2182,6 +2219,8 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
   onRename: () => void
   onDelete: () => void
 }) {
+  const t = useT('eventTypes')
+  const { ts, rowLabel, offlineModes } = useServiceWords()
   const currencySym = useTruckCurrencySymbol()
   const truckMoney = useTruckMoney()
   /* ══ 🔴 §2 · THE ITEM LIST IS FOLDED, AND THE FOLD IS THIS CARD'S OWN STATE ══════════════════════
@@ -2204,13 +2243,15 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
         <Dot colour={colour} />
         <p className="font-bold text-slate-900 min-w-0 flex-1 truncate">{type.name}</p>
         <button type="button" onClick={onRename} disabled={!editable}
-          className="text-xs font-bold text-slate-600 disabled:text-slate-300">Rename</button>
+          className="text-xs font-bold text-slate-600 disabled:text-slate-300">{t('rename')}</button>
         <button type="button" onClick={onDelete} disabled={!editable}
-          className="text-xs font-bold text-red-600 disabled:text-slate-300">Delete</button>
+          className="text-xs font-bold text-red-600 disabled:text-slate-300">{t('delete')}</button>
       </div>
       <p className="text-xs text-slate-500">
-        {type.upcoming} upcoming event{type.upcoming === 1 ? '' : 's'} ·{' '}
-        {changedCount(type) === 0 ? 'nothing changed yet' : `${changedCount(type)} of ${SERVICE_ROW_COUNT} changed`}
+        {t('phone.cardSummary', {
+          upcoming: type.upcoming, upcomingCount: String(type.upcoming),
+          changed: changedCount(type), changedCount: String(changedCount(type)), total: String(SERVICE_ROW_COUNT),
+        })}
       </p>
       {/* ⚠️ THE "Standard: Off" HINT BESIDE EACH LABEL IS GONE. The control itself now shows the value
         * it inherits, so the hint was the same information twice — and on a phone it was the line that
@@ -2226,9 +2267,9 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
       {pricing && (
         <>
           <div className="py-1.5 border-t border-slate-100 flex items-center justify-between gap-2">
-            <span className="text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_change_on}</span>
+            <span className="text-xs font-bold text-slate-600">{ts('priceLabels.price_change_on')}</span>
             <Toggle on={pricing.price_change_on} disabled={!editable}
-              ariaLabel={`${PRICE_SETTING_LABELS.price_change_on} for ${type.name}`}
+              ariaLabel={t('labelFor', { label: ts('priceLabels.price_change_on'), name: type.name })}
               onToggle={() => onPatchPricing({ price_change_on: !pricing.price_change_on })} />
           </div>
           {pricing.price_change_on && (
@@ -2248,9 +2289,9 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
                 * ⚠️ A `<label>`, NOT A `<span>`: the control is named by `label=` for a screen reader
                 * either way, but the visible word is now a press target for the control too. */}
               <div className="py-1.5 pl-4">
-                <span className="mb-1 block text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_mode}</span>
+                <span className="mb-1 block text-xs font-bold text-slate-600">{ts('priceLabels.price_mode')}</span>
                 <PriceModeSelect currencySymbol={currencySym} value={pricing.price_mode} disabled={!editable}
-                  label={`${PRICE_SETTING_LABELS.price_mode} for ${type.name}`}
+                  label={t('labelFor', { label: ts('priceLabels.price_mode'), name: type.name })}
                   onChange={m => onPatchPricing({ price_mode: m, price_amount: pricing.price_amount })} />
               </div>
               {/* ══ 🔴 §2 · AMOUNT AND ROUNDING ARE HIDDEN FOR "Set each price myself" ═══════════════
@@ -2274,19 +2315,19 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
               {PRICE_MODES_WITH_AMOUNT.includes(pricing.price_mode ?? '') && (
                 <>
                   <div className="py-1.5 pl-4">
-                    <span className="mb-1 block text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_amount}</span>
+                    <span className="mb-1 block text-xs font-bold text-slate-600">{ts('priceLabels.price_amount')}</span>
                     <PriceAmountInput currencySymbol={currencySym} mode={pricing.price_mode} value={pricing.price_amount} disabled={!editable}
-                      label={`${PRICE_SETTING_LABELS.price_amount} for ${type.name}`}
+                      label={t('labelFor', { label: ts('priceLabels.price_amount'), name: type.name })}
                       onCommit={v => onPatchPricing({ price_amount: v, price_mode: pricing.price_mode })} />
                   </div>
                   <div className="py-1.5 pl-4">
-                    <span className="mb-1 block text-xs font-bold text-slate-600">{PRICE_SETTING_LABELS.price_rounding}</span>
+                    <span className="mb-1 block text-xs font-bold text-slate-600">{ts('priceLabels.price_rounding')}</span>
                     {/* ⛔ NO FADE HERE EITHER (5 October 2026). The phone card carried the same faded
                       * Rounding as the grid, for the same reason, and it goes for the same reason —
                       * "nothing greyed or faded anywhere". A rule the grid obeys and the phone card
                       * does not is a rule that lasts until somebody opens the phone card. */}
                     <PriceRoundingSelect currencySymbol={currencySym} value={pricing.price_rounding} disabled={!editable}
-                      label={`${PRICE_SETTING_LABELS.price_rounding} for ${type.name}`}
+                      label={t('labelFor', { label: ts('priceLabels.price_rounding'), name: type.name })}
                       onChange={v => onPatchPricing({ price_rounding: v })} />
                   </div>
                 </>
@@ -2314,14 +2355,14 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
                 * forty unlabelled names. */}
               {setEach ? (
                 <p className="pl-4 pt-1 pb-0.5 text-xs font-bold text-slate-600" data-phone-items-heading>
-                  {PRICE_ITEMS_HEADING}
+                  {ts('priceItemsHeading')}
                 </p>
               ) : (
                 <div className="pl-4 pb-1 pt-1">
                   <button type="button" data-phone-items
                     onClick={() => setPhoneItems(v => !v)}
                     className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">
-                    {phoneItems ? PRICE_ITEMS_CLOSE : PRICE_ITEMS_OPEN}
+                    {phoneItems ? ts('priceItemsClose') : ts('priceItemsOpen')}
                   </button>
                 </div>
               )}
@@ -2336,14 +2377,14 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
                 * RULE**, so a screen with no rule has nothing for it to count. */}
               {!setEach && ownPrices > 0 && (
                 <p className="pl-4 pb-1 text-[11px] text-slate-400" data-phone-own-count>
-                  {ownPriceCount(ownPrices)}
+                  {ts('ownPriceCount', { n: ownPrices, count: String(ownPrices) })}
                 </p>
               )}
               {(setEach || phoneItems) && (
                 <div className="pl-4 pb-1" data-phone-item-list>
                   {menu.categories.length === 0 && (
                     <p className="py-1.5 text-[11px] text-slate-400">
-                      No menu items yet — add them in Menu › Items.
+                      {t('phone.noMenuItems')}
                     </p>
                   )}
                   {menu.categories.map(c => (
@@ -2364,7 +2405,7 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
                               typed={pricing.typed[it.id] ?? null}
                               disabled={!editable}
                               showDiff
-                              label={`${it.name} for ${type.name}`}
+                              label={t('labelFor', { label: it.name, name: type.name })}
                               onType={v => onSetItemPrice(it.id, v)}
                               onClear={() => onSetItemPrice(it.id, null)} />
                           </span>
@@ -2381,7 +2422,7 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
       {SERVICE_ROWS.map(row => (
         <div key={row.id} className="py-1.5 border-t border-slate-100">
           <div className="flex items-baseline justify-between gap-2 mb-1">
-            <span className="text-xs font-bold text-slate-600">{row.label}</span>
+            <span className="text-xs font-bold text-slate-600">{rowLabel(row)}</span>
           </div>
           <div className="flex items-center gap-2">
             <TypeControl row={row} type={type} standard={standard} editable={editable} onPatch={onPatch} />
@@ -2390,13 +2431,13 @@ function TypeCard({ type, standard, editable, colour, pricing, menu, onPatch, on
           {row.id === 'offline_protection'
             && (type.offline_protection ?? standard.offline_protection.enabled) === true && (
             <div className="flex items-center justify-between gap-2 pl-4 pt-1.5">
-              <span className="text-[13px] font-semibold text-slate-700">{OFFLINE_WHEN_OFFLINE_LABEL}</span>
+              <span className="text-[13px] font-semibold text-slate-700">{ts('offlineWhenOfflineLabel')}</span>
               <span className="w-[160px] shrink-0">
-                <Select className="w-full" ariaLabel={`${OFFLINE_WHEN_OFFLINE_LABEL} for ${type.name}`}
+                <Select className="w-full" ariaLabel={t('labelFor', { label: ts('offlineWhenOfflineLabel'), name: type.name })}
                   /* ⛔ NO FADE — see the grid's note on the same control. */
                   disabled={!editable}
                   value={type.offline_protection_mode ?? standard.offline_protection.mode ?? 'pause'}
-                  options={OFFLINE_MODE_CHOICES.map(c => ({ value: c.value, label: c.label }))}
+                  options={offlineModes.map(c => ({ value: c.value, label: c.label }))}
                   onChange={m => onPatch({ offline_protection: true, offline_protection_mode: m })} />
               </span>
             </div>
@@ -2425,6 +2466,7 @@ function NewTypePopup({ busy, onCancel, onCreate }: {
   onCancel: () => void
   onCreate: (name: string) => void
 }) {
+  const t = useT('eventTypes')
   const [name, setName] = useState('')
   const inputRef = useRef<HTMLInputElement | null>(null)
   useEffect(() => { inputRef.current?.focus() }, [])
@@ -2432,22 +2474,22 @@ function NewTypePopup({ busy, onCancel, onCreate }: {
   return (
     <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
       onClick={e => { if (e.target === e.currentTarget) onCancel() }}>
-      <div role="dialog" aria-modal="true" aria-label="New event type" data-new-type-popup
+      <div role="dialog" aria-modal="true" aria-label={t('newType.title')} data-new-type-popup
         className="bg-white rounded-2xl w-full max-w-[460px] p-5 flex flex-col gap-3.5">
         <div className="flex items-center gap-3">
-          <p className="font-bold text-slate-900 text-lg flex-1">New event type</p>
-          <button type="button" onClick={onCancel} aria-label="Close"
+          <p className="font-bold text-slate-900 text-lg flex-1">{t('newType.title')}</p>
+          <button type="button" onClick={onCancel} aria-label={t('close')}
             className="w-9 h-9 rounded-full bg-slate-100 text-slate-600 font-bold">✕</button>
         </div>
 
         {/* ⚠️ THE SHARED <Input>. It was a local box with its own border, radius, height and text
           * size — `border-slate-300 rounded-xl px-3 h-11 text-[15px]` — none of which matches the
           * Manage text boxes behind it. The cap and the autofocus travel as props. */}
-        <Input label="Name" value={name} onChange={setName} placeholder="e.g. School fete"
+        <Input label={t('name')} value={name} onChange={setName} placeholder={t('newType.namePlaceholder')}
           maxLength={MAX_TYPE_NAME} inputRef={inputRef} />
 
         <div className="flex flex-wrap gap-2">
-          {TYPE_NAME_CHIPS.map(chip => (
+          {TYPE_NAME_CHIPS.map(id => t(`newType.chips.${id}`)).map(chip => (
             /* ⚠️ A CHIP SETS THE NAME FIELD, which stays editable — so "Festival" can become
              * "Festival (Saturday)" without retyping it. */
             /* ⚠️ `border-slate-200`, THE PAGE'S BORDER COLOUR. These were `border-slate-300`, one
@@ -2467,13 +2509,12 @@ function NewTypePopup({ busy, onCancel, onCreate }: {
           * Standard" was true and became misleading the moment an operator changed Standard — which is
           * the report this build answers. */}
         <p className="text-[13px] text-slate-500">
-          Tap a name or type your own. It starts as a copy of Standard, and changing Standard later
-          won’t change it. Change anything after.
+          {t('newType.help')}
         </p>
 
         <div className="flex gap-2.5 justify-end">
-          <Btn label="Cancel" colour="slate" onClick={onCancel} />
-          <Btn label="Create" disabled={busy || !name.trim()} onClick={() => onCreate(name)} />
+          <Btn label={t('cancel')} colour="slate" onClick={onCancel} />
+          <Btn label={t('newType.create')} disabled={busy || !name.trim()} onClick={() => onCreate(name)} />
         </div>
       </div>
     </div>
@@ -2533,6 +2574,8 @@ export function EventTypeSelect({
    */
   onUsual?: (u: { typeId: string | null; by: string | null }) => void
 }) {
+  const t = useT('eventTypes')
+  const tp = useT('privateEvents')
   const [types, setTypes] = useState<TypeRow[]>([])
   const [ready, setReady] = useState(false)
   const [usual, setUsual] = useState<string | null>(null)
@@ -2629,10 +2672,10 @@ export function EventTypeSelect({
     <div data-event-type-select>
       {/* ⚠️ A `radiogroup`, NOT A LIST OF BUTTONS. Exactly one is selected, which is what a radio group
         * means — and it is what makes the control reachable with arrow keys rather than only by tap. */}
-      <p className="mb-1 block text-xs font-bold text-slate-600" id="event-type-pills-label">Event type</p>
+      <p className="mb-1 block text-xs font-bold text-slate-600" id="event-type-pills-label">{t('select.label')}</p>
       <div role="radiogroup" aria-labelledby="event-type-pills-label"
         data-event-type-pills className="flex flex-wrap gap-1.5">
-        {pill('standard', 'Standard', value === null, 'standard', () => onChange(null))}
+        {pill('standard', t('standard'), value === null, 'standard', () => onChange(null))}
         {/* 🔴 PRIVATE IS SECOND, STRAIGHT AFTER STANDARD — the same position it has on the grid, so a
           * truck finds it in the same place on both screens. */}
         {privateType && pill(privateType.id, privateType.name, privateChosen, 'private', () => onChange(privateType.id))}
@@ -2642,10 +2685,10 @@ export function EventTypeSelect({
       <p className="mt-1 text-xs text-slate-500">
         {isUsual && (
           <span className="font-semibold text-slate-600">
-            {selected ? `${selected.name} is usual for this place. ` : 'Standard is usual for this place. '}
+            {`${t('select.usual', { name: selected ? selected.name : t('standard') })} `}
           </span>
         )}
-        {!privateChosen && summariseType(selected)}
+        {!privateChosen && summariseType(selected, summaryWords(t))}
       </p>
 
       {/* ══ 🔴 THE PURPLE PANEL, DIRECTLY BELOW THE PILLS (5 October 2026) ═══════════════════════════
@@ -2659,11 +2702,11 @@ export function EventTypeSelect({
         * on 5 October: they are one answer to one question and the input used to sit between them. */}
       {privateChosen && (
         <div className="mt-2 rounded-xl border border-purple-200 bg-purple-50 p-3" data-private-panel>
-          <p className="text-[11px] leading-relaxed text-purple-800">{PRIVATE_TICK_HELP}</p>
-          <p className="mt-1 text-[11px] font-semibold leading-relaxed text-purple-900">{PRIVATE_LINK_PROMISE}</p>
+          <p className="text-[11px] leading-relaxed text-purple-800">{tp('form.help')}</p>
+          <p className="mt-1 text-[11px] font-semibold leading-relaxed text-purple-900">{tp('form.linkPromise')}</p>
           <div className="mt-3 border-t border-purple-200 pt-3">
             <label className="mb-1 block text-xs font-bold text-purple-900" htmlFor="private-name-input">
-              {PRIVATE_NAME_LABEL}
+              {tp('form.nameLabel')}
             </label>
             <input
               id="private-name-input"
@@ -2672,10 +2715,10 @@ export function EventTypeSelect({
               value={privateName ?? ''}
               disabled={disabled}
               onChange={e => onPrivateName?.(e.target.value)}
-              placeholder={PRIVATE_NAME_PLACEHOLDER}
+              placeholder={tp('form.namePlaceholder')}
               className="w-full rounded-xl border border-purple-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
-            <p className="mt-1 text-[11px] text-purple-800">{PRIVATE_NAME_HELP}</p>
+            <p className="mt-1 text-[11px] text-purple-800">{tp('form.nameHelp')}</p>
           </div>
         </div>
       )}

@@ -10,7 +10,6 @@
   "setup": {
     "noVanTitle": "No active truck",
     "noVanBody": "This account has no active truck yet. Activate one in <b>Settings → Your trucks</b>, then this device sets up automatically — no further steps here.",
-    "goToVans": "Go to Settings → Your trucks",
     "body": "One-time setup for <b>this device</b>: the screen it opens to and which truck it’s for. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → “This device”.",
     "whichVan": "Which truck is this device for?",
     "selectVan": "Select a truck…"

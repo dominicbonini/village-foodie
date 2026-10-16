@@ -37,9 +37,12 @@ import { Btn, Toggle } from '@/components/manage/primitives'
 /* 🔴 THE ANSWER'S ONE DEFINITION, shared with `add_van` on the server. */
 import { capacityAllSame, capacityStragglers } from '@/lib/van-category-settings'
 import {
-  KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING,
   KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs,
 } from '@/lib/kitchen-capacity'
+/* Language Phase 1d: every word here is `kitchenCapacity` in messages/ — the explainer pair is the SAME message the
+ * dashboard's capacity card reads, so the two cannot drift again. */
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/kitchenCapacity'
 
 /** Only what this screen reads from a category. The Menu tab already has these. */
 export interface CapacityCategory {
@@ -65,6 +68,7 @@ export function KitchenCapacitySection({ categories, api, showToast }: {
   api: (action: string, extra?: Record<string, unknown>) => Promise<Record<string, unknown>>
   showToast: (msg: string, kind?: 'success' | 'error') => void
 }) {
+  const t = useT('kitchenCapacity')
   const [vans, setVans] = useState<VanRow[]>([])
   const [firstVanId, setFirstVanId] = useState<string | null>(null)
   const [available, setAvailable] = useState(true)
@@ -84,9 +88,9 @@ export function KitchenCapacitySection({ categories, api, showToast }: {
        * writing to a table that is not there. */
       setAvailable(r.perVanCategoriesAvailable !== false)
     } catch (e) {
-      showToast(e instanceof Error ? e.message : 'Could not load your vans', 'error')
+      showToast(e instanceof Error ? e.message : t('loadVansFailed'), 'error')
     } finally { setLoading(false) }
-  }, [api, showToast])
+  }, [api, showToast, t])
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load() }, [load])
@@ -209,26 +213,26 @@ export function KitchenCapacitySection({ categories, api, showToast }: {
     } finally { setBusy(false); setConfirmAllSame(false) }
   }
 
-  if (loading) return <p className="text-sm text-slate-400 p-1">Loading…</p>
+  if (loading) return <p className="text-sm text-slate-400 p-1">{t('loading')}</p>
   if (!firstVan) {
     return (
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-        <p className="text-sm text-slate-600">Add a van in Settings › Truck settings to set your kitchen capacity.</p>
+        <p className="text-sm text-slate-600">{t('noVan')}</p>
       </div>
     )
   }
 
   /** Which boxes to draw, and what to call each. Yes ⇒ one; No ⇒ one per van, first first. */
   const boxes = allSame
-    ? [{ van: firstVan, title: vans.length > 1 ? 'All vans · Kitchen capacity' : 'Kitchen capacity' }]
-    : [firstVan, ...others].map(v => ({ van: v, title: `${v.name} · Kitchen capacity` }))
+    ? [{ van: firstVan, title: vans.length > 1 ? t('boxTitleAll') : t('boxTitleOne') }]
+    : [firstVan, ...others].map(v => ({ van: v, title: t('boxTitleVan', { van: v.name }) }))
 
   return (
     <div className="space-y-4" data-kitchen-capacity-section>
       {/* The lead line. ⚠️ NEW COPY, and it is the only new wording on this screen — the moved card's
           own paragraphs are unchanged below. */}
       <p className="text-sm text-slate-500">
-        How many items your kitchen can make, so customers can only pick collection times you can meet.
+        {t('lead')}
       </p>
 
       {/* ── 🔴 ONE QUESTION, AND ONLY WITH MORE THAN ONE VAN ──────────────────────────────────────
@@ -252,7 +256,7 @@ export function KitchenCapacitySection({ categories, api, showToast }: {
           * ⚠️ `bg-slate-50 border rounded-xl p-3` — the card shape Settings' own setting rows use. */
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-800">Same kitchen capacity for all vans?</p>
+            <p className="text-sm font-semibold text-slate-800">{t('sameForAll')}</p>
           </div>
           {/* 🔴 ON ASKS FIRST; OFF DOES NOT. Only one of them replaces anything. */}
           <Toggle
@@ -273,13 +277,13 @@ export function KitchenCapacitySection({ categories, api, showToast }: {
         <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
           onClick={e => { if (e.target === e.currentTarget) setConfirmAllSame(false) }}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-4 space-y-3">
-            <p className="font-bold text-slate-900">Same kitchen capacity for all vans?</p>
+            <p className="font-bold text-slate-900">{t('sameForAll')}</p>
             <p className="text-sm text-slate-600">
-              All vans will use {firstVan.name}’s kitchen capacity. Each van’s own numbers will be replaced.
+              {t('confirmBody', { van: firstVan.name })}
             </p>
             <div className="flex gap-2 justify-end">
-              <Btn label="Cancel" colour="slate" size="sm" onClick={() => setConfirmAllSame(false)} />
-              <Btn label="Yes, use the same" size="sm" disabled={busy} onClick={() => void setAllSame(true)} />
+              <Btn label={t('cancel')} colour="slate" size="sm" onClick={() => setConfirmAllSame(false)} />
+              <Btn label={t('confirmYes')} size="sm" disabled={busy} onClick={() => void setAllSame(true)} />
             </div>
           </div>
         </div>
@@ -308,6 +312,7 @@ function CapacityBox({ van, title, categories, available, effectiveVanCat, write
   writeVanCat: (v: VanRow, cat: CapacityCategory, patch: Partial<{ prep_secs: number | null; batch_size: number | null; counts_toward_capacity: boolean }>) => Promise<void>
   updateVanSetting: (vanId: string, field: 'kitchen_capacity' | 'capacity_window_mins', value: number | null) => Promise<void>
 }) {
+  const t = useT('kitchenCapacity')
   return (
     /* ══════════════════════════════════════════════════════════════════════════════════════════
        🔴 THE MOVED CARD — FROM HERE DOWN THE MARKUP AND THE WORDING ARE UNCHANGED
@@ -323,10 +328,10 @@ function CapacityBox({ van, title, categories, available, effectiveVanCat, write
       <p className="text-sm font-bold text-slate-800 mb-3">{title}</p>
       {categories.length > 0 && (
         <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
-          <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
-          <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
-          <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
-          <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
+          <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">{t('colCategory')}</span>
+          <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{t('colItems')}</span>
+          <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{t('colPrep')}</span>
+          <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title={t('colCountsTitle')}>{t('colCounts')}</span>
           {categories.map(cat => {
             const eff = effectiveVanCat(van, cat)
             const hasCap = van.kitchen_capacity != null
@@ -345,10 +350,10 @@ function CapacityBox({ van, title, categories, available, effectiveVanCat, write
                 locked={locked}
                 capDisabled={capDisabled}
                 countsTitle={locked
-                  ? 'Cooked — always counts (its prep & batch set the pace)'
-                  : !hasCap ? 'Set a capacity to choose which categories count'
-                  : !available ? 'Unavailable until the database is updated'
-                  : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}
+                  ? t('countsLocked')
+                  : !hasCap ? t('countsNoCap')
+                  : !available ? t('countsUnavailable')
+                  : t('countsTick')}
                 onCountsChange={() => { if (!locked && hasCap && available) void writeVanCat(van, cat, { counts_toward_capacity: !eff.counts_toward_capacity }) }}
               />
             )
@@ -358,37 +363,37 @@ function CapacityBox({ van, title, categories, available, effectiveVanCat, write
       {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories. ITEMS
           column = kitchen_capacity ceiling, PREP column = window (plain minutes). */}
       <div className={`${KITCHEN_CAPACITY_GRID} items-center ${categories.length > 0 ? 'mt-2 pt-2.5 border-t border-slate-100' : ''}`}>
-        <span className="text-sm font-semibold text-slate-800 min-w-0">Total capacity</span>
+        <span className="text-sm font-semibold text-slate-800 min-w-0">{t('totalCapacity')}</span>
         <select
           value={van.kitchen_capacity ?? ''}
-          aria-label="Total capacity (items)"
+          aria-label={t('totalCapacityAria')}
           onChange={e => void updateVanSetting(van.id, 'kitchen_capacity', e.target.value === '' ? null : parseInt(e.target.value))}
           className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
           <option value="">∞</option>
           {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
-            <option key={n} value={n}>{n} item{n !== 1 ? 's' : ''}</option>
+            <option key={n} value={n}>{t('items', { n, count: String(n) })}</option>
           ))}
         </select>
         <select
           value={van.capacity_window_mins ?? 5}
-          aria-label="Capacity window (minutes)"
+          aria-label={t('windowAria')}
           disabled={van.kitchen_capacity == null}
           onChange={e => void updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
           className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
           {Array.from({ length: 20 }, (_, i) => i + 1).concat(((van.capacity_window_mins ?? 5) > 20) ? [van.capacity_window_mins as number] : []).map(n => (
-            <option key={n} value={n}>every {formatPrepSecs(n * 60)}</option>
+            <option key={n} value={n}>{t('windowEvery', { duration: formatPrepSecs(n * 60) })}</option>
           ))}
         </select>
         <span />
       </div>
       {van.kitchen_capacity == null && categories.length > 0 && (
-        <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
+        <p className="text-xs text-slate-400 mt-1.5">{t('setCapacityFirst')}</p>
       )}
       {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories) && (
-        <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
+        <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{t('warning')}</div>
       )}
-      <p className="text-xs text-slate-400 mt-2">{KITCHEN_CAPACITY_DESC}</p>
-      <p className="text-xs text-slate-400 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
+      <p className="text-xs text-slate-400 mt-2">{t('desc')}</p>
+      <p className="text-xs text-slate-400 mt-1">{t('example')}</p>
     </div>
   )
 }

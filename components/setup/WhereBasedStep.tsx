@@ -12,10 +12,11 @@
 // a limit) the box simply takes what is typed. Nothing here can block a signup.
 import { useEffect, useRef, useState } from 'react'
 import type { SignupCountry } from '@/lib/signup-country-types'
-import { checkTradeArea, TRADE_AREA_ERRORS } from '@/lib/trade-area'
+import { checkTradeArea, TRADE_AREA_ERRORS, type TradeAreaRefusal } from '@/lib/trade-area'
 import { WHERE_YOU_TRADE_COPY as COPY } from '@/lib/settings-copy'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/whereBased'
+import '@/lib/i18n/catalog/tradeArea'
 
 export interface BasePlace {
   placeId: string | null; name: string; region: string | null; lat: number | null; lng: number | null
@@ -23,7 +24,8 @@ export interface BasePlace {
   regionCode?: string | null
 }
 export interface BaseAnswer { country: string; timezone: string; place: BasePlace }
-export type BaseErrors = Partial<Record<'country' | 'timezone' | 'town', string>>
+/** Language Phase 1d: each problem is lib/trade-area.ts's code and values; the step renders its words (`tradeArea`). */
+export type BaseErrors = Partial<Record<'country' | 'timezone' | 'town', TradeAreaRefusal>>
 
 const EMPTY_PLACE: BasePlace = { placeId: null, name: '', region: null, lat: null, lng: null }
 
@@ -61,7 +63,7 @@ export function baseAnswerErrors(a: BaseAnswer, countries: SignupCountry[]): Bas
   else if (a.place.name.trim().length > 120) errs.town = TRADE_AREA_ERRORS.townTooLong
   if (Object.keys(errs).length === 0) {
     const r = checkTradeArea(baseAnswerBody(a), facts)
-    if (r.ok === false) errs.town = r.error
+    if (r.ok === false) errs.town = { code: r.code, params: r.params }
   }
   return errs
 }
@@ -191,6 +193,8 @@ export function WhereBasedStep({ countries, guessedCode, value, onChange, errors
   value: BaseAnswer; onChange: (a: BaseAnswer) => void; errors?: BaseErrors
 }) {
   const c = countries.find(x => x.code === value.country) ?? countries[0]
+  const tTrade = useT('tradeArea')
+  const say = (r: TradeAreaRefusal) => tTrade(r.code, r.params)
   const setCountry = (code: string) => {
     const next = countries.find(x => x.code === code)
     if (!next) return
@@ -212,19 +216,19 @@ export function WhereBasedStep({ countries, guessedCode, value, onChange, errors
           </select>
         </div>
         {guessedCode !== null && value.country === guessedCode && <p className="text-xs text-slate-500 mt-1">{COPY.countryGuessed}</p>}
-        {errors.country && <p className="text-xs text-red-600 mt-1">{errors.country}</p>}
+        {errors.country && <p className="text-xs text-red-600 mt-1">{say(errors.country)}</p>}
       </div>
       <div>
         <label htmlFor="base-town" className={LABEL}>{COPY.townQuestion}</label>
         <TownInput id="base-town" country={value.country} value={value.place} invalid={!!errors.town}
           onChange={place => onChange({ ...value, place })} />
-        {errors.town && <p className="text-xs text-red-600 mt-1">{errors.town}</p>}
+        {errors.town && <p className="text-xs text-red-600 mt-1">{say(errors.town)}</p>}
       </div>
       {c && c.timezones.length > 1 && (
         <div>
           <label htmlFor="base-zone" className={LABEL}>{COPY.timezone.label}</label>
           <ZoneSelect id="base-zone" zones={c.timezones} value={value.timezone} onChange={tz => onChange({ ...value, timezone: tz })} />
-          {errors.timezone && <p className="text-xs text-red-600 mt-1">{errors.timezone}</p>}
+          {errors.timezone && <p className="text-xs text-red-600 mt-1">{say(errors.timezone)}</p>}
         </div>
       )}
     </div>

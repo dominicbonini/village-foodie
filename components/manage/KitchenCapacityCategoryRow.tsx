@@ -15,6 +15,8 @@
 import { Fragment } from 'react'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/kitchenCapacity'
 
 const CELL_SELECT_CLASS =
   'w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400'
@@ -45,17 +47,18 @@ export function KitchenCapacityCategoryRow({
   countsTitle?: string
   onCountsChange?: () => void
 }) {
+  const t = useT('kitchenCapacity')
   return (
     <Fragment>
       <span className="min-w-0 truncate text-slate-700 font-medium text-sm">{categoryName}</span>
       <BatchSizeSelect
-        ariaLabel={`${categoryName} items per batch`}
+        ariaLabel={t('categoryBatchAria', { hasCategory: 'yes', category: categoryName })}
         valueSize={batchSize}
         onChange={onBatchChange}
         className={CELL_SELECT_CLASS} />
       <PrepTimeSelect
         valueSecs={prepSecs}
-        ariaLabel={`${categoryName} prep time`}
+        ariaLabel={t('categoryPrepAria', { hasCategory: 'yes', category: categoryName })}
         onChange={onPrepChange}
         className={CELL_SELECT_CLASS} />
       {showCountsColumn && (

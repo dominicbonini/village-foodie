@@ -3,6 +3,11 @@ import { createClient } from '@supabase/supabase-js'
 // US readiness (D35): the truck's country decides which allergen list the prompt names.
 import { countrySettingsForTruck } from '@/lib/country-settings'
 import { allergenCardListLines, allergenCardClosingRule, allergenCardExample, type AllergenSet } from '@/lib/allergens'
+// Language Phase 1d: a refusal of ours is `{ error: <today's English>, …, code, params }` (lib/i18n/manage-errors.ts), in the
+// truck's language (en-GB before the truck is known). A database's or exception's message is passed on as it comes. The model's text is not a refusal and is unchanged.
+import { manageErrorBody } from '@/lib/i18n/manage-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { localeForTruck } from '@/lib/i18n/server-locale'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,7 +24,7 @@ export async function POST(req: NextRequest) {
   // (incl. absent) = the default extract-to-structured path used by the per-dish flow (UNCHANGED).
   const transcribeOnly = (formData.get('mode') as string | null) === 'transcribe'
 
-  if (!token) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!token) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
 
   const { data: truck } = await supabase
     .from('trucks')
@@ -27,7 +32,7 @@ export async function POST(req: NextRequest) {
     .eq('dashboard_token', token)
     .single()
 
-  if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
 
   // 🔴 THE TRUCK'S COUNTRY'S ALLERGEN LIST (country_settings.allergen_set). The UK lines below are the
   // prompt's existing text, so a UK prompt is byte-identical; a US truck's names the 9 US major allergens.
@@ -142,7 +147,7 @@ RULES:
 
   if (!responseText) {
     console.error('[process-allergens] All retries failed:', lastError)
-    return NextResponse.json({ error: 'AI processing failed — please try again' }, { status: 500 })
+    return NextResponse.json(manageErrorBody(await localeForTruck(truck), 'ai_failed'), { status: 500 })
   }
 
   // Transcribe mode returns PROSE verbatim (no JSON parse) for the operator to review/edit.
@@ -154,6 +159,6 @@ RULES:
     const parsed = JSON.parse(responseText)
     return NextResponse.json({ ok: true, allergens: parsed })
   } catch {
-    return NextResponse.json({ error: 'Failed to parse allergen data' }, { status: 500 })
+    return NextResponse.json(manageErrorBody(await localeForTruck(truck), 'allergens_parse_failed'), { status: 500 })
   }
 }

@@ -7,8 +7,7 @@ import { createPortal } from 'react-dom'
 import { attachSubTabScroller } from '@/lib/subtab-scroll'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, canAccess, maxVans, planMonthlyMinor } from '@/lib/features'
-import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_AUTO_REJECT_LABEL, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS, offlineAutoRejectLabel, OFFLINE_PROTECTION_PURPOSE } from '@/lib/copy/offlineProtection'
-import { DEFAULT_STOCK_SCOPE_NOTE } from '@/lib/copy/stock'
+import { OFFLINE_PROTECTION_MODES, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS } from '@/lib/copy/offlineProtection'   // the words: messages `offlineProtection`
 import { minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules'
 import { useToasts, type ShowToast } from '@/lib/useToasts'
 import { ToastStack } from '@/components/ToastStack'
@@ -18,7 +17,7 @@ import { phoneErrorMessage } from '@/lib/phone-message'
 import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
 import { CountrySettingsProvider, useCountrySettings, useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 import { allergenVocab, genericReplacements } from '@/lib/allergens'
-import { addressPlaceholders, pastePlaceholder } from '@/lib/copy/addressPlaceholders'   // 🔴 US readiness: Schedule's example addresses by address style
+import { addressStyleOf, upperCasesPostcode, pasteExampleValues } from '@/lib/copy/addressPlaceholders'   // 🔴 US readiness: Schedule's address words by address style (the words are in messages, Language Phase 1d)
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
 import { moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
 import { perMonthLabel, formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-format'
@@ -69,7 +68,7 @@ import {
 } from '@/lib/whatsapp/setup-machine'
 import { whatsAppRowView } from '@/lib/whatsapp/connection-view'
 import { FeatureGate } from '@/components/FeatureGate'
-import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory, collectionTimesHint } from '@/lib/slot-interval'
+import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory } from '@/lib/slot-interval'
 import { EventTypesPanel, EventTypeSelect } from '@/components/manage/EventTypes'
 /* 🔴 THE GRID'S OWN COLOURS AND THE WORD "Standard", so a place's usual type is labelled the same way
  * on a suggestion row as on the Event types grid. `colourFor` is derived from the type's index — see
@@ -77,9 +76,8 @@ import { EventTypesPanel, EventTypeSelect } from '@/components/manage/EventTypes
 import { colourFor, STANDARD_COLOUR } from '@/lib/event-types/types'
 import { STANDARD_TYPE_NAME } from '@/lib/event-types/read'
 import { intervalExample } from '@/lib/slot-generation'
-import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_NO_LIMIT, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_GRID, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
-import { describePreorderDeadline } from '@/lib/preorder'
 import { groupBySubcategory } from '@/lib/basket-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
@@ -90,7 +88,7 @@ import { AppLink } from '@/components/native/AppLink'   // internal-route anchor
 import { useDragDrop } from '@/lib/useDragDrop'
 import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
 import { ImageDropSlot } from '@/components/manage/ImageDropSlot'
-import { formatTime, formatSlot, getLocalDateInTz, addDaysYmd, instantOfLocal, localDateOfInstant, clockOfInstantInTz, formatYmd, formatInstant, formatInstantClock, formatNumericDate, formatNumericDayMonth, formatShortOrdinalDate, formatYmdShortMonth, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
+import { clockOf, formatTime, formatSlot, getLocalDateInTz, addDaysYmd, instantOfLocal, localDateOfInstant, clockOfInstantInTz, formatYmd, formatInstant, formatInstantClock, formatNumericDate, formatNumericDayMonth, formatShortOrdinalDate, formatYmdShortMonth, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { matchCardEntries, mergeAllergensUnion, cardEntryKey, type CardEntry, type DishRef, type CardMatchResult } from '@/lib/allergen-card-match'
 import { isExcluded } from '@/lib/schedule-extract'
 import { detectEventConflicts } from '@/lib/event-conflicts'
@@ -114,13 +112,13 @@ import { KitchenCapacitySection } from '@/components/manage/KitchenCapacitySecti
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
 import { BUZZER_MAX_COUNT, BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
 import { normaliseUrl, isScraperBlockedDomain } from '@/lib/url-normalise'
-import { URL_MALFORMED_MSG, VERIFY_MESSAGES, BLOCKED_DOMAIN_MSG } from '@/lib/copy/scheduleVerify'
 import { SETTING_COPY, TRIAL_NOT_STARTED_BY_EVENTS, TRIAL_NOT_STARTED_HEADING, TRIAL_NOT_STARTED_BILLING } from '@/lib/settings-copy'
 /* 🔴 THREE LABELS ON THIS PAGE ARE NOW CONSTANTS, because the Event types modal and the dashboard's
  * "This event" card show the same three settings and were calling them something shorter. Settings is
  * still the SOURCE of the words — they were lifted from here — but there is one copy of each now, so
  * the modal cannot call this setting one thing while this screen calls it another. */
-import { SERVICE_SETTING_LABELS } from '@/lib/copy/serviceSettings'
+// ⚠️ Language Phase 1d: Settings reads those labels from messages `serviceSettings` (useT) — the same messages
+// lib/copy/serviceSettings.ts's SERVICE_SETTING_LABELS gives the other screens in en-GB.
 /* 🔴 ONE RESOLVER FOR "does this van take cash" (5 October 2026). `truck_vans.takes_cash` is
  * nullable and NULL means "follow `trucks.takes_cash`", so the switch's POSITION is resolved, never
  * read raw — otherwise a van following the truck would draw as off while the hatch split the button. */
@@ -144,19 +142,15 @@ import { fillFromPlace, timeRangeLabel, placeForEvent } from '@/lib/schedule-gra
  * app/trucks/[slug]/TruckClient.tsx renders for every event on a truck's public schedule; this file
  * only builds its props, so the preview cannot drift from the thing it previews. */
 import TruckListCard from '@/components/TruckListCard'
-import { previewEventFromForm, previewLine, vanForPlace, PREVIEW_PLACEHOLDERS } from '@/lib/schedule-graphics/event-preview'
+import { previewEventFromForm, previewLine, vanForPlace } from '@/lib/schedule-graphics/event-preview'   // placeholder words: manageScheduleEvent (Language Phase 1d)
 /* ── 🔴 PRIVATE EVENTS (20261014). Every word from the one copy module. ─────────────────────────── */
 /* 🔴 PRIVATE EVENTS (20261014). The approval card's time prompt, the chip and the panel button.
  * ⚠️ `PRIVATE_TICK_LABEL` AND THE PANEL'S STRINGS ARE NO LONGER IMPORTED HERE: the separate tick is
  * gone and the purple panel moved into `<EventTypeSelect>`, which owns those words now. */
-import {
-  PRIVATE_CHIP, LINK_QR_BUTTON, PRIVATE_NEEDS_TIMES,
-  /* 🔴 THE LINE UNDER THE PREVIEW CARD when Private is the chosen type. See the note on it. */
-  PRIVATE_PREVIEW_NOTE,
-} from '@/lib/private-events/copy'
-/* 🔴 "Private event" — THE ONE STRING THE PUBLIC SURFACES SUBSTITUTE, so the preview's purple title
- * and the title a customer sees are the same constant rather than two copies of two words. */
-import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
+/* Language Phase 1d: the chip, the Link & QR button, the approval card's time prompt, the preview's title
+ * ("Private event", `privateEvents.publicName` — the same words `PRIVATE_PUBLIC_LABEL` gives the public
+ * surfaces) and the line under it are read from the `privateEvents` namespace in ScheduleTab. */
+import '@/lib/i18n/catalog/privateEvents'
 import { PrivateLinkPanel, type PrivateLinkData } from '@/components/manage/PrivateLinkPanel'
 /* ⛔ `PlacesTab` WAS IMPORTED HERE (6 October 2026). The Places pill is gone and the file with it; see
  * the tombstone at the section mount for where each of its four controls went.
@@ -170,7 +164,30 @@ import {
   type ScheduleSection,
 } from '@/lib/manage-links'
 import { isWalkUp } from '@/lib/walk-up'
-import { useTruckLocale } from '@/lib/i18n/use-t'
+import { useTruckLocale, useT } from '@/lib/i18n/use-t'
+// Language Phase 1d (Menu A): the allergen wizard and card, Upsells, Custom extras and Deals.
+import '@/lib/i18n/catalog/manageAllergens'
+import '@/lib/i18n/catalog/manageUpsells'
+import '@/lib/i18n/catalog/manageExtras'
+import '@/lib/i18n/catalog/manageDeals'
+// Language Phase 1d (Menu B): the menu editor (MenuTab) and its import wizard.
+import '@/lib/i18n/catalog/manageMenu'
+import '@/lib/i18n/catalog/manageMenuImport'
+// The setup wizard's schedule step shows the Schedule tab's verify messages, by code (lib/copy/scheduleVerify.ts).
+import { verifyCode } from '@/lib/copy/scheduleVerify'
+import '@/lib/i18n/catalog/manageScheduleVerify'
+// …and the shared words it shows: the kitchen-capacity explainer and grid, the settings labels, the stock note.
+import '@/lib/i18n/catalog/kitchenCapacity'
+import '@/lib/i18n/catalog/settingsCopy'
+import '@/lib/i18n/catalog/stockCopy'
+// Language Phase 1d (Schedule A): the events list, Add/Edit event and the schedule importer.
+import '@/lib/i18n/catalog/manageSchedule'
+import '@/lib/i18n/catalog/manageScheduleEvent'
+import '@/lib/i18n/catalog/manageScheduleImport'
+// Language Phase 1d (Settings): the Settings tab's words and the copy modules it reads.
+import '@/lib/i18n/catalog/manageSettings'
+import '@/lib/i18n/catalog/serviceSettings'
+import '@/lib/i18n/catalog/offlineProtection'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }
@@ -1770,31 +1787,32 @@ function CardOnlyEditor({ value, onChange, onTranscribe, transcribing, canEdit =
   transcribing: boolean
   canEdit?: boolean
 }) {
+  const t = useT('manageAllergens')
   return (
     <div className="flex flex-col gap-3">
       <div className="rounded-xl bg-amber-50 border border-amber-200 p-3">
-        <p className="text-sm font-bold text-amber-800">Your allergen card</p>
-        <p className="text-xs text-amber-700 mt-0.5">Customers see this <span className="font-semibold">exactly as you write it</span> — nothing is rewritten. Type or paste below, or upload a photo/PDF and we’ll read the text in for you to check.</p>
+        <p className="text-sm font-bold text-amber-800">{t('cardEditor.title')}</p>
+        <p className="text-xs text-amber-700 mt-0.5">{t.rich('cardEditor.intro', { b: c => <span className="font-semibold">{c}</span> })}</p>
       </div>
       {!canEdit ? (
         value
           ? <p className="text-sm text-slate-600 whitespace-pre-wrap border border-slate-200 rounded-xl p-3">{value}</p>
-          : <p className="text-sm text-slate-400 italic">No allergen card yet.</p>
+          : <p className="text-sm text-slate-400 italic">{t('cardEditor.empty')}</p>
       ) : (
         <>
           <textarea
             value={value}
             onChange={e => onChange(e.target.value)}
-            placeholder="e.g. All our fish & chips contain wheat and milk. Fryer is shared with items containing gluten and nuts. Vegan options available — ask staff."
+            placeholder={t('cardEditor.placeholder')}
             className="w-full h-44 border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
           <div className="flex items-center gap-3">
             <label className={`inline-flex items-center gap-2 text-sm font-semibold rounded-lg border border-slate-300 px-3 py-1.5 cursor-pointer hover:bg-slate-50 ${transcribing ? 'opacity-60 pointer-events-none' : ''}`}>
-              {transcribing ? <><Spinner /> Reading image…</> : <>📷 Upload image / PDF</>}
+              {transcribing ? <><Spinner /> {t('cardEditor.reading')}</> : <>{t('cardEditor.upload')}</>}
               <input type="file" accept="image/*,application/pdf" className="sr-only"
                 onChange={e => { const f = e.target.files?.[0]; if (f) onTranscribe(f); e.target.value = '' }} />
             </label>
-            <p className="text-xs text-slate-400">We read the text off your image so you can review it — the image isn’t stored.</p>
+            <p className="text-xs text-slate-400">{t('cardEditor.uploadNote')}</p>
           </div>
         </>
       )}
@@ -1824,7 +1842,8 @@ function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, 
   // this LOCAL state (not the showUpload prop) so the first Yes click reliably shows the box. DRY: both
   // wizards inherit this. UI-only — no change to matcher/merge/verified logic.
   const [cardChoice, setCardChoice] = useState<'yes' | 'no' | null>(null)
-  const dishName = (id: string) => dishes.find(d => d.id === id)?.name || 'Dish'
+  const t = useT('manageAllergens')
+  const dishName = (id: string) => dishes.find(d => d.id === id)?.name || t('cardUpload.dishFallback')
   const pending = matchResult
     ? [...matchResult.unmatched.map(e => ({ entry: e, candidates: null as string[] | null })),
        ...matchResult.ambiguous.map(a => ({ entry: a.entry, candidates: a.candidateDishIds }))]
@@ -1833,11 +1852,11 @@ function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, 
   return (
     <>
       <div className="rounded-xl bg-amber-50 border border-amber-200 p-3">
-        <p className="text-sm font-bold text-amber-800">Do you have an allergen card to upload?</p>
+        <p className="text-sm font-bold text-amber-800">{t('cardUpload.question')}</p>
         <p className="text-xs text-amber-700 mt-0.5">
           {perDish
-            ? <>Upload one and we’ll use it to build your dish allergens.{anyDetected ? ' Detected allergens will be visible on the next page where you confirm each dish.' : ''}</>
-            : <>Upload the allergen card customers will see.</>}
+            ? <>{t('cardUpload.perDish', { detected: anyDetected ? 'yes' : 'no' })}</>
+            : <>{t('cardUpload.cardOnly')}</>}
         </p>
         {/* Yes/No — ALWAYS visible (until a card is parsed/processing) so the operator can switch choice.
             Default = neither selected. Yes reveals the upload UI below; No shows the proceed hint. */}
@@ -1845,61 +1864,61 @@ function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, 
           <div className="mt-3">
             <div className="flex gap-2">
               <button type="button" onClick={() => { setCardChoice('yes'); onShowUpload() }}
-                className={`px-5 py-1.5 rounded-lg text-sm font-bold border transition-colors ${cardChoice === 'yes' ? 'bg-orange-600 text-white border-orange-600' : 'bg-white border-amber-300 text-amber-800 hover:bg-amber-100'}`}>Yes</button>
+                className={`px-5 py-1.5 rounded-lg text-sm font-bold border transition-colors ${cardChoice === 'yes' ? 'bg-orange-600 text-white border-orange-600' : 'bg-white border-amber-300 text-amber-800 hover:bg-amber-100'}`}>{t('cardUpload.yes')}</button>
               <button type="button" onClick={() => setCardChoice('no')}
-                className={`px-5 py-1.5 rounded-lg text-sm font-bold border transition-colors ${cardChoice === 'no' ? 'bg-slate-700 text-white border-slate-700' : 'bg-white border-amber-300 text-amber-800 hover:bg-amber-100'}`}>No</button>
+                className={`px-5 py-1.5 rounded-lg text-sm font-bold border transition-colors ${cardChoice === 'no' ? 'bg-slate-700 text-white border-slate-700' : 'bg-white border-amber-300 text-amber-800 hover:bg-amber-100'}`}>{t('cardUpload.no')}</button>
             </div>
-            {cardChoice === 'no' && <p className="text-xs text-amber-700 font-semibold mt-2">No problem — you don’t need one. Continue with the button below.</p>}
+            {cardChoice === 'no' && <p className="text-xs text-amber-700 font-semibold mt-2">{t('cardUpload.noProblem')}</p>}
           </div>
         )}
       </div>
       {!parsed ? (
         <div className="flex flex-col gap-3">
           {processing ? (
-            <div className="flex items-center gap-2 text-sm text-slate-500"><Spinner /> Analysing card…</div>
+            <div className="flex items-center gap-2 text-sm text-slate-500"><Spinner /> {t('cardUpload.analysing')}</div>
           ) : cardChoice === 'yes' ? (
             /* YES expanded — the drag-drop + paste UI inline, BELOW the still-visible Yes/No. Dropzone and
                textarea share the SAME height (h-28) so they sit neatly and fit the fixed-height body. */
             <>
               <label className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 hover:border-orange-300 hover:bg-orange-50/30 rounded-xl h-28 px-4 cursor-pointer transition-colors">
                 <span className="text-2xl">{file ? '✅' : '📷'}</span>
-                <span className="text-sm text-slate-500 text-center">{file ? file.name : 'Drag and drop or tap to choose'}</span>
-                <span className="text-xs text-slate-400">Image or PDF</span>
+                <span className="text-sm text-slate-500 text-center">{file ? file.name : t('cardUpload.dropzone')}</span>
+                <span className="text-xs text-slate-400">{t('cardUpload.imageOrPdf')}</span>
                 <input type="file" accept="image/*,application/pdf" className="sr-only" onChange={e => onFile(e.target.files?.[0] || null)} />
               </label>
-              <div className="flex items-center gap-3"><div className="flex-1 h-px bg-slate-200" /><span className="text-xs text-slate-400 font-medium">or</span><div className="flex-1 h-px bg-slate-200" /></div>
-              <textarea value={text} onChange={e => onText(e.target.value)} placeholder="Paste your allergen card text here…" className="w-full h-28 border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400" />
-              <div><Btn label="Process card" disabled={!file && !text.trim()} onClick={onProcess} /></div>
+              <div className="flex items-center gap-3"><div className="flex-1 h-px bg-slate-200" /><span className="text-xs text-slate-400 font-medium">{t('cardUpload.or')}</span><div className="flex-1 h-px bg-slate-200" /></div>
+              <textarea value={text} onChange={e => onText(e.target.value)} placeholder={t('cardUpload.pastePlaceholder')} className="w-full h-28 border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400" />
+              <div><Btn label={t('cardUpload.process')} disabled={!file && !text.trim()} onClick={onProcess} /></div>
             </>
           ) : null}
         </div>
       ) : (
         <>
           <div className="rounded-xl border border-slate-200 p-3">
-            <p className="text-sm font-bold text-slate-800">Card read ✓</p>
+            <p className="text-sm font-bold text-slate-800">{t('cardUpload.cardRead')}</p>
             <p className="text-xs text-slate-500 mt-0.5">
-              {(matchResult?.matched.length ?? 0)} matched to a dish.{pending.length > 0 && <> {pending.length} need your assignment.</>}
+              {t('cardUpload.matchSummary', { matched: String(matchResult?.matched.length ?? 0), n: pending.length, count: String(pending.length) })}
             </p>
           </div>
           {pending.length > 0 && (
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-bold text-slate-600 uppercase tracking-wide">Couldn’t auto-match these — assign or dismiss</p>
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-wide">{t('cardUpload.unmatchedHeading')}</p>
               {pending.map((p, pi) => {
                 const opts = p.candidates ?? dishes.map(d => d.id)
                 return (
                   <div key={`${cardEntryKey(p.entry)}-${pi}`} className="border border-slate-200 rounded-xl p-3 flex flex-col gap-2">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <span className="text-sm font-bold text-slate-900">“{p.entry.name}”</span>
+                      <span className="text-sm font-bold text-slate-900">{t('cardUpload.quotedName', { name: p.entry.name })}</span>
                       <span className="inline-flex flex-wrap gap-1">{p.entry.allergens.map(a => <AllergenChip key={a} label={a} />)}</span>
                     </div>
-                    {p.candidates && <p className="text-[11px] text-amber-700 font-semibold">Ambiguous — matches several dishes; pick the right one.</p>}
+                    {p.candidates && <p className="text-[11px] text-amber-700 font-semibold">{t('cardUpload.ambiguous')}</p>}
                     <div className="flex items-center gap-2 flex-wrap">
                       <select defaultValue="" onChange={e => { const v = e.target.value; if (v !== '') onAssign(p.entry, v) }}
                         className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm bg-white">
-                        <option value="">Assign to dish…</option>
+                        <option value="">{t('cardUpload.assignTo')}</option>
                         {opts.map(id => <option key={id} value={id}>{dishName(id)}</option>)}
                       </select>
-                      <Btn label="Dismiss" colour="slate" size="sm" onClick={() => onDismiss(p.entry)} />
+                      <Btn label={t('cardUpload.dismiss')} colour="slate" size="sm" onClick={() => onDismiss(p.entry)} />
                     </div>
                   </div>
                 )
@@ -1910,14 +1929,13 @@ function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, 
             <label className="flex items-start gap-2 rounded-xl border border-slate-200 p-3 cursor-pointer">
               <input type="checkbox" checked={blanketOptIn} onChange={e => onBlanketToggle(e.target.checked)} className="mt-0.5" />
               <span className="text-xs text-slate-600">
-                The card says <strong>{parsed.blanket.join(', ')}</strong> may be present across <strong>all</strong> dishes.
-                Add to every dish? (you’ll still confirm each) <span className="text-slate-400">— off by default</span>
+                {t.rich('cardUpload.blanket', { list: parsed.blanket.join(', '), b: c => <strong>{c}</strong>, muted: c => <span className="text-slate-400">{c}</span> })}
               </span>
             </label>
           )}
           {!!parsed.cross_contamination?.length && (
             <div className="rounded-xl border border-slate-200 p-3">
-              <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">Kitchen notes (saved to your allergen info)</p>
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">{t('cardUpload.kitchenNotes')}</p>
               <ul className="list-disc pl-5 text-xs text-slate-600">{parsed.cross_contamination.map((n, i) => <li key={i}>{n}</li>)}</ul>
             </div>
           )}
@@ -1959,6 +1977,7 @@ function SavedAllergenCard({ text, url, clampClass, className = '' }: {
   const [expanded, setExpanded] = useState(false)
   const [clipped, setClipped] = useState(false)
   const textRef = useRef<HTMLParagraphElement | null>(null)
+  const t = useT('manageAllergens')
 
   useEffect(() => {
     const el = textRef.current
@@ -1986,7 +2005,7 @@ function SavedAllergenCard({ text, url, clampClass, className = '' }: {
               onClick={() => setExpanded(v => !v)}
               className="text-xs font-semibold text-green-700 hover:text-green-800 underline mt-1"
             >
-              {expanded ? 'Show less' : 'Show more'}
+              {expanded ? t('savedCard.showLess') : t('savedCard.showMore')}
             </button>
           )}
         </>
@@ -1995,13 +2014,13 @@ function SavedAllergenCard({ text, url, clampClass, className = '' }: {
         // ever produced — usually an upload whose AI pass then failed. Say that, rather than showing a
         // green box with nothing in it.
         <p className="text-xs text-slate-600">
-          A card file is saved for this truck, but no summary text was stored. Open the original to read it.
+          {t('savedCard.fileOnly')}
         </p>
       )}
       {url && (
         <a href={url} target="_blank" rel="noopener noreferrer"
           className="text-xs text-green-600 underline mt-1 inline-block">
-          View original card
+          {t('savedCard.viewOriginal')}
         </a>
       )}
     </div>
@@ -2038,6 +2057,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   // 🔴 US readiness (D35): the truck's country list and its generic families (lib/allergens.ts). A UK truck
   // reads exactly the UK list and families it always did; outside a provider it is the UK list too.
   const allergenSet = useOptionalCountrySettings()?.allergenSet
+  const t = useT('manageAllergens')
   const ALLERGEN_VOCAB = allergenVocab(allergenSet)
   const GENERIC_REPLACEMENTS = genericReplacements(allergenSet)
   const isVocab = (a: string) => ALLERGEN_VOCAB.includes(a)
@@ -2068,15 +2088,16 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
     setStdCardProcessing(true)
     try {
       const parsed = await onProcessCard(stdCardFile, stdCardText)
-      if (!parsed) { showToast('Couldn’t read the allergen card — try again', 'error'); return }
+      if (!parsed) { showToast(t('wizard.toast.readFailed'), 'error'); return }
       setStdCardParsed(parsed)
       const entries: CardEntry[] = Array.isArray(parsed.entries) ? parsed.entries.filter((e: any) => e && e.name && Array.isArray(e.allergens)) : []
       const m = matchCardEntries(entries, items.map(i => ({ id: i.id, name: i.name })))
       setStdCardMatch(m)
       for (const { entry, dishId } of m.matched) await applyCardToCommitted(dishId, entry.allergens)   // exact auto-apply (guarded)
       setStdResolved(new Set(m.matched.map(x => cardEntryKey(x.entry))))
-      showToast(`Card read — ${m.matched.length} matched, ${m.unmatched.length + m.ambiguous.length} need assignment`, 'success')
-    } catch { showToast('Couldn’t read the allergen card — try again', 'error') }
+      const need = m.unmatched.length + m.ambiguous.length
+      showToast(t('wizard.toast.cardRead', { matched: String(m.matched.length), n: need, count: String(need) }), 'success')
+    } catch { showToast(t('wizard.toast.readFailed'), 'error') }
     finally { setStdCardProcessing(false) }
   }
   const assignStandaloneEntry = async (entry: CardEntry, dishId: string) => {
@@ -2143,9 +2164,9 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
       // "changed"/auto-restore. (Vocab allergens + dietary, matching what draftFor returns.)
       setConfirmedSnapshot(s => ({ ...s, [item.id]: { allergens: draft.allergens, dietary: draft.dietary } }))
       // Named toast + Undo via the SHARED toast-undo system (lib/useToasts + ToastStack).
-      showToast(`${item.name} confirmed`, 'success', {
+      showToast(t('wizard.toast.confirmed', { name: item.name }), 'success', {
         duration: 6000,
-        action: { label: 'Undo', run: () => undoConfirm(item, prev) },
+        action: { label: t('wizard.toast.undo'), run: () => undoConfirm(item, prev) },
       })
     } finally {
       setConfirming(null)
@@ -2235,8 +2256,10 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   // Consequence-bearing warning text for an unresolved generic — the safety now lives in THIS text (the
   // operator is told that confirming with no precise pick = the dish shows as containing none of that family).
   const genericWarnText = (generics: string[]) => generics.map(s => {
+    // ⚠️ `family` is the allergen-list name lower-cased, as before (Language Phase 1d kept GB identical; see report).
     const fam = s.toLowerCase()
-    return `“${s}” was detected but isn’t specific. Pick ${GENERIC_REPLACEMENTS[s].join(' and/or ')} if this dish contains ${fam} — or leave them unselected if it doesn’t.`
+    const picks = GENERIC_REPLACEMENTS[s].reduce((a, b) => t('wizard.genericWarn.andOr', { a, b }))
+    return t('wizard.genericWarn.text', { generic: s, picks, family: fam })
   }).join(' ')
   // Selected allergens/dietary as PILLS — REUSES the customer-page chip components (DRY: AllergenChip /
   // DietaryChip from @/components/MenuAllergenChips) so the operator previews exactly the customer view.
@@ -2255,10 +2278,10 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   )
   const stateBadge = (m: ReturnType<typeof rowMeta>) =>
     m.justConfirmed && m.verified
-      ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 shrink-0">✓ Confirmed</span>
+      ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 shrink-0">{t('wizard.badge.justConfirmed')}</span>
       : m.verified
-        ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 shrink-0">Confirmed</span>
-        : <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 shrink-0">Needs review</span>
+        ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 shrink-0">{t('wizard.badge.confirmed')}</span>
+        : <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 shrink-0">{t('wizard.badge.needsReview')}</span>
   const confirmBtn = (item: Item, m: ReturnType<typeof rowMeta>) => {
     // #3: an edited-since-confirmed row reads "Confirm" (NOT "re-confirm") + a subtle "· changed" hint so
     // the operator sees why it needs confirming again. A verified row reads "Confirmed ✓" (disabled —
@@ -2269,19 +2292,19 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
       // only when the hint shows). items-center → button + hint CENTRED in the Status column (#1).
       <div className="flex flex-col items-center gap-0.5">
         <Btn
-          label={confirming === item.id ? 'Confirming…' : m.verified ? 'Confirmed ✓' : 'Confirm'}
+          label={confirming === item.id ? t('wizard.confirm.confirming') : m.verified ? t('wizard.confirm.confirmed') : t('wizard.confirm.confirm')}
           colour={m.verified ? 'slate' : (m.canConfirm ? 'green' : 'slate')} size="sm" loading={confirming === item.id}
           disabled={!canEdit || m.verified || !m.canConfirm || confirming === item.id} onClick={() => handleConfirm(item)}
         />
-        {changed && <span className="text-[10px] font-bold text-amber-600 leading-tight" title="Edited since you last confirmed — confirm again">· changed</span>}
+        {changed && <span className="text-[10px] font-bold text-amber-600 leading-tight" title={t('wizard.confirm.changedTitle')}>{t('wizard.confirm.changed')}</span>}
       </div>
     )
   }
   const togglesBlock = (item: Item, draft: { allergens: string[]; dietary: string[] }) => (
     <>
-      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Allergens</p>
+      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">{t('wizard.allergens')}</p>
       <AllergenToggles value={draft.allergens} onChange={next => handleToggle(item, { allergens: next })} />
-      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mt-2 mb-1">Dietary</p>
+      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mt-2 mb-1">{t('wizard.dietary')}</p>
       <DietaryToggles value={draft.dietary} onChange={next => handleToggle(item, { dietary: next })} />
     </>
   )
@@ -2300,7 +2323,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
     items.forEach(i => { const k = i.category_id ?? '__none'; (byCat.get(k) ?? byCat.set(k, []).get(k)!).push(i) })
     return [
       ...categories.filter(c => byCat.has(c.id)).map(c => ({ name: c.name, rows: byCat.get(c.id)! })),
-      ...(byCat.has('__none') ? [{ name: 'Uncategorised', rows: byCat.get('__none')! }] : []),
+      ...(byCat.has('__none') ? [{ name: t('wizard.uncategorised'), rows: byCat.get('__none')! }] : []),
     ]
   })()
 
@@ -2314,7 +2337,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
       await onSetDisplayMode(m)
       onClose()
     } catch (e: any) {
-      showToast(e?.message || 'Couldn’t save — please try again', 'error')
+      showToast(e?.message || t('wizard.toast.saveFailed'), 'error')
     } finally {
       setFinishing(false)
     }
@@ -2326,8 +2349,8 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   const transcribeCard = async (file: File) => {
     if (!onTranscribeCard) return
     setCardTranscribing(true)
-    try { const t = await onTranscribeCard(file); if (t != null) setCardEditText(t) }
-    catch { showToast('Couldn’t read that image — type or paste your card instead', 'error') }
+    try { const text = await onTranscribeCard(file); if (text != null) setCardEditText(text) }
+    catch { showToast(t('wizard.toast.imageFailed'), 'error') }
     finally { setCardTranscribing(false) }
   }
   const finishCard = async () => {
@@ -2337,7 +2360,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
       await onSetDisplayMode('card')
       onClose()
     } catch (e: any) {
-      showToast(e?.message || 'Couldn’t save — please try again', 'error')
+      showToast(e?.message || t('wizard.toast.saveFailed'), 'error')
     } finally {
       setFinishing(false)
     }
@@ -2351,13 +2374,13 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   const reviewHeader = (
     <div className="px-5 pt-4">
       <div className="flex items-center justify-between mb-1 gap-2">
-        <p className="text-xs font-bold text-slate-600">{confirmedCount} of {items.length} confirmed</p>
+        <p className="text-xs font-bold text-slate-600">{t('wizard.review.progress', { confirmed: String(confirmedCount), total: String(items.length) })}</p>
         <div className="flex items-center gap-2">
-          {allDone && <span className="text-xs font-bold text-green-600">✓ All confirmed</span>}
+          {allDone && <span className="text-xs font-bold text-green-600">{t('wizard.review.allConfirmed')}</span>}
           {/* List ⇄ Table view toggle — layout only, same review data/logic. Slightly larger for clarity. */}
           <div className="flex rounded-lg border border-slate-200 overflow-hidden text-sm font-bold">
-            <button onClick={() => setReviewView('list')} className={`px-4 py-1.5 ${reviewView === 'list' ? 'bg-orange-500 text-white' : 'text-slate-500 hover:bg-slate-50'}`}>List</button>
-            <button onClick={() => setReviewView('table')} className={`px-4 py-1.5 ${reviewView === 'table' ? 'bg-orange-500 text-white' : 'text-slate-500 hover:bg-slate-50'}`}>Table</button>
+            <button onClick={() => setReviewView('list')} className={`px-4 py-1.5 ${reviewView === 'list' ? 'bg-orange-500 text-white' : 'text-slate-500 hover:bg-slate-50'}`}>{t('wizard.review.list')}</button>
+            <button onClick={() => setReviewView('table')} className={`px-4 py-1.5 ${reviewView === 'table' ? 'bg-orange-500 text-white' : 'text-slate-500 hover:bg-slate-50'}`}>{t('wizard.review.table')}</button>
           </div>
         </div>
       </div>
@@ -2365,10 +2388,10 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
         <div className="h-full bg-green-500 transition-all" style={{ width: items.length ? `${(confirmedCount / items.length) * 100}%` : '0%' }} />
       </div>
       <p className="text-[11px] text-amber-700 mt-2">
-        Detected from your menu — <strong>check these</strong>. Allergens stay hidden from customers until you confirm each dish.
+        {t.rich('wizard.review.detected', { b: c => <strong>{c}</strong> })}
       </p>
       {!canEdit && (
-        <p className="text-[11px] text-slate-500 mt-1 font-semibold">👁 View only — only the owner can confirm or change allergens.</p>
+        <p className="text-[11px] text-slate-500 mt-1 font-semibold">{t('wizard.review.viewOnly')}</p>
       )}
     </div>
   )
@@ -2377,7 +2400,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
     <>
       {reviewHeader}
       <div className="p-5 pt-3 overflow-y-auto flex-1 min-h-0">
-        {items.length === 0 && <EmptyState icon="🍽️" title="No menu items" body="Add menu items first, then set their allergens here." />}
+        {items.length === 0 && <EmptyState icon="🍽️" title={t('wizard.review.emptyTitle')} body={t('wizard.review.emptyBody')} />}
 
         {/* LIST view — one roomy card per dish, GROUPED BY CATEGORY in menu order (#7), no per-item
             category line (#8), selected pills INLINE beside the name (#9). */}
@@ -2479,14 +2502,14 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
                   {/* group headers spanning the allergen + dietary blocks */}
                   <tr>
                     <th colSpan={2} className="sticky left-0 z-40 bg-white h-6 border-b border-r border-slate-200" />
-                    <th colSpan={A} className="bg-amber-100 border-b border-r border-slate-200 text-center text-[11px] font-bold text-amber-700 uppercase tracking-wide py-1">Allergens</th>
-                    <th colSpan={D} className={`bg-green-100 border-b border-r border-slate-200 ${DIVIDER} text-center text-[11px] font-bold text-green-700 uppercase tracking-wide py-1`}>Dietary</th>
+                    <th colSpan={A} className="bg-amber-100 border-b border-r border-slate-200 text-center text-[11px] font-bold text-amber-700 uppercase tracking-wide py-1">{t('wizard.allergens')}</th>
+                    <th colSpan={D} className={`bg-green-100 border-b border-r border-slate-200 ${DIVIDER} text-center text-[11px] font-bold text-green-700 uppercase tracking-wide py-1`}>{t('wizard.dietary')}</th>
                   </tr>
                   {/* per-column labels (horizontal, centred, hyphenated 2-line wrap). Dish frozen always;
                       Status frozen on sm+ only (req 2). */}
                   <tr>
-                    <th style={{ width: DISH_COL_W }} className="sticky left-0 z-40 bg-white h-12 border-b border-r border-slate-200 text-left text-[11px] font-bold text-slate-900 uppercase tracking-wide px-2 align-bottom pb-2">Dish</th>
-                    <th style={{ left: DISH_COL_W }} className={`static sm:sticky z-40 bg-white ${STATUS_W} h-12 border-b border-r border-slate-200 text-center text-[11px] font-bold text-slate-900 uppercase tracking-wide px-2 align-bottom pb-2`}>Status</th>
+                    <th style={{ width: DISH_COL_W }} className="sticky left-0 z-40 bg-white h-12 border-b border-r border-slate-200 text-left text-[11px] font-bold text-slate-900 uppercase tracking-wide px-2 align-bottom pb-2">{t('wizard.review.dish')}</th>
+                    <th style={{ left: DISH_COL_W }} className={`static sm:sticky z-40 bg-white ${STATUS_W} h-12 border-b border-r border-slate-200 text-center text-[11px] font-bold text-slate-900 uppercase tracking-wide px-2 align-bottom pb-2`}>{t('wizard.review.status')}</th>
                     {COLUMNS.map((c, i) => (
                       <th key={c.label} className={`bg-white h-12 px-0.5 py-1 align-middle text-center text-[11px] font-bold text-slate-900 leading-tight hyphens-auto break-words border-b border-r border-slate-100 ${i === A ? DIVIDER : ''}`}>{c.label}</th>
                     ))}
@@ -2547,36 +2570,36 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   const cardPanel = (
     <div className="p-5 overflow-y-auto flex flex-col gap-4">
       <p className="text-[11px] text-amber-700">
-        Customers will see this card as the menu&apos;s allergen reference. Per-dish allergens stay hidden in card-only mode (your dish data is kept for if you switch to per-dish later).
+        {t('wizard.cardPanel.intro')}
       </p>
       {cardProcessing ? (
         <div className="border border-slate-200 rounded-xl p-6 flex items-center gap-3">
-          <Spinner /><p className="text-sm text-slate-500">Reading allergen information…</p>
+          <Spinner /><p className="text-sm text-slate-500">{t('wizard.cardPanel.reading')}</p>
         </div>
       ) : cardText ? (
         <div className="border border-green-100 bg-green-50 rounded-xl p-4 flex flex-col gap-2">
-          <p className="text-sm font-semibold text-slate-900">🛡️ Allergen card saved</p>
+          <p className="text-sm font-semibold text-slate-900">{t('wizard.cardPanel.saved')}</p>
           <p className="text-xs text-slate-600 whitespace-pre-wrap line-clamp-6">{cardText}</p>
-          {cardUrl && <a href={cardUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 underline">View original card</a>}
-          {canEdit && <div><Btn label="Replace card" colour="slate" size="sm" onClick={onAddCard} /></div>}
+          {cardUrl && <a href={cardUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 underline">{t('wizard.cardPanel.viewOriginal')}</a>}
+          {canEdit && <div><Btn label={t('wizard.cardPanel.replace')} colour="slate" size="sm" onClick={onAddCard} /></div>}
         </div>
       ) : (
         <div className="border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center gap-3">
           <div className="text-3xl">🛡️</div>
-          <p className="text-xs text-slate-500 max-w-xs">Upload your allergen card (photo/PDF) or paste your allergen info — our AI structures it for customers.</p>
+          <p className="text-xs text-slate-500 max-w-xs">{t('wizard.cardPanel.uploadHelp')}</p>
           {canEdit
-            ? <Btn label="Add allergen card" onClick={onAddCard} />
-            : <p className="text-[11px] text-slate-500 font-semibold">👁 View only — only the owner can add the allergen card.</p>}
+            ? <Btn label={t('wizard.cardPanel.add')} onClick={onAddCard} />
+            : <p className="text-[11px] text-slate-500 font-semibold">{t('wizard.cardPanel.viewOnly')}</p>}
         </div>
       )}
     </div>
   )
 
   const subtitle =
-    mode === 0 ? 'Choose how customers see allergen info'
-      : mode === 2 ? 'Add your allergen card'
-        : mode === 3 ? 'Add an allergen card (optional)'
-          : 'Check & confirm each dish'
+    mode === 0 ? t('wizard.subtitle.choose')
+      : mode === 2 ? t('wizard.subtitle.card')
+        : mode === 3 ? t('wizard.subtitle.cardOptional')
+          : t('wizard.subtitle.review')
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -2589,7 +2612,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
             part of the wizard flow (Menu · Extras · Allergens · Kitchen setup). */}
         <div className="p-5 border-b border-slate-200 shrink-0">
           <div className="flex items-start justify-between gap-3">
-            <h2 className="text-base font-bold text-slate-900">{importStepper ? 'Allergens' : 'Allergen setup'}</h2>
+            <h2 className="text-base font-bold text-slate-900">{importStepper ? t('wizard.heading.import') : t('wizard.heading.standalone')}</h2>
             <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-lg leading-none flex-shrink-0">✕</button>
           </div>
           {importStepper ? importStepper : <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
@@ -2605,7 +2628,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
             </div>
             <div className="p-4 border-t border-slate-200 flex justify-end shrink-0">
               {/* per-dish → card-upload page (3) when card matching is wired (#6); else straight to review (1). card → 2. */}
-              <Btn label="Next →" disabled={!chooserMode} onClick={() => setMode(chooserMode === 'card' ? 2 : (onProcessCard ? 3 : 1))} />
+              <Btn label={t('wizard.nav.next')} disabled={!chooserMode} onClick={() => setMode(chooserMode === 'card' ? 2 : (onProcessCard ? 3 : 1))} />
             </div>
           </>
         )}
@@ -2638,9 +2661,9 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
               />
             </div>
             <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
-              <Btn label="← Back" colour="slate" onClick={() => setMode(0)} />
+              <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => setMode(0)} />
               <div className="flex-1" />
-              <Btn label="Next →" onClick={() => setMode(1)} />
+              <Btn label={t('wizard.nav.next')} onClick={() => setMode(1)} />
             </div>
           </>
         )}
@@ -2651,23 +2674,23 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
             {reviewTable}
             {canEdit ? (
               <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
-                <Btn label="← Back" colour="slate" onClick={() => onBack ? onBack() : setMode(onProcessCard ? 3 : 0)} />
+                <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => onBack ? onBack() : setMode(onProcessCard ? 3 : 0)} />
                 <div className="flex-1" />
                 {/* Skip = defer, save AS-IS (per-row confirms already persisted; this doesn't confirm anything).
                     ALWAYS available (the escape hatch) — never disabled, so the operator is never trapped when
                     "Next" is greyed pending all-confirmed. Wording ties to the active-gated visibility rule. */}
-                <Btn label={importStepper ? 'Skip Allergen setup for now' : 'Skip for now'} colour="ghost" onClick={onClose} />
+                <Btn label={importStepper ? t('wizard.nav.skipImport') : t('wizard.nav.skip')} colour="ghost" onClick={onClose} />
                 {importStepper
                   ? /* IMPORT: "Next" — a wizard step; greyed until EVERY dish is confirmed (allDone). */
-                    <Btn label={finishing ? 'Saving…' : 'Next →'} colour="green" loading={finishing} disabled={finishing || !allDone} onClick={() => finishWith('per_dish')} />
-                  : <Btn label={finishing ? 'Saving…' : allDone ? 'Done' : 'Save & finish later'} colour={allDone ? 'green' : 'slate'} loading={finishing} disabled={finishing} onClick={() => finishWith('per_dish')} />}
+                    <Btn label={finishing ? t('wizard.nav.saving') : t('wizard.nav.next')} colour="green" loading={finishing} disabled={finishing || !allDone} onClick={() => finishWith('per_dish')} />
+                  : <Btn label={finishing ? t('wizard.nav.saving') : allDone ? t('wizard.nav.done') : t('wizard.nav.saveLater')} colour={allDone ? 'green' : 'slate'} loading={finishing} disabled={finishing} onClick={() => finishWith('per_dish')} />}
               </div>
             ) : (
-              <div className="p-4 border-t border-slate-200 flex justify-end shrink-0"><Btn label="Close" colour="slate" onClick={onClose} /></div>
+              <div className="p-4 border-t border-slate-200 flex justify-end shrink-0"><Btn label={t('wizard.nav.close')} colour="slate" onClick={onClose} /></div>
             )}
             {canEdit && <p className="px-4 pb-3 -mt-1 text-[11px] text-slate-400">{importStepper && !allDone
-              ? 'Confirm every dish to continue — or “Skip Allergen setup for now”.'
-              : 'Skip defers — dishes you haven’t confirmed stay hidden from customers until their allergens are confirmed.'}</p>}
+              ? t('wizard.hint.importIncomplete')
+              : t('wizard.hint.skipDefers')}</p>}
           </>
         )}
 
@@ -2684,11 +2707,11 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
               />
             </div>
             <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
-              <Btn label="← Back" colour="slate" onClick={() => setMode(0)} />
+              <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => setMode(0)} />
               <div className="flex-1" />
               {canEdit
-                ? <Btn label={finishing ? 'Saving…' : 'Finish'} colour="green" loading={finishing} disabled={!cardEditText.trim() || finishing} onClick={finishCard} />
-                : <Btn label="Close" colour="slate" onClick={onClose} />}
+                ? <Btn label={finishing ? t('wizard.nav.saving') : t('wizard.nav.finish')} colour="green" loading={finishing} disabled={!cardEditText.trim() || finishing} onClick={finishCard} />
+                : <Btn label={t('wizard.nav.close')} colour="slate" onClick={onClose} />}
             </div>
           </>
         )}
@@ -2711,6 +2734,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
    *  completion callback so the wizard can advance itself once they are saved. */
   onVerifySuccess: (events: unknown[], onSaved?: () => void) => void
 }) {
+  // Language Phase 1d: the editor's words and the import wizard's words, in the truck's locale.
+  const t = useT('manageMenu')
+  const ti = useT('manageMenuImport')
+  const tv = useT('manageScheduleVerify')   // the schedule step's verify messages, keyed by the route's reason code
+  const tk = useT('kitchenCapacity')        // the kitchen-setup step: the same explainer and grid words as Menu › Kitchen capacity
+  const tset = useT('settingsCopy')         // the settings review: the same labels and help as Manage › Settings
+  const tstock = useT('stockCopy')          // the item editor's default-stock scope note (shared with the extras editor)
+  const tabTime = useTruckTime()   // the schedule step's read-back dates and times, in the truck's settings
   // 🔴 THE TRUCK'S MONEY FORMAT (the manage page's country settings) — every price on this tab.
   const tabSettings = useCountrySettings()
   const tabFmt = moneyFormatOf(tabSettings)
@@ -2763,7 +2794,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       const sc = res.subcategory as Subcategory
       if (sc) setLocalSubcats(prev => prev.some(s => s.id === sc.id) ? prev.map(s => s.id === sc.id ? sc : s) : [...prev, sc])
       return sc ?? null
-    } catch (e: any) { showToast(e.message || 'Failed to add sub-category', 'error'); return null }
+    } catch (e: any) { showToast(e.message || t('toast.subcatAddFailed'), 'error'); return null }
   }
 
   // Delete a sub-category (empty-guarded server-side); show a clear message when it has items.
@@ -2771,11 +2802,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     try {
       const res = await api('delete_subcategory', { id: sc.id })
       if (res?.ok === false && res.error === 'not_empty') {
-        showToast(`Move or remove its ${res.count} item${res.count === 1 ? '' : 's'} first`, 'error'); return
+        showToast(t('toast.subcatNotEmpty', { count: res.count }), 'error'); return
       }
       setLocalSubcats(prev => prev.filter(s => s.id !== sc.id))
     } catch (e: any) {
-      showToast(e.message || 'Failed to delete sub-category', 'error')
+      showToast(e.message || t('toast.subcatDeleteFailed'), 'error')
     }
   }
 
@@ -2790,7 +2821,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     try {
       await api('update_subcategory_order', { id: a.id, sort_order: b.sort_order })
       await api('update_subcategory_order', { id: b.id, sort_order: a.sort_order })
-    } catch (e: any) { showToast(e.message || 'Failed to reorder', 'error') }
+    } catch (e: any) { showToast(e.message || t('toast.reorderFailed'), 'error') }
   }
 
   // Rename a sub-category by id, refresh local state. Same upsert action as create (edit-by-id).
@@ -2801,7 +2832,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       const res = await api('upsert_subcategory', { id: sc.id, name: trimmed })
       const updated = res.subcategory as Subcategory
       if (updated) setLocalSubcats(prev => prev.map(s => s.id === updated.id ? updated : s))
-    } catch (e: any) { showToast(e.message || 'Failed to rename sub-category', 'error') }
+    } catch (e: any) { showToast(e.message || t('toast.subcatRenameFailed'), 'error') }
     setEditingSubcatId(null)
   }
   const [importStep, setImportStep] = useState<ImportStep>('idle')
@@ -3111,14 +3142,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   /** null = acceptable; a string = the reason to show the operator. */
   const validateCatName = (name: string, exclude?: string): string | null => {
     const clean = normaliseCatName(name)
-    if (!clean) return 'Give the category a name.'
-    if (clean.length > 60) return 'That name is too long.'
+    if (!clean) return ti('catError.empty')
+    if (clean.length > 60) return ti('catError.tooLong')
     // Compared on catKey, so "mains " cannot be added beside "Mains" — which matters beyond tidiness:
     // commit-menu derives menu_categories.slug as name.toLowerCase().replace(/[^a-z0-9]+/g,'-'), so both
     // would resolve to the SAME slug and collide on menu_categories_truck_id_slug_key.
     const clash = (importResult?.categories || [])
       .some(c => catKey(c) === catKey(clean) && (exclude == null || catKey(c) !== catKey(exclude)))
-    if (clash) return `There's already a category called "${clean}".`
+    if (clash) return ti('catError.clash', { name: clean })
     return null
   }
   const renameImportCategory = (from: string, to: string) =>
@@ -3585,7 +3616,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           //    next" — belongs in the flow, not in an error, and is slice C's to place. Silent here.
           //  • 'no_claim' / anything else — no demo behind this signup; a normal upload is unremarkable.
           if (data?.reason === 'no_extraction') {
-            showToast('Your demo menu is no longer available — please upload it again to carry on.', 'error')
+            showToast(ti('toast.demoGone'), 'error')
           }
           // ── C2: THE TEMPLATE ROUTE — straight to the EXISTING upload step ───────────────────────
           // A sample demo has nothing to offer: the payload is intact but deliberately withheld (it was
@@ -3683,14 +3714,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // Kitchen "Save". Nothing persists until then (abandon = nothing written).
   type WizKey = 'menu' | 'extras' | 'allergens' | 'kitchen' | 'schedule' | 'settings'
   const baseWizardSteps: { key: WizKey; label: string }[] = hasExtras
-    ? [{ key: 'menu', label: 'Menu' }, { key: 'extras', label: 'Extras' }, { key: 'allergens', label: 'Allergens' }, { key: 'kitchen', label: 'Kitchen setup' }]
-    : [{ key: 'menu', label: 'Menu' }, { key: 'allergens', label: 'Allergens' }, { key: 'kitchen', label: 'Kitchen setup' }]
+    ? [{ key: 'menu', label: ti('steps.menu') }, { key: 'extras', label: ti('steps.extras') }, { key: 'allergens', label: ti('steps.allergens') }, { key: 'kitchen', label: ti('steps.kitchen') }]
+    : [{ key: 'menu', label: ti('steps.menu') }, { key: 'allergens', label: ti('steps.allergens') }, { key: 'kitchen', label: ti('steps.kitchen') }]
   // Setup mode APPENDS "Schedule" after "Kitchen setup" (item 5). Existing operators (not inSetup) never see it,
   // so their stepper is byte-for-byte today's.
   // K1 appends "Settings" after "Schedule" — both are inSetup-only, so a non-setup operator's stepper is
   // still byte-for-byte today's.
   const wizardSteps: { key: WizKey; label: string }[] = inSetup
-    ? [...baseWizardSteps, { key: 'schedule', label: 'Schedule' }, { key: 'settings', label: 'Settings' }]
+    ? [...baseWizardSteps, { key: 'schedule', label: ti('steps.schedule') }, { key: 'settings', label: ti('steps.settings') }]
     : baseWizardSteps
   // Advance to the Kitchen-setup ('prep') step. Seeds prep state for new categories WITHOUT clobbering
   // values already entered (so stepping back/forward is non-destructive).
@@ -3745,7 +3776,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     // not a second wizard restarting at 1. It renders as complete (green ✓) and is NOT clickable (they can't
     // go back to identity). The real steps then number from 2. When NOT inSetup the prefix is empty and the
     // output is byte-for-byte today's (same list, same i+1 numbering, same clickable markup).
-    const prefix = inSetup ? [{ key: '__details__', label: 'Your details', done: true }] : []
+    const prefix = inSetup ? [{ key: '__details__', label: ti('steps.details'), done: true }] : []
     const all = [...prefix, ...wizardSteps.map(s => ({ key: s.key as string, label: s.label, done: false }))]
     // Extra classes ONLY in setup mode (the prepended pill can overflow the width); the non-setup path keeps
     // today's exact container/button/chevron classes so nothing changes for existing operators.
@@ -3800,9 +3831,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     disabled?: boolean
     onChange: (next: never) => void
     secondary?: {
+      /** The words beside the control — or, with `sentence`, the control's accessible name only. */
       label: string
-      /** Q4: the tail of a sentence the control sits inside, e.g. "…up to [30 minutes] before pickup". */
-      suffix?: string
+      /** Q4 → Language Phase 1d: a control that sits INSIDE a sentence ("…up to [30 minutes] before pickup")
+       *  is one whole message with the control as a rich-text tag, never a prefix and a suffix. */
+      sentence?: (control: React.ReactNode) => React.ReactNode
       value: number
       options: { value: number; label: string }[]
       visible: boolean
@@ -3812,7 +3845,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // One failure message for all three write paths. Never blocks: every row on this screen is optional,
   // so a failed save says so and leaves the operator on the step rather than trapping them.
   const reviewSaveFailed = (e: unknown) =>
-    showToast(e instanceof Error && e.message ? e.message : "Couldn't save that — you can change it in Settings.", 'error')
+    showToast(e instanceof Error && e.message ? e.message : ti('settingsReview.saveFailed'), 'error')
   const saveVanReview = async (patch: Record<string, unknown>) => {
     if (!reviewVan) return
     try { await api('update_van_settings', { vanId: reviewVan.id, ...patch }) } catch (e) { reviewSaveFailed(e) }
@@ -3831,22 +3864,22 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const setupReviewItems: SetupReviewItem[] = [
     {
       id: 'allow_customer_cancellation',
-      label: SETTING_COPY.allowCancellation.label,
-      helpText: SETTING_COPY.allowCancellation.help,
+      label: tset('allowCancellation.label'),
+      helpText: '',
       currentValue: reviewAllowCancel,
       control: 'toggle',
-      settingsAnchor: 'Settings → Contact Details',
+      settingsAnchor: ti('settingsReview.anchorContact'),
       onChange: ((next: boolean) => {
         setReviewAllowCancel(next)
         void saveTruckReview({ allow_customer_cancellation: next })
       }) as SetupReviewItem['onChange'],
       secondary: {
-        label: SETTING_COPY.allowCancellation.cancelPrefix,
-        suffix: SETTING_COPY.allowCancellation.cancelSuffix,
+        label: ti('settingsReview.cancelAria'),
+        sentence: control => tset.rich('allowCancellation.sentence', { select: () => control }),
         value: reviewCancelMins,
         options: [
-          { value: 15, label: '15 minutes' }, { value: 30, label: '30 minutes' },
-          { value: 60, label: '60 minutes' }, { value: 120, label: '2 hours' },
+          { value: 15, label: ti('settingsReview.mins15') }, { value: 30, label: ti('settingsReview.mins30') },
+          { value: 60, label: ti('settingsReview.mins60') }, { value: 120, label: ti('settingsReview.hours2') },
         ],
         visible: reviewAllowCancel,
         onChange: (n: number) => { setReviewCancelMins(n); void saveTruckReview({ cancellation_cutoff_mins: n }) },
@@ -3858,11 +3891,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       // by default, so every order waits for you", and became false the day provisioning started
       // writing auto_accept:true. Rewriting it by hand a second time would only reset the clock; it now
       // reads the same constant Settings does and describes the setting rather than its default.
-      label: SETTING_COPY.autoAccept.label,
-      helpText: SETTING_COPY.autoAccept.help,
+      label: tset('autoAccept.label'),
+      helpText: tset('autoAccept.help'),
       currentValue: reviewAutoAccept,
       control: 'toggle',
-      settingsAnchor: 'Settings → Order settings',
+      settingsAnchor: ti('settingsReview.anchorOrder'),
       onChange: ((next: boolean) => {
         setReviewAutoAccept(next)
         // update_settings takes TOP-LEVEL fields (not a `data` object) — the shape saveFormField uses.
@@ -3873,11 +3906,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     },
     {
       id: 'order_ready_enabled',
-      label: SETTING_COPY.orderReady.label,
-      helpText: SETTING_COPY.orderReady.help,
+      label: tset('orderReady.label'),
+      helpText: tset('orderReady.help'),
       currentValue: reviewVan?.order_ready_enabled ?? null,
       control: 'toggle',
-      settingsAnchor: 'Settings → Your trucks → Display settings',
+      settingsAnchor: ti('settingsReview.anchorDisplay'),
       disabled: !reviewVan,
       onChange: ((next: boolean) => {
         setReviewVan(v => v ? { ...v, order_ready_enabled: next } : v)
@@ -3896,12 +3929,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       // (app/api/manage/route.ts) — an unlisted key there is silently dropped and the toggle would
       // appear to save while writing nothing. It is listed; this writes.
       id: 'buzzer_count',
-      label: SETTING_COPY.buzzers.label,
-      helpText: SETTING_COPY.buzzers.help,
+      label: tset('buzzers.label'),
+      helpText: tset('buzzers.help'),
       // The POOL is a number, but the question is a yes/no — non-null means "yes, and this many".
       currentValue: reviewVan ? reviewVan.buzzer_count != null : null,
       control: 'toggle',
-      settingsAnchor: 'Settings → Your trucks → Display settings',
+      settingsAnchor: ti('settingsReview.anchorDisplay'),
       disabled: !reviewVan,
       onChange: ((next: boolean) => {
         // Off ⇒ null (the feature is hidden entirely); on ⇒ the same default Settings offers.
@@ -3910,7 +3943,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         void saveVanReview({ buzzer_count: n })
       }) as SetupReviewItem['onChange'],
       secondary: {
-        label: SETTING_COPY.buzzers.countLabel,
+        label: tset('buzzers.countLabel'),
         value: reviewVan?.buzzer_count ?? BUZZER_DEFAULT_COUNT,
         options: Array.from({ length: BUZZER_MAX_COUNT }, (_, i) => ({ value: i + 1, label: String(i + 1) })),
         visible: !!reviewVan && reviewVan.buzzer_count != null,
@@ -3931,8 +3964,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // yet. Its firing CONDITION lives at the call site and is unchanged (see the done screen).
   const allergensNotSetNotice = (
     <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-left">
-      <p className="text-xs font-bold text-amber-800">⚠ Allergens &amp; dietary aren&apos;t set yet</p>
-      <p className="text-xs text-amber-700 mt-0.5">Review them {inSetup ? 'before going live' : 'in Settings before going live'}. Items are flagged &ldquo;allergens not set&rdquo; until you do.</p>
+      <p className="text-xs font-bold text-amber-800">{ti('allergensNotSet.title')}</p>
+      <p className="text-xs text-amber-700 mt-0.5">{inSetup ? ti('allergensNotSet.bodySetup') : ti('allergensNotSet.body')}</p>
     </div>
   )
 
@@ -3941,7 +3974,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // V2: was a local copy whose `catch { return false }` failed OPEN. Both copies now call the one
   // shared guard, which fails CLOSED — see lib/url-normalise.ts.
   const schedIsBlockedDomain = isScraperBlockedDomain
-  const SCHED_BLOCKED_DOMAIN_MSG = "Please use your website URL — Facebook and Instagram pages can't be scraped automatically."
+  // A read-back date ("DD/MM/YYYY", as process-schedule returns it) in the truck's date order. Day-first
+  // countries show the string exactly as read (GB unchanged); a month-first country (US) gets "MM/DD/YYYY".
+  const schedDateLabel = (d: string) => {
+    const p = d.split('/')
+    if (p.length !== 3 || tabTime.dateOrder !== 'mdy') return d
+    return formatNumericDate(`${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`, tabTime)
+  }
+  const SCHED_BLOCKED_DOMAIN_MSG = ti('schedule.blockedDomain')
 
   // Finish setup: setup_step='done' so inSetup goes false and the setup chrome stops haunting Manage. Single
   // scoped write (update_truck → .eq('id', truck.id)). Best-effort by posture (item 6): if it fails we still
@@ -3952,7 +3992,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     try {
       await api('update_truck', { data: { setup_step: 'done' } })
     } catch (e: any) {
-      showToast(e?.message || "Couldn't mark setup complete — you can still continue.", 'error')
+      showToast(e?.message || ti('toast.finishFailed'), 'error')
     } finally {
       setFinishingSetup(false)
       setImportStep('done')   // in setup mode 'done' does NOT auto-dismiss (item 2) — explicit exit only
@@ -4003,7 +4043,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     // inside a try/catch that returns FALSE on throw, so a scheme-less `www.facebook.com/…` was not
     // blocked — it was unparseable, and the guard failed open. It is now given a parseable URL.
     const url = normaliseUrl(schedUrl)
-    if (!url) { setSchedVerifyError(URL_MALFORMED_MSG); return }
+    if (!url) { setSchedVerifyError(tv('malformed')); return }
     if (schedIsBlockedDomain(url)) { setSchedVerifyError(SCHED_BLOCKED_DOMAIN_MSG); return }
     // Reflect the corrected address back into the field, so what was verified and what is on screen
     // are the same string — and the operator sees what we actually used.
@@ -4034,7 +4074,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           // schedule step with no forward move. Settings passes no second argument at all.
           onVerifySuccess(data.events || [], () => goToSettingsReview())
         } catch (e: any) {
-          setSchedVerifyError(e?.message || "We read your schedule, but couldn't save it just now — try again.")
+          setSchedVerifyError(e?.message || ti('schedule.saveFailed'))
         }
         return
       }
@@ -4042,10 +4082,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       // would be false. It maps to the malformed message like any other unparseable input.
       const reason: string = data.reason
         || (res.status >= 500 ? 'launch_failed' : res.status === 400 ? 'malformed' : 'unreachable')
-      setSchedVerifyError(VERIFY_MESSAGES[reason] || VERIFY_MESSAGES.unreachable)
+      setSchedVerifyError(tv(verifyCode(reason)))
     } catch {
       // The verify request itself failed — our API or the operator's connection, not their address.
-      setSchedVerifyError(VERIFY_MESSAGES.unreachable)
+      setSchedVerifyError(tv('unreachable'))
     } finally {
       setSchedVerifying(false)
     }
@@ -4065,7 +4105,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       const data = await res.json().catch(() => ({} as any))
       setSchedExtracted(data.events || [])
     } catch {
-      showToast("Couldn't read that schedule — try a clearer photo or type your dates in.", 'error')
+      showToast(ti('toast.scheduleReadFailed'), 'error')
       setSchedExtracted([])
     } finally {
       setSchedPhotoProcessing(false)
@@ -4090,7 +4130,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       }
       goToSettingsReview()   // K1 — was finishSetup(); the review screen now owns that call
     } catch (e: any) {
-      showToast(e?.message || 'Failed to save events', 'error')
+      showToast(e?.message || ti('toast.eventsSaveFailed'), 'error')
       setSchedSaving(false)   // stay so they can retry or skip
     }
   }
@@ -4119,7 +4159,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       else fd.append('text', text)
       const res = await fetch('/api/manage/process-allergens', { method: 'POST', body: fd })
       const data = await res.json()
-      if (!data.ok) { showToast('Couldn’t read the allergen card — try again', 'error'); return }
+      if (!data.ok) { showToast(ti('toast.cardReadFailed'), 'error'); return }
       const parsed = data.allergens || {}
       setCardImportParsed(parsed)
       const entries: CardEntry[] = Array.isArray(parsed.entries) ? parsed.entries.filter((e: any) => e && e.name && Array.isArray(e.allergens)) : []
@@ -4129,8 +4169,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       m.matched.forEach(({ entry, dishId }) => mergeCardAllergensIntoItem(Number(dishId), entry.allergens))   // exact only
       setCardEntriesResolved(new Set(m.matched.map(x => cardEntryKey(x.entry))))   // exact matches count as resolved
       setCardImportDone(true)
-      showToast(`Card read — ${m.matched.length} matched, ${m.unmatched.length + m.ambiguous.length} need your assignment`, 'success')
-    } catch { showToast('Couldn’t read the allergen card — try again', 'error') }
+      showToast(ti('toast.cardRead', { matched: m.matched.length, pending: m.unmatched.length + m.ambiguous.length }), 'success')
+    } catch { showToast(ti('toast.cardReadFailed'), 'error') }
     finally { setCardImportProcessing(false) }
   }
   // CARD-ONLY (import): image → faithful PROSE transcription (no extraction/vocab) → pre-fills the editor.
@@ -4141,8 +4181,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       const res = await fetch('/api/manage/process-allergens', { method: 'POST', body: fd })
       const data = await res.json()
       if (data.ok && typeof data.text === 'string') setImportCardOnlyText(data.text)
-      else showToast('Couldn’t read that image — type or paste your card instead', 'error')
-    } catch { showToast('Couldn’t read that image — type or paste your card instead', 'error') }
+      else showToast(ti('toast.imageReadFailed'), 'error')
+    } catch { showToast(ti('toast.imageReadFailed'), 'error') }
     finally { setImportCardOnlyTranscribing(false) }
   }
   // Operator assigns an unmatched/ambiguous card entry to a specific dish → union into that dish, mark resolved.
@@ -4293,8 +4333,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         setImportStep('prep')
         showToast(
           data?.error
-            ? `Couldn’t finish saving the menu: ${data.error}. Some items may already have saved — check your menu before retrying.`
-            : 'Couldn’t finish saving the menu. Some items may already have saved — check your menu before retrying.',
+            ? ti('toast.commitFailedDetail', { error: String(data.error) })
+            : ti('toast.commitFailed'),
           'error',
         )
       }
@@ -4313,7 +4353,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       // Unified auto-save: full-object upsert (not a sparse {id, image_path} — that coerced other
       // absent fields to null/default). In CREATE mode this stages onto editingItem until "Add item".
       await saveItemPatch({ image_path: path })
-    } catch (err: any) { showToast(err.message || 'Upload failed', 'error') }
+    } catch (err: any) { showToast(err.message || t('toast.uploadFailed'), 'error') }
     finally { setUploadingItemPhoto(false) }
   }
   // 🔴 THE INLINE SLOT'S UPLOAD, LIFTED OUT OF ITS onChange HANDLER.
@@ -4335,10 +4375,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       const next = { ...item, image_path: path } as Item
       setLocalItems(list => list.map(i => (i.id === item.id ? next : i)))
       await api('upsert_item', next)
-      showToast('Photo updated')
+      showToast(t('toast.photoUpdated'))
     } catch (err: any) {
       setLocalItems(prevLocal)
-      showToast(err.message || 'Upload failed', 'error')
+      showToast(err.message || t('toast.uploadFailed'), 'error')
     }
   }
 
@@ -4368,8 +4408,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       const res = await fetch('/api/manage/process-allergens', { method: 'POST', body: fd })
       const data = await res.json()
       if (data.ok) { setAllergenExtracted(data.allergens); setAllergenStep('review') }
-      else { setAllergenStep('idle'); showToast('AI processing failed', 'error') }
-    } catch { setAllergenStep('idle'); showToast('Processing failed', 'error') }
+      else { setAllergenStep('idle'); showToast(t('toast.aiProcessingFailed'), 'error') }
+    } catch { setAllergenStep('idle'); showToast(t('toast.processingFailed'), 'error') }
   }
 
   const handleAllergenTextProcess = async (text: string) => {
@@ -4381,8 +4421,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       const res = await fetch('/api/manage/process-allergens', { method: 'POST', body: fd })
       const data = await res.json()
       if (data.ok) { setAllergenExtracted(data.allergens); setAllergenStep('review') }
-      else { setAllergenStep('idle'); showToast('AI processing failed', 'error') }
-    } catch { setAllergenStep('idle'); showToast('Processing failed', 'error') }
+      else { setAllergenStep('idle'); showToast(t('toast.aiProcessingFailed'), 'error') }
+    } catch { setAllergenStep('idle'); showToast(t('toast.processingFailed'), 'error') }
   }
 
   const handleSaveAllergens = async () => {
@@ -4401,7 +4441,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       setAllergenExtracted(null)
       setAllergenText('')
       setShowAllergenModal(false)
-    } catch (e: any) { showToast(e.message || 'Save failed', 'error') }
+    } catch (e: any) { showToast(e.message || t('toast.saveFailed'), 'error') }
   }
 
   const saveCat = async (overrides?: Partial<Category>) => {
@@ -4467,14 +4507,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // the insert didn't echo a row.
   const saveItem = async () => {
     if (!editingItem) return
-    if (!editingItem.name?.trim()) { showToast('Item name is required', 'error'); return }
-    if (!(Number(editingItem.price) > 0)) { showToast('Enter a price', 'error'); return }
-    if (!editingItem.category_id) { showToast('Choose a category', 'error'); return }
+    if (!editingItem.name?.trim()) { showToast(t('toast.nameRequired'), 'error'); return }
+    if (!(Number(editingItem.price) > 0)) { showToast(t('toast.enterPrice'), 'error'); return }
+    if (!editingItem.category_id) { showToast(t('toast.chooseCategory'), 'error'); return }
     setSaving(true)
     try {
       const result = await api('upsert_item', editingItem)
       const saved = result.item as Item | undefined
-      showToast('Item added')
+      showToast(t('toast.itemAdded'))
       if (saved?.id) {
         setLocalItems(prev => [...prev, saved])
         setEditingItem(saved)                 // → EDIT mode: options section + per-field auto-save now active
@@ -4549,8 +4589,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const handleDeleteCategory = async (cat: Category) => {
     const catItemCount = localItems.filter(i => i.category_id === cat.id).length
     const confirmMsg = catItemCount > 0
-      ? `Delete "${cat.name}"? This will also delete ${catItemCount} item${catItemCount === 1 ? '' : 's'} in this category. This cannot be undone.`
-      : `Delete "${cat.name}"? This cannot be undone.`
+      ? t('confirmDelete.withItems', { name: cat.name, count: catItemCount })
+      : t('confirmDelete.empty', { name: cat.name })
     if (!window.confirm(confirmMsg)) return
     try {
       if (catItemCount > 0) {
@@ -4581,7 +4621,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     setDeletingItem(null)
     try {
       await api('delete_item', { id: gone.id })
-      showToast('Item removed')
+      showToast(t('toast.itemRemoved'))
     } catch (e: any) {
       setLocalItems(prev => [...prev, gone])
       showToast(e.message, 'error')
@@ -4595,21 +4635,21 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         <div className="flex items-start justify-between">
           <div>
             {/* Manage page section heading — use font-black text-slate-900 text-lg for all tab headings */}
-            <h2 className="font-black text-slate-900 text-lg">Menu</h2>
+            <h2 className="font-black text-slate-900 text-lg">{t('title')}</h2>
             <p className="text-slate-400 text-sm mt-0.5">
-              {categories.length} {categories.length === 1 ? 'category' : 'categories'} · {items.length} items
+              {t('summary', { categories: categories.length, items: items.length })}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex flex-col items-end gap-0.5">
               <button onClick={() => setImportStep('upload')}
                 className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors whitespace-nowrap">
-                ✨ Import menu
+                {t('importMenu')}
               </button>
-              <p className="text-xs text-slate-400">photo, PDF or text</p>
+              <p className="text-xs text-slate-400">{t('importHint')}</p>
             </div>
             <div className="self-start">
-              <Btn label="+ Add category" onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)} />
+              <Btn label={t('addCategory')} onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)} />
             </div>
           </div>
         </div>
@@ -4643,16 +4683,13 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
             <span className="text-red-500 text-lg shrink-0" aria-hidden>🚫</span>
             <div className="min-w-0">
               <p className="text-sm font-bold text-red-900">
-                {hiddenCount} {hiddenCount === 1 ? 'item is' : 'items are'} not visible to customers
+                {t('hiddenNotice.title', { count: hiddenCount })}
               </p>
               <p className="text-xs text-red-800 mt-0.5">
-                {hiddenCount === 1 ? 'It won’t appear' : 'They won’t appear'} on your ordering page until
-                {hiddenCount === 1 ? ' its' : ' their'} allergens are confirmed — showing a dish with unchecked
-                allergen info would read as &ldquo;allergen-free&rdquo;. You can still see
-                {hiddenCount === 1 ? ' it' : ' them'} here.{' '}
-                <button type="button" onClick={onOpenAllergenWizard} className="underline font-bold">
-                  Confirm allergens →
-                </button>
+                {t.rich('hiddenNotice.body', {
+                  count: hiddenCount,
+                  link: chunks => <button type="button" onClick={onOpenAllergenWizard} className="underline font-bold">{chunks}</button>,
+                })}
               </p>
             </div>
           </div>
@@ -4663,20 +4700,20 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       {categories.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-4">
           <div className="text-5xl mb-4">✨</div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">Build your menu in seconds</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">{t('empty.title')}</h3>
           <p className="text-sm text-slate-500 text-center max-w-sm mb-2">
-            Take a photo of your menu board, screenshot your existing menu, or drag in a PDF — our AI will extract everything and build your digital menu automatically.
+            {t('empty.body')}
           </p>
           <p className="text-xs text-slate-400 text-center max-w-xs mb-8">
-            Works with photos, screenshots, PDFs and plain text. You can review and edit everything before it's saved.
+            {t('empty.note')}
           </p>
           <button onClick={() => setImportStep('upload')}
             className="flex items-center gap-2 px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl text-sm hover:bg-orange-700 transition-colors shadow-sm">
-            ✨ Import menu with AI
+            {t('empty.importAi')}
           </button>
           <button onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)}
             className="mt-3 text-xs text-slate-400 hover:text-slate-600 underline">
-            or add categories manually
+            {t('empty.manual')}
           </button>
         </div>
       ) : null}
@@ -4734,7 +4771,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   )
                 )
                 reload()
-                showToast('Category order updated')
+                showToast(t('toast.categoryOrderUpdated'))
               } catch (e: any) {
                 showToast(e.message, 'error')
               }
@@ -4746,25 +4783,25 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
             <div
               className="flex items-center gap-3 p-4 hover:bg-slate-50 transition-colors cursor-pointer"
               onClick={() => handleExpandCat(isOpen ? null : cat.id)}>
-              <div className="text-slate-600 hover:text-slate-900 cursor-grab active:cursor-grabbing text-xl font-bold select-none" title="Drag to reorder" draggable={false}>
+              <div className="text-slate-600 hover:text-slate-900 cursor-grab active:cursor-grabbing text-xl font-bold select-none" title={t('category.dragToReorder')} draggable={false}>
                 ⋮⋮
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-black text-slate-900">{cat.name}</span>
-                  <span className="text-slate-400 text-xs">{catItems.length} item{catItems.length !== 1 ? 's' : ''}</span>
+                  <span className="text-slate-400 text-xs">{t('category.itemCount', { count: catItems.length })}</span>
                   {cat.prep_secs > 0 && (
                     <span className="text-[11px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-                      {cat.prep_secs < 60 ? `${cat.prep_secs}s prep` : `${Math.round(cat.prep_secs / 60)}m prep`}
+                      {cat.prep_secs < 60 ? t('category.prepSecs', { secs: cat.prep_secs }) : t('category.prepMins', { mins: Math.round(cat.prep_secs / 60) })}
                     </span>
                   )}
                   {cat.batch_size > 0 && cat.batch_size < 999 && (
-                    <span className="text-[11px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{cat.batch_size} at a time</span>
+                    <span className="text-[11px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{t('category.batch', { count: cat.batch_size })}</span>
                   )}
                   {cat.default_stock != null && (
-                    <span className="text-[11px] font-bold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{cat.default_stock} per event</span>
+                    <span className="text-[11px] font-bold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{t('category.perEvent', { count: cat.default_stock })}</span>
                   )}
-                  {cat.allow_notes && <span className="text-[11px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Notes on</span>}
+                  {cat.allow_notes && <span className="text-[11px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">{t('category.notesOn')}</span>}
                   {/* "Counts toward kitchen capacity" is configured in MENU → KITCHEN CAPACITY
                       (the tickbox list under the ceiling), not here — one place, no double-toggle.
                       ⚠️ THE POINTER WAS "Settings → Kitchen capacity" AND IS NOW ONE PILL AWAY
@@ -4772,8 +4809,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                       leaves the Menu screen to set it.
                       A tiny read-only indicator for instant categories that are included: */}
                   {cat.prep_secs === 0 && cat.counts_toward_capacity && (
-                    <span title="Counts toward the kitchen-capacity limit (set in Menu → Kitchen capacity)"
-                      className="text-[11px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">Counts toward capacity</span>
+                    <span title={t('category.countsTitle')}
+                      className="text-[11px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{t('category.counts')}</span>
                   )}
                 </div>
               </div>
@@ -4792,12 +4829,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     value={editingCat.name || ''}
                     onChange={e => setEditingCat(p => ({...p!, name: e.target.value}))}
                     onBlur={() => saveCat()}
-                    placeholder="Category name"
+                    placeholder={t('category.namePlaceholder')}
                     className="flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
                   />
                   <div className="shrink-0">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <span className="text-xs font-bold text-slate-600 whitespace-nowrap">Allow customer notes</span>
+                      <span className="text-xs font-bold text-slate-600 whitespace-nowrap">{t('category.allowNotes')}</span>
                       <Toggle
                         on={!!(editingCat as any).allow_notes}
                         onToggle={() => {
@@ -4807,25 +4844,25 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                         }}
                       />
                     </label>
-                    <p className="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">Truck can always note; this is for customers</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">{t('category.allowNotesHelp')}</p>
                   </div>
                 </div>
                 {/* Row 2: Prep time + Batch size + Default stock */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Prep time</label>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">{t('category.prepTime')}</label>
                     {/* Shared prep dropdown (V7.8 §42) — same control as the dashboard. prep_secs in
                         SECONDS via saveCat({prep_secs}) (same upsert_category write); off-grid values
                         preserved (no snap). */}
                     <PrepTimeSelect
                       valueSecs={editingCat.prep_secs}
-                      ariaLabel="Prep time"
+                      ariaLabel={t('category.prepTime')}
                       onChange={secs => { setEditingCat(p => ({...p!, prep_secs: secs})); saveCat({ prep_secs: secs }) }}
                       className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
-                    <p className="text-xs text-slate-400 mt-1">Set to Instant for items like drinks or dips. These won&apos;t count toward kitchen capacity.</p>
+                    <p className="text-xs text-slate-400 mt-1">{t('category.prepHelp')}</p>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Batch size</label>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">{t('category.batchSize')}</label>
                     {/* Shared <BatchSizeSelect> dropdown (∞ + 1-20) — change-saves via saveCat (same path
                         as Prep), 0 = ∞ preserved (val ?? 0). Persistence unchanged vs the old free input. */}
                     <BatchSizeSelect
@@ -4834,13 +4871,13 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                       className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Default stock/event</label>
-                    <input type="number" min="0" placeholder="e.g. 100"
+                    <label className="block text-xs font-bold text-slate-600 mb-1">{t('category.defaultStock')}</label>
+                    <input type="number" min="0" placeholder={t('category.stockPlaceholder')}
                       value={(editingCat as any).default_stock ?? ''}
                       onChange={e => setEditingCat(p => ({...p!, default_stock: e.target.value === '' ? null : parseInt(e.target.value)} as any))}
                       onBlur={() => saveCat()}
                       className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
-                    <p className="text-[10px] text-slate-400 mt-0.5">Category-wide limit</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{t('category.categoryLimit')}</p>
                   </div>
                 </div>
 
@@ -4850,7 +4887,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   <button type="button"
                     onClick={() => { setNewSubcatName(''); setEditingSubcatId(null); setSubcatModalCat(cat.id) }}
                     className="inline-flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    Manage sub-categories ({subcatsFor(cat.id).length})
+                    {t('category.manageSubcats', { count: subcatsFor(cat.id).length })}
                   </button>
                 </div>
               </div>
@@ -4864,12 +4901,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     heading. Display-only (Phase 3); "+ Add item" stays category-level below. */}
                 {groupBySubcategory(catItems, subcatsFor(cat.id)).map(group => (
                 <div key={group.id ?? '__ungrouped'}>
-                  {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider px-4 pt-2.5 pb-1">{group.name}{group.items.length === 0 ? ' · empty' : ''}</p>}
+                  {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider px-4 pt-2.5 pb-1">{group.items.length === 0 ? t('category.subcatEmpty', { name: group.name }) : group.name}</p>}
                   {group.items.map(item => (
                   <div key={item.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
                     {/* Item image */}
                     <ImageDropSlot
-                      title="Tap or drop a photo"
+                      title={t('category.photoTitle')}
                       className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0 hover:opacity-80 transition-opacity block"
                       onFile={f => { void uploadItemImage(item, f) }}
                     >
@@ -4910,7 +4947,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                               persists), but dimmed when the truck's auto-accept is off (= set, not active
                               right now). NEVER rendered on the customer order page. */}
                           {item.auto_accept === false && (
-                            <span className={`text-[10px] px-1.5 py-0.5 bg-rose-50 text-rose-700 rounded-md border border-rose-100 ${truck.auto_accept ? '' : 'opacity-50'}`}>Manual review</span>
+                            <span className={`text-[10px] px-1.5 py-0.5 bg-rose-50 text-rose-700 rounded-md border border-rose-100 ${truck.auto_accept ? '' : 'opacity-50'}`}>{t('category.manualReview')}</span>
                           )}
                           {item.allergens_verified !== false && item.dietary_info?.map(d => (
                             <span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>
@@ -4918,13 +4955,13 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                           {item.allergens_verified !== false && item.allergens?.map(a => (
                             <span key={a} className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">{a}</span>
                           ))}
-                          {item.default_stock != null && <Badge label={`${item.default_stock} per event`} colour="slate" />}
-                          {item.stock_count != null && <Badge label={`Stock: ${item.stock_count}`} colour="orange" />}
+                          {item.default_stock != null && <Badge label={t('category.perEvent', { count: item.default_stock })} colour="slate" />}
+                          {item.stock_count != null && <Badge label={t('category.stock', { count: item.stock_count })} colour="orange" />}
                           {/* Pre-order inclusion flag (operator-only). Mirrors the "Manual review" dim
                               pattern: shown when set, dimmed when the truck's master pre-orders toggle is
                               OFF (included but globally inactive). Slate (NOT green — avoids the dietary clash). */}
                           {item.preorder_enabled === true && (
-                            <span className={`text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded-md border border-slate-200 ${truck.preorders_enabled !== false ? '' : 'opacity-50'}`}>Pre-order</span>
+                            <span className={`text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded-md border border-slate-200 ${truck.preorders_enabled !== false ? '' : 'opacity-50'}`}>{t('category.preorder')}</span>
                           )}
                           {/* OPTIONAL option groups (§54 rework) — sky badge showing the group title (e.g.
                               "Pizza Extras"), one per optional group. Required groups instead list their
@@ -4939,7 +4976,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="flex items-center gap-1.5">
                         <span className={`text-xs font-medium hidden sm:inline ${item.is_available ? 'text-green-600' : 'text-slate-400'}`}>
-                          {item.is_available ? 'Available' : 'Hidden'}
+                          {item.is_available ? t('available') : t('hidden')}
                         </span>
                         <Toggle on={item.is_available} onToggle={() => toggleItem(item)} />
                       </div>
@@ -4952,14 +4989,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 ))}
 
                 <div className="px-4 py-3">
-                  <Btn label="+ Add item" size="sm" colour="ghost" onClick={() => setEditingItem({ category_id: cat.id, is_available: true, price: 0 })} />
+                  <Btn label={t('addItem')} size="sm" colour="ghost" onClick={() => setEditingItem({ category_id: cat.id, is_available: true, price: 0 })} />
                 </div>
                 <div className="px-4 pb-4">
                   <button
                     onClick={() => handleDeleteCategory(cat)}
                     className="mt-4 text-sm text-red-500 hover:text-red-700 flex items-center gap-1"
                   >
-                    🗑 Delete category
+                    {t('category.delete')}
                   </button>
                 </div>
               </div>
@@ -4980,8 +5017,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         return (
           <Card>
             <div className="px-4 py-3 border-b border-slate-100">
-              <p className="font-bold text-slate-900">Uncategorized</p>
-              <p className="text-xs text-amber-600 mt-0.5">⚠ No category set — pick one (✏️) so each shows in its section. They’re still live on the order screens until then.</p>
+              <p className="font-bold text-slate-900">{t('uncategorized.title')}</p>
+              <p className="text-xs text-amber-600 mt-0.5">{t('uncategorized.body')}</p>
             </div>
             {uncategorized.map(item => (
               <div key={item.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
@@ -4993,7 +5030,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <div className="flex items-center gap-1.5">
-                    <span className={`text-xs font-medium hidden sm:inline ${item.is_available ? 'text-green-600' : 'text-slate-400'}`}>{item.is_available ? 'Available' : 'Hidden'}</span>
+                    <span className={`text-xs font-medium hidden sm:inline ${item.is_available ? 'text-green-600' : 'text-slate-400'}`}>{item.is_available ? t('available') : t('hidden')}</span>
                     <Toggle on={item.is_available} onToggle={() => toggleItem(item)} />
                   </div>
                   <button onClick={() => setEditingItem(item)} className="text-slate-400 hover:text-orange-600 text-xs font-bold p-1.5 rounded-lg hover:bg-orange-50 transition-colors">✏️</button>
@@ -5009,21 +5046,21 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       {editingCat && !editingCat.id && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => {}}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 mb-4">New category</h3>
+            <h3 className="font-black text-slate-900 mb-4">{t('newCategory.title')}</h3>
             <div className="space-y-3">
-              <Input label="Category name" required value={editingCat.name || ''} onChange={v => setEditingCat(p => ({...p!, name: v}))} placeholder="e.g. Pizza" />
+              <Input label={t('newCategory.nameLabel')} required value={editingCat.name || ''} onChange={v => setEditingCat(p => ({...p!, name: v}))} placeholder={t('newCategory.namePlaceholder')} />
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Prep time</label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">{t('category.prepTime')}</label>
                   <PrepTimeSelect
                     valueSecs={editingCat.prep_secs}
-                    ariaLabel="Prep time"
+                    ariaLabel={t('category.prepTime')}
                     onChange={secs => setEditingCat(p => ({...p!, prep_secs: secs}))}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                  <p className="text-xs text-slate-400 mt-1">Set to Instant for items like drinks or dips. These won&apos;t count toward kitchen capacity.</p>
+                  <p className="text-xs text-slate-400 mt-1">{t('category.prepHelp')}</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Batch size</label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">{t('category.batchSize')}</label>
                   {/* Shared <BatchSizeSelect> dropdown — updates the draft only (like Prep here); the
                       modal's Save button persists. 0 = ∞ preserved (val ?? 0). */}
                   <BatchSizeSelect
@@ -5032,8 +5069,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Default stock/event</label>
-                  <input type="number" min="0" placeholder="e.g. 100"
+                  <label className="block text-xs font-bold text-slate-600 mb-1">{t('category.defaultStock')}</label>
+                  <input type="number" min="0" placeholder={t('category.stockPlaceholder')}
                     value={(editingCat as any).default_stock ?? ''}
                     onChange={e => setEditingCat(p => ({...p!, default_stock: e.target.value === '' ? null : parseInt(e.target.value)} as any))}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
@@ -5042,15 +5079,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               {/* TODO: ask operator if allow_notes during onboarding menu setup — see session notes May 2026 */}
               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                 <div>
-                  <p className="text-sm font-bold text-slate-700">Allow customer notes per item</p>
-                  <p className="text-xs text-slate-400">Lets customers add a note to each item (e.g. "no onion"). The truck can always add item notes regardless. All orders also have an order-level notes field.</p>
+                  <p className="text-sm font-bold text-slate-700">{t('newCategory.notesTitle')}</p>
+                  <p className="text-xs text-slate-400">{t('newCategory.notesHelp')}</p>
                 </div>
                 <Toggle on={!!(editingCat as any).allow_notes} onToggle={() => setEditingCat(p => ({...p!, allow_notes: !(p as any).allow_notes} as any))} />
               </div>
             </div>
             <div className="flex gap-2 mt-4">
-              <Btn label="Cancel" colour="slate" onClick={() => setEditingCat(null)} />
-              <Btn label={saving ? 'Saving...' : 'Save'} loading={saving} onClick={saveCat} />
+              <Btn label={t('cancel')} colour="slate" onClick={() => setEditingCat(null)} />
+              <Btn label={saving ? t('saving') : t('save')} loading={saving} onClick={saveCat} />
             </div>
           </div>
         </div>
@@ -5099,7 +5136,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
              roles can VIEW. The card flow itself is folded into the wizard (one card UI); the shared
              upload/processing/review modals below are still rendered here because the wizard drives them. */}
       {/* "Allergens" SECTION heading — its own section on the Menu tab, mirroring the Menu's heading. */}
-      <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest mt-10 mb-2">Allergens</h2>
+      <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest mt-10 mb-2">{t('allergens.heading')}</h2>
       {(() => {
         const unverifiedCount = localItems.filter(i => (i as any).allergens_verified === false).length
         // Empty menu: "0 unconfirmed" is vacuously true but "all dishes confirmed" reads as a false "done".
@@ -5107,7 +5144,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         const noMenu = localItems.length === 0
         // Display mode collapsed to 2 (per-dish / card): 'both' + NULL legacy read as per-dish.
         const mode = (truck as any).allergen_display_mode as 'per_dish' | 'card' | 'both' | null
-        const modeLabel = mode === 'card' ? 'Allergen card' : mode === 'per_dish' || mode === 'both' ? 'Per dish' : 'Not set'
+        const modeLabel = mode === 'card' ? t('allergens.modeCard') : mode === 'per_dish' || mode === 'both' ? t('allergens.modePerDish') : t('allergens.modeNotSet')
         // CARD mode: the card IS the allergen info → the per-dish unverified count is irrelevant and must
         // NOT drive "N dishes need review" (mirrors the customer per-dish gate, menu route :438). Card mode
         // is "set up" once a card is saved; card mode WITHOUT a card prompts to ADD one (not "review dishes").
@@ -5125,27 +5162,27 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               <div className="flex items-start gap-3">
                 <span className="text-2xl">{warn ? '⚠️' : '🛡️'}</span>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">{warn ? 'Allergens not set' : 'Allergens'}</h3>
+                  <h3 className="text-sm font-bold text-slate-900">{warn ? t('allergens.titleNotSet') : t('allergens.titleSet')}</h3>
                   <p className="text-xs text-slate-500 mt-0.5">
                     {noMenu
-                      ? <span className="text-slate-500 font-semibold">Build your menu first — add dishes, then set up their allergens</span>
+                      ? <span className="text-slate-500 font-semibold">{t('allergens.buildFirst')}</span>
                       : <>
-                          Display mode: <strong>{modeLabel}</strong>
+                          {t.rich('allergens.displayMode', { mode: modeLabel, b: chunks => <strong>{chunks}</strong> })}
                           {' · '}
                           {cardMode
                             ? (hasCard
-                                ? <span className="text-green-600 font-semibold">allergen card saved</span>
-                                : <span className="text-amber-700 font-semibold">add an allergen card so customers can see allergen info</span>)
+                                ? <span className="text-green-600 font-semibold">{t('allergens.cardSaved')}</span>
+                                : <span className="text-amber-700 font-semibold">{t('allergens.addCard')}</span>)
                             : (needsReview
-                                ? <span className="text-amber-700 font-semibold">{unverifiedCount} dish{unverifiedCount !== 1 ? 'es' : ''} need review — customers can&apos;t see allergen info until confirmed</span>
-                                : <span className="text-green-600 font-semibold">all dishes confirmed</span>)}
-                          {!cardMode && allergenInfoText ? ' · allergen card saved' : ''}
+                                ? <span className="text-amber-700 font-semibold">{t('allergens.needReview', { count: unverifiedCount })}</span>
+                                : <span className="text-green-600 font-semibold">{t('allergens.allConfirmed')}</span>)}
+                          {!cardMode && allergenInfoText ? ` · ${t('allergens.cardSaved')}` : ''}
                         </>}
                   </p>
                 </div>
               </div>
               {canEditAllergens
-                ? <Btn label="Set up / review allergens" colour="orange" size="sm" icon="🛡️" disabled={noMenu} onClick={() => {
+                ? <Btn label={t('allergens.setUpReview')} colour="orange" size="sm" icon="🛡️" disabled={noMenu} onClick={() => {
                     // T3: land on the per-dish TABLE when a display mode is already chosen — mode 1 is
                     // the confirmation table, mode 0 the card-vs-per-dish chooser. Re-asking a question
                     // the operator has answered is what made this feel like starting over. 'card' and
@@ -5154,7 +5191,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     setWizardInitialMode(mode === 'per_dish' || mode === 'both' ? 1 : 0)
                     onOpenAllergenWizard()
                   }} />
-                : <span className="text-[11px] text-slate-400 self-center">View only — only the owner can edit allergens</span>}
+                : <span className="text-[11px] text-slate-400 self-center">{t('allergens.viewOnly')}</span>}
             </div>
             {/* Saved card preview (view always; replace is owner/admin via the wizard).
                 ⚠️ THE GATE MOVED INTO THE COMPONENT, and that is the fix for the url-only truck: this
@@ -5175,14 +5212,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       {allergenStep === 'processing' && (
         <div className="border border-slate-200 rounded-2xl p-6 flex items-center gap-3 mt-8">
           <div className="w-5 h-5 border-2 border-orange-600 border-t-transparent rounded-full animate-spin flex-shrink-0" />
-          <p className="text-sm text-slate-500">Reading allergen information...</p>
+          <p className="text-sm text-slate-500">{t('allergens.reading')}</p>
         </div>
       )}
 
       {allergenStep === 'review' && allergenExtracted && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-lg p-6 flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
-            <p className="text-sm font-semibold text-slate-900">Extracted allergen information</p>
+            <p className="text-sm font-semibold text-slate-900">{t('allergens.extractedTitle')}</p>
 
             {allergenExtracted.summary && (
               <p className="text-sm text-slate-600">{allergenExtracted.summary}</p>
@@ -5190,7 +5227,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 
             {allergenExtracted.contains?.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-slate-500 mb-1">Contains</p>
+                <p className="text-xs font-semibold text-slate-500 mb-1">{t('allergens.contains')}</p>
                 <div className="flex flex-wrap gap-1">
                   {allergenExtracted.contains.map((a: string) => (
                     <span key={a} className="text-xs px-2 py-1 bg-red-50 border border-red-200 text-red-700 rounded-lg">{a}</span>
@@ -5201,7 +5238,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 
             {allergenExtracted.may_contain?.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-slate-500 mb-1">May contain</p>
+                <p className="text-xs font-semibold text-slate-500 mb-1">{t('allergens.mayContain')}</p>
                 <div className="flex flex-wrap gap-1">
                   {allergenExtracted.may_contain.map((a: string) => (
                     <span key={a} className="text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg">{a}</span>
@@ -5212,7 +5249,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 
             {allergenExtracted.free_from?.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-slate-500 mb-1">Free from</p>
+                <p className="text-xs font-semibold text-slate-500 mb-1">{t('allergens.freeFrom')}</p>
                 <div className="flex flex-wrap gap-1">
                   {allergenExtracted.free_from.map((a: string) => (
                     <span key={a} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{a}</span>
@@ -5223,7 +5260,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 
             {allergenExtracted.dietary_options?.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-slate-500 mb-1">Dietary options</p>
+                <p className="text-xs font-semibold text-slate-500 mb-1">{t('allergens.dietaryOptions')}</p>
                 <div className="flex flex-wrap gap-1">
                   {allergenExtracted.dietary_options.map((d: string) => (
                     <span key={d} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{d}</span>
@@ -5239,11 +5276,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
             <div className="flex gap-3 pt-2">
               <button onClick={() => { setAllergenStep('idle'); setAllergenExtracted(null); setShowAllergenModal(true) }}
                 className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm hover:bg-slate-50">
-                Try again
+                {t('allergens.tryAgain')}
               </button>
               <button onClick={handleSaveAllergens}
                 className="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm hover:bg-orange-700">
-                Save allergen info
+                {t('allergens.saveInfo')}
               </button>
             </div>
           </div>
@@ -5256,13 +5293,13 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           <div className="bg-white rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-slate-900">
-                {allergenInfoText ? 'Update allergen info' : 'Add allergen info'}
+                {allergenInfoText ? t('allergens.update') : t('allergens.add')}
               </h3>
               <button onClick={() => { setShowAllergenModal(false); setAllergenText('') }}
                 className="text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
             </div>
             <p className="text-sm text-slate-500">
-              Upload your allergen card or paste your allergen information. Our AI will extract and structure it clearly for customers.
+              {t('allergens.uploadIntro')}
             </p>
             <label
               {...allergenDragProps}
@@ -5270,34 +5307,34 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
             >
               <span className="text-3xl">{isAllergenDragging ? '📂' : '📋'}</span>
               <span className="text-sm text-slate-500 text-center">
-                {isAllergenDragging ? 'Drop your allergen card here' : 'Drag and drop or tap to upload'}
+                {isAllergenDragging ? t('allergens.dropHere') : t('allergens.dragOrTap')}
               </span>
-              <span className="text-xs text-slate-400">Image or PDF</span>
+              <span className="text-xs text-slate-400">{t('allergens.imageOrPdf')}</span>
               <input type="file" accept="image/*,.pdf" className="sr-only"
                 onChange={e => { const f = e.target.files?.[0]; if (f) { setShowAllergenModal(false); handleAllergenUploadAndProcess(f) } }} />
             </label>
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-slate-100" />
-              <span className="text-xs text-slate-400">or type / paste</span>
+              <span className="text-xs text-slate-400">{t('allergens.orTypePaste')}</span>
               <div className="flex-1 h-px bg-slate-100" />
             </div>
             <textarea
               value={allergenText}
               onChange={e => setAllergenText(e.target.value)}
-              placeholder="Paste your allergen information here..."
+              placeholder={t('allergens.pastePlaceholder')}
               rows={4}
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
             <div className="flex gap-3">
               <button onClick={() => { setShowAllergenModal(false); setAllergenText('') }}
                 className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50">
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={() => { setShowAllergenModal(false); handleAllergenTextProcess(allergenText) }}
                 disabled={!allergenText.trim()}
                 className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
-                Extract with AI
+                {t('allergens.extract')}
               </button>
             </div>
           </div>
@@ -5309,22 +5346,22 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setDeletingItem(null)}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4 shadow-2xl">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Remove {deletingItem.name}?</h3>
+              <h3 className="text-lg font-semibold text-slate-900">{t('deleteItem.title', { name: deletingItem.name })}</h3>
               <p className="text-sm text-slate-500 mt-2">
-                This item will be hidden from your menu immediately. It won't appear on the customer order page or in the Add Order panel.
+                {t('deleteItem.body')}
               </p>
               <p className="text-xs text-slate-400 mt-2">
-                Historical orders containing this item are preserved.
+                {t('deleteItem.history')}
               </p>
             </div>
             <div className="flex gap-3">
               <button onClick={() => setDeletingItem(null)}
                 className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50">
-                Keep item
+                {t('deleteItem.keep')}
               </button>
               <button onClick={confirmDeleteItem}
                 className="flex-1 bg-red-600 text-white font-semibold py-3 rounded-xl text-sm hover:bg-red-700">
-                Remove item
+                {t('deleteItem.remove')}
               </button>
             </div>
           </div>
@@ -5339,7 +5376,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setSubcatModalCat(null)}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 className="font-black text-slate-900 mb-4">Sub-categories — {modalCat?.name}</h3>
+            <h3 className="font-black text-slate-900 mb-4">{t('subcats.title', { name: modalCat?.name ?? '' })}</h3>
             <div className="space-y-1.5">
               {modalSubcats.map((sc, i, arr) => {
                 const itemCount = localItems.filter(it => it.subcategory_id === sc.id).length
@@ -5347,9 +5384,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   <div key={sc.id} className="flex items-center gap-2 bg-slate-50 rounded-lg px-2.5 py-1.5">
                     <div className="flex items-center gap-1">
                       <button type="button" disabled={i === 0} onClick={() => moveSubcat(subcatModalCat, sc.id, -1)}
-                        className="border border-slate-200 rounded px-2 py-1 text-slate-600 hover:bg-slate-50 disabled:opacity-30" title="Move up">↑</button>
+                        className="border border-slate-200 rounded px-2 py-1 text-slate-600 hover:bg-slate-50 disabled:opacity-30" title={t('subcats.moveUp')}>↑</button>
                       <button type="button" disabled={i === arr.length - 1} onClick={() => moveSubcat(subcatModalCat, sc.id, 1)}
-                        className="border border-slate-200 rounded px-2 py-1 text-slate-600 hover:bg-slate-50 disabled:opacity-30" title="Move down">↓</button>
+                        className="border border-slate-200 rounded px-2 py-1 text-slate-600 hover:bg-slate-50 disabled:opacity-30" title={t('subcats.moveDown')}>↓</button>
                     </div>
                     {editingSubcatId === sc.id ? (
                       <input autoFocus value={editingSubcatName}
@@ -5362,28 +5399,28 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                         className="flex-1 border border-slate-200 rounded-lg px-2.5 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
                     ) : (
                       <button type="button" onClick={() => { setEditingSubcatId(sc.id); setEditingSubcatName(sc.name) }}
-                        className="flex-1 text-left text-sm text-slate-700 truncate hover:text-orange-600" title="Tap to rename">{sc.name}</button>
+                        className="flex-1 text-left text-sm text-slate-700 truncate hover:text-orange-600" title={t('subcats.tapToRename')}>{sc.name}</button>
                     )}
-                    <span className="text-[10px] text-slate-400 flex-shrink-0">{itemCount === 0 ? 'empty' : `${itemCount} item${itemCount === 1 ? '' : 's'}`}</span>
-                    <button type="button" onClick={() => deleteSubcategory(sc)} className="text-slate-400 hover:text-red-500 text-sm flex-shrink-0" title="Delete sub-category">🗑</button>
+                    <span className="text-[10px] text-slate-400 flex-shrink-0">{t('subcats.count', { count: itemCount })}</span>
+                    <button type="button" onClick={() => deleteSubcategory(sc)} className="text-slate-400 hover:text-red-500 text-sm flex-shrink-0" title={t('subcats.delete')}>🗑</button>
                   </div>
                 )
               })}
-              {modalSubcats.length === 0 && <p className="text-xs text-slate-400">No sub-categories yet</p>}
+              {modalSubcats.length === 0 && <p className="text-xs text-slate-400">{t('subcats.none')}</p>}
             </div>
             <div className="flex items-center gap-2 mt-3">
               <input value={newSubcatName} onChange={e => setNewSubcatName(e.target.value)}
                 onKeyDown={async e => {
                   if (e.key === 'Enter' && newSubcatName.trim()) { await createSubcategory(subcatModalCat, newSubcatName); setNewSubcatName('') }
                 }}
-                placeholder="Sub-category name"
+                placeholder={t('subcats.namePlaceholder')}
                 className="flex-1 border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
               <button type="button" disabled={!newSubcatName.trim()}
                 onClick={async () => { await createSubcategory(subcatModalCat, newSubcatName); setNewSubcatName('') }}
-                className="flex-shrink-0 text-xs font-bold px-2.5 py-1.5 rounded-lg bg-orange-600 text-white disabled:opacity-40">+ Add sub-category</button>
+                className="flex-shrink-0 text-xs font-bold px-2.5 py-1.5 rounded-lg bg-orange-600 text-white disabled:opacity-40">{t('subcats.add')}</button>
             </div>
             <div className="flex gap-2 mt-4">
-              <Btn label="Done" colour="slate" onClick={() => setSubcatModalCat(null)} />
+              <Btn label={t('done')} colour="slate" onClick={() => setSubcatModalCat(null)} />
             </div>
           </div>
         </div>
@@ -5397,26 +5434,26 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => { if (editingItem.id) setEditingItem(null) }}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between mb-1">
-              <h3 className="font-black text-slate-900">{editingItem.id ? 'Edit item' : 'New item'}</h3>
-              <button onClick={() => setEditingItem(null)} aria-label="Close" className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1">×</button>
+              <h3 className="font-black text-slate-900">{editingItem.id ? t('item.editTitle') : t('item.newTitle')}</h3>
+              <button onClick={() => setEditingItem(null)} aria-label={t('item.close')} className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1">×</button>
             </div>
-            <p className="text-xs text-slate-400 mb-4">{editingItem.id ? 'Changes save automatically.' : 'Fill in the details, then add the item.'}</p>
+            <p className="text-xs text-slate-400 mb-4">{editingItem.id ? t('item.autoSave') : t('item.createHint')}</p>
             <div className="space-y-3">
-              <Input label="Item name" required value={editingItem.name || ''}
+              <Input label={t('item.nameLabel')} required value={editingItem.name || ''}
                 onChange={v => setEditingItem(p => ({...p!, name: v}))}
                 onBlur={() => { if (editingItem.name?.trim()) saveItemPatch({ name: editingItem.name.trim() }) }}
-                error={editingItem.id && !editingItem.name?.trim() ? 'Name is required' : ''}
-                placeholder="e.g. Margherita" />
+                error={editingItem.id && !editingItem.name?.trim() ? t('item.nameRequired') : ''}
+                placeholder={t('item.namePlaceholder')} />
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Ingredients <span className="text-slate-400 font-normal">(optional)</span></label>
+                <label className="block text-xs font-bold text-slate-600 mb-1">{t.rich('item.ingredients', { opt: chunks => <span className="text-slate-400 font-normal">{chunks}</span> })}</label>
                 <input value={editingItem.description || ''} onChange={e => setEditingItem(p => ({...p!, description: e.target.value}))}
                   onBlur={() => saveItemPatch({ description: editingItem.description ?? null })}
-                  placeholder="e.g. Tomato, Mozzarella, Basil"
+                  placeholder={t('item.ingredientsPlaceholder')}
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
-                <p className="text-slate-400 text-xs mt-0.5">Shown to customers on the order page</p>
+                <p className="text-slate-400 text-xs mt-0.5">{t('item.ingredientsHelp')}</p>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Category <span className="text-red-500">*</span></label>
+                <label className="block text-xs font-bold text-slate-600 mb-1">{t.rich('item.category', { req: chunks => <span className="text-red-500">{chunks}</span> })}</label>
                 <select value={editingItem.category_id || ''} onChange={e => {
                     const newCat = e.target.value || null
                     // On-change save (a select is a discrete choice). Clear the sub-category if it no
@@ -5428,7 +5465,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   {/* REQUIRED (no "No category"): a DISABLED placeholder shows when category_id is null
                       (e.g. a pre-existing stranded item) so it can't be left unset and doesn't masquerade
                       as the first real category. Column stays NULLABLE; the UI + Menu-tab fallback cover it. */}
-                  <option value="" disabled>Select a category…</option>
+                  <option value="" disabled>{t('item.selectCategory')}</option>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
@@ -5437,35 +5474,35 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   heading within its category on the order screens. Dropdown of the selected category's
                   sub-categories. null = ungrouped. Phase 3 does the actual grouping. */}
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Sub-category <span className="text-slate-400 font-normal">(optional)</span></label>
+                <label className="block text-xs font-bold text-slate-600 mb-1">{t.rich('item.subcategory', { opt: chunks => <span className="text-slate-400 font-normal">{chunks}</span> })}</label>
                 <select
                   value={editingItem.subcategory_id || ''}
                   onChange={e => saveItemPatch({ subcategory_id: e.target.value || null })}
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                  <option value="">— None —</option>
+                  <option value="">{t('item.none')}</option>
                   {subcatsFor(editingItem.category_id).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
-                <p className="text-xs text-slate-400 mt-1">Groups this item under a heading within its category on the order screens — e.g. Meat Lovers, Veggie. Leave blank for none.</p>
+                <p className="text-xs text-slate-400 mt-1">{t('item.subcatHelp')}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Input label="Price" required type="number" value={editingItem.price || ''}
+                <Input label={t('item.price')} required type="number" value={editingItem.price || ''}
                   onChange={v => setEditingItem(p => ({...p!, price: parseFloat(v) || 0}))}
                   onBlur={() => { if (Number(editingItem.price) > 0) saveItemPatch({ price: Number(editingItem.price) }) }}
-                  error={editingItem.id && !(Number(editingItem.price) > 0) ? 'Enter a price' : ''}
+                  error={editingItem.id && !(Number(editingItem.price) > 0) ? t('toast.enterPrice') : ''}
                   placeholder="10.00" />
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1">
-                    Default stock per event <span className="text-slate-400 font-normal">(optional)</span>
+                    {t.rich('item.defaultStock', { opt: chunks => <span className="text-slate-400 font-normal">{chunks}</span> })}
                   </label>
                   <input
-                    type="number" min="0" placeholder="e.g. 100"
+                    type="number" min="0" placeholder={t('category.stockPlaceholder')}
                     value={(editingItem as any).default_stock ?? ''}
                     onChange={e => setEditingItem(p => ({...p!, default_stock: e.target.value === '' ? null : parseInt(e.target.value)} as any))}
                     onBlur={() => saveItemPatch({ default_stock: (editingItem as any).default_stock ?? null })}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
                   />
-                  <p className="text-[10px] text-slate-400 mt-0.5">{DEFAULT_STOCK_SCOPE_NOTE}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{tstock('defaultScopeNote')}</p>
                 </div>
               </div>
 
@@ -5482,15 +5519,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 if (modifierGroups.length === 0) {
                   return (
                     <div>
-                      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Options offered on this dish</label>
-                      <p className="text-xs text-slate-400 mt-0.5">No option groups yet — create them in Extras &amp; Upsells.</p>
+                      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('item.optionsTitle')}</label>
+                      <p className="text-xs text-slate-400 mt-0.5">{t('item.noGroups')}</p>
                     </div>
                   )
                 }
                 return (
                   <div>
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Options offered on this dish</label>
-                    <p className="text-xs text-slate-400 mt-0.5 mb-2">Tick a group to offer it on this dish, then choose which of its options to show.</p>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('item.optionsTitle')}</label>
+                    <p className="text-xs text-slate-400 mt-0.5 mb-2">{t('item.optionsHelp')}</p>
                     <div className="space-y-2.5">
                       {/* REQUIRED groups first (#3) via the shared sort; the rule label (#4/#5) via the
                           shared groupRuleLabel — same source as the order screens. */}
@@ -5520,7 +5557,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                   const locked = required && on && includedCount <= 1
                                   return (
                                     <button key={o.id} type="button" disabled={locked}
-                                      title={locked ? 'A required group needs at least one option for each dish' : (on ? 'Offered — tap to hide on this dish' : 'Hidden — tap to offer on this dish')}
+                                      title={locked ? t('item.optionLocked') : (on ? t('item.optionOffered') : t('item.optionHidden'))}
                                       onClick={() => toggleItemOption(itemId, g.id, o.id, on)}
                                       className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all ${on ? 'bg-green-50 text-green-700 border-green-300' : 'bg-white text-slate-600 border-slate-200 hover:border-green-400'} ${locked ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}`}>
                                       {on ? '✓ ' : ''}{o.name}{o.price_adjustment > 0 ? ` +${tabAmount(o.price_adjustment)}` : ''}
@@ -5540,7 +5577,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               {/* Spiciness — optional, display-only heat rating. None = null (renders nothing on the
                   order page). 1-3 → that many chilis. Best-effort prefilled by the AI import; editable here. */}
               <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Spiciness</label>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('item.spiciness')}</label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {([null, 1, 2, 3] as (number | null)[]).map(level => {
                     const active = ((editingItem as any).spiciness ?? null) === level
@@ -5548,7 +5585,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                       <button key={String(level)} type="button"
                         onClick={() => saveItemPatch({ spiciness: level })}
                         className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-red-50 border-red-300 text-red-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
-                        {level === null ? 'None' : '🌶️'.repeat(level)}
+                        {level === null ? t('item.spiceNone') : '🌶️'.repeat(level)}
                       </button>
                     )
                   })}
@@ -5563,15 +5600,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   and every other field stay editable regardless. */}
               {(editingItem as any).allergens_verified === false ? (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-                  <p className="text-sm font-semibold text-amber-800">Set up allergens for this dish in the allergen review.</p>
-                  <p className="text-xs text-amber-700 mt-0.5">Open the “Set up / review allergens” box on the Menu tab — the wizard walks each dish through confirmation.</p>
+                  <p className="text-sm font-semibold text-amber-800">{t('item.allergenGateTitle')}</p>
+                  <p className="text-xs text-amber-700 mt-0.5">{t('item.allergenGateBody')}</p>
                 </div>
               ) : (
                 <>
                   {/* Allergens */}
                   <div>
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Allergens</label>
-                    <p className="text-xs text-slate-400 mt-0.5 mb-2">Select all that apply</p>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('item.allergens')}</label>
+                    <p className="text-xs text-slate-400 mt-0.5 mb-2">{t('item.selectAll')}</p>
                     <AllergenToggles
                       value={(editingItem as any).allergens || []}
                       onChange={next => saveItemPatch({ allergens: next, allergens_verified: true })}
@@ -5580,7 +5617,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 
                   {/* Dietary */}
                   <div>
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Dietary</label>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('item.dietary')}</label>
                     <div className="mt-2">
                       <DietaryToggles
                         value={(editingItem as any).dietary_info || []}
@@ -5593,7 +5630,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 
               {/* Photo */}
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-2">Photo <span className="text-slate-400 font-normal">(optional)</span></label>
+                <label className="block text-xs font-bold text-slate-600 mb-2">{t.rich('item.photo', { opt: chunks => <span className="text-slate-400 font-normal">{chunks}</span> })}</label>
                 <div className="flex items-center gap-3">
                   <div className="w-16 h-16 rounded-xl border border-slate-200 overflow-hidden flex-shrink-0 bg-slate-50 flex items-center justify-center">
                     {editingItem.image_path
@@ -5603,21 +5640,21 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   </div>
                   <div className="flex flex-col gap-2">
                     <ImageDropSlot
-                      title="Tap or drop a photo"
+                      title={t('category.photoTitle')}
                       className="inline-flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
                       disabled={uploadingItemPhoto}
                       onFile={f => { void uploadItemPhoto(f) }}
                     >
-                      {uploadingItemPhoto ? 'Uploading…' : editingItem.image_path ? 'Change photo' : 'Add photo'}
+                      {uploadingItemPhoto ? t('item.uploading') : editingItem.image_path ? t('item.changePhoto') : t('item.addPhoto')}
                     </ImageDropSlot>
                     {editingItem.image_path && (
                       <button onClick={() => saveItemPatch({ image_path: null })} className="text-xs text-red-500 hover:text-red-700 text-left">
-                        Remove photo
+                        {t('item.removePhoto')}
                       </button>
                     )}
                   </div>
                 </div>
-                <p className="text-xs text-slate-400 mt-1">Square photos work best. JPG or PNG.</p>
+                <p className="text-xs text-slate-400 mt-1">{t('item.photoHint')}</p>
               </div>
 
               {/* Auto-accept (per item) — UI control removed; menu_items.auto_accept column + the submit
@@ -5635,8 +5672,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   <div className="border-t border-slate-100 pt-3">
                     <div className="flex items-center justify-between gap-3">
                       <div>
-                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Pre-order item</label>
-                        <p className="text-xs text-slate-400 mt-0.5">Include this item in pre-orders. Timing &amp; rule are set globally in Settings → Pre-orders.</p>
+                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('item.preorderTitle')}</label>
+                        <p className="text-xs text-slate-400 mt-0.5">{t('item.preorderHelp')}</p>
                       </div>
                       <button type="button" aria-pressed={pe}
                         onClick={() => saveItemPatch({ preorder_enabled: !pe })}
@@ -5653,15 +5690,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 /* EDIT mode: everything auto-saves → just Done (close). The "✓ Saved" cue flashes on
                    each field save; the header's "Changes save automatically" is the standing reassurance. */
                 <>
-                  <span className={`text-xs font-medium text-green-600 mr-auto transition-opacity duration-300 ${savedShown ? 'opacity-100' : 'opacity-0'}`}>✓ Saved</span>
-                  <Btn label="Done" onClick={() => setEditingItem(null)} />
+                  <span className={`text-xs font-medium text-green-600 mr-auto transition-opacity duration-300 ${savedShown ? 'opacity-100' : 'opacity-0'}`}>{t('item.saved')}</span>
+                  <Btn label={t('done')} onClick={() => setEditingItem(null)} />
                 </>
               ) : (
                 /* CREATE mode: one explicit "Add item" step (needs name+price+category) — then the modal
                    switches to EDIT mode and auto-save takes over. Cancel discards the un-created item. */
                 <>
-                  <Btn label="Cancel" colour="slate" onClick={() => setEditingItem(null)} />
-                  <Btn label={saving ? 'Adding…' : 'Add item'} loading={saving} disabled={!editingItem.name?.trim() || !(Number(editingItem.price) > 0) || !editingItem.category_id} onClick={saveItem} />
+                  <Btn label={t('cancel')} colour="slate" onClick={() => setEditingItem(null)} />
+                  <Btn label={saving ? t('item.adding') : t('item.add')} loading={saving} disabled={!editingItem.name?.trim() || !(Number(editingItem.price) > 0) || !editingItem.category_id} onClick={saveItem} />
                 </>
               )}
             </div>
@@ -5689,17 +5726,17 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       {showSetupIntro && inSetup && (importStep === 'offer' || importStep === 'upload') && (
         <div className="fixed inset-0 bg-black/60 z-[55] flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
-            <h3 className="font-black text-slate-900 text-lg mb-2">Welcome to HatchGrab</h3>
+            <h3 className="font-black text-slate-900 text-lg mb-2">{ti('welcome.title')}</h3>
             {/* Fallback: an operator truck's name is required at creation (/api/setup enforces >= 2
                 chars), so this cannot normally be empty — "Your truck" keeps the sentence grammatical
                 rather than rendering " is set up." if it ever is. */}
             <p className="text-sm text-slate-600 mb-1">
-              {truck.name?.trim() || 'Your truck'} is set up. Next we&apos;ll add your menu, then your first event.
+              {ti('welcome.body', { name: truck.name?.trim() || ti('welcome.yourTruck') })}
             </p>
-            <p className="text-sm text-slate-500 mb-5">You can stop and come back whenever.</p>
+            <p className="text-sm text-slate-500 mb-5">{ti('welcome.stop')}</p>
             <button type="button" onClick={() => setShowSetupIntro(false)}
               className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl text-sm">
-              Let&apos;s go
+              {ti('welcome.go')}
             </button>
           </div>
         </div>
@@ -5727,10 +5764,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
             {/* H4: the stepper, gated on inSetup — see the upload step for why. The offer step has no
                 position of its own in wizardSteps (it decides what FEEDS step 1), so it shows 'menu'. */}
             {inSetup && <div className="mb-3">{renderWizardStepper('menu')}</div>}
-            <h3 className="font-black text-slate-900 mb-1">Use the menu from your demo?</h3>
+            <h3 className="font-black text-slate-900 mb-1">{ti('offer.title')}</h3>
             <p className="text-slate-400 text-sm mb-5">
-              We saved the menu you uploaded — {committedImportItems.length} items.
-              Use it as your starting point, or upload a different one.
+              {ti('offer.body', { count: committedImportItems.length })}
             </p>
             <div className="flex flex-col gap-2">
               {/* PRIMARY — exactly today's behaviour. The extraction, the vans and demoImportMode were
@@ -5738,14 +5774,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   so the resulting state is byte-identical to before slice C. */}
               <button type="button" onClick={() => { setShowSetupIntro(false); setImportStep('review') }}
                 className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl text-sm">
-                Use this menu
+                {ti('offer.use')}
               </button>
               {/* SECONDARY — a different menu. 🔴 demoImportMode goes FALSE so the eventual commit does
                   NOT clear-first: clearFirst exists to make the demo re-commit repairable, and firing it
                   for a menu that has nothing to do with the demo would wipe rows on an unrelated import. */}
               <button type="button" onClick={() => { setShowSetupIntro(false); setDemoImportMode(false); setImportStep('upload') }}
                 className="w-full border border-slate-200 text-slate-600 font-semibold py-3 rounded-xl text-sm hover:bg-slate-50">
-                Upload a different menu
+                {ti('offer.upload')}
               </button>
             </div>
           </div>
@@ -5766,8 +5802,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 reason — the gate is what makes H4 a setup-only change. Same array, same component, no
                 second step list. */}
             {inSetup && <div className="mb-3">{renderWizardStepper('menu')}</div>}
-            <h3 className="font-black text-slate-900 mb-1">Import your menu</h3>
-            <p className="text-slate-400 text-sm mb-5">Upload a photo of your menu board, a screenshot, a PDF, or paste your menu as text. Our AI reads it and builds your digital menu — you review everything before it saves.</p>
+            <h3 className="font-black text-slate-900 mb-1">{ti('upload.title')}</h3>
+            <p className="text-slate-400 text-sm mb-5">{ti('upload.body')}</p>
             {/* SHARED with the public demo modal — components/menu/MenuUploadFields.tsx. Extracted so
                 there is ONE dropzone; two would drift. */}
             <MenuUploadFields
@@ -5801,13 +5837,13 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   The confirm is already conditional on `importResult`, which is null on this route
                   (nothing has been processed), so no dialog appears — exactly as specified.
                   ⚠️ Gusto and RTF are not inSetup, so they keep the string "Cancel" verbatim. */}
-              <Btn label={inSetup ? "I'll do this later" : 'Cancel'} colour="slate" onClick={() => {
-                if (importResult && !window.confirm('Cancel this import? Your review of this menu will be discarded.')) return
+              <Btn label={inSetup ? ti('upload.later') : ti('cancel')} colour="slate" onClick={() => {
+                if (importResult && !window.confirm(ti('upload.confirmCancel'))) return
                 resetImportState()
                 stripImportParam()
               }} />
               <Btn
-                label="Process menu"
+                label={ti('upload.process')}
                 disabled={!importFile && !importText.trim()}
                 onClick={handleProcessMenu}
               />
@@ -5821,8 +5857,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center">
             <div className="w-12 h-12 border-4 border-slate-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-4" />
-            <p className="font-black text-slate-900 mb-1">Analysing your menu</p>
-            <p className="text-slate-400 text-sm">AI is reading and categorising your items…</p>
+            <p className="font-black text-slate-900 mb-1">{ti('processing.title')}</p>
+            <p className="text-slate-400 text-sm">{ti('processing.body')}</p>
           </div>
         </div>
       )}
@@ -5833,8 +5869,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col h-[70vh] max-h-[90vh]">
             <div className="p-5 border-b border-slate-100 shrink-0">
               <div className="flex items-start justify-between gap-3">
-                <h3 className="font-black text-slate-900">Review imported menu</h3>
-                <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label="Close import"
+                <h3 className="font-black text-slate-900">{ti('review.title')}</h3>
+                <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label={ti('closeImport')}
                   className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0">×</button>
               </div>
               {/* Stepper — adapts to the flow: "Menu · Extras · Kitchen setup" (extras detected) or
@@ -5859,8 +5895,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   <div className="mb-6">
                     {/* H5: reads the shared committable set — same predicate as before, now the same
                         expression the done screen's count uses, so the two cannot disagree. */}
-                    <p className="text-slate-600 text-sm">{committedImportItems.length} items ready to add. Uncheck any you don&apos;t want.</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Names, prices, extras, allergens and dietary info can all be edited anytime {inSetup ? 'later' : 'in Settings'}.</p>
+                    <p className="text-slate-600 text-sm">{ti('review.ready', { count: committedImportItems.length })}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{inSetup ? ti('review.editLaterSetup') : ti('review.editLater')}</p>
                   </div>
                   {/* PRICE BANNER — lives INSIDE the scroll content (not sticky) but sits at the top of it,
                       and the count keeps it accurate as rows are resolved. Framed as "we couldn't read
@@ -5868,11 +5904,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   {unresolvedPrices.length > 0 && (
                     <div className="mb-6 rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3">
                       <p className="text-sm font-bold text-amber-900">
-                        {unresolvedPrices.length} item{unresolvedPrices.length === 1 ? '' : 's'} had no price we could read
+                        {ti('review.noPrice', { count: unresolvedPrices.length })}
                       </p>
                       <p className="text-xs text-amber-800 mt-0.5">
-                        Set a price for each, or mark it free — otherwise it would go live at {formatMajor(0, tabFmt, { trimWhole: true })}. You can&apos;t
-                        continue until these are sorted.
+                        {ti('review.noPriceBody', { zero: formatMajor(0, tabFmt, { trimWhole: true }) })}
                       </p>
                     </div>
                   )}
@@ -5890,7 +5925,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                         {/* §67 point 5: category header sticks to the top of the scroll area while its section is in view. */}
                         <div className="sticky top-0 z-20 bg-white flex items-center gap-2 mb-2 py-2 border-b border-slate-100">
                           {editingThis ? (
-                            <input autoFocus value={catEdit.value} aria-label={`Rename category ${cat}`}
+                            <input autoFocus value={catEdit.value} aria-label={ti('review.renameCategoryAria', { name: cat })}
                               onChange={e => { setCatEdit({ from: cat, value: e.target.value }); setCatEditError(null) }}
                               onBlur={commitCatEdit}
                               onKeyDown={e => {
@@ -5911,7 +5946,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                               as a control. Same handler, same behaviour; visibility only. */}
                           {!editingThis && (
                             isExisting ? null : (
-                              <button type="button" aria-label={`Rename ${cat}`} title="Rename category"
+                              <button type="button" aria-label={ti('review.renameAria', { name: cat })} title={ti('review.renameTitle')}
                                 onClick={() => { setCatEdit({ from: cat, value: cat }); setCatEditError(null) }}
                                 className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded px-1.5 py-0.5 text-base leading-none flex-shrink-0">✎</button>
                             )
@@ -5930,16 +5965,16 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                               reasoning as the rename block above. */}
                           {!editingThis && !isExisting && (
                             importResult.categories.length > 1 ? (
-                              <button type="button" aria-label={`Delete ${cat}`} title="Delete category"
+                              <button type="button" aria-label={ti('review.deleteAria', { name: cat })} title={ti('review.deleteTitle')}
                                 onClick={() => setCatDeleting({ name: cat, moveTo: '' })}
                                 className="text-slate-400 hover:text-red-600 hover:bg-red-50 rounded px-1.5 py-0.5 text-base leading-none flex-shrink-0">✕</button>
                             ) : (
-                              <span title="Your menu needs at least one category" aria-hidden
+                              <span title={ti('review.lastCategory')} aria-hidden
                                 className="text-slate-200 px-1.5 py-0.5 text-base leading-none flex-shrink-0 cursor-not-allowed">✕</span>
                             )
                           )}
-                          <span className="text-xs text-slate-400">{catItems.filter(i => !i._skip).length} of {catItems.length}</span>
-                          {isExisting && <span className="text-xs text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">existing</span>}
+                          <span className="text-xs text-slate-400">{ti('review.countOf', { kept: catItems.filter(i => !i._skip).length, total: catItems.length })}</span>
+                          {isExisting && <span className="text-xs text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">{ti('review.existing')}</span>}
                         </div>
                         {editingThis && catEditError && <p className="text-[11px] text-red-600 -mt-1 mb-2">{catEditError}</p>}
                         {/* M4: the reassignment panel — the ONLY place a category dropdown appears now.
@@ -5948,30 +5983,29 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                           <div className="mb-3 rounded-xl border-2 border-red-200 bg-red-50 px-4 py-3">
                             {catItems.length === 0 ? (
                               <>
-                                <p className="text-sm font-bold text-red-900">Delete &ldquo;{cat}&rdquo;?</p>
-                                <p className="text-xs text-red-800 mt-0.5">It has no items, so nothing is lost.</p>
+                                <p className="text-sm font-bold text-red-900">{ti('review.deleteEmptyTitle', { name: cat })}</p>
+                                <p className="text-xs text-red-800 mt-0.5">{ti('review.deleteEmptyBody')}</p>
                                 <div className="flex gap-2 mt-3">
                                   <button type="button" onClick={() => { deleteImportCategory(cat, null); setCatDeleting(null) }}
-                                    className="text-xs font-black bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg">Delete</button>
+                                    className="text-xs font-black bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg">{ti('review.delete')}</button>
                                   <button type="button" onClick={() => setCatDeleting(null)}
-                                    className="text-xs font-bold text-slate-600 px-3 py-1.5 rounded-lg hover:bg-white">Cancel</button>
+                                    className="text-xs font-bold text-slate-600 px-3 py-1.5 rounded-lg hover:bg-white">{ti('cancel')}</button>
                                 </div>
                               </>
                             ) : (
                               <>
                                 <p className="text-sm font-bold text-red-900">
-                                  Where should {catItems.length} item{catItems.length === 1 ? '' : 's'} go?
+                                  {ti('review.moveTitle', { count: catItems.length })}
                                 </p>
                                 <p className="text-xs text-red-800 mt-0.5">
-                                  Deleting &ldquo;{cat}&rdquo; needs somewhere to move its dishes — items with no category
-                                  are not imported.
+                                  {ti('review.moveBody', { name: cat })}
                                 </p>
                                 <div className="flex flex-wrap items-center gap-2 mt-3">
                                   <select value={catDeleting.moveTo}
-                                    aria-label={`Move items from ${cat} to`}
+                                    aria-label={ti('review.moveAria', { name: cat })}
                                     onChange={e => setCatDeleting({ name: cat, moveTo: e.target.value })}
                                     className="text-sm bg-white border border-red-200 rounded-lg px-2 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400">
-                                    <option value="">Choose a category…</option>
+                                    <option value="">{ti('review.chooseCategory')}</option>
                                     {importResult.categories.filter(c => c !== cat).map(c => (
                                       <option key={c} value={c}>{c}</option>
                                     ))}
@@ -5990,10 +6024,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                       setCatDeleting(null)
                                     }}
                                     className="text-xs font-black bg-red-600 hover:bg-red-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-3 py-1.5 rounded-lg">
-                                    Move &amp; delete
+                                    {ti('review.moveDelete')}
                                   </button>
                                   <button type="button" onClick={() => setCatDeleting(null)}
-                                    className="text-xs font-bold text-slate-600 px-3 py-1.5 rounded-lg hover:bg-white">Cancel</button>
+                                    className="text-xs font-bold text-slate-600 px-3 py-1.5 rounded-lg hover:bg-white">{ti('cancel')}</button>
                                 </div>
                               </>
                             )}
@@ -6013,7 +6047,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                 <div className="flex-1 min-w-0">
                                   {/* §67 point 1: persistent underline + pencil so the name clearly reads as editable. */}
                                   <div className="flex items-center gap-1">
-                                    <input value={item.name} placeholder="Item name" onChange={e => patchImportItem(globalIdx, it => ({ ...it, name: e.target.value }))}
+                                    <input value={item.name} placeholder={ti('review.itemName')} onChange={e => patchImportItem(globalIdx, it => ({ ...it, name: e.target.value }))}
                                       className={`w-full text-sm font-semibold text-slate-900 bg-transparent border-b focus:border-orange-400 focus:outline-none py-0.5 ${incomplete ? 'border-amber-400' : 'border-slate-200 hover:border-slate-400'}`} />
                                     {/* M3: was `text-slate-300 text-xs`. Same element, same job — it is
                                         a hint attached to the always-editable name input beside it, not
@@ -6021,7 +6055,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                         it now matches the category pencil so the two read as one idea. */}
                                     <span aria-hidden className="text-orange-600 text-base leading-none flex-shrink-0">✎</span>
                                   </div>
-                                  {incomplete && <p className="text-[11px] text-amber-600 mt-0.5">Enter a name to add this item — empty rows aren&apos;t imported.</p>}
+                                  {incomplete && <p className="text-[11px] text-amber-600 mt-0.5">{ti('review.incomplete')}</p>}
                                   {item.description && <p className="text-xs text-slate-400 mt-0.5 truncate">{item.description}</p>}
                                   {/* ⚠️ M2: THE PER-ROW CATEGORY DROPDOWN WAS REMOVED FROM HERE.
                                       Slice I put a `<select>` on every row; on a 37-item menu that is 37
@@ -6040,13 +6074,13 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                   {priceUnresolved(item) && (
                                     <button type="button" onClick={() => patchImportItem(globalIdx, it => ({ ...it, _free: true, price: 0, price_missing: false }))}
                                       className="text-[11px] font-semibold text-slate-400 hover:text-orange-600 underline whitespace-nowrap">
-                                      free?
+                                      {ti('review.free')}
                                     </button>
                                   )}
                                   {item._free === true ? (
                                     <button type="button" onClick={() => patchImportItem(globalIdx, it => ({ ...it, _free: false, price_missing: true }))}
                                       className="text-xs font-bold text-green-700 bg-green-50 border border-green-200 rounded-lg px-2 py-1 whitespace-nowrap">
-                                      Free ✕
+                                      {ti('review.freeOn')}
                                     </button>
                                   ) : (
                                     <div className="flex items-center gap-1">
@@ -6070,9 +6104,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                           const hasBlankManual = catItems.some(i => i._manual && !String(i.name || '').trim())
                           return (
                             <button type="button" disabled={hasBlankManual}
-                              title={hasBlankManual ? 'Name the new item before adding another' : undefined}
+                              title={hasBlankManual ? ti('review.nameFirst') : undefined}
                               onClick={() => { if (hasBlankManual) return; setImportResult(prev => prev ? { ...prev, items: [...prev.items, { name: '', price: 0, price_missing: true, category: cat, allergens: [], dietary: [], _allergensChecked: false, _manual: true, _uid: newImpUid() }] } : prev) }}
-                              className={`mt-2 text-xs font-bold ${hasBlankManual ? 'text-slate-300 cursor-not-allowed' : 'text-orange-600 hover:text-orange-700'}`}>+ Add item</button>
+                              className={`mt-2 text-xs font-bold ${hasBlankManual ? 'text-slate-300 cursor-not-allowed' : 'text-orange-600 hover:text-orange-700'}`}>{ti('review.addItem')}</button>
                           )
                         })()}
                       </div>
@@ -6085,7 +6119,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   <div className="mt-4">
                     {catEdit?.from === '' ? (
                       <>
-                        <input autoFocus value={catEdit.value} placeholder="Category name" aria-label="New category name"
+                        <input autoFocus value={catEdit.value} placeholder={ti('review.categoryName')} aria-label={ti('review.newCategoryAria')}
                           onChange={e => { setCatEdit({ from: '', value: e.target.value }); setCatEditError(null) }}
                           onBlur={commitCatEdit}
                           onKeyDown={e => {
@@ -6097,7 +6131,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                       </>
                     ) : (
                       <button type="button" onClick={() => { setCatEdit({ from: '', value: '' }); setCatEditError(null) }}
-                        className="text-xs font-bold text-orange-600 hover:text-orange-700">+ Add category</button>
+                        className="text-xs font-bold text-orange-600 hover:text-orange-700">{ti('review.addCategory')}</button>
                     )}
                   </div>
                 </div>
@@ -6110,9 +6144,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                    The per-dish offer/option MATRIX returns later on the shared component — NOT this build. */
                 /* py-6: vertical breathing room (the scroller is px-6 only) — matches step 1. */
                 <div className="flex flex-col gap-5 py-6">
-                  <p className="text-sm text-slate-600">Some dishes can be set up as <span className="font-semibold">one customisable item</span> or kept as <span className="font-semibold">separate dishes</span>. Choose how each should appear. You can change this{inSetup ? ' later' : ' later in Settings'}.</p>
+                  <p className="text-sm text-slate-600">{ti.rich(inSetup ? 'extras.introSetup' : 'extras.intro', { b: chunks => <span className="font-semibold">{chunks}</span> })}</p>
                   {groupingRows.length === 0 ? (
-                    <p className="text-sm text-slate-500">No groupable dishes — every item is a standalone dish.</p>
+                    <p className="text-sm text-slate-500">{ti('extras.none')}</p>
                   ) : (
                     <div className="flex flex-col gap-4">
                       {groupingRows.map(row => {
@@ -6120,11 +6154,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                         const boxCls = (active: boolean) => `text-left rounded-xl border-2 p-3 transition-colors ${active ? 'border-orange-500 bg-orange-50 ring-1 ring-orange-200' : 'border-slate-200 bg-white hover:border-slate-300'}`
                         return (
                           <div key={row.key} className="rounded-xl border border-slate-200 p-3">
-                            <p className="text-sm font-bold text-slate-800 mb-2">{row.baseName} <span className="text-xs font-medium text-slate-400">· {row.axisLabel} choice</span></p>
+                            <p className="text-sm font-bold text-slate-800 mb-2">{row.baseName} <span className="text-xs font-medium text-slate-400">{ti('extras.axisChoice', { axis: row.axisLabel })}</span></p>
                             <div className="grid grid-cols-2 gap-3">
                               {/* LEFT — Grouped (customisable) */}
                               <button type="button" onClick={() => setGroupingChoice(c => ({ ...c, [row.key]: 'grouped' }))} className={boxCls(choice === 'grouped')}>
-                                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">Grouped · one item, customer chooses</p>
+                                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">{ti('extras.grouped')}</p>
                                 <p className="text-sm font-bold text-slate-900">{row.baseName} <span className="text-slate-500 font-medium">{tabAmount(row.basePrice)}</span></p>
                                 <div className="flex flex-wrap gap-1 mt-1.5">
                                   {row.options.map(o => (
@@ -6134,7 +6168,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                               </button>
                               {/* RIGHT — Separate items */}
                               <button type="button" onClick={() => setGroupingChoice(c => ({ ...c, [row.key]: 'separate' }))} className={boxCls(choice === 'separate')}>
-                                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">Separate menu items</p>
+                                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">{ti('extras.separate')}</p>
                                 <div className="flex flex-col gap-0.5 mt-0.5">
                                   {row.separateItems.map(s => (
                                     <p key={s.name} className="text-xs text-slate-700 truncate">{s.name} <span className="text-slate-400">{tabAmount(s.price)}</span></p>
@@ -6155,7 +6189,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 
             </div>
             <div className="p-5 border-t border-slate-100 flex items-center gap-2 shrink-0">
-              <Btn label={reviewStep > 1 ? '← Back' : 'Back'} colour="slate" onClick={() => reviewStep > 1 ? setReviewStep(reviewStep - 1) : setImportStep('upload')} />
+              <Btn label={reviewStep > 1 ? ti('back') : ti('backPlain')} colour="slate" onClick={() => reviewStep > 1 ? setReviewStep(reviewStep - 1) : setImportStep('upload')} />
               <div className="flex-1" />
               {/* "Next →" everywhere — Kitchen setup (prep) follows, so neither review step is the final
                  action. Menu → Extras (if any) else straight to Kitchen setup; Extras → Kitchen setup.
@@ -6163,10 +6197,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               {reviewStep === 1 ? (
                 // Gated: the price banner above explains why. Disabled until every unread price is a price
                 // or an explicit "free". Only step 1 is gated — unresolved prices can only exist here.
-                <Btn label="Next →" disabled={unresolvedPrices.length > 0}
+                <Btn label={ti('next')} disabled={unresolvedPrices.length > 0}
                   onClick={() => { if (unresolvedPrices.length > 0) return; if (hasExtras) setReviewStep(2); else goToAllergens() }} />
               ) : (
-                <Btn label="Next →" onClick={goToAllergens} />
+                <Btn label={ti('next')} onClick={goToAllergens} />
               )}
             </div>
           </div>
@@ -6220,8 +6254,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
             <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col h-[70vh] max-h-[90vh]">
               <div className="p-5 border-b border-slate-100 shrink-0">
                 <div className="flex items-start justify-between gap-3">
-                  <h3 className="font-black text-slate-900">Allergens</h3>
-                  <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label="Close import"
+                  <h3 className="font-black text-slate-900">{ti('allergens.title')}</h3>
+                  <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label={ti('closeImport')}
                     className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0">×</button>
                 </div>
                 {renderWizardStepper('allergens')}
@@ -6235,10 +6269,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     border-amber-200 rounded-xl), same as the CardUploadPage notice + the cross-tab banners. */}
                 {anyDetected && (
                   <div className="rounded-xl bg-amber-50 border border-amber-200 p-3">
-                    <p className="text-xs text-amber-800 font-semibold">We detected allergens from your menu. Choose how to show them below.</p>
+                    <p className="text-xs text-amber-800 font-semibold">{ti('allergens.detected')}</p>
                   </div>
                 )}
-                <p className="text-sm font-bold text-slate-900">How do you want to show allergens to customers?</p>
+                <p className="text-sm font-bold text-slate-900">{ti('allergens.howShow')}</p>
                 {/* #4 controlled — select a mode, then "Next" (footer) advances. No auto-advance. */}
                 <AllergenModeChooser value={pendingDisplayMode} onChange={setPendingDisplayMode} />
               </div>
@@ -6279,14 +6313,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               )}
             </div>
             <div className="p-5 border-t border-slate-100 flex items-center gap-2 shrink-0">
-              <Btn label="← Back" colour="slate" onClick={() => allergenSubStep === 'card' ? setAllergenSubStep('chooser') : (hasExtras ? (setImportStep('review'), setReviewStep(2)) : (setImportStep('review'), setReviewStep(1)))} />
+              <Btn label={ti('back')} colour="slate" onClick={() => allergenSubStep === 'card' ? setAllergenSubStep('chooser') : (hasExtras ? (setImportStep('review'), setReviewStep(2)) : (setImportStep('review'), setReviewStep(1)))} />
               <div className="flex-1" />
               {/* Skip the WHOLE allergen setup → Kitchen. NOTHING commits here (Kitchen "Save" is the commit). */}
-              <Btn label="Skip Allergen setup for now" colour="ghost" onClick={goToKitchen} />
+              <Btn label={ti('allergens.skip')} colour="ghost" onClick={goToKitchen} />
               {/* #4: chooser needs an explicit Next (select a mode first); card page advances to review/Kitchen. */}
               {allergenSubStep === 'chooser'
-                ? <Btn label="Next →" disabled={!pendingDisplayMode} onClick={() => setAllergenSubStep('card')} />
-                : <Btn label="Next →" onClick={advanceFromCardPage} />}
+                ? <Btn label={ti('next')} disabled={!pendingDisplayMode} onClick={() => setAllergenSubStep('card')} />
+                : <Btn label={ti('next')} onClick={advanceFromCardPage} />}
             </div>
             </div>
           </div>
@@ -6303,34 +6337,34 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
             <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col h-[70vh] max-h-[90vh]">
               <div className="p-5 border-b border-slate-100 shrink-0">
                 <div className="flex items-start justify-between gap-3">
-                  <h3 className="font-black text-slate-900">Kitchen setup</h3>
-                  <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label="Close import"
+                  <h3 className="font-black text-slate-900">{ti('kitchen.title')}</h3>
+                  <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label={ti('closeImport')}
                     className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0">×</button>
                 </div>
-                <p className="text-slate-500 text-sm mt-0.5">Help customers know how long to wait — you can always change these later.</p>
+                <p className="text-slate-500 text-sm mt-0.5">{ti('kitchen.intro')}</p>
                 {/* Same wizard stepper as the review modal, now highlighting Kitchen setup. */}
                 {renderWizardStepper('kitchen')}
               </div>
 
               {/* Copy = the SAME shared constants Menu › Kitchen capacity shows
-                  (KITCHEN_CAPACITY_DESC + KITCHEN_CAPACITY_EXAMPLE in lib/kitchen-capacity.ts) — one source,
+                  (`kitchenCapacity.desc` + `.example` in messages, read with useT('kitchenCapacity')) — one source,
                   no drift. ⚠️ THE SECTION MOVED (October 2026) and the constants did not, so this grid
                   needed no change — which is the point of having them in lib/.
                   (The old pizza-walkthrough KITCHEN_SETUP_EXPLAINER is now unused — sweep later.) */}
               <div className="mx-5 mt-4 mb-0 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex-shrink-0">
-                <p className="text-xs font-semibold text-blue-700 mb-2">How kitchen capacity works</p>
-                <p className="text-xs text-blue-600 mb-1.5">{KITCHEN_CAPACITY_DESC}</p>
-                <p className="text-xs text-blue-500 mb-1.5">{KITCHEN_CAPACITY_EXAMPLE}</p>
+                <p className="text-xs font-semibold text-blue-700 mb-2">{ti('kitchen.howWorks')}</p>
+                <p className="text-xs text-blue-600 mb-1.5">{tk('desc')}</p>
+                <p className="text-xs text-blue-500 mb-1.5">{tk('example')}</p>
                 {/* I3: the third briefed line. Rendered HERE ONLY — the Settings and dashboard capacity
                     cards keep their existing two paragraphs, because adding a line to those surfaces
                     would be a UI change outside this item's scope. The constant is shared so that when
                     they do want it, there is nothing to re-type. */}
-                <p className="text-xs text-blue-500">{KITCHEN_CAPACITY_NO_LIMIT}</p>
+                <p className="text-xs text-blue-500">{tk('noLimit')}</p>
               </div>
 
               <div ref={wizardScrollRef} className="overflow-y-auto flex-1 p-5 min-h-0">
                 {newCats.length === 0 ? (
-                  <p className="text-sm text-slate-500 text-center py-4">All categories already exist — no times to set.</p>
+                  <p className="text-sm text-slate-500 text-center py-4">{ti('kitchen.allExist')}</p>
                 ) : (
                   // Settings-style GRID — SAME 4-col template as Settings (Category | Items | Prep |
                   // Counts to total capacity). Cells come from the shared <KitchenCapacityCategoryRow>
@@ -6338,10 +6372,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   // with the categories. The counts column mirrors Settings exactly (cooked → checked+
                   // disabled / auto-counts; instant → tickable only once a total capacity is set).
                   <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
-                    <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
+                    <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">{tk('colCategory')}</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{tk('colItems')}</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{tk('colPrep')}</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title={tk('colCountsTitle')}>{tk('colCounts')}</span>
                     {newCats.map(cat => {
                       const prep = categoryPrep[cat] || { prep_secs: null, batch_size: null }
                       const hasCap = importKitchenCapacity.kitchen_capacity != null
@@ -6360,9 +6394,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                           locked={locked}
                           capDisabled={capDisabled}
                           countsTitle={locked
-                            ? 'Cooked — always counts (its prep & batch set the pace)'
-                            : !hasCap ? 'Set a capacity to choose which categories count'
-                            : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}
+                            ? tk('countsLocked')
+                            : !hasCap ? tk('countsNoCap')
+                            : tk('countsTick')}
                           onCountsChange={() => { if (!locked && hasCap) setCategoryPrep(prev => ({ ...prev, [cat]: { ...prev[cat], counts_toward: !prev[cat]?.counts_toward } })) }}
                         />
                       )
@@ -6374,38 +6408,38 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     category grid so it aligns (empty 4th cell under the Counts column, like Settings).
                     HELD IN STATE — written to the van(s) ONLY at commit (deferred; see importKitchenCapacity). */}
                 <div className={`${KITCHEN_CAPACITY_GRID} items-center mt-4 pt-2.5 border-t border-slate-100`}>
-                  <span className="text-sm font-semibold text-slate-800 min-w-0">Total capacity</span>
+                  <span className="text-sm font-semibold text-slate-800 min-w-0">{tk('totalCapacity')}</span>
                   <BatchSizeSelect
-                    ariaLabel="Total capacity (items)"
+                    ariaLabel={tk('totalCapacityAria')}
                     valueSize={importKitchenCapacity.kitchen_capacity}
                     onChange={n => { setImportKitchenCapacity(c => ({ ...c, kitchen_capacity: n })); setImportKitchenDirty(true) }}
                     className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400" />
                   <select
                     value={importKitchenCapacity.capacity_window_mins ?? 5}
-                    aria-label="Capacity window (minutes)"
+                    aria-label={tk('windowAria')}
                     disabled={importKitchenCapacity.kitchen_capacity == null}
                     onChange={e => { setImportKitchenCapacity(c => ({ ...c, capacity_window_mins: parseInt(e.target.value) })); setImportKitchenDirty(true) }}
                     className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
                     {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
-                      <option key={n} value={n}>every {formatPrepSecs(n * 60)}</option>
+                      <option key={n} value={n}>{tk('windowEvery', { duration: formatPrepSecs(n * 60) })}</option>
                     ))}
                   </select>
                   <span/>
                 </div>
                 {importKitchenCapacity.kitchen_capacity == null && (
-                  <p className="text-xs text-slate-400 mt-1.5 px-0.5">Set a total capacity to cap how many items the kitchen takes on per window. Leave at ∞ for no limit.</p>
+                  <p className="text-xs text-slate-400 mt-1.5 px-0.5">{ti('kitchen.totalHelp')}</p>
                 )}
               </div>
 
               <div className="p-5 border-t border-slate-100 flex gap-2 shrink-0">
-                <Btn label="← Back" colour="slate" onClick={() => setImportStep('allergens')} disabled={importStep === 'saving'} />
+                <Btn label={ti('back')} colour="slate" onClick={() => setImportStep('allergens')} disabled={importStep === 'saving'} />
                 <div className="flex-1" />
                 {/* Kitchen is the FINAL step → the ONE atomic commit (items + categories + prep + reviewed
                     allergens). Nothing was written before this. */}
                 {/* Setup mode: Schedule follows, so this reads "Next →" like the other steps (it STILL commits
                     the menu — commit-first — then advances to Schedule). Not inSetup: it's the terminal commit,
                     so the label stays "Save & add to menu" exactly as today. */}
-                <Btn label={inSetup ? 'Next →' : 'Save & add to menu'} onClick={() => handleCommitMenu()} loading={importStep === 'saving'} />
+                <Btn label={inSetup ? ti('next') : ti('kitchen.saveAdd')} onClick={() => handleCommitMenu()} loading={importStep === 'saving'} />
               </div>
             </div>
           </div>
@@ -6429,11 +6463,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col h-[70vh] max-h-[90vh]">
             <div className="p-5 border-b border-slate-100 shrink-0">
               <div className="flex items-start justify-between gap-3">
-                <h3 className="font-black text-slate-900">Add my schedule</h3>
-                <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label="Close import" disabled={finishingSetup}
+                <h3 className="font-black text-slate-900">{ti('schedule.title')}</h3>
+                <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label={ti('closeImport')} disabled={finishingSetup}
                   className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0 disabled:opacity-40">×</button>
               </div>
-              <p className="text-slate-500 text-sm mt-0.5">If your schedule lives on your website we can keep it up to date automatically — or add your dates yourself.</p>
+              <p className="text-slate-500 text-sm mt-0.5">{ti('schedule.intro')}</p>
               {/* T2: the reassurance sits on the step where the worry arises — an operator adding dates
                   reasonably assumes that is what starts a clock. ⚠️ It describes a mechanism that is
                   NOT built; the constant's own comment explains why it ships anyway. */}
@@ -6456,8 +6490,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 options={[
                   {
                     key: 'website',
-                    title: 'My schedule is on my website',
-                    desc: "We'll check it regularly and send new dates for your approval.",
+                    title: ti('schedule.websiteTitle'),
+                    desc: ti('schedule.websiteDesc'),
                     // Once a URL is verified+enrolled the OTHER rows LOCK (can't stack a second route on top).
                     // The open website row itself stays put; toggleScheduleRoute no-ops while verified.
                     disabled: !!schedVerifiedEvents && scheduleRoute !== 'website',
@@ -6471,22 +6505,22 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                               type="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
                               value={schedUrl}
                               onChange={e => { setSchedUrl(e.target.value); setSchedVerifyError(null) }}
-                              placeholder="https://yourtruck.co.uk/events"
+                              placeholder={ti('schedule.urlPlaceholder')}
                               disabled={schedVerifying || !!schedVerifiedEvents}
                               className={`flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${(schedVerifying || schedVerifiedEvents) ? 'opacity-60' : ''}`} />
                             <button type="button" onClick={schedVerify} disabled={!schedUrl.trim() || schedVerifying || !!schedVerifiedEvents}
                               className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
                               {schedVerifying
-                                ? <><div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-orange-500 rounded-full animate-spin" />Checking…</>
-                                : 'Verify'}
+                                ? <><div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-orange-500 rounded-full animate-spin" />{ti('schedule.checking')}</>
+                                : ti('schedule.verify')}
                             </button>
                           </div>
                           {schedVerifying && (
                             <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
                               <div className="w-4 h-4 border-2 border-amber-300 border-t-amber-600 rounded-full animate-spin shrink-0 mt-0.5" />
                               <div>
-                                <p className="text-sm font-semibold text-amber-800">Checking your website…</p>
-                                <p className="text-xs text-amber-700 mt-0.5">This can take up to 2 minutes — please keep this open.</p>
+                                <p className="text-sm font-semibold text-amber-800">{ti('schedule.checkingSite')}</p>
+                                <p className="text-xs text-amber-700 mt-0.5">{ti('schedule.takesTime')}</p>
                               </div>
                             </div>
                           )}
@@ -6501,21 +6535,21 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                               page is now watched from here on. */}
                           {schedVerifiedEvents && (
                             <div className="rounded-xl border border-green-200 bg-green-50 p-3">
-                              <p className="text-sm font-bold text-green-800">✓ We can read your schedule</p>
+                              <p className="text-sm font-bold text-green-800">{ti('schedule.canRead')}</p>
                               <p className="text-xs text-green-700 mt-0.5">
-                                We&apos;ll keep checking this page and send any new dates for your approval.
+                                {ti('schedule.keepChecking')}
                               </p>
-                              <div className="mt-3"><Btn label="Continue →" onClick={skipSchedule} loading={finishingSetup} /></div>
+                              <div className="mt-3"><Btn label={ti('continue')} onClick={skipSchedule} loading={finishingSetup} /></div>
                             </div>
                           )}
-                          {!schedVerifiedEvents && <p className="text-xs text-slate-500">Your own website — not a Facebook or Instagram page.</p>}
+                          {!schedVerifiedEvents && <p className="text-xs text-slate-500">{ti('schedule.ownSite')}</p>}
                       </div>
                     ),
                   },
                   {
                     key: 'photo',
-                    title: 'Upload a photo of my schedule',
-                    desc: "Snap or paste your dates — we'll read them in for you to check.",
+                    title: ti('schedule.photoTitle'),
+                    desc: ti('schedule.photoDesc'),
                     disabled: !!schedVerifiedEvents && scheduleRoute !== 'photo',
                     // ROUTE B — photo/text → read → review → save (same upsert_event path).
                     body: (
@@ -6524,30 +6558,30 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                             <>
                               <label className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 hover:border-orange-300 hover:bg-orange-50/30 rounded-xl h-28 px-4 cursor-pointer transition-colors">
                                 <span className="text-2xl">{schedFile ? '✅' : '📷'}</span>
-                                <span className="text-sm text-slate-500 text-center">{schedFile ? schedFile.name : 'Drag and drop or tap to choose'}</span>
-                                <span className="text-xs text-slate-400">Image or PDF</span>
+                                <span className="text-sm text-slate-500 text-center">{schedFile ? schedFile.name : ti('schedule.dragChoose')}</span>
+                                <span className="text-xs text-slate-400">{ti('schedule.imageOrPdf')}</span>
                                 <input type="file" accept="image/*,application/pdf" className="sr-only" onChange={e => setSchedFile(e.target.files?.[0] || null)} />
                               </label>
-                              <div className="flex items-center gap-3"><div className="flex-1 h-px bg-slate-200" /><span className="text-xs text-slate-400 font-medium">or</span><div className="flex-1 h-px bg-slate-200" /></div>
-                              <textarea value={schedText} onChange={e => setSchedText(e.target.value)} placeholder="Paste your dates here…" className="w-full h-24 border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                              <div><Btn label="Read schedule" onClick={schedProcessPhoto} loading={schedPhotoProcessing} disabled={!schedFile && !schedText.trim()} /></div>
+                              <div className="flex items-center gap-3"><div className="flex-1 h-px bg-slate-200" /><span className="text-xs text-slate-400 font-medium">{ti('schedule.or')}</span><div className="flex-1 h-px bg-slate-200" /></div>
+                              <textarea value={schedText} onChange={e => setSchedText(e.target.value)} placeholder={ti('schedule.pastePlaceholder')} className="w-full h-24 border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                              <div><Btn label={ti('schedule.read')} onClick={schedProcessPhoto} loading={schedPhotoProcessing} disabled={!schedFile && !schedText.trim()} /></div>
                             </>
                           ) : schedExtracted.length === 0 ? (
                             <>
-                              <p className="text-sm text-slate-500">We couldn&apos;t find any dates in that — try a clearer photo, or add a date yourself.</p>
-                              <div><Btn label="Try again" colour="slate" onClick={() => setSchedExtracted(null)} /></div>
+                              <p className="text-sm text-slate-500">{ti('schedule.noneFound')}</p>
+                              <div><Btn label={ti('tryAgain')} colour="slate" onClick={() => setSchedExtracted(null)} /></div>
                             </>
                           ) : (
                             <>
-                              <p className="text-sm text-slate-600">{schedExtracted.length} date{schedExtracted.length !== 1 ? 's' : ''} found — these will be added to your schedule.</p>
+                              <p className="text-sm text-slate-600">{ti('schedule.found', { count: schedExtracted.length })}</p>
                               <ul className="flex flex-col gap-1.5">
                                 {schedExtracted.map((ev: any, i: number) => (
                                   <li key={i} className="text-sm text-slate-700 border border-slate-200 rounded-lg px-3 py-2">
-                                    <span className="font-semibold">{ev.event_date || 'Date TBC'}</span>{ev.venue_name ? ` · ${ev.venue_name}` : ''}{ev.start_time ? ` · ${ev.start_time}${ev.end_time ? `–${ev.end_time}` : ''}` : ''}
+                                    <span className="font-semibold">{ev.event_date ? schedDateLabel(ev.event_date) : ti('schedule.dateTbc')}</span>{ev.venue_name ? ` · ${ev.venue_name}` : ''}{ev.start_time ? ` · ${formatSlot(ev.start_time, tabTime)}${ev.end_time ? `–${formatSlot(ev.end_time, tabTime)}` : ''}` : ''}
                                   </li>
                                 ))}
                               </ul>
-                              <div><Btn label={`Save ${schedExtracted.length} date${schedExtracted.length !== 1 ? 's' : ''}`} onClick={schedSaveExtracted} loading={schedSaving} /></div>
+                              <div><Btn label={ti('schedule.save', { count: schedExtracted.length })} onClick={schedSaveExtracted} loading={schedSaving} /></div>
                             </>
                           )}
                       </div>
@@ -6555,16 +6589,16 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   },
                   {
                     key: 'manual',
-                    title: "I'll add my dates myself",
-                    desc: 'Add them later in the Schedule tab — nothing to do now.',
+                    title: ti('schedule.manualTitle'),
+                    desc: ti('schedule.manualDesc'),
                     disabled: !!schedVerifiedEvents && scheduleRoute !== 'manual',
                     // ROUTE C — EXPLANATORY COPY ONLY. No form, no write, no handler: "Continue →" is
                     // skipSchedule, so this finishes setup exactly as the old skip link did (setup_step='done',
                     // no events). This is the deliberate "later" path — do not grow a schedule manager here.
                     body: (
                       <div className="flex flex-col gap-3">
-                        <p className="text-sm text-slate-600">No problem. You can add and manage your dates any time from the Schedule tab in your account.</p>
-                        <div><Btn label="Continue →" onClick={skipSchedule} loading={finishingSetup} /></div>
+                        <p className="text-sm text-slate-600">{ti('schedule.manualBody')}</p>
+                        <div><Btn label={ti('continue')} onClick={skipSchedule} loading={finishingSetup} /></div>
                       </div>
                     ),
                   },
@@ -6586,13 +6620,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col h-[70vh] max-h-[90vh]">
             <div className="p-5 border-b border-slate-100 shrink-0">
               <div className="flex items-start justify-between gap-3">
-                <h3 className="font-black text-slate-900">A few settings to check</h3>
-                <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label="Close import"
+                <h3 className="font-black text-slate-900">{ti('settingsReview.title')}</h3>
+                <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label={ti('closeImport')}
                   className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0">×</button>
               </div>
               <p className="text-slate-500 text-sm mt-0.5">
-                We&apos;ve set you up with some common settings. Worth a quick look — you can change any of
-                these later in Settings.
+                {ti('settingsReview.intro')}
               </p>
               {renderWizardStepper('settings')}
             </div>
@@ -6627,33 +6660,38 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                       )}
                     </div>
                   </div>
-                  {item.secondary && item.secondary.visible && (
-                    <div className="flex items-center gap-2 mt-3 pl-4">
-                      <span className="text-xs text-slate-600">{item.secondary.label}</span>
+                  {item.secondary && item.secondary.visible && (() => {
+                    const sec = item.secondary
+                    const control = (
                       <select
-                        value={item.secondary.value}
-                        aria-label={`${item.label} — ${item.secondary.label}`}
-                        onChange={e => item.secondary!.onChange(parseInt(e.target.value))}
+                        value={sec.value}
+                        aria-label={sec.sentence ? sec.label : ti('settingsReview.secondaryAria', { label: item.label, secondary: sec.label })}
+                        onChange={e => sec.onChange(parseInt(e.target.value))}
                         className="border border-slate-200 rounded-lg px-2 py-1 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
                       >
-                        {item.secondary.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                        {sec.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                       </select>
-                      {/* Q4: the tail comes from the row's own data — it was hardcoded "before their
-                          pickup time", which is only true of the cancellation row and would have been
-                          nonsense beneath the buzzer count. */}
-                      {item.secondary.suffix && <span className="text-xs text-slate-600">{item.secondary.suffix}</span>}
-                    </div>
-                  )}
+                    )
+                    return (
+                      <div className="flex items-center gap-2 mt-3 pl-4">
+                        {/* Q4: the words around the control come from the row's own data — the cancellation
+                            row is one sentence with the select inside it; the buzzer count is a label. */}
+                        {sec.sentence
+                          ? <span className="text-xs text-slate-600">{sec.sentence(control)}</span>
+                          : <><span className="text-xs text-slate-600">{sec.label}</span>{control}</>}
+                      </div>
+                    )
+                  })()}
                   <p className="text-[11px] text-slate-400 mt-2">{item.settingsAnchor}</p>
                 </div>
               ))}
-              {reviewLoading && <p className="text-xs text-slate-400">Loading your current settings…</p>}
+              {reviewLoading && <p className="text-xs text-slate-400">{ti('settingsReview.loading')}</p>}
             </div>
 
             <div className="p-5 border-t border-slate-100 flex gap-2 shrink-0">
               <div className="flex-1" />
               {/* The ONLY caller of finishSetup() now — this is where setup_step becomes 'done'. */}
-              <Btn label="Looks good →" loading={finishingSetup} onClick={() => { void finishSetup() }} />
+              <Btn label={ti('settingsReview.looksGood')} loading={finishingSetup} onClick={() => { void finishSetup() }} />
             </div>
           </div>
         </div>
@@ -6705,9 +6743,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               {inSetup ? (
                 <>
                   <p className="text-5xl mb-3">🎉</p>
-                  <p className="font-black text-slate-900 text-lg mb-1">You&apos;re all set!</p>
+                  <p className="font-black text-slate-900 text-lg mb-1">{ti('done.allSet')}</p>
                   <p className="text-slate-500 text-sm">
-                    {n} item{n === 1 ? '' : 's'} across {m} categor{m === 1 ? 'y' : 'ies'}.
+                    {ti('done.summary', { items: n, categories: m })}
                   </p>
                   <p className="text-xs text-slate-500 mt-3 text-left bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
                     <WalkthroughIntro />
@@ -6716,13 +6754,13 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               ) : (
                 <>
                   <p className="text-5xl mb-4">✅</p>
-                  <p className="font-black text-slate-900 mb-1">Menu imported!</p>
-                  <p className="text-slate-400 text-sm">Your items have been added to the menu.</p>
+                  <p className="font-black text-slate-900 mb-1">{ti('done.imported')}</p>
+                  <p className="text-slate-400 text-sm">{ti('done.added')}</p>
                 </>
               )}
               {importDoneSkipped > 0 && (
                 <p className="text-sm text-slate-400 mt-1">
-                  {importDoneSkipped} duplicate{importDoneSkipped !== 1 ? 's' : ''} skipped
+                  {ti('done.duplicates', { count: importDoneSkipped })}
                 </p>
               )}
               {/* Shown ONLY when the allergen setup isn't complete: card mode = complete; per_dish = complete
@@ -6744,17 +6782,17 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   <button type="button"
                     onClick={() => { onWalkthroughChoice('now'); resetImportState(); reload() }}
                     className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm hover:bg-orange-700">
-                    Show me around
+                    {ti('done.showMe')}
                   </button>
                   <button type="button"
                     onClick={() => { onWalkthroughChoice('later'); resetImportState(); reload() }}
                     className="w-full border border-slate-200 text-slate-600 font-semibold py-2.5 rounded-xl text-sm hover:bg-slate-50">
-                    Remind me later
+                    {ti('done.remind')}
                   </button>
                   <button type="button"
                     onClick={() => { onWalkthroughChoice('never'); resetImportState(); reload() }}
                     className="w-full text-slate-400 font-semibold py-1.5 text-xs hover:text-slate-600">
-                    I&apos;ll explore myself
+                    {ti('done.explore')}
                   </button>
                 </div>
               )}
@@ -6775,20 +6813,20 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center">
             {inSetup ? (
               <>
-                <p className="font-black text-slate-900 mb-1">Finish setting up later?</p>
-                <p className="text-sm text-slate-500 mb-4">Your account and truck are saved — nothing is lost. You can add your menu any time: sign in and tap <span className="font-semibold">Import menu</span> on your menu screen to pick up right here.</p>
+                <p className="font-black text-slate-900 mb-1">{ti('discard.setupTitle')}</p>
+                <p className="text-sm text-slate-500 mb-4">{ti.rich('discard.setupBody', { b: chunks => <span className="font-semibold">{chunks}</span> })}</p>
                 <div className="flex gap-2 justify-center">
-                  <Btn label="Keep going" colour="slate" onClick={() => setShowDiscardConfirm(false)} />
-                  <Btn label="Finish later" colour="orange" onClick={resetImportState} />
+                  <Btn label={ti('discard.keepGoing')} colour="slate" onClick={() => setShowDiscardConfirm(false)} />
+                  <Btn label={ti('discard.finishLater')} colour="orange" onClick={resetImportState} />
                 </div>
               </>
             ) : (
               <>
-                <p className="font-black text-slate-900 mb-1">Discard this import?</p>
-                <p className="text-sm text-slate-500 mb-4">Your changes won&apos;t be saved — the imported items, prep times and kitchen capacity won&apos;t be added.</p>
+                <p className="font-black text-slate-900 mb-1">{ti('discard.title')}</p>
+                <p className="text-sm text-slate-500 mb-4">{ti('discard.body')}</p>
                 <div className="flex gap-2 justify-center">
-                  <Btn label="Keep editing" colour="slate" onClick={() => setShowDiscardConfirm(false)} />
-                  <Btn label="Discard" colour="red" onClick={resetImportState} />
+                  <Btn label={ti('discard.keepEditing')} colour="slate" onClick={() => setShowDiscardConfirm(false)} />
+                  <Btn label={ti('discard.discard')} colour="red" onClick={resetImportState} />
                 </div>
               </>
             )}
@@ -6818,6 +6856,7 @@ function UpsellRulesSection({ initialRules, categories, api, showToast, adding, 
   const [newSuggest, setNewSuggest] = useState('')
   // When set, the inline form is editing this existing rule (vs. adding a new one).
   const [editingId, setEditingId] = useState<string | null>(null)
+  const t = useT('manageUpsells')
 
   const saveRule = async () => {
     if (!newTrigger || !newSuggest || newTrigger === newSuggest) return
@@ -6832,7 +6871,7 @@ function UpsellRulesSection({ initialRules, categories, api, showToast, adding, 
       })
       setRules(prev => editingId ? prev.map(r => r.id === editingId ? data.rule : r) : [...prev, data.rule])
       setNewTrigger(''); setNewSuggest(''); setEditingId(null); setAdding(false)
-      showToast(editingId ? 'Upsell rule updated' : 'Upsell rule added')
+      showToast(editingId ? t('toast.updated') : t('toast.added'))
     } catch (e: any) { showToast(e.message, 'error') }
   }
 
@@ -6844,11 +6883,11 @@ function UpsellRulesSection({ initialRules, categories, api, showToast, adding, 
   }
 
   const deleteRule = async (rule: UpsellRule) => {
-    if (!window.confirm(`Remove upsell rule "${rule.trigger_category} → ${rule.suggest_category}"?`)) return
+    if (!window.confirm(t('confirmRemove', { trigger: rule.trigger_category, suggest: rule.suggest_category }))) return
     setRules(prev => prev.filter(r => r.id !== rule.id))
     try {
       await api('delete_upsell_rule', { id: rule.id })
-      showToast('Rule removed')
+      showToast(t('toast.removed'))
     } catch (e: any) {
       setRules(prev => [...prev, rule])
       showToast(e.message, 'error')
@@ -6863,31 +6902,31 @@ function UpsellRulesSection({ initialRules, categories, api, showToast, adding, 
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-3 space-y-3">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">When customer adds…</label>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">{t('whenAdds')}</label>
               <select value={newTrigger} onChange={e => setNewTrigger(e.target.value)}
                 className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                <option value="">Choose category</option>
+                <option value="">{t('chooseCategory')}</option>
                 {catNames.map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </div>
             <div className="flex-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">Suggest items from…</label>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">{t('suggestFrom')}</label>
               <select value={newSuggest} onChange={e => setNewSuggest(e.target.value)}
                 className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                <option value="">Choose category</option>
+                <option value="">{t('chooseCategory')}</option>
                 {catNames.filter(n => n !== newTrigger).map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </div>
           </div>
           <div className="flex gap-2">
-            <Btn label="Cancel" colour="slate" onClick={() => { setAdding(false); setNewTrigger(''); setNewSuggest(''); setEditingId(null) }} />
-            <Btn label={editingId ? 'Save changes' : 'Add rule'} onClick={saveRule} />
+            <Btn label={t('cancel')} colour="slate" onClick={() => { setAdding(false); setNewTrigger(''); setNewSuggest(''); setEditingId(null) }} />
+            <Btn label={editingId ? t('saveChanges') : t('addRule')} onClick={saveRule} />
           </div>
         </div>
       )}
 
       {rules.length === 0 ? (
-        <p className="text-slate-400 text-sm">No upsell rules yet.</p>
+        <p className="text-slate-400 text-sm">{t('empty')}</p>
       ) : (
         <div className="space-y-2">
           {rules.map(rule => (
@@ -6896,7 +6935,7 @@ function UpsellRulesSection({ initialRules, categories, api, showToast, adding, 
                 <p className="text-sm font-semibold text-slate-800 truncate">
                   {rule.trigger_category} → {rule.suggest_category}
                 </p>
-                <p className="text-xs text-slate-400 mt-0.5">Up to {rule.max_suggestions} items suggested</p>
+                <p className="text-xs text-slate-400 mt-0.5">{t('upTo', { n: rule.max_suggestions, count: String(rule.max_suggestions) })}</p>
               </div>
               {/* show_at_checkout column exists in DB but is unused — all rules are inline */}
               <div className="flex items-center gap-2 shrink-0">
@@ -6931,6 +6970,8 @@ function ModifiersTab({ categories, items, modifierGroups, modifierOptions, item
 }) {
   // Upsell "add rule" form visibility — lifted from UpsellRulesSection for header button
   const [upsellAdding, setUpsellAdding] = useState(false)
+  const tUpsells = useT('manageUpsells')
+  const tExtras = useT('manageExtras')
 
   // §20/§23 optimism lives in the PARENT's state (modifierGroups/modifierOptions/itemModGroups).
   // This tab is conditionally rendered (manage:461) → it UNMOUNTS on tab switch, which previously
@@ -6950,7 +6991,7 @@ function ModifiersTab({ categories, items, modifierGroups, modifierOptions, item
       const result = await api('upsert_modifier_group', { name, is_required: false, min_choices: 0, max_choices: 99 })
       const g = result.group
       if (g?.id) setModifierGroups(gs => [...gs, g]) // optimistic append (no reload)
-      showToast('Group created')
+      showToast(tExtras('toast.groupCreated'))
       return g as ModifierGroup
     } catch (e: any) { showToast(e.message, 'error'); throw e }
   }
@@ -6972,19 +7013,19 @@ function ModifiersTab({ categories, items, modifierGroups, modifierOptions, item
     setModifierGroups(gs => gs.map(g => g.id === group.id ? { ...g, name, is_required, min_choices, max_choices } : g))
     try {
       await api('upsert_modifier_group', { id: group.id, name, is_required, min_choices, max_choices })
-      if (isRename) showToast('Group renamed')
+      if (isRename) showToast(tExtras('toast.groupRenamed'))
     } catch (e: any) { setModifierGroups(prev); showToast(e.message, 'error') }
   }
 
   // ── Delete group — confirm + optimistic removal + persist without reload. Revert both on error. ──
   const onDeleteGroup = async (group: ModifierGroup) => {
-    if (!window.confirm(`Delete "${group.name}"? All options will be removed and it will be unassigned from all categories.`)) return
+    if (!window.confirm(tExtras('confirmDeleteGroup', { name: group.name }))) return
     const prevG = modifierGroups, prevO = modifierOptions
     setModifierGroups(gs => gs.filter(g => g.id !== group.id))
     setModifierOptions(os => os.filter(o => o.group_id !== group.id))
     try {
       await api('delete_modifier_group', { id: group.id })
-      showToast('Group deleted')
+      showToast(tExtras('toast.groupDeleted'))
     } catch (e: any) { setModifierGroups(prevG); setModifierOptions(prevO); showToast(e.message, 'error') }
   }
 
@@ -7038,7 +7079,7 @@ function ModifiersTab({ categories, items, modifierGroups, modifierOptions, item
       const saved = result.option
       if (isEdit) setModifierOptions(os => os.map(o => o.id === draft.id ? { ...o, ...saved } : o))
       else if (saved?.id) setModifierOptions(os => [...os, saved])
-      showToast(isEdit ? 'Option updated' : 'Option added')
+      showToast(isEdit ? tExtras('toast.optionUpdated') : tExtras('toast.optionAdded'))
     } catch (e: any) { setModifierOptions(prevO); showToast(e.message, 'error'); throw e }
   }
 
@@ -7046,7 +7087,7 @@ function ModifiersTab({ categories, items, modifierGroups, modifierOptions, item
   const onDeleteOption = async (opt: ModifierOption) => {
     const prevO = modifierOptions
     setModifierOptions(os => os.filter(o => o.id !== opt.id))
-    try { await api('delete_modifier_option', { id: opt.id }); showToast('Option removed') }
+    try { await api('delete_modifier_option', { id: opt.id }); showToast(tExtras('toast.optionRemoved')) }
     catch (e: any) { setModifierOptions(prevO); showToast(e.message, 'error') }
   }
 
@@ -7057,10 +7098,10 @@ function ModifiersTab({ categories, items, modifierGroups, modifierOptions, item
       <div className="flex items-center justify-between mb-4">
         <div>
           {/* Manage page section heading — use font-black text-slate-900 text-lg for all tab headings */}
-          <h2 className="font-black text-slate-900 text-lg">Upsells</h2>
-          <p className="text-slate-400 text-sm mt-0.5">Nudge customers to add something extra. When someone orders from one category, suggest items from another — a drink with a pizza, a sauce with a burger.</p>
+          <h2 className="font-black text-slate-900 text-lg">{tUpsells('heading')}</h2>
+          <p className="text-slate-400 text-sm mt-0.5">{tUpsells('intro')}</p>
         </div>
-        {!upsellAdding && <Btn label="+ Add upsell" onClick={() => setUpsellAdding(true)} />}
+        {!upsellAdding && <Btn label={tUpsells('add')} onClick={() => setUpsellAdding(true)} />}
       </div>
 
       <UpsellRulesSection initialRules={upsellRules} categories={categories} api={api} showToast={showToast} adding={upsellAdding} setAdding={setUpsellAdding} />
@@ -7101,6 +7142,9 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
   // 🔴 THE TRUCK'S MONEY FORMAT (the manage page's country settings) — every price on this tab.
   const tabFmt = moneyFormatOf(useCountrySettings())
   const tabAmount = (major: number) => formatMajor(major, tabFmt)
+  const t = useT('manageDeals')
+  // The truck's clock (Language Phase 1d): a deal's stored times, exactly as stored in 24h (GB unchanged).
+  const ts = useTruckTime()
   const [editing, setEditing] = useState<Partial<Bundle> | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -7111,15 +7155,15 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
     setSaving(true)
     try {
       await api('upsert_bundle', editing)
-      showToast(editing.id ? 'Deal updated' : 'Deal created')
+      showToast(editing.id ? t('toast.updated') : t('toast.created'))
       setEditing(null); reload()
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setSaving(false) }
   }
 
   const del = async (id: string) => {
-    if (!confirm('Remove this deal?')) return
-    try { await api('delete_bundle', { id }); reload(); showToast('Deal removed') }
+    if (!confirm(t('confirmRemove'))) return
+    try { await api('delete_bundle', { id }); reload(); showToast(t('toast.removed')) }
     catch (e: any) { showToast(e.message, 'error') }
   }
 
@@ -7130,14 +7174,14 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-black text-slate-900 text-lg">Deals</h2>
-          <p className="text-slate-400 text-sm">{bundles.length} deal{bundles.length !== 1 ? 's' : ''} configured</p>
+          <h2 className="font-black text-slate-900 text-lg">{t('heading')}</h2>
+          <p className="text-slate-400 text-sm">{t('count', { n: bundles.length, count: String(bundles.length) })}</p>
         </div>
-        <Btn label="+ New deal" onClick={() => setEditing(emptyBundle)} />
+        <Btn label={t('newDeal')} onClick={() => setEditing(emptyBundle)} />
       </div>
 
       {bundles.length === 0 && (
-        <EmptyState icon="🎁" title="No deals yet" body={`Create a bundle deal like "Lunch Deal — any pizza + drink + dip for ${formatMajor(12, tabFmt, { trimWhole: true })}"`} />
+        <EmptyState icon="🎁" title={t('emptyTitle')} body={t('emptyBody', { price: formatMajor(12, tabFmt, { trimWhole: true }) })} />
       )}
 
       {bundles.map(bundle => {
@@ -7148,13 +7192,13 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
               <div className="flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-black text-slate-900">{bundle.name}</p>
-                  <Badge label={bundle.is_available ? 'Active' : 'Off'} colour={bundle.is_available ? 'green' : 'slate'} />
+                  <Badge label={bundle.is_available ? t('active') : t('off')} colour={bundle.is_available ? 'green' : 'slate'} />
                   <span className={`text-xs px-2 py-0.5 rounded-full border ${
                     bundle.apply_to_new_events
                       ? 'bg-teal-50 text-teal-700 border-teal-100'
                       : 'bg-slate-100 text-slate-500 border-slate-200'
                   }`}>
-                    {bundle.apply_to_new_events ? 'Auto-apply' : 'Manual'}
+                    {bundle.apply_to_new_events ? t('autoApply') : t('manual')}
                   </span>
                 </div>
                 {bundle.description && <p className="text-slate-400 text-xs mt-0.5">{bundle.description}</p>}
@@ -7162,7 +7206,7 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
                   <span className="font-black text-orange-600">{tabAmount(bundle.bundle_price)}</span>
                   {bundle.original_price && <span className="text-slate-400 text-xs line-through">{tabAmount(bundle.original_price)}</span>}
                   {(bundle.start_time || bundle.end_time) && (
-                    <span className="text-xs text-slate-400">{[bundle.start_time, bundle.end_time].filter(Boolean).join(' – ')}</span>
+                    <span className="text-xs text-slate-400">{[formatSlot(bundle.start_time, ts), formatSlot(bundle.end_time, ts)].filter(Boolean).join(' – ')}</span>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1 mt-1.5">
@@ -7170,15 +7214,15 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
                 </div>
               </div>
               <div className="flex gap-1.5 shrink-0">
-                <Btn label="Edit" size="sm" colour="ghost" onClick={() => setEditing(bundle)} />
-                <Btn label="Delete" size="sm" colour="red" onClick={() => del(bundle.id)} />
+                <Btn label={t('edit')} size="sm" colour="ghost" onClick={() => setEditing(bundle)} />
+                <Btn label={t('delete')} size="sm" colour="red" onClick={() => del(bundle.id)} />
               </div>
             </div>
 
             {bundle.stock_warning && (
               <div className="mt-3 flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
                 <span className="text-amber-500 flex-shrink-0 text-sm">⚠️</span>
-                <p className="text-xs text-amber-700">Currently hidden from customers — {bundle.stock_warning}</p>
+                <p className="text-xs text-amber-700">{t('hidden', { warning: bundle.stock_warning })}</p>
               </div>
             )}
           </Card>
@@ -7188,36 +7232,36 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
       {editing && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => {}}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 className="font-black text-slate-900 mb-4">{editing.id ? 'Edit deal' : 'New deal'}</h3>
+            <h3 className="font-black text-slate-900 mb-4">{editing.id ? t('editTitle') : t('newTitle')}</h3>
             <div className="space-y-3">
-              <Input label="Deal name" required value={editing.name || ''} onChange={v => setEditing(p => ({...p!, name: v}))} placeholder='e.g. Lunch Deal' />
-              <Input label="Description" value={editing.description || ''} onChange={v => setEditing(p => ({...p!, description: v}))} placeholder='Any pizza + drink + dip' />
+              <Input label={t('name')} required value={editing.name || ''} onChange={v => setEditing(p => ({...p!, name: v}))} placeholder={t('namePlaceholder')} />
+              <Input label={t('description')} value={editing.description || ''} onChange={v => setEditing(p => ({...p!, description: v}))} placeholder={t('descriptionPlaceholder')} />
               <div className="grid grid-cols-2 gap-3">
-                <Input label="Deal price" required type="number" value={editing.bundle_price || ''} onChange={v => setEditing(p => ({...p!, bundle_price: parseFloat(v) || 0}))} placeholder="12.00" />
-                <Input label="Original price" type="number" value={editing.original_price ?? ''} onChange={v => setEditing(p => ({...p!, original_price: v === '' ? null : parseFloat(v)}))} placeholder="leave blank = auto" hint="blank = calculate from items" />
+                <Input label={t('price')} required type="number" value={editing.bundle_price || ''} onChange={v => setEditing(p => ({...p!, bundle_price: parseFloat(v) || 0}))} placeholder="12.00" />
+                <Input label={t('originalPrice')} type="number" value={editing.original_price ?? ''} onChange={v => setEditing(p => ({...p!, original_price: v === '' ? null : parseFloat(v)}))} placeholder={t('originalPlaceholder')} hint={t('originalHint')} />
               </div>
 
               <div>
-                <p className="text-xs font-bold text-slate-600 mb-2">Item slots (categories required for this deal)</p>
+                <p className="text-xs font-bold text-slate-600 mb-2">{t('slots')}</p>
                 {slotKeys.map((k, i) => (
                   <div key={k} className="flex items-center gap-2 mb-1.5">
-                    <span className="text-xs text-slate-400 w-12 shrink-0">Slot {i + 1}</span>
+                    <span className="text-xs text-slate-400 w-12 shrink-0">{t('slot', { n: String(i + 1) })}</span>
                     <select value={editing[k] || ''} onChange={e => setEditing(p => ({...p!, [k]: e.target.value || null}))}
                       className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                      <option value="">— Not used —</option>
+                      <option value="">{t('notUsed')}</option>
                       {categories.map(c => <option key={c.id} value={c.slug}>{c.name}</option>)}
                     </select>
                   </div>
                 ))}
               </div>
               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                <span className="text-sm font-bold text-slate-700">Deal active</span>
+                <span className="text-sm font-bold text-slate-700">{t('dealActive')}</span>
                 <Toggle on={!!editing.is_available} onToggle={() => setEditing(p => ({...p!, is_available: !p!.is_available}))} />
               </div>
 
               <div className="border-t border-slate-100 pt-4">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Apply to events</p>
-                <p className="text-xs text-slate-400 mt-0.5 mb-3">Choose whether this deal is automatically applied to your events</p>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('applyHeading')}</p>
+                <p className="text-xs text-slate-400 mt-0.5 mb-3">{t('applyHelp')}</p>
                 <div className="flex flex-col gap-2">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input
@@ -7228,8 +7272,8 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
                       className="mt-0.5 flex-shrink-0"
                     />
                     <div>
-                      <p className="text-sm font-medium text-slate-800">Apply to all future events automatically</p>
-                      <p className="text-xs text-slate-500">This deal will be active on every new event you create. You can still turn it off for specific events in Schedule.</p>
+                      <p className="text-sm font-medium text-slate-800">{t('applyAll')}</p>
+                      <p className="text-xs text-slate-500">{t('applyAllHelp')}</p>
                     </div>
                   </label>
                   <label className="flex items-start gap-3 cursor-pointer">
@@ -7241,21 +7285,21 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
                       className="mt-0.5 flex-shrink-0"
                     />
                     <div>
-                      <p className="text-sm font-medium text-slate-800">Select manually per event</p>
-                      <p className="text-xs text-slate-500">This deal won't appear on events unless you enable it in the Schedule tab.</p>
+                      <p className="text-sm font-medium text-slate-800">{t('manualTitle')}</p>
+                      <p className="text-xs text-slate-500">{t('manualHelp')}</p>
                     </div>
                   </label>
                 </div>
                 {editing.apply_to_new_events && (
                   <div className="mt-3 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-                    <p className="text-xs text-amber-700">This deal will be added to new events. For existing events, go to Schedule to manage deals per event.</p>
+                    <p className="text-xs text-amber-700">{t('applyAllNote')}</p>
                   </div>
                 )}
               </div>
             </div>
             <div className="flex gap-2 mt-4">
-              <Btn label="Cancel" colour="slate" onClick={() => setEditing(null)} />
-              <Btn label={saving ? 'Saving...' : 'Save deal'} loading={saving} onClick={save} />
+              <Btn label={t('cancel')} colour="slate" onClick={() => setEditing(null)} />
+              <Btn label={saving ? t('saving') : t('save')} loading={saving} onClick={save} />
             </div>
           </div>
         </div>
@@ -7289,31 +7333,32 @@ async function geocodeLocation(
 }
 function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent['status']; event_date: string; end_time: string }) {
   const tz = useTruckTime().timeZone
+  const t = useT('manageSchedule')
   const isPast = end_time ? new Date().getTime() > instantOfLocal(event_date, end_time, tz) : false
   if (status === 'cancelled') return (
-    <span className="text-xs font-semibold text-slate-400">Cancelled</span>
+    <span className="text-xs font-semibold text-slate-400">{t('status.cancelled')}</span>
   )
   if (isPast) return (
-    <span className="text-xs font-semibold text-slate-400">Finished</span>
+    <span className="text-xs font-semibold text-slate-400">{t('status.finished')}</span>
   )
   if (status === 'unconfirmed') return (
     <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-600">
-      <span className="inline-block w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />Unconfirmed
+      <span className="inline-block w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />{t('status.unconfirmed')}
     </span>
   )
   if (status === 'confirmed') return (
     <span className="flex items-center gap-1.5 text-xs font-semibold text-blue-600">
-      <span className="inline-block w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />Confirmed
+      <span className="inline-block w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />{t('status.confirmed')}
     </span>
   )
   if (status === 'open') return (
     <span className="flex items-center gap-1.5 text-xs font-semibold text-green-600">
-      <span className="inline-block w-2 h-2 rounded-full bg-green-400 flex-shrink-0" />Open now
+      <span className="inline-block w-2 h-2 rounded-full bg-green-400 flex-shrink-0" />{t('status.open')}
     </span>
   )
   return (
     <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-400">
-      <span className="inline-block w-2 h-2 rounded-full bg-slate-300 flex-shrink-0" />Closed
+      <span className="inline-block w-2 h-2 rounded-full bg-slate-300 flex-shrink-0" />{t('status.closed')}
     </span>
   )
 }
@@ -7402,6 +7447,12 @@ function EventTimeSelect({
 }) {
   const { h: curH, m: curM } = splitHhMm(value)
   const minMins = hhMmToMins(minExclusive)
+  const t = useT('manageScheduleEvent')
+  /* 🔴 THE HOUR'S LABEL IN THE TRUCK'S CLOCK (Language Phase 1d). 24h: "17", exactly as before. 12h: the truck's
+   * own 12-hour form from `clockOf` without the ":00" the minute box beside it supplies — US "5 PM".
+   * ⚠️ LABELS ONLY. The option VALUES stay "00"–"23", so what is stored is the same "HH:MM" as ever. */
+  const ts = useTruckTime()
+  const hourLabel = (h: string) => (ts.timeFormat === '12h' ? clockOf(`${h}:00`, '12h', ts.locale).replace(':00', '') : h)
 
   // Minutes selectable for a given hour: the fixed 5-step list, narrowed only inside the boundary hour.
   const minutesFor = (h: string) =>
@@ -7434,16 +7485,16 @@ function EventTimeSelect({
   return (
     <div className="flex items-center gap-1 w-full">
       <Select
-        ariaLabel={label ? `${label} hour` : 'Hour'}
+        ariaLabel={label ? t('time.hourOf', { label }) : t('time.hour')}
         value={curH}
         disabled={disabled}
         onChange={v => onHour(v)}
         className={className}
-        options={[{ value: '', label: placeholder ?? '--' }, ...hours.map(h => ({ value: h, label: h }))]}
+        options={[{ value: '', label: placeholder ?? '--' }, ...hours.map(h => ({ value: h, label: hourLabel(h) }))]}
       />
       <span className="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>
       <Select
-        ariaLabel={label ? `${label} minute` : 'Minute'}
+        ariaLabel={label ? t('time.minuteOf', { label }) : t('time.minute')}
         value={curM}
         // No hour means there is no time to attach a minute to; the hour is always chosen first.
         disabled={disabled || !curH}
@@ -7554,6 +7605,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const tabSettings = useCountrySettings()
   const tabFmt = moneyFormatOf(tabSettings)
   const tabAmount = (major: number) => formatMajor(major, tabFmt)
+  // 🔴 THIS TAB'S WORDS (Language Phase 1d) and the truck's ADDRESS STYLE, which picks its address words
+  // (postcode or ZIP code, the example addresses) and whether a postcode is forced upper-case.
+  const tS = useT('manageSchedule')
+  const tE = useT('manageScheduleEvent')
+  const tI = useT('manageScheduleImport')
+  const tP = useT('privateEvents')
+  const addrStyle = addressStyleOf(tabSettings.addressFormat)
+  const pcUpper = upperCasesPostcode(addrStyle)
   const [events, setEvents] = useState<TruckEvent[]>([])
   /* ── 🔴 PRIVATE EVENTS (20261014) ───────────────────────────────────────────────────────────────
    * `private_events` is a **Pro** key, deliberately split from `event_types` (Max) — see
@@ -7731,7 +7790,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    * pieces of state come to disagree about what is showing. */
   const [eventTypeId, setEventTypeId] = useState<string | null>(null)
   const [showImportModal, setShowImportModal] = useState(false)
-  const [importModalTitle, setImportModalTitle] = useState('Import schedule')
+  /** Which title the import modal shows — a CODE (it is set in an effect); the render supplies the words. */
+  const [importModalTitle, setImportModalTitle] = useState<'import' | 'found'>('import')
   const { isDragging: isScheduleDragging, dragProps: scheduleDragProps } = useDragDrop(
     (file) => setUploadFile(file),
     ['image/*', '.pdf']
@@ -7744,7 +7804,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setEvents(data.events)
-    } catch (e: any) { showToast(e.message || 'Failed to load events', 'error') }
+    } catch (e: any) { showToast(e.message || tS('toast.loadFailed'), 'error') }
     finally { setLoadingEvents(false) }
   }, [token])
 
@@ -7792,7 +7852,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     setSelectedEvents(new Set(evs.map((_: any, i: number) => i)))
     setExpandedEventIds(new Set())
     setFocusedEventIds(new Set(evs.filter((e: any) => e._missingDate || e._missingVenue || e._missingTime).map((e: any) => e.id)))
-    setImportModalTitle('Events found on your website')
+    setImportModalTitle('found')
     setShowImportModal(true)
     onClearPendingVerify?.()
   }, [pendingVerifyEvents])
@@ -7886,8 +7946,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     try {
       const r = await api('private_link', { id: eventId })
       if (r?.ok) setLinkPanel(r as PrivateLinkData)
-      else showToast(r?.error || 'Could not load the link', 'error')
-    } catch (e) { showToast(e instanceof Error ? e.message : 'Could not load the link', 'error') }
+      else showToast(r?.error || tS('toast.linkFailed'), 'error')
+    } catch (e) { showToast(e instanceof Error ? e.message : tS('toast.linkFailed'), 'error') }
     finally { setLinkBusy(false) }
   }
 
@@ -7952,7 +8012,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    */
   const linkPanelModal = linkPanel ? (
     <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 sm:items-center"
-      role="dialog" aria-modal="true" aria-label="Private link and QR code"
+      role="dialog" aria-modal="true" aria-label={tS('link.label')}
       onClick={() => setLinkPanel(null)}>
       <div className="w-full max-w-lg" onClick={e => e.stopPropagation()}>
         <PrivateLinkPanel
@@ -7966,7 +8026,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         />
         <button type="button" onClick={() => setLinkPanel(null)}
           className="mt-3 w-full rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow">
-          Close
+          {tS('link.close')}
         </button>
       </div>
     </div>
@@ -8078,12 +8138,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const previewIsPrivate = privateTypeId
     ? eventTypeId === privateTypeId
     : (editingEvent?.is_private === true)
+  /** The preview's placeholder words, in the truck's language (Language Phase 1d). */
+  const previewWords = { venue: tE('whereTrading'), date: tE('previewDate'), truck: tE('previewTruck') }
   const previewEvent = editingEvent
-    ? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName })
+    ? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName, words: previewWords })
     : null
   const previewOneLine = editingEvent
     ? previewLine({
-        form: editingEvent, vanName: previewVanName,
+        form: editingEvent, vanName: previewVanName, words: previewWords,
         fmtDay: placeShortDayLocal, fmtTimes: (a, b) => timeRangeLabel(a, b, ts),
       })
     : ''
@@ -8106,15 +8168,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
 
   const validateEventForm = (form: EditingEvent) => {
     const errors: Record<string, string> = {}
-    if (!form.event_date) errors.event_date = 'Date is required'
-    if (!form.venue_name?.trim()) errors.venue_name = 'Venue name is required'
-    if (!form.start_time) errors.start_time = 'Start time is required'
-    if (!form.end_time) errors.end_time = 'End time is required'
+    if (!form.event_date) errors.event_date = tE('errors.date')
+    if (!form.venue_name?.trim()) errors.venue_name = tE('errors.venue')
+    if (!form.start_time) errors.start_time = tE('errors.start')
+    if (!form.end_time) errors.end_time = tE('errors.end')
     // V11.15: the end select can no longer OFFER an invalid time, but an event opened for editing may
     // already hold one. Without this the modal would save it and the server would reject it with a
     // message about missing times, which is not what is wrong.
-    else if (endIsNotAfterStart(form.start_time, form.end_time)) errors.end_time = 'End time must be after the start time'
-    if (vans.length > 1 && !form.van_id) errors.van_id = 'Please select a truck'
+    else if (endIsNotAfterStart(form.start_time, form.end_time)) errors.end_time = tE('errors.endAfterStart')
+    if (vans.length > 1 && !form.van_id) errors.van_id = tE('errors.van')
     return errors
   }
 
@@ -8140,7 +8202,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
 
   const closeImportModal = () => {
     setShowImportModal(false)
-    setImportModalTitle('Import schedule')
+    setImportModalTitle('import')
     setUploadFile(null)
     setUploadText('')
     setExtractedEvents([])
@@ -8216,16 +8278,17 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
            * below, so a note rendered inside the form would be drawn and destroyed in the same tick.
            * The sentence names BOTH outcomes, in that order, because the one an operator must not
            * doubt is that their event saved. */
-          showToast(
-            `Event saved. ${pickedPlace.name}’s usual type was not — ${
-              e instanceof Error ? e.message : 'the save did not go through'}.`, 'error')
+          showToast(tS('toast.placeTypeFailed', {
+            place: pickedPlace.name,
+            reason: e instanceof Error ? e.message : tS('toast.placeTypeFailedReason'),
+          }), 'error')
         }
       }
       if (editingEventConfirmOnSave && editingEvent.id) {
         await handleConfirmEvent(editingEvent.id)
         setEditingEventConfirmOnSave(false)
       } else {
-        showToast(editingEvent.id ? 'Event updated' : 'Event added')
+        showToast(editingEvent.id ? tS('toast.eventUpdated') : tS('toast.eventAdded'))
       }
       closeAddModal()
       await loadEvents()
@@ -8316,12 +8379,12 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       await loadEvents()
       closeAddModal()
       setShowImportModal(false)
-      showToast(`${count} event${count !== 1 ? 's' : ''} saved`)
+      showToast(tS('toast.eventsSaved', { count }))
       // T1: the ONLY line added to this function. Undefined/null for Settings (see the prop's note), so
       // for Gusto and RTF this is `undefined?.()` — evaluated, no-op, nothing else about the save
       // touched. Placed AFTER the toast so the wizard advances only once the events are genuinely in.
       onEventsSaved?.()
-    } catch (e: any) { showToast(e.message || 'Failed to save events', 'error') }
+    } catch (e: any) { showToast(e.message || tS('toast.saveEventsFailed'), 'error') }
     finally { setSavingExtracted(false) }
   }
 
@@ -8357,8 +8420,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       seedTypePill(ev)
     }
     if (evForTime && (!evForTime.start_time || !evForTime.end_time)) {
-      showToast('Add a start and end time before approving — this event needs a time to go live.', 'error')
-      openForFix(evForTime, { start_time: !evForTime.start_time ? 'Add a start time' : '', end_time: !evForTime.end_time ? 'Add an end time' : '' })
+      showToast(tS('toast.needsTime'), 'error')
+      openForFix(evForTime, { start_time: !evForTime.start_time ? tS('toast.addStartTime') : '', end_time: !evForTime.end_time ? tS('toast.addEndTime') : '' })
       return
     }
     // ── 🔴 LIVE-VAN GATE (UX) — SAME TREATMENT AS THE TIME GATE ABOVE ──────────────────────────────
@@ -8376,8 +8439,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     // ⚠️ The server enforces the same rule and is the actual guard; this exists so the operator gets the
     // field flagged in Edit & Approve rather than a rejected request.
     if (evForTime && !evForTime.van_id && vans.length > 1) {
-      showToast('Choose which truck is working this event before approving.', 'error')
-      openForFix(evForTime, { van_id: 'Choose which truck is working this event' })
+      showToast(tS('toast.chooseTruckBefore'), 'error')
+      openForFix(evForTime, { van_id: tS('toast.chooseTruck') })
       return
     }
     setSaving(true)
@@ -8402,7 +8465,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'confirmed' as const } : e))
-      showToast('Event confirmed')
+      showToast(tS('toast.eventConfirmed'))
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setSaving(false) }
   }
@@ -8425,7 +8488,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setEvents(prev => prev.filter(e => e.id !== event.id))
-      showToast('Event rejected', 'success', { duration: 5000, action: { label: '↩ Undo', run: () => undoRejectEvent(event) } })
+      showToast(tS('toast.eventRejected'), 'success', { duration: 5000, action: { label: tS('toast.undo'), run: () => undoRejectEvent(event) } })
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setSaving(false) }
   }
@@ -8445,8 +8508,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setEvents(prev => prev.some(e => e.id === event.id) ? prev : [...prev, { ...event, status: 'unconfirmed' as const }])
-      showToast('Event restored')
-    } catch (e: any) { showToast(e.message || 'Failed to restore', 'error') }
+      showToast(tS('toast.eventRestored'))
+    } catch (e: any) { showToast(e.message || tS('toast.restoreFailed'), 'error') }
   }
 
   const openEventCancelModal = async (event: TruckEvent) => {
@@ -8481,8 +8544,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       setEvents(prev => prev.filter(e => e.id !== cancellingEvent.id))
       const cancelled = data.cancelledOrders ?? 0
       showToast(cancelled > 0
-        ? `Event cancelled · ${cancelled} order${cancelled !== 1 ? 's' : ''} cancelled`
-        : 'Event cancelled')
+        ? tS('toast.eventCancelledOrders', { count: cancelled })
+        : tS('toast.eventCancelled'))
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setCancellingEvent(null) }
   }
@@ -8541,7 +8604,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   * of the public feeds, not of the data. */}
                 {event.is_private && (
                   <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-purple-300 bg-purple-50 px-1.5 py-px text-[10px] font-bold text-purple-700">
-                    <span aria-hidden="true">🔒</span>{PRIVATE_CHIP}
+                    <span aria-hidden="true">🔒</span>{tP('chip')}
                   </span>
                 )}
                 <EventStatusBadge status={event.status} event_date={event.event_date} end_time={event.end_time} />
@@ -8556,7 +8619,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     ? event.private_name
                     : (
                       <button type="button" onClick={() => { setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }}
-                        className="font-semibold underline hover:no-underline">Add a name</button>
+                        className="font-semibold underline hover:no-underline">{tS('card.addName')}</button>
                     )}
                 </p>
               )}
@@ -8569,7 +8632,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {event.start_time && event.end_time && `${formatTime(event.start_time, ts)}–${formatTime(event.end_time, ts)}`}
                 {/* ⚠ Time needed — a pending event with no time can't go live; flag it so the operator fixes it. */}
                 {(!event.start_time || !event.end_time) && event.status === 'unconfirmed' && (
-                  <span className="text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-bold">⚠ Time needed</span>
+                  <span className="text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-bold">{tS('card.timeNeeded')}</span>
                 )}
                 {vans.length > 1 && event.van_id && ` · ${vans.find(v => v.id === event.van_id)?.name || ''}`}
               </p>
@@ -8586,9 +8649,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     // SAME acknowledge gate as the scraper Approve button: with a conflict the first
                     // click reveals "confirm anyway" in the banner below (warn-with-friction); no
                     // conflict → confirms immediately. Keyed on event.id so cards don't collide.
-                    <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? 'Set a time first' : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? tS('card.setTimeFirst') : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">
                       <span className="sm:hidden">✓</span>
-                      <span className="hidden sm:inline">Confirm</span>
+                      <span className="hidden sm:inline">{tS('card.confirm')}</span>
                     </button>
                   )}
                   {/* ── 🔴 "Link & QR" — ONLY ON A PRIVATE EVENT, AND ONLY WITH THE PRO KEY ───────
@@ -8599,18 +8662,18 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     <button onClick={() => void openLinkPanel(event.id)} disabled={linkBusy}
                       className="text-xs font-semibold text-purple-700 border border-purple-300 bg-white rounded-lg px-2 py-1.5 hover:bg-purple-50 disabled:opacity-50">
                       <span className="sm:hidden">🔗</span>
-                      <span className="hidden sm:inline">{LINK_QR_BUTTON}</span>
+                      <span className="hidden sm:inline">{tP('link.button')}</span>
                     </button>
                   )}
                   <button onClick={() => { setAddMode('manual'); setExtractedEvents([]); handleCopyEvent(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
                     <span className="sm:hidden">⧉</span>
-                    <span className="hidden sm:inline">Copy</span>
+                    <span className="hidden sm:inline">{tS('card.copy')}</span>
                   </button>
                   {!isPast && (
                     <>
                       <button onClick={() => { setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
                         <span className="sm:hidden">✏</span>
-                        <span className="hidden sm:inline">Edit</span>
+                        <span className="hidden sm:inline">{tS('card.edit')}</span>
                       </button>
                       {/* ══ 🔴 MAKE POST (stage 2) ═══════════════════════════════════════════
                           ⚠️ UPCOMING EVENTS ONLY — it sits inside the existing `!isPast` branch, which also
@@ -8644,12 +8707,12 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                          mount has gone with this line — see the tombstone at the mount site. */
                       <button onClick={() => onOpenSocial('create', event.id)} className="text-xs font-semibold text-orange-700 border border-orange-200 bg-white rounded-lg px-2 py-1.5 hover:bg-orange-50">
                         <span className="sm:hidden">▣</span>
-                        <span className="hidden sm:inline">Make post</span>
+                        <span className="hidden sm:inline">{tS('card.makePost')}</span>
                       </button>
                       )}
                       <button onClick={() => openEventCancelModal(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">
                         <span className="sm:hidden">✕</span>
-                        <span className="hidden sm:inline">Cancel</span>
+                        <span className="hidden sm:inline">{tS('card.cancel')}</span>
                       </button>
                     </>
                   )}
@@ -8685,7 +8748,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {privateTypeId && pendingTypeFor(event) === privateTypeId
                   && (!event.start_time || !event.end_time) && (
                   <p className="mt-1.5 rounded-lg border border-amber-300 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-900">
-                    {PRIVATE_NEEDS_TIMES}
+                    {tP('form.needsTimes')}
                   </p>
                 )}
               </div>
@@ -8696,11 +8759,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 as that row, including the conflict-acknowledge gate on Approve. */}
             {pending && (
               <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0 self-start">
-                <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? 'Set a time first' : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">Approve</button>
+                <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? tS('card.setTimeFirst') : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">{tS('card.approve')}</button>
                 {!isPast && (
-                  <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">Edit</button>
+                  <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">{tS('card.edit')}</button>
                 )}
-                <button onClick={() => handleRejectScrapedEvent(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">Reject</button>
+                <button onClick={() => handleRejectScrapedEvent(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">{tS('card.reject')}</button>
               </div>
             )}
           </div>
@@ -8717,13 +8780,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               location was guessed; a confidently-matched or operator-entered event shows nothing. */}
           {event.status === 'unconfirmed' && event.source === 'scraper' && event.venue_match_confidence === 'low' && (
             <div className="mt-3 px-3 py-2.5 bg-orange-50 border border-orange-300 rounded-lg text-sm">
-              <p className="font-bold text-orange-800 mb-1">📍 We guessed this location</p>
+              <p className="font-bold text-orange-800 mb-1">{tS('guessed.title')}</p>
               <p className="text-orange-900 text-xs leading-relaxed">
-                More than one venue matched <strong>{event.venue_name || 'this venue'}</strong>, so we picked
-                the closest fit{event.town ? <> in <strong>{event.town}</strong></> : null}
-                {event.postcode ? <> ({event.postcode})</> : null}. Check it is the right one before approving —
-                if it is wrong, use <strong>Edit</strong> to correct the area or postcode, otherwise customers
-                will be sent to the wrong place.
+                {tS.rich('guessed.body', {
+                  venue: event.venue_name || tS('guessed.thisVenue'),
+                  hasTown: event.town ? 'yes' : 'no', town: event.town ?? '',
+                  hasPostcode: event.postcode ? 'yes' : 'no', postcode: event.postcode ?? '',
+                  style: addrStyle,
+                  b: chunks => <strong>{chunks}</strong>,
+                })}
               </p>
             </div>
           )}
@@ -8731,10 +8796,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               but never on the map. Silent until now — the operator saw a normal-looking card. */}
           {event.status === 'unconfirmed' && event.source === 'scraper' && !event.latitude && (
             <div className="mt-3 px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
-              <p className="font-bold text-slate-700 mb-1">📍 No location yet</p>
+              <p className="font-bold text-slate-700 mb-1">{tS('noLocation.title')}</p>
               <p className="text-slate-600 text-xs leading-relaxed">
-                We could not place this venue on the map, so it will be listed but will not show a map pin.
-                Add a postcode with <strong>Edit</strong> to put it on the map.
+                {tS.rich('noLocation.body', { style: addrStyle, b: chunks => <strong>{chunks}</strong> })}
               </p>
             </div>
           )}
@@ -8747,25 +8811,31 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               (warn-with-friction, never hard-blocked). */}
           {conflicts.length > 0 && (
             <div className="mt-3 px-3 py-2.5 bg-amber-50 border border-amber-300 rounded-lg text-sm">
-              <p className="font-bold text-amber-800 mb-1.5">⚠️ Possible conflict{conflicts.length !== 1 ? 's' : ''} — review before {pending ? 'approving' : 'confirming'}</p>
+              <p className="font-bold text-amber-800 mb-1.5">{tS('conflict.title', { count: conflicts.length, pending: pending ? 'yes' : 'no' })}</p>
               <div className="space-y-2">
                 {conflicts.map((c, i) => (
                   <div key={`${c.event.id}-${i}`} className="text-amber-900">
-                    <p>{c.message}</p>
+                    {/* ⚠️ THE KIND'S SENTENCE FROM MESSAGES (Language Phase 1d) — `c.message` is the English
+                        lib/event-conflicts.ts still carries for any other reader. */}
+                    <p>{tS(`conflict.${c.kind}`)}</p>
                     <p className="text-xs text-amber-700 mt-0.5">
-                      Already on your schedule: <strong>{c.event.venue_name || 'Unnamed venue'}</strong>
-                      {` · ${formatYmdShortMonth(c.event.event_date, ts, { day: 'numeric', month: 'short' })}`}
-                      {(c.event.start_time || c.event.end_time) ? ` · ${formatSlot((c.event.start_time || '').slice(0, 5), ts)}–${formatSlot((c.event.end_time || '').slice(0, 5), ts)}` : ''}
-                      {c.event.postcode ? ` · ${c.event.postcode}` : ''}
-                      {` (${c.event.status})`}
+                      {/* The status is a CODE ("confirmed" / "open"); the message words it. */}
+                      {tS.rich('conflict.already', {
+                        venue: c.event.venue_name || tS('conflict.unnamedVenue'),
+                        details: ` · ${formatYmdShortMonth(c.event.event_date, ts, { day: 'numeric', month: 'short' })}`
+                          + ((c.event.start_time || c.event.end_time) ? ` · ${formatSlot((c.event.start_time || '').slice(0, 5), ts)}–${formatSlot((c.event.end_time || '').slice(0, 5), ts)}` : '')
+                          + (c.event.postcode ? ` · ${c.event.postcode}` : ''),
+                        status: c.event.status,
+                        b: chunks => <strong>{chunks}</strong>,
+                      })}
                     </p>
                   </div>
                 ))}
               </div>
               {conflictAckId === event.id && (
                 <div className="flex flex-wrap gap-2 mt-2.5">
-                  <button onClick={() => { handleConfirmEvent(event.id); setConflictAckId(null) }} className="text-xs font-semibold px-3 py-1.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700">Yes, these are different events — {pending ? 'approve' : 'confirm'} anyway</button>
-                  <button onClick={() => setConflictAckId(null)} className="text-xs font-medium px-3 py-1.5 border border-amber-300 bg-white rounded-lg hover:bg-amber-100">Cancel</button>
+                  <button onClick={() => { handleConfirmEvent(event.id); setConflictAckId(null) }} className="text-xs font-semibold px-3 py-1.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700">{tS('conflict.ack', { pending: pending ? 'yes' : 'no' })}</button>
+                  <button onClick={() => setConflictAckId(null)} className="text-xs font-medium px-3 py-1.5 border border-amber-300 bg-white rounded-lg hover:bg-amber-100">{tS('conflict.cancel')}</button>
                 </div>
               )}
             </div>
@@ -8779,11 +8849,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               {/* Approve: with a conflict, the FIRST click reveals the acknowledge in the banner
                   above (warn-with-friction); the explicit "approve anyway" there confirms. No conflict
                   → confirms immediately. */}
-              <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? 'Set a time first' : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">Approve</button>
+              <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? tS('card.setTimeFirst') : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">{tS('card.approve')}</button>
               {!isPast && (
-                <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">Edit</button>
+                <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">{tS('card.edit')}</button>
               )}
-              <button onClick={() => handleRejectScrapedEvent(event)} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-red-50">Reject</button>
+              <button onClick={() => handleRejectScrapedEvent(event)} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-red-50">{tS('card.reject')}</button>
             </div>
           )}
 
@@ -8796,8 +8866,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             const hiddenDeals = activeDeals.filter(b => b.stock_warning)
             const dealNames = activeDeals.map(b => b.name).join(' · ')
             const dealLabel = activeDeals.length === 0
-              ? 'No deals active'
-              : `${activeDeals.length} deal${activeDeals.length !== 1 ? 's' : ''} active · ${dealNames}${hiddenDeals.length > 0 ? ` · ${hiddenDeals.length} hidden` : ''}`
+              ? tS('card.noDeals')
+              : tS('card.dealsActive', { count: activeDeals.length, names: dealNames, hidden: hiddenDeals.length })
 
             return (
               <details className="mt-2 border-t border-slate-50 pt-2 group">
@@ -8815,9 +8885,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-slate-700 truncate">{bundle.name}</span>
                             <span className="text-xs text-slate-400">{tabAmount(bundle.bundle_price)}</span>
-                            {bundle.stock_warning && <span className="text-xs text-amber-600">⚠️ Stock</span>}
+                            {bundle.stock_warning && <span className="text-xs text-amber-600">{tS('card.stock')}</span>}
                           </div>
-                          {bundle.stock_warning && <p className="text-xs text-amber-600 mt-0.5">Hidden — {bundle.stock_warning}</p>}
+                          {bundle.stock_warning && <p className="text-xs text-amber-600 mt-0.5">{tS('card.stockHidden', { reason: bundle.stock_warning })}</p>}
                         </div>
                         <button
                           onClick={() => handleEventDealToggle(event.id, bundle.id, !isActive)}
@@ -8880,12 +8950,12 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     placesCtl.patchLocal(pl.id, { is_hidden: hide })
     try {
       await api('sg_upsert_place', { id: pl.id, is_hidden: hide })
-      showToast(hide ? 'Place hidden' : 'Place shown again', 'success')
+      showToast(hide ? tS('toast.placeHidden') : tS('toast.placeShown'), 'success')
     } catch (e: unknown) {
       placesCtl.patchLocal(pl.id, { is_hidden: !hide })
-      showToast(e instanceof Error ? e.message : 'Couldn’t save that.', 'error')
+      showToast(e instanceof Error ? e.message : tS('toast.saveThatFailed'), 'error')
     }
-  }, [api, placesCtl, showToast])
+  }, [api, placesCtl, showToast, tS])
 
   /* ══ 🔴 THE PLACE'S USUAL TYPE, ON ITS SUGGESTION ROW ════════════════════════════════════════════
    * A colour dot and the type's name, or a purple lock and "Private" — the Event types grid's own
@@ -9035,7 +9105,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         setExclusionList(prev => [...prev, { id: res.id ?? '', term: ev.venue_name }])
         setExclusionTerms(prev => [...prev, ev.venue_name])
         removeEvent(ev.id)
-        showToast('Removed and excluded from future imports')
+        showToast(tI('review.removedExcluded'))
       } catch { removeEvent(ev.id) }
     }
     const handleDeleteOnly = (ev: any) => removeEvent(ev.id)
@@ -9048,7 +9118,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         setExclusionTerms(prev => prev.filter(t => t !== match.term))
         setExclusionList(prev => prev.filter(t => t.term !== match.term))
       }
-      showToast('Added back — exclusion removed')
+      showToast(tI('review.addedBack'))
     }
     const expandToEdit = (id: string) =>
       setExpandedEventIds(prev => { const n = new Set(prev); n.add(id); return n })
@@ -9062,23 +9132,17 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       const p = (ev.event_date || '').split('/')
       return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : ev.event_date || ''
     }
-    const getMissingLabel = (ev: any) => {
-      if (!ev.event_date) return 'Add date'
-      if (!ev.venue_name) return 'Add venue'
-      if (!ev.start_time) return 'Add start time'
-      if (!ev.end_time) return 'Add end time'
-      return ''
-    }
+    /* ⛔ `getMissingLabel` WAS HERE, UNUSED — nothing called it. Removed with Language Phase 1d rather than moved. */
 
     const TrashBtn = ({ id }: { id: string }) => (
-      <button type="button" onClick={() => setPendingDelete(id, true)} className="text-slate-400 hover:text-red-600" aria-label="Remove">
+      <button type="button" onClick={() => setPendingDelete(id, true)} className="text-slate-400 hover:text-red-600" aria-label={tI('review.remove')}>
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
       </button>
     )
     const Checkbox = ({ id, checked, disabled }: { id: string; checked: boolean; disabled?: boolean }) => (
-      <button type="button" onClick={disabled ? undefined : () => toggleSelected(id)} className={`w-[18px] h-[18px] rounded border-2 flex-shrink-0 flex items-center justify-center ${checked ? 'bg-orange-600 border-orange-600' : 'border-slate-300 bg-white'} ${disabled ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`} aria-label={checked ? 'Deselect' : 'Select'}>
+      <button type="button" onClick={disabled ? undefined : () => toggleSelected(id)} className={`w-[18px] h-[18px] rounded border-2 flex-shrink-0 flex items-center justify-center ${checked ? 'bg-orange-600 border-orange-600' : 'border-slate-300 bg-white'} ${disabled ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`} aria-label={checked ? tI('review.deselect') : tI('review.selectRow')}>
         {checked && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
       </button>
     )
@@ -9089,7 +9153,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
             <span className="text-amber-600">⚠</span>
             <span className="text-sm text-amber-700 font-medium">
-              {attentionSelected.length} event{attentionSelected.length !== 1 ? 's' : ''} need{attentionSelected.length === 1 ? 's' : ''} attention before saving
+              {tI('review.attention', { count: attentionSelected.length })}
             </span>
           </div>
         )}
@@ -9115,9 +9179,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             const timePair = (
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className={`text-xs font-medium mb-1 block ${!ev.start_time ? 'text-amber-600' : 'text-slate-500'}`}>Start time</label>
+                  <label className={`text-xs font-medium mb-1 block ${!ev.start_time ? 'text-amber-600' : 'text-slate-500'}`}>{tI('review.startTime')}</label>
                   <EventTimeSelect
-                    label="Start time"
+                    label={tI('review.startTime')}
                     value={ev.start_time}
                     onChange={v => updateEvent(ev.id, { start_time: v })}
                     className={fieldCls(!ev.start_time)}
@@ -9125,9 +9189,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   />
                 </div>
                 <div>
-                  <label className={`text-xs font-medium mb-1 block ${!ev.end_time || endBeforeStart ? 'text-amber-600' : 'text-slate-500'}`}>End time</label>
+                  <label className={`text-xs font-medium mb-1 block ${!ev.end_time || endBeforeStart ? 'text-amber-600' : 'text-slate-500'}`}>{tI('review.endTime')}</label>
                   <EventTimeSelect
-                    label="End time"
+                    label={tI('review.endTime')}
                     value={ev.end_time}
                     onChange={v => updateEvent(ev.id, { end_time: v })}
                     className={fieldCls(!ev.end_time || endBeforeStart)}
@@ -9150,9 +9214,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-semibold leading-snug ${!ev.start_time || !ev.event_date ? 'text-amber-600' : 'text-slate-900'}`}>
-                          {ev.event_date ? dateLabel : 'No date'}{timeLabel ? ` · ${timeLabel}` : ' · time missing'}
+                          {timeLabel
+                            ? tI('review.summary', { date: ev.event_date ? dateLabel : tI('review.noDate'), time: timeLabel })
+                            : tI('review.summaryNoTime', { date: ev.event_date ? dateLabel : tI('review.noDate') })}
                         </p>
-                        <p className="text-sm text-slate-900 break-words">{ev.venue_name || <span className="text-amber-600">Add venue</span>}</p>
+                        <p className="text-sm text-slate-900 break-words">{ev.venue_name || <span className="text-amber-600">{tI('review.addVenue')}</span>}</p>
                         {(ev.town || ev.postcode) && <p className="text-xs text-slate-500">{[ev.town, ev.postcode].filter(Boolean).join(' · ')}</p>}
                       </div>
                       <div className="flex items-center flex-shrink-0 pt-0.5">
@@ -9160,7 +9226,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         {!stateC && (
                           <>
                             <button type="button" disabled={!canEdit} onClick={() => expandToEdit(ev.id)} className={`text-xs font-medium text-slate-600 border border-slate-200 rounded px-2.5 py-1 leading-5 ${!canEdit ? 'pointer-events-none opacity-40' : 'hover:bg-slate-50'}`}>
-                              Edit
+                              {tI('review.edit')}
                             </button>
                             <span className="mx-3 text-slate-200 select-none">|</span>
                           </>
@@ -9176,9 +9242,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   <div className="border-t border-slate-100 px-3 pb-3 pt-2 space-y-3">
                     {ev._missingDate && (
                       <div className="relative">
-                        <label className={`text-xs font-medium mb-1 block ${!ev.event_date ? 'text-amber-600' : 'text-slate-500'}`}>Date</label>
+                        <label className={`text-xs font-medium mb-1 block ${!ev.event_date ? 'text-amber-600' : 'text-slate-500'}`}>{tI('review.date')}</label>
                         <div onClick={() => { const el = document.getElementById(`m-date-${ev.id}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className={`w-full border rounded-lg px-3 py-2.5 text-sm cursor-pointer flex items-center justify-between ${!ev.event_date ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-white'}`}>
-                          <span className={ev.event_date ? 'text-slate-800 font-medium' : 'text-amber-600'}>{dateLabel || 'Select date'}</span>
+                          <span className={ev.event_date ? 'text-slate-800 font-medium' : 'text-amber-600'}>{dateLabel || tI('review.selectDate')}</span>
                           <span className="text-slate-400 text-xs">📅</span>
                         </div>
                         <input id={`m-date-${ev.id}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); updateEvent(ev.id, { event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
@@ -9186,16 +9252,16 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     )}
                     {ev._missingVenue && (
                       <div>
-                        <label className={`text-xs font-medium mb-1 block ${!ev.venue_name ? 'text-amber-600' : 'text-slate-500'}`}>Venue</label>
-                        <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder="Venue name" className={fieldCls(!ev.venue_name)} />
+                        <label className={`text-xs font-medium mb-1 block ${!ev.venue_name ? 'text-amber-600' : 'text-slate-500'}`}>{tI('review.venue')}</label>
+                        <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder={tI('review.venueName')} className={fieldCls(!ev.venue_name)} />
                       </div>
                     )}
                     {ev._missingTime && timePair}
                     {vans.length > 1 && !ev.van_id && (
                       <div>
-                        <label className={`text-xs font-medium mb-1 block ${!ev.van_id ? 'text-amber-600' : 'text-slate-500'}`}>Van</label>
+                        <label className={`text-xs font-medium mb-1 block ${!ev.van_id ? 'text-amber-600' : 'text-slate-500'}`}>{tI('review.van')}</label>
                         <select value={ev.van_id || ''} onChange={e => updateEvent(ev.id, { van_id: e.target.value || undefined })} className={fieldCls(!ev.van_id)}>
-                          <option value="">Select a van</option>
+                          <option value="">{tI('review.selectVan')}</option>
                           {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
                         </select>
                       </div>
@@ -9207,31 +9273,32 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {stateC && canEdit && (
                   <div className="border-t border-slate-100 px-3 pb-3 pt-2 space-y-3">
                     <div className="relative">
-                      <label className="text-xs font-medium text-slate-500 mb-1 block">Date</label>
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">{tI('review.date')}</label>
                       <div onClick={() => { const el = document.getElementById(`m-date-${ev.id}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className="w-full border border-slate-200 bg-white rounded-lg px-3 py-2.5 text-sm cursor-pointer flex items-center justify-between">
-                        <span className={ev.event_date ? 'text-slate-800 font-medium' : 'text-slate-400'}>{dateLabel || 'Select date'}</span>
+                        <span className={ev.event_date ? 'text-slate-800 font-medium' : 'text-slate-400'}>{dateLabel || tI('review.selectDate')}</span>
                         <span className="text-slate-400 text-xs">📅</span>
                       </div>
                       <input id={`m-date-${ev.id}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); updateEvent(ev.id, { event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-slate-500 mb-1 block">Venue</label>
-                      <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder="Venue name" className={fieldCls(!ev.venue_name)} />
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">{tI('review.venue')}</label>
+                      <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder={tI('review.venueName')} className={fieldCls(!ev.venue_name)} />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-slate-500 mb-1 block">Area</label>
-                      <input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder="Area" className={fieldCls(false)} />
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">{tI('review.area')}</label>
+                      <input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder={tI('review.area')} className={fieldCls(false)} />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-slate-500 mb-1 block">Postcode</label>
-                      <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: e.target.value.toUpperCase() })} placeholder="Postcode" className={`${fieldCls(false)} uppercase`} />
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">{tI('review.postcode', { style: addrStyle })}</label>
+                      {/* ⚠️ A UK POSTCODE IS FORCED UPPER-CASE; A US ZIP CODE IS LEFT AS TYPED (address style). */}
+                      <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: pcUpper ? e.target.value.toUpperCase() : e.target.value })} placeholder={tI('review.postcode', { style: addrStyle })} className={pcUpper ? `${fieldCls(false)} uppercase` : fieldCls(false)} />
                     </div>
                     {timePair}
                     {vans.length > 1 && (
                       <div>
-                        <label className="text-xs font-medium text-slate-500 mb-1 block">Van</label>
+                        <label className="text-xs font-medium text-slate-500 mb-1 block">{tI('review.van')}</label>
                         <select value={ev.van_id || ''} onChange={e => updateEvent(ev.id, { van_id: e.target.value || undefined })} className={fieldCls(false)}>
-                          <option value="">Select a van</option>
+                          <option value="">{tI('review.selectVan')}</option>
                           {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
                         </select>
                       </div>
@@ -9241,16 +9308,16 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               {/* Pending-delete confirmation */}
               {ev._pendingDelete && (
                 <div className="px-4 py-3 bg-slate-50 border-t border-slate-100 text-sm text-slate-600">
-                  <p className="font-medium mb-2">Exclude &ldquo;{ev.venue_name}&rdquo; from future imports?</p>
+                  <p className="font-medium mb-2">{tI('review.excludeQ', { venue: ev.venue_name })}</p>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => handleDeleteWithExclusion(ev)} className="text-xs font-medium px-3 py-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900">
-                      Yes, exclude
+                      {tI('review.yesExclude')}
                     </button>
                     <button type="button" onClick={() => handleDeleteOnly(ev)} className="text-xs font-medium px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-slate-50">
-                      Just remove this one
+                      {tI('review.removeThisOne')}
                     </button>
                     <button type="button" onClick={() => setPendingDelete(ev.id, false)} className="text-xs text-slate-400 px-2 py-1.5 hover:text-slate-600 ml-auto">
-                      Cancel
+                      {tI('review.cancel')}
                     </button>
                   </div>
                 </div>
@@ -9265,8 +9332,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {sortedHistorical.length > 0 && (
                   <div className="mt-2">
                     <div className="px-1 mb-1.5">
-                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Past dates — update to save</p>
-                      <p className="text-xs text-slate-400 mt-0.5">These events have already passed. Update the date to a future date to include them.</p>
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">{tI('review.pastHeading')}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">{tI('review.pastBody')}</p>
                     </div>
                     {sortedHistorical.map(ev => renderMobileCard(ev, true))}
                   </div>
@@ -9293,13 +9360,13 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             <thead>
               <tr className="border-b border-slate-200">
                 <th className="pb-2" />
-                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Date</th>
-                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Venue</th>
-                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Area</th>
-                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Postcode</th>
-                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Start</th>
-                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">End</th>
-                {vans.length > 1 && <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Van</th>}
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.date')}</th>
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.venue')}</th>
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.area')}</th>
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.postcode', { style: addrStyle })}</th>
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.start')}</th>
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.end')}</th>
+                {vans.length > 1 && <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.van')}</th>}
                 <th className="pb-2" />
               </tr>
             </thead>
@@ -9325,23 +9392,23 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
                       <div className="relative">
                         <div onClick={() => { const el = document.getElementById(`d-date-${ev.id}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className={`text-sm px-1.5 cursor-pointer flex items-center ${missingDate ? 'text-amber-600 bg-amber-50 border-b border-amber-400' : 'text-slate-900 hover:bg-slate-50 border-b border-b-slate-200 hover:border-b-slate-400'}`} style={{ minHeight: '48px' }}>
-                          {dateLabel || <span className="italic text-xs text-amber-400">Add date</span>}
+                          {dateLabel || <span className="italic text-xs text-amber-400">{tI('review.addDate')}</span>}
                         </div>
                         <input id={`d-date-${ev.id}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); updateEvent(ev.id, { event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
                       </div>
                     </td>
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
-                      <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder="Venue name" className={ci(missingVenue)} style={{ minHeight: '48px' }} />
+                      <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder={tI('review.venueName')} className={ci(missingVenue)} style={{ minHeight: '48px' }} />
                     </td>
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
-                      <input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder="Area" className={ci(false)} style={{ minHeight: '48px' }} />
+                      <input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder={tI('review.area')} className={ci(false)} style={{ minHeight: '48px' }} />
                     </td>
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
-                      <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: e.target.value.toUpperCase() })} placeholder="CB22 5EJ" className={`${ci(false)} uppercase`} style={{ minHeight: '48px' }} />
+                      <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: pcUpper ? e.target.value.toUpperCase() : e.target.value })} placeholder={tI('review.postcodeExample', { style: addrStyle })} className={pcUpper ? `${ci(false)} uppercase` : ci(false)} style={{ minHeight: '48px' }} />
                     </td>
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
                       <EventTimeSelect
-                        label="Start time"
+                        label={tI('review.startTime')}
                         value={ev.start_time}
                         onChange={v => updateEvent(ev.id, { start_time: v })}
                         className={ci(missingStart)}
@@ -9350,7 +9417,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     </td>
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
                       <EventTimeSelect
-                        label="End time"
+                        label={tI('review.endTime')}
                         value={ev.end_time}
                         onChange={v => updateEvent(ev.id, { end_time: v })}
                         className={ci(missingEnd || endBeforeStart)}
@@ -9361,7 +9428,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     {vans.length > 1 && (
                       <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
                         <select value={ev.van_id || ''} onChange={e => updateEvent(ev.id, { van_id: e.target.value || undefined })} className={`${ci(false)} bg-transparent`} style={{ minHeight: '48px' }}>
-                          <option value="">Select</option>
+                          <option value="">{tI('review.select')}</option>
                           {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
                         </select>
                       </td>
@@ -9373,10 +9440,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   {ev._pendingDelete ? (
                     <tr>
                       <td colSpan={vans.length > 1 ? 9 : 8} className="px-3 py-2 bg-slate-50 border-t border-slate-100 text-sm text-slate-600">
-                        <span className="font-medium mr-3">Exclude &ldquo;{ev.venue_name}&rdquo; from future imports?</span>
-                        <button type="button" onClick={() => handleDeleteWithExclusion(ev)} className="text-xs font-medium px-2.5 py-1 bg-slate-800 text-white rounded-lg hover:bg-slate-900 mr-2">Yes, exclude</button>
-                        <button type="button" onClick={() => handleDeleteOnly(ev)} className="text-xs font-medium px-2.5 py-1 border border-slate-200 rounded-lg hover:bg-white mr-2">Just remove</button>
-                        <button type="button" onClick={() => setPendingDelete(ev.id, false)} className="text-xs text-slate-400 hover:text-slate-600">Cancel</button>
+                        <span className="font-medium mr-3">{tI('review.excludeQ', { venue: ev.venue_name })}</span>
+                        <button type="button" onClick={() => handleDeleteWithExclusion(ev)} className="text-xs font-medium px-2.5 py-1 bg-slate-800 text-white rounded-lg hover:bg-slate-900 mr-2">{tI('review.yesExclude')}</button>
+                        <button type="button" onClick={() => handleDeleteOnly(ev)} className="text-xs font-medium px-2.5 py-1 border border-slate-200 rounded-lg hover:bg-white mr-2">{tI('review.justRemove')}</button>
+                        <button type="button" onClick={() => setPendingDelete(ev.id, false)} className="text-xs text-slate-400 hover:text-slate-600">{tI('review.cancel')}</button>
                       </td>
                     </tr>
                   ) : null}
@@ -9391,7 +9458,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 <tbody>
                   <tr>
                     <td colSpan={vans.length > 1 ? 9 : 8} className="pt-4 pb-1 px-1.5">
-                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Past dates — update to save</p>
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">{tI('review.pastHeading')}</p>
                     </td>
                   </tr>
                 </tbody>
@@ -9416,17 +9483,17 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         <td className="px-0 py-0 align-middle">
                           <div className="relative">
                             <div onClick={() => { const el = document.getElementById(`d-date-${ev.id}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className={`text-sm px-1.5 cursor-pointer flex items-center ${missingDate ? 'text-amber-600 bg-amber-50 border-b border-amber-400' : 'text-slate-900 hover:bg-slate-50 border-b border-b-slate-200 hover:border-b-slate-400'}`} style={{ minHeight: '48px' }}>
-                              {dateLabel || <span className="italic text-xs text-amber-400">Add date</span>}
+                              {dateLabel || <span className="italic text-xs text-amber-400">{tI('review.addDate')}</span>}
                             </div>
                             <input id={`d-date-${ev.id}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); updateEvent(ev.id, { event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
                           </div>
                         </td>
-                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder="Venue name" className={ci(missingVenue)} style={{ minHeight: '48px' }} /></td>
-                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder="Area" className={ci(false)} style={{ minHeight: '48px' }} /></td>
-                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: e.target.value.toUpperCase() })} placeholder="CB22 5EJ" className={`${ci(false)} uppercase`} style={{ minHeight: '48px' }} /></td>
+                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder={tI('review.venueName')} className={ci(missingVenue)} style={{ minHeight: '48px' }} /></td>
+                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder={tI('review.area')} className={ci(false)} style={{ minHeight: '48px' }} /></td>
+                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: pcUpper ? e.target.value.toUpperCase() : e.target.value })} placeholder={tI('review.postcodeExample', { style: addrStyle })} className={pcUpper ? `${ci(false)} uppercase` : ci(false)} style={{ minHeight: '48px' }} /></td>
                         <td className="px-0 py-0 align-middle">
                           <EventTimeSelect
-                            label="Start time"
+                            label={tI('review.startTime')}
                             value={ev.start_time}
                             onChange={v => updateEvent(ev.id, { start_time: v })}
                             className={ci(missingStart)}
@@ -9435,7 +9502,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         </td>
                         <td className="px-0 py-0 align-middle">
                           <EventTimeSelect
-                            label="End time"
+                            label={tI('review.endTime')}
                             value={ev.end_time}
                             onChange={v => updateEvent(ev.id, { end_time: v })}
                             className={ci(missingEnd || endBeforeStart)}
@@ -9446,7 +9513,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         {vans.length > 1 && (
                           <td className="px-0 py-0 align-middle">
                             <select value={ev.van_id || ''} onChange={e => updateEvent(ev.id, { van_id: e.target.value || undefined })} className={`${ci(false)} bg-transparent`} style={{ minHeight: '48px' }}>
-                              <option value="">Select</option>
+                              <option value="">{tI('review.select')}</option>
                               {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
                             </select>
                           </td>
@@ -9469,7 +9536,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         {excludedEvents.length > 0 && (
           <details className="border border-slate-200 rounded-xl overflow-hidden">
             <summary className="px-4 py-3 text-sm font-medium text-slate-500 cursor-pointer select-none list-none flex items-center justify-between hover:bg-slate-50">
-              <span>{excludedEvents.length} excluded — previously flagged as not an event</span>
+              <span>{tI('review.excluded', { count: excludedEvents.length })}</span>
               <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
             </summary>
             <div className="divide-y divide-slate-100">
@@ -9477,14 +9544,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 <div key={ev.id} className="flex items-center gap-3 px-4 py-3 bg-slate-50">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-slate-500 line-through">{ev.venue_name}</p>
-                    <p className="text-xs text-slate-400">{ev.event_date}{ev.town ? ` · ${ev.town}` : ''}</p>
+                    {/* ⚠️ THE IMPORTER'S 'DD/MM/YYYY' THROUGH THE TRUCK'S DATE ORDER (Language Phase 1d) — GB reads as before. */}
+                    <p className="text-xs text-slate-400">{parseDDMMYYYY(ev.event_date) ? formatNumericDate(parseDDMMYYYY(ev.event_date), ts) : ev.event_date}{ev.town ? ` · ${ev.town}` : ''}</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleAddBack(ev)}
                     className="shrink-0 text-xs font-medium text-orange-600 hover:text-orange-700 px-3 py-1.5 border border-orange-200 rounded-lg hover:bg-orange-50 whitespace-nowrap"
                   >
-                    Add back
+                    {tI('review.addBack')}
                   </button>
                 </div>
               ))}
@@ -9493,14 +9561,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         )}
 
         <div className="flex flex-col-reverse gap-2 pt-1 md:flex-row md:justify-end">
-          <button type="button" onClick={onCancel} className="w-full md:w-auto border border-slate-200 text-slate-600 py-2.5 px-4 rounded-xl text-sm">Cancel</button>
+          <button type="button" onClick={onCancel} className="w-full md:w-auto border border-slate-200 text-slate-600 py-2.5 px-4 rounded-xl text-sm">{tI('review.cancel')}</button>
           {canSave ? (
             <button type="button" onClick={() => saveExtractedEvents(selectedEvts.filter(e => !isEv(e)))} disabled={savingExtracted} className="w-full md:w-auto bg-orange-600 text-white font-medium py-2.5 px-4 rounded-xl text-sm disabled:opacity-40">
-              {savingExtracted ? 'Saving...' : `Save ${saveCount} event${saveCount !== 1 ? 's' : ''}`}
+              {savingExtracted ? tI('review.saving') : tI('review.save', { count: saveCount })}
             </button>
           ) : (
             <button type="button" disabled className="w-full md:w-auto bg-slate-100 text-slate-400 font-medium py-2.5 px-4 rounded-xl text-sm cursor-not-allowed">
-              Fix {incompleteSelected.length} event{incompleteSelected.length !== 1 ? 's' : ''} first
+              {tI('review.fixFirst', { count: incompleteSelected.length })}
             </button>
           )}
         </div>
@@ -9522,7 +9590,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         padded wrapper — which is what lets the `:has(> [data-subtab-bar]:first-child)` rule in
         app/globals.css sit it flush against the tab bar above. */}
     {isActive && (
-      <SubTabBar label="Schedule sections" className="mb-4">
+      <SubTabBar label={tS('sections.label')} className="mb-4">
           {/* 🔴 THE LIT PILL IS THE SECTION'S **PILL**, NOT THE SECTION. Three pills, four sections:
             * Designs lives inside Social posts, so `scheduleSectionPill('designs')` is `'posts'`.
             * ⛔ THIS TESTED `shownSection === sec.id` AND LEFT DESIGNS WITH NOTHING LIT — reported by
@@ -9532,7 +9600,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             <button key={sec.id} role="tab" aria-selected={litPill === sec.id}
               onClick={() => onSectionChange(sec.id)}
               className={subtabBtn(litPill === sec.id)}>
-              {sec.label}
+              {/* The pill's words from messages, by id (Language Phase 1d) — `sec.label` is the English the list carries. */}
+              {sec.id === 'events' ? tS('sections.events') : tS('sections.eventTypes')}
             </button>
           ))}
       </SubTabBar>
@@ -9543,19 +9612,19 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-black text-slate-900 text-lg">Schedule</h2>
-          <p className="text-slate-400 text-sm">{upcoming.length} upcoming</p>
+          <h2 className="font-black text-slate-900 text-lg">{tS('header.title')}</h2>
+          <p className="text-slate-400 text-sm">{tS('header.upcoming', { count: upcoming.length })}</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex flex-col items-end gap-0.5">
             <button onClick={() => setShowImportModal(true)}
               className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
-              ✨ Import schedule
+              {tS('header.import')}
             </button>
-            <p className="text-xs text-slate-400">photo, PDF or text</p>
+            <p className="text-xs text-slate-400">{tS('header.importHint')}</p>
           </div>
           <div className="self-start">
-            <Btn label="+ Add event" onClick={() => {
+            <Btn label={tS('header.addEvent')} onClick={() => {
               const lastEv = [...events].filter(e => e.start_time && e.end_time).sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())[0]
               setFormErrors({})
               // ⚠️ `truck_place_id: null` EXPLICITLY. The picker sets it; a new event starts with no
@@ -9583,23 +9652,23 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       <div className="flex items-center justify-between">
         <p className="text-xs text-slate-500">
           {truck.scraper_preference === 'auto' || truck.scraper_preference === 'both'
-            ? 'Finding events automatically from your website'
-            : "You're managing your schedule manually"}
+            ? tS('header.scraperAuto')
+            : tS('header.scraperManual')}
           {' · '}
           <button onClick={() => onSwitchTab('settings')} className="text-orange-600 hover:underline font-medium">
-            Change in Settings
+            {tS('header.changeInSettings')}
           </button>
         </p>
         <VanFilter vans={vans} value={vanFilter} onChange={setVanFilter} showUnassigned={hasUnassignedEvents} />
       </div>
 
       {upcoming.length === 0 && (
-        <EmptyState icon="🗓️" title="No upcoming events" body="Events scraped from your social media and booking calendar will appear here for you to confirm" />
+        <EmptyState icon="🗓️" title={tS('empty.title')} body={tS('empty.body')} />
       )}
 
       {openEvents.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Open now</p>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">{tS('list.openNow')}</p>
           {openEvents.map(e => renderEvent(e))}
         </div>
       )}
@@ -9607,9 +9676,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       {scraperUnconfirmed.length > 0 && (
         <div className="space-y-2">
           <div className="mb-1">
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Needs your approval</p>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{tS('list.needsApproval')}</p>
             <p className="text-sm text-slate-600 mt-0.5">
-              We found {scraperUnconfirmed.length} event{scraperUnconfirmed.length !== 1 ? 's' : ''} for you — review and approve before they go live.
+              {tS('list.found', { count: scraperUnconfirmed.length })}
             </p>
           </div>
           {scraperUnconfirmed.map(event => (
@@ -9622,14 +9691,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
 
       {operatorUnconfirmed.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Needs confirmation</p>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">{tS('list.needsConfirmation')}</p>
           {operatorUnconfirmed.map(e => renderEvent(e))}
         </div>
       )}
 
       {confirmedEvents.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Confirmed</p>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">{tS('list.confirmed')}</p>
           {confirmedEvents.map(e => renderEvent(e))}
         </div>
       )}
@@ -9645,7 +9714,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             className="flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
           >
             <span className={`transition-transform inline-block ${showPast ? 'rotate-90' : ''}`}>▶</span>
-            <span>Past events ({past.length})</span>
+            <span>{tS('list.past', { count: past.length })}</span>
           </button>
           {showPast && (
             <div className="mt-3 space-y-2">{past.map(e => renderEvent(e))}</div>
@@ -9671,7 +9740,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             old `lg:max-w-2xl`. The upload flow keeps its own wider cap, unchanged. */
         <div className="fixed inset-0 bg-black/60 z-50 flex items-stretch sm:items-center justify-center sm:p-4"
           onClick={e => { if (e.target === e.currentTarget) closeAddModal() }}>
-          <div id="add-event-modal" role="dialog" aria-modal="true" aria-label={editingEvent.id ? 'Edit event' : 'Add event'}
+          <div id="add-event-modal" role="dialog" aria-modal="true" aria-label={editingEvent.id ? tE('titleEdit') : tE('titleAdd')}
             /* ── 🔴 `md:h-[90vh]` IS THE FIX FOR THE PANE THAT WOULD NOT SCROLL ─────────────────────
              * This read `sm:max-h-[90vh]` alone, and a MAX-height does not make a flex container's
              * height DEFINITE. So `h-full` further down — on the grid inside the `flex-1` body —
@@ -9688,7 +9757,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             {/* ── THE HEADER ROW ───────────────────────────────────────────────────────────────── */}
             <div className="shrink-0 flex items-center gap-3 px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
               <h3 className="font-black text-slate-900 min-w-0 flex-1 truncate">
-                {editingEvent.id ? 'Edit event' : modalView === 'tidy' ? 'Tidy up places' : 'Add event'}
+                {editingEvent.id ? tE('titleEdit') : modalView === 'tidy' ? tE('titleTidy') : tE('titleAdd')}
               </h3>
 
               {/* ⛔ THE One event | Upload schedule SWITCH IS GONE (3 October 2026). The upload flow was
@@ -9700,7 +9769,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               {/* ⚠️ A REAL CLOSE BUTTON WITH A LABEL. Escape closes too (see the effect above the
                   modal); a dialog whose only exit is a Cancel button below the fold is the thing the
                   sticky footer and this are both fixing. */}
-              <button type="button" onClick={closeAddModal} aria-label="Close"
+              <button type="button" onClick={closeAddModal} aria-label={tE('close')}
                 className="shrink-0 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-lg leading-none flex items-center justify-center">
                 ×
               </button>
@@ -9726,7 +9795,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {showPicker && (
                   <div className={`min-h-0 md:h-full md:border md:border-slate-200 md:rounded-2xl md:overflow-hidden flex flex-col ${
                     phoneStep === 2 ? 'max-md:hidden' : ''}`}>
-                    <p className="md:hidden text-sm font-bold text-slate-700 pt-1 pb-2">Where are you trading?</p>
+                    <p className="md:hidden text-sm font-bold text-slate-700 pt-1 pb-2">{tE('whereTrading')}</p>
                     {placesCtl.loading ? (
                       <div className="py-10 flex justify-center"><Spinner /></div>
                     ) : (
@@ -9735,7 +9804,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                             it is the escape hatch from a list that may not contain the pitch. */}
                         <button type="button" onClick={startNewPlace}
                           className="md:hidden w-full border-2 border-dashed border-slate-300 rounded-xl py-2.5 text-sm font-bold text-slate-500 hover:border-orange-300 hover:text-orange-600 mb-2">
-                          + New place
+                          {tE('newPlace')}
                         </button>
                         <div className="flex-1 min-h-0">
                           <PlaceList
@@ -9746,19 +9815,19 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                             search={placeSearch}
                             onSearch={setPlaceSearch}
                             starError={placesCtl.starError}
-                            emptyHint="No places yet — type the venue on the right and it will be saved as one."
+                            emptyHint={tE('placesEmpty')}
                             footer={
                               <div className="flex items-center justify-between gap-3">
                                 <button type="button" onClick={startNewPlace}
                                   className="text-xs font-bold text-orange-600 hover:text-orange-700 max-md:hidden">
-                                  + New place
+                                  {tE('newPlace')}
                                 </button>
                                 {/* 🔴 "Tidy up places" REPLACED THE Places PILL. Renaming, merging and
                                     hiding belong beside the list they are about, not in a separate
                                     tab the operator has to find. */}
                                 <button type="button" onClick={() => setModalView('tidy')}
                                   className="text-xs font-bold text-slate-400 hover:text-slate-600 max-md:mx-auto">
-                                  Tidy up places
+                                  {tE('tidyUp')}
                                 </button>
                               </div>
                             }
@@ -9787,7 +9856,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       {previewOneLine}
                     </span>
                     <button type="button" onClick={() => setPhoneStep(1)}
-                      className="shrink-0 text-xs font-bold text-orange-600 hover:text-orange-700">Change</button>
+                      className="shrink-0 text-xs font-bold text-orange-600 hover:text-orange-700">{tE('change')}</button>
                   </div>
                 )}
 
@@ -9801,11 +9870,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                  fields would be two sets of validation and two places to add the next one. */
               <div id="add-event-form" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="sm:col-span-2 max-md:order-1">
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Date<span className="text-red-400 ml-0.5">*</span></label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">{tE('date')}<span className="text-red-400 ml-0.5">*</span></label>
                   <div className="relative">
                     <div onClick={() => { const el = document.getElementById('date-input-event') as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className={`w-full border rounded-xl px-3 py-2 text-sm cursor-pointer flex items-center justify-between bg-white ${formErrors.event_date ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}>
                       <span className={editingEvent.event_date ? 'text-slate-900 font-medium' : 'text-slate-400'}>
-                        {editingEvent.event_date ? (() => { const p = editingEvent.event_date.split('-'); if (p.length !== 3) return editingEvent.event_date; return formatShortOrdinalDate(editingEvent.event_date, ts) })() : 'Select date'}
+                        {editingEvent.event_date ? (() => { const p = editingEvent.event_date.split('-'); if (p.length !== 3) return editingEvent.event_date; return formatShortOrdinalDate(editingEvent.event_date, ts) })() : tE('selectDate')}
                       </span>
                       <span className="text-slate-400 text-xs">📅</span>
                     </div>
@@ -9852,8 +9921,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         className="mt-0.5 h-4 w-4 shrink-0 accent-green-600" />
                       <span className="min-w-0 text-xs font-semibold text-green-900">
                         {usualForPlace.by === 'pin'
-                          ? `Always use ${chosenTypeName} at ${pickedPlace?.name ?? 'this place'}`
-                          : `Use ${chosenTypeName} at ${pickedPlace?.name ?? 'this place'} next time`}
+                          ? tE('alwaysUse', { type: chosenTypeName, place: pickedPlace?.name ?? tE('thisPlace') })
+                          : tE('useNextTime', { type: chosenTypeName, place: pickedPlace?.name ?? tE('thisPlace') })}
                       </span>
                     </label>
                   )}
@@ -9871,7 +9940,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 <div className="md:contents max-md:order-5">
                   <button type="button" onClick={() => setAddrOpen(o => !o)}
                     className="md:hidden w-full flex items-center justify-between border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-600">
-                    <span>Address details</span>
+                    <span>{tE('addressDetails')}</span>
                     <span className={`transition-transform ${addrOpen ? 'rotate-90' : ''}`}>▶</span>
                   </button>
                   <div className={`md:contents ${addrOpen ? 'max-md:grid max-md:gap-3 max-md:mt-3' : 'max-md:hidden'}`}>
@@ -9884,14 +9953,14 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   * before Venue), where selecting the purple Private pill IS making the event private
                   * and opens the panel with the explanation and the Event name field. */}
                 <div className="sm:col-span-2 relative">
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Venue name <span className="text-red-400">*</span></label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">{tE('venueName')} <span className="text-red-400">*</span></label>
                   <input
                     type="text"
                     value={editingEvent.venue_name}
                     onChange={e => { setEditingEvent(p => ({ ...p!, venue_name: e.target.value })); setShowVenueSuggestions(true); if (formErrors.venue_name) setFormErrors(p => ({ ...p, venue_name: '' })) }}
                     onFocus={() => setShowVenueSuggestions(true)}
                     onBlur={() => setTimeout(() => setShowVenueSuggestions(false), 150)}
-                    placeholder="e.g. The Crown"
+                    placeholder={tE('venuePlaceholder', { style: addrStyle })}
                     className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.venue_name ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                   />
                   {/* ══ 🔴 THE SUGGESTIONS ARE PLACES NOW, AND THEY CARRY THE TWO CONTROLS THE PLACES
@@ -9912,7 +9981,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-64 overflow-y-auto">
                       {placeSuggestions.live.length > 0 && (
                         <>
-                          <p className="px-4 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">Your places</p>
+                          <p className="px-4 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">{tE('yourPlaces')}</p>
                           {placeSuggestions.live.map(pl => (
                             <div key={pl.id} className="flex items-stretch border-b border-slate-100 last:border-0">
                               <button type="button"
@@ -9925,7 +9994,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                                 </span>
                                 <span className="block truncate text-xs text-slate-400">{pl.area || pl.postcode || ''}</span>
                               </button>
-                              <button type="button" aria-label="Hide this place"
+                              <button type="button" aria-label={tE('hidePlace')}
                                 onMouseDown={e => e.preventDefault()}
                                 onClick={e => { e.preventDefault(); e.stopPropagation(); void hidePlace(pl, true) }}
                                 className="shrink-0 px-3 text-slate-300 hover:text-red-600">×</button>
@@ -9941,12 +10010,12 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                           onClick={e => { e.preventDefault(); setHiddenShown(true) }}
                           data-show-hidden
                           className="w-full px-4 py-2 text-left text-[11px] font-semibold text-slate-500 underline hover:no-underline">
-                          {placeSuggestions.hidden.length} hidden place{placeSuggestions.hidden.length === 1 ? '' : 's'} match · Show hidden
+                          {tE('hiddenMatch', { count: placeSuggestions.hidden.length })}
                         </button>
                       )}
                       {placeSuggestions.hidden.length > 0 && hiddenShown && (
                         <>
-                          <p className="px-4 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">Hidden</p>
+                          <p className="px-4 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">{tE('hidden')}</p>
                           {placeSuggestions.hidden.map(pl => (
                             <div key={pl.id} className="flex items-center gap-2 border-b border-slate-100 px-4 py-2 opacity-55 last:border-0">
                               <span className="min-w-0 flex-1">
@@ -9956,7 +10025,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                               <button type="button" onMouseDown={e => e.preventDefault()}
                                 onClick={e => { e.preventDefault(); e.stopPropagation(); void hidePlace(pl, false) }}
                                 className="shrink-0 text-[11px] font-semibold text-orange-700 underline hover:no-underline">
-                                Show again
+                                {tE('showAgain')}
                               </button>
                             </div>
                           ))}
@@ -9965,7 +10034,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       {filteredVenueSuggestions.length > 0 && (
                         <>
                           {placeSuggestions.live.length > 0 && (
-                            <p className="px-4 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">From your schedule</p>
+                            <p className="px-4 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">{tE('fromSchedule')}</p>
                           )}
                           {filteredVenueSuggestions.map((venue, i) => (
                         <button
@@ -9996,19 +10065,19 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     UK format: street address → village/town + postcode
                     Future: extract to addressFieldConfig(locale) to support US/EU formats */}
                 <div className="sm:col-span-2">
-                  <Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder={addressPlaceholders(tabSettings.addressFormat).address} />
+                  <Input label={tE('address')} value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder={tE('addressPlaceholder', { style: addrStyle })} />
                 </div>
                 <div>
-                  <Input label="Area (village, town or city)" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder={addressPlaceholders(tabSettings.addressFormat).area} />
+                  <Input label={tE('area')} value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder={tE('areaPlaceholder', { style: addrStyle })} />
                 </div>
-                <Input label="Postcode" value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder="e.g. CB8 8PD" />
+                <Input label={tE('postcode', { style: addrStyle })} value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder={tE('postcodePlaceholder', { style: addrStyle })} />
                   </div>
                 </div>
                 <div className="sm:col-span-2 max-md:order-2 grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Start time<span className="text-red-400 ml-0.5">*</span></label>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">{tE('startTime')}<span className="text-red-400 ml-0.5">*</span></label>
                     <EventTimeSelect
-                      label="Start time"
+                      label={tE('startTime')}
                       value={editingEvent.start_time}
                       onChange={v => {
                         const { start_time, end_time } = applyStartTimeChange(v, editingEvent.end_time)
@@ -10022,13 +10091,13 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     {formErrors.start_time && <p className="text-xs text-red-500 mt-1">{formErrors.start_time}</p>}
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1">End time<span className="text-red-400 ml-0.5">*</span></label>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">{tE('endTime')}<span className="text-red-400 ml-0.5">*</span></label>
                     {/* 🔴 `minExclusive` IS THE REPLACEMENT FOR `filter(t => t > start_time)`, which was the
                         only end-after-start enforcement in the product. It cannot repair a pair that is
                         already invalid, so validateEventForm now rejects one too — belt and braces, plus
                         hasValidEventTimes on the server. */}
                     <EventTimeSelect
-                      label="End time"
+                      label={tE('endTime')}
                       value={editingEvent.end_time}
                       onChange={v => { setEditingEvent(p => ({ ...p!, end_time: v })); if (formErrors.end_time) setFormErrors(p => ({ ...p, end_time: '' })) }}
                       className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.end_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
@@ -10044,19 +10113,19 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         come from `truck_vans` scoped to THIS truck — so it asks which VEHICLE, and an
                         operator with two trucks on one account read it as "which of my businesses".
                         Copy only; the value, the column and the options are untouched. */}
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Van <span className="text-red-500">*</span></label>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">{tE('van')} <span className="text-red-500">*</span></label>
                     {/* 🔴 THE SHARED `Select` — see the note on the time boxes. WebKit renders a native
                       * `<select>` at 23px whatever its padding says, so this was half the height of
                       * the fields around it on an iPad.
                       * ⚠️ THE ERROR STATE IS CARRIED THROUGH `className`, which `Select` merges onto its
                       * wrapper — so a missing van still shows the red box it always did. */}
                     <Select
-                      ariaLabel="Van"
+                      ariaLabel={tE('van')}
                       value={editingEvent.van_id || ''}
                       onChange={v => { setEditingEvent(p => ({ ...p!, van_id: v || null })); if (formErrors.van_id) setFormErrors(p => ({ ...p, van_id: '' })) }}
                       className={`w-full ${formErrors.van_id ? 'border-red-400 bg-red-50' : ''}`}
                       options={[
-                        { value: '', label: 'Select a van' },
+                        { value: '', label: tE('selectVan') },
                         ...vans.map(van => ({ value: van.id, label: van.name })),
                       ]}
                     />
@@ -10064,8 +10133,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   </div>
                 )}
                 <div className="sm:col-span-2 max-md:order-4">
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
-                  <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Park in the main car park" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
+                  <label className="block text-xs font-bold text-slate-600 mb-1">{tE('notes')}</label>
+                  <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder={tE('notesPlaceholder')} rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
                 </div>
                 {/* ══ 🔴 THE LIVE PREVIEW — IN THE FORM PANE, BELOW NOTES ════════════════════════
                     🔴 MOVED OUT OF THE STICKY FOOTER (5 October 2026). In the footer it had to be
@@ -10087,7 +10156,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     back to the place. */}
                 {previewEvent && (
                   <div className="sm:col-span-2 max-md:hidden" data-preview-pane>
-                    <p className="block text-xs font-bold text-slate-400 mb-1">Preview</p>
+                    <p className="block text-xs font-bold text-slate-400 mb-1">{tE('preview')}</p>
                     {/* ══ 🔴 THE PRIVATE SHAPE — DATE, TIMES, VAN, AND NOTHING THAT LOCATES IT ═══════
                       * 🔴 IT IS NOT `TruckListCard`, AND THAT IS THE ONE PLACE THIS FEATURE DEPARTS
                       * FROM "render the public component". The public card for a private event shows
@@ -10096,7 +10165,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       * address. The OPERATOR needs to be told something different and stronger: that
                       * the venue they just typed is deliberately not going to appear. The lock and the
                       * purple title say that; a faithful public card could not.
-                      * ⚠️ THE WORDS COME FROM `PRIVATE_PUBLIC_LABEL`, the same constant the public
+                      * ⚠️ THE WORDS ARE `privateEvents.publicName`, the same words `PRIVATE_PUBLIC_LABEL` gives the public
                       * surfaces substitute, so the title here and the title a customer sees are one
                       * string. ⛔ THE VENUE, TOWN, POSTCODE AND ADDRESS ARE NOT RENDERED AT ALL — not
                       * greyed, not struck through, not in a title attribute. A private address that is
@@ -10108,7 +10177,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       <div className="rounded-2xl border border-purple-200 bg-white p-3">
                         <div className="flex items-start justify-between gap-2">
                           <p className="font-black text-purple-700 text-sm flex items-center gap-1.5">
-                            <span aria-hidden="true">🔒</span>{PRIVATE_PUBLIC_LABEL}
+                            <span aria-hidden="true">🔒</span>{tP('publicName')}
                           </p>
                           {previewVanName && (
                             <span className="text-[11px] font-bold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 flex-shrink-0">{previewVanName}</span>
@@ -10119,7 +10188,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         <p className="text-sm font-semibold text-slate-700 mt-1">
                           {[placeShortDayLocal(editingEvent.event_date || null),
                             timeRangeLabel(editingEvent.start_time, editingEvent.end_time, ts)]
-                            .filter(Boolean).join(' · ') || PREVIEW_PLACEHOLDERS.date}
+                            .filter(Boolean).join(' · ') || previewWords.date}
                         </p>
                       </div>
                     ) : (
@@ -10141,10 +10210,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         preview is broken. ⚠️ THE PRIVATE LINE IS NOT CONDITIONAL ON `truck_place_id`:
                         it is true of every private event, picked place or typed address. */}
                     {previewIsPrivate ? (
-                      <p className="text-[11px] text-slate-400 -mt-1">{PRIVATE_PREVIEW_NOTE}</p>
+                      <p className="text-[11px] text-slate-400 -mt-1">{tP('form.previewNote')}</p>
                     ) : !editingEvent.id && editingEvent.truck_place_id ? (
                       <p className="text-[11px] text-slate-400 truncate -mt-1">
-                        Filled from {pickedPlace?.name ?? 'that place'}
+                        {tE('filledFrom', { place: pickedPlace?.name ?? tE('thatPlace') })}
                       </p>
                     ) : null}
                   </div>
@@ -10189,7 +10258,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {/* The phone keeps a single muted line here — the preview itself is the pinned card. */}
                 <p className="min-w-0 flex-1 text-xs text-slate-400 truncate md:hidden">
                   {!editingEvent.id && editingEvent.truck_place_id
-                    ? `Filled from ${pickedPlace?.name ?? 'that place'}`
+                    ? tE('filledFrom', { place: pickedPlace?.name ?? tE('thatPlace') })
                     : ''}
                 </p>
                 {/* ⚠️ `ml-auto` KEEPS THE BUTTONS RIGHT-ALIGNED NOW THE PREVIEW HAS GONE. On a phone the
@@ -10197,8 +10266,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     without this they would sit at the LEFT edge of the footer — which is not where
                     anyone looks for "Add event". */}
                 <div className="shrink-0 ml-auto flex gap-2">
-                  <Btn label="Cancel" colour="slate" onClick={closeAddModal} />
-                  <Btn label={editSaving ? 'Saving...' : editingEvent.id ? 'Save changes' : 'Add event'} loading={editSaving} onClick={saveEdit} />
+                  <Btn label={tE('cancel')} colour="slate" onClick={closeAddModal} />
+                  <Btn label={editSaving ? tE('saving') : editingEvent.id ? tE('saveChanges') : tE('addEvent')} loading={editSaving} onClick={saveEdit} />
                 </div>
               </div>
             )}
@@ -10260,13 +10329,12 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     {showImportModal && (
       <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
         <div className={`bg-white rounded-2xl p-5 sm:p-6 w-full shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain touch-pan-y ${extractedEvents.length > 0 ? 'md:max-w-[980px]' : 'max-w-sm sm:max-w-lg'}`}>
-          <h3 className="font-black text-slate-900 mb-4">{importModalTitle}</h3>
+          <h3 className="font-black text-slate-900 mb-4">{importModalTitle === 'found' ? tI('titleFound') : tI('title')}</h3>
           <div className="flex flex-col gap-4">
             {extractedEvents.length === 0 && (
               <>
                 <p className="text-sm text-slate-500">
-                  Upload a screenshot, photo, or PDF of your schedule — or paste the text below.
-                  Our AI will extract your events for you to review.
+                  {tI('intro')}
                 </p>
 
                 <label
@@ -10275,22 +10343,22 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 >
                   <span className="text-3xl">{isScheduleDragging ? '📂' : uploadFile ? '✅' : '📷'}</span>
                   <span className="text-sm text-slate-500 text-center">
-                    {isScheduleDragging ? 'Drop your schedule here' : uploadFile ? uploadFile.name : 'Drag and drop or tap to choose'}
+                    {isScheduleDragging ? tI('dropHere') : uploadFile ? uploadFile.name : tI('dragOrTap')}
                   </span>
                   {!isScheduleDragging && !uploadFile && (
-                    <span className="text-xs text-slate-400">Image or PDF</span>
+                    <span className="text-xs text-slate-400">{tI('imageOrPdf')}</span>
                   )}
                   <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
                 </label>
 
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Or paste schedule text
+                    {tI('orPaste')}
                   </label>
                   <textarea
                     value={uploadText}
                     onChange={e => setUploadText(e.target.value)}
-                    placeholder={pastePlaceholder(tabSettings.addressFormat)}
+                    placeholder={tI('pastePlaceholder', pasteExampleValues(addrStyle, ts))}
                     rows={4}
                     className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
@@ -10301,7 +10369,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   disabled={(!uploadFile && !uploadText) || uploadProcessing}
                   className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
                 >
-                  {uploadProcessing ? 'Analysing...' : 'Process schedule'}
+                  {uploadProcessing ? tI('analysing') : tI('process')}
                 </button>
               </>
             )}
@@ -10310,7 +10378,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
 
             {extractedEvents.length === 0 && (
               <button onClick={closeImportModal} className="text-sm text-slate-400 hover:text-slate-600 text-center">
-                Cancel
+                {tI('cancel')}
               </button>
             )}
           </div>
@@ -10625,11 +10693,12 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
 function QrPreview({ src, alt, onOpen, locked }: {
   src?: string; alt: string; onOpen: () => void; locked?: boolean
 }) {
+  const t = useT('manageSettings')
   return (
     <span
       role="button"
       tabIndex={0}
-      title={locked ? 'Branded codes are part of a higher plan' : 'View QR code'}
+      title={locked ? t('qr.lockedTitle') : t('qr.view')}
       onClick={e => { e.stopPropagation(); e.preventDefault(); onOpen() }}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onOpen() } }}
       className="shrink-0 w-16 h-16 rounded-md border border-slate-200 bg-white overflow-hidden flex items-center justify-center cursor-zoom-in"
@@ -11017,6 +11086,17 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   onOpenWalkthrough: () => void
   /** Opens Schedule › Events with the Schedule settings modal already up — one press. */
 }) {
+  /* ── Language Phase 1d: every word on this tab is in messages/ — `manageSettings`, and the shared copy modules'
+   * own namespaces (settingsCopy, serviceSettings, offlineProtection; the verify sentences are Schedule's
+   * `manageScheduleVerify`). The truck's language decides, so a US truck reads "Your trucks", "Pickup times". */
+  const t = useT('manageSettings')
+  const tSet = useT('settingsCopy')
+  const tSvc = useT('serviceSettings')
+  const tOff = useT('offlineProtection')
+  const tVerify = useT('manageScheduleVerify')
+  const ts = useTruckTime()
+  /** "18:00, 18:15, 18:30…" for an interval — each time in the truck's clock (GB 24h prints it exactly as before). */
+  const pickExample = (iv: number) => intervalExample(iv).replace(/\d{2}:\d{2}/g, hm => formatSlot(hm, ts))
   const [form, setForm] = useState({ ...truck })
   // ── CUISINE ROWS, SEEDED ONCE FROM THE STORED STRING ────────────────────────────────────────────
   // 🔴 SEEDED, NOT DERIVED PER RENDER. Deriving would rebuild the rows on every keystroke elsewhere in
@@ -11184,9 +11264,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
     // disagree about what counts as a usable address. See the note on schedVerify for why this also
     // repairs the blocked-domain guard, which failed OPEN on an unparseable string.
     const url = normaliseUrl(form.schedule_url)
-    if (!url) { setVerifyError(URL_MALFORMED_MSG); return }
+    if (!url) { setVerifyError(tVerify('malformed')); return }
     if (isBlockedDomain(url)) {
-      setVerifyError(BLOCKED_DOMAIN_MSG)
+      setVerifyError(tVerify('blockedDomain'))
       return
     }
     // Show the operator the address that was actually verified, and persist that one on success.
@@ -11212,10 +11292,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       // failure. The message map is now the one shared definition at module scope.
       const reason: string = data.reason
         || (res.status >= 500 ? 'launch_failed' : res.status === 400 ? 'malformed' : 'unreachable')
-      setVerifyError(VERIFY_MESSAGES[reason] || VERIFY_MESSAGES.unreachable)
+      setVerifyError(tVerify(verifyCode(reason)))
     } catch {
       // The verify request itself failed (network/our API) — genuinely couldn't complete the check.
-      setVerifyError(VERIFY_MESSAGES.unreachable)
+      setVerifyError(tVerify('unreachable'))
     } finally {
       setVerifying(false)
     }
@@ -11323,8 +11403,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.font = `600 ${Math.max(3, Math.round(w * 0.17))}px system-ui, -apple-system, sans-serif`
-    ctx.fillText('Your logo', x + w / 2, y + h * 0.36)
-    ctx.fillText('here', x + w / 2, y + h * 0.66)
+    const [line1, line2 = ''] = t('qr.logoPlaceholder').split('\n')   // one message, drawn on two lines
+    ctx.fillText(line1, x + w / 2, y + h * 0.36)
+    ctx.fillText(line2, x + w / 2, y + h * 0.66)
   }
 
   const PREVIEW_PX = 128
@@ -11503,9 +11584,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   const INCLUDED_VANS: Record<string, number> = { starter: 1, pro: 2, max: 999, trial: 999 }
 
   const handleAddVanClick = () => {
-    const confirmed = window.confirm(
-      "Adding an additional truck will be charged as an add-on to your subscription.\n\nThis will be reflected in your next billing cycle.\n\nDo you want to continue?"
-    )
+    const confirmed = window.confirm(t('vans.addConfirm'))
     if (!confirmed) return
     const included = INCLUDED_VANS[truck.plan] ?? 1
     const addonPrice = vanAddonMinor
@@ -11646,7 +11725,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // already knows its exact path. A storage sweep is a separate job.
   const removeLogo = async () => {
     if (!form.logo_storage_path) return
-    if (!window.confirm('Remove your logo? Customers will see your truck name without it. You can upload a new one at any time.')) return
+    if (!window.confirm(t('logo.removeConfirm'))) return
     const prev = form.logo_storage_path
     setRemovingLogo(true)
     setForm(p => ({ ...p, logo_storage_path: null }))          // optimistic
@@ -11657,7 +11736,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       onTruckUpdate({ logo_storage_path: null, logo: null })
     } catch (e: any) {
       setForm(p => ({ ...p, logo_storage_path: prev }))        // revert
-      showToast(e.message || 'Couldn\u2019t remove the logo \u2014 please try again.', 'error')
+      showToast(e.message || t('logo.removeFailed'), 'error')
     } finally { setRemovingLogo(false) }
   }
 
@@ -11674,7 +11753,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
 
   const copyKdsLink = async (kdsToken: string) => {
     await navigator.clipboard.writeText(`https://www.hatchgrab.com/kds/${kdsToken}`)
-    showToast('Order screen link copied')
+    showToast(t('vans.kdsLinkCopied'))
   }
 
   const saveNewVan = async () => {
@@ -11704,7 +11783,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       await api('delete_van', { vanId: deletingVan.id })
       setVans(prev => prev.filter(v => v.id !== deletingVan.id))
       setDeletingVan(null)
-      showToast(`${deletingVan.name} removed`)
+      showToast(t('vans.removed', { name: deletingVan.name }))
     } catch (e: any) { showToast(e.message, 'error') }
   }
 
@@ -11848,6 +11927,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   /* ── THE JUMP BAR. See `useSettingsJumpBar` for why the offset is measured and why the spy reads
    * the `<main>` scroller rather than the window. */
   const jump = useSettingsJumpBar(true)
+  /** FOOD_EMOJI_CATEGORIES' headings, in that array's order. */
+  const EMOJI_CATEGORY_KEYS = ['streetFood', 'meat', 'fish', 'world', 'bread', 'sweet', 'fruitVeg', 'drinks', 'utensils', 'truck'] as const
+  /** Each section id's message key — the jump tab and its `<h2>` say the same words. */
+  const SETTINGS_SECTION_KEYS = {
+    'truck-details': 'truckDetails', contact: 'contact', 'order-settings': 'orderSettings', 'truck-settings': 'truckSettings',
+    schedule: 'schedule', 'qr-code': 'qrCode', 'auto-replies': 'autoReplies', 'account-deletion': 'accountDeletion',
+  } as const
   const { barRef, sectionEls, pinnedTop, activeId, jumpTo, lastSectionMinHeight } = jump
 
   return (
@@ -11879,7 +11965,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           measures this bar's height and keeps the active pill in view as the operator scrolls the
           page, which is this screen's own behaviour and not something the shared bar knows about.
           The shared bar's own scroll-into-view runs once, when the node mounts. */}
-      <SubTabBar label="Settings sections" barRef={barRef}>
+      <SubTabBar label={t('sections.barLabel')} barRef={barRef}>
           {SETTINGS_SECTIONS.map(sec => (
             <button
               key={sec.id}
@@ -11889,7 +11975,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               onClick={() => jumpTo(sec.id)}
               className={subtabBtn(activeId === sec.id)}
             >
-              {sec.label}
+              {t(`sections.${SETTINGS_SECTION_KEYS[sec.id as keyof typeof SETTINGS_SECTION_KEYS]}`)}
             </button>
           ))}
       </SubTabBar>
@@ -11916,12 +12002,12 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       <Card className="p-4">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-base font-bold text-slate-800">New to HatchGrab?</p>
-            <p className="text-xs text-slate-500 mt-0.5">A quick tour of what lives on each tab. Takes about a minute.</p>
+            <p className="text-base font-bold text-slate-800">{t('walkthrough.title')}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{t('walkthrough.body')}</p>
           </div>
           <button type="button" onClick={onOpenWalkthrough}
             className="shrink-0 text-xs font-bold px-3 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50">
-            Show me around
+            {t('walkthrough.button')}
           </button>
         </div>
       </Card>
@@ -11950,13 +12036,12 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           early-return, so this markup appears in no server render and cannot hydrate-mismatch. */}
       {!isNativeApp() && (
         <Card className="p-4">
-          <p className="text-base font-bold text-slate-800">Get the app</p>
+          <p className="text-base font-bold text-slate-800">{t('getApp.title')}</p>
           {/* ⚠️ OPERATOR VOCABULARY AND A REASON, NOT A FEATURE LIST. The one thing the app does that
               the browser cannot is keep taking orders with no signal — that is why a truck installs it,
               and it is the sentence that makes the badges worth tapping. */}
           <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-            The kitchen app runs your service on a phone or tablet — and it is the only way to keep taking
-            orders when you lose signal. Free with your account, on iPhone, iPad and Android.
+            {t('getApp.body')}
           </p>
           {/* 🔴 THE SHARED BADGES — components/StoreBadges.tsx. Apple's badge first and in black is a
               VENDOR RULE, not styling, which is why this is a component and not two <a> tags here. */}
@@ -11984,7 +12069,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             "do not show the same words twice" as "drop the heading". That left the section with no
             header at all, which is the opposite of what a jump target needs. The HEADING stays and the
             duplicate CARD TITLE goes, so the words appear exactly once — as the section's header. */}
-        <h2 className="text-lg font-black text-slate-900">Truck details</h2>
+        <h2 className="text-lg font-black text-slate-900">{t('sections.truckDetails')}</h2>
       {/* ── 🔴 LOGO + TRUCK DETAILS, ONE BOX ───────────────────────────────────────────
           🔴 COMBINED 3 October 2026 (operator request). The logo had a card of its own directly above
           this one, so the first screen of Settings was two boxes that are both "what my truck is".
@@ -12006,7 +12091,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             the thing it labels. Two siblings would take a `space-y-3` gap between the word and the row
             it names. */}
         <div>
-          <label className="block text-xs font-bold text-slate-600 mb-1">Logo</label>
+          <label className="block text-xs font-bold text-slate-600 mb-1">{t('logo.label')}</label>
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
             {form.logo_storage_path
@@ -12016,14 +12101,14 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           </div>
           <div>
             <ImageDropSlot
-              title="Tap or drop a logo"
+              title={t('logo.dropTitle')}
               className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
               disabled={uploadingLogo}
               onFile={f => { void uploadLogo(f) }}
             >
-              {uploadingLogo ? 'Uploading…' : 'Upload logo'}
+              {uploadingLogo ? t('logo.uploading') : t('logo.upload')}
             </ImageDropSlot>
-            <p className="text-xs text-slate-400 mt-1">PNG or JPG, square recommended</p>
+            <p className="text-xs text-slate-400 mt-1">{t('logo.hint')}</p>
             {/* Only when there is something to remove — a disabled button on a truck that never had a
                 logo is an affordance with nothing behind it. */}
             {form.logo_storage_path && (
@@ -12033,7 +12118,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 disabled={removingLogo || uploadingLogo}
                 className="mt-2 text-xs font-medium text-red-500 hover:text-red-700 disabled:opacity-50"
               >
-                {removingLogo ? 'Removing\u2026' : 'Remove logo'}
+                {removingLogo ? t('logo.removing') : t('logo.remove')}
               </button>
             )}
           </div>
@@ -12043,10 +12128,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         {/* ⛔ THE CARD TITLE "Truck details" IS GONE — the section's own `<h2>` above now carries exactly
             these words, and printing them twice is what the first pass was trying to avoid by
             dropping the heading instead. Nothing else in this card changed. */}
-        <Input label="Truck name" required value={form.name} onChange={v => setForm(p => ({...p, name: v}))} onBlur={() => saveFormField()} />
+        <Input label={t('details.truckName')} required value={form.name} onChange={v => setForm(p => ({...p, name: v}))} onBlur={() => saveFormField()} />
         <div>
-          <label className="block text-xs font-bold text-slate-600 mb-1">Description</label>
-          <textarea value={form.description || ''} onChange={e => setForm(p => ({...p, description: e.target.value}))} onBlur={() => saveFormField()} placeholder="Tell customers about your food..."
+          <label className="block text-xs font-bold text-slate-600 mb-1">{t('details.description')}</label>
+          <textarea value={form.description || ''} onChange={e => setForm(p => ({...p, description: e.target.value}))} onBlur={() => saveFormField()} placeholder={t('details.descriptionPlaceholder')}
             className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" rows={3} />
         </div>
         {/* ── CUISINE — THE WIZARD'S CONTROL, NOT A SECOND ONE ─────────────────────────────────────
@@ -12063,7 +12148,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             round-trips unchanged. A silently emptied cuisine_type would remove this truck from its own
             filter on the live map. */}
         <div>
-          <label className="block text-xs font-bold text-slate-600 mb-1">Cuisine type <span className="text-red-500">*</span></label>
+          <label className="block text-xs font-bold text-slate-600 mb-1">{t('details.cuisine')} <span className="text-red-500">*</span></label>
           <CuisinePicker
             slots={cuisineSlots}
             onChange={next => {
@@ -12099,7 +12184,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             left as typed and still saved. Changing it would turn a free-text field into a validated
             one, which is a behaviour change, not a keyboard fix. */}
         <Input
-          label="Website"
+          label={t('details.website')}
           inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
           value={form.website || ''}
           onChange={v => setForm(p => ({...p, website: v}))}
@@ -12119,20 +12204,20 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               saveFormField()
             }
           }}
-          placeholder="https://yourtruck.com"
+          placeholder={t('details.websitePlaceholder')}
         />
 
         {/* Menu icon */}
         <div className="mt-1">
           <label className="text-xs font-bold uppercase tracking-widest text-slate-500 block mb-2">
-            Menu icon
+            {t('details.menuIcon')}
           </label>
           <div className="flex items-center gap-3">
             <span className="text-3xl">{form.truck_emoji || '🍕'}</span>
             <button
               onClick={() => setShowEmojiPicker(true)}
               className="text-sm text-orange-500 hover:text-orange-600 font-medium underline underline-offset-2">
-              Change emoji
+              {t('details.changeEmoji')}
             </button>
           </div>
         </div>
@@ -12151,34 +12236,34 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         style={{ scrollMarginTop: pinnedTop }}
         className="scroll-mt-0 space-y-6"
       >
-        <h2 className="text-lg font-black text-slate-900">Contact</h2>
+        <h2 className="text-lg font-black text-slate-900">{t('sections.contact')}</h2>
       {/* Contact (merged: business contact + customer contact) */}
       <Card className="p-4 space-y-3">
         <div>
-          <p className="text-base font-bold text-slate-800">Contact Details</p>
-          <p className="text-xs text-slate-400 mt-0.5">How customers reach you about their order (shown on order confirmations) and where you receive new-order alerts. For your personal account details, go to Team → My profile.</p>
+          <p className="text-base font-bold text-slate-800">{t('contact.title')}</p>
+          <p className="text-xs text-slate-400 mt-0.5">{t('contact.intro')}</p>
         </div>
-        <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} onBlur={() => saveFormField()} placeholder="hello@yourtruck.com" error={contactEmailErr ? 'Please enter a valid email (e.g. hello@yourtruck.com)' : undefined} />
-        <p className="text-xs text-slate-400 -mt-1.5">Where you receive new-order notifications — and shown to customers on their confirmation when “Email” is the preferred method below.</p>
-        <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} onBlur={saveContactPhone} placeholder={phonePlaceholder(phoneCopy)} error={contactPhoneErr ? phoneErrorMessage('phone', phoneCopy) : undefined} />
+        <Input label={t('contact.email')} required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} onBlur={() => saveFormField()} placeholder={t('contact.emailPlaceholder')} error={contactEmailErr ? t('contact.emailError') : undefined} />
+        <p className="text-xs text-slate-400 -mt-1.5">{t('contact.emailHelp')}</p>
+        <Input label={t('contact.phone')} required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} onBlur={saveContactPhone} placeholder={phonePlaceholder(phoneCopy)} error={contactPhoneErr ? phoneErrorMessage('phone', phoneCopy, ts.locale) : undefined} />
         {/* "This number is on WhatsApp" — ties the customer-facing `whatsapp` to the phone (no double
             entry) and gates WhatsApp as a preferred method below. */}
         <label className="flex items-center gap-2 text-sm text-slate-600 -mt-1 cursor-pointer">
           <input type="checkbox" checked={!!form.phone_is_whatsapp} onChange={e => togglePhoneIsWhatsapp(e.target.checked)} className="w-4 h-4 accent-orange-600 cursor-pointer" />
-          This number is on WhatsApp
+          {t('contact.onWhatsApp')}
         </label>
 
         {/* Preferred contact method — WhatsApp gated on the tick above (customer-facing whatsapp = phone) */}
         <div className="pt-3 border-t border-slate-100">
           {['facebook', 'messenger', 'instagram'].includes(preferredContact) && (
-            <p className="text-xs text-slate-500 italic mb-2">Your previous contact method is no longer available. Please select a new one.</p>
+            <p className="text-xs text-slate-500 italic mb-2">{t('contact.previousMethodGone')}</p>
           )}
           <div className="flex items-center gap-3">
             {/* 🔴 w-44, NOT w-36. Measured in a browser against the app's own stylesheet: "Preferred
                 contact method" needs 167px on one line and w-36 reserves 144, so it wrapped to two while
                 the select had the rest of the row spare. w-44 is 176px — the next Tailwind step that
                 fits, with 9px to spare. */}
-            <label className="text-sm text-slate-600 w-44 flex-shrink-0">Preferred contact method</label>
+            <label className="text-sm text-slate-600 w-44 flex-shrink-0">{t('contact.preferred')}</label>
             <select
               value={['facebook', 'messenger', 'instagram'].includes(preferredContact) ? '' : preferredContact}
               onChange={async e => {
@@ -12188,18 +12273,18 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               }}
               className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"
             >
-              <option value="">Not specified</option>
-              {(!!form.contact_email?.trim() || preferredContact === 'email') && <option value="email">Email</option>}
-              {(!!form.contact_phone?.trim() || preferredContact === 'phone') && <option value="phone">Phone</option>}
+              <option value="">{t('contact.notSpecified')}</option>
+              {(!!form.contact_email?.trim() || preferredContact === 'email') && <option value="email">{t('contact.optionEmail')}</option>}
+              {(!!form.contact_phone?.trim() || preferredContact === 'phone') && <option value="phone">{t('contact.optionPhone')}</option>}
               {(whatsappUsable || preferredContact === 'whatsapp') && <option value="whatsapp">WhatsApp</option>}
             </select>
           </div>
-          <p className="text-xs text-slate-400 mt-1.5">How customers should contact you about their order — shown on their confirmation email.</p>
+          <p className="text-xs text-slate-400 mt-1.5">{t('contact.preferredHelp')}</p>
           {!form.contact_email?.trim() && !form.contact_phone?.trim() && (
-            <p className="text-xs text-slate-400 mt-1">Add an email or phone above to offer a contact method.</p>
+            <p className="text-xs text-slate-400 mt-1">{t('contact.addEmailOrPhone')}</p>
           )}
           {preferredContact === 'whatsapp' && !whatsappUsable && (
-            <p className="text-xs text-amber-600 mt-1">⚠️ Tick “This number is on WhatsApp” on the Phone field to use WhatsApp.</p>
+            <p className="text-xs text-amber-600 mt-1">{t('contact.tickWhatsApp')}</p>
           )}
         </div>
 
@@ -12221,7 +12306,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             "do not show the same words twice" as "drop the heading". That left the section with no
             header at all, which is the opposite of what a jump target needs. The HEADING stays and the
             duplicate CARD TITLE goes, so the words appear exactly once — as the section's header. */}
-        <h2 className="text-lg font-black text-slate-900">Order settings</h2>
+        <h2 className="text-lg font-black text-slate-900">{t('sections.orderSettings')}</h2>
       {/* Orders */}
       <Card className="p-4 space-y-3">
         {/* ⛔ THE CARD TITLE "Order settings" IS GONE — the section's own `<h2>` above now carries exactly
@@ -12232,13 +12317,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             treatment as Sounds. Toggles use the shared <Toggle> (canonical w-11/h-6/teal) — no bespoke inline. */}
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
           <div className="pb-3">
-            <p className={SUBCARD_HEADING}>Accepting orders</p>
-            <p className="text-xs text-slate-500 mt-0.5">What happens when a new order arrives.</p>
+            <p className={SUBCARD_HEADING}>{t('orders.acceptingTitle')}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{t('orders.acceptingHelp')}</p>
           </div>
           <div className="flex items-center justify-between gap-3 pb-3">
             <div>
-              <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.autoAccept.label}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{SETTING_COPY.autoAccept.help}</p>
+              <p className="text-sm font-semibold text-slate-800">{tSet('autoAccept.label')}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{tSet('autoAccept.help')}</p>
             </div>
             <Toggle on={!!form.auto_accept} onToggle={() => { const next = !form.auto_accept; setForm(p => ({...p, auto_accept: next})); saveFormField({ auto_accept: next }) }} />
           </div>
@@ -12274,13 +12359,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         <div className="pt-3 border-t border-slate-100">
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
             <div className="pb-3">
-              <p className={SUBCARD_HEADING}>Notifications</p>
-              <p className="text-xs text-slate-500 mt-0.5">How you hear about new orders.</p>
+              <p className={SUBCARD_HEADING}>{t('orders.notificationsTitle')}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('orders.notificationsHelp')}</p>
             </div>
             <div className="flex items-center justify-between gap-3 py-3">
               <div>
-                <p className="text-sm font-semibold text-slate-800">Email order notifications</p>
-                <p className="text-xs text-slate-500 mt-0.5">When on, an email is sent to {truck.contact_email || "the truck's contact email"} for every new order. Customer order emails are sent either way.</p>
+                <p className="text-sm font-semibold text-slate-800">{t('orders.emailNotifications')}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{t('orders.emailNotificationsHelp', { hasEmail: truck.contact_email ? 'yes' : 'no', email: truck.contact_email ?? '' })}</p>
               </div>
               <Toggle
                 on={(form as any).truck_order_email_enabled !== false}
@@ -12300,13 +12385,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         <div className="pt-3 border-t border-slate-100">
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
             <div className="pb-3">
-              <p className={SUBCARD_HEADING}>Opening and closing</p>
-              <p className="text-xs text-slate-500 mt-0.5">When your events start and stop taking online orders.</p>
+              <p className={SUBCARD_HEADING}>{t('orders.openCloseTitle')}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('orders.openCloseHelp')}</p>
             </div>
             <div className="flex items-center justify-between gap-3 py-3">
               <div>
-                <p className="text-sm font-semibold text-slate-800">Open for orders automatically</p>
-                <p className="text-xs text-slate-500 mt-0.5">Events open for online orders at your event start time</p>
+                <p className="text-sm font-semibold text-slate-800">{t('orders.autoOpen')}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{t('orders.autoOpenHelp')}</p>
               </div>
               <Toggle
                 on={form.default_auto_open}
@@ -12315,8 +12400,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             </div>
             <div className="flex items-center justify-between gap-3 py-3">
               <div>
-                <p className="text-sm font-semibold text-slate-800">Close for orders automatically</p>
-                <p className="text-xs text-slate-500 mt-0.5">Events stop taking orders at your event end time</p>
+                <p className="text-sm font-semibold text-slate-800">{t('orders.autoClose')}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{t('orders.autoCloseHelp')}</p>
               </div>
               <Toggle
                 on={form.default_auto_close}
@@ -12339,7 +12424,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             from the SAME `SETTING_COPY` constant — so the words are the setting's own and nothing new
             was written. The duplicate label line inside the row is gone with it, so "Allow customers
             to cancel orders" appears exactly once. */}
-        <p className="text-base font-bold text-slate-800">{SETTING_COPY.allowCancellation.label}</p>
+        <p className="text-base font-bold text-slate-800">{tSet('allowCancellation.label')}</p>
         {/* ⛔ THE TOP DIVIDER IS GONE (the `border-t` row rule used elsewhere in this section). It was
             separating this group from the contact fields ABOVE it in its old home. Carried into a card
             of its own there was nothing above it to divide from, so it drew a stray rule across the top
@@ -12347,9 +12432,12 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             ⚠️ `mt-1` replaces it: the heading needs a little air, not a line. */}
         <div className="flex items-center justify-between mt-1">
           <div>
+            {/* Language Phase 1d: ONE sentence with the select inside it (`settingsCopy.allowCancellation.sentence`),
+                not a prefix and a suffix around a control — a language that puts the time first can. */}
             <p className="text-sm text-slate-700">
-              {SETTING_COPY.allowCancellation.cancelPrefix}{' '}
+              {tSet.rich('allowCancellation.sentence', { select: () => (
               <select
+                key="cutoff"
                 value={cancellationCutoff}
                 onChange={async e => {
                   const val = parseInt(e.target.value)
@@ -12358,12 +12446,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 }}
                 className="border-b border-slate-300 text-xs px-1 bg-transparent"
               >
-                <option value="15">15 minutes</option>
-                <option value="30">30 minutes</option>
-                <option value="60">60 minutes</option>
-                <option value="120">2 hours</option>
-              </select>
-              {' '}{SETTING_COPY.allowCancellation.cancelSuffix}
+                <option value="15">{t('orders.cutoffMinutes', { n: 15, count: '15' })}</option>
+                <option value="30">{t('orders.cutoffMinutes', { n: 30, count: '30' })}</option>
+                <option value="60">{t('orders.cutoffMinutes', { n: 60, count: '60' })}</option>
+                <option value="120">{t('orders.cutoffHours', { n: 2, count: '2' })}</option>
+              </select>) })}
             </p>
           </div>
           <Toggle
@@ -12383,34 +12470,29 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       {preorderCan && (() => {
         const groups = [
           ...categories.map(c => ({ id: c.id, name: c.name, items: items.filter(i => i.category_id === c.id) })),
-          { id: '__uncat__', name: 'Uncategorized', items: items.filter(i => !i.category_id) },
+          { id: '__uncat__', name: t('preorders.uncategorized'), items: items.filter(i => !i.category_id) },
         ].filter(g => g.items.length > 0)
         const includedCount = items.filter(i => i.preorder_enabled === true).length
         const cutoffStr = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
-        const ruleSummary = `${describePreorderDeadline({ enabled: true, deadlineType: gType, deadlineValue: gVal, pastAction: gAction })} · ${gAction === 'force_pending' ? 'needs approval' : 'sold out'}`
+        // ONE sentence: the deadline (a cutoff time in the truck's clock) and what happens past it.
+        const ruleSummary = t('preorders.ruleSummary', { type: gType, hours: gVal, count: String(gVal), time: formatSlot(cutoffStr(gVal), ts), action: gAction })
         return (
           <Card className="p-4">
             {/* Card header (the master toggle moved down to the "Pre-order rule" line). */}
             <div>
-              <p className="text-base font-bold text-slate-800">Pre-orders</p>
-              <p className="text-xs text-slate-400 mt-0.5">Let customers order ahead of an event. Set when pre-orders open and the deadline rules below — these apply only to the items you select.</p>
+              <p className="text-base font-bold text-slate-800">{t('preorders.title')}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t('preorders.intro')}</p>
             </div>
 
             {/* GLOBAL CONFIG — the ONE rule (truck row via update_truck). Stable deadline control + radios. */}
             <div className="mt-4">
               {/* OPEN-WINDOW (V8.3): when customers can START pre-ordering — Opens FIRST, 9 fixed options. */}
-              <p className="text-sm font-semibold text-slate-800 mb-2">When pre-orders open</p>
+              <p className="text-sm font-semibold text-slate-800 mb-2">{t('preorders.whenOpen')}</p>
               <select value={gOpen} onChange={e => saveOpenRule(e.target.value)}
                 className="w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 mb-3">
-                <option value="on_confirm">As soon as event is confirmed</option>
-                <option value="7d">7 days before</option>
-                <option value="6d">6 days before</option>
-                <option value="5d">5 days before</option>
-                <option value="4d">4 days before</option>
-                <option value="3d">3 days before</option>
-                <option value="2d">2 days before</option>
-                <option value="1d">1 day before</option>
-                <option value="day_of">On day of event</option>
+                <option value="on_confirm">{t('preorders.openOnConfirm')}</option>
+                {[7, 6, 5, 4, 3, 2, 1].map(d => <option key={d} value={`${d}d`}>{t('preorders.openDaysBefore', { n: d, count: String(d) })}</option>)}
+                <option value="day_of">{t('preorders.openDayOf')}</option>
               </select>
               {/* ── 🔴 THE DEADLINE RULES SIT IN THEIR OWN BOX (28 August 2026). ────────────────────────
                   "When pre-orders open" above is a DIFFERENT question — when customers may START — and
@@ -12424,33 +12506,33 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               {/* "Pre-order deadline" heading (prominent — matches the other section headings) + the master
                   toggle on the SAME line; explanatory + scope text below. */}
               <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold text-slate-800">Pre-order deadline</p>
+                <p className="text-sm font-semibold text-slate-800">{t('preorders.deadlineTitle')}</p>
                 <Toggle on={preordersOn} onToggle={() => saveMaster(!preordersOn)} />
               </div>
-              <p className="text-xs text-slate-400 mt-0.5 mb-2">Set pre-order rule to prevent ordering of items after a specified time.</p>
+              <p className="text-xs text-slate-400 mt-0.5 mb-2">{t('preorders.deadlineHelp')}</p>
               {/* Deadline + past-action dim when off; Opens + the toggle stay crisp. */}
               <div className={preordersOn ? '' : 'opacity-50'}>
-              <label className="block text-xs font-bold text-slate-600 mb-1">Deadline</label>
+              <label className="block text-xs font-bold text-slate-600 mb-1">{t('preorders.deadline')}</label>
               <div className="flex items-center gap-2 mb-3">
                 <select value={gType} onChange={e => saveGlobalCfg({ type: e.target.value as any })}
                   className="border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                  <option value="hours_before">Hours before event</option>
-                  <option value="daily_cutoff">Daily cutoff time</option>
+                  <option value="hours_before">{t('preorders.hoursBefore')}</option>
+                  <option value="daily_cutoff">{t('preorders.dailyCutoff')}</option>
                 </select>
                 {/* fixed slot — both controls live here; only one shows → no reflow on type switch */}
                 <div className="w-32 flex-shrink-0">
                   <select value={gVal} onChange={e => saveGlobalCfg({ value: parseInt(e.target.value) })}
                     className={gType === 'hours_before' ? 'w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400' : 'hidden'}>
-                    {Array.from({ length: 48 }, (_, i) => i + 1).map(h => <option key={h} value={h}>{h} hour{h !== 1 ? 's' : ''}</option>)}
+                    {Array.from({ length: 48 }, (_, i) => i + 1).map(h => <option key={h} value={h}>{t('preorders.hours', { n: h, count: String(h) })}</option>)}
                   </select>
                   <input type="time" value={cutoffStr(gVal)} onChange={e => { const [h, m] = e.target.value.split(':').map(Number); saveGlobalCfg({ value: (h || 0) * 60 + (m || 0) }) }}
                     className={gType === 'daily_cutoff' ? 'w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400' : 'hidden'} />
                 </div>
               </div>
-              <label className="block text-xs font-bold text-slate-600 mb-1">Past the deadline</label>
+              <label className="block text-xs font-bold text-slate-600 mb-1">{t('preorders.pastDeadline')}</label>
               <div className="space-y-1.5">
-                {([['sold_out', 'Mark sold out', "Customers can't order it after the deadline."],
-                   ['force_pending', 'Allow, require approval', "Customers can still order, but the order needs your approval (won't auto-accept)."]] as const).map(([v, lbl, help]) => (
+                {([['sold_out', t('preorders.soldOutLabel'), t('preorders.soldOutHelp')],
+                   ['force_pending', t('preorders.approvalLabel'), t('preorders.approvalHelp')]] as const).map(([v, lbl, help]) => (
                   <button type="button" key={v} onClick={() => saveGlobalCfg({ action: v })} className="w-full text-left flex items-start gap-2 cursor-pointer">
                     <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${gAction === v ? 'border-orange-500' : 'border-slate-300'}`}>{gAction === v && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
                     <span className="text-sm"><span className="font-medium text-slate-700">{lbl}</span><span className="block text-xs text-slate-400">{help}</span></span>
@@ -12462,15 +12544,15 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               {/* INCLUDED ITEMS (read-only) + Configure button — the summary shows the GLOBAL rule. */}
               <div className={`mt-4 pt-3 border-t border-slate-100 ${preordersOn ? '' : 'opacity-50'}`}>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <p className="text-sm font-semibold text-slate-800">Pre-order items <span className="font-normal text-slate-400">({includedCount})</span></p>
+                  <p className="text-sm font-semibold text-slate-800">{t.rich('preorders.itemsTitle', { count: String(includedCount), muted: chunks => <span className="font-normal text-slate-400">{chunks}</span> })}</p>
                   <button type="button" onClick={() => setPoModalOpen(true)}
-                    className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700">Configure items</button>
+                    className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700">{t('preorders.configure')}</button>
                 </div>
                 {includedCount === 0
-                  ? <p className={preordersOn ? 'text-sm font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2' : 'text-xs text-slate-400'}>No items selected yet — “Configure items” to add some.</p>
+                  ? <p className={preordersOn ? 'text-sm font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2' : 'text-xs text-slate-400'}>{t('preorders.noneYet')}</p>
                   : (
                     <>
-                      <p className="text-xs text-slate-400 mb-2">All selected items use the rule above: <span className="text-slate-600">{ruleSummary}</span>.</p>
+                      <p className="text-xs text-slate-400 mb-2">{t.rich('preorders.allUseRule', { rule: ruleSummary, hl: chunks => <span className="text-slate-600">{chunks}</span> })}</p>
                       <div className="space-y-2">
                         {groups.map(g => {
                           const inc = g.items.filter(i => i.preorder_enabled === true)
@@ -12494,8 +12576,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             {poModalOpen && (
               <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setPoModalOpen(false)}>
                 <div className="bg-white rounded-2xl p-5 w-full max-w-md shadow-2xl max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                  <h3 className="font-black text-slate-900 mb-1">Choose pre-order items</h3>
-                  <p className="text-xs text-slate-400 mb-4">Tick which items are pre-order. They all use the global rule ({ruleSummary}).</p>
+                  <h3 className="font-black text-slate-900 mb-1">{t('preorders.modalTitle')}</h3>
+                  <p className="text-xs text-slate-400 mb-4">{t('preorders.modalHelp', { rule: ruleSummary })}</p>
                   <div className="space-y-4">
                     {groups.map(g => {
                       const gIds = g.items.map(i => i.id)
@@ -12506,7 +12588,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                           <div className="flex items-center justify-between gap-2">
                             <span className="text-[11px] font-bold uppercase tracking-wide text-orange-600">{g.name}</span>
                             <button type="button" onClick={() => setGroupIncluded(gIds, !gAllOn)}
-                              className="text-[11px] font-semibold text-orange-600">{gAllOn ? 'Deselect all' : 'Select all'}</button>
+                              className="text-[11px] font-semibold text-orange-600">{gAllOn ? t('preorders.deselectAll') : t('preorders.selectAll')}</button>
                           </div>
                           {subGroups.filter(sg => sg.items.length > 0).map(sg => {
                             const sgIds = sg.items.map(i => i.id)
@@ -12517,7 +12599,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                                   <div className="flex items-center justify-between gap-2">
                                     <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{sg.name}</span>
                                     <button type="button" onClick={() => setGroupIncluded(sgIds, !sgAllOn)}
-                                      className="text-[10px] font-semibold text-slate-400 hover:text-orange-600">{sgAllOn ? 'Deselect' : 'Select all'}</button>
+                                      className="text-[10px] font-semibold text-slate-400 hover:text-orange-600">{sgAllOn ? t('preorders.deselect') : t('preorders.selectAll')}</button>
                                   </div>
                                 )}
                                 <div className="space-y-1 mt-1">
@@ -12539,7 +12621,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                     })}
                   </div>
                   <div className="flex justify-end mt-5">
-                    <button type="button" onClick={() => setPoModalOpen(false)} className="text-sm font-semibold px-3 py-2 rounded-lg bg-slate-800 text-white">Done</button>
+                    <button type="button" onClick={() => setPoModalOpen(false)} className="text-sm font-semibold px-3 py-2 rounded-lg bg-slate-800 text-white">{t('preorders.done')}</button>
                   </div>
                 </div>
               </div>
@@ -12559,21 +12641,21 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         style={{ scrollMarginTop: pinnedTop }}
         className="scroll-mt-0 space-y-6"
       >
-        <h2 className="text-lg font-black text-slate-900">Truck settings</h2>
+        <h2 className="text-lg font-black text-slate-900">{t('sections.truckSettings')}</h2>
       {/* Your trucks */}
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-base font-bold text-slate-800">Your trucks</p>
+            <p className="text-base font-bold text-slate-800">{t('vans.title')}</p>
             <p className="text-xs text-slate-500 mt-0.5">
-              Manage your trucks. Each has its own order screen and settings.
+              {t('vans.help')}
             </p>
           </div>
           <button
             onClick={handleAddVanClick}
             className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
           >
-            + Add truck
+            {t('vans.add')}
           </button>
         </div>
 
@@ -12588,14 +12670,14 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   onClick={() => { setRenamingVanId(van.id); setRenameVanName(van.name) }}
                   className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
                 >
-                  Rename
+                  {t('vans.rename')}
                 </button>
                 {vans.length > 1 && (
                   <button
                     onClick={() => setDeletingVan(van)}
                     className="text-xs px-3 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
                   >
-                    Delete
+                    {t('vans.delete')}
                   </button>
                 )}
               </div>
@@ -12618,7 +12700,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               <div className="flex items-center justify-between gap-3 mb-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-slate-800">
-                    Same as {vans.find(v => v.id === firstVanId)?.name ?? 'the first van'}
+                    {(() => { const name = vans.find(v => v.id === firstVanId)?.name; return t('vans.sameAs', { hasName: name != null ? 'yes' : 'no', name: name ?? '' }) })()}
                   </p>
                   {/* ⚠️ "EVERYTHING EXCEPT CAPACITY" IS NEW WORDING, AND IT HAS TO BE (October 2026).
                       Kitchen capacity moved to Menu › Kitchen capacity with its own switch, so this
@@ -12626,8 +12708,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                       something it stopped doing — the quiet kind of wrong. */}
                   <p className="text-xs text-slate-500 mt-0.5">
                     {van.same_as_first_van
-                      ? 'This van uses the same settings, except kitchen capacity.'
-                      : 'Copy the first van\u2019s settings — everything except kitchen capacity — and keep them in step.'}
+                      ? t('vans.sameOn')
+                      : t('vans.sameOff')}
                   </p>
                 </div>
                 <Toggle
@@ -12651,7 +12733,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   <p className={`text-sm font-semibold ${
                     van.auto_pause_on_offline ? 'text-teal-800' : 'text-slate-800'
                   }`}>
-                    {SERVICE_SETTING_LABELS.offline_protection}
+                    {tSvc('labels.offline_protection')}
                   </p>
                   {/* ── 🔴 THE SAME THREE LINES AS THE DASHBOARD'S CARD, IN THE SAME ORDER. ──────────
                       Description, then the ⚠️ instruction, then the two modes below — the dashboard's
@@ -12664,8 +12746,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                       ⚠️ WHAT DOES NOT CHANGE IS THE SCOPE. This card is the VAN default and applies to
                       every event; the dashboard's is the live event. Same words, same order, and each
                       still writes what it always wrote. */}
-                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_PURPOSE}</p>
-                  <p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{tOff('purpose')}</p>
+                  <p className="text-xs text-amber-600 mt-1">⚠️ <strong>{tOff('explainerLead')}</strong> {tOff('explainerBody')}</p>
                 </div>
                 <button
                   onClick={() => handleToggleAutoPause(van.id, !van.auto_pause_on_offline)}
@@ -12684,10 +12766,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   the SAME `OFFLINE_PROTECTION_MODES` array, so a wording change is one edit in
                   lib/copy/offlineProtection.ts and neither screen can drift from the other. */}
               {van.auto_pause_on_offline && (
-                <div role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL} className="mt-3 pt-3 border-t border-teal-200 flex flex-col gap-2">
+                <div role="radiogroup" aria-label={tOff('switchLabel')} className="mt-3 pt-3 border-t border-teal-200 flex flex-col gap-2">
                   {/* MOVED DOWN FROM THE HEADING. It describes the CHOICE below it, so it reads as
                       the options' lead-in rather than as a summary of the whole box. */}
-                  <p className="text-xs text-slate-500">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
+                  <p className="text-xs text-slate-500">{tOff('cardDescription')}</p>
                   {OFFLINE_PROTECTION_MODES.map(m => {
                     const selected = (van.offline_protection_mode ?? 'pause') === m.value
                     return (
@@ -12708,8 +12790,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                           {selected && <span className="w-2 h-2 rounded-full bg-teal-600" />}
                         </span>
                         <span className="min-w-0">
-                          <span className="block text-xs font-semibold text-teal-800">{m.label}</span>
-                          <span className="block text-xs text-slate-500">{m.help}</span>
+                          <span className="block text-xs font-semibold text-teal-800">{tOff(`modes.${m.value}.label`)}</span>
+                          <span className="block text-xs text-slate-500">{tOff(`modes.${m.value}.help`)}</span>
                         </span>
                       </button>
                       {/* ── 🔴 THE DELAY BELONGS TO THIS OPTION, SO IT SITS INSIDE IT. ────────────────
@@ -12728,14 +12810,14 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                       {m.value === 'no_auto_accept' && selected && (
                         <div className="pl-6">
                           <div className="flex items-center justify-between gap-3">
-                            <p className="text-xs font-semibold text-teal-800">{OFFLINE_AUTO_REJECT_LABEL}</p>
+                            <p className="text-xs font-semibold text-teal-800">{tOff('autoRejectLabel')}</p>
                             <select
                               value={van.offline_auto_reject_mins ?? OFFLINE_AUTO_REJECT_DEFAULT_MINS}
-                              aria-label={OFFLINE_AUTO_REJECT_LABEL}
+                              aria-label={tOff('autoRejectLabel')}
                               onChange={e => void updateVanSetting(van.id, 'offline_auto_reject_mins', parseInt(e.target.value))}
                               className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
                             >
-                              {OFFLINE_AUTO_REJECT_OPTIONS.map(n => <option key={n} value={n}>{offlineAutoRejectLabel(n)}</option>)}
+                              {OFFLINE_AUTO_REJECT_OPTIONS.map(n => <option key={n} value={n}>{tOff('autoRejectOption', { n, count: String(n) })}</option>)}
                             </select>
                           </div>
                         </div>
@@ -12760,7 +12842,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 order screen shows vs. how fast the kitchen can cook) and now box separately.
                 Presentation only — same rows, same updateVanSetting calls, same defaults. */}
             <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col gap-3">
-              <p className={SUBCARD_HEADING}>Display settings</p>
+              <p className={SUBCARD_HEADING}>{t('vans.displayTitle')}</p>
 
               {/* Stage 1 (order-ready redesign): the "Show cooking step" toggle was REMOVED here — the
                   cooking step is now ALWAYS on (the KDS cook-view gate + OrderCard cook-mode were
@@ -12772,8 +12854,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   the dashboard's Menu & Stock tab. Stage 4 of the order-ready redesign. */}
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.orderReady.label}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{SETTING_COPY.orderReady.help}</p>
+                  <p className="text-sm font-semibold text-slate-800">{tSet('orderReady.label')}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{tSet('orderReady.help')}</p>
                 </div>
                 <button
                   onClick={() => updateVanSetting(van.id, 'order_ready_enabled', !van.order_ready_enabled)}
@@ -12805,13 +12887,12 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               {vanCashAvailable && (
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">{SERVICE_SETTING_LABELS.takes_cash}</p>
+                    <p className="text-sm font-semibold text-slate-800">{tSvc('labels.takes_cash')}</p>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Splits the payment button into &quot;Cash&quot; and &quot;Card&quot; so your takings reconcile
-                      against the till. You can turn this on for a single event from the dashboard.
+                      {t('vans.takesCashHelp')}
                     </p>
                     {(van.takes_cash === null || van.takes_cash === undefined) && (
-                      <p className="text-xs text-slate-400 mt-0.5">Following your truck setting.</p>
+                      <p className="text-xs text-slate-400 mt-0.5">{t('vans.followingTruck')}</p>
                     )}
                   </div>
                   <Toggle
@@ -12838,9 +12919,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   treatment as "Do you take cash?" under the paid step. */}
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.buzzers.label}</p>
+                  <p className="text-sm font-semibold text-slate-800">{tSet('buzzers.label')}</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    {SETTING_COPY.buzzers.help}
+                    {tSet('buzzers.help')}
                   </p>
                 </div>
                 <button
@@ -12859,10 +12940,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   1-20 select showing "10" would read as a stored value that is not stored. */}
               {van.buzzer_count != null && (
                 <div className="flex items-center justify-between gap-3 pl-4">
-                  <p className="text-sm text-slate-700">{SETTING_COPY.buzzers.countLabel}</p>
+                  <p className="text-sm text-slate-700">{tSet('buzzers.countLabel')}</p>
                   <select
                     value={van.buzzer_count}
-                    aria-label="Number of buzzers"
+                    aria-label={t('vans.buzzerCountAria')}
                     onChange={e => updateVanSetting(van.id, 'buzzer_count', parseInt(e.target.value))}
                     className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
                   >
@@ -12889,13 +12970,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 ⚠️ update_van_settings' destructure is an ALLOWLIST and get_vans' select is NAMED — both
                 carry these keys, or the value writes and never reads back. */}
             <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <p className={`${SUBCARD_HEADING} mb-1`}>{SERVICE_SETTING_LABELS.collection_interval_mins}</p>
-              <p className="text-xs text-slate-500 mb-3">How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.</p>
+              <p className={`${SUBCARD_HEADING} mb-1`}>{tSvc('labels.collection_interval_mins')}</p>
+              <p className="text-xs text-slate-500 mb-3">{t('collection.help')}</p>
               {!intervalsAvailable ? (
                 /* 🔴 THE BOX DEGRADES; THE VAN DOES NOT. The interval columns could not be read, so the
                    controls would be lying about what is stored. One line, no controls — and every other
                    box on this van, Kitchen capacity included, renders exactly as it always does. */
-                <p className="text-xs text-slate-500">Collection times are unavailable right now.</p>
+                <p className="text-xs text-slate-500">{t('collection.unavailable')}</p>
               ) : (() => {
                 const customer = normaliseInterval(van.collection_interval_mins)
                 const overrideOn = van.operator_collection_interval_mins != null
@@ -12903,46 +12984,46 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 return (
                   <div className="flex flex-col gap-3">
                     <label className="block">
-                      <span className="text-sm font-semibold text-slate-800">Customer Collection Times</span>
+                      <span className="text-sm font-semibold text-slate-800">{t('collection.customerTimes')}</span>
                       <select
                         value={customer}
-                        aria-label="Customer Collection Times"
+                        aria-label={t('collection.customerTimes')}
                         onChange={e => updateVanSetting(van.id, 'collection_interval_mins', normaliseInterval(parseInt(e.target.value)))}
                         className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                        {INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} minutes</option>)}
+                        {INTERVAL_CHOICES.map(n => <option key={n} value={n}>{t('collection.everyMinutes', { n, count: String(n) })}</option>)}
                       </select>
                       <p className="text-xs text-slate-500 mt-1">
-                        {overrideOn ? 'Customers can pick ' : 'You and your customers can pick '}{intervalExample(customer)}
+                        {t('collection.canPick', { who: overrideOn ? 'customers' : 'everyone', example: pickExample(customer) })}
                       </p>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={overrideOn}
-                        aria-label="Use different times for orders I add"
+                        aria-label={t('collection.differentTimes')}
                         onChange={e => updateVanSetting(van.id, 'operator_collection_interval_mins', e.target.checked ? customer : null)}
                         className="accent-orange-500"
                       />
-                      <span className="text-sm text-slate-800">Use different times for orders I add</span>
+                      <span className="text-sm text-slate-800">{t('collection.differentTimes')}</span>
                     </label>
                     {overrideOn && (
                       <label className="block">
-                        <span className="text-sm font-semibold text-slate-800">Your Collection Times</span>
+                        <span className="text-sm font-semibold text-slate-800">{t('collection.yourTimes')}</span>
                         <select
                           value={operator}
-                          aria-label="Your Collection Times"
+                          aria-label={t('collection.yourTimes')}
                           onChange={e => updateVanSetting(van.id, 'operator_collection_interval_mins', normaliseInterval(parseInt(e.target.value)))}
                           className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                          {INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} minutes</option>)}
+                          {INTERVAL_CHOICES.map(n => <option key={n} value={n}>{t('collection.everyMinutes', { n, count: String(n) })}</option>)}
                         </select>
-                        <p className="text-xs text-slate-500 mt-1">You can pick {intervalExample(operator)}</p>
+                        <p className="text-xs text-slate-500 mt-1">{t('collection.youCanPick', { example: pickExample(operator) })}</p>
                       </label>
                     )}
                     {/* 18 September 2026: ONE conditional line under the selects, from the shared rule
                         (misalignedCookingCategory) — shown only when the EFFECTIVE interval (yours when ticked,
                         else the customers') is not a whole multiple of a cooking category's prep. Same line,
                         same rule, on the dashboard. `categories` is the tab's existing prop — no new read. */}
-                    {(() => { const mc = misalignedCookingCategory(overrideOn ? operator : customer, categories); return mc ? <p className="text-xs text-amber-700 mt-1">{collectionTimesHint(mc)}</p> : null })()}
+                    {(() => { const mc = misalignedCookingCategory(overrideOn ? operator : customer, categories); return mc ? <p className="text-xs text-amber-700 mt-1">{t('collection.misaligned', { name: mc.name, mins: mc.prepMins })}</p> : null })()}
                   </div>
                 )
               })()}
@@ -12964,13 +13045,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   disabled={!renameVanName.trim()}
                   className="px-3 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl disabled:opacity-40"
                 >
-                  Save
+                  {t('vans.save')}
                 </button>
                 <button
                   onClick={() => { setRenamingVanId(null); setRenameVanName('') }}
                   className="px-3 py-2 border border-slate-200 text-slate-600 text-sm rounded-xl"
                 >
-                  Cancel
+                  {t('vans.cancel')}
                 </button>
               </div>
             )}
@@ -13003,7 +13084,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               type="text"
               value={newVanName}
               onChange={e => setNewVanName(e.target.value)}
-              placeholder="e.g. Van 2, Festival Van"
+              placeholder={t('vans.newPlaceholder')}
               autoFocus
               className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm"
             />
@@ -13012,13 +13093,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               disabled={!newVanName.trim()}
               className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl disabled:opacity-40"
             >
-              Add
+              {t('vans.addButton')}
             </button>
             <button
               onClick={() => { setAddingVan(false); setNewVanName('') }}
               className="px-4 py-2 border border-slate-200 text-slate-600 text-sm rounded-xl"
             >
-              Cancel
+              {t('vans.cancel')}
             </button>
           </div>
         )}
@@ -13035,7 +13116,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         style={{ scrollMarginTop: pinnedTop }}
         className="scroll-mt-0 space-y-6"
       >
-        <h2 className="text-lg font-black text-slate-900">Schedule</h2>
+        <h2 className="text-lg font-black text-slate-900">{t('sections.schedule')}</h2>
       {/* ══ 🔴 "Your schedule" AND "Import exclusions" ARE BACK HERE (Dominic reversed the move) ═══
           They were moved into a modal opened from Schedule › Events on 4 October (option (a) of
           docs/manage-moves-report.md §1). Dominic reversed that decision, so they are back in their
@@ -13049,11 +13130,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           having whether or not a modal exists. Nothing here retypes them. */}
       {/* Your schedule */}
       <Card className="p-4 space-y-4">
-        <p className="text-base font-bold text-slate-800">Your schedule</p>
+        <p className="text-base font-bold text-slate-800">{t('schedule.title')}</p>
         <div className="space-y-2">
           {([
-            { value: 'manual', label: "I'll add events myself" },
-            { value: 'auto',   label: 'Find my events automatically',    desc: "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page." },
+            { value: 'manual', label: t('schedule.manual') },
+            { value: 'auto',   label: t('schedule.auto'),    desc: t('schedule.autoDesc') },
           ] as { value: 'auto' | 'manual'; label: string; desc?: string }[]).map(opt => {
             const pref = form.scraper_preference ?? 'manual'
             const selected = pref === opt.value || (opt.value === 'auto' && pref === 'both')
@@ -13083,11 +13164,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         {/* Clarifier — applies to BOTH options: found events always come for approval, nothing
             goes live until confirmed (so a "I'll add events myself" truck isn't surprised). */}
         <p className="text-xs text-slate-500">
-          Either way, if we find your events listed elsewhere, we&apos;ll still send these to you for approval. Nothing goes live until you confirm it.
+          {t('schedule.eitherWay')}
         </p>
         {['auto', 'both'].includes(form.scraper_preference ?? 'manual') && (
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-slate-800">Where do you post your schedule?</p>
+            <p className="text-sm font-semibold text-slate-800">{t('schedule.wherePost')}</p>
             <div className="flex gap-2">
               <input
                 type="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
@@ -13100,16 +13181,16 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   const raw = e.target.value.trim()
                   if (!raw) { setVerifyError(null); saveSetting('schedule_url', null); return }
                   const val = normaliseUrl(raw)
-                  if (!val) { setVerifyError(URL_MALFORMED_MSG); return }
+                  if (!val) { setVerifyError(tVerify('malformed')); return }
                   setForm(p => ({ ...p, schedule_url: val }))
                   if (isBlockedDomain(val)) {
-                    setVerifyError(BLOCKED_DOMAIN_MSG)
+                    setVerifyError(tVerify('blockedDomain'))
                   } else {
                     setVerifyError(null)
                     saveSetting('schedule_url', val)
                   }
                 }}
-                placeholder="https://yourtruck.co.uk/events"
+                placeholder={t('schedule.urlPlaceholder')}
                 disabled={verifying}
                 className={`flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${verifying ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
@@ -13120,8 +13201,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {verifying
-                  ? <><div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-orange-500 rounded-full animate-spin" />Checking...</>
-                  : 'Verify'}
+                  ? <><div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-orange-500 rounded-full animate-spin" />{t('schedule.checking')}</>
+                  : t('schedule.verify')}
               </button>
             </div>
             {verifying && (
@@ -13131,13 +13212,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                 </svg>
                 <div>
-                  <p className="text-sm font-semibold text-amber-800">Checking your website...</p>
-                  <p className="text-xs text-amber-700 mt-0.5">This can take up to 2 minutes — please keep this page open and don't close the tab.</p>
+                  <p className="text-sm font-semibold text-amber-800">{t('schedule.checkingWebsite')}</p>
+                  <p className="text-xs text-amber-700 mt-0.5">{t('schedule.checkingHelp')}</p>
                 </div>
               </div>
             )}
             {!verifying && verifyError && <p className="text-xs text-red-500">{verifyError}</p>}
-            <p className="text-xs text-slate-500">Your website where customers can see your upcoming events — not a Facebook or Instagram page</p>
+            <p className="text-xs text-slate-500">{t('schedule.urlHelp')}</p>
           </div>
         )}
       </Card>
@@ -13146,8 +13227,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       {settingsExclusionList.length > 0 && (
         <Card className="p-4 space-y-3">
           <div>
-            <p className="text-base font-bold text-slate-800">Import exclusions</p>
-            <p className="text-xs text-slate-500 mt-0.5">These terms are automatically filtered out when importing your schedule. Remove any that were added by mistake.</p>
+            <p className="text-base font-bold text-slate-800">{t('schedule.exclusionsTitle')}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{t('schedule.exclusionsHelp')}</p>
           </div>
           <div className="space-y-1.5">
             {settingsExclusionList.map(item => (
@@ -13162,7 +13243,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                     setSettingsExclusionList(prev => prev.filter(t => t.id !== item.id))
                   }}
                   className="text-slate-400 hover:text-red-600 transition-colors ml-3"
-                  aria-label={`Remove exclusion for ${item.term}`}
+                  aria-label={t('schedule.removeExclusion', { term: item.term })}
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
@@ -13190,10 +13271,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         style={{ scrollMarginTop: pinnedTop }}
         className="scroll-mt-0 space-y-6"
       >
-        <h2 className="text-lg font-black text-slate-900">QR code</h2>
+        <h2 className="text-lg font-black text-slate-900">{t('sections.qrCode')}</h2>
       {/* QR Code */}
       <Card className="p-4">
-        <p className="text-base font-bold text-slate-800 mb-1">Order QR code</p>
+        <p className="text-base font-bold text-slate-800 mb-1">{t('qr.title')}</p>
         {/* 🔴 WHERE THIS CODE SENDS PEOPLE *NOW*, NOT WHAT IT WILL DO ONE DAY. ────────────────────────
             This line was future tense for every truck — "once your own web address is set up…" — which is
             a promise to an operator who has not set one up, and simply WRONG for one whose address is
@@ -13218,21 +13299,16 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             && !!lastOk && Date.now() - lastOk <= STOPPED_AFTER_MS
           return domainLive ? (
             <p className="text-xs text-slate-500 mb-3">
-              This QR code now sends customers to{' '}
-              <span className="font-mono text-slate-700">{truck.custom_domain}</span>. You never need to
-              print a new one.
+              {t.rich('qr.domainLive', { domain: truck.custom_domain ?? '', mono: chunks => <span className="font-mono text-slate-700">{chunks}</span> })}
             </p>
           ) : (
             <p className="text-xs text-slate-500 mb-3">
-              This QR code sends customers to your HatchGrab ordering page. If you set up your own web
-              address later, the same QR code will send them there instead — you will not need to print
-              a new one.
+              {t('qr.domainNotLive')}
             </p>
           )
         })()}
         <p className="text-xs text-slate-500 mb-4">
-          Print or display this code so customers can scan and pre-order.
-          Place it at your hatch, on your van, or share it online.
+          {t('qr.printHelp')}
         </p>
         {orderUrl ? (
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 mb-4">
@@ -13241,15 +13317,15 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               onClick={handleCopyOrderLink}
               className="text-xs text-orange-600 font-semibold flex-shrink-0 hover:text-orange-700"
             >
-              {copiedOrderLink ? '✓ Copied' : 'Copy'}
+              {copiedOrderLink ? t('qr.copied') : t('qr.copy')}
             </button>
           </div>
         ) : (
-          <p className="text-sm text-slate-400 mb-4">No order URL — slug not set</p>
+          <p className="text-sm text-slate-400 mb-4">{t('qr.noUrl')}</p>
         )}
         {/* QR code style selector */}
         <div className="mb-4 space-y-2">
-          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">QR code style</p>
+          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">{t('qr.style')}</p>
           {/* ── 🔴 SIDE BY SIDE, BECAUSE THEY ARE ALTERNATIVES AND NOT TWO SETTINGS. ─────────────────
               Stacked full-width they read as independent switches an operator might turn on
               individually; abreast, the choice is visible as a choice.
@@ -13267,7 +13343,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           >
             <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${qrCodeStyle === 'standard' ? 'border-orange-500' : 'border-slate-300'}`}>{qrCodeStyle === 'standard' && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-slate-800">Standard QR code</p>
+              <p className="text-sm font-semibold text-slate-800">{t('qr.standard')}</p>
             </div>
             {/* ── 🔴 A PREVIEW, NOT A BUTTON. The card is still the control for CHOOSING a style; this
                 image answers the different question "what will mine look like". Clicking it enlarges —
@@ -13275,7 +13351,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 also silently change the operator's saved style. */}
             <QrPreview
               src={qrPreviews.standard}
-              alt="Standard QR code preview"
+              alt={t('qr.standardAlt')}
               onOpen={() => openQrView('standard')}
             />
           </button>
@@ -13289,8 +13365,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             >
               <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${qrCodeStyle === 'branded' ? 'border-orange-500' : 'border-slate-300'}`}>{qrCodeStyle === 'branded' && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
-                <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
+                <p className="text-sm font-semibold text-slate-800">{t('qr.branded')}</p>
+                <p className="text-xs text-slate-400">{t('qr.brandedHelp')}</p>
                 {/* ── 🔴 A BLOCKER, NOT A STATUS. ────────────────────────────────────────────────────
                     This was a badge reading "No logo" sitting beside the option that promises a logo in
                     the middle. It told an operator who had just chosen branded that the thing they chose
@@ -13299,7 +13375,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                     ⚠️ BEHAVIOUR IS UNCHANGED — selecting branded without a logo does exactly what it did
                     before. Only what they are told has changed. */}
                 {!truck.logo_storage_path && (
-                  <p className="text-xs text-amber-700 mt-1">Add your logo to your profile and it will show here.</p>
+                  <p className="text-xs text-amber-700 mt-1">{t('qr.addLogo')}</p>
                 )}
               </div>
               {/* ⚠️ THE BRANDED PREVIEW IS THEIR REAL CODE WITH THEIR REAL LOGO — and where there is no
@@ -13308,7 +13384,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   adding a logo stays: the preview shows the state, the line says what to do about it. */}
               <QrPreview
                 src={qrPreviews.branded}
-                alt="Branded QR code preview"
+                alt={t('qr.brandedAlt')}
                 onOpen={() => openQrView('branded')}
               />
             </button>
@@ -13316,15 +13392,15 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 opacity-50 cursor-not-allowed">
               <span className="w-4 h-4 rounded-full border-2 border-slate-300 shrink-0" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
-                <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
+                <p className="text-sm font-semibold text-slate-800">{t('qr.branded')}</p>
+                <p className="text-xs text-slate-400">{t('qr.brandedHelp')}</p>
               </div>
               {/* 🔴 BELOW THE PLAN THEY STILL SEE IT, WITH THEIR OWN LOGO, AND THAT IS THE POINT — a
                   locked feature you cannot picture is not a feature anybody upgrades for. What they
                   cannot do is enlarge it or download it: clicking explains the lock instead. */}
               <QrPreview
                 src={qrPreviews.branded}
-                alt="Branded QR code preview"
+                alt={t('qr.brandedAlt')}
                 locked
                 onOpen={() => openQrView('branded')}
               />
@@ -13356,7 +13432,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               disabled={generatingQR}
               className="bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl text-sm disabled:opacity-40"
             >
-              {generatingQR ? 'Opening…' : 'View QR code'}
+              {generatingQR ? t('qr.opening') : t('qr.view')}
             </button>
           </div>
         )}
@@ -13373,10 +13449,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             <div className="bg-white rounded-2xl p-5 max-w-sm w-full" onClick={e => e.stopPropagation()}>
               {qrModal.locked ? (
                 <>
-                  <p className="text-base font-bold text-slate-800 mb-1">Branded QR code</p>
+                  <p className="text-base font-bold text-slate-800 mb-1">{t('qr.branded')}</p>
                   <p className="text-sm text-slate-600">
-                    Branded codes are part of a higher plan. Your standard QR code works exactly the same
-                    for customers — the difference is your logo in the middle.
+                    {t('qr.lockedBody')}
                   </p>
                   <div className="mt-3">
                     <FeatureGate
@@ -13390,7 +13465,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 </>
               ) : qrModal.dataUrl ? (
                 <div className="flex flex-col items-center gap-4">
-                  <img src={qrModal.displayUrl ?? qrModal.dataUrl} alt="Order QR code" className="w-64 h-auto rounded-xl border border-slate-100" />
+                  <img src={qrModal.displayUrl ?? qrModal.dataUrl} alt={t('qr.imageAlt')} className="w-64 h-auto rounded-xl border border-slate-100" />
                   {/* ⛔ THE EXPLANATORY LINE THAT STOOD HERE WAS REMOVED ON REQUEST, 28 August 2026.
                       ⚠️ WHAT IT DISCLOSED IS STILL TRUE: with no logo the picture above carries the dotted
                       square and the downloaded file does NOT. That is deliberate — a printed board must
@@ -13403,18 +13478,18 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                     download={`${truck.name.toLowerCase().replace(/\s+/g, '-')}-qr.png`}
                     className="w-full flex items-center justify-center px-4 py-2.5 bg-orange-600 text-white text-sm font-medium rounded-xl"
                   >
-                    Download PNG
+                    {t('qr.download')}
                   </a>
                   <p className="text-xs text-slate-400 self-start break-all font-mono">{orderUrl}</p>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">That could not be built just now. Try again shortly.</p>
+                <p className="text-sm text-slate-500">{t('qr.buildFailed')}</p>
               )}
               <button
                 onClick={() => setQrModal(null)}
                 className="mt-3 w-full px-4 py-2.5 border border-slate-200 text-slate-600 text-sm rounded-xl"
               >
-                Close
+                {t('qr.close')}
               </button>
             </div>
           </div>
@@ -14037,20 +14112,19 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Remove {deletingVan.name}?</h3>
+              <h3 className="text-lg font-semibold text-slate-900">{t('removeVan.title', { name: deletingVan.name })}</h3>
               <p className="text-sm text-slate-500 mt-2">
-                This van will be removed from your account and will no longer
-                appear on your dashboard or in future events.
+                {t('removeVan.body')}
               </p>
               <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 space-y-1.5">
                 <p className="text-xs text-slate-600">
-                  <span className="font-semibold">✓ Preserved:</span> All historical orders, sales data, and reports are kept permanently.
+                  {t.rich('removeVan.preservedOrders', { b: chunks => <span className="font-semibold">{chunks}</span> })}
                 </p>
                 <p className="text-xs text-slate-600">
-                  <span className="font-semibold">✓ Preserved:</span> Past event records linked to this van are unaffected.
+                  {t.rich('removeVan.preservedEvents', { b: chunks => <span className="font-semibold">{chunks}</span> })}
                 </p>
                 <p className="text-xs text-red-600">
-                  <span className="font-semibold">✕ Removed:</span> The van&apos;s kitchen screen link and settings will be deactivated.
+                  {t.rich('removeVan.removedLink', { b: chunks => <span className="font-semibold">{chunks}</span> })}
                 </p>
               </div>
             </div>
@@ -14059,13 +14133,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 onClick={() => setDeletingVan(null)}
                 className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
               >
-                Keep van
+                {t('removeVan.keep')}
               </button>
               <button
                 onClick={confirmDeleteVan}
                 className="flex-1 bg-red-600 text-white font-semibold py-3 rounded-xl text-sm hover:bg-red-700"
               >
-                Remove van
+                {t('removeVan.remove')}
               </button>
             </div>
           </div>
@@ -14077,18 +14151,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Add another truck</h3>
+              <h3 className="text-lg font-semibold text-slate-900">{t('vanBilling.title')}</h3>
               <p className="text-sm text-slate-500 mt-2">
-                Your {truck.plan === 'pro' ? 'Pro' : 'Max'} plan includes{' '}
-                {truck.plan === 'pro' ? '2 trucks' : 'unlimited trucks'}.
-                Adding an additional truck costs{' '}
-                <strong>{vanPx(vanAddonLabel('month'))}</strong>{' '}
-                and will be added to your next billing cycle.
+                {t.rich('vanBilling.body', { plan: truck.plan === 'pro' ? 'pro' : 'other', price: vanPx(vanAddonLabel('month')), b: chunks => <strong>{chunks}</strong> })}
               </p>
               <div className="mt-3 bg-slate-50 rounded-xl px-4 py-3">
                 <p className="text-xs text-slate-500">
-                  ⚠️ Note: Billing adjustment is processed manually during early access.
-                  You will receive a confirmation email within 24 hours.
+                  {t('vanBilling.note')}
                 </p>
               </div>
             </div>
@@ -14097,13 +14166,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 onClick={() => setShowVanBillingModal(false)}
                 className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
               >
-                Cancel
+                {t('vanBilling.cancel')}
               </button>
               <button
                 onClick={() => { setShowVanBillingModal(false); setAddingVan(true) }}
                 className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm hover:bg-orange-700"
               >
-                Add truck — {vanPx(vanAddonLabel('mo'))}
+                {t('vanBilling.add', { price: vanPx(vanAddonLabel('mo')) })}
               </button>
             </div>
           </div>
@@ -14114,9 +14183,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       {showVanUpgradeModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
-            <h3 className="text-lg font-semibold text-slate-900">Upgrade to add more vans</h3>
+            <h3 className="text-lg font-semibold text-slate-900">{t('vanUpgrade.title')}</h3>
             <p className="text-sm text-slate-500">
-              The Starter plan includes 1 van. Upgrade to Pro or Max to add additional vans.
+              {t('vanUpgrade.body')}
             </p>
             {/* 🔴 iOS (App Store 3.1.1/3.1.3): the "View plans" CTA is suppressed, the EXPLANATION is not.
                 An operator who hits the van limit still has to be told why the button did nothing — a
@@ -14129,14 +14198,14 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 onClick={() => setShowVanUpgradeModal(false)}
                 className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
               >
-                Cancel
+                {t('vanUpgrade.cancel')}
               </button>
               {purchaseCtaAllowed() && (
                 <a
                   href={manageTabHref('billing')}
                   className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm text-center hover:bg-orange-700"
                 >
-                  View plans
+                  {t('vanUpgrade.viewPlans')}
                 </a>
               )}
             </div>
@@ -14144,14 +14213,14 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         </div>
       )}
 
-      <p className="text-xs text-slate-400 text-center pb-2">Changes save automatically</p>
+      <p className="text-xs text-slate-400 text-center pb-2">{t('changesSave')}</p>
 
       {/* Emoji picker popup */}
       {showEmojiPicker && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl flex flex-col max-h-[80vh]">
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900">Choose your icon</h3>
+              <h3 className="font-bold text-slate-900">{t('emojiPicker.title')}</h3>
               <button
                 onClick={() => setShowEmojiPicker(false)}
                 className="text-slate-400 hover:text-slate-600 text-lg leading-none">
@@ -14159,10 +14228,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               </button>
             </div>
             <div className="overflow-y-auto p-4 space-y-4">
-              {FOOD_EMOJI_CATEGORIES.map(({ label, emojis }) => (
+              {FOOD_EMOJI_CATEGORIES.map(({ label, emojis }, i) => (
                 <div key={label}>
                   <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
-                    {label}
+                    {/* The category's words by its POSITION in FOOD_EMOJI_CATEGORIES (same order), never by its label. */}
+                    {t(`emojiPicker.categories.${EMOJI_CATEGORY_KEYS[i]}`)}
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {emojis.map(emoji => (

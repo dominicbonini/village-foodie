@@ -283,9 +283,18 @@ console.log('\n── 6 · THE YES / NO ANSWER ───────────
     && /import \{[^}]*\bToggle\b[^}]*\} from '@\/components\/manage\/primitives'/.test(read('app/manage/[token]/page.tsx')),
     '🔴 …and Settings renders that same component — page.tsx defines no switch of its own')
   /* ⛔ AND THE HELPER LINE UNDER THE LABEL IS GONE (Dominic, same message). */
-  check(!/Only asked when you have more than one van\./.test(UI),
+  // ⚠️ RE-PINNED (Language Phase 1d): this screen's words moved to messages/en-GB.json `kitchenCapacity`, so "gone"
+  // is now also asserted of that namespace — otherwise the source check alone could never fail again.
+  const KC_GB = JSON.parse(read('messages/en-GB.json')).kitchenCapacity
+  check(!/Only asked when you have more than one van\./.test(UI) && !JSON.stringify(KC_GB).includes('Only asked when you have more than one van.'),
     '⛔ "Only asked when you have more than one van." is gone')
-  check(/All vans will use \{firstVan\.name\}’s kitchen capacity\. Each van’s own numbers will be replaced\./.test(UI),
+  // ⚠️ RE-PINNED (Language Phase 1d): the confirm sentence moved to kitchenCapacity.confirmBody (words unchanged, the
+  // van name now a {van} argument); the modal renders t('confirmBody', { van: firstVan.name }). Rendered here with
+  // next-intl's createTranslator, exactly as useT does, so the words are still asserted exactly.
+  const { createTranslator } = require(require.resolve('next-intl', { paths: [REPO] }))
+  const kcT = createTranslator({ locale: 'en-GB', messages: { kitchenCapacity: KC_GB }, namespace: 'kitchenCapacity' })
+  check(/\{confirmAllSame && \([\s\S]{0,800}?\{t\('confirmBody', \{ van: firstVan\.name \}\)\}/.test(UI)
+    && kcT('confirmBody', { van: 'Van 1' }) === 'All vans will use Van 1’s kitchen capacity. Each van’s own numbers will be replaced.',
     '🔴 …and the confirm says exactly what the brief gave')
   check(/for \(const v of others\) await api\('set_van_capacity_same_as_first', \{ vanId: v\.id, on \}\)/.test(UI),
     '🔴 both answers write EVERY other van\'s flag, through the action that already copies')

@@ -1,6 +1,8 @@
 'use client'
 
 import { prepTimeOptionsFor } from '@/lib/kitchen-capacity'
+import { useAppLocale, useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/kitchenCapacity'
 
 // Shared prep-time dropdown (V7.8 §42) — ONE control for category prep on BOTH the dashboard
 // Menu & Stock section and the Manage category editor. Value = prep_secs (SECONDS), fed straight to
@@ -13,21 +15,25 @@ export function PrepTimeSelect({
   onChange,
   className,
   disabled,
-  ariaLabel = 'Prep time',
+  ariaLabel,
 }: {
   valueSecs: number | null | undefined
   onChange: (secs: number) => void
   className?: string
   disabled?: boolean
+  /** Omitted ⇒ `kitchenCapacity.prepSecs.aria` ("Prep time"). */
   ariaLabel?: string
 }) {
+  // Language Phase 1d: the option labels ("Instant", "1m 30s") and the default name in the truck's language.
+  const t = useT('kitchenCapacity')
+  const locale = useAppLocale()
   const v = Number(valueSecs) || 0
-  const options = prepTimeOptionsFor(v)
+  const options = prepTimeOptionsFor(v, locale)
   return (
     <select
       value={v}
       disabled={disabled}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? t('prepSecs.aria')}
       onChange={e => onChange(parseInt(e.target.value, 10) || 0)}
       className={className}
     >

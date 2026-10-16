@@ -3,6 +3,9 @@
 // phase makes its own assumption from the base town.) Pure and client-safe: signup (/api/setup), provisioning (lib/provision-truck.ts) and
 // Manage › Settings › Where you trade (/api/manage update_trade_area) all run THIS, so the three cannot accept
 // different things. Every refusal is a plain sentence a person can act on.
+// 🔴 A REFUSAL IS A CODE AND ITS VALUES (Language Phase 1d), never words: `{ code, params }`, whose sentence is the
+// `tradeArea` namespace's message (messages/en-GB.json) — read by each caller in its own language: the routes through
+// `tradeAreaErrorBody` (lib/i18n/manage-errors.ts), provisioning through `translatorFor`, the signup step through `useT`.
 import type { CountrySettings } from '@/lib/country-settings-types'
 
 type CountryFacts = Pick<CountrySettings, 'countryCode' | 'name' | 'enabled' | 'timezones' | 'defaultTimezone'>
@@ -10,12 +13,16 @@ type CountryFacts = Pick<CountrySettings, 'countryCode' | 'name' | 'enabled' | '
   // (which has no address format) runs unchanged.
   & Partial<Pick<CountrySettings, 'addressFormat'>>
 
+/** A refusal: a `tradeArea` message key and its values (the country's name, already as the settings row writes it). */
+export type TradeAreaCode = 'country_missing' | 'country_off' | 'zone_unknown' | 'town_missing' | 'town_too_long'
+export interface TradeAreaRefusal { code: TradeAreaCode; params: Record<string, string> }
+
 export const TRADE_AREA_ERRORS = {
-  noCountry: 'Choose the country your truck is based in.',
-  countryOff: (name: string) => `Trucks can't sign up in ${name} yet. Choose another country.`,
-  zone: (name: string) => `That time zone isn't one we offer in ${name}. Choose one from the list.`,
-  noTown: 'Tell us the town or city you’re based in.',
-  townTooLong: 'That town name is too long — 120 characters at most.',
+  noCountry: { code: 'country_missing', params: {} } as TradeAreaRefusal,
+  countryOff: (name: string): TradeAreaRefusal => ({ code: 'country_off', params: { country: name } }),
+  zone: (name: string): TradeAreaRefusal => ({ code: 'zone_unknown', params: { country: name } }),
+  noTown: { code: 'town_missing', params: {} } as TradeAreaRefusal,
+  townTooLong: { code: 'town_too_long', params: {} } as TradeAreaRefusal,
 } as const
 
 /** What is stored on the truck. Coordinates and the place id are present only when a suggestion was picked. */
@@ -44,12 +51,12 @@ const str = (v: unknown, max: number): string | null => {
  * not refused: the town's name is what matters, and a bad point must never cost a signup.
  */
 export function checkTradeArea(input: Record<string, unknown>, c: CountryFacts):
-  { ok: true; values: TradeAreaValues } | { ok: false; error: string } {
+  { ok: true; values: TradeAreaValues } | ({ ok: false } & TradeAreaRefusal) {
   const zoneIn = typeof input.timezone === 'string' && input.timezone.trim() ? input.timezone.trim() : c.defaultTimezone
-  if (!c.timezones.includes(zoneIn)) return { ok: false, error: TRADE_AREA_ERRORS.zone(c.name) }
+  if (!c.timezones.includes(zoneIn)) return { ok: false, ...TRADE_AREA_ERRORS.zone(c.name) }
   const town = typeof input.base_place_name === 'string' ? input.base_place_name.trim() : ''
-  if (!town) return { ok: false, error: TRADE_AREA_ERRORS.noTown }
-  if (town.length > 120) return { ok: false, error: TRADE_AREA_ERRORS.townTooLong }
+  if (!town) return { ok: false, ...TRADE_AREA_ERRORS.noTown }
+  if (town.length > 120) return { ok: false, ...TRADE_AREA_ERRORS.townTooLong }
   const placeId = str(input.base_place_id, 300)
   const lat = num(input.base_lat, -90, 90), lng = num(input.base_lng, -180, 180)
   const pointed = placeId && lat !== null && lng !== null
@@ -71,7 +78,7 @@ export function checkTradeArea(input: Record<string, unknown>, c: CountryFacts):
 }
 
 /** The country check alone — for a signup, before anything else is looked at. */
-export function checkSignupCountry(code: unknown, c: CountryFacts | null): string | null {
+export function checkSignupCountry(code: unknown, c: CountryFacts | null): TradeAreaRefusal | null {
   if (typeof code !== 'string' || !code.trim() || !c) return TRADE_AREA_ERRORS.noCountry
   if (!c.enabled) return TRADE_AREA_ERRORS.countryOff(c.name)
   return null

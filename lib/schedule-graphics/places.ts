@@ -457,16 +457,26 @@ export function timeRangeLabel(start: string | null | undefined, end: string | n
  * ⚠️ "No events yet" ONLY WHEN THERE IS GENUINELY NEITHER. With bug 3 unfixed almost every place said
  * this, which is what made the line look broken rather than empty.
  */
-export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string, ts: TimeSettings | null | undefined): string {
+export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string, ts: TimeSettings | null | undefined, words?: PlaceWhenWords): string {
   if (p.last_event_date) {
     const t = timeRangeLabel(p.last_start_time, p.last_end_time, ts)
+    if (words) return words.last(fmtDay(p.last_event_date), t)
     return `Last: ${fmtDay(p.last_event_date)}${t ? ` · ${t}` : ''}`
   }
   if (p.next_event_date) {
     const t = timeRangeLabel(p.next_start_time, p.next_end_time, ts)
+    if (words) return words.next(fmtDay(p.next_event_date), t)
     return `Next: ${fmtDay(p.next_event_date)}${t ? ` · ${t}` : ''}`
   }
-  return 'No events yet'
+  return words ? words.none : 'No events yet'
+}
+
+/** 🔴 THE LINE'S WORDS IN THE TRUCK'S LANGUAGE (Language Phase 1d) — the places list passes them from
+ *  `schedulePlaces`. `times` is '' when the visit has none. Without them the line is the English above. */
+export interface PlaceWhenWords {
+  last: (day: string, times: string) => string
+  next: (day: string, times: string) => string
+  none: string
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════

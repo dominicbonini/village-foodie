@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Verification is temporarily unavailable. Please try again in a moment.",
+  "malformed": "That doesn’t look like a web address. Try something like yourtruck.co.uk/events",
+  "blocked": "We couldn’t access this site — it may be blocking automated checks. Try the page that lists your schedule, or add events manually.",
+  "unreachable": "We couldn’t reach this website. It may be down, or the address may be wrong.",
+  "no_content": "We reached this page but couldn’t read anything on it. Check it’s publicly accessible.",
+  "no_events": "We couldn’t find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed.",
+  "blockedDomain": "Please use your website URL — Facebook and Instagram pages can’t be scraped automatically."
+}

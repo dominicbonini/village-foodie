@@ -313,16 +313,70 @@ module.exports = async function us(h) {
     {
       // SettingsTab, HEAD vs now, from its first line to the next top-level function. With the moved block,
       // its tombstone and the moved derivation taken out of each, the two must be the same text.
+      // ⚠️ RE-PINNED (Language Phase 1d): 1d legitimately moved every word of SettingsTab into messages/
+      // (`manageSettings`, `settingsCopy`, `serviceSettings`, `offlineProtection`, `manageScheduleVerify`), so the
+      // working tree's SettingsTab can no longer be byte-identical to 3033a53's. The guarded property — ONLY the
+      // Taking-payment block left Settings — is now held in three bounded steps instead of one:
+      //   (A) the original byte comparison, unchanged, run on 756ca09's SettingsTab (the last tree before 1d);
+      //   (B) 756ca09 → now: a line diff in which every REMOVED line is a word site (a literal with a letter, JSX
+      //       text, or a reference to the copy constants 1d retired) or survives re-wrapped inside an added line —
+      //       so 1d's word moves are excused and nothing else may leave;
+      //   (C) the saves Settings makes (saveSetting / api / update_* keys) are the same multiset as 756ca09's, and
+      //       the moved block did not come back: none of its code lines, none of its three saves, tombstone kept.
       const region = src => { const a = src.indexOf('function SettingsTab('); return src.slice(a, src.indexOf('\nfunction ', a + 10)) }
-      const headR = region(headSrc), nowR = region(P)
-      const nowStripped = nowR
+      const stripNow = r => r
         .replace(/        \{\/\* ── ⛔ "TAKING PAYMENT" MOVED TO MANAGE › PAYMENTS[\s\S]*?\*\/\}\n/, '')
         .replace(/  \/\/ ── ⛔ `completionPresses` MOVED WITH[^\n]*\n(  \/\/[^\n]*\n)*/, '')
+      const baseSrc = execFileSync('git', ['show', '756ca09:app/manage/[token]/page.tsx'], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
+      const headR = region(headSrc), baseR = region(baseSrc), nowR = region(P)
       const headStripped = headR.replace(was, '')
         .replace(/  \/\/ ── THE RESOLVED COMPLETION SETTING, ONE PLACE ON THIS PAGE[^\n]*\n(  \/\/[^\n]*\n)*  const completionPresses: 'one' \| 'two' =\n    form\.completion_presses \?\? \(form\.show_paid_step === true \? 'two' : 'one'\)\n/, '')
-      t('…and ONLY that block left Settings: the rest of SettingsTab is identical to 3033a53',
-        headStripped.length > 100000 && headStripped === nowStripped,
-        headStripped === nowStripped ? '' : `HEAD ${headStripped.length} chars vs now ${nowStripped.length}`)
+      const baseStripped = stripNow(baseR)
+      t('…and ONLY that block left Settings: the rest of SettingsTab is identical to 3033a53 (A: at 756ca09, the tree before Language Phase 1d)',
+        headStripped.length > 100000 && headStripped === baseStripped,
+        headStripped === baseStripped ? '' : `3033a53 ${headStripped.length} chars vs 756ca09 ${baseStripped.length}`)
+      // (B) the line diff, 756ca09 → now (LCS over lines).
+      const A = baseR.split('\n'), B = nowR.split('\n'), n = A.length, m = B.length
+      const L = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1))
+      for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1])
+      const hunks = []; let cur = null
+      for (let i = 0, j = 0; i < n || j < m;) {
+        if (i < n && j < m && A[i] === B[j]) { cur = null; i++; j++; continue }
+        if (!cur) hunks.push(cur = { del: [], add: [] })
+        if (j < m && (i === n || L[i][j + 1] >= L[i + 1][j])) cur.add.push(B[j++]); else cur.del.push(A[i++])
+      }
+      // A word site: a quoted literal holding a word; JSX text (between tags, or a whole line of it) holding a word once
+      // {expressions} and &entities; are set aside; or a reference to the copy constants / labels 1d retired.
+      const WORD_REF = /_MSG\b|VERIFY_MESSAGES|SETTING_COPY|SERVICE_SETTING_LABELS|OFFLINE_AUTO_REJECT|COPY\.|\{(sec\.)?label\}|\.map\(\(?\{? ?label/
+      const wordSite = l => {
+        const bare = l.replace(/&[a-z]+;/g, ' ').replace(/\{[^{}<>]*\}/g, ' ')
+        // A quoted literal counts only if it is not a lowercase identifier — an identifier-like
+        // literal ('update_van_settings', 'month') is code, and a line holding only those is not excused.
+        const lits = [...l.matchAll(/(['"`])((?:\\.|(?!\1).)*)\1/g)].map(x => x[2])
+        return lits.some(x => /[A-Za-z]{2}/.test(x) && !/^[a-z0-9_]+$/.test(x)) || WORD_REF.test(l)
+          || [...bare.matchAll(/>([^<]*)</g)].some(x => /[A-Za-z]{2}/.test(x[1]))
+          || (/^\s+[^\s<{/)]/.test(bare) && !/[=(){};<>]/.test(bare) && /[A-Za-z]{2}/.test(bare))
+      }
+      // Two NAMED word moves whose removed line has no word of its own — each excused only when its replacement is in
+      // the same hunk: the QR logo placeholder's second line ('here', now line 2 of qr.logoPlaceholder), and the
+      // add-on price (now the `price` value of manageSettings.vanBilling.body, still in <strong>).
+      const NAMED = [
+        ["    ctx.fillText('here', x + w / 2, y + h * 0.66)", /ctx\.fillText\(line2, x \+ w \/ 2, y \+ h \* 0\.66\)/],
+        ["                <strong>{vanPx(vanAddonLabel('month'))}</strong>{' '}", /t\.rich\('vanBilling\.body', \{[^\n]*price: vanPx\(vanAddonLabel\('month'\)\), b: chunks => <strong>\{chunks\}<\/strong>/],
+      ]
+      const named = (l, h) => NAMED.some(([line, re]) => l === line && h.add.some(x => re.test(x)))
+      const unexcused = hunks.flatMap(h => h.del.filter(l => l.trim() && !wordSite(l) && !named(l, h) && !h.add.some(x => x.includes(l.trim()))))
+      t('…(B) 756ca09 → now: every line that left SettingsTab is a word moved to messages/ (or the same code re-wrapped)',
+        hunks.length > 50 && unexcused.length === 0, unexcused.slice(0, 8).join('\n'))
+      // (C) the saves, and the moved block staying out.
+      const saves = r => [...r.matchAll(/saveSetting\(\s*'([a-z_]+)'|api\(\s*'([a-z_]+)'|\b(update_[a-z_]+)\b/g)].map(x => x[1] || x[2] || x[3]).sort().join(' ')
+      const movedLines = was.split('\n').map(l => l.trim()).filter(l => l.length > 30 && !headStripped.includes(l))
+      t('…(C) SettingsTab makes the same saves as at 756ca09, and the moved block has not come back',
+        saves(baseR).length > 200 && saves(baseR) === saves(nowR)
+        && movedLines.length > 50 && movedLines.every(l => !nowR.includes(l))
+        && !/saveSetting\('(show_paid_step|completion_presses|takes_cash)'/.test(nowR)
+        && /"TAKING PAYMENT" MOVED TO MANAGE › PAYMENTS/.test(nowR),
+        `${saves(baseR) === saves(nowR) ? '' : 'saves differ; '}${movedLines.filter(l => nowR.includes(l)).slice(0, 3).join(' | ')}`)
     }
     const pt = read('components/manage/PaymentsTab.tsx')
     t('Payments places it after the online section and before "Walk-up payments" (with the new card first)',

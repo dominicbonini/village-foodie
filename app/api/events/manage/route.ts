@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { truckTimeZone } from '@/lib/truck-time'
 import { getLocalDateInTz } from '@/lib/time-utils'
 import { createClient } from '@supabase/supabase-js'
+// Language Phase 1d: a refusal of ours is `{ error: <today's English>, …, code, params }` (lib/i18n/manage-errors.ts), in the
+// truck's language (en-GB before the truck is known). A database's or exception's message is passed on as it comes.
+import { manageErrorBody } from '@/lib/i18n/manage-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,7 +17,7 @@ export async function GET(req: NextRequest) {
   const status = req.nextUrl.searchParams.get('status') // optional filter
   const upcoming = req.nextUrl.searchParams.get('upcoming') // 'true' for future only
 
-  if (!token) return NextResponse.json({ error: 'Token required' }, { status: 400 })
+  if (!token) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'token_required'), { status: 400 })
 
   const { data: truck } = await supabase
     .from('trucks')
@@ -21,7 +25,7 @@ export async function GET(req: NextRequest) {
     .eq('dashboard_token', token)
     .single()
 
-  if (!truck) return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
+  if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'truck_not_found'), { status: 404 })
 
   let query = supabase
     .from('truck_events')

@@ -1,8 +1,7 @@
 {
   "noVan": {
     "title": "Add a truck",
-    "detail": "Events run against a truck — without one there is nothing to take orders through.",
-    "where": "Settings → Your trucks"
+    "detail": "Events run against a truck — without one there is nothing to take orders through."
   },
   "kitchenCapacityUnset": {
     "detail": "No capacity is set for {vans}. Without it we will keep promising customers pickup times your kitchen has no way to hit.",

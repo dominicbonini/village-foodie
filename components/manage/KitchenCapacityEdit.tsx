@@ -13,6 +13,8 @@
 //     surfaces share the ATOMS (PrepTimeSelect, already shared, + this BatchSizeSelect) instead.
 // ══════════════════════════════════════════════════════════════
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/kitchenCapacity'
 
 const SELECT_CLASS =
   'border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-1 focus:ring-orange-400'
@@ -26,7 +28,7 @@ export function BatchSizeSelect({
   valueSize,
   onChange,
   className = SELECT_CLASS,
-  ariaLabel = 'Items per batch',
+  ariaLabel,
   disabled,
 }: {
   valueSize: number | null | undefined
@@ -35,19 +37,20 @@ export function BatchSizeSelect({
   ariaLabel?: string
   disabled?: boolean
 }) {
+  const t = useT('kitchenCapacity')
   const v = !valueSize || valueSize === 0 ? '' : valueSize
   const opts = Array.from({ length: 20 }, (_, i) => i + 1).concat(valueSize && valueSize > 20 ? [valueSize] : [])
   return (
     <select
       value={v}
       disabled={disabled}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? t('batchAria')}
       onChange={e => onChange(e.target.value === '' ? null : parseInt(e.target.value))}
       className={className}
     >
       <option value="">∞</option>
       {opts.map(n => (
-        <option key={n} value={n}>{n} item{n !== 1 ? 's' : ''}</option>
+        <option key={n} value={n}>{t('items', { n, count: String(n) })}</option>
       ))}
     </select>
   )
@@ -91,32 +94,34 @@ export function KitchenCapacityEdit({
   prepClassName?: string
   batchClassName?: string
 }) {
+  const t = useT('kitchenCapacity')
   const cooked = (Number(prepSecs) || 0) > 0
+  const hasCategory = categoryName ? 'yes' : 'no'
   return (
     <div className="space-y-3">
       {showBadge && (
         <div className="flex items-center gap-2">
           {categoryName && <p className="text-sm font-bold text-slate-900">{categoryName}</p>}
           {cooked ? (
-            <span className="text-xs px-2 py-0.5 bg-orange-50 text-orange-600 border border-orange-100 rounded-full">🔥 Cooked</span>
+            <span className="text-xs px-2 py-0.5 bg-orange-50 text-orange-600 border border-orange-100 rounded-full">{t('cooked')}</span>
           ) : (
-            <span className="text-xs px-2 py-0.5 bg-green-50 text-green-600 border border-green-100 rounded-full">⚡ Instant</span>
+            <span className="text-xs px-2 py-0.5 bg-green-50 text-green-600 border border-green-100 rounded-full">{t('instant')}</span>
           )}
         </div>
       )}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-700">Prep time per order</p>
-          <p className="text-xs text-slate-400">How long one order takes to prepare</p>
+          <p className="text-sm text-slate-700">{t('prepPerOrder')}</p>
+          <p className="text-xs text-slate-400">{t('prepPerOrderHelp')}</p>
         </div>
-        <PrepTimeSelect valueSecs={prepSecs} onChange={onPrepChange} className={prepClassName} ariaLabel={`${categoryName || ''} prep time`.trim()} />
+        <PrepTimeSelect valueSecs={prepSecs} onChange={onPrepChange} className={prepClassName} ariaLabel={t('categoryPrepAria', { hasCategory, category: categoryName ?? '' })} />
       </div>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-700">Items at a time</p>
-          <p className="text-xs text-slate-400">How many items your kitchen can cook simultaneously</p>
+          <p className="text-sm text-slate-700">{t('itemsAtATime')}</p>
+          <p className="text-xs text-slate-400">{t('itemsAtATimeHelp')}</p>
         </div>
-        <BatchSizeSelect valueSize={batchSize} onChange={onBatchChange} className={batchClassName} ariaLabel={`${categoryName || ''} items per batch`.trim()} />
+        <BatchSizeSelect valueSize={batchSize} onChange={onBatchChange} className={batchClassName} ariaLabel={t('categoryBatchAria', { hasCategory, category: categoryName ?? '' })} />
       </div>
       {showCountsToward && (
         <label className={`flex items-center gap-2 ${countsDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`} title={countsTitle}>
@@ -127,11 +132,11 @@ export function KitchenCapacityEdit({
             onChange={() => onCountsChange?.()}
             className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"
           />
-          <span className="text-sm text-slate-700">Counts toward capacity</span>
+          <span className="text-sm text-slate-700">{t('countsToward')}</span>
         </label>
       )}
       {showInstantNote && !cooked && (
-        <p className="text-xs text-slate-400">Instant items don&apos;t count towards kitchen capacity — customers receive them immediately.</p>
+        <p className="text-xs text-slate-400">{t('instantNote')}</p>
       )}
     </div>
   )

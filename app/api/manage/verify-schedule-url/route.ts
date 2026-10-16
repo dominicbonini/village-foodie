@@ -4,6 +4,10 @@ import { extractScheduleEvents } from '@/lib/schedule-extract'
 // Phase 2D-2: the truck's name, base, country and recent towns, and its country's location lines.
 import { scheduleContextForTruck } from '@/lib/schedule-context'
 import { truckTimeSettings } from '@/lib/truck-time'
+// Language Phase 1d: a refusal of ours is `{ error: <today's English>, …, code, params }` (lib/i18n/manage-errors.ts),
+// en-GB (each is sent before the truck is known). `reason` is already a code ('blocked', 'unreachable', …) and is unchanged.
+import { manageErrorBody } from '@/lib/i18n/manage-errors'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 // Vercel Pro limit is 60s. Puppeteer + Gemini can take 45-55s on slow sites.
 // If timeouts recur at scale, move to a background job (GitHub Actions / queue)
@@ -160,13 +164,13 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const { token, url } = body
 
-  if (!token) return NextResponse.json({ error: 'Token required' }, { status: 401 })
+  if (!token) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'token_required'), { status: 401 })
   if (!url || !url.startsWith('http')) {
-    return NextResponse.json({ error: 'Invalid URL' }, { status: 400 })
+    return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'invalid_url'), { status: 400 })
   }
 
   const truck = await getTruck(token)
-  if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+  if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'invalid_token'), { status: 401 })
 
   let browser: any
   try {

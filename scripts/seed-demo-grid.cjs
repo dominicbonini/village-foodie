@@ -87,7 +87,7 @@ const summarise = db => db.orders.map(o => ({ slot: o.slot, burgers: o.items.fil
   {
     // V1 — the TRUCK-level interval restored as the planning grid. The van says 15, the truck says 5.
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'sdg-v1-'))
-    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
+    fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true }); fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })   // ⚠️ RE-PINNED (Language Phase 1d): lib/ now reaches catalogs (settingsCopy, whereYouTrade) that import messages/ns/** — the copy needs them to compile
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
     const f = path.join(tmp, 'lib/seed-demo-orders.ts'); const src = fs.readFileSync(f, 'utf8')
     const needle = '  const gridMins = intervals.customer'
